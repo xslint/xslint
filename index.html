@@ -282,12 +282,6 @@
     <td>The match attribute of xsl:template contains //, which triggers a full document scan. Use a more specific path.</td>
   </tr>
   <tr>
-    <td><a href="checks/use-node-set-extension.html">use-node-set-extension</a></td>
-    <td>xpath</td>
-    <td><span class="severity-warning">warning</span></td>
-    <td>The node-set() extension function is unnecessary in XSLT 2.0 and later. Query the variable directly without it.</td>
-  </tr>
-  <tr>
     <td><a href="checks/use-single-option-for-choose.html">use-single-option-for-choose</a></td>
     <td>xpath</td>
     <td><span class="severity-warning">warning</span></td>
@@ -370,6 +364,12 @@
     <td>format</td>
     <td><span class="severity-warning">warning</span></td>
     <td>Verbose axis specifiers child::, attribute::, or parent::node() are used. Replace them with the node name alone, @, or .. respectively.</td>
+  </tr>
+  <tr>
+    <td><a href="checks/use-node-set-extension.html">use-node-set-extension</a></td>
+    <td>format</td>
+    <td><span class="severity-warning">warning</span></td>
+    <td>The node-set() extension function is unnecessary in XSLT 2.0 and later. Query the variable directly without it.</td>
   </tr>
     </tbody>
   </table>
