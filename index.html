@@ -252,12 +252,6 @@
     <td>The stylesheet has 10 or more templates with fewer than 3 child elements. Merge related small templates to reduce fragmentation.</td>
   </tr>
   <tr>
-    <td><a href="checks/unabbreviated-axis.html">unabbreviated-axis</a></td>
-    <td>xpath</td>
-    <td><span class="severity-warning">warning</span></td>
-    <td>Verbose axis specifiers child::, attribute::, or parent::node() are used. Replace them with the node name alone, @, or .. respectively.</td>
-  </tr>
-  <tr>
     <td><a href="checks/unsorted-imports.html">unsorted-imports</a></td>
     <td>xpath</td>
     <td><span class="severity-warning">warning</span></td>
@@ -370,6 +364,12 @@
     <td>format</td>
     <td><span class="severity-warning">warning</span></td>
     <td>An XPath expression has redundant whitespace. Remove the extra spaces.</td>
+  </tr>
+  <tr>
+    <td><a href="checks/unabbreviated-axis.html">unabbreviated-axis</a></td>
+    <td>format</td>
+    <td><span class="severity-warning">warning</span></td>
+    <td>Verbose axis specifiers child::, attribute::, or parent::node() are used. Replace them with the node name alone, @, or .. respectively.</td>
   </tr>
     </tbody>
   </table>
