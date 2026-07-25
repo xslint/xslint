@@ -204,12 +204,6 @@
     <td>xsl:output declares method='xml' while the root template generates HTML elements. Change the method to 'html'.</td>
   </tr>
   <tr>
-    <td><a href="checks/redundant-namespace-declarations.html">redundant-namespace-declarations</a></td>
-    <td>xpath</td>
-    <td><span class="severity-warning">warning</span></td>
-    <td>The xsl:stylesheet declares a namespace prefix that is never used. Remove the redundant xmlns declaration.</td>
-  </tr>
-  <tr>
     <td><a href="checks/setting-value-of-variable-incorrectly.html">setting-value-of-variable-incorrectly</a></td>
     <td>xpath</td>
     <td><span class="severity-warning">warning</span></td>
@@ -358,6 +352,12 @@
     <td>validation</td>
     <td><span class="severity-error">error</span></td>
     <td>The stylesheet is not well-formed XML and cannot be parsed. Fix its syntax.</td>
+  </tr>
+  <tr>
+    <td><a href="checks/redundant-namespace-declarations.html">redundant-namespace-declarations</a></td>
+    <td>format</td>
+    <td><span class="severity-warning">warning</span></td>
+    <td>The xsl:stylesheet declares a namespace prefix that is never used. Remove the redundant xmlns declaration.</td>
   </tr>
   <tr>
     <td><a href="checks/redundant-whitespace.html">redundant-whitespace</a></td>
