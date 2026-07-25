@@ -77,8 +77,9 @@
   <div class="check-content">
 <h1>Using <code>xsl:with-param</code> in invalid parent node</h1>
 <p><code>xsl:with-param</code> is allowed within <code>xsl:call-template</code>, <code>xsl:apply-templates</code>,
-<code>xsl:apply-imports</code>, <code>xsl:next-match</code> and <code>xsl:next-iteration</code>. <code>xsl:with-param</code> is needed to pass values
-to the called template or to the applied templates. Otherwise it doesn&#39;t make sense.</p>
+<code>xsl:apply-imports</code>, <code>xsl:next-match</code> and <code>xsl:next-iteration</code>. <code>xsl:with-param</code> is
+needed to pass values to the called template or to the applied templates. Otherwise
+it doesn&#39;t make sense.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:stylesheet version=&quot;1.0&quot; xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot;&gt;
   &lt;xsl:with-param name=&quot;Kipling&quot; select=&quot;1865&quot;/&gt;
