@@ -72,12 +72,15 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-warning">warning</span>
-    <code class="xpath">//xsl:function[not(some $x in //(@match | @select) except .//(@match | @select) satisfies contains($x, concat(@name,'(')))]</code>
+    <code class="xpath">declaration: //xsl:function</code>
+    <code class="xpath">usage: //@*</code>
   </div>
   <div class="check-content">
 <h1>Unused function</h1>
-<p>A stylesheet function whose name never appears in any <code>match</code> or <code>select</code>
-attribute is dead code and should be removed.</p>
+<p>A stylesheet function that is called from no expression anywhere in the corpus
+— neither in its own stylesheet nor in one that imports it — is dead code and
+should be removed. Calling itself does not count, so a recursive function used
+nowhere else is still flagged.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:function name=&quot;my:format&quot;&gt;
   &lt;xsl:param name=&quot;value&quot;/&gt;

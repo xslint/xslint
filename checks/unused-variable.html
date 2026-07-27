@@ -72,12 +72,14 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-warning">warning</span>
-    <code class="xpath">//xsl:variable[@name][every $x in (//xsl:variable/../*//@*) satisfies not(contains($x, concat('$', @name)))]</code>
+    <code class="xpath">declaration: //xsl:variable[@name]</code>
+    <code class="xpath">usage: //@*</code>
   </div>
   <div class="check-content">
 <h1>Unused variable</h1>
-<p>A variable that is declared but whose <code>$name</code> never appears in any attribute
-value in the stylesheet is dead code and should be removed.</p>
+<p>A variable whose <code>$name</code> is referenced nowhere it is in scope — within its own
+parent for a local one, or anywhere in the corpus (including a stylesheet that
+imports it) for a top-level one — is dead code and should be removed.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:variable name=&quot;greeting&quot; select=&quot;&#39;Hello&#39;&quot;/&gt;
 &lt;!-- $greeting is never referenced --&gt;

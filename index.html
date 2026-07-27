@@ -290,18 +290,6 @@
     <td>A parameter is declared but never referenced in the function or template body. Remove it or use it.</td>
   </tr>
   <tr>
-    <td><a href="checks/unused-function.html">unused-function</a></td>
-    <td>xpath</td>
-    <td><span class="severity-warning">warning</span></td>
-    <td>A stylesheet function is never called in any match or select expression. Remove it or call it.</td>
-  </tr>
-  <tr>
-    <td><a href="checks/unused-variable.html">unused-variable</a></td>
-    <td>xpath</td>
-    <td><span class="severity-warning">warning</span></td>
-    <td>A variable is declared but never referenced by $name in the stylesheet. Remove it or use it.</td>
-  </tr>
-  <tr>
     <td><a href="checks/use-choose-without-otherwise.html">use-choose-without-otherwise</a></td>
     <td>xpath</td>
     <td><span class="severity-warning">warning</span></td>
@@ -362,10 +350,22 @@
     <td>xsl:with-param requires a @name attribute to bind the parameter it passes. Add one.</td>
   </tr>
   <tr>
+    <td><a href="checks/unused-function.html">unused-function</a></td>
+    <td>corpus</td>
+    <td><span class="severity-warning">warning</span></td>
+    <td>A stylesheet function is never called in any expression across the corpus. Remove it or call it.</td>
+  </tr>
+  <tr>
     <td><a href="checks/unused-named-template.html">unused-named-template</a></td>
     <td>corpus</td>
     <td><span class="severity-warning">warning</span></td>
     <td>A named template is never invoked via xsl:call-template. Remove it or call it.</td>
+  </tr>
+  <tr>
+    <td><a href="checks/unused-variable.html">unused-variable</a></td>
+    <td>corpus</td>
+    <td><span class="severity-warning">warning</span></td>
+    <td>A variable is declared but never referenced by $name across the corpus. Remove it or use it.</td>
   </tr>
   <tr>
     <td><a href="checks/invalid-xpath-expression.html">invalid-xpath-expression</a></td>
