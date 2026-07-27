@@ -72,13 +72,15 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-error">error</span>
-    <code class="xpath">/xsl:stylesheet[count(xsl:output) = 0]</code>
+    <code class="xpath">/xsl:stylesheet[count(xsl:template) &gt; 0 and count(xsl:output) = 0]</code>
   </div>
   <div class="check-content">
 <h1>Not using output</h1>
-<p>Every stylesheet must declare <code>xsl:output</code> to specify the serialization format
-explicitly. Omitting it leaves the output method implementation-defined and
-leads to inconsistent results across processors.</p>
+<p>Every stylesheet that has templates must declare <code>xsl:output</code> to specify the
+serialization format explicitly. Omitting it leaves the output method
+implementation-defined and leads to inconsistent results across processors. A
+module with no templates — one imported into a pipeline that sets the output
+itself — is exempt, since it never serializes on its own.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:stylesheet version=&quot;1.0&quot; xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot;&gt;
   &lt;xsl:template match=&quot;/&quot;&gt;

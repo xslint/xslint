@@ -72,16 +72,18 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-error">error</span>
-    <code class="xpath">/xsl:stylesheet[count(xsl:template)=0]</code>
+    <code class="xpath">/xsl:stylesheet[count(xsl:template)=0 and count(xsl:function)=0 and count(xsl:variable)=0]</code>
   </div>
   <div class="check-content">
 <h1>Stylesheet has no templates</h1>
-<p>A stylesheet without any <code>xsl:template</code> elements can produce no output. Add
-at least one template to process the input document.</p>
+<p>A stylesheet with no templates, functions, or variables offers nothing: it can
+produce no output and exports nothing to import. Add at least one template. A
+function or variable library — one whose definitions are pulled in by the
+stylesheets that <code>xsl:import</code> it — is exempt, since its templates live in the
+importer.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:stylesheet version=&quot;1.0&quot; xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot;&gt;
   &lt;xsl:output method=&quot;html&quot;/&gt;
-  &lt;xsl:variable name=&quot;title&quot; select=&quot;&#39;Hello&#39;&quot;/&gt;
 &lt;/xsl:stylesheet&gt;
 </code></pre>
 <p>Correct:</p>

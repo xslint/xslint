@@ -72,13 +72,15 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-warning">warning</span>
-    <code class="xpath">/xsl:stylesheet//xsl:template[starts-with(@match, '/')][(count(*) = count(xsl:variable)) and (normalize-space(string-join(text(), '')) = '')]</code>
+    <code class="xpath">/xsl:stylesheet//xsl:template[starts-with(@match, '/')][count(xsl:variable) &gt; 0 and (count(*) = count(xsl:variable)) and (normalize-space(string-join(text(), '')) = '')]</code>
   </div>
   <div class="check-content">
 <h1>Null output from stylesheet</h1>
 <p>A root-matching template whose only children are <code>xsl:variable</code> declarations
 produces no output. The variables are computed but nothing is ever written
-to the result tree, which is almost certainly a logic error.</p>
+to the result tree, which is almost certainly a logic error. An empty template
+that matches specific nodes to strip them — the &quot;override to delete&quot; idiom — is
+not flagged; the template must actually declare a variable to qualify.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:template match=&quot;/&quot;&gt;
   &lt;xsl:variable name=&quot;heading&quot; select=&quot;title&quot;/&gt;

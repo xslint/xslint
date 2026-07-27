@@ -72,13 +72,14 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-warning">warning</span>
-    <code class="xpath">//*[name()='xsl:for-each' or name()='xsl:if' or name()='xsl:otherwise' or name()='xsl:when'][count(node()) = count(text()) and normalize-space() = ""]</code>
+    <code class="xpath">//*[name()='xsl:for-each' or name()='xsl:if'][count(node()) = count(text()) and normalize-space() = ""]</code>
   </div>
   <div class="check-content">
 <h1>Empty content in instructions</h1>
-<p>Instruction elements such as <code>xsl:for-each</code>, <code>xsl:if</code>, <code>xsl:when</code>, and
-<code>xsl:otherwise</code> with no content produce no output and are almost certainly
-a mistake.</p>
+<p>Instruction elements such as <code>xsl:for-each</code> and <code>xsl:if</code> with no content
+produce no output and are almost certainly a mistake. An empty <code>xsl:when</code> or
+<code>xsl:otherwise</code> is a deliberate &quot;this case produces nothing&quot; and is left
+alone — the latter is exactly what <code>use-choose-without-otherwise</code> asks for.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:for-each select=&quot;item&quot;&gt;
 &lt;/xsl:for-each&gt;
