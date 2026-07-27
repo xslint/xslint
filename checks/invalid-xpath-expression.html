@@ -84,9 +84,13 @@ transformation at runtime, so the sooner it surfaces the better. Only the
 expression syntax is checked, not its formatting; pattern attributes such as
 <code>match</code> and attribute value templates are left to other checks.</p>
 <p>The expression is parsed by the same engine that evaluates the rules, so it is
-valid here exactly when the processor would accept it. Every prefix resolves
+valid here exactly when the processor can parse it. Every prefix resolves
 while parsing, so an unknown prefix or a custom function is never mistaken for
-a syntax error: only genuine syntax mistakes are reported.</p>
+a syntax error. Neither is a static-type mismatch: the engine is XPath 3.1, so
+it rejects the implicit string-to-number coercion an XPath 1.0 stylesheet leans
+on — <code>substring-before($spans, &#39;:&#39;) - 1</code> reads a numeric prefix in 1.0 — but
+that is a dialect difference, not a broken expression, so it is not reported.
+Only genuine syntax mistakes are.</p>
 <p>Incorrect (<code>==</code> is not an XPath operator):</p>
 <pre><code class="language-xsl">&lt;xsl:if test=&quot;foo(a) == &#39;hello&#39;&quot;&gt;
   &lt;xsl:value-of select=&quot;.&quot;/&gt;
