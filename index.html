@@ -86,6 +86,15 @@
 [WARNING] sheet.xsl(3:3) The match attribute starts with //, which scans the whole tree. (starts-with-double-slash)
 [WARNING] sheet.xsl(4:5) A variable has a single-character name. (short-names)</code></pre>
 
+  <h2>Proven on real code</h2>
+  <p>Pointed at the 18 core stylesheets of
+  <a href="https://github.com/docbook/xslt10-stylesheets">DocBook-XSL</a> &mdash;
+  mature, heavily-used XSLT 1.0 &mdash; xslint reported issues across 18
+  different checks: 41 <code>xsl:choose</code> blocks with no
+  <code>xsl:otherwise</code>, 30 named templates that are never called, 12
+  unused parameters, and more. Real stylistic and logical findings in code that
+  has shipped for two decades.</p>
+
   <h2>Checks</h2>
   <p>49 checks, each with its rationale:</p>
   <table>
