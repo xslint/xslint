@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>not-creating-attribute-correctly</title>
+  <style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    color: #24292e;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 24px 32px;
+  }
+  h1 { font-size: 2rem; font-weight: 600; margin-bottom: 4px; }
+  h2 { font-size: 1.3rem; font-weight: 600; margin: 20px 0 8px; }
+  a { color: #0366d6; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  p { margin: 8px 0; }
+  table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 0.9rem; }
+  th {
+    text-align: left;
+    padding: 10px 12px;
+    background: #f6f8fa;
+    border: 1px solid #e1e4e8;
+    font-weight: 600;
+  }
+  td { padding: 10px 12px; border: 1px solid #e1e4e8; vertical-align: top; }
+  tr:hover td { background: #f6f8fa; }
+  .severity-warning {
+    background: #fff8c5;
+    color: #9a6700;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .severity-error {
+    background: #ffebe9;
+    color: #cf222e;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .back { display: inline-block; margin-bottom: 24px; font-size: 0.9rem; }
+  .meta { display: flex; gap: 12px; align-items: flex-start; margin: 12px 0 24px; flex-wrap: wrap; }
+  .xpath {
+    background: #f6f8fa;
+    border: 1px solid #e1e4e8;
+    border-radius: 4px;
+    padding: 6px 10px;
+    font-family: 'SFMono-Regular', Consolas, monospace;
+    font-size: 0.75rem;
+    word-break: break-all;
+    flex: 1;
+  }
+  pre { margin: 12px 0; border-radius: 6px; overflow-x: auto; }
+  code { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; }
+  .check-content h1 { font-size: 1.6rem; margin-bottom: 8px; }
+</style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+  <script>hljs.highlightAll();</script>
+</head>
+<body>
+  <a class="back" href="../index.html">← all checks</a>
+  <div class="meta">
+    <span class="severity-warning">warning</span>
+    <code class="xpath">//xsl:attribute[not(contains(@name, '{'))][parent::*[not(self::xsl:*)]][count(*) = 0 or (count(*) = 1 and xsl:value-of)]</code>
+  </div>
+  <div class="check-content">
+<h1>Not creating attribute correctly</h1>
+<p>The attribute analog of <code>not-creating-element-correctly</code>. When an <code>xsl:attribute</code>
+with a static name sits on a literal result element and its value is simple — a
+single <code>xsl:value-of</code>, plain text, or empty — it can be written inline as a
+literal attribute, with an attribute value template for a computed value:</p>
+<pre><code class="language-xsl">&lt;td&gt;
+  &lt;xsl:attribute name=&quot;class&quot;&gt;&lt;xsl:value-of select=&quot;@c&quot;/&gt;&lt;/xsl:attribute&gt;
+  &lt;xsl:attribute name=&quot;role&quot;&gt;cell&lt;/xsl:attribute&gt;
+</code></pre>
+<p>becomes</p>
+<pre><code class="language-xsl">&lt;td class=&quot;{@c}&quot; role=&quot;cell&quot;&gt;
+</code></pre>
+<p>The inline form is shorter and keeps the attribute next to the element it
+belongs to. <code>xsl:attribute</code> earns its place when the name is computed (an AVT),
+the value needs instructions an AVT cannot hold (an <code>xsl:choose</code>), or the parent
+is itself an instruction such as <code>xsl:element</code> or <code>xsl:copy</code> — those are left
+alone.</p>
+
+  </div>
+</body>
+</html>

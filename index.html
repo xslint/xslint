@@ -98,7 +98,7 @@
   that has shipped for decades.</p>
 
   <h2>Checks</h2>
-  <p>52 checks, each with its rationale:</p>
+  <p>53 checks, each with its rationale:</p>
   <table>
     <thead>
       <tr>
@@ -192,6 +192,12 @@
     <td>xpath</td>
     <td><span class="severity-warning">warning</span></td>
     <td>A variable, function, or template name starts with a digit, which is invalid in XPath. Rename it to start with a letter.</td>
+  </tr>
+  <tr>
+    <td><a href="checks/not-creating-attribute-correctly.html">not-creating-attribute-correctly</a></td>
+    <td>xpath</td>
+    <td><span class="severity-warning">warning</span></td>
+    <td>xsl:attribute with a static name on a literal element can be a literal attribute (an AVT for a computed value). Write it inline.</td>
   </tr>
   <tr>
     <td><a href="checks/not-creating-element-correctly.html">not-creating-element-correctly</a></td>
