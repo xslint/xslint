@@ -245,7 +245,7 @@
     <td><a href="checks/starts-with-double-slash.html">starts-with-double-slash</a></td>
     <td>xpath</td>
     <td><span class="severity-warning">warning</span></td>
-    <td>The match attribute of xsl:template starts with //, which scans the entire document tree. Use a more specific pattern.</td>
+    <td>The match attribute of xsl:template starts with //, which is redundant since an unanchored pattern already matches at any depth. Remove the leading //.</td>
   </tr>
   <tr>
     <td><a href="checks/stylesheet-has-no-templates.html">stylesheet-has-no-templates</a></td>
@@ -287,7 +287,7 @@
     <td><a href="checks/use-double-slash.html">use-double-slash</a></td>
     <td>xpath</td>
     <td><span class="severity-warning">warning</span></td>
-    <td>The match attribute of xsl:template contains //, which triggers a full document scan. Use a more specific path.</td>
+    <td>The match attribute of xsl:template contains //, which matches at any depth and is broader than intended. Use a specific path.</td>
   </tr>
   <tr>
     <td><a href="checks/use-single-option-for-choose.html">use-single-option-for-choose</a></td>
