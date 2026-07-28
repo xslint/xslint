@@ -76,15 +76,19 @@
   </div>
   <div class="check-content">
 <h1>Use double slash</h1>
-<p>Using <code>//</code> anywhere inside the <code>match</code> attribute of <code>xsl:template</code> forces
-a full document scan and should be replaced with a more specific path.</p>
+<p>A <code>//</code> step in a <code>match</code> pattern matches the node at <em>any</em> depth, so the
+pattern is broader and vaguer than a named path. It is not a performance
+problem — a match pattern is tested against a node, not walked as a query — but
+<code>root//item</code> will also match an <code>item</code> nested far deeper than you meant as the
+document grows, and it hides the structure the template actually expects. When
+you know the shape of the input, name the path.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:template match=&quot;root//item&quot;&gt;
   &lt;xsl:value-of select=&quot;.&quot;/&gt;
 &lt;/xsl:template&gt;
 </code></pre>
 <p>Correct:</p>
-<pre><code class="language-xsl">&lt;xsl:template match=&quot;item&quot;&gt;
+<pre><code class="language-xsl">&lt;xsl:template match=&quot;root/list/item&quot;&gt;
   &lt;xsl:value-of select=&quot;.&quot;/&gt;
 &lt;/xsl:template&gt;
 </code></pre>

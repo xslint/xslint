@@ -76,9 +76,11 @@
   </div>
   <div class="check-content">
 <h1>Starts with double slash</h1>
-<p>Starting the <code>match</code> attribute of <code>xsl:template</code> with <code>//</code> forces the
-processor to scan the entire document tree, which is expensive and rarely
-necessary.</p>
+<p>A leading <code>//</code> on a <code>match</code> pattern is redundant: a template pattern is not
+anchored, so <code>match=&quot;//item&quot;</code> already selects exactly the same nodes as
+<code>match=&quot;item&quot;</code> — every <code>item</code>, at any depth. The <code>//</code> adds nothing but noise
+(and, read carelessly, suggests a document scan that never happens). Drop it
+and let the pattern say plainly which element it matches.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:template match=&quot;//item&quot;&gt;
   &lt;xsl:value-of select=&quot;.&quot;/&gt;

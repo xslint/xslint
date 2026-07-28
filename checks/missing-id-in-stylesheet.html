@@ -75,10 +75,15 @@
     <code class="xpath">/xsl:stylesheet[not(@id)]</code>
   </div>
   <div class="check-content">
-<h1>Missing version in stylesheet</h1>
-<p>Every <code>xsl:stylesheet</code> should declare an <code>id</code> attribute with a unique value.
-Without it, stylesheets are indistinguishable in logs, error messages, and
-tooling that processes multiple stylesheets together.</p>
+<h1>Missing id in stylesheet</h1>
+<p>The <code>id</code> attribute on <code>xsl:stylesheet</code> is optional, and on a standalone
+stylesheet it changes nothing about how the transform runs — it matters only
+for a stylesheet embedded in another document and referenced by fragment. So
+this is not a correctness rule; it is a consistency one. Declaring identity is
+still worth doing: it distinguishes a stylesheet in logs, error messages, and
+tooling that processes several at once. The only coherent policies are &quot;every
+stylesheet declares an id&quot; or &quot;none does&quot;, and the second cannot be enforced,
+so xslint asks for the first.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:stylesheet xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot;&gt;
     &lt;!-- stylesheet logic --&gt;
