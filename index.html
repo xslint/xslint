@@ -98,7 +98,7 @@
   that has shipped for decades.</p>
 
   <h2>Checks</h2>
-  <p>48 checks, each with its rationale:</p>
+  <p>49 checks, each with its rationale:</p>
   <table>
     <thead>
       <tr>
@@ -384,6 +384,12 @@
     <td>format</td>
     <td><span class="severity-warning">warning</span></td>
     <td>An XPath expression has redundant whitespace. Remove the extra spaces.</td>
+  </tr>
+  <tr>
+    <td><a href="checks/string-length-compared-to-zero.html">string-length-compared-to-zero</a></td>
+    <td>format</td>
+    <td><span class="severity-warning">warning</span></td>
+    <td>string-length(...) is compared with 0 to test emptiness, which measures the whole string. Compare the value with '' instead.</td>
   </tr>
   <tr>
     <td><a href="checks/unabbreviated-axis.html">unabbreviated-axis</a></td>
