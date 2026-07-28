@@ -98,7 +98,7 @@
   that has shipped for decades.</p>
 
   <h2>Checks</h2>
-  <p>50 checks, each with its rationale:</p>
+  <p>51 checks, each with its rationale:</p>
   <table>
     <thead>
       <tr>
@@ -378,6 +378,12 @@
     <td>format</td>
     <td><span class="severity-warning">warning</span></td>
     <td>count(...) is compared with 0 to test existence, which walks the whole sequence. Use exists() or empty() instead.</td>
+  </tr>
+  <tr>
+    <td><a href="checks/name-compared-to-string.html">name-compared-to-string</a></td>
+    <td>format</td>
+    <td><span class="severity-warning">warning</span></td>
+    <td>name() or local-name() is compared with a string, which is prefix-fragile and slower than a node test. Use self::name instead.</td>
   </tr>
   <tr>
     <td><a href="checks/redundant-namespace-declarations.html">redundant-namespace-declarations</a></td>
