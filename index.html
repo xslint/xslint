@@ -98,7 +98,7 @@
   that has shipped for decades.</p>
 
   <h2>Checks</h2>
-  <p>51 checks, each with its rationale:</p>
+  <p>52 checks, each with its rationale:</p>
   <table>
     <thead>
       <tr>
@@ -402,6 +402,12 @@
     <td>format</td>
     <td><span class="severity-warning">warning</span></td>
     <td>string-length(...) is compared with 0 to test emptiness, which measures the whole string. Compare the value with '' instead.</td>
+  </tr>
+  <tr>
+    <td><a href="checks/translate-for-case.html">translate-for-case</a></td>
+    <td>format</td>
+    <td><span class="severity-warning">warning</span></td>
+    <td>translate() folds case over the ASCII alphabet; XSLT 2.0 does this with lower-case() or upper-case(), which are shorter and Unicode-aware.</td>
   </tr>
   <tr>
     <td><a href="checks/unabbreviated-axis.html">unabbreviated-axis</a></td>
