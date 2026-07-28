@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>too-many-small-templates</title>
+  <title>function-complexity</title>
   <style>
   * { box-sizing: border-box; }
   body {
@@ -72,24 +72,30 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-warning">warning</span>
-    <code class="xpath">/xsl:stylesheet[count(//xsl:template[count(*) &lt; 3]) &gt;= 10]</code>
+    <code class="xpath">//xsl:function[count(.//xsl:*) &gt; 50]</code>
   </div>
   <div class="check-content">
-<h1>Too many small templates</h1>
-<p>Having 10 or more templates that each contain fewer than 3 child elements
-indicates excessive fragmentation. Consider merging related small templates
-to improve readability.</p>
+<h1>Function complexity</h1>
+<p>A stylesheet function containing more than 50 XSLT elements is too complex to
+read and test. A function should compute one value; when it grows this large it
+is doing several jobs at once. Break it into smaller functions that each do one
+thing and call one another.</p>
+<p>This check looks only at <code>xsl:function</code>. A large <code>xsl:template</code> is a different
+smell — it should fan out with <code>apply-templates</code> rather than be split into more
+functions — and is covered by <code>oversized-template</code>.</p>
 <p>Incorrect:</p>
-<pre><code class="language-xsl">&lt;!-- 10 or more templates each with fewer than 3 child xsl:* elements --&gt;
-&lt;xsl:template match=&quot;a&quot;&gt;&lt;xsl:value-of select=&quot;.&quot;/&gt;&lt;/xsl:template&gt;
-&lt;xsl:template match=&quot;b&quot;&gt;&lt;xsl:value-of select=&quot;.&quot;/&gt;&lt;/xsl:template&gt;
-&lt;xsl:template match=&quot;c&quot;&gt;&lt;xsl:value-of select=&quot;.&quot;/&gt;&lt;/xsl:template&gt;
-&lt;!-- ... 7 or more similar templates ... --&gt;
+<pre><code class="language-xsl">&lt;xsl:function name=&quot;my:report&quot; as=&quot;xs:string&quot;&gt;
+  &lt;!-- more than 50 xsl:* descendant elements computing one value --&gt;
+&lt;/xsl:function&gt;
 </code></pre>
 <p>Correct:</p>
-<pre><code class="language-xsl">&lt;xsl:template match=&quot;a|b|c|d|e|f|g|h|i|j&quot;&gt;
-  &lt;xsl:value-of select=&quot;.&quot;/&gt;
-&lt;/xsl:template&gt;
+<pre><code class="language-xsl">&lt;xsl:function name=&quot;my:report&quot; as=&quot;xs:string&quot;&gt;
+  &lt;xsl:sequence select=&quot;my:header() || my:body() || my:footer()&quot;/&gt;
+&lt;/xsl:function&gt;
+
+&lt;xsl:function name=&quot;my:header&quot; as=&quot;xs:string&quot;&gt;
+  &lt;!-- ... --&gt;
+&lt;/xsl:function&gt;
 </code></pre>
 
   </div>

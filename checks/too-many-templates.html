@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>function-template-complexity</title>
+  <title>too-many-templates</title>
   <style>
   * { box-sizing: border-box; }
   body {
@@ -72,33 +72,28 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-warning">warning</span>
-    <code class="xpath">//(xsl:template | xsl:function)[count(.//xsl:*) &gt; 50]</code>
+    <code class="xpath">/xsl:stylesheet[count(//xsl:template) &gt;= 10]</code>
   </div>
   <div class="check-content">
-<h1>Function or template complexity</h1>
-<p>A function or template containing more than 50 XSLT elements is too complex
-to read and maintain. Split it into smaller, focused units.</p>
+<h1>Too many templates</h1>
+<p>A stylesheet that declares ten or more templates has grown too large to read
+in one file, whatever the size of each template. Split it into smaller modules
+and pull them together with <code>xsl:import</code> or <code>xsl:include</code>, so each file holds a
+cohesive handful of templates.</p>
 <p>Incorrect:</p>
-<pre><code class="language-xsl">&lt;xsl:template match=&quot;/&quot;&gt;
-  &lt;!-- more than 50 xsl:* descendant elements --&gt;
-  &lt;xsl:variable name=&quot;a&quot; select=&quot;foo&quot;/&gt;
-  &lt;xsl:variable name=&quot;b&quot; select=&quot;bar&quot;/&gt;
-  &lt;!-- ... many more elements ... --&gt;
-&lt;/xsl:template&gt;
+<pre><code class="language-xsl">&lt;!-- one file declaring ten or more templates --&gt;
+&lt;xsl:stylesheet version=&quot;2.0&quot; xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot;&gt;
+  &lt;xsl:template match=&quot;a&quot;&gt;...&lt;/xsl:template&gt;
+  &lt;xsl:template match=&quot;b&quot;&gt;...&lt;/xsl:template&gt;
+  &lt;!-- ... eight or more further templates ... --&gt;
+&lt;/xsl:stylesheet&gt;
 </code></pre>
 <p>Correct:</p>
-<pre><code class="language-xsl">&lt;xsl:template match=&quot;/&quot;&gt;
-  &lt;xsl:apply-templates select=&quot;header&quot;/&gt;
-  &lt;xsl:apply-templates select=&quot;body&quot;/&gt;
-&lt;/xsl:template&gt;
-
-&lt;xsl:template match=&quot;header&quot;&gt;
-  &lt;!-- header logic --&gt;
-&lt;/xsl:template&gt;
-
-&lt;xsl:template match=&quot;body&quot;&gt;
-  &lt;!-- body logic --&gt;
-&lt;/xsl:template&gt;
+<pre><code class="language-xsl">&lt;xsl:stylesheet version=&quot;2.0&quot; xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot;&gt;
+  &lt;xsl:import href=&quot;headings.xsl&quot;/&gt;
+  &lt;xsl:import href=&quot;tables.xsl&quot;/&gt;
+  &lt;xsl:import href=&quot;inline.xsl&quot;/&gt;
+&lt;/xsl:stylesheet&gt;
 </code></pre>
 
   </div>

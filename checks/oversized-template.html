@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>monolithic-design</title>
+  <title>oversized-template</title>
   <style>
   * { box-sizing: border-box; }
   body {
@@ -72,35 +72,34 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-warning">warning</span>
-    <code class="xpath">/xsl:stylesheet[count(//xsl:template | //xsl:function) = 1]</code>
+    <code class="xpath">//xsl:template[count(.//xsl:*) &gt; 100]</code>
   </div>
   <div class="check-content">
-<h1>Monolithic design</h1>
-<p>A stylesheet with only one template or function concentrates all logic in
-one place, making it hard to read, test, and reuse. Split processing into
-focused templates.</p>
+<h1>Oversized template</h1>
+<p>A single template holding more than 100 XSLT elements has stopped being a
+template and become a program. XSLT is at its best when a template does a small
+piece of the work and delegates the rest with <code>apply-templates</code>, letting the
+processor match the right template to each node. A template this large is doing
+by hand what the processor would do for you. Fan it out into focused templates.</p>
+<p>This check looks only at <code>xsl:template</code>, and by element count, not lines — so a
+template that is large only because it emits a lot of literal markup is left
+alone; it is undecomposed <em>logic</em> that is the smell. A complex <code>xsl:function</code>
+is covered separately by <code>function-complexity</code>.</p>
 <p>Incorrect:</p>
-<pre><code class="language-xsl">&lt;xsl:stylesheet version=&quot;1.0&quot; xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot;&gt;
-  &lt;xsl:output method=&quot;html&quot;/&gt;
-  &lt;xsl:template match=&quot;/&quot;&gt;
-    &lt;!-- all stylesheet logic in a single template --&gt;
-  &lt;/xsl:template&gt;
-&lt;/xsl:stylesheet&gt;
+<pre><code class="language-xsl">&lt;xsl:template match=&quot;/&quot;&gt;
+  &lt;!-- more than 100 xsl:* elements: choose, if, for-each, value-of ... --&gt;
+&lt;/xsl:template&gt;
 </code></pre>
 <p>Correct:</p>
-<pre><code class="language-xsl">&lt;xsl:stylesheet version=&quot;1.0&quot; xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot;&gt;
-  &lt;xsl:output method=&quot;html&quot;/&gt;
-  &lt;xsl:template match=&quot;/&quot;&gt;
-    &lt;xsl:apply-templates select=&quot;header&quot;/&gt;
-    &lt;xsl:apply-templates select=&quot;section&quot;/&gt;
-  &lt;/xsl:template&gt;
-  &lt;xsl:template match=&quot;header&quot;&gt;
-    &lt;h1&gt;&lt;xsl:value-of select=&quot;.&quot;/&gt;&lt;/h1&gt;
-  &lt;/xsl:template&gt;
-  &lt;xsl:template match=&quot;section&quot;&gt;
-    &lt;p&gt;&lt;xsl:value-of select=&quot;.&quot;/&gt;&lt;/p&gt;
-  &lt;/xsl:template&gt;
-&lt;/xsl:stylesheet&gt;
+<pre><code class="language-xsl">&lt;xsl:template match=&quot;/&quot;&gt;
+  &lt;xsl:apply-templates select=&quot;header&quot;/&gt;
+  &lt;xsl:apply-templates select=&quot;section&quot;/&gt;
+  &lt;xsl:apply-templates select=&quot;footer&quot;/&gt;
+&lt;/xsl:template&gt;
+
+&lt;xsl:template match=&quot;section&quot;&gt;
+  &lt;!-- one focused piece of the work --&gt;
+&lt;/xsl:template&gt;
 </code></pre>
 
   </div>

@@ -146,10 +146,10 @@
     <td>An empty xsl:variable binds the empty string for no reason. Give it a @select or some content, or remove it.</td>
   </tr>
   <tr>
-    <td><a href="checks/function-template-complexity.html">function-template-complexity</a></td>
+    <td><a href="checks/function-complexity.html">function-complexity</a></td>
     <td>xpath</td>
     <td><span class="severity-warning">warning</span></td>
-    <td>The function or template contains more than 50 XSLT elements. Split it into smaller, focused units.</td>
+    <td>The function contains more than 50 XSLT elements. Split it into smaller functions.</td>
   </tr>
   <tr>
     <td><a href="checks/function-template-is-not-child-of-stylesheet.html">function-template-is-not-child-of-stylesheet</a></td>
@@ -186,12 +186,6 @@
     <td>xpath</td>
     <td><span class="severity-error">error</span></td>
     <td>An xsl:template that has no match attribute must have no mode attribute and no priority attribute. Add match attribute or remove mode or priority.</td>
-  </tr>
-  <tr>
-    <td><a href="checks/monolithic-design.html">monolithic-design</a></td>
-    <td>xpath</td>
-    <td><span class="severity-warning">warning</span></td>
-    <td>The stylesheet contains only one template or function. Extract logic into separate, focused templates.</td>
   </tr>
   <tr>
     <td><a href="checks/name-starts-with-numeric.html">name-starts-with-numeric</a></td>
@@ -236,6 +230,12 @@
     <td>xsl:output declares method='xml' while the root template generates HTML elements. Change the method to 'html'.</td>
   </tr>
   <tr>
+    <td><a href="checks/oversized-template.html">oversized-template</a></td>
+    <td>xpath</td>
+    <td><span class="severity-warning">warning</span></td>
+    <td>The template contains more than 100 XSLT elements. Decompose it with apply-templates into focused templates.</td>
+  </tr>
+  <tr>
     <td><a href="checks/setting-value-of-variable-incorrectly.html">setting-value-of-variable-incorrectly</a></td>
     <td>xpath</td>
     <td><span class="severity-warning">warning</span></td>
@@ -272,10 +272,10 @@
     <td>Literal text appears directly inside an 'xsl:' instruction element. Wrap it in 'xsl:text'.</td>
   </tr>
   <tr>
-    <td><a href="checks/too-many-small-templates.html">too-many-small-templates</a></td>
+    <td><a href="checks/too-many-templates.html">too-many-templates</a></td>
     <td>xpath</td>
     <td><span class="severity-warning">warning</span></td>
-    <td>The stylesheet has 10 or more templates with fewer than 3 child elements. Merge related small templates to reduce fragmentation.</td>
+    <td>The stylesheet declares 10 or more templates, too many to read in one file. Split it into imported modules.</td>
   </tr>
   <tr>
     <td><a href="checks/unused-function-template-parameter.html">unused-function-template-parameter</a></td>
