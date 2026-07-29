@@ -98,7 +98,7 @@
   that has shipped for decades.</p>
 
   <h2>Checks</h2>
-  <p>55 checks, each with its rationale:</p>
+  <p>56 checks, each with its rationale:</p>
   <table>
     <thead>
       <tr>
@@ -384,6 +384,12 @@
     <td>validation</td>
     <td><span class="severity-error">error</span></td>
     <td>The stylesheet is not well-formed XML and cannot be parsed. Fix its syntax.</td>
+  </tr>
+  <tr>
+    <td><a href="checks/circular-import.html">circular-import</a></td>
+    <td>format</td>
+    <td><span class="severity-error">error</span></td>
+    <td>The stylesheet is part of an xsl:import/xsl:include cycle — it pulls in, directly or through a chain, a stylesheet that pulls it back (or imports itself). This is a static error. Break the cycle so no module depends on one that depends on it.</td>
   </tr>
   <tr>
     <td><a href="checks/count-compared-to-zero.html">count-compared-to-zero</a></td>
