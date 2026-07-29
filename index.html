@@ -98,7 +98,7 @@
   that has shipped for decades.</p>
 
   <h2>Checks</h2>
-  <p>59 checks, each with its rationale:</p>
+  <p>60 checks, each with its rationale:</p>
   <table>
     <thead>
       <tr>
@@ -132,6 +132,12 @@
     <td>xpath</td>
     <td><span class="severity-error">error</span></td>
     <td>A single call passes two xsl:with-param with the same @name. Each parameter can be supplied only once.</td>
+  </tr>
+  <tr>
+    <td><a href="checks/empty-choose.html">empty-choose</a></td>
+    <td>xpath</td>
+    <td><span class="severity-error">error</span></td>
+    <td>'xsl:choose' has no 'xsl:when' branch. Add one, or drop the 'xsl:choose' and keep its content directly.</td>
   </tr>
   <tr>
     <td><a href="checks/empty-content-in-instructions.html">empty-content-in-instructions</a></td>
