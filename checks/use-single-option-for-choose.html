@@ -72,12 +72,14 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-warning">warning</span>
-    <code class="xpath">//xsl:choose[(count(*) = 1)]</code>
+    <code class="xpath">//xsl:choose[count(xsl:when) = 1 and not(xsl:otherwise)]</code>
   </div>
   <div class="check-content">
 <h1>Use single option for choose</h1>
-<p>An <code>xsl:choose</code> with only one <code>xsl:when</code> branch is equivalent to <code>xsl:if</code>.
-Use the simpler <code>xsl:if</code> instead.</p>
+<p>An <code>xsl:choose</code> with a single <code>xsl:when</code> and no <code>xsl:otherwise</code> is just an
+<code>xsl:if</code>. Use the simpler <code>xsl:if</code> instead. A <code>choose</code> that also has an
+<code>xsl:otherwise</code> is a genuine if/else and is left alone, and a <code>choose</code> with no
+<code>xsl:when</code> at all is reported by <code>empty-choose</code>, not here.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:choose&gt;
   &lt;xsl:when test=&quot;@active&quot;&gt;Active&lt;/xsl:when&gt;

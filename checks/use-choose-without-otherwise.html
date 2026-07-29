@@ -72,13 +72,15 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-warning">warning</span>
-    <code class="xpath">//xsl:choose[(count(xsl:otherwise) = 0)]</code>
+    <code class="xpath">//xsl:choose[count(xsl:otherwise) = 0 and count(xsl:when) &gt;= 2]</code>
   </div>
   <div class="check-content">
 <h1>Use choose without otherwise</h1>
-<p>An <code>xsl:choose</code> without an <code>xsl:otherwise</code> branch silently produces no output
-when no <code>xsl:when</code> condition matches. Add <code>xsl:otherwise</code> to handle unexpected
-values explicitly.</p>
+<p>An <code>xsl:choose</code> with two or more <code>xsl:when</code> branches but no <code>xsl:otherwise</code>
+silently produces no output when none of them matches. Add <code>xsl:otherwise</code> to
+handle unexpected values explicitly. (A single-<code>when</code> <code>choose</code> is better
+written as an <code>xsl:if</code> — <code>use-single-option-for-choose</code> — and one with no
+<code>xsl:when</code> at all is reported by <code>empty-choose</code>.)</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:choose&gt;
   &lt;xsl:when test=&quot;@type = &#39;a&#39;&quot;&gt;A&lt;/xsl:when&gt;
