@@ -98,7 +98,7 @@
   that has shipped for decades.</p>
 
   <h2>Checks</h2>
-  <p>54 checks, each with its rationale:</p>
+  <p>55 checks, each with its rationale:</p>
   <table>
     <thead>
       <tr>
@@ -390,6 +390,12 @@
     <td>format</td>
     <td><span class="severity-warning">warning</span></td>
     <td>count(...) is compared with 0 to test existence, which walks the whole sequence. Use exists() or empty() instead.</td>
+  </tr>
+  <tr>
+    <td><a href="checks/leaking-result-namespace.html">leaking-result-namespace</a></td>
+    <td>format</td>
+    <td><span class="severity-warning">warning</span></td>
+    <td>The xsl:stylesheet declares a namespace prefix used only in stylesheet logic, which a literal result element copies into the output. Add the prefix to exclude-result-prefixes.</td>
   </tr>
   <tr>
     <td><a href="checks/name-compared-to-string.html">name-compared-to-string</a></td>
