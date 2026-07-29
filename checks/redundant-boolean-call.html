@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>redundant-double-negation</title>
+  <title>redundant-boolean-call</title>
   <style>
   * { box-sizing: border-box; }
   body {
@@ -75,24 +75,19 @@
     <code class="xpath">checked over the tokens, not an XPath rule</code>
   </div>
   <div class="check-content">
-<h1>Redundant double negation</h1>
-<p><code>not(not(x))</code> negates <code>x</code> and then negates the result — a round trip that just
-coerces <code>x</code> to a boolean. It is exactly <code>boolean(x)</code>, and in a boolean context
-(an <code>xsl:if</code>/<code>xsl:when</code> <code>@test</code>) it is exactly <code>x</code>. Written as a double
-negation it reads as a puzzle: the reader has to cancel the two <code>not</code>s in their
-head to see what it means.</p>
-<p><code>not(not(x))</code> equals <code>boolean(x)</code> in every context, so <code>--fix</code> rewrites it
-there. In a whole <code>@test</code> the value is already coerced to a boolean, so the fix
-goes one step further to bare <code>x</code> — the same form <code>redundant-boolean-call</code>
-would reduce <code>boolean(x)</code> to — rather than leaving a <code>boolean(x)</code> that check
-would then flag.</p>
+<h1>Redundant boolean call</h1>
+<p>The <code>@test</code> of an <code>xsl:if</code> or <code>xsl:when</code> already coerces its value to a boolean,
+so wrapping the whole thing in <code>boolean(...)</code> adds nothing — <code>test=&quot;boolean(x)&quot;</code>
+and <code>test=&quot;x&quot;</code> behave identically. The wrapper is just noise.</p>
+<p>The check fires only when the entire <code>@test</code> is one <code>boolean(...)</code> call, where
+dropping it is always safe, so <code>--fix</code> removes it. A <code>boolean(...)</code> that is only
+part of a larger expression — <code>a = boolean(b)</code> — is left alone, because there
+the coercion can change what the comparison means.</p>
 <p>Incorrect:</p>
-<pre><code class="language-xsl">&lt;xsl:if test=&quot;not(not(@enabled))&quot;&gt;
-&lt;xsl:value-of select=&quot;not(not(@enabled))&quot;/&gt;
+<pre><code class="language-xsl">&lt;xsl:if test=&quot;boolean(@enabled)&quot;&gt;
 </code></pre>
 <p>Correct:</p>
 <pre><code class="language-xsl">&lt;xsl:if test=&quot;@enabled&quot;&gt;
-&lt;xsl:value-of select=&quot;boolean(@enabled)&quot;/&gt;
 </code></pre>
 
   </div>

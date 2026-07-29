@@ -98,7 +98,7 @@
   that has shipped for decades.</p>
 
   <h2>Checks</h2>
-  <p>63 checks, each with its rationale:</p>
+  <p>64 checks, each with its rationale:</p>
   <table>
     <thead>
       <tr>
@@ -440,10 +440,16 @@
     <td>name() or local-name() is compared with a string, which is prefix-fragile and slower than a node test. Use self::name instead.</td>
   </tr>
   <tr>
+    <td><a href="checks/redundant-boolean-call.html">redundant-boolean-call</a></td>
+    <td>format</td>
+    <td><span class="severity-warning">warning</span></td>
+    <td>The whole test is wrapped in boolean(); a test already coerces to a boolean, so the wrapper is redundant. Drop it.</td>
+  </tr>
+  <tr>
     <td><a href="checks/redundant-double-negation.html">redundant-double-negation</a></td>
     <td>format</td>
     <td><span class="severity-warning">warning</span></td>
-    <td>A double negation not(not(x)) is redundant; it is just boolean(x). Replace it with boolean(x).</td>
+    <td>A double negation not(not(x)) is redundant; it is just boolean(x), and in a test simply x. Replace it.</td>
   </tr>
   <tr>
     <td><a href="checks/redundant-import.html">redundant-import</a></td>
