@@ -98,7 +98,7 @@
   that has shipped for decades.</p>
 
   <h2>Checks</h2>
-  <p>62 checks, each with its rationale:</p>
+  <p>63 checks, each with its rationale:</p>
   <table>
     <thead>
       <tr>
@@ -438,6 +438,12 @@
     <td>format</td>
     <td><span class="severity-warning">warning</span></td>
     <td>name() or local-name() is compared with a string, which is prefix-fragile and slower than a node test. Use self::name instead.</td>
+  </tr>
+  <tr>
+    <td><a href="checks/redundant-double-negation.html">redundant-double-negation</a></td>
+    <td>format</td>
+    <td><span class="severity-warning">warning</span></td>
+    <td>A double negation not(not(x)) is redundant; it is just boolean(x). Replace it with boolean(x).</td>
   </tr>
   <tr>
     <td><a href="checks/redundant-import.html">redundant-import</a></td>
