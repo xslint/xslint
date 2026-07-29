@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>unused-function</title>
+  <title>unreachable-function</title>
   <style>
   * { box-sizing: border-box; }
   body {
@@ -76,27 +76,38 @@
     <code class="xpath">usage: //@*</code>
   </div>
   <div class="check-content">
-<h1>Unused function</h1>
-<p>A stylesheet function that is called from no expression anywhere in the corpus
-— neither in its own stylesheet nor in one that imports it — is dead code and
-should be removed. A function that <em>is</em> called, but only from within a
-recursion cycle that nothing enters, is caught by <code>unreachable-function</code>
-instead.</p>
+<h1>Unreachable function</h1>
+<p>A stylesheet function is reachable only if some call to it lives outside every
+function body — in a template, a global variable, or another function that is
+itself reachable. A function that is called, but only from within a recursion
+cycle nothing enters, can never run: a function that calls only itself, or a
+pair (<code>my:even</code>/<code>my:odd</code>) that call only each other, are dead code even though
+each name does appear in a call. Delete the cycle, or start it from a template.</p>
+<p>Unlike <code>unused-function</code>, which flags a name that appears in no call at all,
+this check flags a name that <em>is</em> called yet stays unreachable.</p>
 <p>Incorrect:</p>
-<pre><code class="language-xsl">&lt;xsl:function name=&quot;my:format&quot;&gt;
-  &lt;xsl:param name=&quot;value&quot;/&gt;
-  &lt;xsl:value-of select=&quot;$value&quot;/&gt;
+<pre><code class="language-xsl">&lt;xsl:function name=&quot;my:even&quot; as=&quot;xs:boolean&quot;&gt;
+  &lt;xsl:param name=&quot;number&quot; as=&quot;xs:integer&quot;/&gt;
+  &lt;xsl:sequence select=&quot;if ($number = 0) then true() else my:odd($number - 1)&quot;/&gt;
 &lt;/xsl:function&gt;
-&lt;!-- my:format is never referenced in match or select --&gt;
+&lt;xsl:function name=&quot;my:odd&quot; as=&quot;xs:boolean&quot;&gt;
+  &lt;xsl:param name=&quot;number&quot; as=&quot;xs:integer&quot;/&gt;
+  &lt;xsl:sequence select=&quot;if ($number = 0) then false() else my:even($number - 1)&quot;/&gt;
+&lt;/xsl:function&gt;
+&lt;!-- neither my:even nor my:odd is ever called from a template --&gt;
 </code></pre>
 <p>Correct:</p>
-<pre><code class="language-xsl">&lt;xsl:function name=&quot;my:format&quot;&gt;
-  &lt;xsl:param name=&quot;value&quot;/&gt;
-  &lt;xsl:value-of select=&quot;$value&quot;/&gt;
+<pre><code class="language-xsl">&lt;xsl:function name=&quot;my:even&quot; as=&quot;xs:boolean&quot;&gt;
+  &lt;xsl:param name=&quot;number&quot; as=&quot;xs:integer&quot;/&gt;
+  &lt;xsl:sequence select=&quot;if ($number = 0) then true() else my:odd($number - 1)&quot;/&gt;
+&lt;/xsl:function&gt;
+&lt;xsl:function name=&quot;my:odd&quot; as=&quot;xs:boolean&quot;&gt;
+  &lt;xsl:param name=&quot;number&quot; as=&quot;xs:integer&quot;/&gt;
+  &lt;xsl:sequence select=&quot;if ($number = 0) then false() else my:even($number - 1)&quot;/&gt;
 &lt;/xsl:function&gt;
 
 &lt;xsl:template match=&quot;/&quot;&gt;
-  &lt;p&gt;&lt;xsl:value-of select=&quot;my:format(title)&quot;/&gt;&lt;/p&gt;
+  &lt;xsl:value-of select=&quot;my:even(count(//node()))&quot;/&gt;
 &lt;/xsl:template&gt;
 </code></pre>
 

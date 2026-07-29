@@ -98,7 +98,7 @@
   that has shipped for decades.</p>
 
   <h2>Checks</h2>
-  <p>53 checks, each with its rationale:</p>
+  <p>54 checks, each with its rationale:</p>
   <table>
     <thead>
       <tr>
@@ -348,6 +348,12 @@
     <td>xpath</td>
     <td><span class="severity-error">error</span></td>
     <td>xsl:with-param requires a @name attribute to bind the parameter it passes. Add one.</td>
+  </tr>
+  <tr>
+    <td><a href="checks/unreachable-function.html">unreachable-function</a></td>
+    <td>corpus</td>
+    <td><span class="severity-warning">warning</span></td>
+    <td>A stylesheet function is called only from within a recursion cycle that nothing else enters, so it can never run. Remove it, or call it from a template.</td>
   </tr>
   <tr>
     <td><a href="checks/unused-function.html">unused-function</a></td>
