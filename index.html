@@ -98,7 +98,7 @@
   that has shipped for decades.</p>
 
   <h2>Checks</h2>
-  <p>60 checks, each with its rationale:</p>
+  <p>61 checks, each with its rationale:</p>
   <table>
     <thead>
       <tr>
@@ -264,6 +264,12 @@
     <td>xpath</td>
     <td><span class="severity-warning">warning</span></td>
     <td>A variable, function, or template has a single-character name. Use a descriptive name that reveals intent.</td>
+  </tr>
+  <tr>
+    <td><a href="checks/sort-not-first.html">sort-not-first</a></td>
+    <td>xpath</td>
+    <td><span class="severity-error">error</span></td>
+    <td>'xsl:sort' must come before any other content in its 'xsl:for-each' or 'xsl:apply-templates'. Move it to the front.</td>
   </tr>
   <tr>
     <td><a href="checks/starts-with-double-slash.html">starts-with-double-slash</a></td>
