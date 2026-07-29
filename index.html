@@ -98,7 +98,7 @@
   that has shipped for decades.</p>
 
   <h2>Checks</h2>
-  <p>57 checks, each with its rationale:</p>
+  <p>58 checks, each with its rationale:</p>
   <table>
     <thead>
       <tr>
@@ -336,6 +336,12 @@
     <td>xpath</td>
     <td><span class="severity-error">error</span></td>
     <td>xsl:variable and xsl:param require a @name attribute. Add one or remove the element.</td>
+  </tr>
+  <tr>
+    <td><a href="checks/when-or-otherwise-outside-choose.html">when-or-otherwise-outside-choose</a></td>
+    <td>xpath</td>
+    <td><span class="severity-error">error</span></td>
+    <td>'xsl:when' and 'xsl:otherwise' are valid only as children of 'xsl:choose'. Move it into an 'xsl:choose', or use 'xsl:if'.</td>
   </tr>
   <tr>
     <td><a href="checks/with-param-use-in-invalid-parent-node.html">with-param-use-in-invalid-parent-node</a></td>
