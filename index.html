@@ -98,7 +98,7 @@
   that has shipped for decades.</p>
 
   <h2>Checks</h2>
-  <p>61 checks, each with its rationale:</p>
+  <p>62 checks, each with its rationale:</p>
   <table>
     <thead>
       <tr>
@@ -246,6 +246,12 @@
     <td>xpath</td>
     <td><span class="severity-warning">warning</span></td>
     <td>The template contains more than 100 XSLT elements. Decompose it with apply-templates into focused templates.</td>
+  </tr>
+  <tr>
+    <td><a href="checks/param-after-content.html">param-after-content</a></td>
+    <td>xpath</td>
+    <td><span class="severity-error">error</span></td>
+    <td>'xsl:param' must be declared before any other content in its 'xsl:template' or 'xsl:function'. Move it above the content.</td>
   </tr>
   <tr>
     <td><a href="checks/select-starts-with-double-slash.html">select-starts-with-double-slash</a></td>
