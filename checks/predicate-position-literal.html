@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>predicate-position-literal</title>
+  <style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    color: #24292e;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 24px 32px;
+  }
+  h1 { font-size: 2rem; font-weight: 600; margin-bottom: 4px; }
+  h2 { font-size: 1.3rem; font-weight: 600; margin: 20px 0 8px; }
+  a { color: #0366d6; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  p { margin: 8px 0; }
+  table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 0.9rem; }
+  th {
+    text-align: left;
+    padding: 10px 12px;
+    background: #f6f8fa;
+    border: 1px solid #e1e4e8;
+    font-weight: 600;
+  }
+  td { padding: 10px 12px; border: 1px solid #e1e4e8; vertical-align: top; }
+  tr:hover td { background: #f6f8fa; }
+  .severity-warning {
+    background: #fff8c5;
+    color: #9a6700;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .severity-error {
+    background: #ffebe9;
+    color: #cf222e;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .back { display: inline-block; margin-bottom: 24px; font-size: 0.9rem; }
+  .meta { display: flex; gap: 12px; align-items: flex-start; margin: 12px 0 24px; flex-wrap: wrap; }
+  .xpath {
+    background: #f6f8fa;
+    border: 1px solid #e1e4e8;
+    border-radius: 4px;
+    padding: 6px 10px;
+    font-family: 'SFMono-Regular', Consolas, monospace;
+    font-size: 0.75rem;
+    word-break: break-all;
+    flex: 1;
+  }
+  pre { margin: 12px 0; border-radius: 6px; overflow-x: auto; }
+  code { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; }
+  .check-content h1 { font-size: 1.6rem; margin-bottom: 8px; }
+</style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+  <script>hljs.highlightAll();</script>
+</head>
+<body>
+  <a class="back" href="../index.html">← all checks</a>
+  <div class="meta">
+    <span class="severity-warning">warning</span>
+    <code class="xpath">checked over the tokens, not an XPath rule</code>
+  </div>
+  <div class="check-content">
+<h1>Positional predicate written the long way</h1>
+<p>A predicate that holds a single number is, by definition, a test on the
+context position: <code>foo[1]</code> means <code>foo[position() = 1]</code>, and <code>foo[last()]</code> means
+<code>foo[position() = last()]</code>. Spelling the <code>position() =</code> out adds nothing — it is
+the same selection, just longer to read.</p>
+<p>The check fires only when the whole predicate is that lone comparison, in either
+operand order — <code>[position() = 1]</code>, <code>[1 = position()]</code>, <code>[position() = last()]</code>,
+<code>[last() = position()]</code>. The rewrite drops to the bare <code>[N]</code> or <code>[last()]</code>, which
+is always the same node set, so <code>--fix</code> applies it safely. A predicate that does
+more — <code>[position() = 1 and @current]</code>, <code>[position() &gt; 1]</code>, or a value
+comparison <code>[position() eq 1]</code> — is left alone, since there the <code>position()</code> is
+load-bearing and cannot be dropped.</p>
+<p>Incorrect:</p>
+<pre><code class="language-xsl">&lt;xsl:value-of select=&quot;item[position() = 1]&quot;/&gt;
+&lt;xsl:apply-templates select=&quot;row[position() = last()]&quot;/&gt;
+</code></pre>
+<p>Correct:</p>
+<pre><code class="language-xsl">&lt;xsl:value-of select=&quot;item[1]&quot;/&gt;
+&lt;xsl:apply-templates select=&quot;row[last()]&quot;/&gt;
+</code></pre>
+
+  </div>
+</body>
+</html>

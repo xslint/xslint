@@ -98,7 +98,7 @@
   that has shipped for decades.</p>
 
   <h2>Checks</h2>
-  <p>64 checks, each with its rationale:</p>
+  <p>65 checks, each with its rationale:</p>
   <table>
     <thead>
       <tr>
@@ -438,6 +438,12 @@
     <td>format</td>
     <td><span class="severity-warning">warning</span></td>
     <td>name() or local-name() is compared with a string, which is prefix-fragile and slower than a node test. Use self::name instead.</td>
+  </tr>
+  <tr>
+    <td><a href="checks/predicate-position-literal.html">predicate-position-literal</a></td>
+    <td>format</td>
+    <td><span class="severity-warning">warning</span></td>
+    <td>A positional predicate is written the long way; [position() = N] is just [N] and [position() = last()] is just [last()]. Shorten it.</td>
   </tr>
   <tr>
     <td><a href="checks/redundant-boolean-call.html">redundant-boolean-call</a></td>
