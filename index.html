@@ -98,7 +98,7 @@
   that has shipped for decades.</p>
 
   <h2>Checks</h2>
-  <p>56 checks, each with its rationale:</p>
+  <p>57 checks, each with its rationale:</p>
   <table>
     <thead>
       <tr>
@@ -408,6 +408,12 @@
     <td>format</td>
     <td><span class="severity-warning">warning</span></td>
     <td>name() or local-name() is compared with a string, which is prefix-fragile and slower than a node test. Use self::name instead.</td>
+  </tr>
+  <tr>
+    <td><a href="checks/redundant-import.html">redundant-import</a></td>
+    <td>format</td>
+    <td><span class="severity-warning">warning</span></td>
+    <td>The stylesheet imports or includes the same module more than once. Remove the duplicate xsl:import/xsl:include, keeping a single reference.</td>
   </tr>
   <tr>
     <td><a href="checks/redundant-namespace-declarations.html">redundant-namespace-declarations</a></td>
