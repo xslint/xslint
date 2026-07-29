@@ -98,7 +98,7 @@
   that has shipped for decades.</p>
 
   <h2>Checks</h2>
-  <p>58 checks, each with its rationale:</p>
+  <p>59 checks, each with its rationale:</p>
   <table>
     <thead>
       <tr>
@@ -222,6 +222,12 @@
     <td>xpath</td>
     <td><span class="severity-warning">warning</span></td>
     <td>The root template contains only variable declarations and produces no output. Add instructions that write to the result tree.</td>
+  </tr>
+  <tr>
+    <td><a href="checks/otherwise-not-last.html">otherwise-not-last</a></td>
+    <td>xpath</td>
+    <td><span class="severity-error">error</span></td>
+    <td>'xsl:otherwise' must be the last child of its 'xsl:choose'. Move it after every 'xsl:when'.</td>
   </tr>
   <tr>
     <td><a href="checks/output-method-xml.html">output-method-xml</a></td>
