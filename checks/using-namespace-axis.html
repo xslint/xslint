@@ -81,11 +81,15 @@ some 3.0 processors drop it entirely. Use the standard functions
 <code>in-scope-prefixes()</code> and <code>namespace-uri-for-prefix()</code> to inspect namespace
 bindings instead. In XSLT 1.0 the axis is not deprecated and is not flagged, so
 this check fires only on a stylesheet declaring version 2.0 or 3.0.</p>
-<p>The axis is caught in every XPath and pattern attribute — a template <code>match</code>, a
-<code>select</code>, a <code>test</code>, a <code>use</code> — not only in <code>match</code>/<code>select</code>. Because the
-expression is tokenized, a <code>namespace::</code> inside a string literal is left alone,
-and the lookalike functions <code>in-scope-prefixes()</code> and
-<code>namespace-uri-for-prefix()</code> are never mistaken for the axis.</p>
+<p>The axis is caught in every XPath and pattern attribute of an XSLT element — a
+template <code>match</code>, a <code>select</code>, a <code>test</code>, a <code>use</code> — not only in <code>match</code>/<code>select</code>,
+and inside an attribute value template, where <code>&amp;lt;div id=&quot;{namespace::*}&quot;/&amp;gt;</code>
+holds an expression as surely as a <code>select</code> does. An attribute of the output
+vocabulary that merely shares one of those names carries text for the result
+tree, not XPath, so it is left alone. Because the expression is tokenized, a
+<code>namespace::</code> inside a string literal is left alone too, and the lookalike
+functions <code>in-scope-prefixes()</code> and <code>namespace-uri-for-prefix()</code> are never
+mistaken for the axis.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:stylesheet version=&quot;2.0&quot; xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot;&gt;
   &lt;xsl:output method=&quot;html&quot;/&gt;

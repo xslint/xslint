@@ -107,6 +107,12 @@ left alone. So is a <code>0</code> or <code>1</code> that is only part of a wide
 <code>$max + 1 &amp;gt; count($x)</code> the left side is <code>$max + 1</code>, and in
 <code>count($x) &amp;gt; 0 + $n</code> the right side is <code>0 + $n</code>, so neither compares the call
 against a bare <code>0</code> or <code>1</code>.</p>
+<p>The comparison is caught in the XPath and pattern attributes of XSLT elements and
+inside an attribute value template, where <code>&amp;lt;div empty=&quot;{count($items) = 0}&quot;/&amp;gt;</code>
+holds a real expression; both a comparison and its rewrite print <code>true</code>/<code>false</code>
+there, so the fix stays safe. An attribute of your output vocabulary that happens
+to be called <code>test</code> or <code>select</code> carries text for the result tree, not XPath, and
+is never touched.</p>
 
   </div>
 </body>

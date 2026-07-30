@@ -83,6 +83,11 @@ and <code>test=&quot;x&quot;</code> behave identically. The wrapper is just nois
 dropping it is always safe, so <code>--fix</code> removes it. A <code>boolean(...)</code> that is only
 part of a larger expression — <code>a = boolean(b)</code> — is left alone, because there
 the coercion can change what the comparison means.</p>
+<p>Only the <code>@test</code> of an XSLT element is read. Nothing coerces the expression of an
+attribute value template, so <code>&amp;lt;div flag=&quot;{boolean(x)}&quot;/&amp;gt;</code> prints <code>true</code> or
+<code>false</code> where a bare <code>{x}</code> would print the node&#39;s own text — the wrapper is doing
+real work there and is kept. An attribute of your output vocabulary called <code>test</code>
+is text for the result tree, and is never read as XPath.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:if test=&quot;boolean(@enabled)&quot;&gt;
 </code></pre>
