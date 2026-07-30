@@ -72,35 +72,38 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-error">error</span>
-    <code class="xpath">/xsl:stylesheet[@version="1.0"]//xsl:function</code>
+    <code class="xpath">//xsl:function[not(/*/@version = '2.0' or /*/@version = '3.0')]</code>
   </div>
   <div class="check-content">
-<h1>Function use in XSLT version 1.0</h1>
-<p><code>xsl:function</code> does not exist in XSLT 1.0. Use a <code>xsl:template</code> with <code>name</code> attribute 
-or upgrade the stylesheet version to 2.0.</p>
+<h1>Function use in a pre-2.0 stylesheet</h1>
+<p><code>xsl:function</code> was introduced in XSLT 2.0. A stylesheet that declares
+<code>version=&quot;1.0&quot;</code> (or <code>1.1</code>, or no version at all) but defines an <code>xsl:function</code>
+cannot run on a 1.0 processor — the instruction does not exist there. The check
+fires whenever the root — <code>xsl:stylesheet</code> or <code>xsl:transform</code> — is not
+<code>version=&quot;2.0&quot;</code> or <code>version=&quot;3.0&quot;</code>, so an unversioned or <code>1.1</code> stylesheet is
+caught too, not only an explicit <code>1.0</code>.</p>
+<p>Either replace the function with an <code>xsl:template</code> that has a <code>name</code>, or raise
+the stylesheet to <code>version=&quot;2.0&quot;</code>.</p>
 <p>Incorrect:</p>
-<pre><code class="language-xsl">  &lt;xsl:stylesheet xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot; version=&quot;1.0&quot;&gt;
-    &lt;xsl:output encoding=&quot;UTF-8&quot; method=&quot;xml&quot;/&gt;
-    &lt;xsl:function name=&quot;my:foo&quot;&gt;
-      &lt;!-- body logic --&gt;
-    &lt;/xsl:function&gt;
-  &lt;/xsl:stylesheet&gt;
+<pre><code class="language-xsl">&lt;xsl:stylesheet xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot; version=&quot;1.0&quot;&gt;
+  &lt;xsl:function name=&quot;my:foo&quot;&gt;
+    &lt;!-- body logic --&gt;
+  &lt;/xsl:function&gt;
+&lt;/xsl:stylesheet&gt;
 </code></pre>
 <p>Correct:</p>
-<pre><code class="language-xsl">  &lt;xsl:stylesheet xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot; version=&quot;1.0&quot;&gt;
-    &lt;xsl:output encoding=&quot;UTF-8&quot; method=&quot;xml&quot;/&gt;
-    &lt;xsl:template name=&quot;foo&quot;&gt;
-      &lt;!-- body logic --&gt;
-    &lt;/xsl:template&gt;
-  &lt;/xsl:stylesheet&gt;
+<pre><code class="language-xsl">&lt;xsl:stylesheet xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot; version=&quot;1.0&quot;&gt;
+  &lt;xsl:template name=&quot;foo&quot;&gt;
+    &lt;!-- body logic --&gt;
+  &lt;/xsl:template&gt;
+&lt;/xsl:stylesheet&gt;
 </code></pre>
 <p>or:</p>
-<pre><code class="language-xsl">  &lt;xsl:stylesheet xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot; version=&quot;2.0&quot;&gt;
-    &lt;xsl:output encoding=&quot;UTF-8&quot; method=&quot;xml&quot;/&gt;
-    &lt;xsl:function name=&quot;my:foo&quot;&gt;
-      &lt;!-- body logic --&gt;
-    &lt;/xsl:function&gt;
-  &lt;/xsl:stylesheet&gt;
+<pre><code class="language-xsl">&lt;xsl:stylesheet xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot; version=&quot;2.0&quot;&gt;
+  &lt;xsl:function name=&quot;my:foo&quot;&gt;
+    &lt;!-- body logic --&gt;
+  &lt;/xsl:function&gt;
+&lt;/xsl:stylesheet&gt;
 </code></pre>
 
   </div>
