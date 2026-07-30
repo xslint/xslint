@@ -22,3 +22,8 @@ Correct:
   <xsl:value-of select="."/>
 </xsl:template>
 ```
+
+A pattern that *opens* with `//` is a different defect — redundant rather than
+vague — and belongs to `starts-with-double-slash`, which is where its fix lives
+too. This check stays report-only: only the author knows which path was meant,
+so there is nothing deterministic to rewrite `root//item` into.

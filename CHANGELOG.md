@@ -9,6 +9,13 @@ publication date only; detailed notes begin with the Unreleased section.
 
 ## Unreleased
 
+- Move the `starts-with-double-slash` fix behind `--fix-suggestions`. Dropping
+  the leading `//` off a `@match` keeps the matched nodes but not the default
+  priority — a pattern with a `/` step is 0.5, a lone name test 0 — so a plain
+  `--fix` could hand a conflict to a rule the template used to outrank. A
+  pattern of nothing but the slashes now gets no fix, since emptying it would
+  trade one broken pattern for another (#583).
+
 - Add the `redundant-double-negation` check: `not(not(x))` is a redundant
   double negation — exactly `boolean(x)`. Reported in any `@test`/`@select`,
   with a safe `--fix` that rewrites it to `boolean(x)` (always equivalent). An

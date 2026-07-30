@@ -101,12 +101,6 @@ const APPLIED = [
     after: 'redundant-namespace-declarations.fixed.xsl',
   },
   {
-    name: 'should drop the redundant leading slashes of a match with --fix',
-    flag: '--fix',
-    before: 'starts-with-double-slash.xsl',
-    after: 'starts-with-double-slash.fixed.xsl',
-  },
-  {
     name: 'should delete a redundant import with --fix',
     flag: '--fix',
     before: 'redundant-import.xsl',
@@ -244,6 +238,13 @@ const APPLIED = [
     after: 'select-starts-with-double-slash.fixed.xsl',
   },
   {
+    name: 'should drop the redundant leading slashes of a match with ' +
+      '--fix-suggestions',
+    flag: '--fix-suggestions',
+    before: 'starts-with-double-slash.xsl',
+    after: 'starts-with-double-slash.fixed.xsl',
+  },
+  {
     name: 'should prepend $ to a bare variable name with --fix-suggestions',
     flag: '--fix-suggestions',
     before: 'confusing-variable-and-node.xsl',
@@ -289,8 +290,8 @@ const APPLIED = [
 ]
 
 /**
- * Cases where a flag leaves the `sheet` fixture untouched — a dry run, or a
- * plain `--fix` declining a suggestion.
+ * Cases where a flag leaves the `sheet` fixture untouched — a dry run, a plain
+ * `--fix` declining a suggestion, or a defect whose builder offers no fix.
  * @type {Array.<{name: string, flag: string, sheet: string}>}
  */
 const UNCHANGED = [
@@ -375,6 +376,17 @@ const UNCHANGED = [
     sheet: 'select-starts-with-double-slash.xsl',
   },
   {
+    name: 'cannot drop the leading slashes of a match with plain --fix',
+    flag: '--fix',
+    sheet: 'starts-with-double-slash.xsl',
+  },
+  {
+    name: 'cannot empty a pattern that is nothing but slashes with ' +
+      '--fix-suggestions',
+    flag: '--fix-suggestions',
+    sheet: 'starts-with-double-slash-degenerate.xsl',
+  },
+  {
     name: 'cannot prepend $ to a bare variable name with plain --fix',
     flag: '--fix',
     sheet: 'confusing-variable-and-node.xsl',
@@ -410,7 +422,7 @@ const DROPPED = [
   {
     name: 'should drop the fixed starts-with-double-slash defect from the ' +
       'report',
-    flag: '--fix',
+    flag: '--fix-suggestions',
     sheet: 'starts-with-double-slash.xsl',
     check: 'starts-with-double-slash',
   },
