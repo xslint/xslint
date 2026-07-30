@@ -72,13 +72,14 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-error">error</span>
-    <code class="xpath">/xsl:stylesheet//xsl:stylesheet</code>
+    <code class="xpath">(/xsl:stylesheet | /xsl:transform)//(xsl:stylesheet | xsl:transform)</code>
   </div>
   <div class="check-content">
 <h1>Using not outermost stylesheet</h1>
-<p><code>xsl:stylesheet</code> must be the outermost element of an XSLT document. A
-nested <code>xsl:stylesheet</code> inside a template body is invalid and will be
-rejected by a conformant XSLT processor.</p>
+<p>The stylesheet root — <code>xsl:stylesheet</code> or its synonym <code>xsl:transform</code> — must be
+the outermost element of an XSLT document. A nested <code>xsl:stylesheet</code> or
+<code>xsl:transform</code> inside a template body is invalid and will be rejected by a
+conformant XSLT processor.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:stylesheet version=&quot;1.0&quot; xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot;&gt;
   &lt;xsl:output method=&quot;html&quot;/&gt;

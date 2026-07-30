@@ -72,13 +72,13 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-error">error</span>
-    <code class="xpath">/xsl:stylesheet/*//(xsl:function|xsl:template)</code>
+    <code class="xpath">(/xsl:stylesheet | /xsl:transform)/*//(xsl:function|xsl:template)</code>
   </div>
   <div class="check-content">
 <h1>Function or template is not child of stylesheet</h1>
-<p><code>xsl:function</code> and <code>xsl:template</code> declaration can only appear as 
-top-level elements (a child element of an <code>xsl:stylesheet</code>). 
-Declaring them in other nodes is a syntax error.   </p>
+<p><code>xsl:function</code> and <code>xsl:template</code> declaration can only appear as
+top-level elements (a child element of an <code>xsl:stylesheet</code> or <code>xsl:transform</code>).
+Declaring them in other nodes is a syntax error.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">  &lt;xsl:stylesheet xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot; version=&quot;2.0&quot; id=&quot;style1&quot;&gt;
     &lt;xsl:output encoding=&quot;UTF-8&quot; method=&quot;xml&quot;/&gt;

@@ -72,13 +72,14 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-warning">warning</span>
-    <code class="xpath">/xsl:stylesheet[not(@version)]</code>
+    <code class="xpath">(/xsl:stylesheet | /xsl:transform)[not(@version)]</code>
   </div>
   <div class="check-content">
 <h1>Missing version in stylesheet</h1>
-<p>Every <code>xsl:stylesheet</code> element must declare a <code>version</code> attribute to identify
-the XSLT version the stylesheet conforms to. Omitting it produces an invalid
-stylesheet that a conformant XSLT processor is required to reject.</p>
+<p>Every stylesheet root — <code>xsl:stylesheet</code> or its synonym <code>xsl:transform</code> — must
+declare a <code>version</code> attribute to identify the XSLT version the stylesheet
+conforms to. Omitting it produces an invalid stylesheet that a conformant XSLT
+processor is required to reject.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:stylesheet xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot;&gt;
     &lt;!-- stylesheet logic --&gt;

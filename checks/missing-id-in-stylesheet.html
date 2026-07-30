@@ -72,11 +72,12 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-warning">warning</span>
-    <code class="xpath">/xsl:stylesheet[not(@id)]</code>
+    <code class="xpath">(/xsl:stylesheet | /xsl:transform)[not(@id)]</code>
   </div>
   <div class="check-content">
 <h1>Missing id in stylesheet</h1>
-<p>The <code>id</code> attribute on <code>xsl:stylesheet</code> is optional, and on a standalone
+<p>The <code>id</code> attribute on the stylesheet root (<code>xsl:stylesheet</code> or <code>xsl:transform</code>)
+is optional, and on a standalone
 stylesheet it changes nothing about how the transform runs — it matters only
 for a stylesheet embedded in another document and referenced by fragment. So
 this is not a correctness rule; it is a consistency one. Declaring identity is
