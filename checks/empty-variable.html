@@ -72,7 +72,7 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-warning">warning</span>
-    <code class="xpath">//xsl:variable[not(@select) and not(node()) and not(@as)]</code>
+    <code class="xpath">//xsl:variable[not(@select) and not(node()) and not(@as and (/*/@version = '2.0' or /*/@version = '3.0'))]</code>
   </div>
   <div class="check-content">
 <h1>Empty <code>xsl:variable</code></h1>
@@ -81,10 +81,12 @@ sequence constructor inside it. With neither, the variable binds to an empty
 string — almost always a mistake, and at best a confusing way to declare an
 empty value. State the value explicitly or drop the declaration.</p>
 <p>A variable that declares a type with <code>@as</code> is a different case and is not
-flagged: <code>&lt;xsl:variable name=&quot;acc&quot; as=&quot;node()*&quot;/&gt;</code> in XSLT 2.0 or 3.0 binds the
-empty <em>sequence</em> of that type on purpose — a deliberate empty accumulator, not
-an accidental empty string. The <code>@as</code> attribute only exists in 2.0/3.0, so its
-presence is the signal that the emptiness is intentional.</p>
+flagged <strong>in XSLT 2.0 or 3.0</strong>: <code>&lt;xsl:variable name=&quot;acc&quot; as=&quot;node()*&quot;/&gt;</code> binds
+the empty <em>sequence</em> of that type on purpose — a deliberate empty accumulator,
+not an accidental empty string. The exclusion is version-scoped: in XSLT 1.0
+<code>@as</code> is not a recognized attribute, so it is inert and the variable still binds
+the empty string. A <code>1.0</code> stylesheet with an empty <code>@as</code> variable is therefore
+still flagged — the <code>@as</code> does not do what its author expects.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:variable name=&quot;greeting&quot;/&gt;
 </code></pre>
@@ -94,7 +96,7 @@ presence is the signal that the emptiness is intentional.</p>
 <p>or:</p>
 <pre><code class="language-xsl">&lt;xsl:variable name=&quot;greeting&quot;&gt;hello&lt;/xsl:variable&gt;
 </code></pre>
-<p>Also correct — a typed empty sequence:</p>
+<p>Also correct — a typed empty sequence in XSLT 2.0 or 3.0:</p>
 <pre><code class="language-xsl">&lt;xsl:variable name=&quot;acc&quot; as=&quot;node()*&quot;/&gt;
 </code></pre>
 
