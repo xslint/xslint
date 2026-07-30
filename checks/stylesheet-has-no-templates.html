@@ -72,7 +72,7 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-error">error</span>
-    <code class="xpath">(/xsl:stylesheet | /xsl:transform)[count(xsl:template)=0 and count(xsl:function)=0 and count(xsl:variable)=0]</code>
+    <code class="xpath">(/xsl:stylesheet | /xsl:transform)[not(xsl:template | xsl:function | xsl:variable)]</code>
   </div>
   <div class="check-content">
 <h1>Stylesheet has no templates</h1>

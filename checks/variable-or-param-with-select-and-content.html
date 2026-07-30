@@ -72,22 +72,35 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-error">error</span>
-    <code class="xpath">//(xsl:variable | xsl:param)[@select and (count(*)&gt;0 or text()[normalize-space()])]</code>
+    <code class="xpath">//(xsl:variable | xsl:param | xsl:with-param)[@select and (* or text()[normalize-space()])]</code>
   </div>
   <div class="check-content">
-<h1>Using internal content and @select to set variable or param</h1>
-<p>An xsl:variable or xsl:param must not set its value both ways.
-When it carries a @select attribute and also has content, the
-binding is ambiguous, so keep only one.</p>
+<h1>Using internal content and @select to set a variable, param or with-param</h1>
+<p>An xsl:variable, an xsl:param and an xsl:with-param — the variable-binding
+elements — take their value either from a @select expression or from their
+body, never from both. Given both, a processor holds two candidate values and
+no rule for choosing one, so XSLT forbids the combination outright: 1.0 calls
+it an error, 2.0 and 3.0 raise the static error XTSE0620. The stylesheet does
+not run at all, on any version, hence the error severity. A body of nothing
+but whitespace and comments is not content, and is left alone.</p>
+<p><code>--fix-suggestions</code> deletes the <code>@select</code> and leaves the body as the value. It
+is a suggestion rather than a safe fix: the body binds a tree — a document node
+on 2.0 and later, a result tree fragment on 1.0 — where the expression bound
+its own type, so <code>$physicist</code> stops being a string, and an <code>@as</code> the body
+cannot convert to turns the edit into a type error. Dropping the body instead
+is the other correction, and no single edit expresses it — make that one by
+hand when the <code>@select</code> held the value you meant.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:variable name=&quot;physicist&quot; select=&quot;&#39;Isaac Newton&#39;&quot;&gt;
     Albert Einstein
 &lt;/xsl:variable&gt;
 </code></pre>
 <p>or:</p>
-<pre><code class="language-xsl">&lt;xsl:param name=&quot;physicist&quot; select=&quot;&#39;J.J. Thomson&#39;&quot;&gt;
+<pre><code class="language-xsl">&lt;xsl:call-template name=&quot;cite&quot;&gt;
+  &lt;xsl:with-param name=&quot;physicist&quot; select=&quot;&#39;J.J. Thomson&#39;&quot;&gt;
     Max Planck
-&lt;/xsl:param&gt;
+  &lt;/xsl:with-param&gt;
+&lt;/xsl:call-template&gt;
 </code></pre>
 <p>Correct:</p>
 <pre><code class="language-xsl">&lt;xsl:variable name=&quot;physicist&quot;&gt;
@@ -96,14 +109,6 @@ binding is ambiguous, so keep only one.</p>
 </code></pre>
 <p>or:</p>
 <pre><code class="language-xsl">&lt;xsl:variable name=&quot;physicist&quot; select=&quot;&#39;Ernest Rutherford&#39;&quot;/&gt;
-</code></pre>
-<p>or:</p>
-<pre><code class="language-xsl">&lt;xsl:param name=&quot;physicist&quot;&gt;
-    Galileo Galilei
-&lt;/xsl:param&gt;
-</code></pre>
-<p>or:</p>
-<pre><code class="language-xsl">&lt;xsl:param name=&quot;physicist&quot; select=&quot;&#39;Lev Landau&#39;&quot;/&gt;
 </code></pre>
 
   </div>

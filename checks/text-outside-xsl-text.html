@@ -72,7 +72,7 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-warning">warning</span>
-    <code class="xpath">//xsl:*[count(text()[normalize-space()]) &gt; 0 and not(local-name() = ('text','attribute','comment','processing-instruction','message','variable','param','with-param'))]</code>
+    <code class="xpath">//xsl:*[text()[normalize-space()] and not(local-name() = ('text','attribute','comment','processing-instruction','message','variable','param','with-param'))]</code>
   </div>
   <div class="check-content">
 <h1>Literal text outside <code>xsl:text</code></h1>

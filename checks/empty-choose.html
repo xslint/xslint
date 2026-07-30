@@ -81,16 +81,23 @@
 rejects it; and even read loosely, an <code>xsl:choose</code> holding only an
 <code>xsl:otherwise</code> is a wrapper that always runs its single branch — the
 <code>xsl:choose</code> adds nothing.</p>
-<p>The check is report-only: the fix — deleting the <code>xsl:choose</code> and keeping its
-<code>xsl:otherwise</code> content directly, or adding the missing <code>xsl:when</code> — is a
-structural change and a judgement call.</p>
+<p>The check is report-only until the full-fidelity parser (#228). Both
+corrections — dropping the <code>xsl:choose</code> and keeping its <code>xsl:otherwise</code>
+content, or adding the missing <code>xsl:when</code> — rewrite element structure, which
+the fixer, editing one attribute or text span at a time, cannot express.</p>
 <p>Incorrect:</p>
-<pre><code class="language-xsl">&lt;xsl:choose&gt;
-  &lt;xsl:otherwise&gt;fallback&lt;/xsl:otherwise&gt;
-&lt;/xsl:choose&gt;
+<pre><code class="language-xsl">&lt;xsl:template match=&quot;/objects&quot;&gt;
+  &lt;xsl:choose&gt;
+    &lt;xsl:otherwise&gt;
+      &lt;xsl:text&gt;fallback&lt;/xsl:text&gt;
+    &lt;/xsl:otherwise&gt;
+  &lt;/xsl:choose&gt;
+&lt;/xsl:template&gt;
 </code></pre>
 <p>Correct:</p>
-<pre><code class="language-xsl">fallback
+<pre><code class="language-xsl">&lt;xsl:template match=&quot;/objects&quot;&gt;
+  &lt;xsl:text&gt;fallback&lt;/xsl:text&gt;
+&lt;/xsl:template&gt;
 </code></pre>
 
   </div>

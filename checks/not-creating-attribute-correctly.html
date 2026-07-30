@@ -72,7 +72,7 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-warning">warning</span>
-    <code class="xpath">//xsl:attribute[not(contains(@name, '{'))][parent::*[not(self::xsl:*)]][count(*) = 0 or (count(*) = 1 and xsl:value-of)]</code>
+    <code class="xpath">//xsl:attribute[not(contains(@name, '{'))][parent::*[not(self::xsl:*)]][not(*) or (count(*) = 1 and xsl:value-of)]</code>
   </div>
   <div class="check-content">
 <h1>Not creating attribute correctly</h1>

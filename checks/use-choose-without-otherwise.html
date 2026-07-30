@@ -72,7 +72,7 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-warning">warning</span>
-    <code class="xpath">//xsl:choose[count(xsl:otherwise) = 0 and count(xsl:when) &gt;= 2]</code>
+    <code class="xpath">//xsl:choose[not(xsl:otherwise) and count(xsl:when) &gt;= 2]</code>
   </div>
   <div class="check-content">
 <h1>Use choose without otherwise</h1>
