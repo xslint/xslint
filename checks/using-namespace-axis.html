@@ -72,13 +72,20 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-warning">warning</span>
-    <code class="xpath">//*[(@match | @select)[contains(., 'namespace::')][/xsl:stylesheet/@version = '2.0']]</code>
+    <code class="xpath">checked over the tokens, not an XPath rule</code>
   </div>
   <div class="check-content">
 <h1>Using namespace axis</h1>
-<p>The <code>namespace::</code> axis is deprecated in XSLT 2.0. Use the standard functions
-<code>fn:in-scope-prefixes()</code> and <code>fn:namespace-uri-for-prefix()</code> to inspect
-namespace bindings instead.</p>
+<p>The <code>namespace::</code> axis is deprecated in XSLT 2.0 and stays deprecated in 3.0 —
+some 3.0 processors drop it entirely. Use the standard functions
+<code>in-scope-prefixes()</code> and <code>namespace-uri-for-prefix()</code> to inspect namespace
+bindings instead. In XSLT 1.0 the axis is not deprecated and is not flagged, so
+this check fires only on a stylesheet declaring version 2.0 or 3.0.</p>
+<p>The axis is caught in every XPath and pattern attribute — a template <code>match</code>, a
+<code>select</code>, a <code>test</code>, a <code>use</code> — not only in <code>match</code>/<code>select</code>. Because the
+expression is tokenized, a <code>namespace::</code> inside a string literal is left alone,
+and the lookalike functions <code>in-scope-prefixes()</code> and
+<code>namespace-uri-for-prefix()</code> are never mistaken for the axis.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:stylesheet version=&quot;2.0&quot; xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot;&gt;
   &lt;xsl:output method=&quot;html&quot;/&gt;
@@ -99,6 +106,9 @@ namespace bindings instead.</p>
   &lt;/xsl:template&gt;
 &lt;/xsl:stylesheet&gt;
 </code></pre>
+<p>Rewriting the axis to those functions is a structural change, not a one-span
+edit, so this check reports without a <code>--fix</code> until the full-fidelity parser
+(#228) lands.</p>
 
   </div>
 </body>

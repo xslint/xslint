@@ -338,12 +338,6 @@
     <td>disable-output-escaping='yes' is set, which produces implementation-defined output. Use xsl:copy-of or literal elements instead.</td>
   </tr>
   <tr>
-    <td><a href="checks/using-namespace-axis.html">using-namespace-axis</a></td>
-    <td>xpath</td>
-    <td><span class="severity-warning">warning</span></td>
-    <td>The namespace:: axis is deprecated in XSLT 2.0. Use fn:in-scope-prefixes() and fn:namespace-uri-for-prefix() instead.</td>
-  </tr>
-  <tr>
     <td><a href="checks/using-not-outermost-stylesheet.html">using-not-outermost-stylesheet</a></td>
     <td>xpath</td>
     <td><span class="severity-error">error</span></td>
@@ -498,6 +492,12 @@
     <td>format</td>
     <td><span class="severity-warning">warning</span></td>
     <td>The node-set() extension function is unnecessary in XSLT 2.0 and later. Query the variable directly without it.</td>
+  </tr>
+  <tr>
+    <td><a href="checks/using-namespace-axis.html">using-namespace-axis</a></td>
+    <td>format</td>
+    <td><span class="severity-warning">warning</span></td>
+    <td>The namespace:: axis is deprecated in XSLT 2.0 and later. Use in-scope-prefixes() and namespace-uri-for-prefix() instead.</td>
   </tr>
     </tbody>
   </table>
