@@ -93,6 +93,11 @@ and lets the engine stop at the first item instead of counting every one.</p>
 <code>0 = count($items)</code> are flagged the same way. A comparison that is not an
 existence test — <code>count($x) &amp;gt; 1</code>, <code>count($x) = 5</code> — is a genuine count and is
 left alone.</p>
+<p><code>exists()</code> and <code>empty()</code> are XPath 2.0 functions, so the <code>--fix</code> rewrite is
+offered only on an XSLT 2.0/3.0 stylesheet. On 1.0 the smell is still reported —
+the wasteful full walk is the same — but without a fix, since the direct 1.0
+form (the node-set in a boolean context, or <code>not()</code>) depends on where the test
+sits.</p>
 
   </div>
 </body>
