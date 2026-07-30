@@ -98,7 +98,7 @@
   that has shipped for decades.</p>
 
   <h2>Checks</h2>
-  <p>65 checks, each with its rationale:</p>
+  <p>66 checks, each with its rationale:</p>
   <table>
     <thead>
       <tr>
@@ -192,6 +192,12 @@
     <td>xpath</td>
     <td><span class="severity-error">error</span></td>
     <td>An xsl:template that has no match attribute must have no mode attribute and no priority attribute. Add match attribute or remove mode or priority.</td>
+  </tr>
+  <tr>
+    <td><a href="checks/modern-construct-in-xslt-1.html">modern-construct-in-xslt-1</a></td>
+    <td>xpath</td>
+    <td><span class="severity-error">error</span></td>
+    <td>This XSLT 2.0 construct is used in a stylesheet declared version 1.0, which a conformant 1.0 processor rejects. Use a 1.0 equivalent, or set the version to 2.0.</td>
   </tr>
   <tr>
     <td><a href="checks/name-starts-with-numeric.html">name-starts-with-numeric</a></td>
