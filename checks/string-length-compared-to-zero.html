@@ -90,7 +90,10 @@ comparing <code>count(...)</code> with zero to test existence.</p>
 &lt;xsl:if test=&quot;@name = &#39;&#39;&quot;&gt;
 </code></pre>
 <p>The operand order does not matter (<code>0 &amp;lt; string-length(@name)</code> is flagged the
-same way). When the argument is not a single operand — a union such as
+same way). A <code>0</code> or <code>1</code> that is only part of a wider arithmetic operand — the
+<code>1</code> in <code>$max + 1 &amp;gt; string-length(@a)</code>, the <code>0</code> in
+<code>string-length(@a) &amp;gt; 0 + $n</code> — does not compare the call against zero, and is
+left alone. When the argument is not a single operand — a union such as
 <code>string-length($a | $b)</code>, where <code>X != &#39;&#39;</code> would not mean the same thing — the
 comparison is still reported but carries no fix.</p>
 <p>The rewrite is offered as a <strong>suggestion</strong>, not a safe fix, because <code>X op &#39;&#39;</code> is

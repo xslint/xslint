@@ -103,7 +103,10 @@ gets them too.</p>
 <p>The operand order does not matter: <code>0 &amp;lt; count($items)</code> and
 <code>0 = count($items)</code> are flagged the same way. A comparison that is not an
 existence test — <code>count($x) &amp;gt; 1</code>, <code>count($x) = 5</code> — is a genuine count and is
-left alone.</p>
+left alone. So is a <code>0</code> or <code>1</code> that is only part of a wider operand: in
+<code>$max + 1 &amp;gt; count($x)</code> the left side is <code>$max + 1</code>, and in
+<code>count($x) &amp;gt; 0 + $n</code> the right side is <code>0 + $n</code>, so neither compares the call
+against a bare <code>0</code> or <code>1</code>.</p>
 
   </div>
 </body>
