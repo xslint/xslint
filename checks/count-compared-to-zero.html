@@ -77,27 +77,33 @@
   <div class="check-content">
 <h1>Count compared to zero</h1>
 <p><code>count($x) &amp;gt; 0</code> and <code>count($x) = 0</code> ask the processor to walk the whole
-sequence and tally it, only to find out whether it is empty. The question is
-existence, and XPath states it directly: the sequence itself in a boolean
-context, <code>exists($x)</code>, or <code>empty($x)</code> / <code>not($x)</code>. The direct form reads better
-and lets the engine stop at the first item instead of counting every one.</p>
+sequence and tally it, only to find out whether it holds anything. The question
+is existence, and every version of XPath can state it directly — and let the
+engine stop at the first item instead of counting every one.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:if test=&quot;count($items) &amp;gt; 0&quot;&gt;
 &lt;xsl:if test=&quot;count($items) = 0&quot;&gt;
 </code></pre>
-<p>Correct:</p>
+<p>Correct, on XSLT 2.0 and later:</p>
 <pre><code class="language-xsl">&lt;xsl:if test=&quot;exists($items)&quot;&gt;
 &lt;xsl:if test=&quot;empty($items)&quot;&gt;
 </code></pre>
+<p>Correct, on XSLT 1.0 (where <code>exists()</code>/<code>empty()</code> do not exist):</p>
+<pre><code class="language-xsl">&lt;xsl:if test=&quot;$items&quot;&gt;
+&lt;xsl:if test=&quot;not($items)&quot;&gt;
+</code></pre>
+<p>A node-set in a boolean context is already true exactly when it is non-empty, so
+in an <code>xsl:if</code>/<code>xsl:when</code> <code>@test</code> the bare <code>$items</code> says it; in a <code>@select</code> (or
+any value context) write <code>boolean($items)</code>, and for the empty case <code>not($items)</code>
+either way.</p>
+<p>The <code>--fix</code> picks the form the stylesheet&#39;s version can run: <code>exists()</code>/<code>empty()</code>
+on 2.0/3.0, and <code>boolean()</code>/<code>not()</code> — or the bare node-set in a whole <code>@test</code> —
+on 1.0. The 1.0 forms are valid in every version, so an unversioned stylesheet
+gets them too.</p>
 <p>The operand order does not matter: <code>0 &amp;lt; count($items)</code> and
 <code>0 = count($items)</code> are flagged the same way. A comparison that is not an
 existence test — <code>count($x) &amp;gt; 1</code>, <code>count($x) = 5</code> — is a genuine count and is
 left alone.</p>
-<p><code>exists()</code> and <code>empty()</code> are XPath 2.0 functions, so the <code>--fix</code> rewrite is
-offered only on an XSLT 2.0/3.0 stylesheet. On 1.0 the smell is still reported —
-the wasteful full walk is the same — but without a fix, since the direct 1.0
-form (the node-set in a boolean context, or <code>not()</code>) depends on where the test
-sits.</p>
 
   </div>
 </body>
