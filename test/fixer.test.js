@@ -164,6 +164,20 @@ const APPLIED = [
     after: 'count-shifted-comparison.fixed.xsl',
   },
   {
+    name: 'should rewrite a count comparison inside an attribute value ' +
+      'template, leaving the output text of the same line alone, with --fix',
+    flag: '--fix',
+    before: 'count-in-result-attribute.xsl',
+    after: 'count-in-result-attribute.fixed.xsl',
+  },
+  {
+    name: 'should rewrite both count comparisons of one attribute value, the ' +
+      'second shifted by the entity in the first, with --fix',
+    flag: '--fix',
+    before: 'count-in-attribute-value-templates.xsl',
+    after: 'count-in-attribute-value-templates.fixed.xsl',
+  },
+  {
     name: 'should keep the widest of the fixes that overlap with --fix',
     flag: '--fix',
     before: 'overlapping-fixes.xsl',
@@ -265,6 +279,13 @@ const APPLIED = [
     flag: '--fix-suggestions',
     before: 'mode-or-priority-without-match.xsl',
     after: 'mode-or-priority-without-match.fixed.xsl',
+  },
+  {
+    name: 'should delete the select of a variable, param and with-param that ' +
+      'also have a body with --fix-suggestions',
+    flag: '--fix-suggestions',
+    before: 'variable-or-param-with-select-and-content.xsl',
+    after: 'variable-or-param-with-select-and-content.fixed.xsl',
   },
 ]
 
@@ -379,6 +400,11 @@ const UNCHANGED = [
     name: 'cannot apply a suggestion with plain --fix',
     flag: '--fix',
     sheet: 'using-disable-output-escaping.xsl',
+  },
+  {
+    name: 'cannot delete a select beside a body with plain --fix',
+    flag: '--fix',
+    sheet: 'variable-or-param-with-select-and-content.xsl',
   },
 ]
 

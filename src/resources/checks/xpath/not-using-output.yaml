@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
 # SPDX-License-Identifier: MIT
 ---
-xpath: (/xsl:stylesheet | /xsl:transform)[count(xsl:template) > 0 and count(xsl:output) = 0]
+xpath: (/xsl:stylesheet | /xsl:transform)[xsl:template and not(xsl:output)]
 severity: error
 message: The xsl:output instruction is missing. Declare it to specify the serialization format explicitly.

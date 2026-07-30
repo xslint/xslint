@@ -3,10 +3,9 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {nodes} = require('./xpath')
 const {tokenized, TOKENS} = require('./tokens')
 const {metaOf, suppressed, defect} = require('./checks')
-const {SELECTOR} = require('./attributes')
+const {expressionsOf} = require('./attributes')
 const {logger} = require('./logger')
 
 /**
@@ -63,9 +62,9 @@ const lintByNamespaceAxis = function(corpus, suppressions = []) {
   if (!suppressed(CHECK, suppressions)) {
     for (const {file, xsl} of corpus) {
       if (MODERN.includes(xsl.documentElement.getAttribute('version'))) {
-        for (const attribute of nodes(xsl, SELECTOR)) {
-          for (const offset of axes(attribute.nodeValue)) {
-            defects.push(defect(CHECK, META, file, attribute, offset))
+        for (const {node, start, expression} of expressionsOf(xsl)) {
+          for (const offset of axes(expression)) {
+            defects.push(defect(CHECK, META, file, node, start + offset))
           }
         }
       }

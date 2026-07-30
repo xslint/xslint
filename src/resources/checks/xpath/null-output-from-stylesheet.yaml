@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
 # SPDX-License-Identifier: MIT
 ---
-xpath: (/xsl:stylesheet | /xsl:transform)//xsl:template[starts-with(@match, '/')][count(xsl:variable) > 0 and (count(*) = count(xsl:variable)) and (normalize-space(string-join(text(), '')) = '')]
+xpath: (/xsl:stylesheet | /xsl:transform)//xsl:template[starts-with(@match, '/')][xsl:variable and (count(*) = count(xsl:variable)) and (normalize-space(string-join(text(), '')) = '')]
 severity: warning
 message: The root template contains only variable declarations and produces no output. Add instructions that write to the result tree.

@@ -3,10 +3,9 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {nodes} = require('./xpath')
 const {masked, closes} = require('./expressions')
 const {metaOf, suppressed, defect} = require('./checks')
-const {SELECTOR} = require('./attributes')
+const {expressionsOf} = require('./attributes')
 const {logger} = require('./logger')
 
 /**
@@ -154,13 +153,11 @@ const lintByTranslate = function(corpus, suppressions = []) {
   if (!suppressed(CHECK, suppressions)) {
     for (const {file, xsl} of corpus) {
       if (MODERN.includes(xsl.documentElement.getAttribute('version'))) {
-        for (const attribute of nodes(xsl, SELECTOR)) {
-          for (const {offset, value, replacement} of folded(
-            attribute.nodeValue,
-          )) {
+        for (const {node, start, expression} of expressionsOf(xsl)) {
+          for (const {offset, value, replacement} of folded(expression)) {
             defects.push(
               defect(
-                CHECK, META, file, attribute, offset,
+                CHECK, META, file, node, start + offset,
                 {value, replacement, suggestion: true},
               ),
             )

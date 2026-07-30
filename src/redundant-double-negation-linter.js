@@ -3,10 +3,9 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {nodes} = require('./xpath')
 const {masked, closes} = require('./expressions')
 const {metaOf, suppressed, defect} = require('./checks')
-const {SELECTOR} = require('./attributes')
+const {expressionsOf} = require('./attributes')
 const {logger} = require('./logger')
 
 /**
@@ -93,14 +92,12 @@ const lintByDoubleNegation = function(corpus, suppressions = []) {
   const defects = []
   if (!suppressed(CHECK, suppressions)) {
     for (const {file, xsl} of corpus) {
-      for (const attribute of nodes(xsl, SELECTOR)) {
-        for (const {offset, value, argument} of negations(
-          attribute.nodeValue,
-        )) {
-          const bare = attribute.nodeName === 'test' &&
-            attribute.nodeValue.trim() === value
+      for (const {node, start, expression} of expressionsOf(xsl)) {
+        for (const {offset, value, argument} of negations(expression)) {
+          const bare = node.nodeName === 'test' &&
+            node.nodeValue.trim() === value
           defects.push(
-            defect(CHECK, META, file, attribute, offset, {
+            defect(CHECK, META, file, node, start + offset, {
               value: value,
               replacement: bare ? argument : `boolean(${argument})`,
             }),

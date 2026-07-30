@@ -44,10 +44,26 @@ const KINDS = ['xpath', 'corpus', 'validation', 'format']
 const PACKED = {xpath: 'xpath-packs', corpus: 'corpus-packs'}
 
 /**
+ * Rule kinds paired with the YAML keys holding their selectors, so a check's
+ * own XPath is audited wherever it is written.
+ * @type {{[kind: string]: Array.<string>}}
+ */
+const SELECTORS = {xpath: ['xpath'], corpus: ['declaration', 'usage']}
+
+/**
  * Kebab-case with no leading or trailing hyphen.
  * @type {RegExp}
  */
 const KEBAB = /^[a-z0-9]+(-[a-z0-9]+)*$/
+
+/**
+ * A `count(...)` call compared with zero — the existence test spelled the slow
+ * way, which `count-compared-to-zero` flags in a user's stylesheet and a
+ * check's own selector must therefore not commit. One level of nested
+ * parentheses is enough for the argument of a count.
+ * @type {RegExp}
+ */
+const COUNTED = /count\((?:[^()]|\([^()]*\))*\)\s*(?:!?=|[<>]=?)\s*0(?!\d)/
 
 /**
  * Names of the checks of a kind.
@@ -147,11 +163,26 @@ describe('conformance', function() {
       assert.ok(suite.includes(name), `validation/${name} is tested nowhere`)
     }
   })
+  it('tests existence directly, never by counting, in every selector', function() {
+    for (const [kind, keys] of Object.entries(SELECTORS)) {
+      for (const name of names(kind)) {
+        const check = yaml.parsedFromFile(
+          path.join(CHECKS, kind, `${name}.yaml`),
+        )
+        for (const key of keys) {
+          assert.ok(
+            !check[key] || !COUNTED.test(check[key]),
+            `${kind}/${name} compares count(...) with 0 in its ${key}; ` +
+              'write the node test itself, as count-compared-to-zero asks',
+          )
+        }
+      }
+    }
+  })
   it('pairs every root xsl:stylesheet with an xsl:transform', function() {
     const rooted = /(?<!\/)\/xsl:stylesheet/
     const paired = /(?<!\/)\/xsl:transform/
-    const fields = {xpath: ['xpath'], corpus: ['declaration', 'usage']}
-    for (const [kind, keys] of Object.entries(fields)) {
+    for (const [kind, keys] of Object.entries(SELECTORS)) {
       for (const name of names(kind)) {
         const check = yaml.parsedFromFile(
           path.join(CHECKS, kind, `${name}.yaml`),

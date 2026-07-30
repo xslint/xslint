@@ -1,0 +1,15 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: using-namespace-axis
+found:
+  amount: 3
+  positions: [ [ 4, 41 ], [ 5, 26 ], [ 5, 41 ] ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="s">
+    <xsl:template match="/">
+      <widget test="namespace::*" label="{namespace::*}"/>
+      <widget note="{count(namespace::*)}{namespace::x}"/>
+    </xsl:template>
+  </xsl:stylesheet>

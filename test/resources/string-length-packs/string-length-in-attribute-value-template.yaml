@@ -1,0 +1,16 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: string-length-compared-to-zero
+found:
+  amount: 3
+  positions: [ [ 4, 50 ], [ 5, 20 ], [ 5, 44 ] ]
+  fixes: [ "@x = ''", "@a != ''", "@b = ''" ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="s">
+    <xsl:template match="/">
+      <widget test="string-length(@x) = 0" label="{string-length(@x) = 0}"/>
+      <widget note="{string-length(@a) != 0}{string-length(@b) = 0}"/>
+    </xsl:template>
+  </xsl:stylesheet>

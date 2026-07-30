@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
 # SPDX-License-Identifier: MIT
 ---
-xpath: (/xsl:stylesheet | /xsl:transform)[count(xsl:template)=0 and count(xsl:function)=0 and count(xsl:variable)=0]
+xpath: (/xsl:stylesheet | /xsl:transform)[not(xsl:template | xsl:function | xsl:variable)]
 severity: error
 message: The stylesheet has no templates, functions, or variables and offers nothing. Add at least one template.

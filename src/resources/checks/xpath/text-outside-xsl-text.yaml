@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
 # SPDX-License-Identifier: MIT
 ---
-xpath: //xsl:*[count(text()[normalize-space()]) > 0 and not(local-name() = ('text','attribute','comment','processing-instruction','message','variable','param','with-param'))]
+xpath: //xsl:*[text()[normalize-space()] and not(local-name() = ('text','attribute','comment','processing-instruction','message','variable','param','with-param'))]
 severity: warning
 message: "Literal text appears directly inside an 'xsl:' instruction element. Wrap it in 'xsl:text'."

@@ -3,4 +3,3 @@
 ---
 severity: warning
 message: A double negation not(not(x)) is redundant; it is just boolean(x), and in a test simply x. Replace it.
-mature: true

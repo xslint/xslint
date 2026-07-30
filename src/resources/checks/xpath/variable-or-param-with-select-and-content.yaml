@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
 # SPDX-License-Identifier: MIT
 ---
-xpath: //(xsl:variable | xsl:param)[@select and (count(*)>0 or text()[normalize-space()])]
+xpath: //(xsl:variable | xsl:param | xsl:with-param)[@select and (* or text()[normalize-space()])]
 severity: error
-message: An xsl:variable or xsl:param has both a select attribute and a non-empty body. Use only one way to set the value.
+message: An xsl:variable, xsl:param or xsl:with-param has both a select attribute and a non-empty body. Use only one way to set the value.
+mature: true

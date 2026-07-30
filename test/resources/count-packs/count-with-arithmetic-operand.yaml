@@ -1,0 +1,22 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: count-compared-to-zero
+found:
+  amount: 0
+  positions: [ ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="s">
+    <xsl:template match="/">
+      <xsl:variable name="a" select="$max + 1 &gt; count(item)"/>
+      <xsl:variable name="b" select="$max - 1 &lt;= count(item)"/>
+      <xsl:variable name="c" select="$n * 1 &gt; count(item)"/>
+      <xsl:variable name="d" select="count(item) &gt; 0 + $n"/>
+      <xsl:variable name="e" select="count(item) = 0 div $n"/>
+      <xsl:variable name="f" select="count(item) != 0 mod $n"/>
+      <xsl:variable name="g" select="count(item) &lt;= 0 * $n"/>
+      <xsl:variable name="h" select="item[$max + 1 &gt; count(child)]"/>
+      <xsl:variable name="i" select="$a + 1 &gt; count(x) and count(y) &lt; 0 + $b or count(z) = 0 + 1"/>
+    </xsl:template>
+  </xsl:stylesheet>

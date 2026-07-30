@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
 # SPDX-License-Identifier: MIT
 ---
-xpath: "//xsl:choose[count(xsl:otherwise) = 0 and count(xsl:when) >= 2]"
+xpath: "//xsl:choose[not(xsl:otherwise) and count(xsl:when) >= 2]"
 severity: warning
 message: xsl:choose has no xsl:otherwise branch. Add xsl:otherwise to handle unmatched cases explicitly.

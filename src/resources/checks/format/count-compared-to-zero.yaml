@@ -3,4 +3,3 @@
 ---
 severity: warning
 message: count(...) is compared with 0 to test existence, which walks the whole sequence. Test existence directly instead (exists()/empty() on XSLT 2.0+, boolean()/not() on 1.0).
-mature: true

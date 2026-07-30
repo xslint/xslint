@@ -6,6 +6,7 @@
 const {nodes} = require('./xpath')
 const {masked, closes} = require('./expressions')
 const {metaOf, suppressed, defect} = require('./checks')
+const {selectorOf} = require('./attributes')
 const {logger} = require('./logger')
 
 /**
@@ -64,8 +65,12 @@ const stripped = function(test) {
 }
 
 /**
- * Lint the corpus for a whole `@test` that is a single `boolean(...)` call,
- * reporting one defect per test with the safe fix that strips the wrapper.
+ * Lint the corpus for a whole `@test` of an XSLT element that is a single
+ * `boolean(...)` call, reporting one defect per test with the safe fix that
+ * strips the wrapper. Nothing outside such a test coerces the value, so neither
+ * a literal result element's `test` — output text — nor the expression of an
+ * attribute value template, where the wrapper decides whether `true`/`false` or
+ * the node's own text is printed, is read.
  * @param {Array.<{file: string, xsl: Document}>} corpus - Parsed stylesheets
  * @param {Array.<string>} suppressions - Array of suppressed checks
  * @return {{name: string, severity: string, message: string, file: string,
@@ -76,7 +81,7 @@ const lintByBooleanCall = function(corpus, suppressions = []) {
   const defects = []
   if (!suppressed(CHECK, suppressions)) {
     for (const {file, xsl} of corpus) {
-      for (const attribute of nodes(xsl, '//@test')) {
+      for (const attribute of nodes(xsl, selectorOf('test'))) {
         const strip = stripped(attribute.nodeValue)
         if (strip) {
           defects.push(

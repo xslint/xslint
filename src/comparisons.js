@@ -6,17 +6,23 @@
 const {masked, closes} = require('./expressions')
 
 /**
- * The comparison that follows a call: an operator and a `0` or `1`.
+ * The comparison that follows a call: an operator, then a `0` or `1` as the
+ * whole right operand. The two lookaheads keep the digit off the tail of a
+ * longer number (`0.5`, `10`) and off the head of a wider arithmetic operand
+ * (`+`, `-`, `*`, `div`, `mod`), so `count(x) > 0 + $n` does not match on `0`.
  * @type {RegExp}
  */
-const TAIL = /^\s*(!=|<=|>=|=|<|>)\s*([01])(?![\w.])/
+const TAIL = /^\s*(!=|<=|>=|=|<|>)\s*([01])(?![\w.])(?!\s*(?:[-+*]|div\b|mod\b))/
 
 /**
  * The operand-reversed comparison just before a call, as in `0 < f(x)`. The
- * leading group keeps the digit from being the tail of a longer number.
+ * digit is the whole left operand only when what precedes it — past
+ * whitespace — starts the expression, opens `(`/`[`/`,`, or closes a boolean
+ * operator (`and`, `or`); an arithmetic operator before it makes the digit
+ * part of a wider operand, so `$max + 1 > count(x)` does not match on `1`.
  * @type {RegExp}
  */
-const HEAD = /(^|[^\w.])([01])\s*(!=|<=|>=|=|<|>)\s*$/
+const HEAD = /(^\s*|[([,]\s*|\b(?:and|or)\b\s*)([01])\s*(!=|<=|>=|=|<|>)\s*$/
 
 /**
  * Each operator with its sides swapped, so a reversed `0 < f(x)` reads as

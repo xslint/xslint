@@ -6,6 +6,7 @@
 const {nodes} = require('./xpath')
 const {masked, closes} = require('./expressions')
 const {metaOf, suppressed, defect} = require('./checks')
+const {selectorOf} = require('./attributes')
 const {logger} = require('./logger')
 
 /**
@@ -66,7 +67,10 @@ const wrappers = function(select) {
 /**
  * Lint the corpus for the `node-set()` extension used in XSLT 2.0 or 3.0, where
  * a variable is already a node sequence, reporting one defect per call with the
- * fix that unwraps it.
+ * fix that unwraps it. Only the `@select` of an XSLT element is read: the
+ * `select` a literal result element carries is output text, and a call standing
+ * in another expression attribute, or inside an attribute value template, is
+ * not looked for.
  * @param {Array.<{file: string, xsl: Document}>} corpus - Parsed stylesheets
  * @param {Array.<string>} suppressions - Array of suppressed checks
  * @return {{name: string, severity: string, message: string, file: string,
@@ -78,7 +82,7 @@ const lintByNodeSet = function(corpus, suppressions = []) {
   if (!suppressed(CHECK, suppressions)) {
     for (const {file, xsl} of corpus) {
       if (MODERN.includes(xsl.documentElement.getAttribute('version'))) {
-        for (const attribute of nodes(xsl, '//@select')) {
+        for (const attribute of nodes(xsl, selectorOf('select'))) {
           for (const {offset, value, replacement} of wrappers(
             attribute.nodeValue,
           )) {

@@ -21,7 +21,10 @@ Correct:
 ```
 
 The operand order does not matter (`0 &lt; string-length(@name)` is flagged the
-same way). When the argument is not a single operand — a union such as
+same way). A `0` or `1` that is only part of a wider arithmetic operand — the
+`1` in `$max + 1 &gt; string-length(@a)`, the `0` in
+`string-length(@a) &gt; 0 + $n` — does not compare the call against zero, and is
+left alone. When the argument is not a single operand — a union such as
 `string-length($a | $b)`, where `X != ''` would not mean the same thing — the
 comparison is still reported but carries no fix.
 

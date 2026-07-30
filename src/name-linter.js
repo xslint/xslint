@@ -3,10 +3,9 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {nodes} = require('./xpath')
 const {masked, closes} = require('./expressions')
 const {metaOf, suppressed, defect} = require('./checks')
-const {SELECTOR} = require('./attributes')
+const {expressionsOf} = require('./attributes')
 const {logger} = require('./logger')
 
 /**
@@ -144,13 +143,13 @@ const lintByName = function(corpus, suppressions = []) {
       const modern = MODERN.includes(
         xsl.documentElement.getAttribute('version'),
       )
-      for (const attribute of nodes(xsl, SELECTOR)) {
+      for (const {node, start, expression} of expressionsOf(xsl)) {
         for (const {offset, value, replacement} of comparisons(
-          attribute.nodeValue, modern,
+          expression, modern,
         )) {
           defects.push(
             defect(
-              CHECK, META, file, attribute, offset,
+              CHECK, META, file, node, start + offset,
               replacement === null ?
                 undefined : {value, replacement, suggestion: true},
             ),

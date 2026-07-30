@@ -92,6 +92,14 @@ recursion). The staging is wired only in `src/xslint.js`: each linter is one
 list that `--suppress` and config globs match is *derived* from those entries, so
 a linter and its suppression names cannot drift apart.
 
+No code-based linter selects attributes by name on its own. `src/attributes.js`
+hands it every expression the attributes of a stylesheet carry: an XPath or
+pattern attribute *of an XSLT element*, whole, plus each expression an attribute
+value template encloses in braces, offset by where it starts inside the value
+(#579). An attribute a literal result element happens to call `test` or `select`
+holds text destined for the result tree, so it is left alone — reading it as
+XPath let `--fix` rewrite the output.
+
 XPath binds prefix `xsl:` to the XSLT namespace; `xslint:` is reserved in
 `src/xpath.js` for custom functions (none are registered now).
 
@@ -145,8 +153,11 @@ motive, or ships untested fails the build.
 - **validation/format check**: the logic is code (a validator, or a
   `src/*-linter.js` wired into `LINTERS`); the YAML only tunes `severity` and
   `message`. A code-based format linter builds its defects through `src/checks.js`
-  (`metaOf`, `suppressed`, `defect`) and scans `src/attributes.js`'s `SELECTOR`
-  (every XPath/pattern attribute) unless it has a documented reason to narrow.
+  (`metaOf`, `suppressed`, `defect`) and reads its expressions from
+  `src/attributes.js`'s `expressionsOf` (every XPath/pattern attribute of an XSLT
+  element, plus every expression an attribute value template encloses) unless it
+  has a documented reason to narrow — then it narrows through `selectorOf`, never
+  a hand-written `//@name`, which an ESLint `no-restricted-syntax` selector bans.
 
 Then run `npm test`, `npm run coverage`, and `npx grunt docs`.
 
@@ -167,6 +178,11 @@ Then run `npm test`, `npm run coverage`, and `npx grunt docs`.
   descendant root test too (`//(xsl:stylesheet | xsl:transform)`). A whole-rule
   root/version guard belongs at the root step (`/*[guard]//x`), not nested in a
   per-node predicate; nest it only when it gates a sub-clause. This is
+  machine-enforced by `test/conformance.test.js`.
+- **Selector hygiene.** A declarative selector must not test existence by
+  counting — write `x` and `not(x)`, never `count(x) > 0` or `count(x) = 0`,
+  the same anti-pattern `count-compared-to-zero` flags in a user's sheet.
+  A comparison that asks a real cardinality (`count(x) >= 2`) is fine. This is
   machine-enforced by `test/conformance.test.js`.
 - **Fix in the same change.** If a check is fixable, land the fix with the
   detection — never defer it. A declarative rule gets a `node => fix` builder in
@@ -293,9 +309,9 @@ the harness asserts too.
 | `src/corpus-linter.js` | Loads `checks/corpus/*.yaml`; cross-file rules |
 | `src/*-linter.js` | Code-based `checks/format/*.yaml`, one construct each (axis, namespace, count, name, ...); see the flow diagram |
 | `src/checks.js` | Shared for code-based linters: `metaOf`, `suppressed`, `defect(check, meta, file, node, offset, fix)` |
-| `src/attributes.js` | `ATTRIBUTES`/`SELECTOR` — every XPath/pattern attribute the scanners cover |
+| `src/attributes.js` | `expressionsOf(xsl)` — every expression the attributes carry, bare (`ATTRIBUTES` on an XSLT element) or enclosed in an AVT; `selectorOf(name)` for a linter that narrows |
 | `src/comparisons.js` | `comparedToZero` — shared scan for a call compared with `0`/`1` (count, string-length) |
-| `src/expressions.js` | `masked`/`closes` lexer helpers (node-set, double-negation, boolean-call) |
+| `src/expressions.js` | `masked`/`closes` lexer helpers (node-set, double-negation, boolean-call); `enclosed` — the expressions an AVT holds in its braces |
 | `src/tokens.js` | Positioned XPath lexer (`tokenized`, `TOKENS`), preserving whitespace |
 | `src/import-graph.js` | Resolves `xsl:import`/`xsl:include` hrefs: `importsOf`, `graphOf` |
 | `src/fixers.js` | Maps a declarative check name to a `node => fix` builder |
@@ -305,5 +321,5 @@ the harness asserts too.
 | `src/helpers.js` | XML parsing (expands internal-subset entities), YAML parsing, file recursion |
 | `src/logger.js` | 4-level logger |
 | `scripts/generate-docs.js` | Builds the `docs/` site from checks + motives |
-| `test/conformance.test.js` | Enforces naming, motives, pack/test coverage, and the `mature` freeze across all kinds |
+| `test/conformance.test.js` | Enforces naming, motives, selector hygiene, pack/test coverage, and the `mature` freeze across all kinds |
 | `test/xcop.test.js` | Runs xcop over the inline XSL of every `*-packs` directory |

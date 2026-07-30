@@ -1,0 +1,16 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: redundant-double-negation
+found:
+  amount: 3
+  positions: [ [ 4, 41 ], [ 5, 20 ], [ 5, 34 ] ]
+  fixes: [ "boolean(@x)", "boolean(@a)", "boolean(@b)" ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="s">
+    <xsl:template match="/">
+      <widget test="not(not(@x))" label="{not(not(@x))}"/>
+      <widget note="{not(not(@a))}{not(not(@b))}"/>
+    </xsl:template>
+  </xsl:stylesheet>

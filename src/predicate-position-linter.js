@@ -3,10 +3,9 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {nodes} = require('./xpath')
 const {tokenized, TOKENS} = require('./tokens')
 const {metaOf, suppressed, defect} = require('./checks')
-const {SELECTOR} = require('./attributes')
+const {expressionsOf} = require('./attributes')
 const {logger} = require('./logger')
 
 /**
@@ -132,12 +131,12 @@ const lintByPredicatePosition = function(corpus, suppressions = []) {
   const defects = []
   if (!suppressed(CHECK, suppressions)) {
     for (const {file, xsl} of corpus) {
-      for (const attribute of nodes(xsl, SELECTOR)) {
-        for (const {offset, value, replacement} of literals(
-          attribute.nodeValue,
-        )) {
+      for (const {node, start, expression} of expressionsOf(xsl)) {
+        for (const {offset, value, replacement} of literals(expression)) {
           defects.push(
-            defect(CHECK, META, file, attribute, offset, {value, replacement}),
+            defect(
+              CHECK, META, file, node, start + offset, {value, replacement},
+            ),
           )
         }
       }

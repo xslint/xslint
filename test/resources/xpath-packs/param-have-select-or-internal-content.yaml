@@ -20,6 +20,17 @@ input: |-
       <xsl:copy-of select="$chemist"/>
     </xsl:template>
     <xsl:template match="/objects/o/o[1]/o[1]">
-      <xsl:call-template name="scientist"/>
+      <xsl:variable name="mathematician" select="'Sofya Kovalevskaya'">
+        <!-- a comment is not content -->
+      </xsl:variable>
+      <xsl:copy-of select="$mathematician"/>
+      <xsl:call-template name="scientist">
+        <xsl:with-param name="chemist" select="'Alexander Butlerov'"/>
+      </xsl:call-template>
+      <xsl:call-template name="scientist2">
+        <xsl:with-param name="chemist">
+          Nikolay Zinin
+        </xsl:with-param>
+      </xsl:call-template>
     </xsl:template>
   </xsl:stylesheet>

@@ -76,6 +76,11 @@ export default defineConfig([
           selector: "ImportDeclaration[source.value=/^node:/]",
           message:
             "Do not use the 'node:' prefix in import; use the bare name"
+        },
+        {
+          selector: "Literal[value=/\\/\\/@/]",
+          message:
+            "Do not select attributes with a bare '//@name' XPath, which reads a literal result element as XPath; go through src/attributes.js (expressionsOf, selectorOf)"
         }
       ]
     }

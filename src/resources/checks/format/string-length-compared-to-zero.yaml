@@ -3,4 +3,3 @@
 ---
 severity: warning
 message: string-length(...) is compared with 0 to test emptiness, which measures the whole string. Compare the value with '' instead.
-mature: true

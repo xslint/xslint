@@ -177,6 +177,22 @@ const textOutsideXslText = function(node) {
 }
 
 /**
+ * Fix for `variable-or-param-with-select-and-content`: delete the `@select`,
+ * leaving the body as the only value. It is one of the two corrections the rule
+ * offers — dropping the body instead is structural, so no single edit expresses
+ * it — and the body binds a tree where the expression bound its own type, so it
+ * is a suggestion.
+ * @param {Element} node - The variable-binding element
+ * @return {object} - The suggestion fix
+ */
+const selectAndContent = function(node) {
+  return {
+    ...deletion(node.getAttributeNode('select')),
+    suggestion: true,
+  }
+}
+
+/**
  * Fix builders for declarative Xpath checks, keyed by check name. The per-file
  * linter attaches the fix a builder returns to the defect it found for that
  * check, so a rule stays declarative while still carrying a fix; a builder
@@ -193,6 +209,7 @@ const FIXERS = {
   'select-starts-with-double-slash': selectDoubleSlash,
   'confusing-variable-and-node': confusingVariable,
   'text-outside-xsl-text': textOutsideXslText,
+  'variable-or-param-with-select-and-content': selectAndContent,
 }
 
 module.exports = {

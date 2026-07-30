@@ -3,10 +3,9 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {nodes} = require('./xpath')
 const {comparedToZero} = require('./comparisons')
 const {metaOf, suppressed, defect} = require('./checks')
-const {SELECTOR} = require('./attributes')
+const {expressionsOf} = require('./attributes')
 const {logger} = require('./logger')
 
 /**
@@ -127,13 +126,11 @@ const lintByStringLength = function(corpus, suppressions = []) {
   const defects = []
   if (!suppressed(CHECK, suppressions)) {
     for (const {file, xsl} of corpus) {
-      for (const attribute of nodes(xsl, SELECTOR)) {
-        for (const {offset, value, replacement} of comparisons(
-          attribute.nodeValue,
-        )) {
+      for (const {node, start, expression} of expressionsOf(xsl)) {
+        for (const {offset, value, replacement} of comparisons(expression)) {
           defects.push(
             defect(
-              CHECK, META, file, attribute, offset,
+              CHECK, META, file, node, start + offset,
               replacement === null ?
                 undefined : {value, replacement, suggestion: true},
             ),

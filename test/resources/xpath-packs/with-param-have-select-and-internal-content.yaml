@@ -1,0 +1,23 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: variable-or-param-with-select-and-content
+found:
+  amount: 1
+  positions: [ [ 10, 7 ] ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="style1">
+    <xsl:output encoding="UTF-8" method="xml"/>
+    <xsl:template name="scientist">
+      <xsl:param name="chemist"/>
+      <xsl:copy-of select="$chemist"/>
+    </xsl:template>
+    <xsl:template match="/objects">
+      <xsl:call-template name="scientist">
+        <xsl:with-param name="chemist" select="'Nikolay Zinin'">
+          Alexander Butlerov
+        </xsl:with-param>
+      </xsl:call-template>
+    </xsl:template>
+  </xsl:stylesheet>

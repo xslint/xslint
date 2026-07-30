@@ -1,0 +1,19 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: count-compared-to-zero
+found:
+  amount: 5
+  positions: [ [ 4, 37 ], [ 5, 41 ], [ 6, 41 ], [ 7, 43 ], [ 8, 42 ] ]
+  fixes: [ "exists(x)", "empty(x)", "exists(x)", "empty(x)", "exists(x)" ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="s">
+    <xsl:template match="/">
+      <xsl:variable name="a" select="(0 &lt; count(x))"/>
+      <xsl:variable name="b" select="($y, 0 = count(x))"/>
+      <xsl:variable name="c" select="item[0 != count(x)]"/>
+      <xsl:variable name="d" select="$a and 0 &gt;= count(x)"/>
+      <xsl:variable name="e" select="$a or 0 &lt; count(x)"/>
+    </xsl:template>
+  </xsl:stylesheet>

@@ -3,4 +3,3 @@
 ---
 severity: warning
 message: A positional predicate is written the long way; [position() = N] is just [N] and [position() = last()] is just [last()]. Shorten it.
-mature: true

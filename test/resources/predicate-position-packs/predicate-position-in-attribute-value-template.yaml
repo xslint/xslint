@@ -1,0 +1,16 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: predicate-position-literal
+found:
+  amount: 3
+  positions: [ [ 4, 48 ], [ 5, 22 ], [ 5, 46 ] ]
+  fixes: [ "1", "last()", "2" ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="s">
+    <xsl:template match="/">
+      <widget test="x[position() = 1]" label="{x[position() = 1]}"/>
+      <widget note="{a[position() = last()]}{b[position() = 2]}"/>
+    </xsl:template>
+  </xsl:stylesheet>
