@@ -92,9 +92,16 @@ comparing <code>count(...)</code> with zero to test existence.</p>
 <p>The operand order does not matter (<code>0 &amp;lt; string-length(@name)</code> is flagged the
 same way). When the argument is not a single operand — a union such as
 <code>string-length($a | $b)</code>, where <code>X != &#39;&#39;</code> would not mean the same thing — the
-comparison is still reported but left for a human to rewrite. Use
-<code>normalize-space($x)</code> instead when whitespace-only should read as empty; that is
-a different test, so it is not applied automatically.</p>
+comparison is still reported but carries no fix.</p>
+<p>The rewrite is offered as a <strong>suggestion</strong>, not a safe fix, because <code>X op &#39;&#39;</code> is
+not a general equivalent of <code>string-length(X) op 0</code>. They part ways in two
+cases: an <strong>absent</strong> node — <code>string-length(@x) = 0</code> is true when <code>@x</code> is
+missing (the empty string has length zero), but <code>@x = &#39;&#39;</code> is false, since an
+empty node-set matches nothing; and a <strong>multi-node</strong> <code>X</code> — <code>string-length</code> reads
+the first node&#39;s value while <code>X != &#39;&#39;</code> is true if <em>any</em> node is non-empty. For
+the common single, present node the two agree, so <code>--fix-suggestions</code> applies
+it; plain <code>--fix</code> leaves it. Use <code>normalize-space($x)</code> instead when
+whitespace-only should read as empty — a different test again.</p>
 
   </div>
 </body>
