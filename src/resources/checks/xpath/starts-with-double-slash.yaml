@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
 # SPDX-License-Identifier: MIT
 ---
-xpath: //xsl:template[starts-with(@match, '//')]
+xpath: ((//xsl:template | //xsl:key | //xsl:accumulator-rule)/@match | //xsl:number/(@count | @from) | //xsl:for-each-group/(@group-starting-with | @group-ending-with))[starts-with(normalize-space(), '//')]
 severity: warning
-message: The match attribute of xsl:template starts with //, which is redundant since an unanchored pattern already matches at any depth. Remove the leading //.
+message: The pattern starts with //, which is redundant since a pattern already matches at any depth. Remove it, minding that it lowers a template's default priority.
+mature: true

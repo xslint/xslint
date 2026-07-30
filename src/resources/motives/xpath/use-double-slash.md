@@ -22,3 +22,7 @@ Correct:
   <xsl:value-of select="."/>
 </xsl:template>
 ```
+
+A pattern that *opens* with `//`, with or without whitespace before it, is a
+different defect — redundant rather than vague — and belongs to
+`starts-with-double-slash`, which is where its fix lives too.

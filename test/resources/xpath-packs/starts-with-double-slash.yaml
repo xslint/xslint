@@ -3,17 +3,25 @@
 ---
 pack: starts-with-double-slash
 found:
-  amount: 1
-  positions: [ [ 4, 3 ] ]
+  amount: 4
+  positions: [ [ 4, 23 ], [ 7, 23 ], [ 10, 23 ], [ 16, 3, use-double-slash ] ]
 input: |-
   <?xml version="1.0"?>
-  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="2.0" id="style1">
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" id="style1">
     <xsl:output encoding="UTF-8" method="xml"/>
     <xsl:template match="//objects">
       <xsl:copy-of select="."/>
     </xsl:template>
-    <xsl:template match="/objects/o/o[1]/o[1]">
-      <xsl:variable name="qw" as="xs:string" select="ooo" />
-      <xsl:copy-of select="$qw"/>
+    <xsl:template match="  //nested/deep[@id]">
+      <xsl:copy-of select="."/>
+    </xsl:template>
+    <xsl:template match="//third[parent::objects]">
+      <xsl:copy-of select="."/>
+    </xsl:template>
+    <xsl:template match="/objects/deep[1]">
+      <xsl:copy-of select="."/>
+    </xsl:template>
+    <xsl:template match="objects//deep">
+      <xsl:copy-of select="."/>
     </xsl:template>
   </xsl:stylesheet>

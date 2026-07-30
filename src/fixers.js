@@ -67,21 +67,28 @@ const modeOrPriority = function(node) {
 }
 
 /**
- * Fix for `starts-with-double-slash`: drop the leading `//` of the template's
- * `@match`. In a match pattern the leading `//` is redundant — a pattern is
- * already unanchored — so removing it preserves the matched nodes, which makes
- * this a safe fix rather than a suggestion.
- * @param {Element} node - The `xsl:template` element
- * @return {object} - The safe fix
+ * Fix for `starts-with-double-slash`: drop the leading `//` of the pattern,
+ * together with whatever whitespace precedes it. The pattern selects the same
+ * nodes either way, since a pattern is matched unanchored, but a template's
+ * default priority falls from 0.5 to 0 once the leading step is gone, handing
+ * a conflict to whichever rule it used to tie with — a suggestion, then,
+ * rather than a safe fix. Pattern attributes reach no Xpath validator, so a
+ * pattern of nothing but the slashes arrives here too; emptying it would only
+ * trade one broken pattern for another, and it gets no fix.
+ * @param {Node} node - The pattern attribute
+ * @return {?object} - The suggestion fix, or null
  */
 const startsWithDoubleSlash = function(node) {
-  const match = node.getAttributeNode('match')
-  return {
-    line: match.lineNumber,
-    col: match.columnNumber - match.name.length - 1,
-    value: `${match.name}="${match.value}"`,
-    replacement: `${match.name}="${match.value.slice(2)}"`,
-  }
+  const lead = node.value.length - node.value.trimStart().length
+  return node.value.trim().length > 2 ?
+    {
+      line: node.lineNumber,
+      col: node.columnNumber + 1,
+      value: node.value.slice(0, lead + 2),
+      replacement: '',
+      suggestion: true,
+    } :
+    null
 }
 
 /**

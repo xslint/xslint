@@ -31,7 +31,7 @@ describe('xslint', function() {
       'Processed files: 1',
       '(16:3) A variable is assigned via a nested xsl:value-of instead of the select attribute. Use select syntax instead. (setting-value-of-variable-incorrectly)',
       '(16:3) A variable, function, or template has a single-character name. Use a descriptive name that reveals intent. (short-names)',
-      '(31:3) The match attribute of xsl:template starts with //, which is redundant since an unanchored pattern already matches at any depth. Remove the leading //. (starts-with-double-slash)',
+      '(31:23) The pattern starts with //, which is redundant since a pattern already matches at any depth. Remove it, minding that it lowers a template\'s default priority. (starts-with-double-slash)',
       '(45:3) A named template is never invoked via xsl:call-template. Remove it or call it. (unused-named-template)',
     ]
     expected.forEach((str) => assert.ok(stdout.includes(str)))
@@ -107,7 +107,7 @@ describe('xslint', function() {
       'Processed files: 1',
       '(16:3) A variable is assigned via a nested xsl:value-of instead of the select attribute. Use select syntax instead. (setting-value-of-variable-incorrectly)',
       '(16:3) A variable, function, or template has a single-character name. Use a descriptive name that reveals intent. (short-names)',
-      '(31:3) The match attribute of xsl:template starts with //, which is redundant since an unanchored pattern already matches at any depth. Remove the leading //. (starts-with-double-slash)',
+      '(31:23) The pattern starts with //, which is redundant since a pattern already matches at any depth. Remove it, minding that it lowers a template\'s default priority. (starts-with-double-slash)',
       '(45:3) A named template is never invoked via xsl:call-template. Remove it or call it. (unused-named-template)',
     ]
     assert.ok(stdout.includes('Empty suppress is incorrect. Delete this "--suppress" or use another one.'))

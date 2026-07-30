@@ -40,9 +40,10 @@ Given a stylesheet like this:
 xslint points at each problem with its exact position and how to fix it:
 
 ```text
+[WARNING] sheet.xsl(2:1) The '@id' attribute is missing in the 'xsl:stylesheet' element. Declare it to specify the unique identifier explicitly. (missing-id-in-stylesheet)
 [ERROR] sheet.xsl(2:1) The xsl:output instruction is missing. Declare it to specify the serialization format explicitly. (not-using-output)
-[WARNING] sheet.xsl(3:3) The match attribute of xsl:template starts with //, which scans the entire document tree. Use a more specific pattern. (starts-with-double-slash)
 [WARNING] sheet.xsl(4:5) A variable, function, or template has a single-character name. Use a descriptive name that reveals intent. (short-names)
+[WARNING] sheet.xsl(3:23) The pattern starts with //, which is redundant since a pattern already matches at any depth. Remove it, minding that it lowers a template's default priority. (starts-with-double-slash)
 ```
 
 In CI, use the [GitHub Action](https://github.com/xslint/xslint-action) to
@@ -263,9 +264,6 @@ Today this covers nine checks:
   `exists($x)` and `count($x) = 0` becomes `empty($x)`; on 1.0 (where those
   functions don't exist), `boolean($x)` — or a bare `$x` in a whole `@test` —
   and `not($x)`.
-- `starts-with-double-slash` — the redundant leading `//` of a template's
-  `@match` is dropped: `match="//para"` becomes `match="para"`, which selects
-  the same nodes.
 - `redundant-import` — a duplicate `xsl:import`/`xsl:include` of a module
   already imported in the same stylesheet is removed; the module stays imported
   by the first reference.
@@ -305,6 +303,11 @@ Today this covers:
 - `select-starts-with-double-slash` — the leading `//` of a `@select` is
   anchored as `.//`: `select="//title"` becomes `select=".//title"`, scanning
   descendants of the context node instead of the whole document.
+- `starts-with-double-slash` — the redundant leading `//` of a pattern is
+  dropped: `match="//para"` becomes `match="para"`, which selects the same
+  nodes. A suggestion because the priority does not survive the edit: a
+  template matching `//para` defaults to priority 0.5 and one matching `para`
+  to 0, so a rule it used to beat, or tie with, can start winning.
 - `confusing-variable-and-node` — a bare variable name used as a node selector
   gets its `$`: `<xsl:apply-templates select="items"/>` becomes
   `select="$items"`, assuming the variable was meant over a child element.

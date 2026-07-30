@@ -1,0 +1,25 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: starts-with-double-slash
+found:
+  amount: 6
+  positions: [ [ 4, 30 ], [ 6, 31 ], [ 9, 21 ], [ 9, 39 ], [ 10, 57 ], [ 13, 55 ] ]
+input: |-
+  <?xml version="1.0"?>
+  <t:transform xmlns:t="http://www.w3.org/1999/XSL/Transform" version="3.0" id="style2">
+    <t:output encoding="UTF-8" method="xml"/>
+    <t:key name="lookup" match="//keyed" use="@id"/>
+    <t:accumulator name="total" initial-value="0">
+      <t:accumulator-rule match="//counted" select="$value + 1"/>
+    </t:accumulator>
+    <t:template match="objects">
+      <t:number count="//numbered" from="//started"/>
+      <t:for-each-group select="item" group-starting-with="//grouped">
+        <t:copy-of select="."/>
+      </t:for-each-group>
+      <t:for-each-group select="item" group-ending-with="//ended">
+        <t:copy-of select="."/>
+      </t:for-each-group>
+    </t:template>
+  </t:transform>
