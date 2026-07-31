@@ -72,7 +72,7 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-error">error</span>
-    <code class="xpath">(/xsl:stylesheet | /xsl:transform)[@version = '1.0']//(xsl:for-each-group | xsl:sequence | xsl:analyze-string | xsl:next-match | xsl:perform-sort | xsl:namespace | xsl:character-map | xsl:result-document | xsl:import-schema | xsl:*[@as])</code>
+    <code class="xpath">/*[(if (self::xsl:stylesheet or self::xsl:transform) then @version else @xsl:version) = '1.0']//(xsl:for-each-group | xsl:sequence | xsl:analyze-string | xsl:next-match | xsl:perform-sort | xsl:namespace | xsl:character-map | xsl:result-document | xsl:import-schema | xsl:*[@as])</code>
   </div>
   <div class="check-content">
 <h1>Modern construct in a 1.0 stylesheet</h1>
@@ -85,8 +85,8 @@ not run where its own version attribute promises it will.</p>
 <code>xsl:for-each-group</code>, <code>xsl:sequence</code>, <code>xsl:analyze-string</code>, <code>xsl:next-match</code>,
 <code>xsl:perform-sort</code>, <code>xsl:namespace</code>, <code>xsl:character-map</code>, <code>xsl:result-document</code>,
 <code>xsl:import-schema</code> — and the 2.0 <strong><code>as</code> sequence-type attribute</strong> on any XSLT
-element, whenever the stylesheet root (<code>xsl:stylesheet</code> or <code>xsl:transform</code>)
-declares <code>version=&quot;1.0&quot;</code>. Only elements in the XSLT namespace are examined for
+element, whenever the stylesheet declares version 1.0. Only elements in the XSLT
+namespace are examined for
 <code>@as</code>, so a literal result element that legitimately carries an <code>as</code> attribute —
 <code>&lt;link rel=&quot;preload&quot; as=&quot;script&quot;/&gt;</code> in HTML output — is never mistaken for the
 sequence-type attribute.</p>
