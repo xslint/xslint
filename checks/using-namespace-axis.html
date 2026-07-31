@@ -76,20 +76,11 @@
   </div>
   <div class="check-content">
 <h1>Using namespace axis</h1>
-<p>The <code>namespace::</code> axis is deprecated in XSLT 2.0 and stays deprecated in 3.0 —
-some 3.0 processors drop it entirely. Use the standard functions
-<code>in-scope-prefixes()</code> and <code>namespace-uri-for-prefix()</code> to inspect namespace
-bindings instead. In XSLT 1.0 the axis is not deprecated and is not flagged, so
-this check fires only on a stylesheet declaring version 2.0 or 3.0.</p>
-<p>The axis is caught in every XPath and pattern attribute of an XSLT element — a
-template <code>match</code>, a <code>select</code>, a <code>test</code>, a <code>use</code> — not only in <code>match</code>/<code>select</code>,
-and inside an attribute value template, where <code>&amp;lt;div id=&quot;{namespace::*}&quot;/&amp;gt;</code>
-holds an expression as surely as a <code>select</code> does. An attribute of the output
-vocabulary that merely shares one of those names carries text for the result
-tree, not XPath, so it is left alone. Because the expression is tokenized, a
-<code>namespace::</code> inside a string literal is left alone too, and the lookalike
-functions <code>in-scope-prefixes()</code> and <code>namespace-uri-for-prefix()</code> are never
-mistaken for the axis.</p>
+<p>The <code>namespace::</code> axis is deprecated in XSLT 2.0 and remains so in 3.0, where
+some processors drop it entirely — a stylesheet that leans on it may not run at
+all. Inspect namespace bindings with the standard functions <code>in-scope-prefixes()</code>
+and <code>namespace-uri-for-prefix()</code> instead. In XSLT 1.0 the axis is standard, so
+the concern begins at 2.0.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:stylesheet version=&quot;2.0&quot; xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot;&gt;
   &lt;xsl:output method=&quot;html&quot;/&gt;
@@ -104,15 +95,23 @@ mistaken for the axis.</p>
 <pre><code class="language-xsl">&lt;xsl:stylesheet version=&quot;2.0&quot; xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot;&gt;
   &lt;xsl:output method=&quot;html&quot;/&gt;
   &lt;xsl:template match=&quot;*&quot;&gt;
-    &lt;xsl:for-each select=&quot;in-scope-prefixes(.)&quot;&gt;
-      &lt;xsl:value-of select=&quot;namespace-uri-for-prefix(., current())&quot;/&gt;
+    &lt;xsl:variable name=&quot;element&quot; select=&quot;.&quot;/&gt;
+    &lt;xsl:for-each select=&quot;in-scope-prefixes($element)&quot;&gt;
+      &lt;xsl:value-of select=&quot;namespace-uri-for-prefix(., $element)&quot;/&gt;
     &lt;/xsl:for-each&gt;
   &lt;/xsl:template&gt;
 &lt;/xsl:stylesheet&gt;
 </code></pre>
-<p>Rewriting the axis to those functions is a structural change, not a one-span
-edit, so this check reports without a <code>--fix</code> until the full-fidelity parser
-(#228) lands.</p>
+<p>Which function replaces the axis depends on what the namespace node was read for:
+its name is a prefix, its string value the namespace URI. A <code>namespace::*</code> walked
+for its prefixes becomes <code>in-scope-prefixes(.)</code>; a <code>namespace::foo</code> read for its
+URI becomes <code>namespace-uri-for-prefix(&#39;foo&#39;, .)</code>. Two cases need care:
+<code>count(namespace::*)</code> becomes <code>count(in-scope-prefixes(.))</code>, but that raises a
+type error on a context node that is not an element, where the axis merely
+yielded nothing; and a <code>namespace::foo</code> copied by <code>xsl:copy-of</code> writes a
+namespace node into the result tree, which no function returns — recreate it with
+<code>xsl:namespace</code>, as
+<code>&lt;xsl:namespace name=&quot;foo&quot; select=&quot;namespace-uri-for-prefix(&#39;foo&#39;, .)&quot;/&gt;</code>.</p>
 
   </div>
 </body>
