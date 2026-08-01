@@ -76,11 +76,17 @@
   </div>
   <div class="check-content">
 <h1>Using namespace axis</h1>
-<p>The <code>namespace::</code> axis is deprecated in XSLT 2.0 and remains so in 3.0, where
-some processors drop it entirely — a stylesheet that leans on it may not run at
-all. Inspect namespace bindings with the standard functions <code>in-scope-prefixes()</code>
-and <code>namespace-uri-for-prefix()</code> instead. In XSLT 1.0 the axis is standard, so
-the concern begins at 2.0.</p>
+<p>XPath 2.0 deprecated the <code>namespace::</code> axis, and support for it stopped being
+something a stylesheet may count on. A processor must offer the axis only while
+backwards compatible behaviour is enabled, which means an effective version of
+1.0; anywhere else support is optional, and a processor that does not offer it
+must reject the expression outright with a static error, <code>XPST0010</code>. So the same
+stylesheet runs on one processor and fails to compile on the next, and there is
+a system property, <code>xsl:supports-namespace-axis</code>, whose whole reason for
+existing is to let a stylesheet ask which kind it is running on. Inspect
+namespace bindings with the standard functions <code>in-scope-prefixes()</code> and
+<code>namespace-uri-for-prefix()</code> instead, which every 2.0 processor has. In XSLT 1.0
+the axis is guaranteed, so the concern begins at 2.0.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:stylesheet version=&quot;2.0&quot; xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot;&gt;
   &lt;xsl:output method=&quot;html&quot;/&gt;

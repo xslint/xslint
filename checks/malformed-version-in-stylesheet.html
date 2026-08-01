@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>malformed-version-in-stylesheet</title>
+  <style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    color: #24292e;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 24px 32px;
+  }
+  h1 { font-size: 2rem; font-weight: 600; margin-bottom: 4px; }
+  h2 { font-size: 1.3rem; font-weight: 600; margin: 20px 0 8px; }
+  a { color: #0366d6; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  p { margin: 8px 0; }
+  table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 0.9rem; }
+  th {
+    text-align: left;
+    padding: 10px 12px;
+    background: #f6f8fa;
+    border: 1px solid #e1e4e8;
+    font-weight: 600;
+  }
+  td { padding: 10px 12px; border: 1px solid #e1e4e8; vertical-align: top; }
+  tr:hover td { background: #f6f8fa; }
+  .severity-warning {
+    background: #fff8c5;
+    color: #9a6700;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .severity-error {
+    background: #ffebe9;
+    color: #cf222e;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .back { display: inline-block; margin-bottom: 24px; font-size: 0.9rem; }
+  .meta { display: flex; gap: 12px; align-items: flex-start; margin: 12px 0 24px; flex-wrap: wrap; }
+  .xpath {
+    background: #f6f8fa;
+    border: 1px solid #e1e4e8;
+    border-radius: 4px;
+    padding: 6px 10px;
+    font-family: 'SFMono-Regular', Consolas, monospace;
+    font-size: 0.75rem;
+    word-break: break-all;
+    flex: 1;
+  }
+  pre { margin: 12px 0; border-radius: 6px; overflow-x: auto; }
+  code { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; }
+  .check-content h1 { font-size: 1.6rem; margin-bottom: 8px; }
+</style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+  <script>hljs.highlightAll();</script>
+</head>
+<body>
+  <a class="back" href="../index.html">← all checks</a>
+  <div class="meta">
+    <span class="severity-error">error</span>
+    <code class="xpath">(//xsl:*[not(self::xsl:output)]/@version | //*[not(self::xsl:*)]/@xsl:version)[not(matches(normalize-space(.), '^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$'))]</code>
+  </div>
+  <div class="check-content">
+<h1>Malformed version in stylesheet</h1>
+<p>The <code>version</code> attribute is what a processor reads to decide which language it
+is running, and it is declared as an <code>xs:decimal</code>. That is why <code>2</code>, <code>2.0</code> and
+<code>2.00</code> all name version 2.0 and behave alike, and why a value that is not a
+decimal at all names nothing: <code>2,0</code> is a typo for a version, <code>2e0</code> is a spelling
+the type does not have, and an empty <code>version</code> says as much as no version would.</p>
+<p>A processor is free to answer any of those differently, and the quiet answer is
+the dangerous one. Where the effective version cannot be read as 1.0, the
+stylesheet is not in XSLT 1.0 behaviour, so a processor that shrugs and carries
+on may run <code>xsl:for-each-group</code>, sequence types and every other construct in the
+file under rules the author never chose — or it may reject the stylesheet
+outright. Which of the two you get is not something the file decides.</p>
+<p>Incorrect:</p>
+<pre><code class="language-xsl">&lt;xsl:stylesheet xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot; version=&quot;2,0&quot;&gt;
+  &lt;xsl:template match=&quot;/&quot;&gt;
+    &lt;xsl:value-of select=&quot;count(item)&quot;/&gt;
+  &lt;/xsl:template&gt;
+&lt;/xsl:stylesheet&gt;
+</code></pre>
+<p>Correct:</p>
+<pre><code class="language-xsl">&lt;xsl:stylesheet xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot; version=&quot;2.0&quot;&gt;
+  &lt;xsl:template match=&quot;/&quot;&gt;
+    &lt;xsl:value-of select=&quot;count(item)&quot;/&gt;
+  &lt;/xsl:template&gt;
+&lt;/xsl:stylesheet&gt;
+</code></pre>
+<p>The same applies wherever a version is declared, not only at the root: XSLT 2.0
+lets <code>version</code> sit on any XSLT element and <code>xsl:version</code> on any literal result
+element, each setting the version of everything beneath it. A template raised to
+a value that names no version leaves that subtree in the same doubt a whole file
+would be in.</p>
+<p>A version that is a decimal is a different matter, even one no processor has
+shipped yet. <code>version=&quot;4.0&quot;</code> is well formed and says plainly which language the
+author wants; a 3.0 processor runs it forwards-compatibly, and the only cost is
+that instructions from a later version go unrecognised. One exception is worth
+knowing about: <code>version</code> on <code>xsl:output</code> is not the language at all but the
+version of the output method, so <code>4.0</code> there asks for HTML 4.0 and is ordinary.
+On <code>xsl:result-document</code> the serialization parameter is spelled
+<code>output-version</code>, precisely so the two do not collide — writing <code>version</code> there
+declares the language for everything the instruction contains.</p>
+
+  </div>
+</body>
+</html>

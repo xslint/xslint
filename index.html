@@ -98,7 +98,7 @@
   that has shipped for decades.</p>
 
   <h2>Checks</h2>
-  <p>66 checks, each with its rationale:</p>
+  <p>67 checks, each with its rationale:</p>
   <table>
     <thead>
       <tr>
@@ -174,6 +174,12 @@
     <td>xpath</td>
     <td><span class="severity-warning">warning</span></td>
     <td>The test is the string 'true' or 'false', a non-empty string that is always true, not a boolean. Use true() or false() instead.</td>
+  </tr>
+  <tr>
+    <td><a href="checks/malformed-version-in-stylesheet.html">malformed-version-in-stylesheet</a></td>
+    <td>xpath</td>
+    <td><span class="severity-error">error</span></td>
+    <td>A declared version is not a number, so it names no XSLT version and every version-dependent check falls back to XSLT 1.0 here, the fixes it writes included. Declare it as a decimal, such as 2.0</td>
   </tr>
   <tr>
     <td><a href="checks/missing-id-in-stylesheet.html">missing-id-in-stylesheet</a></td>
