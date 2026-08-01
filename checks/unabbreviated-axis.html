@@ -76,19 +76,73 @@
   </div>
   <div class="check-content">
 <h1>Can use abbreviated axis specifier</h1>
-<p>XSLT supports short forms for common axis specifiers: <code>child::</code> can be
-omitted entirely, <code>attribute::</code> is abbreviated as <code>@</code>, and <code>parent::node()</code>
-is written as <code>..</code>.</p>
+<p>The steps an XPath uses most often have short forms, and those short forms are
+what every XSLT reader scans for. Spelling them out buries the shape of the
+path under axis ceremony: <code>child::chapter/child::section/attribute::id</code> selects
+exactly what <code>chapter/section/@id</code> selects, in nearly three times the width,
+and the difference only grows inside a predicate, where the path is already
+competing for the reader&#39;s attention. Worse, <code>child::</code> is noise that says
+nothing — the child axis is the one a bare name already uses, so writing it out
+draws the eye to the one part of the step that carries no information.</p>
+<p>The abbreviations are defined by XPath itself and select precisely the same
+nodes as the longhand:</p>
+<table>
+<thead>
+<tr>
+<th>Longhand</th>
+<th>Short</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>child::name</code></td>
+<td><code>name</code></td>
+</tr>
+<tr>
+<td><code>attribute::name</code></td>
+<td><code>@name</code></td>
+</tr>
+<tr>
+<td><code>parent::node()</code></td>
+<td><code>..</code></td>
+</tr>
+<tr>
+<td><code>self::node()</code></td>
+<td><code>.</code></td>
+</tr>
+</tbody></table>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:value-of select=&quot;child::title&quot;/&gt;
 &lt;xsl:value-of select=&quot;attribute::name&quot;/&gt;
 &lt;xsl:apply-templates select=&quot;parent::node()&quot;/&gt;
+&lt;xsl:copy-of select=&quot;self::node()&quot;/&gt;
+&lt;xsl:value-of select=&quot;child::book/child::author/attribute::id&quot;/&gt;
 </code></pre>
 <p>Correct:</p>
 <pre><code class="language-xsl">&lt;xsl:value-of select=&quot;title&quot;/&gt;
 &lt;xsl:value-of select=&quot;@name&quot;/&gt;
 &lt;xsl:apply-templates select=&quot;..&quot;/&gt;
+&lt;xsl:copy-of select=&quot;.&quot;/&gt;
+&lt;xsl:value-of select=&quot;book/author/@id&quot;/&gt;
 </code></pre>
+<p>Those four are the whole of the trade. <code>parent::chapter</code> and <code>self::chapter</code>
+name an element rather than any node at all, so they have no shorter spelling
+and stay as they are, and the remaining axes — <code>descendant::</code>, <code>ancestor::</code>,
+<code>following-sibling::</code> and the rest — were never given one.</p>
+<p>The node-sets match, but the grammars do not quite, and on XSLT 1.0 that shows.
+There <code>.</code> and <code>..</code> are an <em>abbreviated step</em>, a production that takes no
+predicate, while the longhand is a full step and a full step accepts them. So
+<code>self::node()[1]</code> is legal in a 1.0 stylesheet and <code>.[1]</code> is a syntax error in
+it — XPath 2.0 gave the context item its own predicate list and lifted the
+restriction, which is why the same expression compiles under a later <code>version</code>.
+Where a predicate follows the step in a 1.0 stylesheet, either leave it spelled
+out or parenthesise the abbreviation, since <code>(.)[1]</code> is a filter expression and
+is legal in every version.</p>
+<p><code>descendant-or-self::node()</code> is the exception that is not worth taking. Its
+short form is <code>//</code>, but the two are easy to confuse in use: a <code>//</code> that opens a
+<code>select</code> walks the whole document from the root on every evaluation, which is
+rarely what the longhand step meant. Where the abbreviation is wanted there,
+anchor it — <code>.//author</code> searches the current subtree, <code>//author</code> searches the
+entire document.</p>
 
   </div>
 </body>
