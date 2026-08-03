@@ -374,12 +374,12 @@ the harness asserts too.
 | `src/xsl-version.js` | `versionOf(node)` — the version in force at a node, from the nearest ancestor's `@version` (XSLT element) or `@xsl:version` (literal result element), canonicalised as a decimal; `since(version, floor)` for a lower-bound gate; shared `MODERN`/`KNOWN`/`DECIMAL` |
 | `src/comparisons.js` | `comparedToZero` — shared scan for a call compared with `0`/`1` (count, string-length) |
 | `src/expressions.js` | `masked`/`closes` lexer helpers (node-set, double-negation, boolean-call); `enclosed` — the expressions an AVT holds in its braces |
-| `src/tokens.js` | Positioned XPath lexer (`tokenized`, `TOKENS`), preserving whitespace |
+| `src/tokens.js` | Positioned XPath lexer (`tokenized`, `TOKENS`), preserving whitespace; owns `WHITESPACE`, the XML `S` a gap is spelled with, and `spelling`, which answers whether a name runs up to an offset. `src/xpath.js` borrows both; six code-based linters still read a gap as JavaScript's `\s`, which is wider (#643) |
 | `src/import-graph.js` | Resolves `xsl:import`/`xsl:include` hrefs: `importsOf`, `graphOf` |
 | `src/fixers.js` | Maps a declarative check name to a `node => fix` builder |
 | `src/fixes.js` | Shared fix builders (`deletion(attribute)`) |
 | `src/fixer.js` | Applies a defect's `fix` to source (decode-walk, verify-before-apply, end-to-start) |
-| `src/xpath.js` | fontoxpath environment: prefixes, evaluators, `isValid` |
+| `src/xpath.js` | fontoxpath environment: prefixes, evaluators, `isValid` — which retries the expression respelled when the engine refuses a spelling the grammar allows: the `namespace::` axis, ExprWhitespace around an axis's `::` or in front of a node test's bracket (#615). A squeeze runs only between a step's own parts, and asks `src/tokens.js`'s `spelling` where a name begins, so the axis of `1-namespace::x` is respelled and the name of `a-namespace::x` is not. What the retry cannot claim is that it only ever widens what the engine accepts: its guards read characters rather than a parse (#641) |
 | `src/helpers.js` | XML parsing (expands internal-subset entities), YAML parsing, file recursion |
 | `src/logger.js` | 4-level logger |
 | `scripts/generate-docs.js` | Builds the `docs/` site from checks + motives |

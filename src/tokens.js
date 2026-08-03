@@ -62,7 +62,8 @@ const TOKENS = {
 }
 
 /**
- * Characters XPath treats as insignificant whitespace.
+ * Characters XPath treats as insignificant whitespace: XML's `S` production,
+ * which ExprWhitespace is spelled with, and no others.
  * @type {string}
  */
 const WHITESPACE = ' \t\r\n'
@@ -469,5 +470,7 @@ const tokenized = function(xpath) {
 
 module.exports = {
   tokenized,
+  spelling,
   TOKENS,
+  WHITESPACE,
 }
