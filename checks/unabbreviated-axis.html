@@ -85,7 +85,10 @@ competing for the reader&#39;s attention. Worse, <code>child::</code> is noise t
 nothing — the child axis is the one a bare name already uses, so writing it out
 draws the eye to the one part of the step that carries no information.</p>
 <p>The abbreviations are defined by XPath itself and select precisely the same
-nodes as the longhand:</p>
+nodes as the longhand — in an expression. A <code>match</code> is not an expression but a
+pattern, a narrower grammar with its own rules about where <code>.</code> may stand and its
+own way of deciding which template wins, so the table below is about <code>select</code>
+and <code>test</code>, and a pattern is discussed at the end:</p>
 <table>
 <thead>
 <tr>
@@ -137,6 +140,27 @@ restriction, which is why the same expression compiles under a later <code>versi
 Where a predicate follows the step in a 1.0 stylesheet, either leave it spelled
 out or parenthesise the abbreviation, since <code>(.)[1]</code> is a filter expression and
 is legal in every version.</p>
+<p>In a pattern only the first two rows hold, and not by coincidence. Before 3.0 a
+pattern step admits the child and attribute axes and no others — a 1.0 processor
+rejects <code>match=&quot;self::r&quot;</code> outright — which is exactly the pair whose
+abbreviations are safe there. XSLT 3.0 widened the step to the downward axes —
+<code>descendant</code>, <code>self</code>, <code>descendant-or-self</code>, <code>namespace</code> — so <code>match=&quot;self::r&quot;</code>
+compiles on a 3.0 processor; the pair is still the pair, because those two drop
+a step without touching how the rule is weighed. Every axis that reaches
+elsewhere stayed out, <code>following::</code> as much as <code>parent::</code>, which is why
+<code>parent::</code> never became a pattern step in any version.</p>
+<p>Neither abbreviated step survives the trip. For <code>..</code> there is nothing to weigh:
+<code>match=&quot;parent::node()&quot;</code> is not a legal pattern in any version, so neither is
+<code>match=&quot;..&quot;</code>, and the question of shortening one into the other never arises.</p>
+<p><code>.</code> is the one with two eras. Before 3.0 the longhand is not a legal pattern
+either, the self axis not being among the two. From 3.0 it is, and then the
+short form is no synonym for it: <code>.</code> is a pattern in its own right, not a step
+inside one, so it cannot stand in a union or behind a parenthesis,
+<code>match=&quot;y|self::node()&quot;</code> being legal where <code>match=&quot;y|.&quot;</code> is not; and standing
+alone it is outranked by the longhand it replaced, <code>.</code> carrying a default
+priority of -1 where <code>self::node()</code> carries -0.5, so the rewrite quietly hands
+the node to a template that used to lose. Leave a longhand step as it is in a
+<code>match</code>, a <code>count</code>, a <code>from</code>, or an <code>xsl:for-each-group</code> boundary.</p>
 <p><code>descendant-or-self::node()</code> is the exception that is not worth taking. Its
 short form is <code>//</code>, but the two are easy to confuse in use: a <code>//</code> that opens a
 <code>select</code> walks the whole document from the root on every evaluation, which is
