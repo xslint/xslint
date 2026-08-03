@@ -91,8 +91,11 @@ it rejects the implicit string-to-number coercion an XPath 1.0 stylesheet leans
 on — <code>substring-before($spans, &#39;:&#39;) - 1</code> reads a numeric prefix in 1.0 — but
 that is a dialect difference, not a broken expression, so it is not reported.
 The <code>namespace::</code> axis is another such difference — XPath 3.0 dropped it, but
-1.0 and 2.0 define it, so <code>namespace::*</code> is left alone. Only genuine syntax
-mistakes are reported.</p>
+1.0 and 2.0 define it, so <code>namespace::*</code> is left alone. So is a step spaced
+inside itself: a gap around the <code>::</code> of an axis, or in front of the bracket of
+a node test, is whitespace the grammar allows, so <code>child :: a</code> and
+<code>parent::node ( )</code> are read as the steps <code>child::a</code> and <code>parent::node()</code> name.
+Only genuine syntax mistakes are reported.</p>
 <p>Incorrect (<code>==</code> is not an XPath operator):</p>
 <pre><code class="language-xsl">&lt;xsl:if test=&quot;foo(a) == &#39;hello&#39;&quot;&gt;
   &lt;xsl:value-of select=&quot;.&quot;/&gt;
