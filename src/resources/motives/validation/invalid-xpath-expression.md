@@ -16,7 +16,10 @@ it rejects the implicit string-to-number coercion an XPath 1.0 stylesheet leans
 on — `substring-before($spans, ':') - 1` reads a numeric prefix in 1.0 — but
 that is a dialect difference, not a broken expression, so it is not reported.
 The `namespace::` axis is another such difference — XPath 3.0 dropped it, but
-1.0 and 2.0 define it, so `namespace::*` is left alone. Only genuine syntax
+1.0 and 2.0 define it, so `namespace::*` is left alone. Spacing is one more:
+whitespace stands between any two tokens of an expression, so `child :: a`
+names the step `child::a` names and `parent::node ( )` the one
+`parent::node()` names, and none of them is reported. Only genuine syntax
 mistakes are reported.
 
 Incorrect (`==` is not an XPath operator):

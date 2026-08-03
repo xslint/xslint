@@ -90,7 +90,42 @@ const CODED = /^[A-Z]{4}\d{4}/
  * supported axis before being retried.
  * @type {RegExp}
  */
-const NAMESPACE_AXIS = /namespace\s*::/
+const NAMESPACE_AXIS = /namespace\s*::/g
+
+/**
+ * The axis separator together with the whitespace around it. XPath lexes `::`
+ * as one token and allows whitespace between tokens, so `child :: a` names the
+ * step `child::a` names, yet the engine reads the spaced spelling as a name
+ * followed by rubbish.
+ * @type {RegExp}
+ */
+const SPACED_AXIS = /\s*::\s*/g
+
+/**
+ * The names a node test is spelled with: the four NodeTypes of XPath 1.0, the
+ * kind tests 2.0 added, and the one 3.0 added.
+ * @type {Array.<string>}
+ */
+const TESTS = [
+  'node', 'text', 'comment', 'processing-instruction',
+  'document-node', 'element', 'attribute', 'schema-element',
+  'schema-attribute', 'namespace-node',
+]
+
+/**
+ * A node test's name together with the whitespace between it and its `(`, and
+ * whatever follows that bracket. XPath 1.0 §3.7 recognises one of these names
+ * as a NodeType when a `(` follows it "possibly after intervening
+ * ExprWhitespace", but the engine reads it as an element name unless the
+ * bracket is adjacent, and refuses a `(` its `)` does not touch. The names are
+ * spelled out rather than taken as any name, because it is only a node test a
+ * bracket changes the meaning of; a name that merely ends in one is left
+ * alone, so `my-text ()` stays the call it already was.
+ * @type {RegExp}
+ */
+const SPACED_TEST = new RegExp(
+  `(^|[^\\w.-])(${TESTS.join('|')})\\s*\\(\\s*`, 'g',
+)
 
 /**
  * Whether the engine compiles the expression, counting a static-type
@@ -116,19 +151,35 @@ const compiles = function(xpath) {
 }
 
 /**
+ * The expression respelled the one way the engine reads it: the namespace axis
+ * rewritten to a supported one, the whitespace around an axis separator and
+ * around the bracket of a node test squeezed out. Every one of these is a
+ * spelling the grammar allows and the engine alone refuses, and squeezing
+ * whitespace out of a step cannot make a broken expression whole — `child ::`
+ * still has no node test once its gap is gone.
+ * @param {string} xpath - Xpath expression
+ * @return {string} - The same expression, spelled for the engine
+ */
+const squeezed = function(xpath) {
+  return xpath
+    .replace(NAMESPACE_AXIS, 'child::')
+    .replace(SPACED_AXIS, '::')
+    .replace(SPACED_TEST, '$1$2(')
+}
+
+/**
  * Whether given Xpath expression is syntactically valid. The same engine that
  * runs the rules parses it, so an expression is valid here exactly when the
  * processor can parse it. Every prefix resolves, isolating syntax from
- * unresolved-prefix errors. The namespace axis is the one construct the engine
- * cannot parse yet the older dialects allow, so an expression that parses once
- * its namespace:: axis is rewritten to a supported one is valid too.
+ * unresolved-prefix errors. What the engine refuses yet the grammar spells —
+ * the namespace axis of the older dialects, whitespace around an axis
+ * separator or a node test's bracket (#615) — is retried respelled, and an
+ * expression the respelling gets through is valid too.
  * @param {string} xpath - Xpath expression
  * @return {boolean} - True when the expression parses
  */
 const isValid = function(xpath) {
-  return compiles(xpath) ||
-    (NAMESPACE_AXIS.test(xpath) &&
-      compiles(xpath.replace(/namespace\s*::/g, 'child::')))
+  return compiles(xpath) || compiles(squeezed(xpath))
 }
 
 module.exports = {

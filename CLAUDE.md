@@ -379,7 +379,7 @@ the harness asserts too.
 | `src/fixers.js` | Maps a declarative check name to a `node => fix` builder |
 | `src/fixes.js` | Shared fix builders (`deletion(attribute)`) |
 | `src/fixer.js` | Applies a defect's `fix` to source (decode-walk, verify-before-apply, end-to-start) |
-| `src/xpath.js` | fontoxpath environment: prefixes, evaluators, `isValid` |
+| `src/xpath.js` | fontoxpath environment: prefixes, evaluators, `isValid` — which retries the expression respelled when the engine refuses a spelling the grammar allows: the `namespace::` axis, whitespace around an axis's `::` or a node test's bracket (#615) |
 | `src/helpers.js` | XML parsing (expands internal-subset entities), YAML parsing, file recursion |
 | `src/logger.js` | 4-level logger |
 | `scripts/generate-docs.js` | Builds the `docs/` site from checks + motives |
