@@ -470,6 +470,7 @@ const tokenized = function(xpath) {
 
 module.exports = {
   tokenized,
+  spelling,
   TOKENS,
   WHITESPACE,
 }

@@ -7,7 +7,7 @@ const {
   evaluateXPath, evaluateXPathToNodes, evaluateXPathToStrings,
   compileXPathToJavaScript,
 } = require('fontoxpath')
-const {WHITESPACE} = require('./tokens')
+const {WHITESPACE, spelling} = require('./tokens')
 
 /**
  * Namespace URI of the xslint custom XPath functions.
@@ -89,10 +89,10 @@ const CODED = /^[A-Z]{4}\d{4}/
  * One character of ExprWhitespace, which XPath 1.0 §3.7 spells as XML's `S`:
  * a space, a tab, a carriage return or a newline, and nothing else. The lexer
  * reads a gap through the same four. A wider class would be wrong rather than
- * generous, because the six further characters JavaScript's `\s` counts — a
- * no-break space and an em space among them — stand nowhere in an expression
- * outside a string literal, so a gap spelled with one is malformed and must
- * not be respelled into something the engine accepts.
+ * generous, because the twenty-one further characters JavaScript's `\s` counts
+ * — a no-break space and an em space among them — stand nowhere in an
+ * expression outside a string literal, so a gap spelled with one is malformed
+ * and must not be respelled into something the engine accepts.
  * @type {string}
  */
 const SPACE = `[${WHITESPACE}]`
@@ -148,7 +148,7 @@ const TESTS = [
  * @type {RegExp}
  */
 const SPACED_AXIS = new RegExp(
-  `(?<![\\w.-])(${AXES.join('|')})${SPACE}*::${SPACE}*(?=${TEST})`, 'gu',
+  `(${AXES.join('|')})${SPACE}*::${SPACE}*(?=${TEST})`, 'gu',
 )
 
 /**
@@ -158,7 +158,7 @@ const SPACED_AXIS = new RegExp(
  * out with every other axis's.
  * @type {RegExp}
  */
-const NAMESPACE_AXIS = /(?<![\w.-])namespace::/g
+const NAMESPACE_AXIS = /(namespace)::/g
 
 /**
  * A node test's name spaced from its `(`, up to what the brackets hold. XPath
@@ -173,7 +173,7 @@ const NAMESPACE_AXIS = /(?<![\w.-])namespace::/g
  * @type {RegExp}
  */
 const SPACED_TEST = new RegExp(
-  `(?<![\\w.-])(${TESTS.join('|')})${SPACE}*\\(${SPACE}*(?=${ARGUMENT})`, 'gu',
+  `(${TESTS.join('|')})${SPACE}*\\(${SPACE}*(?=${ARGUMENT})`, 'gu',
 )
 
 /**
@@ -200,21 +200,74 @@ const compiles = function(xpath) {
 }
 
 /**
- * The expression respelled the one way the engine reads it: an axis pulled
- * onto its separator, a node test onto its bracket, and the namespace axis
- * rewritten to a supported one — in that order, so the rewrite meets a
- * separator whose gaps are already gone. Each squeeze runs between a step's
- * own parts and nowhere else, so it deletes a gap the grammar allows and never
- * writes a token: what surrounds the gap reads as a step before the squeeze
- * and after it, which is why a broken expression cannot come out whole.
+ * The same expression with each match of the pattern rewritten, except where a
+ * name is still being spelled in front of it. A `-` continues a name a letter
+ * started and subtracts everywhere else, and no lookbehind can tell the two
+ * apart, because it reads characters where the question is about tokens. The
+ * lexer answers it instead: `spelling` walks the run of name characters back
+ * and asks whether it begins the way a name may, so the `namespace` of
+ * `a-namespace::x` is the tail of one name and is left alone, while the one in
+ * `1-namespace::x` stands behind a minus and opens a step of its own.
+ * @param {string} xpath - Xpath expression
+ * @param {RegExp} pattern - Pattern whose first group is the name it opens on
+ * @param {function(string): string} replacement - What that name becomes
+ * @param {function(string, number): boolean} swallowed - Whether a longer name
+ *  takes the match in, leaving nothing of its own to respell
+ * @return {string} - The expression rewritten wherever no name runs into it
+ */
+const rewritten = function(xpath, pattern, replacement, swallowed) {
+  return xpath.replace(
+    pattern,
+    (match, name, at) => swallowed(xpath, at) ? match : replacement(name),
+  )
+}
+
+/**
+ * Whether the node test's name at the offset is the tail of a longer name
+ * rather than a test standing on its own. `spelling` answers most of it, but a
+ * `:` is a name character to the lexer — a QName carries one — and the `::`
+ * that puts a node test where it stands is an axis separator, not a name. So
+ * the `node` of `parent::node ()` opens a test though a name reads back from
+ * it, while the `text` of `my-text ()` is the end of one name. A prefixed name
+ * loses nothing by the exception: the engine compiles `my:node ( )` outright.
+ * @param {string} xpath - Xpath expression
+ * @param {number} at - Offset the name opens at
+ * @return {boolean} - True when a longer name swallows the test
+ */
+const tailed = function(xpath, at) {
+  return spelling(xpath, at) && xpath[at - 1] !== ':'
+}
+
+/**
+ * The respellings, in the order they run: an axis pulled onto its separator,
+ * the namespace axis then rewritten to a supported one — second, so the
+ * rewrite meets a separator whose gaps are already gone — and a node test
+ * pulled onto its bracket last.
+ * @type {Array.<Array>}
+ */
+const SQUEEZES = [
+  [SPACED_AXIS, (name) => `${name}::`, spelling],
+  [NAMESPACE_AXIS, () => 'child::', spelling],
+  [SPACED_TEST, (name) => `${name}(`, tailed],
+]
+
+/**
+ * The expression respelled the one way the engine reads it. Each squeeze runs
+ * between a step's own parts and nowhere else, so the gap it deletes is one the
+ * grammar lets stand there, and the tests hold every merge a deletion elsewhere
+ * would spell. What the retry cannot claim is that it only ever widens what is
+ * accepted: its guards are a regex over characters and one borrowed lexer
+ * question, not a parse, so an expression it declines to respell is refused on
+ * the engine's word alone. #641 tracks what that costs.
  * @param {string} xpath - Xpath expression
  * @return {string} - The same expression, spelled for the engine
  */
 const squeezed = function(xpath) {
-  return xpath
-    .replace(SPACED_AXIS, '$1::')
-    .replace(NAMESPACE_AXIS, 'child::')
-    .replace(SPACED_TEST, '$1(')
+  return SQUEEZES.reduce(
+    (expression, [pattern, replacement, swallowed]) =>
+      rewritten(expression, pattern, replacement, swallowed),
+    xpath,
+  )
 }
 
 /**

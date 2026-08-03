@@ -31,8 +31,36 @@ const SPACED = [
   ['child\t::a', 'spelled as the tab it may also be'],
   ['child\n::a', 'spelled as the newline a wrapped attribute puts there'],
   ['child :: *', 'in front of a wildcard node test'],
-  ['element (*)', 'in front of the bracket of a wildcard kind test'],
   ['document-node (element(a))', 'in front of the bracket of a nested test'],
+]
+
+/**
+ * Expressions whose axis stands behind a `-`, each paired with what the `-`
+ * subtracts from. A `-` continues a name a letter started and is the operator
+ * everywhere else, so the axis behind one opens a step and must be respelled
+ * like any other. The pair below them is the name the same characters spell
+ * when a letter does start the run.
+ * @type {Array.<Array.<string>>}
+ */
+const OPERATED = [
+  ['1-namespace::x', 'a number'],
+  ['count(a)-namespace::x', 'a call'],
+  ['\'s\'-namespace::x', 'a string'],
+  ['a -namespace::x', 'a name a gap stands behind'],
+  ['-namespace::x', 'nothing, being unary'],
+  ['1-child ::a', 'a number, in front of a spaced axis'],
+  ['count(a)-parent ::b', 'a call, in front of a spaced axis'],
+]
+
+/**
+ * Expressions whose `-` continues a name rather than subtracting, each paired
+ * with the name it continues. No axis opens inside a name, so none of these is
+ * respelled and the engine's refusal stands.
+ * @type {Array.<Array.<string>>}
+ */
+const NAMED = [
+  ['a-namespace::x', 'a-namespace'],
+  ['a-child::x', 'a-child'],
 ]
 
 /**
@@ -102,6 +130,22 @@ describe('xpath', function() {
       assert.ok(
         !isValid(xpath),
         `${xpath} passes, though it carries ${what}`,
+      )
+    })
+  })
+  OPERATED.forEach(function([xpath, from]) {
+    it(`accepts an axis behind a minus that subtracts from ${from}`, function() {
+      assert.ok(
+        isValid(xpath),
+        `${xpath} is refused, though its minus subtracts from ${from}`,
+      )
+    })
+  })
+  NAMED.forEach(function([xpath, name]) {
+    it(`reads no axis inside the name ${name}`, function() {
+      assert.ok(
+        !isValid(xpath),
+        `${xpath} passes, though ${name} is one name and names no axis`,
       )
     })
   })
