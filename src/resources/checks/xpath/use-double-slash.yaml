@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
 # SPDX-License-Identifier: MIT
 ---
-xpath: //xsl:template[not(starts-with(@match, '//')) and contains(@match, '//')]
+xpath: //xsl:template[not(starts-with(normalize-space(@match), '//')) and contains(@match, '//')]
 severity: warning
 message: The match attribute of xsl:template contains //, which matches at any depth and is broader than intended. Use a specific path.

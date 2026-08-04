@@ -107,8 +107,9 @@ const APPLIED = [
     after: 'redundant-namespace-declarations.fixed.xsl',
   },
   {
-    name: 'should drop the redundant leading slashes of a match with --fix',
-    flag: '--fix',
+    name: 'should drop the redundant leading slashes of a pattern with ' +
+      '--fix-suggestions',
+    flag: '--fix-suggestions',
     before: 'starts-with-double-slash.xsl',
     after: 'starts-with-double-slash.fixed.xsl',
   },
@@ -318,6 +319,11 @@ const UNCHANGED = [
     sheet: 'starts-with-double-slash.xsl',
   },
   {
+    name: 'cannot drop the leading slashes of a pattern with plain --fix',
+    flag: '--fix',
+    sheet: 'starts-with-double-slash.xsl',
+  },
+  {
     name: 'cannot delete a redundant import with --fix-dry-run',
     flag: '--fix-dry-run',
     sheet: 'redundant-import.xsl',
@@ -434,7 +440,7 @@ const DROPPED = [
   {
     name: 'should drop the fixed starts-with-double-slash defect from the ' +
       'report',
-    flag: '--fix',
+    flag: '--fix-suggestions',
     sheet: 'starts-with-double-slash.xsl',
     check: 'starts-with-double-slash',
   },

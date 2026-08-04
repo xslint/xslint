@@ -7,4 +7,11 @@
   <xsl:template match="//objects">
     <xsl:copy-of select="."/>
   </xsl:template>
+  <xsl:template match=" //spaced">
+    <xsl:copy-of select="."/>
+  </xsl:template>
+  <xsl:key name="kk" match="//keyed" use="@id"/>
+  <xsl:template match="kept">
+    <xsl:number count="//counted" from="//started"/>
+  </xsl:template>
 </xsl:stylesheet>
