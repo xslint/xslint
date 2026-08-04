@@ -69,8 +69,7 @@ const KEBAB = /^[a-z0-9]+(-[a-z0-9]+)*$/
  * check reports in someone else's.
  * @type {RegExp}
  */
-const COUNTED =
-  /count\s*\((?:[^()]|\([^()]*\))*\)\s*(?:!?=|[<>]=?)\s*0(?!\d)/
+const COUNTED = /count\s*\((?:[^()]|\([^()]*\))*\)\s*(?:!?=|[<>]=?)\s*0(?!\d)/
 
 /**
  * Names of the checks of a kind.
