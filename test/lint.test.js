@@ -75,4 +75,36 @@ describe('lint (programmatic API)', function() {
       [true, true],
     )
   })
+  it('offers no declarative fix on a refused pattern or expression', function() {
+    assert.deepEqual(
+      lint([source('refused/refused-by-a-declarative-fix.xsl')])
+        .filter((defect) => [8, 9].includes(defect.line) && defect.fix)
+        .map((defect) => `${defect.name} at ${defect.line}:${defect.pos}`),
+      [],
+    )
+  })
+  it('still reports the double slash it refused to drop', function() {
+    assert.ok(
+      lint([source('refused/refused-by-a-declarative-fix.xsl')]).some(
+        (defect) =>
+          defect.name === 'starts-with-double-slash' && defect.line === 8,
+      ),
+    )
+  })
+  it('offers no declarative fix beside a refused text value template', function() {
+    assert.deepEqual(
+      lint([source('refused/refused-by-a-declarative-fix.xsl')])
+        .filter((defect) => defect.line === 14 && defect.fix)
+        .map((defect) => defect.name),
+      [],
+    )
+  })
+  it('keeps both declarative fixes on the valid template', function() {
+    assert.deepEqual(
+      lint([source('refused/refused-by-a-declarative-fix.xsl')])
+        .filter((defect) => [11, 12].includes(defect.line))
+        .map((defect) => Boolean(defect.fix)),
+      [true, true],
+    )
+  })
 })

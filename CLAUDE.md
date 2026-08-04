@@ -346,10 +346,14 @@ the harness asserts too.
   reads an expression the XPath validator refused — it takes the whole corpus,
   not the validated part — so it still reports what it finds there, but `defect`
   withholds the fix, because rewriting text no processor parses is how
-  `select="child::"` became `select=""` (#636). That gate lives in `defect`, so
-  it covers the code-based linters only: a declarative fix from `src/fixers.js`
-  is attached in `src/xpath-linter.js`, never passes through `defect`, and is
-  still offered on an expression that does not parse (#651). A *safe* fix
+  `select="child::"` became `select=""` (#636). A declarative fix never passes
+  through `defect` — `src/xpath-linter.js` attaches it from `src/fixers.js` — so
+  it is gated there instead, against the same `expressionsOf` derivation: no fix
+  is offered on an attribute whose expression the engine refuses, nor on the
+  element carrying it, since a fixer names the attribute it wants inside itself
+  where no gate can see it (#651). Withholding every fix on such an element is
+  deliberate over-reach: an element holding an expression no processor parses is
+  not worth tidying. A *safe* fix
   (deterministic, semantics-preserving) is applied by `--fix`; a
   `suggestion: true` fix (changes behavior, or is one of several corrections) is
   applied only by `--fix-suggestions`. `--fix-dry-run` writes nothing.
@@ -372,7 +376,7 @@ the harness asserts too.
 | `src/reporters.js` | `reporterOf(format)` — `text`, `json`, `sarif`, or `github` output |
 | `src/xsl-validator.js` | Builds the corpus; reports each non-well-formed stylesheet |
 | `src/xpath-validator.js` | Splits corpus expressions into valid (kept) and malformed (reported) via `isValid` |
-| `src/xpath-linter.js` | Loads `checks/xpath/*.yaml`; attaches any `src/fixers.js` fix |
+| `src/xpath-linter.js` | Loads `checks/xpath/*.yaml`; attaches any `src/fixers.js` fix, unless the node — or the element carrying it — holds an expression the engine refuses (#651) |
 | `src/corpus-linter.js` | Loads `checks/corpus/*.yaml`; cross-file rules |
 | `src/*-linter.js` | Code-based `checks/format/*.yaml`, one construct each (axis, namespace, count, name, ...); see the flow diagram |
 | `src/checks.js` | Shared for code-based linters: `metaOf`, `suppressed`, `defect(check, meta, source, node, offset, expression, fix)` — walks the raw text so a wrapped or entity-shifted value reports where it truly stands (#611), and drops the `fix` when `expression` does not parse (#636) |

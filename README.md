@@ -345,14 +345,12 @@ Checks whose correction needs real judgment (a fresh name, a more specific
 path) stay report-only. A run without `--fix` reports how many defects each
 option would fix.
 
-An expression xslint cannot parse is reported as `invalid-xpath-expression`,
-and the checks that read the expression itself — the axis, count, name,
-translate and whitespace family — report what they find in it without offering a
-correction. A stylesheet whose real fault is a missing bracket should come back
-with that fault and nothing else changed, so fix the syntax and the corrections
-appear on the next run. The checks that match on the attribute rather than on
-the expression inside it still offer their corrections there, which is tracked
-in [#651](https://github.com/xslint/xslint/issues/651).
+An expression xslint cannot parse is never rewritten. It is reported as
+`invalid-xpath-expression`, and the other defects standing in it are reported
+too, with no correction offered — including the ones that would rewrite the
+attribute from the outside rather than the expression within it. A stylesheet
+whose real fault is a missing bracket comes back with that fault untouched, so
+fix the syntax and the corrections appear on the next run.
 
 Where two corrections cover the same piece of an expression — the redundant
 whitespace in `d[position()  =  1]` sits inside the predicate that becomes
