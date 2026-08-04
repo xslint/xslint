@@ -78,9 +78,11 @@
 <h1>Invalid XPath expression</h1>
 <p>An attribute carrying a bare XPath expression — <code>select</code>, <code>test</code>, <code>use</code>,
 <code>value</code>, <code>group-by</code>, <code>group-adjacent</code>, or the XSLT 3.0 <code>key</code>, <code>initial-value</code>,
-<code>xpath</code>, <code>context-item</code>, <code>with-params</code>, <code>namespace-context</code> — must hold an
-expression the processor can parse. A malformed expression breaks the
-transformation at runtime, so the sooner it surfaces the better. Only the
+<code>xpath</code>, <code>context-item</code>, <code>with-params</code>, <code>namespace-context</code>, the
+<code>for-each-item</code> and <code>for-each-source</code> of an <code>xsl:merge-source</code>, and the static
+<code>use-when</code> — must hold an expression the processor can parse. A malformed
+expression breaks the transformation at runtime, so the sooner it surfaces the
+better. Only the
 expression syntax is checked, not its formatting; pattern attributes such as
 <code>match</code> and attribute value templates are left to other checks.</p>
 <p>The expression is parsed by the same engine that evaluates the rules, so it is
