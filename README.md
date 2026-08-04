@@ -345,12 +345,20 @@ Checks whose correction needs real judgment (a fresh name, a more specific
 path) stay report-only. A run without `--fix` reports how many defects each
 option would fix.
 
-An expression xslint cannot parse is never rewritten. It is reported as
-`invalid-xpath-expression`, and the other defects standing in it are reported
-too, with no correction offered — including the ones that would rewrite the
-attribute from the outside rather than the expression within it. A stylesheet
-whose real fault is a missing bracket comes back with that fault untouched, so
-fix the syntax and the corrections appear on the next run.
+An expression xslint cannot parse is never rewritten. The other defects standing
+in it are still reported, with no correction offered — including the ones that
+would rewrite the attribute from the outside rather than the expression within
+it. A stylesheet whose real fault is a missing bracket comes back with that
+fault untouched, so fix the syntax and the corrections appear on the next run.
+
+Where the expression sits decides whether you are told why. A bare one — a
+`select`, a `test`, and the rest listed under `invalid-xpath-expression` — is
+reported as malformed. A **pattern** such as `match`, and the braces of an
+attribute or text value template, are not yet parsed by that check
+([#589](https://github.com/xslint/xslint/issues/589)), so a broken one is silent:
+the corrections around it disappear with nothing said. Until that lands, a defect
+that reports without a correction where you expected one is the sign to check the
+expression's syntax by hand.
 
 Where two corrections cover the same piece of an expression — the redundant
 whitespace in `d[position()  =  1]` sits inside the predicate that becomes

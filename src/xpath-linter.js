@@ -56,12 +56,16 @@ const evaluateXpath = function(xsl, xpath) {
 const REFUSED = new WeakMap()
 
 /**
- * The nodes no fix may be attached to: every attribute holding an expression
- * the engine cannot parse, and the element carrying it. Both are listed because
- * a declarative rule selects either one — `starts-with-double-slash` matches
- * the `xsl:template` and its fixer then reaches for the `@match`, while another
- * rule may select the attribute itself — and a fixer names the attribute it
- * wants inside itself, where no gate can see it.
+ * The nodes no fix may be attached to: every node holding an expression the
+ * engine cannot parse — an attribute, or a text node whose braces carry a
+ * template — and the element around it. The element is there because a
+ * declarative rule selects it while the fix lands somewhere inside, and a fixer
+ * names that target within itself, where no gate can read it. It reaches in
+ * both directions: `starts-with-double-slash` matches the `xsl:template` and
+ * reaches sideways for its `@match`, while `text-outside-xsl-text` matches the
+ * instruction and reaches down into the loose text, which it rewrites whole —
+ * so on `delta {1 +} epsilon` it would wrap the unparsable brace in an
+ * `xsl:text` were the parent not listed here.
  *
  * Listing the element withholds every fix on it, including one aimed at a
  * sound attribute beside the broken one. That is deliberate: an element whose
