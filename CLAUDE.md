@@ -342,12 +342,14 @@ the harness asserts too.
   `xslint-disable-line`, `xslint-disable-file`, each with optional space-separated
   rule names (`src/directives.js`); an unused directive is reported.
 - **Fix tiers**: a defect is fixable when it carries
-  `fix: {line, col, value, replacement, suggestion?}`, and only when the
-  expression it stands in parses. A code-based linter still reads an expression
-  the XPath validator refused — it takes the whole corpus, not the validated
-  part — so it still reports what it finds there, but `defect` withholds the
-  fix, because rewriting text no processor parses is how `select="child::"`
-  became `select=""` (#636). A *safe* fix
+  `fix: {line, col, value, replacement, suggestion?}`. A code-based linter still
+  reads an expression the XPath validator refused — it takes the whole corpus,
+  not the validated part — so it still reports what it finds there, but `defect`
+  withholds the fix, because rewriting text no processor parses is how
+  `select="child::"` became `select=""` (#636). That gate lives in `defect`, so
+  it covers the code-based linters only: a declarative fix from `src/fixers.js`
+  is attached in `src/xpath-linter.js`, never passes through `defect`, and is
+  still offered on an expression that does not parse (#651). A *safe* fix
   (deterministic, semantics-preserving) is applied by `--fix`; a
   `suggestion: true` fix (changes behavior, or is one of several corrections) is
   applied only by `--fix-suggestions`. `--fix-dry-run` writes nothing.
