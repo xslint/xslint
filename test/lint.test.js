@@ -99,6 +99,14 @@ describe('lint (programmatic API)', function() {
       [],
     )
   })
+  it('reports a malformed expression in every attribute that holds one', function() {
+    assert.deepEqual(
+      lint([source('refused/unvalidated-expression-attributes.xsl')])
+        .filter((defect) => defect.name === 'invalid-xpath-expression')
+        .map((defect) => `${defect.line}:${defect.pos}`),
+      ['9:41', '11:39', '14:41'],
+    )
+  })
   it('keeps both declarative fixes on the valid template', function() {
     assert.deepEqual(
       lint([source('refused/refused-by-a-declarative-fix.xsl')])

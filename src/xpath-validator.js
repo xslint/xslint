@@ -40,7 +40,7 @@ const names = [CHECK]
 const EXPRESSIONS = [
   'select', 'test', 'use', 'value', 'group-by', 'group-adjacent',
   'key', 'initial-value', 'xpath', 'context-item', 'with-params',
-  'namespace-context',
+  'namespace-context', 'for-each-item', 'for-each-source', 'use-when',
 ]
 
 /**
