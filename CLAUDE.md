@@ -325,6 +325,13 @@ the harness asserts too.
   flags, which xcop would canonicalize away. The repo-wide sweep in the workflow
   excludes `test/resources/directives/wrapped*.xsl` for the same reason: they must
   keep the wrapped attribute value #611 is about, which xcop joins onto one line.
+  Where the tool does not run, every fixture is registered and **pending**, never
+  absent: a suite that asserts nothing must not read like one that passed, which
+  is how 250 assertions went missing on a developer machine for months (#645).
+  Whether it runs is settled by running it, not by looking it up in `PATH`. The
+  CI job passes `--forbid-pending`, so in the one place the tool must be there,
+  pending is a failure. A test registered behind a condition is banned by a
+  `no-restricted-syntax` selector — skip it in its body with `this.skip()`.
 - **Table-driven.** Where several `it` blocks differ only in data, express them as
   a data array plus one generator, not repeated blocks. When adding a test, add a
   row to the matching table (`test/fixer.test.js`, the pack harnesses,
@@ -395,4 +402,4 @@ the harness asserts too.
 | `src/logger.js` | 4-level logger |
 | `scripts/generate-docs.js` | Builds the `docs/` site from checks + motives |
 | `test/conformance.test.js` | Enforces naming, motives, selector hygiene, pack/test coverage, and the `mature` freeze across all kinds |
-| `test/xcop.test.js` | Runs xcop over the inline XSL of every `*-packs` directory |
+| `test/xcop.test.js` | Runs xcop over the inline XSL of every `*-packs` directory; pending, never absent, where the tool does not run |

@@ -25,10 +25,11 @@ const PACKS = fs.readdirSync(RESOURCES)
   .flatMap((dir) => allFilesFrom(path.resolve(RESOURCES, dir)))
 
 /**
- * Whether xcop is installed.
+ * Whether xcop runs here, asked with the same command the tests run it by, so
+ * the probe cannot answer a different question from theirs.
  * @type {boolean}
  */
-const available = cmdAvailable('xcop')
+const available = cmdAvailable('xcop', ['--version'], false)
 
 /**
  * Packs whose fixture must carry a construct xcop rejects, so it cannot also be
@@ -47,22 +48,29 @@ const CHECKED = PACKS.filter(
   (pack) => !UNFORMATTED.includes(path.basename(pack)),
 )
 
+if (!available) {
+  console.warn(
+    'xcop does not run here, so its fixtures are pending, not passing',
+  )
+}
+
 describe('xcop', function() {
   CHECKED.forEach((pack) => {
     const yml = yaml.parsedFromFile(pack)
     const inputs = yml.inputs || [yml.input]
     inputs.forEach((input, index) => {
-      if (available) {
-        it(`should find 0 xcop errors in xsl #${index} of ${path.basename(pack)}`, function() {
-          const xsl = path.resolve(
-            __dirname, `temp-${path.basename(pack, '.yaml')}-${index}.xsl`,
-          )
-          fs.writeFileSync(xsl, `${xml.parsedFromString(input)}\n`)
-          const stdout = runXcop(xsl)
-          fs.unlinkSync(xsl)
-          assert.ok(stdout.includes(`${xsl} looks good`))
-        })
-      }
+      it(`should find 0 xcop errors in xsl #${index} of ${path.basename(pack)}`, function() {
+        if (!available) {
+          this.skip()
+        }
+        const xsl = path.resolve(
+          __dirname, `temp-${path.basename(pack, '.yaml')}-${index}.xsl`,
+        )
+        fs.writeFileSync(xsl, `${xml.parsedFromString(input)}\n`)
+        const stdout = runXcop(xsl)
+        fs.unlinkSync(xsl)
+        assert.ok(stdout.includes(`${xsl} looks good`))
+      })
     })
   })
 })
