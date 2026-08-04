@@ -5,6 +5,7 @@ pack: leaking-result-namespace
 found:
   amount: 2
   positions: [ [ 2, 66 ], [ 2, 110 ] ]
+  fixes: [ null, null ]
 input: |-
   <?xml version="1.0"?>
   <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:my="urn:my" version="2.0">

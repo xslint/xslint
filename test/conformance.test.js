@@ -155,6 +155,23 @@ describe('conformance', function() {
       assert.ok(packed.has(name), `format/${name} has no test pack`)
     }
   })
+  it('pins the fix of every format pack against its positions', function() {
+    const formats = new Set(names('format'))
+    const packs = allFilesFrom(RESOURCES)
+      .filter((file) => file.endsWith('.yaml'))
+      .map((file) => ({
+        name: path.relative(RESOURCES, file), yml: yaml.parsedFromFile(file),
+      }))
+      .filter((pack) => formats.has(pack.yml.pack))
+    assert.deepEqual(
+      packs
+        .filter((pack) => !Array.isArray(pack.yml.found.fixes) ||
+          pack.yml.found.fixes.length !== pack.yml.found.positions.length)
+        .map((pack) => pack.name),
+      [],
+      'a format pack whose fixes do not stand one per position asserts nothing about them',
+    )
+  })
   it('tests every validation check by name in a test file', function() {
     const suite = allFilesFrom(path.resolve(__dirname))
       .filter((file) => file.endsWith('.test.js'))
