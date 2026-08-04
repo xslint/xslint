@@ -5,24 +5,26 @@
 
 const path = require('path')
 const {execSync, spawnSync} = require('child_process')
-const os = require('os')
 
 /**
- * Run the console command
+ * Run the console command. A run told not to print captures nothing, and
+ * `execSync` answers `null` rather than a buffer for it, so the empty string
+ * stands in — without it the quiet form threw on every command that ran, which
+ * reads exactly like a command that is not there (#645).
  * @param {string} command - Console Command
  * @param {Array.<string>} args - Arguments
  * @param {boolean} print - Capture logs or not
  * @return {string} Stdout
  */
 const execCmd = function(command, args, print) {
-  return execSync(
+  return (execSync(
     `${command} ${args.join(' ')}`,
     {
       timeout: 120000,
       windowsHide: true,
       stdio: print ? null : 'ignore',
     },
-  ).toString()
+  ) ?? '').toString()
 }
 
 /**
@@ -83,15 +85,22 @@ const runXcop = function(arg, print = true) {
 }
 
 /**
- * Helper to check if command is available in the system.
+ * Whether the tool runs here, asked by running it with the argument that proves
+ * it does. Looking the name up in `PATH` was a proxy for that question, and the
+ * two disagree: `which` walks `PATH` literally while the shell that starts the
+ * tool expands a `~` in it, so an installed xcop read as absent and its 249
+ * assertions went with it (#645). Running the tool also retires the
+ * `where`/`which` fork, whose platform test compared a function with a string
+ * and so never once took the Windows arm it was written for.
  * @param {string} cmd - Command
+ * @param {Array.<string>} args - Arguments proving it runs
  * @param {boolean} print - Capture logs
  * @return {boolean} - Result
  */
-const cmdAvailable = function(cmd, print = true) {
+const cmdAvailable = function(cmd, args, print) {
   let available = true
   try {
-    execCmd(os.platform === 'win32' ? 'where' : 'which', [cmd], print)
+    execCmd(cmd, args, print)
   } catch {
     available = false
   }

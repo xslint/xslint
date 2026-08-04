@@ -86,6 +86,12 @@ export default defineConfig([
         },
         {
           selector:
+            "IfStatement CallExpression[callee.name=/^(it|describe)$/], ConditionalExpression CallExpression[callee.name=/^(it|describe)$/]",
+          message:
+            "Register the test and skip it in its body with this.skip(); a test registered behind a condition disappears without a word, the way 249 xcop assertions did (#645)"
+        },
+        {
+          selector:
             "CallExpression[callee.property.name='getAttribute'][callee.object.property.name='documentElement'][arguments.0.value='version']",
           message:
             "Read the stylesheet version through versionOf in src/xsl-version.js, which handles a simplified stylesheet's xsl:version; do not read documentElement.getAttribute('version') directly"
