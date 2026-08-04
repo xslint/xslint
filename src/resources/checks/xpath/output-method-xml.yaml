@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
 # SPDX-License-Identifier: MIT
 ---
-xpath: (/xsl:stylesheet | /xsl:transform)/xsl:output[@method = 'xml'][//xsl:template[starts-with(@match, '/') and (count (.//html | .//HTML) > 0)]]
+xpath: (/xsl:stylesheet | /xsl:transform)/xsl:output[@method = 'xml'][//xsl:template[starts-with(@match, '/') and (.//html | .//HTML)]]
 severity: warning
 message: "xsl:output declares method='xml' while the root template generates HTML elements. Change the method to 'html'."

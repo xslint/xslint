@@ -232,7 +232,9 @@ Then run `npm test`, `npm run coverage`, and `npx grunt docs`.
   counting — write `x` and `not(x)`, never `count(x) > 0` or `count(x) = 0`,
   the same anti-pattern `count-compared-to-zero` flags in a user's sheet.
   A comparison that asks a real cardinality (`count(x) >= 2`) is fine. This is
-  machine-enforced by `test/conformance.test.js`.
+  machine-enforced by `test/conformance.test.js`, and the gap XPath allows before
+  the `(` is part of the call, so `count (x) > 0` is caught too — it was not until
+  #621, which let one selector spend the space the user-facing check reports.
 - **Fix in the same change.** If a check is fixable, land the fix with the
   detection — never defer it. A declarative rule gets a `node => fix` builder in
   `src/fixers.js`; a code-based linter attaches the `fix` to its defect. Mark it
