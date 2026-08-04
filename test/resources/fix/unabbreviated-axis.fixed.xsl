@@ -7,6 +7,7 @@
   <xsl:template match="R/qwer">
     <xsl:value-of select="title"/>
     <xsl:value-of select="@name"/>
+    <xsl:value-of select="a/b/@c"/>
     <xsl:apply-templates select=".."/>
     <xsl:value-of select="."/>
     <xsl:value-of select=".."/>

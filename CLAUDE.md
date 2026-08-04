@@ -292,6 +292,16 @@ check: its motive carries an `Incorrect:`/`Correct:` pair, and if it is fixable
 fixture pair exists and `fixer.test.js` runs it. The opinionated checks tracked
 in #499 are not marked mature until that issue is settled.
 
+**No check carries the flag today** (#637). The last two, both axis checks, were
+frozen around open bugs — `using-namespace-axis` around advice its own message
+cannot give inside a pattern (#632), `unabbreviated-axis` around a safe-tier fix
+that wrote a pattern no processor loads, re-flagged in `ad6bf7f` before it was
+true and then changed by six commits with the freeze still on. Nothing enforced
+the freeze either (#638), so the mark asserted what the tree could not back.
+Before adding it back, read the amendment in #644: nine checks have carried it
+and all nine were unfrozen, so the bar itself — not the discipline around it — is
+what is under review.
+
 ## Test packs
 
 Each linter owns a `test/resources/<name>-packs/` directory, auto-discovered by

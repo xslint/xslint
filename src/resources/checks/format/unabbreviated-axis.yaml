@@ -3,4 +3,3 @@
 ---
 severity: warning
 message: Verbose axis specifiers child::, attribute::, parent::node(), or self::node() are used. Replace them with the node name alone, @, .., or . respectively.
-mature: true
