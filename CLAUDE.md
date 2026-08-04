@@ -342,7 +342,14 @@ the harness asserts too.
   `xslint-disable-line`, `xslint-disable-file`, each with optional space-separated
   rule names (`src/directives.js`); an unused directive is reported.
 - **Fix tiers**: a defect is fixable when it carries
-  `fix: {line, col, value, replacement, suggestion?}`. A *safe* fix
+  `fix: {line, col, value, replacement, suggestion?}`. A code-based linter still
+  reads an expression the XPath validator refused — it takes the whole corpus,
+  not the validated part — so it still reports what it finds there, but `defect`
+  withholds the fix, because rewriting text no processor parses is how
+  `select="child::"` became `select=""` (#636). That gate lives in `defect`, so
+  it covers the code-based linters only: a declarative fix from `src/fixers.js`
+  is attached in `src/xpath-linter.js`, never passes through `defect`, and is
+  still offered on an expression that does not parse (#651). A *safe* fix
   (deterministic, semantics-preserving) is applied by `--fix`; a
   `suggestion: true` fix (changes behavior, or is one of several corrections) is
   applied only by `--fix-suggestions`. `--fix-dry-run` writes nothing.
@@ -368,7 +375,7 @@ the harness asserts too.
 | `src/xpath-linter.js` | Loads `checks/xpath/*.yaml`; attaches any `src/fixers.js` fix |
 | `src/corpus-linter.js` | Loads `checks/corpus/*.yaml`; cross-file rules |
 | `src/*-linter.js` | Code-based `checks/format/*.yaml`, one construct each (axis, namespace, count, name, ...); see the flow diagram |
-| `src/checks.js` | Shared for code-based linters: `metaOf`, `suppressed`, `defect(check, meta, source, node, offset, fix)` — walks the raw text so a wrapped or entity-shifted value reports where it truly stands (#611) |
+| `src/checks.js` | Shared for code-based linters: `metaOf`, `suppressed`, `defect(check, meta, source, node, offset, expression, fix)` — walks the raw text so a wrapped or entity-shifted value reports where it truly stands (#611), and drops the `fix` when `expression` does not parse (#636) |
 | `src/source.js` | Raw-text walking shared by `checks` and `fixer`: `offsetAt`, `placeAt`, `character`, `skip` |
 | `src/attributes.js` | `expressionsOf(xsl)` — every expression a stylesheet carries: a bare/AVT attribute, a 3.0 text value template, or a shadow attribute, each saying whether it is a `pattern`; `PATTERNS` names the five attributes that hold one; `selectorOf(name)` for a linter that narrows |
 | `src/xsl-version.js` | `versionOf(node)` — the version in force at a node, from the nearest ancestor's `@version` (XSLT element) or `@xsl:version` (literal result element), canonicalised as a decimal; `since(version, floor)` for a lower-bound gate; shared `MODERN`/`KNOWN`/`DECIMAL` |

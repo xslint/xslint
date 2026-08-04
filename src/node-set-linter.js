@@ -83,7 +83,8 @@ const lintByNodeSet = function(corpus, suppressions = []) {
           )) {
             defects.push(
               defect(
-                CHECK, META, source, attribute, offset, {value, replacement},
+                CHECK, META, source, attribute, offset, attribute.nodeValue,
+                {value, replacement},
               ),
             )
           }

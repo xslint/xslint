@@ -145,7 +145,7 @@ const lintByTranslate = function(corpus, suppressions = []) {
         if (since(versionOf(node), MODERN)) {
           for (const {offset, value, replacement} of folded(expression)) {
             defects.push(
-              defect(CHECK, META, source, node, start + offset,
+              defect(CHECK, META, source, node, start + offset, expression,
                 {value, replacement, suggestion: true},
               ),
             )

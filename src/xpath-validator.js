@@ -67,9 +67,14 @@ const UNRESOLVED = /&[A-Za-z_][\w.-]*;/
 
 /**
  * Validate every Xpath expression in the corpus, splitting the valid ones out
- * for the linters to consume from the malformed ones, which become defects.
- * An expression that cannot be parsed by the engine that would run it is
- * reported and dropped, so no linter ever reasons over broken input.
+ * for the expression linters to consume from the malformed ones, which become
+ * defects. An expression that cannot be parsed by the engine that would run it
+ * is reported here and never handed on. A code-based linter is staged
+ * differently — it takes the whole corpus and reads its own expressions from
+ * `src/attributes.js`, patterns and attribute value templates included, which
+ * this validator does not cover — so it does still read a refused expression
+ * and report what it finds. What it may not do is offer to rewrite one, and
+ * `defect` in `src/checks.js` is where that is withheld (#636).
  * @param {Array.<{file: string, content: string, xsl: Document}>} corpus -
  *  Parsed stylesheets
  * @param {Array.<string>} suppressions - Array of suppressed checks

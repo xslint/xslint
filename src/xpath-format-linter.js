@@ -75,7 +75,10 @@ const lintByFormat = function(expressions, suppressions = []) {
         expression.nodeValue,
       )) {
         defects.push(
-          defect(CHECK, META, source, expression, offset, {value, replacement}),
+          defect(
+            CHECK, META, source, expression, offset, expression.nodeValue,
+            {value, replacement},
+          ),
         )
       }
     }

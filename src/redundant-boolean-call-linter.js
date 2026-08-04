@@ -81,10 +81,11 @@ const lintByBooleanCall = function(corpus, suppressions = []) {
         const strip = stripped(attribute.nodeValue)
         if (strip) {
           defects.push(
-            defect(CHECK, META, source, attribute, strip.offset, {
-              value: strip.value,
-              replacement: strip.replacement,
-            }),
+            defect(
+              CHECK, META, source, attribute, strip.offset,
+              attribute.nodeValue,
+              {value: strip.value, replacement: strip.replacement},
+            ),
           )
         }
       }
