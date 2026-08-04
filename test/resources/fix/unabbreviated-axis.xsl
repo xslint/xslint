@@ -7,6 +7,7 @@
   <xsl:template match="R/child::qwer">
     <xsl:value-of select="child::title"/>
     <xsl:value-of select="attribute::name"/>
+    <xsl:value-of select="child::a/child::b/attribute::c"/>
     <xsl:apply-templates select="parent::node()"/>
     <xsl:value-of select="self::node()"/>
     <xsl:value-of select="parent :: node ( )"/>
