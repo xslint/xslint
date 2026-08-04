@@ -3,8 +3,9 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {nodes} = require('./xpath')
+const {nodes, isValid} = require('./xpath')
 const {FIXERS} = require('./fixers')
+const {expressionsOf} = require('./attributes')
 const {allFilesFrom, yaml} = require('./helpers')
 const path = require('path')
 const {logger} = require('./logger')
@@ -46,6 +47,49 @@ const evaluateXpath = function(xsl, xpath) {
 }
 
 /**
+ * The refusal already worked out for a document. A declarative fix is offered
+ * per defect, and the answer is a property of the stylesheet, so it is derived
+ * once and remembered against the document itself the way `expressionsOf` is —
+ * a `WeakMap` releases it when the corpus does.
+ * @type {WeakMap}
+ */
+const REFUSED = new WeakMap()
+
+/**
+ * The nodes no fix may be attached to: every node holding an expression the
+ * engine cannot parse — an attribute, or a text node whose braces carry a
+ * template — and the element around it. The element is there because a
+ * declarative rule selects it while the fix lands somewhere inside, and a fixer
+ * names that target within itself, where no gate can read it. It reaches in
+ * both directions: `starts-with-double-slash` matches the `xsl:template` and
+ * reaches sideways for its `@match`, while `text-outside-xsl-text` matches the
+ * instruction and reaches down into the loose text, which it rewrites whole —
+ * so on `delta {1 +} epsilon` it would wrap the unparsable brace in an
+ * `xsl:text` were the parent not listed here.
+ *
+ * Listing the element withholds every fix on it, including one aimed at a
+ * sound attribute beside the broken one. That is deliberate: an element whose
+ * expression no processor parses is not worth tidying, and the cost of being
+ * wrong here is a correction that waits for the syntax to be fixed, against a
+ * rewrite of text the same run reported malformed (#651).
+ * @param {Document} xsl - XSL document parsed as {@link Document}
+ * @return {Set.<Node>} - The nodes a fix must not be offered on
+ */
+const refused = function(xsl) {
+  if (!REFUSED.has(xsl)) {
+    const found = new Set()
+    for (const held of expressionsOf(xsl)) {
+      if (!isValid(held.expression)) {
+        found.add(held.node)
+        found.add(held.node.ownerElement || held.node.parentNode)
+      }
+    }
+    REFUSED.set(xsl, found)
+  }
+  return REFUSED.get(xsl)
+}
+
+/**
  * Lint the corpus of stylesheets by per-file Xpath packs.
  * @param {Array.<{file: string, xsl: Document}>} corpus - Parsed stylesheets
  * @param {Array.<string>} suppressions - Array of suppressed checks
@@ -69,7 +113,8 @@ const lintByXpath = function(corpus, suppressions = []) {
           line: node.lineNumber,
           pos: node.columnNumber,
         }
-        const fix = FIXERS[pack.name] && FIXERS[pack.name](node)
+        const fix = FIXERS[pack.name] && !refused(xsl).has(node) &&
+          FIXERS[pack.name](node)
         if (fix) {
           defect.fix = fix
         }
