@@ -4,9 +4,7 @@
 pack: starts-with-double-slash
 found:
   amount: 10
-  positions: [ [ 4, 23 ], [ 7, 23 ], [ 10, 28 ], [ 12, 23 ], [ 12, 40 ],
-    [ 15, 87 ], [ 15, 57 ], [ 20, 33 ],
-    [ 11, 3, use-double-slash ], [ 14, 3, use-double-slash ] ]
+  positions: [ [ 4, 23 ], [ 7, 23 ], [ 10, 28 ], [ 12, 23 ], [ 12, 40 ], [ 15, 87 ], [ 15, 57 ], [ 20, 33 ], [ 11, 3, use-double-slash ], [ 14, 3, use-double-slash ] ]
 input: |-
   <?xml version="1.0"?>
   <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="3.0" id="style1">
