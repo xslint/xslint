@@ -61,10 +61,16 @@ const KEBAB = /^[a-z0-9]+(-[a-z0-9]+)*$/
  * A `count(...)` call compared with zero — the existence test spelled the slow
  * way, which `count-compared-to-zero` flags in a user's stylesheet and a
  * check's own selector must therefore not commit. One level of nested
- * parentheses is enough for the argument of a count.
+ * parentheses is enough for the argument of a count. The gap before the `(` is
+ * part of the call: XPath reads an NCName as a FunctionName when a `(` follows
+ * it, "possibly after intervening ExprWhitespace", so `count (x) > 0` is the
+ * same slow test spelled differently, and the user-facing check does flag it
+ * (#621). A gate blind to the space permitted in our own selectors what the
+ * check reports in someone else's.
  * @type {RegExp}
  */
-const COUNTED = /count\((?:[^()]|\([^()]*\))*\)\s*(?:!?=|[<>]=?)\s*0(?!\d)/
+const COUNTED =
+  /count\s*\((?:[^()]|\([^()]*\))*\)\s*(?:!?=|[<>]=?)\s*0(?!\d)/
 
 /**
  * Names of the checks of a kind.
