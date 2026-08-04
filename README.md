@@ -401,8 +401,8 @@ Validators:
 - **XPath syntax** — every bare XPath expression (in `select`, `test`,
   `use`, `value`, `group-by`, `group-adjacent`, and the XSLT 3.0 `key`,
   `initial-value`, `xpath`, `context-item`, `with-params`,
-  `namespace-context`) is parsed; the ones the processor cannot parse are
-  reported.
+  `namespace-context`, `for-each-item`, `for-each-source` and `use-when`) is
+  parsed; the ones the processor cannot parse are reported.
 
 Linters:
 

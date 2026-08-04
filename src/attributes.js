@@ -168,6 +168,7 @@ const expressionsOf = function(xsl) {
 
 module.exports = {
   ATTRIBUTES,
+  PATTERNS,
   selectorOf,
   expressionsOf,
 }

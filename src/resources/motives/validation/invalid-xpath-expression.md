@@ -2,9 +2,11 @@
 
 An attribute carrying a bare XPath expression — `select`, `test`, `use`,
 `value`, `group-by`, `group-adjacent`, or the XSLT 3.0 `key`, `initial-value`,
-`xpath`, `context-item`, `with-params`, `namespace-context` — must hold an
-expression the processor can parse. A malformed expression breaks the
-transformation at runtime, so the sooner it surfaces the better. Only the
+`xpath`, `context-item`, `with-params`, `namespace-context`, the
+`for-each-item` and `for-each-source` of an `xsl:merge-source`, and the static
+`use-when` — must hold an expression the processor can parse. A malformed
+expression breaks the transformation at runtime, so the sooner it surfaces the
+better. Only the
 expression syntax is checked, not its formatting; pattern attributes such as
 `match` and attribute value templates are left to other checks.
 
