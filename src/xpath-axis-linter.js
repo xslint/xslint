@@ -173,7 +173,11 @@ const lintByAxis = function(corpus, suppressions = []) {
         for (const {offset, fix} of abbreviable(
           expression, since(versionOf(node), MODERN), held.pattern,
         )) {
-          defects.push(defect(CHECK, META, source, node, start + offset, fix))
+          defects.push(
+            defect(
+              CHECK, META, source, node, start + offset, expression, fix,
+            ),
+          )
         }
       }
     }

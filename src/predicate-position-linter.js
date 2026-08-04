@@ -127,7 +127,8 @@ const lintByPredicatePosition = function(corpus, suppressions = []) {
         for (const {offset, value, replacement} of literals(expression)) {
           defects.push(
             defect(
-              CHECK, META, source, node, start + offset, {value, replacement},
+              CHECK, META, source, node, start + offset, expression,
+              {value, replacement},
             ),
           )
         }

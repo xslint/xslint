@@ -112,7 +112,7 @@ const lintByCount = function(corpus, suppressions = []) {
           const whole = node.nodeName === 'test' &&
             node.nodeValue.trim() === value
           defects.push(
-            defect(CHECK, META, source, node, start + offset, {
+            defect(CHECK, META, source, node, start + offset, expression, {
               value: value,
               replacement: rewritten(test, argument, modern, whole),
             }),

@@ -139,7 +139,7 @@ const lintByName = function(corpus, suppressions = []) {
           expression, modern,
         )) {
           defects.push(
-            defect(CHECK, META, source, node, start + offset,
+            defect(CHECK, META, source, node, start + offset, expression,
               replacement === null ?
                 undefined : {value, replacement, suggestion: true},
             ),

@@ -20,6 +20,23 @@ const source = function(name) {
   }
 }
 
+/**
+ * Lines of `refused/refused-expressions.xsl` whose expression the XPath
+ * validator refuses. A code-based linter still reads them, so it still reports
+ * what it finds there, but a fix it offered would rewrite text no processor
+ * parses — `select="child::"` shortened to `select=""` — so none may carry one.
+ * @type {Array.<number>}
+ */
+const REFUSED = [9, 10]
+
+/**
+ * Lines of the same stylesheet whose expression parses, one of them spaced
+ * inside its own step (#615). Their fixes are the ones a validity gate must not
+ * take with it.
+ * @type {Array.<number>}
+ */
+const KEPT = [13, 14]
+
 describe('lint (programmatic API)', function() {
   it('returns defects for in-memory sources', function() {
     const defects = lint([source('stylesheets/xsl-with-some-violations.xsl')])
@@ -51,5 +68,29 @@ describe('lint (programmatic API)', function() {
   it('exposes the fix engine for callers to apply', function() {
     const sources = [source('stylesheets/xsl-with-no-violations.xsl')]
     assert.equal(fixed(sources, lint(sources)).contents.size, 0)
+  })
+  it('offers no fix on an expression the validator refused', function() {
+    assert.deepEqual(
+      lint([source('refused/refused-expressions.xsl')])
+        .filter((defect) => REFUSED.includes(defect.line) && defect.fix)
+        .map((defect) => `${defect.name} at ${defect.line}:${defect.pos}`),
+      [],
+    )
+  })
+  it('still reports what it finds on a refused expression', function() {
+    assert.ok(
+      lint([source('refused/refused-expressions.xsl')]).some(
+        (defect) => defect.name === 'unabbreviated-axis' &&
+          defect.line === REFUSED[0],
+      ),
+    )
+  })
+  it('keeps the fix on a valid expression beside a refused one', function() {
+    assert.deepEqual(
+      lint([source('refused/refused-expressions.xsl')])
+        .filter((defect) => KEPT.includes(defect.line))
+        .map((defect) => Boolean(defect.fix)),
+      [true, true],
+    )
   })
 })

@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
+const {isValid} = require('./xpath')
 const {yaml} = require('./helpers')
 const {offsetAt, placeAt, skip} = require('./source')
 const path = require('path')
@@ -54,11 +55,15 @@ const LEAD = {2: 1, 4: '<![CDATA['.length}
  *  normalised away are still visible
  * @param {Node} node - The attribute, text, or CDATA node
  * @param {number} offset - Offset of the defect within the node value
+ * @param {string} expression - The expression the defect stands in, whose own
+ *  text decides whether a fix may be offered at all
  * @param {?{value: string, replacement: string, suggestion?: boolean}} [fix] -
  *  The fix, or undefined for a report-only defect
  * @return {object} - Defect
  */
-const defect = function(check, meta, source, node, offset, fix = undefined) {
+const defect = function(
+  check, meta, source, node, offset, expression, fix = undefined,
+) {
   const {line, pos} = placeAt(
     source.content,
     skip(
@@ -68,7 +73,7 @@ const defect = function(check, meta, source, node, offset, fix = undefined) {
       offset,
     ),
   )
-  const anchored = fix === undefined ?
+  const anchored = fix === undefined || !isValid(expression) ?
     undefined :
     {line: line, col: pos, ...fix}
   return {

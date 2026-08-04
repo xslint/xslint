@@ -118,7 +118,7 @@ const lintByStringLength = function(corpus, suppressions = []) {
       for (const {node, start, expression} of expressionsOf(source.xsl)) {
         for (const {offset, value, replacement} of comparisons(expression)) {
           defects.push(
-            defect(CHECK, META, source, node, start + offset,
+            defect(CHECK, META, source, node, start + offset, expression,
               replacement === null ?
                 undefined : {value, replacement, suggestion: true},
             ),

@@ -345,6 +345,12 @@ Checks whose correction needs real judgment (a fresh name, a more specific
 path) stay report-only. A run without `--fix` reports how many defects each
 option would fix.
 
+An expression xslint cannot parse is never rewritten. It is reported as
+`invalid-xpath-expression`, and any other defect standing in it is reported
+too, but with no correction offered: a stylesheet whose real fault is a missing
+bracket should come back with that fault and nothing else changed. Fix the
+syntax and the corrections appear on the next run.
+
 Where two corrections cover the same piece of an expression — the redundant
 whitespace in `d[position()  =  1]` sits inside the predicate that becomes
 `d[1]` — only the wider one is applied, and the other is announced as skipped.
