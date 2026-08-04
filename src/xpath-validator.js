@@ -4,6 +4,7 @@
  */
 
 const {isValid} = require('./xpath')
+const {ATTRIBUTES, PATTERNS} = require('./attributes')
 const {walked} = require('./tree')
 const {XSLT} = require('./xsl-version')
 const {yaml} = require('./helpers')
@@ -31,17 +32,21 @@ const META = yaml.parsedFromFile(
 const names = [CHECK]
 
 /**
- * Attribute nodes that carry a bare Xpath expression, scoped to XSLT elements
- * so literal result elements are left alone. Pattern attributes (match, count,
- * from, group-starting-with, group-ending-with), attribute value templates,
- * and sequence types (as) are not expressions and stay out.
- * @type {string}
+ * The attributes carrying a bare Xpath expression: every attribute a linter
+ * reads, less the ones holding a pattern. A pattern is a different language
+ * and waits on a grammar of its own (#589); an attribute value template and a
+ * sequence type are not expressions either, and neither is in the list to
+ * begin with.
+ *
+ * Derived rather than written out, because a second list is a second opinion
+ * about what a stylesheet carries and drifts from the first. That is not a
+ * hypothetical: #627 added `for-each-item` and `for-each-source` to
+ * `src/attributes.js` alone, and the three attributes nothing validated (#647)
+ * were what came of it. Subtracting one list from the other leaves nowhere for
+ * the next one to hide.
+ * @type {Array.<string>}
  */
-const EXPRESSIONS = [
-  'select', 'test', 'use', 'value', 'group-by', 'group-adjacent',
-  'key', 'initial-value', 'xpath', 'context-item', 'with-params',
-  'namespace-context', 'for-each-item', 'for-each-source', 'use-when',
-]
+const EXPRESSIONS = ATTRIBUTES.filter((name) => !PATTERNS.includes(name))
 
 /**
  * Whether the walked node is one of those attributes on an XSLT element. The
