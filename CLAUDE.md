@@ -301,7 +301,17 @@ its harness — no registration. A pack is `pack` (the check name), `found`, and
 `[fileIndex, line, col]` for cross-file packs, or `[line, col, other-check]` for
 a co-firing check. A code-based linter's pack also carries `found.fixes` aligned
 with `positions` (the expected `fix.replacement`, `null` for report-only), which
-the harness asserts too.
+the harness asserts too. Both halves are machine-enforced by
+`conformance.test.js`: a pack whose `pack:` names a `checks/format/` check must
+carry `fixes` standing one per position, **and** the harness reading that pack's
+directory must mention `found.fixes` at all — the pack declaring a fix and
+nobody reading it is how `import-packs` asserted none while `redundant-import`
+emitted one. No harness falls back to an empty array for `fixes` any more
+(`found.values` is a separate, still opt-in key), so a dropped key throws rather
+than quietly asserting nothing. It was opt-in until #607, and 33 of 98 packs had
+opted out, among them every `redundant-whitespace` replacement. A `null` is as
+much of an assertion as a string: it pins a check as report-only, so an
+accidentally attached fix turns red.
 
 - **Test the hard cases.** A pack must exercise more than one clean, top-level
   occurrence: the construct **buried** in a larger expression (a predicate, an

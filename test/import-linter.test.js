@@ -30,6 +30,12 @@ describe('import-linter', function() {
           assert.equal(defects[index].line, pos[1])
           assert.equal(defects[index].pos, pos[2])
         })
+        yml.found.fixes.forEach((expected, index) => {
+          assert.equal(
+            defects[index].fix ? defects[index].fix.replacement : null,
+            expected,
+          )
+        })
       })
     })
   })

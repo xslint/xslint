@@ -5,6 +5,7 @@ pack: redundant-import
 found:
   amount: 0
   positions: [ ]
+  fixes: [ ]
 inputs:
   - |-
     <?xml version="1.0"?>
