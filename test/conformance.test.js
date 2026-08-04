@@ -172,6 +172,24 @@ describe('conformance', function() {
       'a format pack whose fixes do not stand one per position asserts nothing about them',
     )
   })
+  it('reads the fixes of every format pack in the harness owning it', function() {
+    const formats = new Set(names('format'))
+    const suites = allFilesFrom(path.resolve(__dirname))
+      .filter((file) => file.endsWith('.test.js'))
+      .map((file) => fs.readFileSync(file, 'utf-8'))
+    assert.deepEqual(
+      [...new Set(
+        allFilesFrom(RESOURCES)
+          .filter((file) => file.endsWith('.yaml'))
+          .filter((file) => formats.has(yaml.parsedFromFile(file).pack))
+          .map((file) => path.basename(path.dirname(file))),
+      )].filter((dir) => !suites.some(
+        (suite) => suite.includes(`'${dir}'`) && suite.includes('found.fixes'),
+      )),
+      [],
+      'a pack directory whose harness never reads found.fixes leaves every fix in it unasserted',
+    )
+  })
   it('tests every validation check by name in a test file', function() {
     const suite = allFilesFrom(path.resolve(__dirname))
       .filter((file) => file.endsWith('.test.js'))

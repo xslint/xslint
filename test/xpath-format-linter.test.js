@@ -31,8 +31,7 @@ describe('xpath-format-linter', function() {
             assert.equal(defects[index].line, pos[0])
             assert.equal(defects[index].pos, pos[1])
           })
-          const fixes = yml.found.fixes
-          fixes.forEach((expected, index) => {
+          yml.found.fixes.forEach((expected, index) => {
             assert.equal(
               defects[index].fix ? defects[index].fix.replacement : null,
               expected,
