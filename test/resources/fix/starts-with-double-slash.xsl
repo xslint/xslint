@@ -7,4 +7,7 @@
   <xsl:template match="//objects">
     <xsl:copy-of select="."/>
   </xsl:template>
+  <xsl:template match=" //spaced">
+    <xsl:copy-of select="."/>
+  </xsl:template>
 </xsl:stylesheet>

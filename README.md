@@ -41,7 +41,7 @@ xslint points at each problem with its exact position and how to fix it:
 
 ```text
 [ERROR] sheet.xsl(2:1) The xsl:output instruction is missing. Declare it to specify the serialization format explicitly. (not-using-output)
-[WARNING] sheet.xsl(3:3) The match attribute of xsl:template starts with //, which scans the entire document tree. Use a more specific pattern. (starts-with-double-slash)
+[WARNING] sheet.xsl(3:23) A pattern starts with //, which is redundant since every XSLT pattern already matches at any depth, and it lowers the rule's default priority from 0.5 to that of the step alone. Remove the leading // and give the rule an explicit priority if it must keep ranking as it does. (starts-with-double-slash)
 [WARNING] sheet.xsl(4:5) A variable, function, or template has a single-character name. Use a descriptive name that reveals intent. (short-names)
 ```
 
@@ -271,12 +271,14 @@ Today this covers ten checks:
   `exists($x)` and `count($x) = 0` becomes `empty($x)`; on 1.0 (where those
   functions don't exist), `boolean($x)` — or a bare `$x` in a whole `@test` —
   and `not($x)`.
-- `starts-with-double-slash` — the redundant leading `//` of a template's
-  `@match` is dropped: `match="//para"` becomes `match="para"`, which selects
-  the same nodes.
 - `redundant-import` — a duplicate `xsl:import`/`xsl:include` of a module
   already imported in the same stylesheet is removed; the module stays imported
   by the first reference.
+- `starts-with-double-slash`, outside an `xsl:template` — the redundant leading
+  `//` of a pattern is dropped: `match="//keyed"` on an `xsl:key` becomes
+  `match="keyed"`. Only a template's pattern is ranked by priority, so on
+  `xsl:key`, `xsl:number`, `xsl:for-each-group` and `xsl:accumulator-rule` the
+  same nodes match at the same rank.
 - `redundant-double-negation` — `not(not(x))` becomes `boolean(x)`, the
   equivalent it spells out the long way; in a whole `@test`, which already
   coerces to a boolean, it becomes plain `x`.
@@ -313,6 +315,10 @@ Today this covers:
 - `select-starts-with-double-slash` — the leading `//` of a `@select` is
   anchored as `.//`: `select="//title"` becomes `select=".//title"`, scanning
   descendants of the context node instead of the whole document.
+- `starts-with-double-slash`, on an `xsl:template` — the redundant leading `//`
+  of `@match` is dropped: `match="//para"` becomes `match="para"`. The same nodes
+  match, but the template's default priority falls from 0.5 to 0, so a rule that
+  used to win a conflict can start losing it.
 - `confusing-variable-and-node` — a bare variable name used as a node selector
   gets its `$`: `<xsl:apply-templates select="items"/>` becomes
   `select="$items"`, assuming the variable was meant over a child element.

@@ -67,20 +67,40 @@ const modeOrPriority = function(node) {
 }
 
 /**
- * Fix for `starts-with-double-slash`: drop the leading `//` of the template's
- * `@match`. In a match pattern the leading `//` is redundant — a pattern is
- * already unanchored — so removing it preserves the matched nodes, which makes
- * this a safe fix rather than a suggestion.
- * @param {Element} node - The `xsl:template` element
- * @return {object} - The safe fix
+ * Fix for `starts-with-double-slash`: drop the leading `//` of a pattern
+ * attribute. The same nodes match afterwards, since a pattern is unanchored
+ * either way — but on an `xsl:template` they do not match at the same *rank*: a
+ * pattern carrying a `/` step has a default priority of 0.5 where a lone name
+ * test has 0, so the rule loses half a point against every rule it competes
+ * with and a template that used to win can start losing (#583). That is a
+ * behaviour change, so there the edit is a suggestion.
+ *
+ * Nowhere else is it one. `priority` is an attribute of `xsl:template` alone,
+ * so no other pattern is ranked against anything: an `xsl:key` or `xsl:number`
+ * pattern only selects, an `xsl:for-each-group` pattern only tests membership,
+ * and `xsl:accumulator-rule` resolves a clash by declaration order. Dropping
+ * the `//` there is deterministic and semantics-preserving, which is a safe
+ * fix, and tiering every kind as a suggestion would withhold five of the six
+ * from `--fix` for a hazard only the sixth has.
+ *
+ * The `//` is cut where it truly stands rather than off the front, because the
+ * check reads the pattern normalized: on `match=" //spaced"` slicing two
+ * characters would leave `/spaced`, turning an unanchored pattern into an
+ * absolute one.
+ * @param {Node} pattern - The pattern attribute node
+ * @return {object} - The fix, a suggestion only inside a template
  */
-const startsWithDoubleSlash = function(node) {
-  const match = node.getAttributeNode('match')
+const startsWithDoubleSlash = function(pattern) {
+  const at = pattern.value.indexOf('//')
   return {
-    line: match.lineNumber,
-    col: match.columnNumber - match.name.length - 1,
-    value: `${match.name}="${match.value}"`,
-    replacement: `${match.name}="${match.value.slice(2)}"`,
+    line: pattern.lineNumber,
+    col: pattern.columnNumber - pattern.name.length - 1,
+    value: `${pattern.name}="${pattern.value}"`,
+    replacement: `${pattern.name}="${
+      pattern.value.slice(0, at)}${pattern.value.slice(at + 2)}"`,
+    ...pattern.ownerElement.localName === 'template' ?
+      {suggestion: true} :
+      {},
   }
 }
 

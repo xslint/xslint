@@ -72,6 +72,11 @@ const REFUSED = new WeakMap()
  * expression no processor parses is not worth tidying, and the cost of being
  * wrong here is a correction that waits for the syntax to be fixed, against a
  * rewrite of text the same run reported malformed (#651).
+ *
+ * Its own attributes are listed with it, because a rule may select the
+ * attribute rather than the element carrying it — `starts-with-double-slash`
+ * does, so that one selector covers every attribute holding a pattern (#583) —
+ * and an attribute is not reachable from the element through this set.
  * @param {Document} xsl - XSL document parsed as {@link Document}
  * @return {Set.<Node>} - The nodes a fix must not be offered on
  */
@@ -80,8 +85,12 @@ const refused = function(xsl) {
     const found = new Set()
     for (const held of expressionsOf(xsl)) {
       if (!isValid(held.expression)) {
+        const owner = held.node.ownerElement || held.node.parentNode
         found.add(held.node)
-        found.add(held.node.ownerElement || held.node.parentNode)
+        found.add(owner)
+        for (const beside of owner.attributes) {
+          found.add(beside)
+        }
       }
     }
     REFUSED.set(xsl, found)
