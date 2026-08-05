@@ -1,0 +1,19 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: redundant-whitespace
+# Both runs of an axis spaced on each side of its `::` are pinned. The lexer
+# folds the gap in front of the colons into the axis token, so the run in front
+# is found inside that token and the run behind it is a whitespace token of its
+# own (#642).
+found:
+  amount: 2
+  positions: [ [ 4, 35 ], [ 4, 39 ] ]
+  fixes: [ " ", " " ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="s">
+    <xsl:template match="/">
+      <xsl:value-of select="ancestor  ::  b"/>
+    </xsl:template>
+  </xsl:stylesheet>

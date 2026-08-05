@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {tokenized, TOKENS} = require('./tokens')
+const {tokenized, TOKENS, GAP} = require('./tokens')
 const {metaOf, suppressed, defect} = require('./checks')
 const {logger} = require('./logger')
 
@@ -26,6 +26,34 @@ const META = metaOf(CHECK)
 const names = [CHECK]
 
 /**
+ * A run of more than one gap character, for looking inside a token that carries
+ * one.
+ * @type {RegExp}
+ */
+const INTERNAL = new RegExp(`${GAP}{2,}`)
+
+/**
+ * The redundant run a token holds inside itself, or null. Only an axis holds
+ * one: the lexer folds the gap in front of its `::` into the axis token, so
+ * `ancestor  ::` is a single token and a scan reading only `whitespace` tokens
+ * saw the run behind the colons and not the one in front of them — one of the
+ * two runs in `ancestor  ::  b`, with `--fix` leaving the other in the file and
+ * the next run calling it clean (#642). A string or a comment is kept
+ * whole on purpose, so neither is ever looked into, and a run that wraps a line
+ * is left alone here as it is everywhere else.
+ * @param {{type: string, value: string, start: number}} token - The token
+ * @return {?{offset: number, value: string, replacement: string}} - The run
+ */
+const inside = function(token) {
+  const run = token.type === TOKENS.STRING || token.type === TOKENS.COMMENT ?
+    null :
+    INTERNAL.exec(token.value)
+  return run === null || /[\r\n]/.test(run[0]) ?
+    null :
+    {offset: token.start + run.index, value: run[0], replacement: ' '}
+}
+
+/**
  * Redundant whitespace runs in an expression. A run is redundant when it is
  * longer than one space, or leads or trails the expression; a run that wraps a
  * line is left alone, and runs inside string literals or comments are never
@@ -41,6 +69,7 @@ const redundancies = function(expression) {
     const edge =
       token.start === 0 ||
       token.start + token.value.length === expression.length
+    const held = token.type === TOKENS.WHITESPACE ? null : inside(token)
     if (
       token.type === TOKENS.WHITESPACE &&
       !/[\r\n]/.test(token.value) &&
@@ -51,6 +80,8 @@ const redundancies = function(expression) {
         value: token.value,
         replacement: edge ? '' : ' ',
       })
+    } else if (held !== null) {
+      runs.push(held)
     }
   }
   return runs
