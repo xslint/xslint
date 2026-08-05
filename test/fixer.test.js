@@ -107,11 +107,18 @@ const APPLIED = [
     after: 'redundant-namespace-declarations.fixed.xsl',
   },
   {
-    name: 'should drop the redundant leading slashes of a pattern with ' +
+    name: 'should drop the redundant leading slashes of a match with ' +
       '--fix-suggestions',
     flag: '--fix-suggestions',
     before: 'starts-with-double-slash.xsl',
     after: 'starts-with-double-slash.fixed.xsl',
+  },
+  {
+    name: 'should drop the redundant leading slashes of a pattern outside a ' +
+      'template with --fix',
+    flag: '--fix',
+    before: 'starts-with-double-slash-outside-a-template.xsl',
+    after: 'starts-with-double-slash-outside-a-template.fixed.xsl',
   },
   {
     name: 'should delete a redundant import with --fix',

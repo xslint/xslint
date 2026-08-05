@@ -107,6 +107,17 @@ describe('lint (programmatic API)', function() {
       ['9:41', '11:39', '14:41'],
     )
   })
+  it('suggests dropping a match, but safely fixes any other pattern', function() {
+    assert.deepEqual(
+      [
+        'fix/starts-with-double-slash.xsl',
+        'fix/starts-with-double-slash-outside-a-template.xsl',
+      ].flatMap((sheet) => lint([source(sheet)])
+        .filter((defect) => defect.name === 'starts-with-double-slash')
+        .map((defect) => Boolean(defect.fix.suggestion))),
+      [true, true, false, false, false, false, false, false],
+    )
+  })
   it('keeps both declarative fixes on the valid template', function() {
     assert.deepEqual(
       lint([source('refused/refused-by-a-declarative-fix.xsl')])

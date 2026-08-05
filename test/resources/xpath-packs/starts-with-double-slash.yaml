@@ -2,6 +2,10 @@
 # SPDX-License-Identifier: MIT
 ---
 pack: starts-with-double-slash
+# The two xsl:for-each-group attributes are pinned column 87 before column 57:
+# a union yields the attributes of one element in no defined order, and this is
+# the order fontoxpath gives, so document order is not what the report follows
+# when one element carries two patterns.
 found:
   amount: 10
   positions: [ [ 4, 23 ], [ 7, 23 ], [ 10, 28 ], [ 12, 23 ], [ 12, 40 ], [ 15, 87 ], [ 15, 57 ], [ 20, 33 ], [ 11, 3, use-double-slash ], [ 14, 3, use-double-slash ] ]

@@ -274,6 +274,11 @@ Today this covers ten checks:
 - `redundant-import` — a duplicate `xsl:import`/`xsl:include` of a module
   already imported in the same stylesheet is removed; the module stays imported
   by the first reference.
+- `starts-with-double-slash`, outside an `xsl:template` — the redundant leading
+  `//` of a pattern is dropped: `match="//keyed"` on an `xsl:key` becomes
+  `match="keyed"`. Only a template's pattern is ranked by priority, so on
+  `xsl:key`, `xsl:number`, `xsl:for-each-group` and `xsl:accumulator-rule` the
+  same nodes match at the same rank.
 - `redundant-double-negation` — `not(not(x))` becomes `boolean(x)`, the
   equivalent it spells out the long way; in a whole `@test`, which already
   coerces to a boolean, it becomes plain `x`.
@@ -310,10 +315,10 @@ Today this covers:
 - `select-starts-with-double-slash` — the leading `//` of a `@select` is
   anchored as `.//`: `select="//title"` becomes `select=".//title"`, scanning
   descendants of the context node instead of the whole document.
-- `starts-with-double-slash` — the redundant leading `//` of a pattern is
-  dropped: `match="//para"` becomes `match="para"`. The same nodes match, but a
-  template's default priority falls from 0.5 to 0, so a rule that used to win a
-  conflict can start losing it.
+- `starts-with-double-slash`, on an `xsl:template` — the redundant leading `//`
+  of `@match` is dropped: `match="//para"` becomes `match="para"`. The same nodes
+  match, but the template's default priority falls from 0.5 to 0, so a rule that
+  used to win a conflict can start losing it.
 - `confusing-variable-and-node` — a bare variable name used as a node selector
   gets its `$`: `<xsl:apply-templates select="items"/>` becomes
   `select="$items"`, assuming the variable was meant over a child element.
