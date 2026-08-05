@@ -42,6 +42,30 @@ const SCANS = [
     ],
   },
   {
+    name: 'keeps a name whole around the operator letters inside it',
+    count: 1,
+    pairs: [
+      ['border', TOKENS.NAME],
+      ['agent', TOKENS.NAME],
+      ['grandchild', TOKENS.NAME],
+      ['modal', TOKENS.NAME],
+      ['unionist', TOKENS.NAME],
+      ['exception', TOKENS.NAME],
+      ['orange', TOKENS.NAME],
+      ['a-child', TOKENS.NAME],
+      ['instanceof', TOKENS.NAME],
+    ],
+  },
+  {
+    name: 'reads a word as a name where no operator may stand',
+    count: 3,
+    pairs: [
+      ['union w e', TOKENS.NAME],
+      ['or w e', TOKENS.NAME],
+      ['a/or/b', TOKENS.NAME],
+    ],
+  },
+  {
     name: 'finds operators',
     count: 1,
     pairs: [
@@ -51,9 +75,9 @@ const SCANS = [
       ['t = t', TOKENS.EQUAL],
       ['!= w e', TOKENS.NOT_EQUAL],
       ['t eq t', TOKENS.EQ],
-      ['2div7', TOKENS.DIV],
-      ['union w e', TOKENS.UNION],
-      ['instance of', TOKENS.INSTANCE_OF],
+      ['2 div 7', TOKENS.DIV],
+      ['w union e', TOKENS.UNION],
+      ['w instance of node()', TOKENS.INSTANCE_OF],
     ],
   },
   {

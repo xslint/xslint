@@ -47,7 +47,7 @@ const SIGN = {
  * @return {string} - Its one-character signature symbol
  */
 const symbol = function(token) {
-  return (token.type === TOKENS.OTHER ?
+  return (token.type === TOKENS.NAME ?
     {position: 'P', last: 'L'}[token.value] :
     SIGN[token.type]) || 'x'
 }
