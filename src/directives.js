@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {GAP, WHITESPACE} = require('./tokens')
+const {GAP, GAPS, WHITESPACE} = require('./tokens')
 
 /**
  * Directive keywords and the scope each one covers: the whole file, the line
@@ -43,7 +43,7 @@ const directivesFrom = function(content) {
     directives.push({
       type: match[1],
       line: content.slice(0, match.index).split('\n').length,
-      names: match[2].trim().split(new RegExp(`${GAP}+`)).filter((name) => name.length > 0),
+      names: match[2].trim().split(GAPS).filter((name) => name.length > 0),
     })
   }
   return directives

@@ -79,6 +79,15 @@ const WHITESPACE = ' \t\r\n'
 const GAP = `[${WHITESPACE}]`
 
 /**
+ * A run of one or more of them, ready to split a whitespace-separated list on —
+ * the rule names of an inline directive, or the prefixes of an
+ * `exclude-result-prefixes`. Built once here rather than per call, and carrying
+ * no `g` flag, so it holds no `lastIndex` for a caller to trip over.
+ * @type {RegExp}
+ */
+const GAPS = new RegExp(`${GAP}+`)
+
+/**
  * Quote characters that open a string literal.
  * @type {string}
  */
@@ -484,4 +493,5 @@ module.exports = {
   TOKENS,
   WHITESPACE,
   GAP,
+  GAPS,
 }
