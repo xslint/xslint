@@ -103,7 +103,9 @@ const byCircularity = function(corpus) {
  * is exactly that, so an oddly formatted, single-quoted, or non-self-closing
  * import is reported but left untouched rather than wrongly cut. Deleting a
  * duplicate is semantics-preserving — the module stays imported by the first
- * reference — so it is a safe fix, not a suggestion.
+ * reference — so it is a safe fix, not a suggestion. It is offered only where
+ * every reference to that module uses one mechanism, which is what `crossed`
+ * decides.
  * @param {Element} node - The duplicate import/include element
  * @return {{line: number, col: number, value: string, replacement: string}} -
  *  The fix
@@ -119,20 +121,46 @@ const removal = function(node) {
 }
 
 /**
+ * The `file|target` keys of every module one stylesheet reaches both ways — by
+ * `xsl:import` and also by `xsl:include`. The two mechanisms differ in import
+ * precedence: an included module's definitions stand at the level of the
+ * including stylesheet's own, an imported module's below them. So the pair is
+ * not the same reference written twice, and deleting either moves definitions
+ * between precedence levels, which the author decides rather than a fix (#597).
+ * @param {Array.<{file: string, node: Element, to: string}>} imports - Imports
+ * @return {Set.<string>} - Keys of the modules reached both ways
+ */
+const crossed = function(imports) {
+  const mechanisms = new Map()
+  for (const {file, node, to} of imports) {
+    const key = `${file}|${to}`
+    mechanisms.set(key, (mechanisms.get(key) || new Set()).add(node.localName))
+  }
+  return new Set(
+    Array.from(mechanisms.keys()).filter((key) => mechanisms.get(key).size > 1),
+  )
+}
+
+/**
  * Defects for `redundant-import` — the second and later `xsl:import`/
  * `xsl:include` of the same resolved target within one stylesheet's own list.
  * The target need not be a corpus file: importing the same external library
- * twice is redundant too. Each carries a fix that deletes the duplicate line.
+ * twice is redundant too. Each carries a fix that deletes the duplicate line,
+ * except where the module is reached by both mechanisms, which is reported
+ * without one.
  * @param {Array.<{file: string, xsl: Document}>} corpus - Parsed stylesheets
  * @return {Array.<object>} - Defects found
  */
 const byRedundancy = function(corpus) {
+  const imports = importsOf(corpus)
+  const mixed = crossed(imports)
   const seen = new Set()
   const defects = []
-  for (const {file, node, to} of importsOf(corpus)) {
+  for (const {file, node, to} of imports) {
     const key = `${file}|${to}`
     if (seen.has(key)) {
-      defects.push({...defect(REDUNDANT, file, node), fix: removal(node)})
+      const report = defect(REDUNDANT, file, node)
+      defects.push(mixed.has(key) ? report : {...report, fix: removal(node)})
     } else {
       seen.add(key)
     }

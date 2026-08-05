@@ -28,6 +28,11 @@ const target = function(file, href) {
  * declaring file's own directory). The target may or may not be a file in the
  * corpus; membership is left to the caller. No file is read — the corpus
  * already holds every parsed stylesheet with its path.
+ *
+ * A reference carrying no `@href` names no module, so it yields no import. It
+ * is well-formed XML and invalid XSLT — a fault for a check of its own to
+ * report (#668), not one to resolve here, since joining its absent href onto
+ * the directory threw and took the whole run's report down with it (#597).
  * @param {Array.<{file: string, xsl: Document}>} corpus - Parsed stylesheets
  * @return {Array.<{file: string, node: Element, to: string}>} - The imports
  */
@@ -37,7 +42,8 @@ const importsOf = function(corpus) {
       .filter(
         (element) =>
           element.namespaceURI === XSLT &&
-          (element.localName === 'import' || element.localName === 'include'),
+          (element.localName === 'import' || element.localName === 'include') &&
+          element.hasAttribute('href'),
       )
       .map((node) => ({
         file: path.normalize(file),
