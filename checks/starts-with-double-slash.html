@@ -72,25 +72,45 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-warning">warning</span>
-    <code class="xpath">//xsl:template[starts-with(@match, '//')]</code>
+    <code class="xpath">((//xsl:template | //xsl:key | //xsl:accumulator-rule)/@match | //xsl:number/(@count | @from) | //xsl:for-each-group/(@group-starting-with | @group-ending-with))[starts-with(normalize-space(), '//')]</code>
   </div>
   <div class="check-content">
 <h1>Starts with double slash</h1>
-<p>A leading <code>//</code> on a <code>match</code> pattern is redundant: a template pattern is not
-anchored, so <code>match=&quot;//item&quot;</code> already selects exactly the same nodes as
-<code>match=&quot;item&quot;</code> — every <code>item</code>, at any depth. The <code>//</code> adds nothing but noise
-(and, read carelessly, suggests a document scan that never happens). Drop it
-and let the pattern say plainly which element it matches.</p>
+<p>A leading <code>//</code> on a pattern selects nothing extra. Every XSLT pattern is matched
+unanchored — a node matches when any alternative of the pattern matches it,
+wherever it sits — so <code>match=&quot;//item&quot;</code> and <code>match=&quot;item&quot;</code> select exactly the same
+nodes, every <code>item</code> at any depth. Read carelessly, the <code>//</code> suggests a scan of the
+whole document that never happens.</p>
+<p>What it does change is which rule wins. A pattern&#39;s default priority comes from
+its shape: a lone name test scores 0, while a pattern carrying a <code>/</code> step scores
+0.5. So <code>//item</code> outranks <code>item</code> by half a point, and two templates that look
+interchangeable are not:</p>
+<pre><code class="language-xsl">&lt;xsl:template match=&quot;list/item&quot;&gt;SPECIFIC&lt;/xsl:template&gt;
+&lt;xsl:template match=&quot;//item&quot;&gt;DOUBLESLASH&lt;/xsl:template&gt;
+</code></pre>
+<p>Both patterns score 0.5, so the later one wins and every <code>item</code> inside a <code>list</code>
+is handled by <code>DOUBLESLASH</code>. Remove the <code>//</code> and <code>list/item</code> keeps 0.5 while the
+bare <code>item</code> drops to 0, so the same node is handled by <code>SPECIFIC</code> instead. The
+output changes though neither template was touched.</p>
+<p>Write the pattern the shape you mean, and where a rule has to keep the rank it
+had, say so with an explicit <code>priority</code> rather than leaning on a <code>//</code> to buy half
+a point:</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:template match=&quot;//item&quot;&gt;
   &lt;xsl:value-of select=&quot;.&quot;/&gt;
 &lt;/xsl:template&gt;
 </code></pre>
 <p>Correct:</p>
-<pre><code class="language-xsl">&lt;xsl:template match=&quot;item&quot;&gt;
+<pre><code class="language-xsl">&lt;xsl:template match=&quot;item&quot; priority=&quot;0.5&quot;&gt;
   &lt;xsl:value-of select=&quot;.&quot;/&gt;
 &lt;/xsl:template&gt;
 </code></pre>
+<p>The redundancy is the same in every attribute that holds a pattern rather than an
+expression — <code>xsl:key/@match</code>, <code>xsl:accumulator-rule/@match</code>, the <code>@count</code> and
+<code>@from</code> of <code>xsl:number</code>, and the <code>@group-starting-with</code> and <code>@group-ending-with</code>
+of <code>xsl:for-each-group</code>. None of those is anchored either. Priority is a
+template&#39;s concern alone, so in the others a leading <code>//</code> costs only the
+misreading.</p>
 
   </div>
 </body>
