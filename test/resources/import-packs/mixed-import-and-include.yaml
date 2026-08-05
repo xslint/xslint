@@ -1,0 +1,21 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: redundant-import
+found:
+  amount: 3
+  positions: [ [ 0, 5, 3 ], [ 0, 6, 3 ], [ 0, 7, 3 ] ]
+  fixes: [ null, null, null ]
+inputs:
+  - |-
+    <?xml version="1.0"?>
+    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="a">
+      <xsl:import href="shared.xsl"/>
+      <xsl:import href="other.xsl"/>
+      <xsl:include href="shared.xsl"/>
+      <xsl:include href="other.xsl"/>
+      <xsl:include href="other.xsl"/>
+      <xsl:template match="/">
+        <xsl:value-of select="."/>
+      </xsl:template>
+    </xsl:stylesheet>

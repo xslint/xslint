@@ -273,7 +273,10 @@ Today this covers ten checks:
   and `not($x)`.
 - `redundant-import` — a duplicate `xsl:import`/`xsl:include` of a module
   already imported in the same stylesheet is removed; the module stays imported
-  by the first reference.
+  by the first reference. A module reached *both* ways — imported and also
+  included — is reported without a fix, since `xsl:import` and `xsl:include`
+  differ in import precedence, so which of the two to drop is the author's
+  decision rather than a deletion the tool can make.
 - `starts-with-double-slash`, outside an `xsl:template` — the redundant leading
   `//` of a pattern is dropped: `match="//keyed"` on an `xsl:key` becomes
   `match="keyed"`. Only a template's pattern is ranked by priority, so on
