@@ -96,7 +96,7 @@ const afterNode = function(tokens, index) {
     (token) => token.type !== TOKENS.WHITESPACE,
   )
   const shaped = rest.length >= 3 &&
-    rest[0].type === TOKENS.OTHER && rest[0].value === 'node' &&
+    rest[0].type === TOKENS.NAME && rest[0].value === 'node' &&
     rest[1].type === TOKENS.LPAREN && rest[2].type === TOKENS.RPAREN
   return shaped ? {
     end: rest[2].start + 1,
