@@ -55,6 +55,7 @@ const TOKENS = {
   ANCESTOR: 'ancestor',
   ANCESTOR_OR_SELF: 'ancestor-or-self',
   NAMESPACE: 'namespace',
+  NAME: 'name',
   USER_FUNCTION: 'user_function',
   CONCAT: '||',
   FUNCTION: 'function',
@@ -178,6 +179,41 @@ const MORE = {
 }
 
 /**
+ * The word operators, one word each, taken from the maps that already spell
+ * them rather than listed a fourth time. `instance of` is left out: it is two
+ * words with a gap between them, which a name scan can never reach past, so the
+ * `more` branch keeps it.
+ * @type {Array.<string>}
+ */
+const WORDS = Object.keys({...DOUBLE, ...TRIPLE, ...MORE})
+  .filter((word) => /^[a-z]+$/.test(word))
+
+/**
+ * The operators spelled with symbols rather than letters, so they are the
+ * complement of `WORDS` in the same maps and cannot drift from them. A word is
+ * an operator only by position; a symbol always is one, and `!=` has no name it
+ * could belong to.
+ * @type {{[key: string]: string}}
+ */
+const SYMBOLS = Object.fromEntries(
+  Object.entries({...DOUBLE, ...TRIPLE, ...MORE})
+    .filter(([key]) => !/^[a-z]/.test(key)),
+)
+
+/**
+ * Token types a value ends with, so that a word standing after one of them is
+ * an operator rather than a name. XPath decides this by position, not by
+ * spelling: an NCName is an OperatorName only where an operator may stand,
+ * which is why `border` is one name and not `b`, `or`, `der` (#617), and why
+ * the `or` of `or/border` is a node test.
+ * @type {Array.<string>}
+ */
+const ENDS = [
+  TOKENS.NAME, TOKENS.NUMBER, TOKENS.STRING, TOKENS.RPAREN, TOKENS.RBRACKET,
+  TOKENS.MULTI,
+]
+
+/**
  * Whether a comment opens at given offset.
  * @param {string} xpath - Xpath expression
  * @param {number} at - Offset to test
@@ -219,6 +255,42 @@ const spelling = function(xpath, at) {
     start -= 1
   }
   return start < at && STARTS.test(xpath[start])
+}
+
+/**
+ * Offset just past the name spelled at the given offset. A name is taken whole
+ * and greedily, so an operator's letters inside one — the `or` of `border`, the
+ * `and` of `grandchild`, the `union` of `unionist` — stay part of the name they
+ * belong to.
+ * @param {string} xpath - Xpath expression
+ * @param {number} start - Offset of the first character
+ * @return {number} - Offset just past the name
+ */
+const afterName = function(xpath, start) {
+  let at = start
+  while (at < xpath.length && NAMED.test(xpath[at])) {
+    at += 1
+  }
+  return at
+}
+
+/**
+ * Whether an operator may stand at the end of what has been lexed, which is
+ * what makes a word an operator rather than a name. A value ends the tokens, or
+ * the residue `OTHER` still carries one — `@id` and `$var` end a value where
+ * `/` and `,` do not, and while `OTHER` is undivided its last character is what
+ * says which it was.
+ * @param {Array.<{type: string, value: string}>} tokens - Tokens so far
+ * @return {boolean} - True when an operator may stand here
+ */
+const operates = function(tokens) {
+  const solid = tokens.filter(
+    (token) => token.type !== TOKENS.WHITESPACE &&
+      token.type !== TOKENS.COMMENT,
+  )
+  const last = solid[solid.length - 1]
+  return last !== undefined && (ENDS.includes(last.type) ||
+    (last.type === TOKENS.OTHER && NAMED.test(last.value.slice(-1))))
 }
 
 /**
@@ -402,6 +474,7 @@ const afterOther = function(xpath, start) {
   let at = start
   while (
     at < xpath.length &&
+    !(at > start && STARTS.test(xpath[at])) &&
     !QUOTES.includes(xpath[at]) &&
     !WHITESPACE.includes(xpath[at]) &&
     !SINGLE[xpath[at]] &&
@@ -463,21 +536,24 @@ const tokenized = function(xpath) {
     } else if (opensNumber(xpath, at)) {
       type = TOKENS.NUMBER
       at = afterNumber(xpath, at)
-    } else if (more) {
-      type = MORE[more]
-      at += more.length
-    } else if (TRIPLE[xpath.slice(at, at + 3)]) {
-      type = TRIPLE[xpath.slice(at, at + 3)]
-      at += 3
-    } else if (DOUBLE[xpath.slice(at, at + 2)]) {
-      type = DOUBLE[xpath.slice(at, at + 2)]
+    } else if (func) {
+      type = TOKENS.USER_FUNCTION
+      at += func.length
+    } else if (STARTS.test(xpath[at])) {
+      const name = xpath.slice(at, afterName(xpath, at))
+      const spelled = more && more.split(' ')[0] === name ? more : name
+      const word = WORDS.includes(name) ||
+        (spelled !== name && MORE[spelled] !== undefined)
+      type = word && operates(tokens) ?
+        {...DOUBLE, ...TRIPLE, ...MORE}[spelled] :
+        TOKENS.NAME
+      at += type === TOKENS.NAME ? name.length : spelled.length
+    } else if (SYMBOLS[xpath.slice(at, at + 2)]) {
+      type = SYMBOLS[xpath.slice(at, at + 2)]
       at += 2
     } else if (SINGLE[xpath[at]]) {
       type = SINGLE[xpath[at]]
       at++
-    } else if (func) {
-      type = TOKENS.USER_FUNCTION
-      at += func.length
     } else {
       type = TOKENS.OTHER
       at = afterOther(xpath, at)
