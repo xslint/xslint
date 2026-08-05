@@ -69,6 +69,16 @@ const TOKENS = {
 const WHITESPACE = ' \t\r\n'
 
 /**
+ * The same characters as a regular-expression class, so a scan that reads a gap
+ * out of expression text spells it the one way the grammar does. JavaScript's
+ * `\s` is wider — it also takes a no-break space, a vertical tab, a form feed,
+ * the Unicode spaces and U+FEFF — and a scan spelling its gap that way reads a
+ * call in `boolean\u00a0(a)`, where no processor sees one (#643).
+ * @type {string}
+ */
+const GAP = `[${WHITESPACE}]`
+
+/**
  * Quote characters that open a string literal.
  * @type {string}
  */
@@ -473,4 +483,5 @@ module.exports = {
   spelling,
   TOKENS,
   WHITESPACE,
+  GAP,
 }

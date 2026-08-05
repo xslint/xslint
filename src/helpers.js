@@ -7,6 +7,7 @@ const fs = require('fs')
 const path = require('path')
 const {DOMParser} = require('@xmldom/xmldom')
 const yaml = require('yaml')
+const {GAP} = require('./tokens')
 
 /**
  * A reference to a general entity, `&name;`, as it survives in a parsed value.
@@ -28,7 +29,9 @@ const REFERENCE = /&([A-Za-z_][\w.-]*);/g
 const declaredEntities = function(str) {
   const entities = new Map()
   for (const match of str.matchAll(
-    /<!ENTITY\s+([A-Za-z_][\w.-]*)\s+(?:"([^"]*)"|'([^']*)')/g)) {
+    new RegExp(
+      `<!ENTITY${GAP}+([A-Za-z_][\\w.-]*)${GAP}+` +
+      `(?:"([^"]*)"|'([^']*)')`, 'g'))) {
     entities.set(match[1], match[2] === undefined ? match[3] : match[2])
   }
   return entities
@@ -43,7 +46,7 @@ const declaredEntities = function(str) {
  * @return {boolean} - True when an external subset is in play
  */
 const external = function(str) {
-  return /<!ENTITY\s+%/.test(str) ||
+  return new RegExp(`<!ENTITY${GAP}+%`).test(str) ||
     /<!DOCTYPE[^>[]*\b(?:SYSTEM|PUBLIC)\b/.test(str)
 }
 

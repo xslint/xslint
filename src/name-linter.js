@@ -4,6 +4,7 @@
  */
 
 const {masked, closes} = require('./expressions')
+const {GAP} = require('./tokens')
 const {metaOf, suppressed, defect} = require('./checks')
 const {expressionsOf} = require('./attributes')
 const {MODERN, since, versionOf} = require('./xsl-version')
@@ -32,19 +33,19 @@ const names = [CHECK]
  * alone.
  * @type {RegExp}
  */
-const CALL = /(^|[^\w:.-])(name|local-name)\s*\(/g
+const CALL = new RegExp(`(^|[^\\w:.-])(name|local-name)${GAP}*\\(`, 'g')
 
 /**
  * The comparison that follows the call, `= 'x'` or `!= 'x'`.
  * @type {RegExp}
  */
-const TAIL = /^\s*(=|!=)\s*'([^']*)'/
+const TAIL = new RegExp(`^${GAP}*(=|!=)${GAP}*'([^']*)'`)
 
 /**
  * The operand-reversed comparison sitting just before the call, `'x' = `.
  * @type {RegExp}
  */
-const HEAD = /'([^']*)'\s*(=|!=)\s*$/
+const HEAD = new RegExp(`'([^']*)'${GAP}*(=|!=)${GAP}*$`)
 
 /**
  * A valid unprefixed or prefixed name, so `self::` can be built from it. A

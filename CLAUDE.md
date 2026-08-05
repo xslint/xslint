@@ -56,6 +56,12 @@ the exit — decides what it carries: a lookup keyed on the deciding values
 enclosing function, so a `map`/`every` callback carrying its own single `return`
 is fine, and an arrow with an expression body has none at all.
 
+A gap is spelled one way: `GAP` (or `WHITESPACE`) from `src/tokens.js`, the four
+characters of XML's `S`. JavaScript's `\s` is banned by a `no-restricted-syntax`
+selector in every regex literal and template, because it also matches a no-break
+space and the Unicode spaces, so a scan spelling its gap that way reads a call in
+`boolean&#xA0;(a)` that no processor parses (#643).
+
 **Every style or consistency convention must be machine-enforced.** When you fix
 one, do not just fix the instances — in the same change add a check that fails on
 the next violation (prefer a new `no-restricted-syntax` selector so no dependency
@@ -414,7 +420,7 @@ accidentally attached fix turns red.
 | `src/xsl-version.js` | `versionOf(node)` — the version in force at a node, from the nearest ancestor's `@version` (XSLT element) or `@xsl:version` (literal result element), canonicalised as a decimal; `since(version, floor)` for a lower-bound gate; shared `MODERN`/`KNOWN`/`DECIMAL` |
 | `src/comparisons.js` | `comparedToZero` — shared scan for a call compared with `0`/`1` (count, string-length) |
 | `src/expressions.js` | `masked`/`closes` lexer helpers (node-set, double-negation, boolean-call); `enclosed` — the expressions an AVT holds in its braces |
-| `src/tokens.js` | Positioned XPath lexer (`tokenized`, `TOKENS`), preserving whitespace; owns `WHITESPACE`, the XML `S` a gap is spelled with, and `spelling`, which answers whether a name runs up to an offset. `src/xpath.js` borrows both; six code-based linters still read a gap as JavaScript's `\s`, which is wider (#643) |
+| `src/tokens.js` | Positioned XPath lexer (`tokenized`, `TOKENS`), preserving whitespace; owns the one definition of a gap — `WHITESPACE`, the XML `S` a gap is spelled with, and `GAP`, the same four characters as a regular-expression class — plus `spelling`, which answers whether a name runs up to an offset. Every reader of a gap borrows one of them, and a `no-restricted-syntax` selector bans `\s` outright, because JavaScript's class also takes a no-break space and so reads a call in `boolean&#xA0;(a)` where no processor sees one (#643) |
 | `src/import-graph.js` | Resolves `xsl:import`/`xsl:include` hrefs: `importsOf`, `graphOf` |
 | `src/fixers.js` | Maps a declarative check name to a `node => fix` builder |
 | `src/fixes.js` | Shared fix builders (`deletion(attribute)`) |

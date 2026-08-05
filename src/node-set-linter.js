@@ -5,6 +5,7 @@
 
 const {nodes} = require('./xpath')
 const {masked, closes} = require('./expressions')
+const {GAP} = require('./tokens')
 const {metaOf, suppressed, defect} = require('./checks')
 const {selectorOf} = require('./attributes')
 const {MODERN, since, versionOf} = require('./xsl-version')
@@ -32,7 +33,7 @@ const names = [CHECK]
  * Pattern of a `prefix:node-set(` call opener.
  * @type {RegExp}
  */
-const CALL = /[\w.-]+:node-set\s*\(/g
+const CALL = new RegExp(`[\\w.-]+:node-set${GAP}*\\(`, 'g')
 
 /**
  * The node-set() wrappers in a select value: each carries the offset it starts
