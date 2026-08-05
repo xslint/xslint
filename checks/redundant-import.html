@@ -76,17 +76,18 @@
   </div>
   <div class="check-content">
 <h1>Redundant import</h1>
-<p>Importing or including the same module twice in one stylesheet adds nothing —
-the second reference brings in the same templates, functions, and variables the
-first already did. At best it is noise; at worst it muddies import precedence
-and hides which reference a reader should reason about. Keep a single
-<code>xsl:import</code>/<code>xsl:include</code> per module.</p>
+<p>Referencing the same module twice the same way in one stylesheet adds nothing —
+the second <code>xsl:import</code>, or the second <code>xsl:include</code>, brings in the same
+templates, functions, and variables the first already did. At best it is noise;
+at worst it muddies import precedence and hides which reference a reader should
+reason about. Keep a single reference per module.</p>
 <p>The linter resolves each <code>@href</code> against the importing file&#39;s own directory, so
 two spellings that point at the same file (<code>lib/util.xsl</code> and <code>./lib/util.xsl</code>)
 count as one, and a module imported once directly and once from a sibling is
 not confused with a genuine duplicate — only repeats within a single
 stylesheet&#39;s own list are flagged. A self-import or a cross-file cycle is a
-different fault, reported by <code>circular-import</code>.</p>
+different fault, reported by <code>circular-import</code>. A reference carrying no <code>@href</code>
+names no module at all, and is invalid XSLT rather than a duplicate.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:stylesheet version=&quot;2.0&quot; xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot;&gt;
   &lt;xsl:import href=&quot;common.xsl&quot;/&gt;
@@ -96,6 +97,29 @@ different fault, reported by <code>circular-import</code>.</p>
 <p>Correct:</p>
 <pre><code class="language-xsl">&lt;xsl:stylesheet version=&quot;2.0&quot; xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot;&gt;
   &lt;xsl:import href=&quot;common.xsl&quot;/&gt;
+&lt;/xsl:stylesheet&gt;
+</code></pre>
+<p>Reaching one module both ways is worse than noise, because the two mechanisms
+do not agree on precedence. <code>xsl:include</code> places the module&#39;s definitions at
+the precedence of the including stylesheet&#39;s own, while <code>xsl:import</code> places
+them below it. So importing and also including one module gives every
+definition in it two lives at two levels: the imported copy is shadowed by the
+included one, and a template the stylesheet defines for itself now collides
+with the included copy at equal precedence instead of quietly overriding the
+imported one.</p>
+<p>Which reference to drop is therefore a decision about precedence, not a tidying
+up. Keep the <code>xsl:include</code> to let the module&#39;s definitions rank alongside the
+stylesheet&#39;s own, or keep the <code>xsl:import</code> to let the stylesheet&#39;s own override
+them — then delete the other.</p>
+<p>Incorrect:</p>
+<pre><code class="language-xsl">&lt;xsl:stylesheet version=&quot;2.0&quot; xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot;&gt;
+  &lt;xsl:import href=&quot;common.xsl&quot;/&gt;
+  &lt;xsl:include href=&quot;common.xsl&quot;/&gt;
+&lt;/xsl:stylesheet&gt;
+</code></pre>
+<p>Correct:</p>
+<pre><code class="language-xsl">&lt;xsl:stylesheet version=&quot;2.0&quot; xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot;&gt;
+  &lt;xsl:include href=&quot;common.xsl&quot;/&gt;
 &lt;/xsl:stylesheet&gt;
 </code></pre>
 
