@@ -101,11 +101,13 @@ const byCircularity = function(corpus) {
  * from the element as its indentation, the self-closing tag with its single
  * `href`, and the trailing newline. The fixer applies it only when the source
  * is exactly that, so an oddly formatted, single-quoted, or non-self-closing
- * import is reported but left untouched rather than wrongly cut. Deleting a
- * duplicate is semantics-preserving — the module stays imported by the first
- * reference — so it is a safe fix, not a suggestion. It is offered only where
- * every reference to that module uses one mechanism, which is what `crossed`
- * decides.
+ * import is reported but left untouched rather than wrongly cut. It is offered
+ * only where every reference to that module uses one mechanism, which is what
+ * `crossed` decides — the module stays imported by the reference left standing,
+ * so the deletion is safe rather than a suggestion. Safe there is not safe
+ * everywhere: import precedence is positional, so where an import of another
+ * module stands between two imports of this one, cutting the later of the two
+ * drops this module below that one and can change the output (#667).
  * @param {Element} node - The duplicate import/include element
  * @return {{line: number, col: number, value: string, replacement: string}} -
  *  The fix
