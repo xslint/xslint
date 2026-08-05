@@ -4,6 +4,7 @@
  */
 
 const {metaOf, suppressed} = require('./checks')
+const {GAPS} = require('./tokens')
 const {logger} = require('./logger')
 
 /**
@@ -182,10 +183,10 @@ const lintByResultNamespace = function(corpus, suppressions = []) {
       const root = xsl.documentElement
       const elements = Array.from(xsl.getElementsByTagName('*'))
       const extension = new Set(
-        (root.getAttribute('extension-element-prefixes') || '').split(/\s+/),
+        (root.getAttribute('extension-element-prefixes') || '').split(GAPS),
       )
       const excluded = new Set(
-        (root.getAttribute('exclude-result-prefixes') || '').split(/\s+/),
+        (root.getAttribute('exclude-result-prefixes') || '').split(GAPS),
       )
       const leaks = !excluded.has('#all') &&
         !textual(elements) &&

@@ -4,6 +4,7 @@
  */
 
 const {masked, closes} = require('./expressions')
+const {GAP} = require('./tokens')
 const {metaOf, suppressed, defect} = require('./checks')
 const {expressionsOf} = require('./attributes')
 const {MODERN, since, versionOf} = require('./xsl-version')
@@ -31,7 +32,7 @@ const names = [CHECK]
  * A `translate(` call opener, unprefixed so a custom one is left alone.
  * @type {RegExp}
  */
-const CALL = /(^|[^\w:.-])translate\s*\(/g
+const CALL = new RegExp(`(^|[^\\w:.-])translate${GAP}*\\(`, 'g')
 
 /**
  * The uppercase ASCII alphabet.

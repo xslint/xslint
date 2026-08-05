@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: MIT
  */
 
+const {GAP, GAPS, WHITESPACE} = require('./tokens')
+
 /**
  * Directive keywords and the scope each one covers: the whole file, the line
  * after the comment, or the comment's own line.
@@ -22,9 +24,9 @@ const TYPES = {
  * @type {RegExp}
  */
 const DIRECTIVE = new RegExp(
-  '<!--\\s*xslint-(' +
+  `<!--${GAP}*xslint-(` +
   [TYPES.FILE, TYPES.NEXT_LINE, TYPES.LINE].join('|') +
-  ')([a-z0-9\\s-]*)-->',
+  `)([a-z0-9${WHITESPACE}-]*)-->`,
   'g',
 )
 
@@ -41,7 +43,7 @@ const directivesFrom = function(content) {
     directives.push({
       type: match[1],
       line: content.slice(0, match.index).split('\n').length,
-      names: match[2].trim().split(/\s+/).filter((name) => name.length > 0),
+      names: match[2].trim().split(GAPS).filter((name) => name.length > 0),
     })
   }
   return directives

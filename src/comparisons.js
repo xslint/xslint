@@ -4,6 +4,7 @@
  */
 
 const {masked, closes} = require('./expressions')
+const {GAP} = require('./tokens')
 
 /**
  * The comparison that follows a call: an operator, then a `0` or `1` as the
@@ -12,7 +13,10 @@ const {masked, closes} = require('./expressions')
  * (`+`, `-`, `*`, `div`, `mod`), so `count(x) > 0 + $n` does not match on `0`.
  * @type {RegExp}
  */
-const TAIL = /^\s*(!=|<=|>=|=|<|>)\s*([01])(?![\w.])(?!\s*(?:[-+*]|div\b|mod\b))/
+const TAIL = new RegExp(
+  `^${GAP}*(!=|<=|>=|=|<|>)${GAP}*([01])(?![\\w.])` +
+  `(?!${GAP}*(?:[-+*]|div\\b|mod\\b))`,
+)
 
 /**
  * The operand-reversed comparison just before a call, as in `0 < f(x)`. The
@@ -22,7 +26,10 @@ const TAIL = /^\s*(!=|<=|>=|=|<|>)\s*([01])(?![\w.])(?!\s*(?:[-+*]|div\b|mod\b))
  * part of a wider operand, so `$max + 1 > count(x)` does not match on `1`.
  * @type {RegExp}
  */
-const HEAD = /(^\s*|[([,]\s*|\b(?:and|or)\b\s*)([01])\s*(!=|<=|>=|=|<|>)\s*$/
+const HEAD = new RegExp(
+  `(^${GAP}*|[([,]${GAP}*|\\b(?:and|or)\\b${GAP}*)` +
+  `([01])${GAP}*(!=|<=|>=|=|<|>)${GAP}*$`,
+)
 
 /**
  * Each operator with its sides swapped, so a reversed `0 < f(x)` reads as
@@ -51,7 +58,7 @@ const FLIP = {
  *  each carrying the fields `decide` returned
  */
 const comparedToZero = function(expression, name, decide) {
-  const call = new RegExp(`(^|[^\\w:.-])${name}\\s*\\(`, 'g')
+  const call = new RegExp(`(^|[^\\w:.-])${name}${GAP}*\\(`, 'g')
   const found = []
   const blanked = masked(expression)
   for (const match of blanked.matchAll(call)) {

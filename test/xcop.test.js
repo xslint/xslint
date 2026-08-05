@@ -34,11 +34,19 @@ const available = cmdAvailable('xcop', ['--version'], false)
 /**
  * Packs whose fixture must carry a construct xcop rejects, so it cannot also be
  * canonical XML — an unused namespace declaration is the very thing
- * `redundant-namespace-declarations` exists to flag. Excluded from the
- * formatting check, as the fix fixtures are in the xcop workflow.
+ * `redundant-namespace-declarations` exists to flag, and the gap a
+ * `no-break-space-before-the-bracket` pack puts before a bracket is the very
+ * character #643 is about: xcop insists on seeing it written `&#xA0;`, which is
+ * how the pack does write it, but the check re-serializes through xmldom first
+ * and xmldom emits the raw character. One name covers all six such packs, one
+ * per linter. Excluded from the formatting check, as the fix fixtures are in
+ * the xcop workflow.
  * @type {Array.<string>}
  */
-const UNFORMATTED = ['redundant-namespace-declarations.yaml']
+const UNFORMATTED = [
+  'redundant-namespace-declarations.yaml',
+  'no-break-space-before-the-bracket.yaml',
+]
 
 /**
  * Packs whose inline XSL is well-formed and worth formatting-checking.

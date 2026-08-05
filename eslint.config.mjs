@@ -80,6 +80,11 @@ export default defineConfig([
             "Do not use the 'node:' prefix in import; use the bare name"
         },
         {
+          selector: "Literal[regex.pattern=/\\\\s/], Literal[value=/\\\\s/], TemplateElement[value.cooked=/\\\\s/]",
+          message:
+            "Do not spell a whitespace gap as \\s: JavaScript's class is wider than the XML S that XPath and XSLT mean, so it reads a gap where the grammar has none. Use GAP (or WHITESPACE) from src/tokens.js"
+        },
+        {
           selector: "Literal[value=/\\/\\/@/]",
           message:
             "Do not select attributes with a bare '//@name' XPath, which reads a literal result element as XPath; go through src/attributes.js (expressionsOf, selectorOf)"

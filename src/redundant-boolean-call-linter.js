@@ -5,6 +5,7 @@
 
 const {nodes} = require('./xpath')
 const {masked, closes} = require('./expressions')
+const {GAP} = require('./tokens')
 const {metaOf, suppressed, defect} = require('./checks')
 const {selectorOf} = require('./attributes')
 const {logger} = require('./logger')
@@ -32,7 +33,7 @@ const names = [CHECK]
  * `my:boolean()` or a `boolean()` nested in a larger expression is left alone.
  * @type {RegExp}
  */
-const WRAPPER = /^\s*boolean\s*\(/
+const WRAPPER = new RegExp(`^${GAP}*boolean${GAP}*\\(`)
 
 /**
  * The redundant `boolean(...)` wrapping a whole `@test`, or null when the test

@@ -69,6 +69,25 @@ const TOKENS = {
 const WHITESPACE = ' \t\r\n'
 
 /**
+ * The same characters as a regular-expression class, so a scan that reads a gap
+ * out of expression text spells it the one way the grammar does. JavaScript's
+ * `\s` is wider — it also takes a no-break space, a vertical tab, a form feed,
+ * the Unicode spaces and U+FEFF — and a scan spelling its gap that way reads a
+ * call in `boolean\u00a0(a)`, where no processor sees one (#643).
+ * @type {string}
+ */
+const GAP = `[${WHITESPACE}]`
+
+/**
+ * A run of one or more of them, ready to split a whitespace-separated list on —
+ * the rule names of an inline directive, or the prefixes of an
+ * `exclude-result-prefixes`. Built once here rather than per call, and carrying
+ * no `g` flag, so it holds no `lastIndex` for a caller to trip over.
+ * @type {RegExp}
+ */
+const GAPS = new RegExp(`${GAP}+`)
+
+/**
  * Quote characters that open a string literal.
  * @type {string}
  */
@@ -473,4 +492,6 @@ module.exports = {
   spelling,
   TOKENS,
   WHITESPACE,
+  GAP,
+  GAPS,
 }

@@ -4,6 +4,7 @@
  */
 
 const {masked, closes} = require('./expressions')
+const {GAP} = require('./tokens')
 const {metaOf, suppressed, defect} = require('./checks')
 const {expressionsOf} = require('./attributes')
 const {logger} = require('./logger')
@@ -30,13 +31,13 @@ const names = [CHECK]
  * An unprefixed `not(` opener, so a custom `my:not()` is left alone.
  * @type {RegExp}
  */
-const CALL = /(^|[^\w:.-])not\s*\(/g
+const CALL = new RegExp(`(^|[^\\w:.-])not${GAP}*\\(`, 'g')
 
 /**
  * The inner `not(` that must open the outer `not`'s content.
  * @type {RegExp}
  */
-const INNER = /^\s*not\s*\(/
+const INNER = new RegExp(`^${GAP}*not${GAP}*\\(`)
 
 /**
  * The double negations in an expression: an outer `not(...)` whose only content

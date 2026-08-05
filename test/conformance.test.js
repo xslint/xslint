@@ -4,6 +4,7 @@
  */
 
 const {allFilesFrom, yaml} = require('../src/helpers')
+const {GAP} = require('../src/tokens')
 const {FIXERS} = require('../src/fixers')
 const {DECIMAL} = require('../src/xsl-version')
 const path = require('path')
@@ -69,7 +70,9 @@ const KEBAB = /^[a-z0-9]+(-[a-z0-9]+)*$/
  * check reports in someone else's.
  * @type {RegExp}
  */
-const COUNTED = /count\s*\((?:[^()]|\([^()]*\))*\)\s*(?:!?=|[<>]=?)\s*0(?!\d)/
+const COUNTED = new RegExp(
+  `count${GAP}*\\((?:[^()]|\\([^()]*\\))*\\)${GAP}*(?:!?=|[<>]=?)${GAP}*0(?!\\d)`,
+)
 
 /**
  * Names of the checks of a kind.
@@ -250,7 +253,7 @@ describe('conformance', function() {
     )
   })
   it('reads @xsl:version too wherever a selector tests @version', function() {
-    const versioned = /@version\s*!?=/
+    const versioned = new RegExp(`@version${GAP}*!?=`)
     for (const [kind, keys] of Object.entries(SELECTORS)) {
       for (const name of names(kind)) {
         const check = yaml.parsedFromFile(
