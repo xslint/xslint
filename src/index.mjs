@@ -6,7 +6,6 @@
 
 import {program, Option} from 'commander'
 import version from './version.js'
-import xslint from './xslint.js'
 
 program
   .name('xslint')
@@ -45,12 +44,13 @@ program
     (check, suppressions) => [...suppressions, check], [],
   )
   .argument('[paths...]', 'paths to file or directory to process', ['.'])
-  .action((path) => {
+  .action(async (path) => {
+    const {default: xslint} = await import('./xslint.js')
     xslint(path, program.opts())
   })
 
 try {
-  program.parse(process.argv)
+  await program.parseAsync(process.argv)
 } catch (error) {
   console.error(error.message)
   console.error(error.stack)

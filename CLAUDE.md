@@ -16,17 +16,42 @@ git pull origin master
 ## Commands
 
 ```bash
-npm test                                        # ESLint then all tests (Grunt)
-npx mocha test/xslint.test.js --timeout 10000   # one test file
-npx mocha test/xslint.test.js --grep sentence   # tests matching a pattern
-npx grunt docs                                  # regenerate the docs/ site
-npm run coverage                                # 100% branch gate (CI)
+npm run fast                                         # ESLint then the fast half
+npm test                                             # ESLint then every test (Grunt)
+npx mocha test/xslint.deep.test.js --timeout 10000   # one test file
+npx mocha test/xslint.deep.test.js --grep sentence   # tests matching a pattern
+npx grunt docs                                       # regenerate the docs/ site
+npm run coverage                                     # 100% branch gate (CI)
 ```
 
 CI also runs, as separate jobs beyond `npm test`: `coverage`, `xcop`,
 `copyrights` (SPDX header on every source file), `markdown-lint`, `yamllint`,
 `typos`, `pdd`, and `fixtures`. A green local `npm test` does not mean CI is
 green — run `npm run coverage` and the xcop suite too.
+
+The suite comes in two halves, and the line between them is a child process. A
+**deep** test starts one — it runs `xslint` or `xcop` the way a user does — and
+is named `*.deep.test.js`; every other test stays in this process. Three files
+are deep, and they still cost most of what the suite costs: 431 of the 1071
+tests, 15 of the 18 seconds. The other 640 finish inside a second, which is why
+`npm run fast` is the loop to work in and `npm test` the one to finish on. The
+deep target runs under `mocha --parallel`, so those three files run at once and
+the slowest of them sets the clock. `grunt mochacli` runs both targets, so
+nothing in CI narrows. The naming is not a convention anybody has to remember
+either: `test/conformance.test.js` reads every `.test.js` for the
+`require('./helpers')` that is the only door to a child process, and fails when
+a file holding it is not named `.deep.test.js` — or when one that spawns nothing
+is.
+
+What a deep test must not do is spend a process per assertion. The xcop suite
+did, 257 of them, and 25 of the suite's 26 seconds were ruby interpreters
+booting; it asks once over a directory now and reads each fixture's line out of
+the one report (#687). Nor may it write into the working tree: its scratch files
+go under `mkdtempSync`, because `should test default directory` lints the
+repository and a file appearing and vanishing under `test/` takes that walk's
+count with it — a race parallel mode turns from theory into one failure in four.
+`conformance.test.js` fails any test file that writes without asking for a
+temporary directory.
 
 ## Code style
 
@@ -127,6 +152,15 @@ it — resolves config, reads the `.xsl` files, calls `lint`, applies `--fix`,
 reports, and sets the exit code. The package `main` re-exports `lint` and
 `fixed` so an embedder (the planned LSP server, #336) can lint a buffer without
 shelling out; the bin stays `src/index.mjs`.
+
+`src/index.mjs` reaches `xslint.js` through a dynamic `import` inside the
+command action, not a top-level one, and so runs `program.parseAsync`. Importing
+it eagerly loaded fontoxpath, xmldom, `yaml`, and all 67 check YAMLs — 137 ms
+before a byte of XSL was read, charged to `--version` and `--help` and every
+rejected argument as much as to a real run. Behind the action that work happens
+only where it is used, and the invocations that never lint answer in 72 ms
+(#687). Whatever the action throws still reaches the one `try` around the parse,
+which is what `parseAsync` buys over letting an async action reject unheard.
 
 A check is one entry with **four kinds**, each a YAML file plus a motive plus a
 test pack:
@@ -279,11 +313,11 @@ Then run `npm test`, `npm run coverage`, and `npx grunt docs`.
   `src/fixers.js`; a code-based linter attaches the `fix` to its defect. Mark it
   `suggestion: true` unless the edit is deterministic and semantics-preserving.
   Cover it with a committed `test/resources/fix/<name>.{xsl,fixed.xsl}` pair
-  (generate the `.fixed` by running `--fix`) plus rows in `test/fixer.test.js`'s
-  `APPLIED`/`UNCHANGED`/`DROPPED` tables. A check whose only correct fix is
-  structural stays report-only until the full-fidelity parser (#228); the missing
-  fixer records that, and the motive stays silent about it (see **Motive
-  quality**).
+  (generate the `.fixed` by running `--fix`) plus rows in
+  `test/fixer.deep.test.js`'s `APPLIED`/`UNCHANGED`/`DROPPED` tables. A check
+  whose only correct fix is structural stays report-only until the full-fidelity
+  parser (#228); the missing fixer records that, and the motive stays silent
+  about it (see **Motive quality**).
 - **Motive quality.** A motive teaches the *construct*, not the tool. Lead with
   the concrete harm — why the flagged construct is wrong (correctness,
   portability, performance, or readability), not just that it is — then show an
@@ -330,8 +364,8 @@ human attestation the flag records, the rest are visible in the tree:
 `test/conformance.test.js` enforces the machine-checkable floor for a `mature`
 check: its motive carries an `Incorrect:`/`Correct:` pair, and if it is fixable
 (a `src/fixers.js` entry or a `test/resources/fix/<name>.xsl` fixture) that
-fixture pair exists and `fixer.test.js` runs it. The opinionated checks tracked
-in #499 are not marked mature until that issue is settled.
+fixture pair exists and `fixer.deep.test.js` runs it. The opinionated checks
+tracked in #499 are not marked mature until that issue is settled.
 
 **No check carries the flag today** (#637). The last two, both axis checks, were
 frozen around open bugs — `using-namespace-axis` around advice its own message
@@ -379,13 +413,18 @@ accidentally attached fix turns red.
   inline `<?xml`/`<xsl:`); YAML is only for the multi-field packs. Malformed
   fixtures go in `test/resources/malformed/` (excluded from the xcop workflow,
   since malformed XML cannot pass a formatting check).
-- **xcop.** `test/xcop.test.js` re-serializes the inline XSL of every `*-packs`
-  directory and runs [xcop](https://github.com/yegor256/xcop) over it; the CI
-  `xcop` job runs it too. The `redundant-namespace-declarations` pack is listed in
-  `UNFORMATTED` because its fixture must carry the unused namespace the check
-  flags, which xcop would canonicalize away. The repo-wide sweep in the workflow
-  excludes `test/resources/directives/wrapped*.xsl` for the same reason: they must
-  keep the wrapped attribute value #611 is about, which xcop joins onto one line.
+- **xcop.** `test/xcop.deep.test.js` re-serializes the inline XSL of every
+  `*-packs` directory into one `mkdtempSync` directory and runs
+  [xcop](https://github.com/yegor256/xcop) over that directory once, then reads
+  each fixture's own line out of the single report — `helpers.js`'s `xcopped`,
+  which takes the report off the failure when xcop exits non-zero rather than
+  losing it with the throw. The CI `xcop` job runs it too. The
+  `redundant-namespace-declarations` pack is listed in `UNFORMATTED` because its
+  fixture must carry the unused namespace the check flags, which xcop would
+  canonicalize away. The repo-wide sweep in
+  the workflow excludes `test/resources/directives/wrapped*.xsl` for the same
+  reason: they must keep the wrapped attribute value #611 is about, which xcop
+  joins onto one line.
   Where the tool does not run, every fixture is registered and **pending**, never
   absent: a suite that asserts nothing must not read like one that passed, which
   is how 250 assertions went missing on a developer machine for months (#645).
@@ -395,7 +434,7 @@ accidentally attached fix turns red.
   `no-restricted-syntax` selector — skip it in its body with `this.skip()`.
 - **Table-driven.** Where several `it` blocks differ only in data, express them as
   a data array plus one generator, not repeated blocks. When adding a test, add a
-  row to the matching table (`test/fixer.test.js`, the pack harnesses,
+  row to the matching table (`test/fixer.deep.test.js`, the pack harnesses,
   `test/config.test.js`, ...) before writing a new block.
 
 ## User configuration
@@ -431,8 +470,8 @@ accidentally attached fix turns red.
   spans overlap cannot both be applied in one run (#571): the left-most wins,
   the wider of two that start together wins, and the loser is announced and left
   in the report for a later run — so a `.fixed.xsl` fixture may still hold a
-  defect, and every one of them is parsed back by `test/fixer.test.js` to prove
-  no run left broken XML behind.
+  defect, and every one of them is parsed back by `test/fixer.deep.test.js` to
+  prove no run left broken XML behind.
 
 ## Key files
 
@@ -453,7 +492,7 @@ accidentally attached fix turns red.
 | `src/xsl-version.js` | `versionOf(node)` — the version in force at a node, from the nearest ancestor's `@version` (XSLT element) or `@xsl:version` (literal result element), canonicalised as a decimal; `since(version, floor)` for a lower-bound gate; shared `MODERN`/`KNOWN`/`DECIMAL` |
 | `src/comparisons.js` | `comparedToZero` — shared scan for a call compared with `0`/`1` (count, string-length) |
 | `src/expressions.js` | `masked`/`closes` lexer helpers (node-set, double-negation, boolean-call); `enclosed` — the expressions an AVT holds in its braces |
-| `src/tokens.js` | Positioned XPath lexer (`tokenized`, `TOKENS`), preserving whitespace. A name is lexed whole and greedily as `TOKENS.NAME`, so the operator letters inside one stay part of it — `border` is one token, not `b`/`or`/`der` (#617, #249) — and a word is an operator only where the grammar lets one stand, which `operates` decides from the last token rather than from the spelling: the `or` of `a/or` is a node test, the `or` of `a or b` is not. `WORDS` and `SYMBOLS` are derived as complements of each other from the same operator maps. Also owns the one definition of a gap — `WHITESPACE`, the XML `S` a gap is spelled with, and `GAP`, the same four characters as a regular-expression class — plus `spelling`, which answers whether a name runs up to an offset. Every reader of a gap borrows one of them, and a `no-restricted-syntax` selector bans `\s` outright, because JavaScript's class also takes a no-break space and so reads a call in `boolean&#xA0;(a)` where no processor sees one (#643) |
+| `src/tokens.js` | Positioned XPath lexer (`tokenized`, `TOKENS`), preserving whitespace. A name is lexed whole and greedily as `TOKENS.NAME`, so the operator letters inside one stay part of it — `border` is one token, not `b`/`or`/`der` (#617, #249) — and a word is an operator only where the grammar lets one stand, which `operates` decides from the last token rather than from the spelling: the `or` of `a/or` is a node test, the `or` of `a or b` is not. `WORDS` and `SYMBOLS` are derived as complements of each other from the same operator maps. Every piece of punctuation carries a kind of its own too — `/`, `//`, `@`, `$`, `,`, `.`, `..`, and a `::` no axis name claimed — so `TOKENS.OTHER` holds only what XPath has no token for at all, rather than the undivided run that lexed `a/@b` as one `other` and left nothing a recursive-descent grammar could be written against (#676). Which of them ends a value is `ENDS`, so `operates` reads kinds alone: `.` and `..` end one, and the `or` of `. or x` is therefore an operator. Also owns the one definition of a gap — `WHITESPACE`, the XML `S` a gap is spelled with, and `GAP`, the same four characters as a regular-expression class — plus `spelling`, which answers whether a name runs up to an offset. Every reader of a gap borrows one of them, and a `no-restricted-syntax` selector bans `\s` outright, because JavaScript's class also takes a no-break space and so reads a call in `boolean&#xA0;(a)` where no processor sees one (#643) |
 | `src/import-graph.js` | Resolves `xsl:import`/`xsl:include` hrefs: `importsOf`, `graphOf`. A reference with no `@href` names no module and yields no import, rather than joining a null onto the directory and taking the whole run's report down (#597); no check reports that malformed reference yet (#668) |
 | `src/fixers.js` | Maps a declarative check name to a `node => fix` builder |
 | `src/fixes.js` | Shared fix builders: `deletion(attribute, content)`, which reads the span to cut from the raw source — xmldom reports an attribute at its opening delimiter, so the quote is whichever stands there and the walk back over the `=` and the name crosses a gap of any width. Rebuilding the text as ` name="value"` made the fixer decline every other spelling of it (#594) |
@@ -462,5 +501,6 @@ accidentally attached fix turns red.
 | `src/helpers.js` | XML parsing (expands internal-subset entities), YAML parsing, file recursion |
 | `src/logger.js` | 4-level logger |
 | `scripts/generate-docs.js` | Builds the `docs/` site from checks + motives |
-| `test/conformance.test.js` | Enforces naming, motives, selector hygiene, pack/test coverage, and the `mature` freeze across all kinds |
-| `test/xcop.test.js` | Runs xcop over the inline XSL of every `*-packs` directory; pending, never absent, where the tool does not run |
+| `test/conformance.test.js` | Enforces naming, motives, selector hygiene, pack/test coverage, the `mature` freeze across all kinds, the fast/deep split of the suite itself, and that no test writes a scratch file outside a temporary directory |
+| `test/helpers.js` | The only door to a child process in the suite: `runXslint`/`xslintStatus`/`xslintStreams` run the CLI, `xcopped` runs xcop once over a directory, `cmdAvailable` answers whether a tool is there by running it |
+| `test/xcop.deep.test.js` | Writes every pack's inline XSL to one `mkdtempSync` directory and runs xcop over it once; pending, never absent, where the tool does not run |

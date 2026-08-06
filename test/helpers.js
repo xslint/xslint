@@ -89,6 +89,27 @@ const runXcop = function(arg, print = true) {
 }
 
 /**
+ * What xcop says about every stylesheet in a directory, in one run. It reports
+ * a line per file, so a caller asking about 257 of them learns the same from
+ * one interpreter as from 257 — which is the difference between 0.1 seconds and
+ * 25 of them (#687). A file it rejects makes the whole process exit non-zero
+ * and `execSync` announces that by throwing, so the report is read off the
+ * failure rather than lost with it; a tool that is not there throws too, with
+ * nothing to read, and `cmdAvailable` is what tells those two apart.
+ * @param {string} dir - Directory holding the stylesheets
+ * @return {string} Stdout, one line per file
+ */
+const xcopped = function(dir) {
+  let printed
+  try {
+    printed = runXcop(dir, true)
+  } catch (refusal) {
+    printed = (refusal.stdout ?? '').toString()
+  }
+  return printed
+}
+
+/**
  * Whether the tool runs here, asked by running it with the argument that proves
  * it does. Looking the name up in `PATH` was a proxy for that question, and the
  * two disagree: `which` walks `PATH` literally while the shell that starts the
@@ -116,5 +137,6 @@ module.exports = {
   xslintStatus,
   xslintStreams,
   runXcop,
+  xcopped,
   cmdAvailable,
 }
