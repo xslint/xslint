@@ -75,6 +75,22 @@ const COUNTED = new RegExp(
 )
 
 /**
+ * The `require` of `test/helpers.js`, whose every export starts a child process
+ * — xslint or xcop run as a user would run it. Nothing else in the suite spawns
+ * one, so this single line is what separates a deep test from a fast one. Its
+ * escapes also keep the pattern from matching the file it is written in.
+ * @type {RegExp}
+ */
+const SPAWNS = /require\('\.\/helpers'\)/
+
+/**
+ * Suffix a deep test file wears, so the fast half of the suite can be run by
+ * glob rather than by a list somebody has to remember to extend.
+ * @type {string}
+ */
+const DEEP = '.deep.test.js'
+
+/**
  * Names of the checks of a kind.
  * @param {string} kind - Kind of check
  * @return {Array.<string>} - Check names
@@ -109,7 +125,7 @@ describe('conformance', function() {
   })
   it('freezes every mature check behind a complete motive and working fix', function() {
     const fixerSuite = fs.readFileSync(
-      path.join(__dirname, 'fixer.test.js'), 'utf-8',
+      path.join(__dirname, 'fixer.deep.test.js'), 'utf-8',
     )
     for (const kind of KINDS) {
       for (const name of names(kind)) {
@@ -135,7 +151,7 @@ describe('conformance', function() {
           )
           assert.ok(
             fixerSuite.includes(name),
-            `mature ${kind}/${name} is fixable but fixer.test.js never runs it`,
+            `mature ${kind}/${name} is fixable but fixer.deep.test.js never runs it`,
           )
         }
       }
@@ -196,6 +212,18 @@ describe('conformance', function() {
       )),
       [],
       'a pack directory whose harness never reads found.fixes leaves every fix in it unasserted',
+    )
+  })
+  it('names every test file after the resources it takes', function() {
+    assert.deepEqual(
+      allFilesFrom(__dirname)
+        .filter((file) => file.endsWith('.test.js'))
+        .filter((file) => SPAWNS.test(fs.readFileSync(file, 'utf-8')) !==
+          file.endsWith(DEEP))
+        .map((file) => path.basename(file)),
+      [],
+      `a test file that starts a child process is not named '${DEEP}', or one ` +
+        'that starts none is, so the fast half of the suite runs the wrong files',
     )
   })
   it('tests every validation check by name in a test file', function() {

@@ -482,6 +482,20 @@ before sending us your pull request please make sure all your tests pass:
 npm test
 ```
 
+Most of that minute goes to the three `*.deep.test.js` files, which run the
+command-line tool in a child process. While you are still working, run the rest
+of the suite on its own — it finishes in about a second:
+
+```bash
+npm run fast
+```
+
+A test you add belongs on the side it costs: name it `*.deep.test.js` when it
+runs `xslint` or `xcop` in a child process — which it does by requiring
+`test/helpers.js` — and plain `*.test.js` when it stays in this one.
+`test/conformance.test.js` checks that both ways round, so a misnamed file turns
+the build red rather than quietly slowing the fast half down.
+
 New linter rules live in `src/resources/checks/xpath` (per-file) or
 `src/resources/checks/corpus` (cross-file), each with a matching test pack in
 `test/resources`. The validators in `src/resources/checks/validation` and the
