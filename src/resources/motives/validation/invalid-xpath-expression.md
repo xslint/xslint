@@ -19,9 +19,10 @@ on — `substring-before($spans, ':') - 1` reads a numeric prefix in 1.0 — but
 that is a dialect difference, not a broken expression, so it is not reported.
 The `namespace::` axis is another such difference — XPath 3.0 dropped it, but
 1.0 and 2.0 define it, so `namespace::*` is left alone. So is a step spaced
-inside itself: a gap around the `::` of an axis, or in front of the bracket of
-a node test, is whitespace the grammar allows, so `child :: a` and
-`parent::node ( )` are read as the steps `child::a` and `parent::node()` name.
+inside itself: a gap around the `::` of an axis, or on either side of what a
+node test brackets, is whitespace the grammar allows, so `child :: a`,
+`parent::node ( )` and `element( a )` are read as the steps `child::a`,
+`parent::node()` and `element(a)` name.
 Only genuine syntax mistakes are reported.
 
 Incorrect (`==` is not an XPath operator):
