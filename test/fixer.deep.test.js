@@ -307,6 +307,20 @@ const APPLIED = [
     before: 'variable-or-param-with-select-and-content.xsl',
     after: 'variable-or-param-with-select-and-content.fixed.xsl',
   },
+  {
+    name: 'should delete a select however its delimiter and gaps are spelled ' +
+      'with --fix-suggestions',
+    flag: '--fix-suggestions',
+    before: 'variable-or-param-with-select-spelled-oddly.xsl',
+    after: 'variable-or-param-with-select-spelled-oddly.fixed.xsl',
+  },
+  {
+    name: 'should delete a single-quoted and a spaced ' +
+      'disable-output-escaping with --fix-suggestions',
+    flag: '--fix-suggestions',
+    before: 'using-disable-output-escaping-spelled-oddly.xsl',
+    after: 'using-disable-output-escaping-spelled-oddly.fixed.xsl',
+  },
 ]
 
 /**
@@ -424,6 +438,12 @@ const UNCHANGED = [
     name: 'cannot delete a select beside a body with plain --fix',
     flag: '--fix',
     sheet: 'variable-or-param-with-select-and-content.xsl',
+  },
+  {
+    name: 'cannot delete a select whose value holds a numeric entity with ' +
+      '--fix-suggestions',
+    flag: '--fix-suggestions',
+    sheet: 'variable-with-select-holding-a-numeric-entity.xsl',
   },
 ]
 

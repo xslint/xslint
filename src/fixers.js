@@ -9,11 +9,12 @@ const {deletion} = require('./fixes')
  * Fix for `using-disable-output-escaping`: delete the attribute. Removing it
  * changes how the output is escaped, so it is a suggestion.
  * @param {Element} node - The element carrying the attribute
+ * @param {string} content - Raw source text of the file it stands in
  * @return {object} - The suggestion fix
  */
-const disableOutputEscaping = function(node) {
+const disableOutputEscaping = function(node, content) {
   return {
-    ...deletion(node.getAttributeNode('disable-output-escaping')),
+    ...deletion(node.getAttributeNode('disable-output-escaping'), content),
     suggestion: true,
   }
 }
@@ -57,13 +58,17 @@ const missingVersion = function(node) {
  * is a suggestion, and only when exactly one of `mode`/`priority` is present
  * can a single deletion resolve the defect — with both, there is no fix.
  * @param {Element} node - The `xsl:template` element
+ * @param {string} content - Raw source text of the file it stands in
  * @return {?object} - The suggestion fix, or null
  */
-const modeOrPriority = function(node) {
+const modeOrPriority = function(node, content) {
   const present = ['mode', 'priority'].filter((name) => node.hasAttribute(name))
   let fix = null
   if (present.length === 1) {
-    fix = {...deletion(node.getAttributeNode(present[0])), suggestion: true}
+    fix = {
+      ...deletion(node.getAttributeNode(present[0]), content),
+      suggestion: true,
+    }
   }
   return fix
 }
@@ -205,11 +210,12 @@ const textOutsideXslText = function(node) {
  * it — and the body binds a tree where the expression bound its own type, so it
  * is a suggestion.
  * @param {Element} node - The variable-binding element
+ * @param {string} content - Raw source text of the file it stands in
  * @return {object} - The suggestion fix
  */
-const selectAndContent = function(node) {
+const selectAndContent = function(node, content) {
   return {
-    ...deletion(node.getAttributeNode('select')),
+    ...deletion(node.getAttributeNode('select'), content),
     suggestion: true,
   }
 }
@@ -218,8 +224,10 @@ const selectAndContent = function(node) {
  * Fix builders for declarative Xpath checks, keyed by check name. The per-file
  * linter attaches the fix a builder returns to the defect it found for that
  * check, so a rule stays declarative while still carrying a fix; a builder
- * returns null when it cannot resolve the defect with a single edit.
- * @type {{[check: string]: function(Node): ?object}}
+ * returns null when it cannot resolve the defect with a single edit. Each is
+ * handed the raw source alongside the node, since a builder that cuts an
+ * attribute reads the span from the text rather than rebuilding it (#594).
+ * @type {{[check: string]: function(Node, string): ?object}}
  */
 const FIXERS = {
   'using-disable-output-escaping': disableOutputEscaping,

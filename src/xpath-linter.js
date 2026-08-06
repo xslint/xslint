@@ -111,7 +111,7 @@ const lintByXpath = function(corpus, suppressions = []) {
   const active = PACKS.filter(
     (pack) => !suppressions.some((sup) => pack.name.includes(sup)),
   )
-  for (const {file, xsl} of corpus) {
+  for (const {file, content, xsl} of corpus) {
     for (const pack of active) {
       for (const node of nodes(xsl, pack.xpath)) {
         const defect = {
@@ -123,7 +123,7 @@ const lintByXpath = function(corpus, suppressions = []) {
           pos: node.columnNumber,
         }
         const fix = FIXERS[pack.name] && !refused(xsl).has(node) &&
-          FIXERS[pack.name](node)
+          FIXERS[pack.name](node, content)
         if (fix) {
           defect.fix = fix
         }
