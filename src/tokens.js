@@ -4,7 +4,14 @@
  */
 
 /**
- * Token types a lexed expression is made of.
+ * Token types a lexed expression is made of. Every piece of XPath punctuation
+ * carries a kind of its own — the `/` and `//` between steps, the `@` and `$`
+ * opening an abbreviated attribute axis and a variable, the `,` of an argument
+ * list, the `.` and `..` naming the context item and its parent, and the `::`
+ * standing where no axis name claimed it — so `OTHER` holds the characters
+ * XPath has no token for at all rather than the undivided run of punctuation it
+ * swallowed until #676, which no grammar can be written against: a `/../`
+ * arriving as one string is not two steps of a path.
  * @type {{[type: string]: string}}
  */
 const TOKENS = {
@@ -55,6 +62,14 @@ const TOKENS = {
   ANCESTOR: 'ancestor',
   ANCESTOR_OR_SELF: 'ancestor-or-self',
   NAMESPACE: 'namespace',
+  SLASH: '/',
+  DOUBLE_SLASH: '//',
+  AT: '@',
+  DOLLAR: '$',
+  COMMA: ',',
+  DOT: '.',
+  DOUBLE_DOT: '..',
+  COLONS: '::',
   NAME: 'name',
   USER_FUNCTION: 'user_function',
   CONCAT: '||',
@@ -121,7 +136,9 @@ const AXES = {
 }
 
 /**
- * Map single characters to a token.
+ * Map single characters to a token. The number branch is tried before this one,
+ * so a `.` reaches it only where no digit follows: the `.` of `.5` opens a
+ * number, the `.` of `a[.]` is the context item.
  * @type {{[key: string]: string}}
  */
 const SINGLE = {
@@ -136,10 +153,18 @@ const SINGLE = {
   '<': TOKENS.LESS,
   '>': TOKENS.GREATER,
   '|': TOKENS.PIPE,
+  '/': TOKENS.SLASH,
+  '@': TOKENS.AT,
+  '$': TOKENS.DOLLAR,
+  ',': TOKENS.COMMA,
+  '.': TOKENS.DOT,
 }
 
 /**
- * Map double characters to a token.
+ * Map double characters to a token. Two characters are tried before one, so the
+ * longer of an overlapping pair wins: `//` is one separator and not two `/`,
+ * `..` is the parent and not two context items, and `::` stands whole wherever
+ * an axis name did not already take it.
  * @type {{[key: string]: string}}
  */
 const DOUBLE = {
@@ -153,6 +178,9 @@ const DOUBLE = {
   'gt': TOKENS.GT,
   'ge': TOKENS.GE,
   '||': TOKENS.CONCAT,
+  '//': TOKENS.DOUBLE_SLASH,
+  '..': TOKENS.DOUBLE_DOT,
+  '::': TOKENS.COLONS,
   'or': TOKENS.OR,
 }
 
@@ -205,12 +233,14 @@ const SYMBOLS = Object.fromEntries(
  * an operator rather than a name. XPath decides this by position, not by
  * spelling: an NCName is an OperatorName only where an operator may stand,
  * which is why `border` is one name and not `b`, `or`, `der` (#617), and why
- * the `or` of `or/border` is a node test.
+ * the `or` of `or/border` is a node test. The context item and its parent end a
+ * value the way a name does, so the `or` of `. or x` is an operator, while the
+ * `/`, `@`, `$` and `,` end nothing and the word behind one of them is a name.
  * @type {Array.<string>}
  */
 const ENDS = [
   TOKENS.NAME, TOKENS.NUMBER, TOKENS.STRING, TOKENS.RPAREN, TOKENS.RBRACKET,
-  TOKENS.MULTI,
+  TOKENS.MULTI, TOKENS.DOT, TOKENS.DOUBLE_DOT,
 ]
 
 /**
@@ -276,10 +306,11 @@ const afterName = function(xpath, start) {
 
 /**
  * Whether an operator may stand at the end of what has been lexed, which is
- * what makes a word an operator rather than a name. A value ends the tokens, or
- * the residue `OTHER` still carries one — `@id` and `$var` end a value where
- * `/` and `,` do not, and while `OTHER` is undivided its last character is what
- * says which it was.
+ * what makes a word an operator rather than a name. The kind of the last solid
+ * token settles it. Until #676 the punctuation arrived as one undivided `OTHER`
+ * and this had to read the last character of it to guess what had ended — a
+ * guess only `.` and `..` ever needed, and neither needs it now that each has a
+ * kind `ENDS` can name.
  * @param {Array.<{type: string, value: string}>} tokens - Tokens so far
  * @return {boolean} - True when an operator may stand here
  */
@@ -289,8 +320,7 @@ const operates = function(tokens) {
       token.type !== TOKENS.COMMENT,
   )
   const last = solid[solid.length - 1]
-  return last !== undefined && (ENDS.includes(last.type) ||
-    (last.type === TOKENS.OTHER && NAMED.test(last.value.slice(-1))))
+  return last !== undefined && ENDS.includes(last.type)
 }
 
 /**
