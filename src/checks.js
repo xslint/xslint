@@ -48,29 +48,40 @@ const LEAD = {2: 1, 4: '<![CDATA['.length}
  * holding the value opens on, because nothing inside a start tag can be
  * silenced from within it — no comment fits there — so a directive has to reach
  * the whole way down from above the element. Omit `fix` for report-only.
+ *
+ * The expression arrives whole — the node carrying it, where it starts inside
+ * that node's value, and its text — as `src/attributes.js` yields it, rather
+ * than as a node and a string a caller pairs up itself. Two things came of the
+ * old shape (#648): the word `expression` named the node in one module and the
+ * text in another, so one call had to spell both from one identifier, and every
+ * caller added `start` to its own offset, nine chances to forget an addition
+ * that belongs here. A mismatched pair reported at the wrong place and lost its
+ * fix in silence, because a node read as text is valid XPath to nobody.
  * @param {string} check - Check name
  * @param {{severity: string, message: string}} meta - The check metadata
  * @param {{file: string, content: string}} source - The file the node sits
  *  in, with its raw text, which is the only place the line breaks a parser
  *  normalised away are still visible
- * @param {Node} node - The attribute, text, or CDATA node
- * @param {number} offset - Offset of the defect within the node value
- * @param {string} expression - The expression the defect stands in, whose own
- *  text decides whether a fix may be offered at all
+ * @param {{node: Node, start: number, expression: string}} found - The
+ *  expression the defect stands in: its attribute, text or CDATA node, where it
+ *  starts in that node's value, and its own text, which decides whether a fix
+ *  may be offered at all
+ * @param {number} offset - Offset of the defect within the expression
  * @param {?{value: string, replacement: string, suggestion?: boolean}} [fix] -
  *  The fix, or undefined for a report-only defect
  * @return {object} - Defect
  */
 const defect = function(
-  check, meta, source, node, offset, expression, fix = undefined,
+  check, meta, source, found, offset, fix = undefined,
 ) {
+  const {node, start, expression} = found
   const {line, pos} = placeAt(
     source.content,
     skip(
       source.content,
       offsetAt(source.content, node.lineNumber, node.columnNumber) +
         (LEAD[node.nodeType] || 0),
-      offset,
+      start + offset,
     ),
   )
   let anchored = {}

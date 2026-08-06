@@ -124,14 +124,15 @@ const lintByStringLength = function(corpus, suppressions = []) {
   const defects = []
   if (!suppressed(CHECK, suppressions)) {
     for (const source of corpus) {
-      for (const {node, start, expression} of expressionsOf(source.xsl)) {
+      for (const found of expressionsOf(source.xsl)) {
+        const {expression} = found
         for (const {offset, value, replacement} of comparisons(expression)) {
           let fix
           if (replacement !== null) {
             fix = {value, replacement, suggestion: true}
           }
           defects.push(
-            defect(CHECK, META, source, node, start + offset, expression, fix),
+            defect(CHECK, META, source, found, offset, fix),
           )
         }
       }

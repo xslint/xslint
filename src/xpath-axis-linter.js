@@ -178,14 +178,14 @@ const lintByAxis = function(corpus, suppressions = []) {
   const defects = []
   if (!suppressed(CHECK, suppressions)) {
     for (const source of corpus) {
-      for (const held of expressionsOf(source.xsl)) {
-        const {node, start, expression} = held
+      for (const found of expressionsOf(source.xsl)) {
+        const {node, expression} = found
         for (const {offset, fix} of abbreviable(
-          expression, since(versionOf(node), MODERN), held.pattern,
+          expression, since(versionOf(node), MODERN), found.pattern,
         )) {
           defects.push(
             defect(
-              CHECK, META, source, node, start + offset, expression, fix,
+              CHECK, META, source, found, offset, fix,
             ),
           )
         }

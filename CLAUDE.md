@@ -76,6 +76,17 @@ carry the exception, so the fallback is stated once and the reader never holds a
 open branch to reach it. An arrow that has to branch grows a block body — the
 expression form has nowhere to put the `if`.
 
+One word names one thing. **`expression` is the text of an expression, never the
+node carrying it** — a node is an `attribute`, and the record pairing the two is
+`found` (`{node, start, expression, pattern}`, what `expressionsOf` yields).
+`no-restricted-syntax` selectors enforce both halves: reading a node's property
+off an `expression` is an error, and so is handing `defect` a node and its text as
+two arguments. The word named the node in `src/xpath-validator.js` and the text in
+`src/attributes.js` until #648, which is how one call came to spell both from one
+identifier and how a JSDoc drifted to a key (`file`) the validator never pushed.
+Pass the record, not its pieces: a mismatched pair reported at the wrong place and
+lost its fix silently, because a node read as text parses for nobody.
+
 A gap is spelled one way: `GAP` (or `WHITESPACE`) from `src/tokens.js`, the four
 characters of XML's `S`. JavaScript's `\s` is banned by a `no-restricted-syntax`
 selector in every regex literal and template, because it also matches a no-break
@@ -213,7 +224,9 @@ motive, or ships untested fails the build.
   template, or a shadow attribute carries, each flagged `pattern` or not) unless
   it has a documented reason to
   narrow — then it narrows through `selectorOf`, never a hand-written `//@name`,
-  which an ESLint `no-restricted-syntax` selector bans.
+  which an ESLint `no-restricted-syntax` selector bans, and wraps what it narrowed
+  to in `wholeOf` so `defect` still receives one expression rather than a node and
+  a string paired up by hand.
 
 Then run `npm test`, `npm run coverage`, and `npx grunt docs`.
 
@@ -434,9 +447,9 @@ accidentally attached fix turns red.
 | `src/xpath-linter.js` | Loads `checks/xpath/*.yaml`; attaches any `src/fixers.js` fix, unless the node — or the element carrying it — holds an expression the engine refuses (#651) |
 | `src/corpus-linter.js` | Loads `checks/corpus/*.yaml`; cross-file rules |
 | `src/*-linter.js` | Code-based `checks/format/*.yaml`, one construct each (axis, namespace, count, name, ...); see the flow diagram |
-| `src/checks.js` | Shared for code-based linters: `metaOf`, `suppressed`, `defect(check, meta, source, node, offset, expression, fix)` — walks the raw text so a wrapped or entity-shifted value reports where it truly stands (#611), and drops the `fix` when `expression` does not parse (#636) |
+| `src/checks.js` | Shared for code-based linters: `metaOf`, `suppressed`, `defect(check, meta, source, found, offset, fix)` — takes the expression whole, as `expressionsOf` yields it, and adds its `start` to the offset itself (#648); walks the raw text so a wrapped or entity-shifted value reports where it truly stands (#611), and drops the `fix` when the expression does not parse (#636) |
 | `src/source.js` | Raw-text walking shared by `checks` and `fixer`: `offsetAt`, `placeAt`, `character`, `skip` |
-| `src/attributes.js` | `expressionsOf(xsl)` — every expression a stylesheet carries: a bare/AVT attribute, a 3.0 text value template, or a shadow attribute, each saying whether it is a `pattern`; `PATTERNS` names the five attributes that hold one; `selectorOf(name)` for a linter that narrows |
+| `src/attributes.js` | `expressionsOf(xsl)` — every expression a stylesheet carries: a bare/AVT attribute, a 3.0 text value template, or a shadow attribute, each saying whether it is a `pattern`; `PATTERNS` names the five attributes that hold one; `selectorOf(name)` for a linter that narrows, and `wholeOf(attribute)` to build the same record for the one it narrowed to |
 | `src/xsl-version.js` | `versionOf(node)` — the version in force at a node, from the nearest ancestor's `@version` (XSLT element) or `@xsl:version` (literal result element), canonicalised as a decimal; `since(version, floor)` for a lower-bound gate; shared `MODERN`/`KNOWN`/`DECIMAL` |
 | `src/comparisons.js` | `comparedToZero` — shared scan for a call compared with `0`/`1` (count, string-length) |
 | `src/expressions.js` | `masked`/`closes` lexer helpers (node-set, double-negation, boolean-call); `enclosed` — the expressions an AVT holds in its braces |

@@ -66,7 +66,7 @@ const LINTERS = [
 /**
  * Expression linters paired with their checks, each given the valid Xpath
  * expressions the validator kept so they never reason over malformed input.
- * @type {Array.<{run: function(Array.<{file: string, expression: Node}>,
+ * @type {Array.<{run: function(Array.<{source: object, attribute: Node}>,
  *  Array.<string>): Array.<object>, checks: Array.<string>}>}
  */
 const EXPRESSION_LINTERS = [

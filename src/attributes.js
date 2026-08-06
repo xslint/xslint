@@ -117,6 +117,24 @@ const shadow = function(attribute) {
 }
 
 /**
+ * The whole value of an attribute as one expression, standing where the value
+ * itself starts. Every expression this module yields is such a record — the
+ * node carrying it, the offset it begins at inside that node's value, its own
+ * text, and whether it is a pattern — and a linter that narrows to one
+ * attribute of its own builds the record here rather than handing a node and
+ * its text on separately, which is how one word came to name both (#648).
+ * @param {Node} attribute - The attribute node
+ * @return {{node: Node, start: number, expression: string,
+ *  pattern: boolean}} - The expression it holds whole
+ */
+const wholeOf = function(attribute) {
+  return Object.freeze({
+    node: attribute, start: 0, expression: attribute.nodeValue,
+    pattern: PATTERNS.includes(attribute.nodeName.replace(/^_/, '')),
+  })
+}
+
+/**
  * The expressions a node contributes: a whole value when it is a bare-XPath (or
  * shadow) attribute, otherwise each expression its braces enclose — an
  * attribute value template, or a text value template in a text node (a CDATA
@@ -135,13 +153,10 @@ const carried = function(node, bare, three) {
   const braced = node.nodeType === 2 || (three && expands(node))
   let taken = []
   if (whole) {
-    taken = [Object.freeze({
-      node: node, start: 0, expression: node.nodeValue,
-      pattern: PATTERNS.includes(node.nodeName.replace(/^_/, '')),
-    })]
+    taken = [wholeOf(node)]
   } else if (braced) {
-    taken = enclosed(node.nodeValue).map((found) => Object.freeze({
-      node: node, start: found.offset, expression: found.value, pattern: false,
+    taken = enclosed(node.nodeValue).map((brace) => Object.freeze({
+      node: node, start: brace.offset, expression: brace.value, pattern: false,
     }))
   }
   return taken
@@ -177,4 +192,5 @@ module.exports = {
   PATTERNS,
   selectorOf,
   expressionsOf,
+  wholeOf,
 }

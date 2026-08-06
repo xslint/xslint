@@ -4,6 +4,7 @@
  */
 
 const {tokenized, TOKENS, GAP} = require('./tokens')
+const {wholeOf} = require('./attributes')
 const {metaOf, suppressed, defect} = require('./checks')
 const {logger} = require('./logger')
 
@@ -72,9 +73,9 @@ const redundancies = function(expression) {
     const edge =
       token.start === 0 ||
       token.start + token.value.length === expression.length
-    let held = null
+    let run = null
     if (token.type !== TOKENS.WHITESPACE) {
-      held = inside(token)
+      run = inside(token)
     }
     if (
       token.type === TOKENS.WHITESPACE &&
@@ -90,8 +91,8 @@ const redundancies = function(expression) {
         value: token.value,
         replacement: replacement,
       })
-    } else if (held !== null) {
-      runs.push(held)
+    } else if (run !== null) {
+      runs.push(run)
     }
   }
   return runs
@@ -101,8 +102,9 @@ const redundancies = function(expression) {
  * Lint the valid Xpath expressions for redundant whitespace. The expressions
  * are already known to parse — the validator dropped the malformed ones — so
  * this linter never re-checks validity, it only reasons over their tokens.
- * @param {Array.<{file: string, expression: Node}>} expressions - Valid
- *  expressions paired with the file they came from
+ * @param {Array.<{source: object, attribute: Node}>} expressions - Valid
+ *  expressions, each the attribute holding one paired with the file it came
+ *  from
  * @param {Array.<string>} suppressions - Array of suppressed checks
  * @return {{name: string, severity: string, message: string, file: string,
  *  line: number, pos: number}[]} - Defects found
@@ -111,15 +113,13 @@ const lintByFormat = function(expressions, suppressions = []) {
   logger.debug(`Format linting started`)
   const defects = []
   if (!suppressed(CHECK, suppressions)) {
-    for (const {source, expression} of expressions) {
+    for (const {source, attribute} of expressions) {
+      const found = wholeOf(attribute)
       for (const {offset, value, replacement} of redundancies(
-        expression.nodeValue,
+        found.expression,
       )) {
         defects.push(
-          defect(
-            CHECK, META, source, expression, offset, expression.nodeValue,
-            {value, replacement},
-          ),
+          defect(CHECK, META, source, found, offset, {value, replacement}),
         )
       }
     }
