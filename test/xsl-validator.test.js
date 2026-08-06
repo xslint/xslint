@@ -26,6 +26,21 @@ const KEPT = [
     file: 'external.xsl',
     content: '<!DOCTYPE a [<!ENTITY % ent SYSTEM "e.ent"> %ent;]>\n<a>&primary;</a>',
   },
+  {
+    name: 'should keep a stylesheet whose ampersand stands inside a comment',
+    file: 'commented.xsl',
+    content: '<a><!-- Tom & Jerry --></a>',
+  },
+  {
+    name: 'should keep a stylesheet whose ampersand stands in a CDATA section',
+    file: 'cdata.xsl',
+    content: '<a><![CDATA[Tom & Jerry]]></a>',
+  },
+  {
+    name: 'should keep a stylesheet whose ampersands all open a reference',
+    file: 'escaped.xsl',
+    content: '<a>&amp; &lt; &#38; &#x26; a&apos;b</a>',
+  },
 ]
 
 /**
@@ -47,6 +62,36 @@ const REPORTED = [
     name: 'should report a reference to an entity the subset leaves undeclared',
     file: 'gap.xsl',
     content: '<!DOCTYPE a [<!ENTITY sc "x">]>\n<a>&other;</a>',
+  },
+  {
+    name: 'should report an ampersand that opens no reference in text',
+    file: 'ampersand.xsl',
+    content: '<a>Tom & Jerry</a>',
+  },
+  {
+    name: 'should report an ampersand that opens no reference deep in the tree',
+    file: 'buried.xsl',
+    content: '<a><b/><c><d>Tom & Jerry</d></c></a>',
+  },
+  {
+    name: 'should report an ampersand beside two that open a reference',
+    file: 'mixed.xsl',
+    content: '<a>&amp; & &lt;</a>',
+  },
+  {
+    name: 'should report an ampersand closing on a semicolon far downstream',
+    file: 'distant.xsl',
+    content: '<a>Tom & Jerry</a><!-- ; -->',
+  },
+  {
+    name: 'should report an attribute value standing without any quotes',
+    file: 'unquoted.xsl',
+    content: '<a b=c/>',
+  },
+  {
+    name: 'should report an attribute value opening on a quote it never closes',
+    file: 'unclosed.xsl',
+    content: '<a b=\'c"/>',
   },
 ]
 
