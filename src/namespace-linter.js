@@ -66,11 +66,11 @@ const used = function(elements, prefix) {
 /**
  * Lint the corpus for namespace prefixes declared on the stylesheet but used
  * nowhere, reporting one defect per dead declaration with the fix that deletes
- * it. The deletion text is reconstructed from the declaration — a leading
- * space, the name, and the double-quoted value — and the fixer applies it only
- * when that exact text is present, so a single-quoted or oddly spaced
- * declaration is reported but left untouched rather than wrongly edited.
- * @param {Array.<{file: string, xsl: Document}>} corpus - Parsed stylesheets
+ * it. The span to cut is read from the source by `deletion`, so a declaration
+ * spelled with either delimiter, or with a gap of any width around its `=`, is
+ * deleted rather than announced and then declined (#594).
+ * @param {Array.<{file: string, content: string, xsl: Document}>} corpus -
+ *  Parsed stylesheets
  * @param {Array.<string>} suppressions - Array of suppressed checks
  * @return {{name: string, severity: string, message: string, file: string,
  *  line: number, pos: number, fix: object}[]} - Defects found
@@ -79,7 +79,7 @@ const lintByNamespace = function(corpus, suppressions = []) {
   logger.debug(`Namespace linting started`)
   const defects = []
   if (!suppressed(CHECK, suppressions)) {
-    for (const {file, xsl} of corpus) {
+    for (const {file, content, xsl} of corpus) {
       const elements = Array.from(xsl.getElementsByTagName('*'))
       for (const attribute of Array.from(xsl.documentElement.attributes)) {
         const prefix = declared(attribute.name)
@@ -91,7 +91,7 @@ const lintByNamespace = function(corpus, suppressions = []) {
             file: file,
             line: attribute.lineNumber,
             pos: attribute.columnNumber - attribute.name.length - 1,
-            fix: deletion(attribute),
+            fix: deletion(attribute, content),
           })
         }
       }
