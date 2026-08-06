@@ -7,7 +7,8 @@ const {allFilesFrom, xml, yaml} = require('../src/helpers')
 const path = require('path')
 const assert = require('assert')
 const fs = require('fs')
-const {runXcop, cmdAvailable} = require('./helpers')
+const os = require('os')
+const {xcopped, cmdAvailable} = require('./helpers')
 
 /**
  * Directory holding every test pack.
@@ -56,29 +57,56 @@ const CHECKED = PACKS.filter(
   (pack) => !UNFORMATTED.includes(path.basename(pack)),
 )
 
+/**
+ * Where the fixtures are written. It is a temporary directory, not the suite's
+ * own, because a scratch file inside the working tree is a hazard and not only
+ * a mess: `should test default directory` lints the repository, so a file this
+ * suite creates and deletes under `test/` can vanish from beneath that walk and
+ * take its file count with it (#687).
+ * @type {string}
+ */
+const SCRATCH = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-xcop-'))
+
+/**
+ * Every fixture, written out before the first assertion: the pack it came from,
+ * its index inside that pack, and the file now holding it. They are all on disk
+ * up front so that xcop can be asked about the whole set at once.
+ * @type {Array.<{pack: string, index: number, file: string}>}
+ */
+const FIXTURES = CHECKED.flatMap((pack) => {
+  const yml = yaml.parsedFromFile(pack)
+  return (yml.inputs || [yml.input]).map((input, index) => {
+    const file = path.join(
+      SCRATCH, `${path.basename(pack, '.yaml')}-${index}.xsl`,
+    )
+    fs.writeFileSync(file, `${xml.parsedFromString(input)}\n`)
+    return {pack: path.basename(pack), index: index, file: file}
+  })
+})
+
 if (!available) {
   console.warn(
     'xcop does not run here, so its fixtures are pending, not passing',
   )
 }
 
+/**
+ * What xcop made of all of them, from the single run every assertion below
+ * reads its own line out of.
+ * @type {string}
+ */
+let verdict = ''
+if (available) {
+  verdict = xcopped(SCRATCH)
+}
+
 describe('xcop', function() {
-  CHECKED.forEach((pack) => {
-    const yml = yaml.parsedFromFile(pack)
-    const inputs = yml.inputs || [yml.input]
-    inputs.forEach((input, index) => {
-      it(`should find 0 xcop errors in xsl #${index} of ${path.basename(pack)}`, function() {
-        if (!available) {
-          this.skip()
-        }
-        const xsl = path.resolve(
-          __dirname, `temp-${path.basename(pack, '.yaml')}-${index}.xsl`,
-        )
-        fs.writeFileSync(xsl, `${xml.parsedFromString(input)}\n`)
-        const stdout = runXcop(xsl)
-        fs.unlinkSync(xsl)
-        assert.ok(stdout.includes(`${xsl} looks good`))
-      })
+  FIXTURES.forEach((fixture) => {
+    it(`should find 0 xcop errors in xsl #${fixture.index} of ${fixture.pack}`, function() {
+      if (!available) {
+        this.skip()
+      }
+      assert.ok(verdict.includes(`${fixture.file} looks good`))
     })
   })
 })

@@ -32,14 +32,26 @@ green — run `npm run coverage` and the xcop suite too.
 The suite comes in two halves, and the line between them is a child process. A
 **deep** test starts one — it runs `xslint` or `xcop` the way a user does — and
 is named `*.deep.test.js`; every other test stays in this process. Three files
-are deep, and they cost what the suite costs: 431 of the 1070 tests, 52 of the
-53 seconds. The other 639 finish inside a second, which is why `npm run fast` is
-the loop to work in and `npm test` the one to finish on. `grunt mochacli` runs
-both targets, so nothing in CI narrows. The naming is not a convention anybody
-has to remember either: `test/conformance.test.js` reads every `.test.js` for
-the `require('./helpers')` that is the only door to a child process, and fails
-when a file holding it is not named `.deep.test.js` — or when one that spawns
-nothing is.
+are deep, and they still cost most of what the suite costs: 431 of the 1071
+tests, 15 of the 18 seconds. The other 640 finish inside a second, which is why
+`npm run fast` is the loop to work in and `npm test` the one to finish on. The
+deep target runs under `mocha --parallel`, so those three files run at once and
+the slowest of them sets the clock. `grunt mochacli` runs both targets, so
+nothing in CI narrows. The naming is not a convention anybody has to remember
+either: `test/conformance.test.js` reads every `.test.js` for the
+`require('./helpers')` that is the only door to a child process, and fails when
+a file holding it is not named `.deep.test.js` — or when one that spawns nothing
+is.
+
+What a deep test must not do is spend a process per assertion. The xcop suite
+did, 257 of them, and 25 of the suite's 26 seconds were ruby interpreters
+booting; it asks once over a directory now and reads each fixture's line out of
+the one report (#687). Nor may it write into the working tree: its scratch files
+go under `mkdtempSync`, because `should test default directory` lints the
+repository and a file appearing and vanishing under `test/` takes that walk's
+count with it — a race parallel mode turns from theory into one failure in four.
+`conformance.test.js` fails any test file that writes without asking for a
+temporary directory.
 
 ## Code style
 
@@ -140,6 +152,15 @@ it — resolves config, reads the `.xsl` files, calls `lint`, applies `--fix`,
 reports, and sets the exit code. The package `main` re-exports `lint` and
 `fixed` so an embedder (the planned LSP server, #336) can lint a buffer without
 shelling out; the bin stays `src/index.mjs`.
+
+`src/index.mjs` reaches `xslint.js` through a dynamic `import` inside the
+command action, not a top-level one, and so runs `program.parseAsync`. Importing
+it eagerly loaded fontoxpath, xmldom, `yaml`, and all 67 check YAMLs — 137 ms
+before a byte of XSL was read, charged to `--version` and `--help` and every
+rejected argument as much as to a real run. Behind the action that work happens
+only where it is used, and the invocations that never lint answer in 72 ms
+(#687). Whatever the action throws still reaches the one `try` around the parse,
+which is what `parseAsync` buys over letting an async action reject unheard.
 
 A check is one entry with **four kinds**, each a YAML file plus a motive plus a
 test pack:
@@ -393,10 +414,14 @@ accidentally attached fix turns red.
   fixtures go in `test/resources/malformed/` (excluded from the xcop workflow,
   since malformed XML cannot pass a formatting check).
 - **xcop.** `test/xcop.deep.test.js` re-serializes the inline XSL of every
-  `*-packs` directory and runs [xcop](https://github.com/yegor256/xcop) over it;
-  the CI `xcop` job runs it too. The `redundant-namespace-declarations` pack is
-  listed in `UNFORMATTED` because its fixture must carry the unused namespace
-  the check flags, which xcop would canonicalize away. The repo-wide sweep in
+  `*-packs` directory into one `mkdtempSync` directory and runs
+  [xcop](https://github.com/yegor256/xcop) over that directory once, then reads
+  each fixture's own line out of the single report — `helpers.js`'s `xcopped`,
+  which takes the report off the failure when xcop exits non-zero rather than
+  losing it with the throw. The CI `xcop` job runs it too. The
+  `redundant-namespace-declarations` pack is listed in `UNFORMATTED` because its
+  fixture must carry the unused namespace the check flags, which xcop would
+  canonicalize away. The repo-wide sweep in
   the workflow excludes `test/resources/directives/wrapped*.xsl` for the same
   reason: they must keep the wrapped attribute value #611 is about, which xcop
   joins onto one line.
@@ -476,5 +501,6 @@ accidentally attached fix turns red.
 | `src/helpers.js` | XML parsing (expands internal-subset entities), YAML parsing, file recursion |
 | `src/logger.js` | 4-level logger |
 | `scripts/generate-docs.js` | Builds the `docs/` site from checks + motives |
-| `test/conformance.test.js` | Enforces naming, motives, selector hygiene, pack/test coverage, the `mature` freeze across all kinds, and the fast/deep split of the suite itself |
-| `test/xcop.deep.test.js` | Runs xcop over the inline XSL of every `*-packs` directory; pending, never absent, where the tool does not run |
+| `test/conformance.test.js` | Enforces naming, motives, selector hygiene, pack/test coverage, the `mature` freeze across all kinds, the fast/deep split of the suite itself, and that no test writes a scratch file outside a temporary directory |
+| `test/helpers.js` | The only door to a child process in the suite: `runXslint`/`xslintStatus`/`xslintStreams` run the CLI, `xcopped` runs xcop once over a directory, `cmdAvailable` answers whether a tool is there by running it |
+| `test/xcop.deep.test.js` | Writes every pack's inline XSL to one `mkdtempSync` directory and runs xcop over it once; pending, never absent, where the tool does not run |
