@@ -84,9 +84,10 @@ const defect = function(
       start + offset,
     ),
   )
-  const anchored = fix === undefined || !isValid(expression) ?
-    undefined :
-    {line: line, col: pos, ...fix}
+  let anchored = {}
+  if (fix !== undefined && isValid(expression)) {
+    anchored = {fix: {line: line, col: pos, ...fix}}
+  }
   return {
     name: check,
     severity: meta.severity,
@@ -95,7 +96,7 @@ const defect = function(
     line: line,
     from: (node.ownerElement || node.parentNode).lineNumber,
     pos: pos,
-    ...(anchored === undefined ? {} : {fix: anchored}),
+    ...anchored,
   }
 }
 

@@ -25,7 +25,11 @@ const LEVEL = {warning: 'warning', error: 'error'}
 const located = function(file) {
   const relative = path.relative(process.cwd(), file)
   const escapes = relative.startsWith('..') || path.isAbsolute(relative)
-  return (escapes ? file : relative).split(path.sep).join('/')
+  let named = relative
+  if (escapes) {
+    named = file
+  }
+  return named.split(path.sep).join('/')
 }
 
 /**

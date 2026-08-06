@@ -57,7 +57,11 @@ const collapses = function(operator, zero) {
  */
 const decide = function(operator, zero, argument) {
   const test = collapses(operator, zero)
-  return test ? {test: test, argument: argument} : null
+  let found = null
+  if (test) {
+    found = {test: test, argument: argument}
+  }
+  return found
 }
 
 /**
@@ -73,10 +77,15 @@ const decide = function(operator, zero, argument) {
  * @return {string} - The replacement expression
  */
 const rewritten = function(test, argument, modern, whole) {
-  return modern ? `${test}(${argument})` :
-    test === 'exists' ?
-      (whole ? argument : `boolean(${argument})`) :
-      `not(${argument})`
+  let direct = `not(${argument})`
+  if (modern) {
+    direct = `${test}(${argument})`
+  } else if (test === 'exists' && whole) {
+    direct = argument
+  } else if (test === 'exists') {
+    direct = `boolean(${argument})`
+  }
+  return direct
 }
 
 /**

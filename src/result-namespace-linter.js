@@ -38,7 +38,11 @@ const names = [CHECK]
  * @return {?string} - The bound prefix, or null
  */
 const declared = function(name) {
-  return name.startsWith('xmlns:') ? name.slice('xmlns:'.length) : null
+  let prefix = null
+  if (name.startsWith('xmlns:')) {
+    prefix = name.slice('xmlns:'.length)
+  }
+  return prefix
 }
 
 /**
@@ -47,7 +51,11 @@ const declared = function(name) {
  * @return {?string} - The prefix, or null
  */
 const prefixOf = function(name) {
-  return name.includes(':') ? name.slice(0, name.indexOf(':')) : null
+  let prefix = null
+  if (name.includes(':')) {
+    prefix = name.slice(0, name.indexOf(':'))
+  }
+  return prefix
 }
 
 /**
@@ -145,21 +153,23 @@ const textual = function(elements) {
  */
 const exclusion = function(root, prefix) {
   const attribute = root.getAttributeNode('exclude-result-prefixes')
-  return attribute ?
-    {
+  let fix = {
+    line: root.lineNumber,
+    col: root.columnNumber + root.nodeName.length + 1,
+    value: '',
+    replacement: ` exclude-result-prefixes="${prefix}"`,
+    suggestion: true,
+  }
+  if (attribute) {
+    fix = {
       line: attribute.lineNumber,
       col: attribute.columnNumber - attribute.name.length - 1,
       value: `${attribute.name}="${attribute.value}"`,
       replacement: `${attribute.name}="${attribute.value} ${prefix}"`,
       suggestion: true,
-    } :
-    {
-      line: root.lineNumber,
-      col: root.columnNumber + root.nodeName.length + 1,
-      value: '',
-      replacement: ` exclude-result-prefixes="${prefix}"`,
-      suggestion: true,
     }
+  }
+  return fix
 }
 
 /**
@@ -191,15 +201,17 @@ const lintByResultNamespace = function(corpus, suppressions = []) {
       const leaks = !excluded.has('#all') &&
         !textual(elements) &&
         elements.some((element) => literal(element, extension))
-      const output = leaks ? outputs(elements, extension) : new Set()
-      const leaking = leaks ?
-        Array.from(root.attributes).filter((attribute) => {
+      let output = new Set()
+      let leaking = []
+      if (leaks) {
+        output = outputs(elements, extension)
+        leaking = Array.from(root.attributes).filter((attribute) => {
           const prefix = declared(attribute.name)
           return prefix && prefix !== 'xml' && prefix !== root.prefix &&
             !excluded.has(prefix) && !extension.has(prefix) &&
             !output.has(prefix) && used(elements, prefix)
-        }) :
-        []
+        })
+      }
       for (const attribute of leaking) {
         defects.push({
           name: CHECK,

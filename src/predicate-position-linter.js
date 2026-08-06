@@ -47,9 +47,11 @@ const SIGN = {
  * @return {string} - Its one-character signature symbol
  */
 const symbol = function(token) {
-  return (token.type === TOKENS.NAME ?
-    {position: 'P', last: 'L'}[token.value] :
-    SIGN[token.type]) || 'x'
+  let sign = SIGN[token.type]
+  if (token.type === TOKENS.NAME) {
+    sign = {position: 'P', last: 'L'}[token.value]
+  }
+  return sign || 'x'
 }
 
 /**
@@ -64,9 +66,13 @@ const symbol = function(token) {
  */
 const shortened = function(significant) {
   const sign = significant.map(symbol).join('')
-  return sign === 'P()=N' || sign === 'N=P()' ?
-    significant.find((token) => token.type === TOKENS.NUMBER).value :
-    sign === 'P()=L()' || sign === 'L()=P()' ? 'last()' : null
+  let short = null
+  if (sign === 'P()=N' || sign === 'N=P()') {
+    short = significant.find((token) => token.type === TOKENS.NUMBER).value
+  } else if (sign === 'P()=L()' || sign === 'L()=P()') {
+    short = 'last()'
+  }
+  return short
 }
 
 /**

@@ -76,9 +76,11 @@ const SPAN = 4
 const spans = function(tokens, index) {
   const gap = tokens[index + 1]
   const axis = tokens[index]
-  return gap !== undefined && gap.type === TOKENS.WHITESPACE ?
-    gap.start + gap.value.length :
-    axis.start + axis.value.length
+  let past = axis.start + axis.value.length
+  if (gap !== undefined && gap.type === TOKENS.WHITESPACE) {
+    past = gap.start + gap.value.length
+  }
+  return past
 }
 
 /**
@@ -98,10 +100,14 @@ const afterNode = function(tokens, index) {
   const shaped = rest.length >= 3 &&
     rest[0].type === TOKENS.NAME && rest[0].value === 'node' &&
     rest[1].type === TOKENS.LPAREN && rest[2].type === TOKENS.RPAREN
-  return shaped ? {
-    end: rest[2].start + 1,
-    predicated: rest.length > 3 && rest[3].type === TOKENS.LBRACKET,
-  } : null
+  let node = null
+  if (shaped) {
+    node = {
+      end: rest[2].start + 1,
+      predicated: rest.length > 3 && rest[3].type === TOKENS.LBRACKET,
+    }
+  }
+  return node
 }
 
 /**
@@ -133,7 +139,10 @@ const abbreviable = function(expression, modern, pattern) {
   const tokens = tokenized(expression)
   const found = []
   tokens.forEach((token, index) => {
-    const step = STEP[token.type] ? afterNode(tokens, index) : null
+    let step = null
+    if (STEP[token.type]) {
+      step = afterNode(tokens, index)
+    }
     if (SHORT[token.type]) {
       found.push({
         offset: token.start,
@@ -143,13 +152,14 @@ const abbreviable = function(expression, modern, pattern) {
         },
       })
     } else if (step !== null && !pattern) {
-      found.push({
-        offset: token.start,
-        fix: step.predicated && !modern ? undefined : {
+      let fix
+      if (!step.predicated || modern) {
+        fix = {
           value: expression.slice(token.start, step.end),
           replacement: STEP[token.type].replacement,
-        },
-      })
+        }
+      }
+      found.push({offset: token.start, fix: fix})
     }
   })
   return found

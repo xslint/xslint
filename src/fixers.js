@@ -61,9 +61,11 @@ const missingVersion = function(node) {
  */
 const modeOrPriority = function(node) {
   const present = ['mode', 'priority'].filter((name) => node.hasAttribute(name))
-  return present.length === 1 ?
-    {...deletion(node.getAttributeNode(present[0])), suggestion: true} :
-    null
+  let fix = null
+  if (present.length === 1) {
+    fix = {...deletion(node.getAttributeNode(present[0])), suggestion: true}
+  }
+  return fix
 }
 
 /**
@@ -92,15 +94,17 @@ const modeOrPriority = function(node) {
  */
 const startsWithDoubleSlash = function(pattern) {
   const at = pattern.value.indexOf('//')
+  let tier = {}
+  if (pattern.ownerElement.localName === 'template') {
+    tier = {suggestion: true}
+  }
   return {
     line: pattern.lineNumber,
     col: pattern.columnNumber - pattern.name.length - 1,
     value: `${pattern.name}="${pattern.value}"`,
     replacement: `${pattern.name}="${
       pattern.value.slice(0, at)}${pattern.value.slice(at + 2)}"`,
-    ...pattern.ownerElement.localName === 'template' ?
-      {suggestion: true} :
-      {},
+    ...tier,
   }
 }
 
@@ -114,12 +118,15 @@ const startsWithDoubleSlash = function(pattern) {
  */
 const booleanConstant = function(node) {
   const test = node.getAttributeNode('test')
+  let constant = 'false()'
+  if (test.value.includes('true')) {
+    constant = 'true()'
+  }
   return {
     line: test.lineNumber,
     col: test.columnNumber - test.name.length - 1,
     value: `${test.name}="${test.value}"`,
-    replacement:
-      `${test.name}="${test.value.includes('true') ? 'true()' : 'false()'}"`,
+    replacement: `${test.name}="${constant}"`,
     suggestion: true,
   }
 }
@@ -178,15 +185,17 @@ const textOutsideXslText = function(node) {
   const texts = Array.from(node.childNodes).filter(
     (child) => child.nodeType === 3 && child.nodeValue.trim() !== '',
   )
-  return texts.length === 1 ?
-    {
+  let fix = null
+  if (texts.length === 1) {
+    fix = {
       line: texts[0].lineNumber,
       col: texts[0].columnNumber,
       value: texts[0].nodeValue,
       replacement: `<xsl:text>${texts[0].nodeValue}</xsl:text>`,
       suggestion: true,
-    } :
-    null
+    }
+  }
+  return fix
 }
 
 /**
