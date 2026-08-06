@@ -9,7 +9,7 @@ module.exports = function(grunt) {
   grunt.initConfig({
     eslint: {
       target: [
-        'Gruntfile.js', 'src/**/*.js', 'src/**/*.mjs',
+        'Gruntfile.js', 'eslint-local-rules.js', 'src/**/*.js', 'src/**/*.mjs',
         'test/**/*.js', 'scripts/**/*.js',
       ],
     },
