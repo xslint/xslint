@@ -22,10 +22,11 @@ describe('xsl-version', function() {
   ROOTS.forEach((root) => {
     it(root.name, function() {
       const xsl = xml.parsedFromString(root.input)
-      assert.equal(
-        versionOf(root.at === undefined ? xsl : nodes(xsl, root.at)[0]),
-        root.version,
-      )
+      let node = xsl
+      if (root.at !== undefined) {
+        node = nodes(xsl, root.at)[0]
+      }
+      assert.equal(versionOf(node), root.version)
     })
   })
 })

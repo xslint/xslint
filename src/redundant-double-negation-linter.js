@@ -97,10 +97,14 @@ const lintByDoubleNegation = function(corpus, suppressions = []) {
         for (const {offset, value, argument} of negations(expression)) {
           const bare = node.nodeName === 'test' &&
             node.nodeValue.trim() === value
+          let replacement = `boolean(${argument})`
+          if (bare) {
+            replacement = argument
+          }
           defects.push(
             defect(CHECK, META, source, node, start + offset, expression, {
               value: value,
-              replacement: bare ? argument : `boolean(${argument})`,
+              replacement: replacement,
             }),
           )
         }

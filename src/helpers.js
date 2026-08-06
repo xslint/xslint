@@ -32,7 +32,7 @@ const declaredEntities = function(str) {
     new RegExp(
       `<!ENTITY${GAP}+([A-Za-z_][\\w.-]*)${GAP}+` +
       `(?:"([^"]*)"|'([^']*)')`, 'g'))) {
-    entities.set(match[1], match[2] === undefined ? match[3] : match[2])
+    entities.set(match[1], match[2] ?? match[3])
   }
   return entities
 }
@@ -63,7 +63,7 @@ const expand = function(node, entities) {
   if ((node.nodeType === 2 || node.nodeType === 3) &&
     node.nodeValue.includes('&')) {
     const value = node.nodeValue.replace(REFERENCE,
-      (whole, name) => entities.has(name) ? entities.get(name) : whole)
+      (whole, name) => entities.get(name) ?? whole)
     node.nodeValue = value
     if (node.nodeType === 2) {
       node.value = value

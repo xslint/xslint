@@ -65,10 +65,17 @@ const NAME = /^[A-Za-z_][\w.-]*(:[A-Za-z_][\w.-]*)?$/
  * @return {?string} - The replacement expression, or null
  */
 const test = function(fn, operator, literal, modern) {
-  const node = fn === 'name' ? `self::${literal}` : `self::*:${literal}`
-  return !NAME.test(literal) || (fn === 'local-name' && !modern) ?
-    null :
-    operator === '!=' ? `not(${node})` : node
+  let node = `self::*:${literal}`
+  if (fn === 'name') {
+    node = `self::${literal}`
+  }
+  let replacement = node
+  if (!NAME.test(literal) || (fn === 'local-name' && !modern)) {
+    replacement = null
+  } else if (operator === '!=') {
+    replacement = `not(${node})`
+  }
+  return replacement
 }
 
 /**
@@ -139,11 +146,12 @@ const lintByName = function(corpus, suppressions = []) {
         for (const {offset, value, replacement} of comparisons(
           expression, modern,
         )) {
+          let fix
+          if (replacement !== null) {
+            fix = {value, replacement, suggestion: true}
+          }
           defects.push(
-            defect(CHECK, META, source, node, start + offset, expression,
-              replacement === null ?
-                undefined : {value, replacement, suggestion: true},
-            ),
+            defect(CHECK, META, source, node, start + offset, expression, fix),
           )
         }
       }

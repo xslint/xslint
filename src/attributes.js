@@ -91,9 +91,11 @@ const expands = function(text) {
   let node = text.parentNode
   let setting = ''
   while (node.nodeType === 1 && !setting) {
-    setting = node.namespaceURI === XSLT ?
-      node.getAttribute('expand-text') :
-      node.getAttributeNS(XSLT, 'expand-text')
+    if (node.namespaceURI === XSLT) {
+      setting = node.getAttribute('expand-text')
+    } else {
+      setting = node.getAttributeNS(XSLT, 'expand-text')
+    }
     node = node.parentNode
   }
   return Boolean(setting) && ON.includes(setting.trim())
@@ -131,14 +133,18 @@ const carried = function(node, bare, three) {
   const whole = node.nodeType === 2 &&
     (bare.has(node) || (three && shadow(node)))
   const braced = node.nodeType === 2 || (three && expands(node))
-  return whole ?
-    [Object.freeze({
+  let taken = []
+  if (whole) {
+    taken = [Object.freeze({
       node: node, start: 0, expression: node.nodeValue,
       pattern: PATTERNS.includes(node.nodeName.replace(/^_/, '')),
-    })] :
-    braced ? enclosed(node.nodeValue).map((found) => Object.freeze({
+    })]
+  } else if (braced) {
+    taken = enclosed(node.nodeValue).map((found) => Object.freeze({
       node: node, start: found.offset, expression: found.value, pattern: false,
-    })) : []
+    }))
+  }
+  return taken
 }
 
 /**

@@ -162,7 +162,11 @@ const byRedundancy = function(corpus) {
     const key = `${file}|${to}`
     if (seen.has(key)) {
       const report = defect(REDUNDANT, file, node)
-      defects.push(mixed.has(key) ? report : {...report, fix: removal(node)})
+      if (mixed.has(key)) {
+        defects.push(report)
+      } else {
+        defects.push({...report, fix: removal(node)})
+      }
     } else {
       seen.add(key)
     }
@@ -182,10 +186,13 @@ const byRedundancy = function(corpus) {
  */
 const lintByImports = function(corpus, suppressions = []) {
   logger.debug(`Import linting started`)
-  const defects = [
-    ...suppressed(CIRCULAR, suppressions) ? [] : byCircularity(corpus),
-    ...suppressed(REDUNDANT, suppressions) ? [] : byRedundancy(corpus),
-  ]
+  const defects = []
+  if (!suppressed(CIRCULAR, suppressions)) {
+    defects.push(...byCircularity(corpus))
+  }
+  if (!suppressed(REDUNDANT, suppressions)) {
+    defects.push(...byRedundancy(corpus))
+  }
   logger.debug(`Found ${defects.length} import defects`)
   return defects
 }

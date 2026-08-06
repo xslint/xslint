@@ -80,10 +80,19 @@ const simple = function(argument) {
  */
 const decide = function(operator, zero, argument, blanked) {
   const hollow = empty(operator, zero)
-  return hollow === null ? null : {
-    replacement: simple(blanked) ?
-      `${argument} ${hollow ? '=' : '!='} ''` : null,
+  let rewrite = null
+  if (hollow !== null) {
+    let operand = '!='
+    if (hollow) {
+      operand = '='
+    }
+    let replacement = null
+    if (simple(blanked)) {
+      replacement = `${argument} ${operand} ''`
+    }
+    rewrite = {replacement: replacement}
   }
+  return rewrite
 }
 
 /**
@@ -117,11 +126,12 @@ const lintByStringLength = function(corpus, suppressions = []) {
     for (const source of corpus) {
       for (const {node, start, expression} of expressionsOf(source.xsl)) {
         for (const {offset, value, replacement} of comparisons(expression)) {
+          let fix
+          if (replacement !== null) {
+            fix = {value, replacement, suggestion: true}
+          }
           defects.push(
-            defect(CHECK, META, source, node, start + offset, expression,
-              replacement === null ?
-                undefined : {value, replacement, suggestion: true},
-            ),
+            defect(CHECK, META, source, node, start + offset, expression, fix),
           )
         }
       }

@@ -65,7 +65,11 @@ const typed = function(raw, key, ok, expected, fallback) {
   if (present && !fits) {
     logger.warn(`Value of '${key}' in ${NAME} must be ${expected}, ignoring it`)
   }
-  return fits ? raw[key] : fallback
+  let value = fallback
+  if (fits) {
+    value = raw[key]
+  }
+  return value
 }
 
 /**
@@ -125,13 +129,20 @@ const normalized = function(raw) {
  *  logLevel: string|null, quiet: boolean|null, base: string}} - Configuration
  */
 const configFrom = function(explicit, from = process.cwd()) {
-  const file = explicit ? path.resolve(from, explicit) : located(from)
+  let file = null
+  if (explicit) {
+    file = path.resolve(from, explicit)
+  } else {
+    file = located(from)
+  }
   let raw = null
+  let base = from
   if (file) {
     raw = yaml.parsedFromFile(file)
+    base = path.dirname(file)
     logger.debug(`Configuration loaded from ${file}`)
   }
-  return {...normalized(raw), base: file ? path.dirname(file) : from}
+  return {...normalized(raw), base: base}
 }
 
 module.exports = {

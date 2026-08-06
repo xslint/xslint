@@ -30,14 +30,14 @@ describe('xpath-axis-linter', function() {
         })
         yml.found.fixes.forEach((expected, index) => {
           assert.equal(
-            defects[index].fix ? defects[index].fix.replacement : null,
+            defects[index].fix?.replacement ?? null,
             expected,
           )
         })
         const values = yml.found.values || []
         values.forEach((expected, index) => {
           assert.equal(
-            defects[index].fix ? defects[index].fix.value : null,
+            defects[index].fix?.value ?? null,
             expected,
           )
         })

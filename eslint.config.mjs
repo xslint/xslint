@@ -22,7 +22,7 @@ const compat = new FlatCompat({
 });
 
 export default defineConfig([
-  { ignores: ["eslint.config.mjs", "eslint-local-rules.js", "docs/**"] },
+  { ignores: ["eslint.config.mjs", "docs/**"] },
   js.configs.recommended,
   ...compat.extends("google"),
   jsdoc.configs["flat/recommended-error"],
@@ -62,6 +62,7 @@ export default defineConfig([
       ],
       "jsdoc/reject-any-type": "off",
       "@stylistic/space-infix-ops": "error",
+      "no-ternary": "error",
       "id-length": ["error", { min: 2 }],
       "no-restricted-syntax": ["error",
         {
@@ -115,5 +116,17 @@ export default defineConfig([
   {
     files: ["**/*.mjs"],
     languageOptions: { sourceType: "module" }
+  },
+  {
+    files: ["eslint-local-rules.js"],
+    rules: {
+      "comma-dangle": "off",
+      "local/no-multiple-returns": "off",
+      "object-curly-spacing": "off",
+      "quote-props": "off",
+      quotes: "off",
+      semi: "off",
+      "space-before-function-paren": "off"
+    }
   }
 ]);

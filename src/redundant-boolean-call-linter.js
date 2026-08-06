@@ -49,16 +49,20 @@ const WRAPPER = new RegExp(`^${GAP}*boolean${GAP}*\\(`)
 const stripped = function(test) {
   const blanked = masked(test)
   const wrapper = WRAPPER.exec(blanked)
-  const open = wrapper ? wrapper[0].length - 1 : -1
-  const close = wrapper ? closes(blanked, open) : -1
-  const offset = wrapper ? wrapper[0].indexOf('boolean') : -1
-  return close < 0 || blanked.slice(close + 1).trim() !== '' ?
-    null :
-    {
-      offset: offset,
-      value: test.slice(offset, close + 1),
-      replacement: test.slice(open + 1, close).trim(),
+  let strip = null
+  if (wrapper) {
+    const open = wrapper[0].length - 1
+    const close = closes(blanked, open)
+    const offset = wrapper[0].indexOf('boolean')
+    if (close >= 0 && blanked.slice(close + 1).trim() === '') {
+      strip = {
+        offset: offset,
+        value: test.slice(offset, close + 1),
+        replacement: test.slice(open + 1, close).trim(),
+      }
     }
+  }
+  return strip
 }
 
 /**

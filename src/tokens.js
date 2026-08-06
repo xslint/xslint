@@ -315,10 +315,12 @@ const opensAxis = function(xpath, at) {
     colons += 1
   }
   const name = `${xpath.slice(at, end)}::`
-  return end === at || xpath[colons] !== ':' || xpath[colons + 1] !== ':' ||
-    !AXES[name] || spelling(xpath, at) ?
-    null :
-    {name: name, length: colons + 2 - at}
+  let opened = null
+  if (end !== at && xpath[colons] === ':' && xpath[colons + 1] === ':' &&
+    AXES[name] && !spelling(xpath, at)) {
+    opened = {name: name, length: colons + 2 - at}
+  }
+  return opened
 }
 
 /**
@@ -541,13 +543,21 @@ const tokenized = function(xpath) {
       at += func.length
     } else if (STARTS.test(xpath[at])) {
       const name = xpath.slice(at, afterName(xpath, at))
-      const spelled = more && more.split(' ')[0] === name ? more : name
+      let spelled = name
+      if (more && more.split(' ')[0] === name) {
+        spelled = more
+      }
       const word = WORDS.includes(name) ||
         (spelled !== name && MORE[spelled] !== undefined)
-      type = word && operates(tokens) ?
-        {...DOUBLE, ...TRIPLE, ...MORE}[spelled] :
-        TOKENS.NAME
-      at += type === TOKENS.NAME ? name.length : spelled.length
+      type = TOKENS.NAME
+      if (word && operates(tokens)) {
+        type = {...DOUBLE, ...TRIPLE, ...MORE}[spelled]
+      }
+      if (type === TOKENS.NAME) {
+        at += name.length
+      } else {
+        at += spelled.length
+      }
     } else if (SYMBOLS[xpath.slice(at, at + 2)]) {
       type = SYMBOLS[xpath.slice(at, at + 2)]
       at += 2

@@ -57,7 +57,13 @@ const walked = function(xsl) {
     const visit = function(node) {
       const carried = Array.from(node.attributes || [])
         .filter((one) => !DECLARED.test(one.nodeName))
-        .sort((one, two) => (one.nodeName < two.nodeName ? -1 : 1))
+        .sort((one, two) => {
+          let order = 1
+          if (one.nodeName < two.nodeName) {
+            order = -1
+          }
+          return order
+        })
       for (const one of carried) {
         found.push(one)
       }

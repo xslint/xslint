@@ -33,7 +33,11 @@ const names = [CHECK]
  * @return {?string} - The bound prefix, or null
  */
 const declared = function(name) {
-  return name.startsWith('xmlns:') ? name.slice('xmlns:'.length) : null
+  let prefix = null
+  if (name.startsWith('xmlns:')) {
+    prefix = name.slice('xmlns:'.length)
+  }
+  return prefix
 }
 
 /**

@@ -150,7 +150,11 @@ const excluded = function(file, patterns, base) {
  * @return {string} - The level to set
  */
 const leveled = function(quiet, level) {
-  return quiet ? levels.WARNING : level ?? levels.INFO
+  let chosen = level ?? levels.INFO
+  if (quiet) {
+    chosen = levels.WARNING
+  }
+  return chosen
 }
 
 /**

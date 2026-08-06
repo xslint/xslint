@@ -45,12 +45,15 @@ const INTERNAL = new RegExp(`${GAP}{2,}`)
  * @return {?{offset: number, value: string, replacement: string}} - The run
  */
 const inside = function(token) {
-  const run = token.type === TOKENS.STRING || token.type === TOKENS.COMMENT ?
-    null :
-    INTERNAL.exec(token.value)
-  return run === null || /[\r\n]/.test(run[0]) ?
-    null :
-    {offset: token.start + run.index, value: run[0], replacement: ' '}
+  let run = null
+  if (token.type !== TOKENS.STRING && token.type !== TOKENS.COMMENT) {
+    run = INTERNAL.exec(token.value)
+  }
+  let held = null
+  if (run !== null && !/[\r\n]/.test(run[0])) {
+    held = {offset: token.start + run.index, value: run[0], replacement: ' '}
+  }
+  return held
 }
 
 /**
@@ -69,16 +72,23 @@ const redundancies = function(expression) {
     const edge =
       token.start === 0 ||
       token.start + token.value.length === expression.length
-    const held = token.type === TOKENS.WHITESPACE ? null : inside(token)
+    let held = null
+    if (token.type !== TOKENS.WHITESPACE) {
+      held = inside(token)
+    }
     if (
       token.type === TOKENS.WHITESPACE &&
       !/[\r\n]/.test(token.value) &&
       (edge || token.value.length > 1)
     ) {
+      let replacement = ' '
+      if (edge) {
+        replacement = ''
+      }
       runs.push({
         offset: token.start,
         value: token.value,
-        replacement: edge ? '' : ' ',
+        replacement: replacement,
       })
     } else if (held !== null) {
       runs.push(held)

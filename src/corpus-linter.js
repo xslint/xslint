@@ -209,10 +209,15 @@ const byReachability = function(corpus, check) {
  * @return {Array.<object>} - Defects found
  */
 const defectsOf = function(corpus, check) {
-  return !check.reference ? byName(corpus, check) :
-    check.reachable ? byReachability(corpus, check) :
-      check.scoped ? byScope(corpus, check) :
-        byCall(corpus, check)
+  let strategy = byCall
+  if (!check.reference) {
+    strategy = byName
+  } else if (check.reachable) {
+    strategy = byReachability
+  } else if (check.scoped) {
+    strategy = byScope
+  }
+  return strategy(corpus, check)
 }
 
 /**

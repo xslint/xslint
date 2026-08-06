@@ -33,14 +33,22 @@ green — run `npm run coverage` and the xcop suite too.
 ESLint (`eslint-config-google` + `@stylistic`, config in `eslint.config.mjs`,
 run by the `lint` job) enforces: spaced operators, no single-letter names
 (`id-length` >= 2), postfix `x++` only (prefix `++x` is banned), bare module
-names in `require`/`import` (no `node:` prefix), no redundant return variable
+names in `require`/`import` (no `node:` prefix), no conditional operator
+(`a ? b : c` is banned outright by `no-ternary`, nesting and flat chain alike),
+no redundant return variable
 (`const x = expr; return x` is banned — return the expression), no missing
 argument (a call must fill every parameter the callee declares without a
 default), and one `return` per function (a second exit is banned). The last
 three are project-local rules in `eslint-local-rules.js`, unit-tested in
 `test/eslint-local-rules.test.js`; the arity of the callee is read from its
 declaration in the same file, or by loading the module a relative `require`
-names.
+names. That plugin file sat in ESLint's `ignores` and so was held to none of
+the rules it implements — nine ternaries lived there. It is linted now, with the
+formatting rules its own style predates (`semi`, `quotes`, `comma-dangle`,
+`quote-props`, `object-curly-spacing`, `space-before-function-paren`) and
+`local/no-multiple-returns` switched off for that one file, so a ban that
+matters reaches the plugin too. Shortening that off-list is its own job; only
+`eslint.config.mjs` is still unlinted.
 
 A parameter a caller may leave out therefore says so in the signature, with a
 default — `fix = undefined` on `defect` in `src/checks.js`. A JSDoc `[fix]`
@@ -50,11 +58,23 @@ call that omits it.
 
 A function likewise leaves through exactly one `return`, and the branching — not
 the exit — decides what it carries: a lookup keyed on the deciding values
-(`collapses` in `src/count-linter.js`), a ternary chain (`defectsOf` in
-`src/corpus-linter.js`), or a sentinel a scan assigns before its loop ends
+(`collapses` in `src/count-linter.js`), a binding an `if`/`else if` chain settles
+before the exit (`defectsOf` in `src/corpus-linter.js`, which picks the strategy
+rather than the answer), or a sentinel a scan assigns before its loop ends
 (`closes` in `src/expressions.js`). A `return` counts against the nearest
 enclosing function, so a `map`/`every` callback carrying its own single `return`
 is fine, and an arrow with an expression body has none at all.
+
+The conditional operator is not one of those shapes: it is banned outright, so a
+value that branches is a `let` initialised to the fallback and narrowed by an
+`if`, never `a ? b : c`. Two operators stay, because neither asks a question
+about a condition — `??` and `?.`, for the case that is only about absence:
+`entities.get(name) ?? whole` in `src/helpers.js` says what
+`has(name) ? get(name) : whole` said, in one reading rather than three. Where the
+branch really is a condition, initialise to the *default* arm and let the `if`
+carry the exception, so the fallback is stated once and the reader never holds an
+open branch to reach it. An arrow that has to branch grows a block body — the
+expression form has nowhere to put the `if`.
 
 A gap is spelled one way: `GAP` (or `WHITESPACE`) from `src/tokens.js`, the four
 characters of XML's `S`. JavaScript's `\s` is banned by a `no-restricted-syntax`
