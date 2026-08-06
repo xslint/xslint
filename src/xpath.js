@@ -133,7 +133,7 @@ const AXES = [
 const TESTS = [
   'node', 'text', 'comment', 'processing-instruction',
   'document-node', 'element', 'attribute', 'schema-element',
-  'schema-attribute', 'namespace-node',
+  'schema-attribute', 'namespace-node', 'item', 'empty-sequence',
 ]
 
 /**
@@ -175,6 +175,23 @@ const NAMESPACE_AXIS = /(namespace)::/g
 const SPACED_TEST = new RegExp(
   `(${TESTS.join('|')})${SPACE}*\\(${SPACE}*(?=${ARGUMENT})`, 'gu',
 )
+
+/**
+ * The gap in front of a `)`, and the character it stands behind. The engine
+ * reads a kind test as its keyword glued to both brackets, so `element( a )` is
+ * refused where `element(a)` passes, though XPath 2.0 lets ExprWhitespace stand
+ * between any two tokens (#639). Deleting the gap glues that character to the
+ * `)`, and one XPath token alone ends in one — the comment closer `:)` — so a
+ * `:` is the whole of what must be left in front of a gap, and every other
+ * character is safe by the grammar rather than by a list of the ones a test
+ * happens to hold. A list is what refuses the wildcard of `element( * )` and
+ * the non-ASCII name of `element( ä )`, both of which XPath spells. Elsewhere
+ * the deletion is inert: a gap a call's brackets or a string literal carries
+ * leaves the token stream exactly as it stood, so the retry spends it and the
+ * engine answers the same.
+ * @type {RegExp}
+ */
+const SPACED_CLOSE = new RegExp(`([^:${WHITESPACE}])${SPACE}+\\)`, 'gu')
 
 /**
  * Whether the engine compiles the expression, counting a static-type
@@ -241,14 +258,20 @@ const tailed = function(xpath, at) {
 /**
  * The respellings, in the order they run: an axis pulled onto its separator,
  * the namespace axis then rewritten to a supported one — second, so the
- * rewrite meets a separator whose gaps are already gone — and a node test
- * pulled onto its bracket last.
+ * rewrite meets a separator whose gaps are already gone — a node test pulled
+ * onto the bracket it opens with, and last the bracket it closes with pulled
+ * onto what it holds. One sweep of the last is enough for a nested test even
+ * though it leaves a gap standing: `document-node( element( a ) )` comes out
+ * `document-node(element(a) )`, because a scan does not revisit the `)` it has
+ * just consumed. The engine asks for no more — what it refuses is a gap inside
+ * a test, not one in front of the bracket a test closes around another.
  * @type {Array.<Array>}
  */
 const SQUEEZES = [
   [SPACED_AXIS, (name) => `${name}::`, spelling],
   [NAMESPACE_AXIS, () => 'child::', spelling],
   [SPACED_TEST, (name) => `${name}(`, tailed],
+  [SPACED_CLOSE, (tail) => `${tail})`, () => false],
 ]
 
 /**
