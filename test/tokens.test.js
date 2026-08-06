@@ -42,6 +42,40 @@ const SCANS = [
     ],
   },
   {
+    name: 'gives the path punctuation a kind of its own',
+    count: 1,
+    pairs: [
+      ['a/b', TOKENS.SLASH],
+      ['a//b', TOKENS.DOUBLE_SLASH],
+      ['@id', TOKENS.AT],
+      ['$var', TOKENS.DOLLAR],
+      ['f(x, y)', TOKENS.COMMA],
+      ['a[.]', TOKENS.DOT],
+      ['a/..', TOKENS.DOUBLE_DOT],
+      ['foo ::bar', TOKENS.COLONS],
+    ],
+  },
+  {
+    name: 'cannot read punctuation out of a token that spells it',
+    count: 0,
+    pairs: [
+      ['.5', TOKENS.DOT],
+      ['a.', TOKENS.DOT],
+      ['child::a', TOKENS.COLONS],
+      ['a//b', TOKENS.SLASH],
+      ['a/..', TOKENS.DOT],
+    ],
+  },
+  {
+    name: 'reads a word behind the context item as the operator it spells',
+    count: 1,
+    pairs: [
+      ['. or x', TOKENS.OR],
+      ['.. and x', TOKENS.AND],
+      ['a/.. union b', TOKENS.UNION],
+    ],
+  },
+  {
     name: 'keeps a name whole around the operator letters inside it',
     count: 1,
     pairs: [
@@ -140,6 +174,7 @@ const PIECES = [
   '.5', '1e3', 'child::', 'descendant-or-self::', '@', ' ', '  ', '\t',
   '\n', '//', '/', '(', ')', '[', ']', '*', '+', '-', '=', '!=', '<=',
   '>=', '|', '||', 'and', 'or', 'div', 'mod', 'instance of', '$v', ',', ':',
+  '.', '..', '::', '!', '?', '#',
 ]
 
 /**
@@ -238,6 +273,19 @@ describe('tokens', function() {
       assert.equal(
         tokenized(expression).map((token) => token.value).join(''),
         expression,
+      )
+    }
+  })
+  it('leaves none of the path punctuation in the residue', function() {
+    for (let count = 0; count < 500; count += 1) {
+      const expression = generated()
+      assert.deepEqual(
+        tokenized(expression)
+          .filter((token) => token.type === TOKENS.OTHER)
+          .map((token) => token.value)
+          .filter((value) => /[/@$,.]/u.test(value)),
+        [],
+        `${expression} lexes path punctuation into an undivided residue run`,
       )
     }
   })
