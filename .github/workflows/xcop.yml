@@ -22,7 +22,7 @@ jobs:
         with:
           node-version: 22
       - run: npm install
-      - run: npx mocha test/xcop.test.js --timeout 30000 --forbid-pending
+      - run: npx mocha test/xcop.deep.test.js --timeout 30000 --forbid-pending
       - run: >-
           xcop --license LICENSE.txt
           --include '**/*.xsl' --include '**/*.xml'

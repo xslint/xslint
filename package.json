@@ -21,6 +21,7 @@
   "scripts": {
     "postinstall": "patch-package",
     "test": "grunt",
+    "fast": "grunt fast",
     "coverage": "c8 mocha \"test/**/*.test.js\" --timeout 10000"
   },
   "keywords": [

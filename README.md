@@ -482,6 +482,14 @@ before sending us your pull request please make sure all your tests pass:
 npm test
 ```
 
+Most of that minute goes to the three `*.deep.test.js` files, which run the
+command-line tool in a child process. While you are still working, run the rest
+of the suite on its own — it finishes in about a second:
+
+```bash
+npm run fast
+```
+
 New linter rules live in `src/resources/checks/xpath` (per-file) or
 `src/resources/checks/corpus` (cross-file), each with a matching test pack in
 `test/resources`. The validators in `src/resources/checks/validation` and the

@@ -5,6 +5,14 @@
 
 'use strict'
 
+/**
+ * Milliseconds one test may take before mocha calls it hung. Both targets share
+ * it: the split decides which files run, never how patient the runner is with
+ * any one of them.
+ * @type {number}
+ */
+const TIMEOUT = 10000
+
 module.exports = function(grunt) {
   grunt.initConfig({
     eslint: {
@@ -14,10 +22,20 @@ module.exports = function(grunt) {
       ],
     },
     mochacli: {
-      test: {
+      fast: {
         options: {
-          files: ['test/**/*.test.js', '!test/resources/**'],
-          timeout: 10000,
+          files: [
+            'test/**/*.test.js',
+            '!test/**/*.deep.test.js',
+            '!test/resources/**',
+          ],
+          timeout: TIMEOUT,
+        },
+      },
+      deep: {
+        options: {
+          files: ['test/**/*.deep.test.js', '!test/resources/**'],
+          timeout: TIMEOUT,
         },
       },
     },
@@ -27,5 +45,9 @@ module.exports = function(grunt) {
   grunt.registerTask('docs', 'Generate documentation site', function() {
     require('./scripts/generate-docs')
   })
+  grunt.registerTask(
+    'fast', 'Lint, then run every test that starts no process',
+    ['eslint', 'mochacli:fast'],
+  )
   grunt.registerTask('default', ['eslint', 'mochacli'])
 }
