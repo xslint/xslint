@@ -12,6 +12,12 @@ const assert = require('assert')
  * @type {Array.<Array.<string>>}
  */
 const SPACED = [
+  ['element( a )', 'inside the brackets of a kind test'],
+  ['element(a )', 'in front of the bracket a kind test closes'],
+  ['attribute( a )', 'inside the brackets of an attribute test'],
+  ['document-node( element( a ) )', 'inside the brackets of a nested test'],
+  ['. instance of empty-sequence ()', 'in front of a sequence type\'s bracket'],
+  ['. instance of item ()', 'in front of an item type\'s bracket'],
   ['child ::a', 'in front of an axis separator'],
   ['child:: a', 'behind an axis separator'],
   ['child  ::  a', 'on both sides of an axis separator'],

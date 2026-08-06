@@ -133,7 +133,7 @@ const AXES = [
 const TESTS = [
   'node', 'text', 'comment', 'processing-instruction',
   'document-node', 'element', 'attribute', 'schema-element',
-  'schema-attribute', 'namespace-node',
+  'schema-attribute', 'namespace-node', 'item', 'empty-sequence',
 ]
 
 /**
@@ -175,6 +175,20 @@ const NAMESPACE_AXIS = /(namespace)::/g
 const SPACED_TEST = new RegExp(
   `(${TESTS.join('|')})${SPACE}*\\(${SPACE}*(?=${ARGUMENT})`, 'gu',
 )
+
+/**
+ * The gap in front of a `)`, with the end of what the brackets hold in front of
+ * it. The engine reads a kind test as its keyword glued to both brackets, so
+ * `element( a )` is refused where `element(a)` passes, though XPath 2.0 lets
+ * ExprWhitespace stand between any two tokens (#639). The character in front of
+ * the gap is required, and required to end an argument — a name character, or
+ * the `)` of a nested test — so a deletion never pulls a `:` onto the `)` and
+ * spells the comment closer `:)`, and a nested `document-node( element( a ) )`
+ * closes from the inside out in one pass, because the outer gap is preceded by
+ * the inner `)`.
+ * @type {RegExp}
+ */
+const SPACED_CLOSE = new RegExp(`([\\w.\\-)])${SPACE}+\\)`, 'gu')
 
 /**
  * Whether the engine compiles the expression, counting a static-type
@@ -249,6 +263,7 @@ const SQUEEZES = [
   [SPACED_AXIS, (name) => `${name}::`, spelling],
   [NAMESPACE_AXIS, () => 'child::', spelling],
   [SPACED_TEST, (name) => `${name}(`, tailed],
+  [SPACED_CLOSE, (tail) => `${tail})`, () => false],
 ]
 
 /**
