@@ -36,6 +36,7 @@ module.exports = function(grunt) {
         options: {
           files: ['test/**/*.deep.test.js', '!test/resources/**'],
           timeout: TIMEOUT,
+          parallel: true,
         },
       },
     },

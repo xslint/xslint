@@ -226,6 +226,22 @@ describe('conformance', function() {
         'that starts none is, so the fast half of the suite runs the wrong files',
     )
   })
+  it('writes every scratch file of a test into a temporary directory', function() {
+    assert.deepEqual(
+      allFilesFrom(__dirname)
+        .filter((file) => file.endsWith('.test.js'))
+        .filter((file) => {
+          const suite = fs.readFileSync(file, 'utf-8')
+          return suite.includes('writeFileSync') &&
+            !suite.includes('mkdtempSync')
+        })
+        .map((file) => path.basename(file)),
+      [],
+      'a test that writes a file without asking for a temporary directory ' +
+        'leaves it in the working tree, where the run that lints the ' +
+        'repository walks over it and loses its count (#687)',
+    )
+  })
   it('tests every validation check by name in a test file', function() {
     const suite = allFilesFrom(path.resolve(__dirname))
       .filter((file) => file.endsWith('.test.js'))
