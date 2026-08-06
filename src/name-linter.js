@@ -134,13 +134,14 @@ const lintByName = function(corpus, suppressions = []) {
   const defects = []
   if (!suppressed(CHECK, suppressions)) {
     for (const source of corpus) {
-      for (const {node, start, expression} of expressionsOf(source.xsl)) {
+      for (const found of expressionsOf(source.xsl)) {
+        const {node, expression} = found
         const modern = since(versionOf(node), MODERN)
         for (const {offset, value, replacement} of comparisons(
           expression, modern,
         )) {
           defects.push(
-            defect(CHECK, META, source, node, start + offset, expression,
+            defect(CHECK, META, source, found, offset,
               replacement === null ?
                 undefined : {value, replacement, suggestion: true},
             ),
