@@ -30,7 +30,7 @@ describe('redundant-boolean-call-linter', function() {
         })
         yml.found.fixes.forEach((expected, index) => {
           assert.equal(
-            defects[index].fix ? defects[index].fix.replacement : null,
+            defects[index].fix?.replacement ?? null,
             expected,
           )
         })

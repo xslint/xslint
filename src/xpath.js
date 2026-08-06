@@ -207,8 +207,13 @@ const compiles = function(xpath) {
   let ok = true
   try {
     compileXPathToJavaScript(xpath, evaluateXPath.ALL_RESULTS_TYPE, {
-      namespaceResolver: (prefix) =>
-        Object.hasOwn(STANDARD, prefix) ? STANDARD[prefix] : FUNCTIONS,
+      namespaceResolver: (prefix) => {
+        let uri = FUNCTIONS
+        if (Object.hasOwn(STANDARD, prefix)) {
+          uri = STANDARD[prefix]
+        }
+        return uri
+      },
     })
   } catch (err) {
     ok = CODED.test(String(err.message))
@@ -235,7 +240,13 @@ const compiles = function(xpath) {
 const rewritten = function(xpath, pattern, replacement, swallowed) {
   return xpath.replace(
     pattern,
-    (match, name, at) => swallowed(xpath, at) ? match : replacement(name),
+    (match, name, at) => {
+      let spelled = match
+      if (!swallowed(xpath, at)) {
+        spelled = replacement(name)
+      }
+      return spelled
+    },
   )
 }
 

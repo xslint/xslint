@@ -64,9 +64,10 @@ const directivesFrom = function(content) {
 const covers = function(directive, defect) {
   const named = directive.names.length === 0 ||
     directive.names.includes(defect.name)
-  const covered = directive.type === TYPES.NEXT_LINE ?
-    directive.line + 1 :
-    directive.line
+  let covered = directive.line
+  if (directive.type === TYPES.NEXT_LINE) {
+    covered = directive.line + 1
+  }
   return named && (directive.type === TYPES.FILE ||
     (covered >= (defect.from || defect.line) && covered <= defect.line))
 }

@@ -78,22 +78,28 @@ const CSS = `
 
 const HLJS_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0'
 
-const page = (title, content, withHighlight) => `<!DOCTYPE html>
+const page = (title, content, withHighlight) => {
+  let highlight = ''
+  if (withHighlight) {
+    highlight = `
+  <link rel="stylesheet" href="${HLJS_CDN}/styles/github.min.css">
+  <script src="${HLJS_CDN}/highlight.min.js"></script>
+  <script src="${HLJS_CDN}/languages/xml.min.js"></script>
+  <script>hljs.highlightAll();</script>`
+  }
+  return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${title}</title>
-  <style>${CSS}</style>${withHighlight ? `
-  <link rel="stylesheet" href="${HLJS_CDN}/styles/github.min.css">
-  <script src="${HLJS_CDN}/highlight.min.js"></script>
-  <script src="${HLJS_CDN}/languages/xml.min.js"></script>
-  <script>hljs.highlightAll();</script>` : ''}
+  <style>${CSS}</style>${highlight}
 </head>
 <body>
 ${content}
 </body>
 </html>`
+}
 
 const severityBadge = (severity) => {
   return `<span class="severity-${severity}">${severity}</span>`
@@ -101,14 +107,23 @@ const severityBadge = (severity) => {
 
 const escaped = (xpath) => xpath.replace(/</g, '&lt;').replace(/>/g, '&gt;')
 
-const expressions = (kind, lint) => kind === 'corpus' ?
-  `<code class="xpath">declaration: ${escaped(lint.declaration)}</code>
-    <code class="xpath">usage: ${escaped(lint.usage)}</code>` :
-  kind === 'validation' ?
-    `<code class="xpath">verified by the parser, not an XPath rule</code>` :
-    kind === 'format' ?
-      `<code class="xpath">checked over the tokens, not an XPath rule</code>` :
-      `<code class="xpath">${escaped(lint.xpath)}</code>`
+const expressions = (kind, lint) => {
+  let shown
+  if (kind === 'corpus') {
+    shown = `<code class="xpath">declaration: ${
+      escaped(lint.declaration)}</code>
+    <code class="xpath">usage: ${escaped(lint.usage)}</code>`
+  } else if (kind === 'validation') {
+    shown =
+      `<code class="xpath">verified by the parser, not an XPath rule</code>`
+  } else if (kind === 'format') {
+    shown =
+      `<code class="xpath">checked over the tokens, not an XPath rule</code>`
+  } else {
+    shown = `<code class="xpath">${escaped(lint.xpath)}</code>`
+  }
+  return shown
+}
 
 const generate = function() {
   const checks = KINDS.flatMap((kind) => allFilesFrom(path.join(CHECKS, kind))
@@ -118,7 +133,10 @@ const generate = function() {
       const name = path.basename(yamlFile, '.yaml')
       const lint = yaml.parsedFromFile(yamlFile)
       const mdFile = path.join(MOTIVES, kind, `${name}.md`)
-      const md = fs.existsSync(mdFile) ? fs.readFileSync(mdFile, 'utf-8') : null
+      let md = null
+      if (fs.existsSync(mdFile)) {
+        md = fs.readFileSync(mdFile, 'utf-8')
+      }
       return {name, kind, lint, md}
     }))
 
@@ -187,7 +205,10 @@ ${indexRows}
   )
 
   for (const {name, kind, lint, md} of checks) {
-    const mdHtml = md ? marked(md) : `<h1>${name}</h1><p>${lint.message}</p>`
+    let mdHtml = `<h1>${name}</h1><p>${lint.message}</p>`
+    if (md) {
+      mdHtml = marked(md)
+    }
     const checkBody = `  <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     ${severityBadge(lint.severity)}

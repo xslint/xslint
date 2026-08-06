@@ -11,7 +11,11 @@ const required = function (params) {
   const optional = params.findIndex(
     (par) => par.type === "AssignmentPattern" || par.type === "RestElement"
   );
-  return optional === -1 ? params.length : optional;
+  let count = optional;
+  if (optional === -1) {
+    count = params.length;
+  }
+  return count;
 };
 
 // The parameter list of the function a binding holds, when that function is
@@ -36,7 +40,10 @@ const written = function (def) {
 // followed, so no third-party signature is ever second-guessed, and anything
 // that fails to resolve or to load leaves the call unjudged.
 const loaded = function (def, from) {
-  const init = def.node.type === "VariableDeclarator" ? def.node.init : null;
+  let init = null;
+  if (def.node.type === "VariableDeclarator") {
+    init = def.node.init;
+  }
   if (
     !init ||
     init.type !== "CallExpression" ||
@@ -68,9 +75,11 @@ const taken = function (def) {
   const property = def.node.id.properties.find(
     (pro) => pro.type === "Property" && pro.value === def.name
   );
-  return property && property.key.type === "Identifier" ?
-    property.key.name :
-    null;
+  let name = null;
+  if (property && property.key.type === "Identifier") {
+    name = property.key.name;
+  }
+  return name;
 };
 
 // The variable a name resolves to at a scope, respecting shadowing.
@@ -93,7 +102,10 @@ const demanded = function (variable, from, key) {
     return null;
   }
   const def = variable.defs[0];
-  const params = key === null ? written(def) : null;
+  let params = null;
+  if (key === null) {
+    params = written(def);
+  }
   if (params) {
     return required(params);
   }
@@ -104,9 +116,19 @@ const demanded = function (variable, from, key) {
   if (target === null) {
     return null;
   }
-  const name = key === null ? taken(def) : key;
-  const fun = name === null ? target : target[name];
-  return typeof fun === "function" ? fun.length : null;
+  let name = key;
+  if (key === null) {
+    name = taken(def);
+  }
+  let fun = target;
+  if (name !== null) {
+    fun = target[name];
+  }
+  let arity = null;
+  if (typeof fun === "function") {
+    arity = fun.length;
+  }
+  return arity;
 };
 
 // A project-local ESLint plugin, kept out of eslint.config.mjs so it can be
@@ -189,12 +211,16 @@ module.exports = {
             ) {
               return;
             }
-            const holder =
-              callee.type === "Identifier" ? callee : callee.object;
+            let holder = callee;
+            let key = null;
+            if (callee.type !== "Identifier") {
+              holder = callee.object;
+              key = callee.property.name;
+            }
             const expected = demanded(
               bound(context.sourceCode.getScope(node), holder.name),
               context.filename,
-              callee.type === "Identifier" ? null : callee.property.name
+              key
             );
             if (expected !== null && node.arguments.length < expected) {
               context.report({

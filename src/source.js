@@ -85,14 +85,20 @@ const placeAt = function(text, at) {
  *  and the next raw offset
  */
 const character = function(content, at) {
-  const closing = content[at] === '&' ? content.indexOf(';', at) : -1
-  const entity = closing < 0 ?
-    [undefined, at + 1] :
-    [NAMED[content.slice(at + 1, closing)], closing + 1]
-  const ending = content[at] === '\r' ?
-    ['\n', content[at + 1] === '\n' ? at + 2 : at + 1] :
-    [content[at], at + 1]
-  return content[at] === '&' ? entity : ending
+  let read = [content[at], at + 1]
+  if (content[at] === '&') {
+    const closing = content.indexOf(';', at)
+    read = [undefined, at + 1]
+    if (closing >= 0) {
+      read = [NAMED[content.slice(at + 1, closing)], closing + 1]
+    }
+  } else if (content[at] === '\r') {
+    read = ['\n', at + 1]
+    if (content[at + 1] === '\n') {
+      read = ['\n', at + 2]
+    }
+  }
+  return read
 }
 
 /**

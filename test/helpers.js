@@ -17,12 +17,16 @@ const {execSync, spawnSync} = require('child_process')
  * @return {string} Stdout
  */
 const execCmd = function(command, args, print) {
+  let stdio = 'ignore'
+  if (print) {
+    stdio = null
+  }
   return (execSync(
     `${command} ${args.join(' ')}`,
     {
       timeout: 120000,
       windowsHide: true,
-      stdio: print ? null : 'ignore',
+      stdio: stdio,
     },
   ) ?? '').toString()
 }

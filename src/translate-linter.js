@@ -89,8 +89,13 @@ const args = function(expression, blanked, from, to) {
  * @return {?string} - `lower-case`, `upper-case`, or null
  */
 const folds = function(from, to) {
-  return from === UPPER && to === LOWER ? 'lower-case' :
-    from === LOWER && to === UPPER ? 'upper-case' : null
+  let fold = null
+  if (from === UPPER && to === LOWER) {
+    fold = 'lower-case'
+  } else if (from === LOWER && to === UPPER) {
+    fold = 'upper-case'
+  }
+  return fold
 }
 
 /**

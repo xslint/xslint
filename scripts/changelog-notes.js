@@ -26,9 +26,15 @@ const section = function(heading) {
   const next = lines.findIndex(
     (line, index) => index > start && line.startsWith('## '),
   )
-  return start < 0 ?
-    '' :
-    lines.slice(start + 1, next < 0 ? lines.length : next).join('\n').trim()
+  let end = next
+  if (next < 0) {
+    end = lines.length
+  }
+  let body = ''
+  if (start >= 0) {
+    body = lines.slice(start + 1, end).join('\n').trim()
+  }
+  return body
 }
 
 // Prefer this version's section; fall back to Unreleased, then a bare line, so

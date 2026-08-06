@@ -34,7 +34,13 @@ const colorful = function(stream) {
  * }} - Writer bound to the sink
  */
 const writer = function(sink, colored = true) {
-  const paint = (color, text) => colored ? safe[color](text) : text
+  const paint = (color, text) => {
+    let painted = text
+    if (colored) {
+      painted = safe[color](text)
+    }
+    return painted
+  }
   return {
     debug: (msg, ...args) => sink(`${paint('gray', '[DEBUG]')} ${msg}`, ...args),
     info: (msg, ...args) => sink(`${paint('blue', '[INFO]')} ${msg}`, ...args),

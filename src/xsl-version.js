@@ -90,9 +90,13 @@ const since = function(version, floor) {
  */
 const declaring = function(element) {
   const xslt = element.namespaceURI === XSLT
-  const own = xslt && element.localName !== SERIALIZING ?
-    element.getAttribute('version') : ''
-  return xslt ? own : element.getAttributeNS(XSLT, 'version')
+  let declared = element.getAttributeNS(XSLT, 'version')
+  if (xslt && element.localName === SERIALIZING) {
+    declared = ''
+  } else if (xslt) {
+    declared = element.getAttribute('version')
+  }
+  return declared
 }
 
 /**
@@ -115,7 +119,11 @@ const HELD = {
  */
 const holding = function(node) {
   const held = HELD[node.nodeType]
-  return held === undefined ? node.parentNode : held(node)
+  let where = node.parentNode
+  if (held !== undefined) {
+    where = held(node)
+  }
+  return where
 }
 
 /**

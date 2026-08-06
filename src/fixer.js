@@ -19,13 +19,19 @@ const {logger} = require('./logger')
 const decodes = function(content, from, value) {
   let raw = from
   const matched = [...value].every((char) => {
-    const [decoded, next] = raw < content.length ?
-      character(content, raw) :
-      [null, raw]
+    let step = [null, raw]
+    if (raw < content.length) {
+      step = character(content, raw)
+    }
+    const [decoded, next] = step
     raw = next
     return decoded === char
   })
-  return matched ? raw : -1
+  let past = -1
+  if (matched) {
+    past = raw
+  }
+  return past
 }
 
 /**
