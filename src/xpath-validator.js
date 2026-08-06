@@ -49,14 +49,15 @@ const names = [CHECK]
 const EXPRESSIONS = ATTRIBUTES.filter((name) => !PATTERNS.includes(name))
 
 /**
- * Whether the walked node is one of those attributes on an XSLT element. The
- * walk answers the same set a descendant scan did and answers it linearly
- * (#635), so the name test that was a predicate inside the XPath is a filter
- * here.
+ * Whether the walked node is one of those attributes on an XSLT element,
+ * holding its expression bare — the same word `src/attributes.js` uses for the
+ * set it builds, so the two modules name one thing one way (#648). The walk
+ * answers the same set a descendant scan did and answers it linearly (#635), so
+ * the name test that was a predicate inside the XPath is a filter here.
  * @param {Node} node - A node of the walk
  * @return {boolean} - True when it holds an expression to validate
  */
-const held = function(node) {
+const bare = function(node) {
   return node.nodeType === 2 && EXPRESSIONS.includes(node.localName) &&
     node.ownerElement.namespaceURI === XSLT
 }
@@ -83,7 +84,7 @@ const UNRESOLVED = /&[A-Za-z_][\w.-]*;/
  * @param {Array.<{file: string, content: string, xsl: Document}>} corpus -
  *  Parsed stylesheets
  * @param {Array.<string>} suppressions - Array of suppressed checks
- * @return {{expressions: Array.<{source: object, expression: Node}>, defects:
+ * @return {{expressions: Array.<{source: object, attribute: Node}>, defects:
  *  {name: string, severity: string, message: string, file: string,
  *  line: number, pos: number}[]}} - Valid expressions and defects found
  */
@@ -93,10 +94,10 @@ const validate = function(corpus, suppressions = []) {
   const defects = []
   const suppressed = suppressions.some((sup) => CHECK.includes(sup))
   for (const source of corpus) {
-    for (const expression of walked(source.xsl).filter(held)) {
-      if (isValid(expression.nodeValue)) {
-        expressions.push({source: source, expression: expression})
-      } else if (UNRESOLVED.test(expression.nodeValue)) {
+    for (const attribute of walked(source.xsl).filter(bare)) {
+      if (isValid(attribute.nodeValue)) {
+        expressions.push({source: source, attribute: attribute})
+      } else if (UNRESOLVED.test(attribute.nodeValue)) {
         logger.debug(`Skipping expression with an unresolved entity`)
       } else if (!suppressed) {
         defects.push({
@@ -104,8 +105,8 @@ const validate = function(corpus, suppressions = []) {
           severity: META.severity,
           message: META.message,
           file: source.file,
-          line: expression.lineNumber,
-          pos: expression.columnNumber,
+          line: attribute.lineNumber,
+          pos: attribute.columnNumber,
         })
       }
     }

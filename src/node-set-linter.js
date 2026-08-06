@@ -7,7 +7,7 @@ const {nodes} = require('./xpath')
 const {masked, closes} = require('./expressions')
 const {GAP} = require('./tokens')
 const {metaOf, suppressed, defect} = require('./checks')
-const {selectorOf} = require('./attributes')
+const {selectorOf, wholeOf} = require('./attributes')
 const {MODERN, since, versionOf} = require('./xsl-version')
 const {logger} = require('./logger')
 
@@ -84,7 +84,7 @@ const lintByNodeSet = function(corpus, suppressions = []) {
           )) {
             defects.push(
               defect(
-                CHECK, META, source, attribute, offset, attribute.nodeValue,
+                CHECK, META, source, wholeOf(attribute), offset,
                 {value, replacement},
               ),
             )

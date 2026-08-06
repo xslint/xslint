@@ -97,6 +97,18 @@ export default defineConfig([
         },
         {
           selector:
+            "MemberExpression[object.name='expression'][property.name=/^(nodeValue|nodeName|nodeType|localName|lineNumber|columnNumber|ownerElement)$/]",
+          message:
+            "'expression' names the text of an expression, never the node carrying it (#648). A node has no place under that name: call it 'attribute', or pass the whole {node, start, expression} record"
+        },
+        {
+          selector:
+            "CallExpression[callee.name='defect'] MemberExpression[property.name='nodeValue']",
+          message:
+            "Do not spell a node and its text as two arguments of defect (#648); hand it the {node, start, expression} record that expressionsOf yields, or wholeOf(attribute) for a narrowed one"
+        },
+        {
+          selector:
             "CallExpression[callee.property.name='getAttribute'][callee.object.property.name='documentElement'][arguments.0.value='version']",
           message:
             "Read the stylesheet version through versionOf in src/xsl-version.js, which handles a simplified stylesheet's xsl:version; do not read documentElement.getAttribute('version') directly"

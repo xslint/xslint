@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {expressionsOf} = require('../src/attributes')
+const {expressionsOf, wholeOf} = require('../src/attributes')
 const {xml} = require('../src/helpers')
 const path = require('path')
 const fs = require('fs')
@@ -50,6 +50,14 @@ describe('attributes', function() {
         ['select', 0, '@x'],
       ],
       'cannot read the expressions of the stylesheet',
+    )
+  })
+  it('reads a narrowed attribute as the walk reads the same one', function() {
+    const whole = expressionsOf(SHEET).find((found) => found.start === 0)
+    assert.deepEqual(
+      wholeOf(whole.node),
+      whole,
+      'builds a different record for an attribute a linter narrowed to',
     )
   })
   it('cannot read a literal result attribute as an expression', function() {
