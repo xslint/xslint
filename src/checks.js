@@ -35,6 +35,34 @@ const suppressed = function(check, suppressions) {
 const LEAD = {2: 1, 4: '<![CDATA['.length}
 
 /**
+ * Where an offset inside an expression truly stands in the raw source. The
+ * parsed value cannot answer it: a parser decodes the entities and normalises
+ * the line endings of an attribute value, so the two texts drift apart by
+ * however much of that the value holds. The walk starts where the node opens,
+ * steps over whatever markup stands in front of its value, and skips as many
+ * decoded characters as the offset counts.
+ *
+ * A linter needs this as much as a defect does — a check reasoning over a
+ * parsed expression cannot see the line ending it was given a space for, so
+ * anything it decides about whitespace has to be settled against the source
+ * here rather than against the value in its hand (#628).
+ * @param {{file: string, content: string}} source - The file the node sits in
+ * @param {{node: Node, start: number}} found - The expression, as
+ *  `src/attributes.js` yields it
+ * @param {number} offset - Offset of the point within the expression
+ * @return {number} - The raw offset into `source.content`
+ */
+const rawly = function(source, found, offset) {
+  return skip(
+    source.content,
+    offsetAt(
+      source.content, found.node.lineNumber, found.node.columnNumber,
+    ) + (LEAD[found.node.nodeType] || 0),
+    found.start + offset,
+  )
+}
+
+/**
  * A defect at an offset inside an attribute, text, or CDATA node. Its line and
  * column are where it truly stands in the source, which is not something the
  * parsed value can answer on its own: an attribute value arrives with its line
@@ -71,16 +99,8 @@ const LEAD = {2: 1, 4: '<![CDATA['.length}
 const defect = function(
   check, meta, source, found, offset, fix = undefined,
 ) {
-  const {node, start, expression} = found
-  const {line, pos} = placeAt(
-    source.content,
-    skip(
-      source.content,
-      offsetAt(source.content, node.lineNumber, node.columnNumber) +
-        (LEAD[node.nodeType] || 0),
-      start + offset,
-    ),
-  )
+  const {node, expression} = found
+  const {line, pos} = placeAt(source.content, rawly(source, found, offset))
   let anchored = {}
   if (fix !== undefined && isValid(expression)) {
     anchored = {fix: {line: line, col: pos, ...fix}}
@@ -101,4 +121,5 @@ module.exports = {
   metaOf,
   suppressed,
   defect,
+  rawly,
 }

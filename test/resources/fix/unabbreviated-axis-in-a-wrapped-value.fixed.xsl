@@ -8,7 +8,6 @@
     <xsl:value-of select="@a
                           or deep"/>
     <xsl:value-of select="@b &gt; 1 and later"/>
-    <xsl:value-of select="child::
-                          alpha"/>
+    <xsl:value-of select="alpha"/>
   </xsl:template>
 </xsl:stylesheet>

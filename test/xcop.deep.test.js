@@ -47,6 +47,12 @@ const available = cmdAvailable('xcop', ['--version'], false)
  * xcop counts a namespace used only by a QName, so a declaration whose sole
  * mention is an `exclude-result-prefixes` is canonicalized away exactly as a
  * dead one is — which is the reading #553 is about, in another tool.
+ *
+ * The reference pack is here because the fixture cannot survive the trip: its
+ * `&#10;` is the whole point of it, and xmldom serializes that back as a raw
+ * line ending, so what xcop reads is a wrapped attribute it refuses. One
+ * refusal costs every other fixture its verdict too (#694), so this one is
+ * kept out rather than allowed to take 257 assertions down with it.
  * @type {Array.<string>}
  */
 const UNFORMATTED = [
@@ -56,6 +62,7 @@ const UNFORMATTED = [
   'extension-element-prefixes.yaml',
   'all-prefixes-excluded-at-once.yaml',
   'prefix-list-on-a-literal-element.yaml',
+  'a-wrap-written-as-a-reference.yaml',
 ]
 
 /**
