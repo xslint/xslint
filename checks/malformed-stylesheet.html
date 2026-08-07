@@ -82,6 +82,18 @@ the other checks run only over the stylesheets that parse, so one broken file
 never hides the feedback on the rest.</p>
 <p>This is the first validator in the pipeline — validators establish that the
 input is parseable, and the linters that follow assume it.</p>
+<p>An unclosed element is the obvious way to break a stylesheet. Two others break
+it without looking broken. An <code>&amp;</code> in XML opens a reference, so <code>Tom &amp; Jerry</code> is
+not text holding an ampersand: the parser reads the <code>&amp;</code> as the start of an entity
+name and meets a space where a name has to begin. Write it <code>&amp;amp;</code>, which is the
+reference that stands for an ampersand. This bites hardest
+in a URL, where <code>?page=2&amp;sort=name</code> looks like every other query string and is
+the commonest way a hand-written stylesheet stops being XML. An attribute value
+must also be quoted — <code>select=$total</code> gives the parser nothing it can read as a
+value, and the quotes are not optional the way they are in HTML.</p>
+<p>An <code>&amp;</code> is fine where it is not character data: inside a comment, inside a
+<code>&lt;![CDATA[...]]&gt;</code> section, and inside a processing instruction, XML does not read
+it as opening anything.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:stylesheet xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot; version=&quot;2.0&quot;&gt;
   &lt;xsl:template match=&quot;/&quot;&gt;
@@ -93,6 +105,22 @@ input is parseable, and the linters that follow assume it.</p>
 <pre><code class="language-xsl">&lt;xsl:stylesheet xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot; version=&quot;2.0&quot;&gt;
   &lt;xsl:template match=&quot;/&quot;&gt;
     &lt;result/&gt;
+  &lt;/xsl:template&gt;
+&lt;/xsl:stylesheet&gt;
+</code></pre>
+<p>Incorrect:</p>
+<pre><code class="language-xsl">&lt;xsl:stylesheet xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot; version=&quot;2.0&quot;&gt;
+  &lt;xsl:template match=&quot;/&quot;&gt;
+    &lt;a href=&quot;list?page=2&amp;sort=name&quot;&gt;Tom &amp; Jerry&lt;/a&gt;
+    &lt;xsl:value-of select=$total/&gt;
+  &lt;/xsl:template&gt;
+&lt;/xsl:stylesheet&gt;
+</code></pre>
+<p>Correct:</p>
+<pre><code class="language-xsl">&lt;xsl:stylesheet xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot; version=&quot;2.0&quot;&gt;
+  &lt;xsl:template match=&quot;/&quot;&gt;
+    &lt;a href=&quot;list?page=2&amp;amp;sort=name&quot;&gt;Tom &amp;amp; Jerry&lt;/a&gt;
+    &lt;xsl:value-of select=&quot;$total&quot;/&gt;
   &lt;/xsl:template&gt;
 &lt;/xsl:stylesheet&gt;
 </code></pre>
