@@ -6,6 +6,8 @@
 const {metaOf, suppressed} = require('./checks')
 const {deletion} = require('./fixes')
 const {logger} = require('./logger')
+const {GAPS} = require('./tokens')
+const {XSLT} = require('./xsl-version')
 
 /**
  * Name of the check this linter owns.
@@ -41,26 +43,76 @@ const declared = function(name) {
 }
 
 /**
+ * The two standard attributes that name namespace prefixes as bare tokens
+ * rather than inside a qualified name, so a scan looking for `prefix:` cannot
+ * see them.
+ * @type {Array.<string>}
+ */
+const LISTS = ['exclude-result-prefixes', 'extension-element-prefixes']
+
+/**
+ * The prefixes an element names in a prefix list. The spelling depends on what
+ * the element is: on an XSLT element the attribute stands unprefixed, while on
+ * a literal result element it is a standard attribute in the XSLT namespace
+ * (`xsl:exclude-result-prefixes`) — an unprefixed one there is text bound for
+ * the result tree, naming no prefix at all, the same distinction
+ * `src/attributes.js` draws for a `select`. The split is on `GAPS` because that
+ * is the one spelling of a gap this repository allows, not because a tab can
+ * reach here: attribute-value normalization turned every `S` into a space
+ * before the value was read, and only a run of them survives. `#default` names
+ * the default namespace, which binds no prefix and so matches nothing here.
+ * @param {Element} element - The element to read
+ * @return {Array.<string>} - The tokens its prefix lists hold
+ */
+const listed = function(element) {
+  const prefixes = []
+  for (const name of LISTS) {
+    let value = element.getAttributeNS(XSLT, name)
+    if (element.namespaceURI === XSLT) {
+      value = element.getAttribute(name)
+    }
+    if (value) {
+      prefixes.push(...value.split(GAPS))
+    }
+  }
+  return prefixes
+}
+
+/**
  * Whether a prefix is used anywhere in the document — by an element name, an
- * attribute name, or a qualified name inside an attribute value. Namespace
- * declarations themselves are not usage, so they are skipped.
+ * attribute name, a qualified name inside an attribute value, or a prefix list
+ * naming it. Namespace declarations themselves are not usage, so they are
+ * skipped.
+ *
+ * A prefix list is usage even though nothing in it is qualified: a declaration
+ * `exclude-result-prefixes` names is what tells the processor to keep that
+ * namespace out of the output, and deleting the declaration leaves the
+ * reference bound to nothing, which a conformant processor rejects (XTSE0808).
+ * The check reported such a prefix as never used and its safe fix then cut the
+ * declaration, so `--fix` turned a stylesheet that compiled into one that does
+ * not (#553). `#all` says every namespace in scope is excluded, so it is usage
+ * of every prefix at once — read at any version, as `leaking-result-namespace`
+ * reads it, since `#all` is no NCName and can never be the prefix under
+ * judgement.
  * @param {Array.<Element>} elements - Every element of the document
  * @param {string} prefix - Prefix to look for
  * @return {boolean} - True when the prefix is used
  */
 const used = function(elements, prefix) {
   const qualifier = `${prefix}:`
-  return elements.some(
-    (element) =>
-      element.nodeName.startsWith(qualifier) ||
+  return elements.some((element) => {
+    const prefixes = listed(element)
+    return element.nodeName.startsWith(qualifier) ||
+      prefixes.includes(prefix) ||
+      prefixes.includes('#all') ||
       Array.from(element.attributes).some(
         (attribute) =>
           !declared(attribute.name) &&
           attribute.name !== 'xmlns' &&
           (attribute.name.startsWith(qualifier) ||
             attribute.value.includes(qualifier)),
-      ),
-  )
+      )
+  })
 }
 
 /**

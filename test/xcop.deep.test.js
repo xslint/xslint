@@ -42,11 +42,20 @@ const available = cmdAvailable('xcop', ['--version'], false)
  * and xmldom emits the raw character. One name covers all six such packs, one
  * per linter. Excluded from the formatting check, as the fix fixtures are in
  * the xcop workflow.
+ *
+ * The four prefix-list packs are here for the same reason, one step further in:
+ * xcop counts a namespace used only by a QName, so a declaration whose sole
+ * mention is an `exclude-result-prefixes` is canonicalized away exactly as a
+ * dead one is — which is the reading #553 is about, in another tool.
  * @type {Array.<string>}
  */
 const UNFORMATTED = [
   'redundant-namespace-declarations.yaml',
   'no-break-space-before-the-bracket.yaml',
+  'excluded-result-prefixes.yaml',
+  'extension-element-prefixes.yaml',
+  'all-prefixes-excluded-at-once.yaml',
+  'prefix-list-on-a-literal-element.yaml',
 ]
 
 /**

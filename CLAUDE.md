@@ -443,7 +443,13 @@ accidentally attached fix turns red.
   losing it with the throw. The CI `xcop` job runs it too. The
   `redundant-namespace-declarations` pack is listed in `UNFORMATTED` because its
   fixture must carry the unused namespace the check flags, which xcop would
-  canonicalize away. The repo-wide sweep in
+  canonicalize away, and its four prefix-list packs for the same reason one step
+  in: xcop counts a namespace used only by a QName, so a declaration named only
+  by an `exclude-result-prefixes` is canonicalized away exactly as a dead one is
+  (#553). A pack's *basename* is what that list matches and what names its
+  fixture file, so two packs sharing one across directories exclude and overwrite
+  each other silently — name a new pack so it collides with none. The repo-wide
+  sweep in
   the workflow excludes `test/resources/directives/wrapped*.xsl` for the same
   reason: they must keep the wrapped attribute value #611 is about, which xcop
   joins onto one line.
