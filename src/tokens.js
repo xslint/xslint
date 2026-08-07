@@ -7,11 +7,19 @@
  * Token types a lexed expression is made of. Every piece of XPath punctuation
  * carries a kind of its own — the `/` and `//` between steps, the `@` and `$`
  * opening an abbreviated attribute axis and a variable, the `,` of an argument
- * list, the `.` and `..` naming the context item and its parent, and the `::`
- * standing where no axis name claimed it — so `OTHER` holds the characters
- * XPath has no token for at all rather than the undivided run of punctuation it
- * swallowed until #676, which no grammar can be written against: a `/../`
- * arriving as one string is not two steps of a path.
+ * list, the `.` and `..` naming the context item and its parent, the `::` no
+ * axis name claimed, and the operators XPath 3.1 added — `=>`, `:=`, `!`, `#`,
+ * `?`, and the braces and `:` a map constructor is spelled with — so `OTHER`
+ * holds the characters XPath has no token for at all rather than an undivided
+ * run of punctuation no grammar can be written against: a `/../` arriving as
+ * one string is not two steps of a path (#676), and a `}?` is not one operator
+ * (#685).
+ *
+ * The arrow was the sharper half of the two. Absent from `DOUBLE` where `>=`
+ * already sat, it lexed as `=` then `>` — not a stream a parser cannot read but
+ * one it reads wrongly, `a => f()` arriving spelled exactly like
+ * `a = (> f())`. A missing kind announces itself as `OTHER`; a kind read
+ * wrongly has nothing to announce.
  * @type {{[type: string]: string}}
  */
 const TOKENS = {
@@ -70,6 +78,14 @@ const TOKENS = {
   DOT: '.',
   DOUBLE_DOT: '..',
   COLONS: '::',
+  COLON: ':',
+  ARROW: '=>',
+  ASSIGN: ':=',
+  SIMPLE_MAP: '!',
+  HASH: '#',
+  LOOKUP: '?',
+  LBRACE: '{',
+  RBRACE: '}',
   NAME: 'name',
   USER_FUNCTION: 'user_function',
   CONCAT: '||',
@@ -158,13 +174,21 @@ const SINGLE = {
   '$': TOKENS.DOLLAR,
   ',': TOKENS.COMMA,
   '.': TOKENS.DOT,
+  '!': TOKENS.SIMPLE_MAP,
+  '#': TOKENS.HASH,
+  '?': TOKENS.LOOKUP,
+  '{': TOKENS.LBRACE,
+  '}': TOKENS.RBRACE,
+  ':': TOKENS.COLON,
 }
 
 /**
  * Map double characters to a token. Two characters are tried before one, so the
  * longer of an overlapping pair wins: `//` is one separator and not two `/`,
- * `..` is the parent and not two context items, and `::` stands whole wherever
- * an axis name did not already take it.
+ * `..` is the parent and not two context items, `::` stands whole wherever an
+ * axis name did not already take it, and `=>` is the arrow rather than the `=`
+ * and `>` it is spelled from. Nothing orders `=>` against `>=` either: they
+ * are two keys, and the lookup asks for the two characters standing there.
  * @type {{[key: string]: string}}
  */
 const DOUBLE = {
@@ -181,6 +205,8 @@ const DOUBLE = {
   '//': TOKENS.DOUBLE_SLASH,
   '..': TOKENS.DOUBLE_DOT,
   '::': TOKENS.COLONS,
+  '=>': TOKENS.ARROW,
+  ':=': TOKENS.ASSIGN,
   'or': TOKENS.OR,
 }
 
@@ -236,11 +262,14 @@ const SYMBOLS = Object.fromEntries(
  * the `or` of `or/border` is a node test. The context item and its parent end a
  * value the way a name does, so the `or` of `. or x` is an operator, while the
  * `/`, `@`, `$` and `,` end nothing and the word behind one of them is a name.
+ * A map or array constructor ends one as well, so the `instance of` behind the
+ * `}` of `map{"aa":1}` is the operator it spells, the way it is behind the `]`
+ * of a predicate.
  * @type {Array.<string>}
  */
 const ENDS = [
   TOKENS.NAME, TOKENS.NUMBER, TOKENS.STRING, TOKENS.RPAREN, TOKENS.RBRACKET,
-  TOKENS.MULTI, TOKENS.DOT, TOKENS.DOUBLE_DOT,
+  TOKENS.MULTI, TOKENS.DOT, TOKENS.DOUBLE_DOT, TOKENS.RBRACE,
 ]
 
 /**
