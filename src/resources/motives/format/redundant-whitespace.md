@@ -13,6 +13,22 @@ author wrote on purpose. The check runs only over expressions that already
 parse, so a malformed expression is reported once by the validator and never
 nagged about its spacing.
 
+A run holding a line ending is not redundant either. An expression written
+across several lines carries the indentation of each line it wraps onto, and
+that indentation is how a long expression stays readable rather than an
+accident to collapse:
+
+```xsl
+<xsl:if test="$document/section[@type = 'appendix']
+              and $document/section[@type = 'index']">
+  <xsl:value-of select="."/>
+</xsl:if>
+```
+
+Joining that onto one line would preserve what it selects and lose the reason
+anyone could read it. Only the doubled spaces standing within a single line are
+flagged.
+
 Incorrect (a doubled space and a trailing space):
 
 ```xsl

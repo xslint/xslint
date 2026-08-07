@@ -321,6 +321,12 @@ const APPLIED = [
     before: 'using-disable-output-escaping-spelled-oddly.xsl',
     after: 'using-disable-output-escaping-spelled-oddly.fixed.xsl',
   },
+  {
+    name: 'should fix two expressions a line wrap crosses with --fix',
+    flag: '--fix',
+    before: 'a-fix-across-a-line-wrap.xsl',
+    after: 'a-fix-across-a-line-wrap.fixed.xsl',
+  },
 ]
 
 /**
@@ -451,6 +457,11 @@ const UNCHANGED = [
     flag: '--fix',
     sheet: 'an-excluded-result-prefix.xsl',
   },
+  {
+    name: 'cannot collapse a wrap standing behind a trailing space',
+    flag: '--fix',
+    sheet: 'a-wrap-behind-a-trailing-space.xsl',
+  },
 ]
 
 /**
@@ -576,6 +587,18 @@ const DROPPED = [
     flag: '--fix-suggestions',
     sheet: 'text-outside-xsl-text.xsl',
     check: 'text-outside-xsl-text',
+  },
+  {
+    name: 'should drop a count comparison whose expression crosses a wrap',
+    flag: '--fix',
+    sheet: 'a-fix-across-a-line-wrap.xsl',
+    check: 'count-compared-to-zero',
+  },
+  {
+    name: 'should drop an axis whose step crosses a wrap',
+    flag: '--fix',
+    sheet: 'a-fix-across-a-line-wrap.xsl',
+    check: 'unabbreviated-axis',
   },
 ]
 
