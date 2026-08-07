@@ -112,25 +112,32 @@ const REFUSED = [
 ]
 
 /**
- * The two kinds a respelling must never invent or destroy. Every other kind a
- * squeeze could retype leaves the engine reading the same characters, but a
- * comment is text it stops reading altogether and a string literal text it
- * never reads as an expression, so either one conjured out of a gap buries
- * whatever surrounds it — which is the whole of what #641 reported.
- * @type {Array.<string>}
- */
-const DELIMITED = [TOKENS.COMMENT, TOKENS.STRING]
-
-/**
- * The delimited spans an expression holds, in the order it holds them.
+ * The kinds an expression is made of, in order, with the gaps dropped and the
+ * namespace axis answering as the axis it becomes. Rewriting `namespace::` to
+ * `child::` is the one retyping a squeeze does on purpose, the engine having no
+ * parse for the axis 3.0 dropped, so it is normalised away and every other
+ * change of kind is an accident.
+ *
+ * Kinds rather than only the comment and string among them, because a squeeze
+ * does not have to fabricate a delimiter to do harm. One that merged two names
+ * across a gap would leave every delimiter where it stood and still hand the
+ * engine something else to read — `a b` as `ab`, `child a` as `childa`, each of
+ * which compiles — and the whole of that class is invisible to a property that
+ * watches the delimiters alone.
  * @param {string} xpath - Xpath expression
- * @return {string} - Their kinds, joined
+ * @return {string} - The kinds, joined
  */
-const delimited = function(xpath) {
+const kinds = function(xpath) {
   return tokenized(xpath)
-    .filter((token) => DELIMITED.includes(token.type))
-    .map((token) => token.type)
-    .join(' ')
+    .filter((token) => token.type !== TOKENS.WHITESPACE)
+    .map((token) => {
+      let kind = token.type
+      if (kind === TOKENS.NAMESPACE) {
+        kind = TOKENS.CHILD
+      }
+      return kind
+    })
+    .join(' | ')
 }
 
 /**
@@ -159,19 +166,26 @@ const grown = function(depth) {
  * Every sequence of up to four atoms, which is eleven thousand expressions and
  * a moment to sweep. Four is where the reach is: the shortest fabrication the
  * report names is `( ::`, three atoms, and against the retry as it stood when
- * #641 was filed a fourth atom takes the count of them from one to twenty-three
- * — enough margin that a squeeze which started merging again would be caught by
+ * #641 was filed a fourth atom takes the offenders from one to a hundred and
+ * five — enough margin that a squeeze which started merging again is caught by
  * the general case rather than by whichever example somebody thought to add.
+ *
+ * A fifth atom is not swept, which is worth a sentence rather than a silence.
+ * The sweep would break on two of the hundred thousand, `child:: child::` and
+ * `child ::child::`, both respelling to `child::child::`, where the lexer
+ * reads the second axis as a name because a name may not end in a separator it
+ * has already swallowed. That is #703 rather than anything the retry does, so a
+ * deeper sweep would pin a lexer defect inside a test about the respelling.
  * @type {Array.<string>}
  */
 const SWEPT = [1, 2, 3, 4].flatMap((depth) => grown(depth))
 
 describe('xpath', function() {
-  it('cannot spell a comment or a string where a gap stood', function() {
+  it('cannot change the kinds an expression is made of', function() {
     assert.deepEqual(
-      SWEPT.filter((one) => delimited(one) !== delimited(squeezed(one))),
+      SWEPT.filter((one) => kinds(one) !== kinds(squeezed(one))),
       [],
-      'a respelling invented or destroyed a comment or a string literal',
+      'a respelling retyped a token, so the engine reads something else',
     )
   })
   it('cannot answer from a sweep no respelling reaches', function() {

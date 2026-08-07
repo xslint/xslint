@@ -293,17 +293,21 @@ const SQUEEZES = [
  * grammar lets stand there. Its guards are a regex over characters and one
  * borrowed lexer question rather than a parse, which is why what they hold is
  * swept rather than argued: across every sequence of up to four of the pieces a
- * fabrication is spelled from, no respelling invents or destroys a comment or a
- * string literal — the one merge that could bury a broken expression in text
- * the engine skips, and the whole of what #641 reported. That sweep lives in
+ * fabrication is spelled from, no respelling changes the kinds an expression is
+ * made of, so the engine is handed the tokens it was always going to read and
+ * merely spelled the way it insists on. That sweep lives in
  * `test/xpath.test.js`, and is why this is exported.
  *
- * Two things the sweep does not claim. A token may still be retyped without a
- * delimiter moving: `child:: child::` respells to `child::child::`, where the
- * lexer reads the second axis as a name, both spellings refused and the
- * asymmetry the lexer's own (#703). And an expression the guards decline to
- * respell is still refused on the engine's word alone, which no character-level
- * guard can second-guess — only a grammar of our own (#677) can.
+ * Fabricating a delimiter is the sharp end of it — `(:` and `:)` are one token
+ * each, and a gap deleted between a bracket and a colon would bury a broken
+ * expression in a comment the engine skips, which is what #641 reported. It is
+ * not the whole of it, though: a squeeze that merged two names across a gap
+ * would move no delimiter and still change what compiles.
+ *
+ * What the sweep does not claim is that an expression the guards decline to
+ * respell deserved refusing: that is the engine's word alone, which no
+ * character-level guard can second-guess and only a grammar of our own (#677)
+ * can answer.
  * @param {string} xpath - Xpath expression
  * @return {string} - The same expression, spelled for the engine
  */
