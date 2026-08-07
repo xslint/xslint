@@ -310,8 +310,28 @@ Then run `npx grunt checks`, `npm test`, `npm run coverage`, and
   `@xsl:version` on any other root (a literal result element standing in as the
   stylesheet) — never a bare `/*/@version` (blind to a simplified root) or a
   presence fallback `(@version | @xsl:version)` (an SVG root's own `version`
-  defeats it); `test/conformance.test.js` fails a selector testing `@version`
-  without `@xsl:version`. Never emit a fix the declared version cannot run; emit
+  defeats it); `test/conformance.test.js` fails a selector naming `@version`
+  without `@xsl:version`. That gate read only a *comparison* until #608 — its
+  pattern was `@version` followed by `=` — so `missing-version-in-stylesheet`,
+  which asks `not(@version)`, slipped past the very rule written to catch it and
+  never asked a simplified root for the `xsl:version` XSLT requires of it. It
+  matches any mention of `@version` now, presence test included. Fork on the
+  *namespace*, not on the two root names: `xsl:package` is a third XSLT root and
+  takes the plain `version` as much as `xsl:stylesheet` does, so a rule reading
+  `self::xsl:stylesheet or self::xsl:transform` demands `xsl:version` of a
+  package that already declares its version correctly. A fix follows the same
+  fork: `missing-version-in-stylesheet` writes a plain `version` on any XSLT
+  root and the namespaced one on a simplified root, under whichever prefix that
+  document binds — read with `lookupPrefix`, never assumed to be `xsl`. Where
+  check and fixer fork differently the pair is worse than either alone: this one
+  reported a package and then wrote a second `version` beside its first, turning
+  a valid module into a file no parser loads. A non-XSLT root is not a simplified
+  stylesheet on the strength of holding an `xsl:*` either — an *embedded*
+  stylesheet (XSLT 1.0 §2.7) is data around a real module root, which declares
+  its own version, so the else branch excludes a root holding one:
+  `not(.//(xsl:stylesheet | xsl:transform | xsl:package))`, one union step rather
+  than a descendant scan per name. Never emit a fix the declared
+  version cannot run; emit
   the version-appropriate form instead (`count(x) > 0` -> `exists(x)` on 2.0+,
   `boolean(x)`/`x` on 1.0). A version-sensitive check with no version guard is a
   bug. Verify a version-based *exclusion* fires on the versions where its premise

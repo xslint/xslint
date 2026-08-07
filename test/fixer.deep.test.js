@@ -232,6 +232,27 @@ const APPLIED = [
     after: 'name-compared-to-string.fixed.xsl',
   },
   {
+    name: 'should declare the namespaced version on a simplified stylesheet ' +
+      'with --fix-suggestions',
+    flag: '--fix-suggestions',
+    before: 'missing-version-in-simplified-stylesheet.xsl',
+    after: 'missing-version-in-simplified-stylesheet.fixed.xsl',
+  },
+  {
+    name: 'should spell the version with the prefix the document binds with ' +
+      '--fix-suggestions',
+    flag: '--fix-suggestions',
+    before: 'missing-version-with-an-unusual-prefix.xsl',
+    after: 'missing-version-with-an-unusual-prefix.fixed.xsl',
+  },
+  {
+    name: 'should declare the plain version on a package root with ' +
+      '--fix-suggestions',
+    flag: '--fix-suggestions',
+    before: 'missing-version-in-a-package.xsl',
+    after: 'missing-version-in-a-package.fixed.xsl',
+  },
+  {
     name: 'should rewrite a translate case fold to lower/upper-case with ' +
       '--fix-suggestions',
     flag: '--fix-suggestions',
@@ -335,6 +356,11 @@ const APPLIED = [
  * @type {Array.<{name: string, flag: string, sheet: string}>}
  */
 const UNCHANGED = [
+  {
+    name: 'cannot declare a version whose prefix the root binds nowhere',
+    flag: '--fix-suggestions',
+    sheet: 'missing-version-declared-below-the-root.xsl',
+  },
   {
     name: 'cannot touch the file with --fix-dry-run',
     flag: '--fix-dry-run',

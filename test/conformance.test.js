@@ -307,7 +307,7 @@ describe('conformance', function() {
     )
   })
   it('reads @xsl:version too wherever a selector tests @version', function() {
-    const versioned = new RegExp(`@version${GAP}*!?=`)
+    const versioned = /@version/
     for (const [kind, keys] of Object.entries(SELECTORS)) {
       for (const name of names(kind)) {
         const check = yaml.parsedFromFile(
