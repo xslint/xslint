@@ -315,11 +315,18 @@ Then run `npx grunt checks`, `npm test`, `npm run coverage`, and
   pattern was `@version` followed by `=` — so `missing-version-in-stylesheet`,
   which asks `not(@version)`, slipped past the very rule written to catch it and
   never asked a simplified root for the `xsl:version` XSLT requires of it. It
-  matches any mention of `@version` now, presence test included. A fix follows
-  the root the same way: `missing-version-in-stylesheet` writes a plain
-  `version` on an XSLT root and the namespaced one on a simplified root, under
-  whichever prefix that document binds — read with `lookupPrefix`, never
-  assumed to be `xsl`. Never emit a fix the declared version cannot run; emit
+  matches any mention of `@version` now, presence test included. Fork on the
+  *namespace*, not on the two root names: `xsl:package` is a third XSLT root and
+  takes the plain `version` as much as `xsl:stylesheet` does, so a rule reading
+  `self::xsl:stylesheet or self::xsl:transform` demands `xsl:version` of a
+  package that already declares its version correctly. A fix follows the same
+  fork: `missing-version-in-stylesheet` writes a plain `version` on any XSLT
+  root and the namespaced one on a simplified root, under whichever prefix that
+  document binds — read with `lookupPrefix`, never assumed to be `xsl`. Where
+  check and fixer fork differently the pair is worse than either alone: this one
+  reported a package and then wrote a second `version` beside its first, turning
+  a valid module into a file no parser loads. Never emit a fix the declared
+  version cannot run; emit
   the version-appropriate form instead (`count(x) > 0` -> `exists(x)` on 2.0+,
   `boolean(x)`/`x` on 1.0). A version-sensitive check with no version guard is a
   bug. Verify a version-based *exclusion* fires on the versions where its premise

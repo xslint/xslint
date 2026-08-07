@@ -39,14 +39,18 @@ const outputMethodXml = function(node) {
 
 /**
  * Fix for `missing-version-in-stylesheet`: declare the version right after the
- * element name. Which attribute that is follows the root: an `xsl:stylesheet`
- * takes a plain `version`, while a simplified stylesheet takes the version in
- * the XSLT namespace, an unprefixed one there belonging to the result
- * vocabulary and meaning whatever it says (#608). The prefix is the one the
- * document itself binds, read rather than assumed, since a stylesheet may spell
- * the namespace `tt:` as readily as `xsl:`; where the root binds none, there is
- * no attribute to write and no fix is offered. The version is a guess either
- * way, so it is a suggestion.
+ * element name. Which attribute that is follows the root's *namespace*, not its
+ * name: any element XSLT itself defines takes a plain `version`, while a
+ * simplified stylesheet — a root of the result vocabulary — takes the version
+ * in the XSLT namespace, an unprefixed one there belonging to that vocabulary
+ * and meaning whatever it says (#608). Forking on `xsl:stylesheet` and
+ * `xsl:transform` by name instead would leave out the third XSLT root, 3.0's
+ * `xsl:package`, and so write `xsl:version` beside the `version` it already
+ * carries — two spellings of one attribute, which no parser will load. The
+ * prefix is the one the document itself binds, read rather than assumed, since
+ * a stylesheet may spell the namespace `tt:` as readily as `xsl:`; where a root
+ * binds none, there is no attribute to write and no fix is offered. The
+ * version is a guess either way, so it is a suggestion.
  * @param {Element} node - The root element of the stylesheet
  * @return {?object} - The suggestion fix, or nothing when none can be spelled
  */

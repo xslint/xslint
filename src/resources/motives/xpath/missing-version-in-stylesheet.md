@@ -4,10 +4,12 @@ Every stylesheet declares the XSLT version it conforms to, and one that declares
 none is invalid — a conformant processor is required to reject it. Which
 attribute carries the declaration depends on the root element.
 
-An `xsl:stylesheet` root, or its exact synonym `xsl:transform`, carries a plain
-`version`. A *simplified* stylesheet — one whose root is a literal result element
-and whose whole transformation is that element's content — carries `xsl:version`
-instead, in the XSLT namespace. An unprefixed `version` will not do there,
+A root XSLT defines itself carries a plain `version`: `xsl:stylesheet`, its exact
+synonym `xsl:transform`, and — since XSLT 3.0 — `xsl:package`, which declares a
+module other stylesheets can use. A *simplified* stylesheet — one whose root is a
+literal result element and whose whole transformation is that element's
+content — carries `xsl:version` instead, in the XSLT namespace. An unprefixed
+`version` will not do there,
 because on a literal result element it belongs to the result vocabulary and means
 whatever that vocabulary says it means; an SVG or XHTML root may well carry its
 own. The prefixed attribute is also the only thing that makes such a document a

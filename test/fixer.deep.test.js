@@ -246,6 +246,13 @@ const APPLIED = [
     after: 'missing-version-with-an-unusual-prefix.fixed.xsl',
   },
   {
+    name: 'should declare the plain version on a package root with ' +
+      '--fix-suggestions',
+    flag: '--fix-suggestions',
+    before: 'missing-version-in-a-package.xsl',
+    after: 'missing-version-in-a-package.fixed.xsl',
+  },
+  {
     name: 'should rewrite a translate case fold to lower/upper-case with ' +
       '--fix-suggestions',
     flag: '--fix-suggestions',
