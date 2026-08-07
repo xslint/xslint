@@ -161,31 +161,61 @@ const fromFile = function(type, fromString) {
 const OPENS = /^&(?:#[0-9]+|#x[0-9A-Fa-f]+|[A-Za-z_][\w.-]*);/
 
 /**
- * Offset of the first `&` in character data that opens no reference, or -1 when
- * every one of them does. `@xmldom/xmldom` accepts a bare `&` in text in
- * silence — no diagnostic at any level — and rewrites it to `&amp;`, so a
- * stylesheet holding the commonest way hand-written XML stops being XML linted
- * clean while every check read the repaired document (#574).
+ * The one string XML reserves outright: `]]>` marks the end of a CDATA section
+ * and may stand nowhere else in character data, however the author meant it.
+ * @type {string}
+ */
+const CLOSE = ']]>'
+
+/**
+ * The complaint a forbidden sequence earns, saying where in the source it
+ * stands.
+ * @param {string} str - XML source
+ * @param {number} at - Offset the sequence begins at
+ * @param {string} what - How the message should name the sequence
+ * @param {string} why - What is wrong with it standing there
+ * @return {string} - The one-sentence complaint
+ */
+const complaint = function(str, at, what, why) {
+  const {line, pos} = placeAt(str, at)
+  return `the ${what} at ${line}:${pos} ${why}`
+}
+
+/**
+ * The complaint the first sequence character data must not hold earns, or an
+ * empty string when it holds neither. There are two of them, and
+ * `@xmldom/xmldom` accepts both without a word at any level: a bare `&`, which
+ * it rewrites to `&amp;` (#574), and a `]]>` that closes no section, which it
+ * keeps as it stands (#691). Either way a document no processor would load is
+ * handed on as a tree, and every check downstream reasons about content that
+ * does not exist.
  *
  * The character data is reached through the tree rather than by scanning the
- * source, because an `&` is *legal* in a comment, in a CDATA section and in a
- * processing instruction, and a scan that read the source as text would have to
- * find the three of them to stay quiet there. A text node cannot be any of the
- * three, so taking only those excludes them by construction, and each one's own
- * run of source ends at the next `<` — a raw `<` in character data being an
- * error the parser does report.
+ * source, because both sequences are *legal* in a comment and in a processing
+ * instruction, and an `&` is legal inside a CDATA section as well, where a
+ * `]]>` is the close rather than an error. A scan reading the source as text
+ * would have to find all three regions to stay quiet in them. A text node
+ * cannot be any of the three, so taking only those excludes them by
+ * construction, and each one's own run of source ends at the next `<` — a raw
+ * `<` in character data being an error the parser does report. Attribute values
+ * are outside the walk for the same reason: `]]>` is forbidden in content, and
+ * an attribute is not content.
  * @param {string} str - XML source
  * @param {Document} doc - The document the parser built from it
- * @return {number} - Offset of the bare `&`, or -1 when there is none
+ * @return {string} - The complaint, or an empty string when there is none
  */
-const unescaped = function(str, doc) {
-  let found = -1
+const forbidden = function(str, doc) {
+  let found = ''
   for (const node of walked(doc)) {
-    if (found < 0 && node.nodeType === 3) {
+    if (!found && node.nodeType === 3) {
       let at = offsetAt(str, node.lineNumber, node.columnNumber)
-      while (found < 0 && at < str.length && str[at] !== '<') {
+      while (!found && at < str.length && str[at] !== '<') {
         if (str[at] === '&' && !OPENS.test(str.slice(at))) {
-          found = at
+          found = complaint(
+            str, at, 'ampersand', 'opens no entity or character reference')
+        } else if (str.startsWith(CLOSE, at)) {
+          found = complaint(
+            str, at, `"${CLOSE}"`, 'closes a CDATA section that never opened')
         }
         at += 1
       }
@@ -203,12 +233,9 @@ const xmlFromString = function(str) {
   const entities = declaredEntities(str)
   try {
     const doc = parserFor(str, entities).parseFromString(str, 'text/xml')
-    const bare = unescaped(str, doc)
-    if (bare >= 0) {
-      const {line, pos} = placeAt(str, bare)
-      throw new Error(
-        `the ampersand at ${line}:${pos} opens no entity or character reference`,
-      )
+    const refused = forbidden(str, doc)
+    if (refused) {
+      throw new Error(refused)
     }
     if (entities.size) {
       expand(doc.documentElement, entities)

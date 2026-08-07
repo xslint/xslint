@@ -41,6 +41,26 @@ const KEPT = [
     file: 'escaped.xsl',
     content: '<a>&amp; &lt; &#38; &#x26; a&apos;b</a>',
   },
+  {
+    name: 'should keep a stylesheet whose section close is the only one',
+    file: 'closed.xsl',
+    content: '<a><![CDATA[x > y]]></a>',
+  },
+  {
+    name: 'should keep a stylesheet whose section close stands in a comment',
+    file: 'remarked.xsl',
+    content: '<a><!-- ends on ]]> here --></a>',
+  },
+  {
+    name: 'should keep a stylesheet whose section close stands in an instruction',
+    file: 'instructed.xsl',
+    content: '<a><?render ends on ]]> here?></a>',
+  },
+  {
+    name: 'should keep a stylesheet whose section close stands in an attribute',
+    file: 'attributed.xsl',
+    content: '<a b="ends on ]]> here"/>',
+  },
 ]
 
 /**
@@ -92,6 +112,31 @@ const REPORTED = [
     name: 'should report an attribute value opening on a quote it never closes',
     file: 'unclosed.xsl',
     content: '<a b=\'c"/>',
+  },
+  {
+    name: 'should report a section close standing in text',
+    file: 'orphan.xsl',
+    content: '<a>x ]]> y</a>',
+  },
+  {
+    name: 'should report a section close standing deep in the tree',
+    file: 'sunken.xsl',
+    content: '<a><b/><c><d>x ]]> y</d></c></a>',
+  },
+  {
+    name: 'should report a section close beside one that truly closes',
+    file: 'beside.xsl',
+    content: '<a><![CDATA[x]]> ]]> y</a>',
+  },
+  {
+    name: 'should report the first of three section closes standing in text',
+    file: 'thrice.xsl',
+    content: '<a>x ]]> y ]]> z ]]></a>',
+  },
+  {
+    name: 'should report a section close a third bracket runs into',
+    file: 'bracketed.xsl',
+    content: '<a>x ]]]> y</a>',
   },
 ]
 

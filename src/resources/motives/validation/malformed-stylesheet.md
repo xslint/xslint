@@ -18,9 +18,17 @@ the commonest way a hand-written stylesheet stops being XML. An attribute value
 must also be quoted — `select=$total` gives the parser nothing it can read as a
 value, and the quotes are not optional the way they are in HTML.
 
-An `&` is fine where it is not character data: inside a comment, inside a
-`<![CDATA[...]]>` section, and inside a processing instruction, XML does not read
-it as opening anything.
+The string `]]>` is reserved the same way. It closes a `<![CDATA[...]]>` section
+and may stand nowhere else in content, whatever the author meant by it — three
+characters that happen to fall together at the end of an array subscript or a
+piece of quoted code are still the close of a section that never opened. Escape
+the bracket or the angle: `]]&gt;` reads as the text it looks like.
+
+Both are fine where they are not content. Inside a comment and inside a
+processing instruction, XML reads neither as opening or closing anything, and
+inside a CDATA section an `&` is ordinary text while a `]]>` is the close it is
+there to be. `]]>` is also allowed in an attribute value, since an attribute is
+not content.
 
 Incorrect:
 
@@ -60,6 +68,26 @@ Correct:
   <xsl:template match="/">
     <a href="list?page=2&amp;sort=name">Tom &amp; Jerry</a>
     <xsl:value-of select="$total"/>
+  </xsl:template>
+</xsl:stylesheet>
+```
+
+Incorrect:
+
+```xsl
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0">
+  <xsl:template match="/">
+    <code>rows[cells[0]]> 1</code>
+  </xsl:template>
+</xsl:stylesheet>
+```
+
+Correct:
+
+```xsl
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0">
+  <xsl:template match="/">
+    <code>rows[cells[0]]&gt; 1</code>
   </xsl:template>
 </xsl:stylesheet>
 ```
