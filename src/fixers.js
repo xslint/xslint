@@ -4,6 +4,7 @@
  */
 
 const {deletion} = require('./fixes')
+const {XSLT} = require('./xsl-version')
 
 /**
  * Fix for `using-disable-output-escaping`: delete the attribute. Removing it
@@ -37,19 +38,38 @@ const outputMethodXml = function(node) {
 }
 
 /**
- * Fix for `missing-version-in-stylesheet`: declare `version="1.0"` right after
- * the element name. The version is a guess, so it is a suggestion.
- * @param {Element} node - The `xsl:stylesheet` element
- * @return {object} - The suggestion fix
+ * Fix for `missing-version-in-stylesheet`: declare the version right after the
+ * element name. Which attribute that is follows the root: an `xsl:stylesheet`
+ * takes a plain `version`, while a simplified stylesheet takes the version in
+ * the XSLT namespace, an unprefixed one there belonging to the result
+ * vocabulary and meaning whatever it says (#608). The prefix is the one the
+ * document itself binds, read rather than assumed, since a stylesheet may spell
+ * the namespace `tt:` as readily as `xsl:`; where the root binds none, there is
+ * no attribute to write and no fix is offered. The version is a guess either
+ * way, so it is a suggestion.
+ * @param {Element} node - The root element of the stylesheet
+ * @return {?object} - The suggestion fix, or nothing when none can be spelled
  */
 const missingVersion = function(node) {
-  return {
-    line: node.lineNumber,
-    col: node.columnNumber + node.nodeName.length + 1,
-    value: '',
-    replacement: ' version="1.0"',
-    suggestion: true,
+  let spelled = 'version'
+  if (node.namespaceURI !== XSLT) {
+    spelled = ''
+    const prefix = node.lookupPrefix(XSLT)
+    if (prefix) {
+      spelled = `${prefix}:version`
+    }
   }
+  let fix = undefined
+  if (spelled) {
+    fix = {
+      line: node.lineNumber,
+      col: node.columnNumber + node.nodeName.length + 1,
+      value: '',
+      replacement: ` ${spelled}="1.0"`,
+      suggestion: true,
+    }
+  }
+  return fix
 }
 
 /**

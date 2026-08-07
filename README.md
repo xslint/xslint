@@ -336,8 +336,10 @@ Today this covers:
   the output is escaped.
 - `output-method-xml` — `method="xml"` becomes `"html"` when the stylesheet
   emits HTML.
-- `missing-version-in-stylesheet` — `version="1.0"` is declared (a guess you may
-  want to change).
+- `missing-version-in-stylesheet` — the version is declared as `1.0` (a guess you
+  may want to change), spelled the way the root needs it: `version` on an
+  `xsl:stylesheet`, and the namespaced `xsl:version` on a simplified stylesheet,
+  under whichever prefix that document binds to XSLT.
 - `mode-or-priority-without-match` — the orphan `mode` or `priority` attribute
   is removed.
 - `name-compared-to-string` — `name() = 'x'` becomes `self::x` and
