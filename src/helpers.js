@@ -8,6 +8,8 @@ const path = require('path')
 const {DOMParser} = require('@xmldom/xmldom')
 const yaml = require('yaml')
 const {GAP} = require('./tokens')
+const {offsetAt, placeAt} = require('./source')
+const {walked} = require('./tree')
 
 /**
  * A reference to a general entity, `&name;`, as it survives in a parsed value.
@@ -84,7 +86,14 @@ const expand = function(node, entities) {
  * well-formedness problem the parser reports — not only the fatal ones it
  * throws on, but also the recoverable ones such as an undefined entity — so a
  * not-well-formed document never parses, and keeps the parser's diagnostics
- * off the console. The one exception is an unresolved entity the document is
+ * off the console. The level a diagnostic arrives at is not consulted, because
+ * `@xmldom/xmldom` grades an attribute written without quotes a mere `warning`
+ * and then repairs it, so `select=$broken` parsed and every check downstream
+ * read a value the parser had invented (#574). Every warning it can raise at
+ * `text/xml` is either that family of attribute syntax or a replacement
+ * character the bytes did not decode into, and a stylesheet whose bytes did
+ * not decode is no more readable than one whose syntax does not parse. The
+ * one exception is an unresolved entity the document is
  * entitled to: one it declares inline, or any at all when it pulls in an
  * external DTD we did not read. `@xmldom/xmldom` leaves such entities
  * unexpanded, and a declared-but-unexpanded entity is not malformed.
@@ -98,8 +107,7 @@ const parserFor = function(str, declared) {
     onError: (level, message) => {
       const text = message.trim()
       const missing = text.match(/^entity not found:&(.+?);/)
-      const forgiven = missing && (loose || declared.has(missing[1]))
-      if (level !== 'warning' && !forgiven) {
+      if (!missing || !(loose || declared.has(missing[1]))) {
         throw new Error(text)
       }
     },
@@ -143,6 +151,51 @@ const fromFile = function(type, fromString) {
 }
 
 /**
+ * A reference as it must be spelled where one opens: a named entity, a decimal
+ * character reference, or a hexadecimal one. Character data admits an `&` only
+ * here, so an `&` this does not match at is a well-formedness error. Whether
+ * the name is *declared* is a separate question the parser already answers, and
+ * this deliberately does not ask it — a `&primary;` from an external subset is
+ * spelled like a reference and is one.
+ * @type {RegExp}
+ */
+const OPENS = /^&(?:#[0-9]+|#x[0-9A-Fa-f]+|[A-Za-z_][\w.-]*);/
+
+/**
+ * Offset of the first `&` in character data that opens no reference, or -1 when
+ * every one of them does. `@xmldom/xmldom` accepts a bare `&` in text in
+ * silence — no diagnostic at any level — and rewrites it to `&amp;`, so a
+ * stylesheet holding the commonest way hand-written XML stops being XML linted
+ * clean while every check read the repaired document (#574).
+ *
+ * The character data is reached through the tree rather than by scanning the
+ * source, because an `&` is *legal* in a comment, in a CDATA section and in a
+ * processing instruction, and a scan that read the source as text would have to
+ * find the three of them to stay quiet there. A text node cannot be any of the
+ * three, so taking only those excludes them by construction, and each one's own
+ * run of source ends at the next `<` — a raw `<` in character data being an
+ * error the parser does report.
+ * @param {string} str - XML source
+ * @param {Document} doc - The document the parser built from it
+ * @return {number} - Offset of the bare `&`, or -1 when there is none
+ */
+const unescaped = function(str, doc) {
+  let found = -1
+  for (const node of walked(doc)) {
+    if (found < 0 && node.nodeType === 3) {
+      let at = offsetAt(str, node.lineNumber, node.columnNumber)
+      while (found < 0 && at < str.length && str[at] !== '<') {
+        if (str[at] === '&' && !OPENS.test(str.slice(at))) {
+          found = at
+        }
+        at += 1
+      }
+    }
+  }
+  return found
+}
+
+/**
  * Parse XML from string.
  * @param {string} str - XML as string
  * @return {Document} - Parsed XML as Document
@@ -151,6 +204,13 @@ const xmlFromString = function(str) {
   const entities = declaredEntities(str)
   try {
     const doc = parserFor(str, entities).parseFromString(str, 'text/xml')
+    const bare = unescaped(str, doc)
+    if (bare >= 0) {
+      const {line, pos} = placeAt(str, bare)
+      throw new Error(
+        `the ampersand at ${line}:${pos} opens no entity or character reference`,
+      )
+    }
     if (entities.size) {
       expand(doc.documentElement, entities)
     }
