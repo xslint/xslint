@@ -100,6 +100,64 @@ const SCANS = [
     ],
   },
   {
+    name: 'gives the operators XSLT 3.1 added a kind of their own',
+    count: 1,
+    pairs: [
+      ['a => upper-case()', TOKENS.ARROW],
+      ['let $sum := 1 return $sum', TOKENS.ASSIGN],
+      ['$seq!name()', TOKENS.SIMPLE_MAP],
+      ['abs#1', TOKENS.HASH],
+      ['$map?width', TOKENS.LOOKUP],
+      ['map{"aa":1}', TOKENS.LBRACE],
+      ['map{"aa":1}', TOKENS.RBRACE],
+      ['map{"aa":1}', TOKENS.COLON],
+    ],
+  },
+  {
+    name: 'cannot read an operator behind the colon that spells a name',
+    count: 0,
+    pairs: [
+      ['aa:or', TOKENS.OR],
+      ['map{"kk":or}', TOKENS.OR],
+      ['child::or', TOKENS.OR],
+      ['aa:or', TOKENS.COLONS],
+      ['child::or', TOKENS.COLON],
+    ],
+  },
+  {
+    name: 'cannot read a comparison out of the arrow that spells one',
+    count: 0,
+    pairs: [
+      ['a => upper-case()', TOKENS.EQUAL],
+      ['a => upper-case()', TOKENS.GREATER],
+      ['a=>foo()=>bar()', TOKENS.GREATER],
+      ['let $sum := 1 return $sum', TOKENS.EQUAL],
+      ['map{"aa":1}?aa', TOKENS.OTHER],
+    ],
+  },
+  {
+    name: 'keeps every comparison the arrow resembles',
+    count: 1,
+    pairs: [
+      ['$xx >= 1', TOKENS.GREAT_EQUAL],
+      ['aa > bb', TOKENS.GREATER],
+      ['aa = bb', TOKENS.EQUAL],
+      ['aa <= bb', TOKENS.LESS_EQUAL],
+      ['aa != bb', TOKENS.NOT_EQUAL],
+      ['aa >= bb => foo()', TOKENS.GREAT_EQUAL],
+      ['aa >= bb => foo()', TOKENS.ARROW],
+    ],
+  },
+  {
+    name: 'finds every arrow of a chain, not only the first',
+    count: 3,
+    pairs: [
+      ['aa=>foo()=>bar()=>baz()', TOKENS.ARROW],
+      ['aa => foo() => bar() => baz()', TOKENS.ARROW],
+      ['foo(aa=>one(), bb=>two(), cc=>three())', TOKENS.ARROW],
+    ],
+  },
+  {
     name: 'finds operators',
     count: 1,
     pairs: [
@@ -174,7 +232,7 @@ const PIECES = [
   '.5', '1e3', 'child::', 'descendant-or-self::', '@', ' ', '  ', '\t',
   '\n', '//', '/', '(', ')', '[', ']', '*', '+', '-', '=', '!=', '<=',
   '>=', '|', '||', 'and', 'or', 'div', 'mod', 'instance of', '$v', ',', ':',
-  '.', '..', '::', '!', '?', '#',
+  '.', '..', '::', '!', '?', '#', '=>', ':=', '{', '}', 'let ', ' return ',
 ]
 
 /**
@@ -276,14 +334,14 @@ describe('tokens', function() {
       )
     }
   })
-  it('leaves none of the path punctuation in the residue', function() {
+  it('leaves none of the punctuation XPath names in the residue', function() {
     for (let count = 0; count < 500; count += 1) {
       const expression = generated()
       assert.deepEqual(
         tokenized(expression)
           .filter((token) => token.type === TOKENS.OTHER)
           .map((token) => token.value)
-          .filter((value) => /[/@$,.]/u.test(value)),
+          .filter((value) => /[/@$,.!?#{}:]/u.test(value)),
         [],
         `${expression} lexes path punctuation into an undivided residue run`,
       )
