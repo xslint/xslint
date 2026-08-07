@@ -10,11 +10,11 @@ input: |-
   <?xml version="1.0"?>
   <xsl:stylesheet
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-    xmlns:foo="urn:foo"
-    xmlns:bar="urn:bar"
-    xmlns:fo="urn:fo"
+    xmlns:alphabet="urn:alphabet"
+    xmlns:beta="urn:beta"
+    xmlns:alpha="urn:alpha"
     xmlns:dead="urn:dead"
-    exclude-result-prefixes="foo	 bar"
+    exclude-result-prefixes="alphabet	 beta"
     version="2.0">
     <xsl:template match="/">
       <zz/>
