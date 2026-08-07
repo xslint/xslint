@@ -11,6 +11,21 @@ const {logger} = require('./logger')
  * `from`, or `-1` when the source there does not decode to `value` (an
  * already-edited file). Decoding as it walks matches a `>` written `&gt;` or
  * literally alike.
+ *
+ * A line ending answers to a space as well as to itself, which is the last
+ * normalisation between a parsed value and its source: XML 1.0 §3.3.3 turns
+ * every line ending inside an attribute value into a space, so a check reading
+ * `count(item) > 0` off a value wrapped after `count(item)` builds a fix whose
+ * space stands where the source holds a newline. Without this the comparison
+ * failed on that one character and the whole fix was declined, so no fix could
+ * reach an expression a line wrap crossed — announced as fixable and then
+ * refused with "the source no longer matches", which names an edit that never
+ * happened (#629).
+ *
+ * The licence belongs here and not in `character`, which serves the position
+ * walk too and cannot tell an attribute value from element content, where a
+ * line ending stays one and normalisation never applies. Here it widens only
+ * what a fix may match, and only towards the text the parser has already read.
  * @param {string} content - Raw source text
  * @param {number} from - Zero-based offset to match from
  * @param {string} value - The decoded fix value
@@ -25,7 +40,7 @@ const decodes = function(content, from, value) {
     }
     const [decoded, next] = step
     raw = next
-    return decoded === char
+    return decoded === char || (char === ' ' && decoded === '\n')
   })
   let past = -1
   if (matched) {

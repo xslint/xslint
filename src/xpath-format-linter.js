@@ -5,7 +5,8 @@
 
 const {tokenized, TOKENS, GAP} = require('./tokens')
 const {wholeOf} = require('./attributes')
-const {metaOf, suppressed, defect} = require('./checks')
+const {metaOf, suppressed, defect, rawly} = require('./checks')
+const {skip} = require('./source')
 const {logger} = require('./logger')
 
 /**
@@ -40,8 +41,9 @@ const INTERNAL = new RegExp(`${GAP}{2,}`)
  * saw the run behind the colons and not the one in front of them — one of the
  * two runs in `ancestor  ::  b`, with `--fix` leaving the other in the file and
  * the next run calling it clean (#642). A string or a comment is kept
- * whole on purpose, so neither is ever looked into, and a run that wraps a line
- * is left alone here as it is everywhere else.
+ * whole on purpose, so neither is ever looked into. Whether the run wraps a
+ * line is not asked here, because the value cannot answer it — `wrapping` puts
+ * that question to the source.
  * @param {{type: string, value: string, start: number}} token - The token
  * @return {?{offset: number, value: string, replacement: string}} - The run
  */
@@ -51,19 +53,46 @@ const inside = function(token) {
     run = INTERNAL.exec(token.value)
   }
   let held = null
-  if (run !== null && !/[\r\n]/.test(run[0])) {
+  if (run !== null) {
     held = {offset: token.start + run.index, value: run[0], replacement: ' '}
   }
   return held
 }
 
 /**
+ * Whether a run of whitespace wraps a line, asked of the raw source rather than
+ * of the value the run was found in. An attribute value reaches a check with
+ * its line endings already turned into spaces by XML 1.0 §3.3.3, so a run that
+ * is a wrap and a run that is a typed-out double space are the same characters
+ * by then, and a test over the value cannot tell them apart. It read the value
+ * and so answered no every time, which is why a wrapped expression drew a
+ * warning per line it wrapped onto (#628).
+ *
+ * Wrapping a long expression is formatting, not a defect — xcop, which this
+ * project runs over its own fixtures, asks for it — so a run holding a line
+ * ending is not redundant whitespace at all, neither reported nor fixed. The
+ * doubled spaces standing within one line still are.
+ * @param {{file: string, content: string}} source - The file the run sits in
+ * @param {{node: Node, start: number}} found - The expression holding it
+ * @param {{offset: number, value: string}} run - The run
+ * @return {boolean} - True when the source under the run holds a line ending
+ */
+const wrapping = function(source, found, run) {
+  const from = rawly(source, found, run.offset)
+  return /[\r\n]/.test(
+    source.content.slice(from, skip(source.content, from, run.value.length)),
+  )
+}
+
+/**
  * Redundant whitespace runs in an expression. A run is redundant when it is
- * longer than one space, or leads or trails the expression; a run that wraps a
- * line is left alone, and runs inside string literals or comments are never
- * seen because the lexer keeps those whole. Each run carries the offset where
- * it starts, its raw value, and the text that should replace it — empty when it
- * leads or trails, a single space when it is a doubled run in the middle.
+ * longer than one space, or leads or trails the expression; runs inside string
+ * literals or comments are never seen because the lexer keeps those whole. Each
+ * run carries the offset where it starts, its raw value, and the text that
+ * should replace it — empty when it leads or trails, a single space when it is
+ * a doubled run in the middle. Whether a run wraps a line is settled by
+ * `wrapping` against the source, since the expression handed here has had every
+ * wrap in it normalised to a space already.
  * @param {string} expression - Xpath expression
  * @return {Array.<{offset: number, value: string, replacement: string}>} - Runs
  */
@@ -79,7 +108,6 @@ const redundancies = function(expression) {
     }
     if (
       token.type === TOKENS.WHITESPACE &&
-      !/[\r\n]/.test(token.value) &&
       (edge || token.value.length > 1)
     ) {
       let replacement = ' '
@@ -115,12 +143,15 @@ const lintByFormat = function(expressions, suppressions = []) {
   if (!suppressed(CHECK, suppressions)) {
     for (const {source, attribute} of expressions) {
       const found = wholeOf(attribute)
-      for (const {offset, value, replacement} of redundancies(
-        found.expression,
-      )) {
-        defects.push(
-          defect(CHECK, META, source, found, offset, {value, replacement}),
-        )
+      for (const run of redundancies(found.expression)) {
+        if (!wrapping(source, found, run)) {
+          defects.push(
+            defect(CHECK, META, source, found, run.offset, {
+              value: run.value,
+              replacement: run.replacement,
+            }),
+          )
+        }
       }
     }
   }

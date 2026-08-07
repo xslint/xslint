@@ -257,7 +257,9 @@ xslint --fix path/to/dir
 Today this covers ten checks:
 
 - `redundant-whitespace` — a doubled space is collapsed to one, and a space
-  leading or trailing an XPath expression is removed.
+  leading or trailing an XPath expression is removed. A run holding a line
+  ending is the indentation of a wrapped expression, so it is neither reported
+  nor collapsed.
 - `unabbreviated-axis` — a verbose axis specifier is shortened: `child::x`
   becomes `x`, `attribute::x` becomes `@x`, `parent::node()` becomes `..`, and
   `self::node()` becomes `.`. On a 1.0 stylesheet a predicated step keeps its
