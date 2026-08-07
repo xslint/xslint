@@ -186,9 +186,11 @@ const SPACED_TEST = new RegExp(
  * character is safe by the grammar rather than by a list of the ones a test
  * happens to hold. A list is what refuses the wildcard of `element( * )` and
  * the non-ASCII name of `element( ä )`, both of which XPath spells. Elsewhere
- * the deletion is inert: a gap a call's brackets or a string literal carries
- * leaves the token stream exactly as it stood, so the retry spends it and the
- * engine answers the same.
+ * the deletion is inert on the grammar rather than on the text: a gap a call's
+ * brackets carry stands between the same two tokens once it is gone, while one
+ * inside a string literal or a comment shortens a run the parser does not read
+ * into at all — `f('a )')` is retried as `f('a)')` and compiles the same, the
+ * respelling being thrown away the moment it has answered.
  * @type {RegExp}
  */
 const SPACED_CLOSE = new RegExp(`([^:${WHITESPACE}])${SPACE}+\\)`, 'gu')
@@ -288,11 +290,20 @@ const SQUEEZES = [
 /**
  * The expression respelled the one way the engine reads it. Each squeeze runs
  * between a step's own parts and nowhere else, so the gap it deletes is one the
- * grammar lets stand there, and the tests hold every merge a deletion elsewhere
- * would spell. What the retry cannot claim is that it only ever widens what is
- * accepted: its guards are a regex over characters and one borrowed lexer
- * question, not a parse, so an expression it declines to respell is refused on
- * the engine's word alone. #641 tracks what that costs.
+ * grammar lets stand there. Its guards are a regex over characters and one
+ * borrowed lexer question rather than a parse, which is why what they hold is
+ * swept rather than argued: across every sequence of up to four of the pieces a
+ * fabrication is spelled from, no respelling invents or destroys a comment or a
+ * string literal — the one merge that could bury a broken expression in text
+ * the engine skips, and the whole of what #641 reported. That sweep lives in
+ * `test/xpath.test.js`, and is why this is exported.
+ *
+ * Two things the sweep does not claim. A token may still be retyped without a
+ * delimiter moving: `child:: child::` respells to `child::child::`, where the
+ * lexer reads the second axis as a name, both spellings refused and the
+ * asymmetry the lexer's own (#703). And an expression the guards decline to
+ * respell is still refused on the engine's word alone, which no character-level
+ * guard can second-guess — only a grammar of our own (#677) can.
  * @param {string} xpath - Xpath expression
  * @return {string} - The same expression, spelled for the engine
  */
@@ -338,4 +349,5 @@ module.exports = {
   nodes,
   strings,
   isValid,
+  squeezed,
 }

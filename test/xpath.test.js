@@ -3,7 +3,8 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {isValid} = require('../src/xpath')
+const {isValid, squeezed} = require('../src/xpath')
+const {tokenized, TOKENS} = require('../src/tokens')
 const assert = require('assert')
 
 /**
@@ -110,7 +111,76 @@ const REFUSED = [
   ['a[text ( :) + :) ]', 'a colon a node test brackets in a predicate'],
 ]
 
+/**
+ * The two kinds a respelling must never invent or destroy. Every other kind a
+ * squeeze could retype leaves the engine reading the same characters, but a
+ * comment is text it stops reading altogether and a string literal text it
+ * never reads as an expression, so either one conjured out of a gap buries
+ * whatever surrounds it — which is the whole of what #641 reported.
+ * @type {Array.<string>}
+ */
+const DELIMITED = [TOKENS.COMMENT, TOKENS.STRING]
+
+/**
+ * The delimited spans an expression holds, in the order it holds them.
+ * @param {string} xpath - Xpath expression
+ * @return {string} - Their kinds, joined
+ */
+const delimited = function(xpath) {
+  return tokenized(xpath)
+    .filter((token) => DELIMITED.includes(token.type))
+    .map((token) => token.type)
+    .join(' ')
+}
+
+/**
+ * Every piece the fabrications #641 reported are spelled from: the brackets a
+ * comment delimiter is half of, the colon that is its other half, the separator
+ * a step carries, a gap, the names a squeeze opens on, and the quote a literal
+ * opens with.
+ * @type {Array.<string>}
+ */
+const ATOMS = ['(', ')', ':', '::', ' ', 'a', 'child', 'node', '*', '\'']
+
+/**
+ * Every sequence of exactly that many atoms.
+ * @param {number} depth - How many atoms each sequence holds
+ * @return {Array.<string>} - The sequences
+ */
+const grown = function(depth) {
+  let sequences = ['']
+  for (let step = 0; step < depth; step++) {
+    sequences = sequences.flatMap((one) => ATOMS.map((atom) => one + atom))
+  }
+  return sequences
+}
+
+/**
+ * Every sequence of up to four atoms, which is eleven thousand expressions and
+ * a moment to sweep. Four is where the reach is: the shortest fabrication the
+ * report names is `( ::`, three atoms, and against the retry as it stood when
+ * #641 was filed a fourth atom takes the count of them from one to twenty-three
+ * — enough margin that a squeeze which started merging again would be caught by
+ * the general case rather than by whichever example somebody thought to add.
+ * @type {Array.<string>}
+ */
+const SWEPT = [1, 2, 3, 4].flatMap((depth) => grown(depth))
+
 describe('xpath', function() {
+  it('cannot spell a comment or a string where a gap stood', function() {
+    assert.deepEqual(
+      SWEPT.filter((one) => delimited(one) !== delimited(squeezed(one))),
+      [],
+      'a respelling invented or destroyed a comment or a string literal',
+    )
+  })
+  it('cannot answer from a sweep no respelling reaches', function() {
+    assert.notDeepEqual(
+      SWEPT.filter((one) => squeezed(one) !== one),
+      [],
+      'nothing swept is respelled, so it says nothing about respelling',
+    )
+  })
   it('accepts a syntactically valid expression', function() {
     assert.ok(isValid('count(//o) = 2'))
   })
