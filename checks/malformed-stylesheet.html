@@ -91,9 +91,16 @@ in a URL, where <code>?page=2&amp;sort=name</code> looks like every other query 
 the commonest way a hand-written stylesheet stops being XML. An attribute value
 must also be quoted — <code>select=$total</code> gives the parser nothing it can read as a
 value, and the quotes are not optional the way they are in HTML.</p>
-<p>An <code>&amp;</code> is fine where it is not character data: inside a comment, inside a
-<code>&lt;![CDATA[...]]&gt;</code> section, and inside a processing instruction, XML does not read
-it as opening anything.</p>
+<p>The string <code>]]&gt;</code> is reserved the same way. It closes a <code>&lt;![CDATA[...]]&gt;</code> section
+and may stand nowhere else in content, whatever the author meant by it — three
+characters that happen to fall together at the end of an array subscript or a
+piece of quoted code are still the close of a section that never opened. Escape
+the bracket or the angle: <code>]]&amp;gt;</code> reads as the text it looks like.</p>
+<p>Both are fine where they are not content. Inside a comment and inside a
+processing instruction, XML reads neither as opening or closing anything, and
+inside a CDATA section an <code>&amp;</code> is ordinary text while a <code>]]&gt;</code> is the close it is
+there to be. <code>]]&gt;</code> is also allowed in an attribute value, since an attribute is
+not content.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:stylesheet xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot; version=&quot;2.0&quot;&gt;
   &lt;xsl:template match=&quot;/&quot;&gt;
@@ -121,6 +128,20 @@ it as opening anything.</p>
   &lt;xsl:template match=&quot;/&quot;&gt;
     &lt;a href=&quot;list?page=2&amp;amp;sort=name&quot;&gt;Tom &amp;amp; Jerry&lt;/a&gt;
     &lt;xsl:value-of select=&quot;$total&quot;/&gt;
+  &lt;/xsl:template&gt;
+&lt;/xsl:stylesheet&gt;
+</code></pre>
+<p>Incorrect:</p>
+<pre><code class="language-xsl">&lt;xsl:stylesheet xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot; version=&quot;2.0&quot;&gt;
+  &lt;xsl:template match=&quot;/&quot;&gt;
+    &lt;code&gt;rows[cells[0]]&gt; 1&lt;/code&gt;
+  &lt;/xsl:template&gt;
+&lt;/xsl:stylesheet&gt;
+</code></pre>
+<p>Correct:</p>
+<pre><code class="language-xsl">&lt;xsl:stylesheet xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot; version=&quot;2.0&quot;&gt;
+  &lt;xsl:template match=&quot;/&quot;&gt;
+    &lt;code&gt;rows[cells[0]]&amp;gt; 1&lt;/code&gt;
   &lt;/xsl:template&gt;
 &lt;/xsl:stylesheet&gt;
 </code></pre>
