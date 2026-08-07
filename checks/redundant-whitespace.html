@@ -87,6 +87,18 @@ literal or a comment is left untouched — those spaces are part of the value th
 author wrote on purpose. The check runs only over expressions that already
 parse, so a malformed expression is reported once by the validator and never
 nagged about its spacing.</p>
+<p>A run holding a line ending is not redundant either. An expression written
+across several lines carries the indentation of each line it wraps onto, and
+that indentation is how a long expression stays readable rather than an
+accident to collapse:</p>
+<pre><code class="language-xsl">&lt;xsl:if test=&quot;$document/section[@type = &#39;appendix&#39;]
+              and $document/section[@type = &#39;index&#39;]&quot;&gt;
+  &lt;xsl:value-of select=&quot;.&quot;/&gt;
+&lt;/xsl:if&gt;
+</code></pre>
+<p>Joining that onto one line would preserve what it selects and lose the reason
+anyone could read it. Only the doubled spaces standing within a single line are
+flagged.</p>
 <p>Incorrect (a doubled space and a trailing space):</p>
 <pre><code class="language-xsl">&lt;xsl:if test=&quot;foo(  a) = &#39;hello&#39; &quot;&gt;
   &lt;xsl:value-of select=&quot;.&quot;/&gt;
