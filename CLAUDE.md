@@ -325,7 +325,12 @@ Then run `npx grunt checks`, `npm test`, `npm run coverage`, and
   document binds — read with `lookupPrefix`, never assumed to be `xsl`. Where
   check and fixer fork differently the pair is worse than either alone: this one
   reported a package and then wrote a second `version` beside its first, turning
-  a valid module into a file no parser loads. Never emit a fix the declared
+  a valid module into a file no parser loads. A non-XSLT root is not a simplified
+  stylesheet on the strength of holding an `xsl:*` either — an *embedded*
+  stylesheet (XSLT 1.0 §2.7) is data around a real module root, which declares
+  its own version, so the else branch excludes a root holding one:
+  `not(.//(xsl:stylesheet | xsl:transform | xsl:package))`, one union step rather
+  than a descendant scan per name. Never emit a fix the declared
   version cannot run; emit
   the version-appropriate form instead (`count(x) > 0` -> `exists(x)` on 2.0+,
   `boolean(x)`/`x` on 1.0). A version-sensitive check with no version guard is a

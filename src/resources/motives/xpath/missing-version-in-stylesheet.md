@@ -17,6 +17,13 @@ stylesheet rather than ordinary XML, so leaving it off does not produce a
 stylesheet with a missing version — it produces something a processor will not
 recognise as a stylesheet at all.
 
+A third arrangement carries nothing on its root at all. An *embedded* stylesheet
+is a document of data with an `xsl:stylesheet` inside it, picked out by an
+`xml-stylesheet` instruction pointing at that element's `id`. The version belongs
+to the embedded element, which declares it as any other stylesheet root does, and
+the outer root is data — adding `xsl:version` to it would claim the whole
+document is a transformation, which is the one thing it is not.
+
 Incorrect:
 
 ```xsl

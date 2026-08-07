@@ -171,7 +171,7 @@
         "message": "The '@id' attribute is missing in the 'xsl:stylesheet' element. Declare it to specify the unique identifier explicitly."
       },
       "missing-version-in-stylesheet": {
-        "xpath": "/*[if (self::xsl:*) then not(@version) else (.//xsl:* and not(@xsl:version))]",
+        "xpath": "/*[if (self::xsl:*) then not(@version) else (not(@xsl:version) and .//xsl:* and not(.//(xsl:stylesheet | xsl:transform | xsl:package)))]",
         "severity": "warning",
         "message": "The version attribute is missing on the stylesheet's root element. Declare it to specify the stylesheet version explicitly."
       },
