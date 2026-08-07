@@ -1,0 +1,19 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: redundant-namespace-declarations
+found:
+  amount: 1
+  positions: [ [ 4, 3 ] ]
+  fixes: [ "" ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+    xmlns:out="urn:out"
+    exclude-result-prefixes="#default"
+    version="2.0">
+    <xsl:template match="/">
+      <zz exclude-result-prefixes="out"/>
+    </xsl:template>
+  </xsl:stylesheet>

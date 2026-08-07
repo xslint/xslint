@@ -445,6 +445,12 @@ const UNCHANGED = [
     flag: '--fix-suggestions',
     sheet: 'variable-with-select-holding-a-numeric-entity.xsl',
   },
+  {
+    name: 'cannot delete a declaration exclude-result-prefixes names with ' +
+      '--fix',
+    flag: '--fix',
+    sheet: 'an-excluded-result-prefix.xsl',
+  },
 ]
 
 /**
