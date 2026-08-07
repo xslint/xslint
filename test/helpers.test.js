@@ -25,6 +25,10 @@ const REFUSED = [
     name: 'refuses an ampersand in text that opens no reference',
     content: '<a>Tom & Jerry</a>',
   },
+  {
+    name: 'refuses a section close in text that closes no section',
+    content: '<a>Tom ]]> Jerry</a>',
+  },
 ]
 
 describe('helpers', function() {
