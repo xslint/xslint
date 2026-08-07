@@ -79,6 +79,14 @@
 <p>A namespace prefix declared on the <code>xsl:stylesheet</code> element but never used by
 any element name, attribute name, or qualified name inside an attribute value
 is dead weight that misleads the reader and should be removed.</p>
+<p>Two attributes use a prefix without qualifying anything with it, and a prefix
+either of them names is in use:
+<code>exclude-result-prefixes</code> keeps the namespace out of the result tree, and
+<code>extension-element-prefixes</code> marks it as holding extension instructions. Both
+hold bare prefixes, separated by whitespace, and <code>exclude-result-prefixes=&quot;#all&quot;</code>
+names every prefix in scope at once. Removing a declaration one of them names
+leaves the reference bound to nothing, and a conformant processor refuses to
+compile the stylesheet.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:stylesheet xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot; xmlns:foo=&quot;urn:foo&quot; version=&quot;2.0&quot;&gt;
   &lt;!-- the foo prefix is never used anywhere --&gt;
@@ -87,6 +95,12 @@ is dead weight that misleads the reader and should be removed.</p>
 <p>Correct:</p>
 <pre><code class="language-xsl">&lt;xsl:stylesheet xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot; version=&quot;2.0&quot;&gt;
   &lt;!-- only namespaces that are actually used are declared --&gt;
+&lt;/xsl:stylesheet&gt;
+</code></pre>
+<p>A prefix whose only mention is a prefix list is used, and its declaration stays:</p>
+<pre><code class="language-xsl">&lt;xsl:stylesheet xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot; xmlns:foo=&quot;urn:foo&quot;
+  exclude-result-prefixes=&quot;foo&quot; version=&quot;2.0&quot;&gt;
+  &lt;!-- foo is declared so that exclude-result-prefixes can name it --&gt;
 &lt;/xsl:stylesheet&gt;
 </code></pre>
 
