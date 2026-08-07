@@ -573,25 +573,100 @@ const DROPPED = [
   },
 ]
 
+/**
+ * Every row of the three tables above, in one list, so no two of them can be
+ * seeded under the same name.
+ * @type {Array.<{name: string, flag: string}>}
+ */
+const ROWS = [...APPLIED, ...UNCHANGED, ...DROPPED]
+
+/**
+ * A directory per flag, holding every stylesheet that flag is asked about.
+ * @type {Map.<string, string>}
+ */
+const YARDS = new Map()
+
+/**
+ * The scratch file each row is seeded into, keyed by the row. One directory per
+ * flag means one process per flag rather than one per row, and 79 rows spending
+ * a node startup each is where 15 of the suite's 16 seconds went (#689). The
+ * rows of a flag do share a corpus this way, so a cross-file check reads all of
+ * them at once, which the first test below is what keeps honest.
+ * @type {Map.<object, string>}
+ */
+const SEEDED = new Map(ROWS.map((row, index) => {
+  if (!YARDS.has(row.flag)) {
+    YARDS.set(row.flag, fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-fix-')))
+  }
+  const file = path.join(YARDS.get(row.flag), `sheet-${index}.xsl`)
+  fs.writeFileSync(file, fixture(row.before ?? row.sheet))
+  return [row, file]
+}))
+
+/**
+ * What each flag printed, from the single run that fixed everything it held.
+ * @type {Map.<string, string>}
+ */
+const REPORTED = new Map(
+  [...YARDS].map(([flag, yard]) => [flag, xslintStreams([flag, yard]).stdout]),
+)
+
+/**
+ * The lines of a report that speak about one file. A batched run reports on
+ * every stylesheet it was given, so a row asking whether its own defect is gone
+ * must not read a neighbour's — which also makes the question stricter than the
+ * whole-report search it replaces.
+ * @param {string} report - What the run printed
+ * @param {string} file - The stylesheet in question
+ * @return {string} - Only the lines naming that file
+ */
+const about = function(report, file) {
+  return report.split('\n').filter((line) => line.includes(file)).join('\n')
+}
+
+/**
+ * The cross-file checks — the only ones a shared yard could confuse. A yard is
+ * one corpus, so a neighbour's text can stand in as the usage that saves a
+ * declaration; what that does is *hide* a defect, never invent one. A row
+ * pinning file content would turn red if a fix went missing that way, which
+ * leaves the rows asserting an absence: those pass on a neighbour's silence as
+ * readily as on the fix, so none of them may name a check that reads across
+ * files.
+ * @type {Array.<string>}
+ */
+const CROSS = fs
+  .readdirSync(path.join(__dirname, '..', 'src', 'resources', 'checks', 'corpus'))
+  .map((file) => path.basename(file, '.yaml'))
+
 describe('fixer', function() {
-  APPLIED.forEach(({name, flag, before, after}) => {
-    it(name, function() {
-      const file = scratch(fixture(before))
-      runXslint([flag, file])
-      assert.equal(fs.readFileSync(file, 'utf-8'), fixture(after))
+  it('cannot let a dropped row name a cross-file check', function() {
+    assert.deepEqual(
+      DROPPED.filter((row) => CROSS.includes(row.check)).map((row) => row.name),
+      [],
+      'a row asks whether a cross-file check is gone from a stylesheet that ' +
+        'shares its corpus with 78 others, so a neighbour supplying the ' +
+        'usage would answer yes as loudly as the fix does',
+    )
+  })
+  APPLIED.forEach((row) => {
+    it(row.name, function() {
+      assert.equal(
+        fs.readFileSync(SEEDED.get(row), 'utf-8'), fixture(row.after),
+      )
     })
   })
-  UNCHANGED.forEach(({name, flag, sheet}) => {
-    it(name, function() {
-      const file = scratch(fixture(sheet))
-      runXslint([flag, file])
-      assert.equal(fs.readFileSync(file, 'utf-8'), fixture(sheet))
+  UNCHANGED.forEach((row) => {
+    it(row.name, function() {
+      assert.equal(
+        fs.readFileSync(SEEDED.get(row), 'utf-8'), fixture(row.sheet),
+      )
     })
   })
-  DROPPED.forEach(({name, flag, sheet, check}) => {
-    it(name, function() {
-      const file = scratch(fixture(sheet))
-      assert.ok(!xslintStreams([flag, file]).stdout.includes(check))
+  DROPPED.forEach((row) => {
+    it(row.name, function() {
+      assert.ok(
+        !about(REPORTED.get(row.flag), SEEDED.get(row)).includes(row.check),
+      )
     })
   })
   it('cannot abbreviate a parent axis that has no short form', function() {

@@ -305,6 +305,18 @@ const squeezed = function(xpath) {
 }
 
 /**
+ * What each expression already answered. fontoxpath remembers nothing between
+ * calls — a second pass over the same four thousand expressions costs what the
+ * first did — while a corpus repeats its expressions constantly, `.` and
+ * `@name` and `text()` above all, so the same parse was being paid for over and
+ * over (#689). One entry per distinct expression is bounded by the corpus that
+ * asked, and the answer cannot go stale: the same text parses the same way for
+ * the life of a process.
+ * @type {Map.<string, boolean>}
+ */
+const VERDICTS = new Map()
+
+/**
  * Whether given Xpath expression is syntactically valid. The same engine that
  * runs the rules parses it, so an expression is valid here exactly when the
  * processor can parse it. Every prefix resolves, isolating syntax from
@@ -316,7 +328,10 @@ const squeezed = function(xpath) {
  * @return {boolean} - True when the expression parses
  */
 const isValid = function(xpath) {
-  return compiles(xpath) || compiles(squeezed(xpath))
+  if (!VERDICTS.has(xpath)) {
+    VERDICTS.set(xpath, compiles(xpath) || compiles(squeezed(xpath)))
+  }
+  return VERDICTS.get(xpath)
 }
 
 module.exports = {

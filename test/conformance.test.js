@@ -7,6 +7,7 @@ const {allFilesFrom, yaml} = require('../src/helpers')
 const {GAP} = require('../src/tokens')
 const {FIXERS} = require('../src/fixers')
 const {DECIMAL} = require('../src/xsl-version')
+const {authored, rendered, PLACE} = require('../scripts/generate-checks')
 const path = require('path')
 const fs = require('fs')
 const assert = require('assert')
@@ -102,6 +103,15 @@ const names = function(kind) {
 }
 
 describe('conformance', function() {
+  it('keeps the generated checks abreast of the YAML that authors them', function() {
+    assert.equal(
+      fs.readFileSync(PLACE.to, 'utf-8'), rendered(authored()),
+      `${path.basename(PLACE.to)} is not what the YAML under ` +
+        `${path.basename(PLACE.from)}/ says any more, and it is what a run ` +
+        'reads, so the check you edited is not the check that fires; run ' +
+        '`npx grunt checks`',
+    )
+  })
   it('names every check in kebab-case without the banned prefix', function() {
     for (const kind of KINDS) {
       for (const name of names(kind)) {

@@ -4,19 +4,16 @@
  */
 
 const {isValid} = require('./xpath')
-const {yaml} = require('./helpers')
+const {kinds} = require('./resources/checks.json')
 const {offsetAt, placeAt, skip} = require('./source')
-const path = require('path')
 
 /**
- * Defect metadata of a formatting check, read from its YAML.
+ * Defect metadata of a formatting check.
  * @param {string} check - Check name
  * @return {{severity: string, message: string}} - The metadata
  */
 const metaOf = function(check) {
-  return yaml.parsedFromFile(
-    path.join(__dirname, 'resources', 'checks', 'format', `${check}.yaml`),
-  )
+  return kinds.format[check]
 }
 
 /**

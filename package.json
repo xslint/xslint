@@ -22,7 +22,7 @@
     "postinstall": "patch-package",
     "test": "grunt",
     "fast": "grunt fast",
-    "coverage": "c8 mocha \"test/**/*.test.js\" --timeout 10000"
+    "coverage": "c8 mocha \"test/**/*.test.js\" --timeout 10000 --parallel"
   },
   "keywords": [
     "xsl",

@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {xml, yaml} = require('./helpers')
-const path = require('path')
+const {xml} = require('./helpers')
+const {kinds} = require('./resources/checks.json')
 const {logger} = require('./logger')
 
 /**
@@ -17,9 +17,7 @@ const CHECK = 'malformed-stylesheet'
  * Defect metadata of the check.
  * @type {{severity: string, message: string}}
  */
-const META = yaml.parsedFromFile(
-  path.join(__dirname, 'resources', 'checks', 'validation', `${CHECK}.yaml`),
-)
+const META = kinds.validation[CHECK]
 
 /**
  * Names of the checks this validator owns.

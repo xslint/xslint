@@ -4,23 +4,17 @@
  */
 
 const {nodes, strings} = require('./xpath')
-const {allFilesFrom, yaml} = require('./helpers')
-const path = require('path')
+const {kinds} = require('./resources/checks.json')
 const {logger} = require('./logger')
 
 /**
- * Corpus checks, each parsed once at load: the name suppressions match against,
- * plus the declaration/usage selectors and defect metadata.
+ * Corpus checks: the name suppressions match against, plus the
+ * declaration/usage selectors and defect metadata.
  * @type {Array.<{name: string, declaration: string, usage: string,
  *  severity: string, message: string}>}
  */
-const CHECKS = allFilesFrom(
-  path.join(__dirname, 'resources', 'checks', 'corpus'),
-).map((check) => ({
-  name: check.substring(
-    check.lastIndexOf(path.sep) + 1, check.lastIndexOf('.yaml'),
-  ),
-  ...yaml.parsedFromFile(check),
+const CHECKS = Object.entries(kinds.corpus).map(([name, check]) => ({
+  name, ...check,
 }))
 
 /**
