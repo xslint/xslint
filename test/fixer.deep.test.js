@@ -457,6 +457,11 @@ const UNCHANGED = [
     flag: '--fix',
     sheet: 'an-excluded-result-prefix.xsl',
   },
+  {
+    name: 'cannot collapse a wrap standing behind a trailing space',
+    flag: '--fix',
+    sheet: 'a-wrap-behind-a-trailing-space.xsl',
+  },
 ]
 
 /**

@@ -42,8 +42,8 @@ const INTERNAL = new RegExp(`${GAP}{2,}`)
  * two runs in `ancestor  ::  b`, with `--fix` leaving the other in the file and
  * the next run calling it clean (#642). A string or a comment is kept
  * whole on purpose, so neither is ever looked into. Whether the run wraps a
- * line is not asked here, because the value cannot answer it — `wrapping` puts
- * that question to the source.
+ * line is `wrapping`'s question, since the value the run is read from answers
+ * only half of it.
  * @param {{type: string, value: string, start: number}} token - The token
  * @return {?{offset: number, value: string, replacement: string}} - The run
  */
@@ -60,13 +60,14 @@ const inside = function(token) {
 }
 
 /**
- * Whether a run of whitespace wraps a line, asked of the raw source rather than
- * of the value the run was found in. An attribute value reaches a check with
- * its line endings already turned into spaces by XML 1.0 §3.3.3, so a run that
- * is a wrap and a run that is a typed-out double space are the same characters
- * by then, and a test over the value cannot tell them apart. It read the value
- * and so answered no every time, which is why a wrapped expression drew a
- * warning per line it wrapped onto (#628).
+ * Whether a run of whitespace wraps a line. Neither text alone can say: XML 1.0
+ * §3.3.3 turns a line ending inside an attribute value into a space, so a wrap
+ * and a typed-out double space are the same characters in the value the run was
+ * found in — which is why reading the value alone answered no to every wrapped
+ * attribute and a wrapped expression drew a warning per line it wrapped onto
+ * (#628). A character reference is exempt from that normalisation, so `&#10;`
+ * runs the other way: the value holds a real line ending the source never
+ * shows. Each text sees a wrap the other cannot, and either sighting counts.
  *
  * Wrapping a long expression is formatting, not a defect — xcop, which this
  * project runs over its own fixtures, asks for it — so a run holding a line
@@ -75,11 +76,11 @@ const inside = function(token) {
  * @param {{file: string, content: string}} source - The file the run sits in
  * @param {{node: Node, start: number}} found - The expression holding it
  * @param {{offset: number, value: string}} run - The run
- * @return {boolean} - True when the source under the run holds a line ending
+ * @return {boolean} - True when either text holds a line ending in the run
  */
 const wrapping = function(source, found, run) {
   const from = rawly(source, found, run.offset)
-  return /[\r\n]/.test(
+  return /[\r\n]/.test(run.value) || /[\r\n]/.test(
     source.content.slice(from, skip(source.content, from, run.value.length)),
   )
 }
@@ -91,8 +92,8 @@ const wrapping = function(source, found, run) {
  * run carries the offset where it starts, its raw value, and the text that
  * should replace it — empty when it leads or trails, a single space when it is
  * a doubled run in the middle. Whether a run wraps a line is settled by
- * `wrapping` against the source, since the expression handed here has had every
- * wrap in it normalised to a space already.
+ * `wrapping`, which reads the source as well, since the expression handed here
+ * has had every literal wrap in it normalised to a space already.
  * @param {string} expression - Xpath expression
  * @return {Array.<{offset: number, value: string, replacement: string}>} - Runs
  */
