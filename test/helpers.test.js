@@ -9,6 +9,24 @@ const fs = require('fs')
 const path = require('path')
 const os = require('os')
 
+/**
+ * Sources `xml.parsedFromString` refuses. Each is a well-formedness error that
+ * `@xmldom/xmldom` does not throw on — it grades the first a `warning` and says
+ * nothing at all about the second — and repairs, so parsing either one would
+ * hand every stage downstream a document the parser invented (#574).
+ * @type {Array.<{name: string, content: string}>}
+ */
+const REFUSED = [
+  {
+    name: 'refuses an attribute value the parser only warns about',
+    content: '<a b=c></a>',
+  },
+  {
+    name: 'refuses an ampersand in text that opens no reference',
+    content: '<a>Tom & Jerry</a>',
+  },
+]
+
 describe('helpers', function() {
   it('refuses to parse a file that does not exist', function() {
     assert.throws(() => xml.parsedFromFile(path.join(os.tmpdir(), 'no.xml')))
@@ -27,7 +45,9 @@ describe('helpers', function() {
   it('reports YAML that does not parse', function() {
     assert.throws(() => yaml.parsedFromString('"unterminated'))
   })
-  it('keeps a document the parser only warns about', function() {
-    assert.ok(xml.parsedFromString('<a b=c></a>').documentElement)
+  REFUSED.forEach(({name, content}) => {
+    it(name, function() {
+      assert.throws(() => xml.parsedFromString(content))
+    })
   })
 })
