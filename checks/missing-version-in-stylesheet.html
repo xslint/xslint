@@ -72,14 +72,31 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-warning">warning</span>
-    <code class="xpath">(/xsl:stylesheet | /xsl:transform)[not(@version)]</code>
+    <code class="xpath">/*[if (self::xsl:*) then not(@version) else (not(@xsl:version) and .//xsl:* and not(.//(xsl:stylesheet | xsl:transform | xsl:package)))]</code>
   </div>
   <div class="check-content">
 <h1>Missing version in stylesheet</h1>
-<p>Every stylesheet root — <code>xsl:stylesheet</code> or its synonym <code>xsl:transform</code> — must
-declare a <code>version</code> attribute to identify the XSLT version the stylesheet
-conforms to. Omitting it produces an invalid stylesheet that a conformant XSLT
-processor is required to reject.</p>
+<p>Every stylesheet declares the XSLT version it conforms to, and one that declares
+none is invalid — a conformant processor is required to reject it. Which
+attribute carries the declaration depends on the root element.</p>
+<p>A root XSLT defines itself carries a plain <code>version</code>: <code>xsl:stylesheet</code>, its exact
+synonym <code>xsl:transform</code>, and — since XSLT 3.0 — <code>xsl:package</code>, which declares a
+module other stylesheets can use. A <em>simplified</em> stylesheet — one whose root is a
+literal result element and whose whole transformation is that element&#39;s
+content — carries <code>xsl:version</code> instead, in the XSLT namespace. An unprefixed
+<code>version</code> will not do there,
+because on a literal result element it belongs to the result vocabulary and means
+whatever that vocabulary says it means; an SVG or XHTML root may well carry its
+own. The prefixed attribute is also the only thing that makes such a document a
+stylesheet rather than ordinary XML, so leaving it off does not produce a
+stylesheet with a missing version — it produces something a processor will not
+recognise as a stylesheet at all.</p>
+<p>A third arrangement carries nothing on its root at all. An <em>embedded</em> stylesheet
+is a document of data with an <code>xsl:stylesheet</code> inside it, picked out by an
+<code>xml-stylesheet</code> instruction pointing at that element&#39;s <code>id</code>. The version belongs
+to the embedded element, which declares it as any other stylesheet root does, and
+the outer root is data — adding <code>xsl:version</code> to it would claim the whole
+document is a transformation, which is the one thing it is not.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:stylesheet xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot;&gt;
     &lt;!-- stylesheet logic --&gt;
@@ -89,6 +106,16 @@ processor is required to reject.</p>
 <pre><code class="language-xsl">&lt;xsl:stylesheet xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot; version=&quot;1.0&quot;&gt;
     &lt;!-- stylesheet logic --&gt;
 &lt;/xsl:stylesheet&gt;
+</code></pre>
+<p>Incorrect:</p>
+<pre><code class="language-xsl">&lt;html xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot;&gt;
+    &lt;body&gt;&lt;xsl:value-of select=&quot;/page/title&quot;/&gt;&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<p>Correct:</p>
+<pre><code class="language-xsl">&lt;html xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot; xsl:version=&quot;2.0&quot;&gt;
+    &lt;body&gt;&lt;xsl:value-of select=&quot;/page/title&quot;/&gt;&lt;/body&gt;
+&lt;/html&gt;
 </code></pre>
 
   </div>
