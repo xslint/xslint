@@ -46,6 +46,9 @@ module.exports = function(grunt) {
   grunt.registerTask('docs', 'Generate documentation site', function() {
     require('./scripts/generate-docs')
   })
+  grunt.registerTask('checks', 'Rebuild the checks a run reads', function() {
+    grunt.log.writeln(require('./scripts/generate-checks').generate())
+  })
   grunt.registerTask(
     'fast', 'Lint, then run every test that starts no process',
     ['eslint', 'mochacli:fast'],

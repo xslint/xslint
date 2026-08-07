@@ -6,23 +6,17 @@
 const {nodes, isValid} = require('./xpath')
 const {FIXERS} = require('./fixers')
 const {expressionsOf} = require('./attributes')
-const {allFilesFrom, yaml} = require('./helpers')
-const path = require('path')
+const {kinds} = require('./resources/checks.json')
 const {logger} = require('./logger')
 
 /**
- * Xpath packs, each parsed once at load: the name suppressions match against
- * and the rule the linter applies.
+ * Xpath packs: the name suppressions match against and the rule the linter
+ * applies.
  * @type {Array.<{name: string, xpath: string, severity: string,
  *  message: string}>}
  */
-const PACKS = allFilesFrom(
-  path.join(__dirname, 'resources', 'checks', 'xpath'),
-).map((pack) => ({
-  name: pack.substring(
-    pack.lastIndexOf(path.sep) + 1, pack.lastIndexOf('.yaml'),
-  ),
-  ...yaml.parsedFromFile(pack),
+const PACKS = Object.entries(kinds.xpath).map(([name, pack]) => ({
+  name, ...pack,
 }))
 
 /**

@@ -21,6 +21,7 @@ npm test                                             # ESLint then every test (G
 npx mocha test/xslint.deep.test.js --timeout 10000   # one test file
 npx mocha test/xslint.deep.test.js --grep sentence   # tests matching a pattern
 npx grunt docs                                       # regenerate the docs/ site
+npx grunt checks                                     # rebuild src/resources/checks.json
 npm run coverage                                     # 100% branch gate (CI)
 ```
 
@@ -32,11 +33,15 @@ green — run `npm run coverage` and the xcop suite too.
 The suite comes in two halves, and the line between them is a child process. A
 **deep** test starts one — it runs `xslint` or `xcop` the way a user does — and
 is named `*.deep.test.js`; every other test stays in this process. Three files
-are deep, and they still cost most of what the suite costs: 431 of the 1071
-tests, 15 of the 18 seconds. The other 640 finish inside a second, which is why
+are deep, and they still cost most of what the suite costs: 437 of the 1082
+tests, 8 of the 12 seconds. The other 645 finish inside a second, which is why
 `npm run fast` is the loop to work in and `npm test` the one to finish on. The
 deep target runs under `mocha --parallel`, so those three files run at once and
-the slowest of them sets the clock. `grunt mochacli` runs both targets, so
+the slowest of them sets the clock — `xslint.deep.test.js` alone, whose 50 tests
+each try the CLI with different arguments and so cannot share a process the way
+the other two now do. `npm run coverage` runs parallel too: c8 merges what each
+worker writes to `NODE_V8_COVERAGE`, so the 100% gate is unaffected while the
+run went from 48 seconds to 13. `grunt mochacli` runs both targets, so
 nothing in CI narrows. The naming is not a convention anybody has to remember
 either: `test/conformance.test.js` reads every `.test.js` for the
 `require('./helpers')` that is the only door to a child process, and fails when
@@ -46,7 +51,15 @@ is.
 What a deep test must not do is spend a process per assertion. The xcop suite
 did, 257 of them, and 25 of the suite's 26 seconds were ruby interpreters
 booting; it asks once over a directory now and reads each fixture's line out of
-the one report (#687). Nor may it write into the working tree: its scratch files
+the one report (#687). `fixer.deep.test.js` did the same with 79 — a node per
+row — and now seeds one `mkdtempSync` directory per *flag* and fixes it in one
+run, 15 seconds down to 1 (#689). A yard shared that way is one corpus, so a
+cross-file check reads every fixture in it at once; that can only ever hide a
+defect a neighbour supplies the usage for, never invent one, and a row pinning
+file content would turn red if a fix went missing. What would not turn red is a
+row asserting a check is *gone*, so the suite's first test holds every such row
+to a check that reads one file. Nor may a deep test write into the working
+tree: its scratch files
 go under `mkdtempSync`, because `should test default directory` lints the
 repository and a file appearing and vanishing under `test/` takes that walk's
 count with it — a race parallel mode turns from theory into one failure in four.
@@ -245,6 +258,14 @@ test. `test/conformance.test.js` enforces the naming, the motive, and the
 pack/test coverage for all four kinds — a rule that misnames itself, drops its
 motive, or ships untested fails the build.
 
+The YAML is where a check is authored and reviewed, but not what a run reads:
+`npx grunt checks` renders all four kinds into `src/resources/checks.json`, and
+that is what the loaders `require`. Parsing 67 YAML files, and loading the parser
+to do it, cost 31 of the 71 ms every process spent before it looked at a byte of
+XSL (#689). So **touching a check means running `npx grunt checks` and committing
+the result** — `conformance.test.js` re-renders the JSON from the YAML and fails
+on any difference, because a check that has drifted is not the check that fires.
+
 - **xpath rule**: add `checks/xpath/<name>.yaml` and
   `test/resources/xpath-packs/<name>.yaml`.
 - **corpus rule**: add `checks/corpus/<name>.yaml` and
@@ -262,7 +283,8 @@ motive, or ships untested fails the build.
   to in `wholeOf` so `defect` still receives one expression rather than a node and
   a string paired up by hand.
 
-Then run `npm test`, `npm run coverage`, and `npx grunt docs`.
+Then run `npx grunt checks`, `npm test`, `npm run coverage`, and
+`npx grunt docs`.
 
 ### Mandatory rules
 
@@ -497,10 +519,12 @@ accidentally attached fix turns red.
 | `src/fixers.js` | Maps a declarative check name to a `node => fix` builder |
 | `src/fixes.js` | Shared fix builders: `deletion(attribute, content)`, which reads the span to cut from the raw source — xmldom reports an attribute at its opening delimiter, so the quote is whichever stands there and the walk back over the `=` and the name crosses a gap of any width. Rebuilding the text as ` name="value"` made the fixer decline every other spelling of it (#594) |
 | `src/fixer.js` | Applies a defect's `fix` to source (decode-walk, verify-before-apply, end-to-start) |
-| `src/xpath.js` | fontoxpath environment: prefixes, evaluators, `isValid` — which retries the expression respelled when the engine refuses a spelling the grammar allows: the `namespace::` axis, ExprWhitespace around an axis's `::`, in front of a node test's bracket (#615), and in front of the bracket it closes with (#639). The axis and opening-bracket squeezes run between a step's own parts, and ask `src/tokens.js`'s `spelling` where a name begins, so the axis of `1-namespace::x` is respelled and the name of `a-namespace::x` is not; the closing one runs wherever a gap stands in front of a `)`, refusing only the `:` in front of it, since `:)` is the one XPath token a bracket ends — a list of what a test may hold instead is what refused `element( * )`. What the retry cannot claim is that it only ever widens what the engine accepts: its guards read characters rather than a parse (#641) |
-| `src/helpers.js` | XML parsing (expands internal-subset entities), YAML parsing, file recursion. It refuses what `@xmldom/xmldom` would repair rather than reject: the level of a diagnostic is not consulted, since an attribute written without quotes arrives a mere `warning` and is then invented into a value (#574), and `unescaped` walks the text nodes for an `&` that opens no reference, which the parser accepts in silence. Text nodes come from `src/tree.js`'s `walked`, not from a scan of the source, because an `&` is legal in a comment, a CDATA section and a processing instruction — a text node cannot be any of the three, so those are excluded by construction rather than by finding them |
+| `src/xpath.js` | fontoxpath environment: prefixes, evaluators, `isValid` — which retries the expression respelled when the engine refuses a spelling the grammar allows: the `namespace::` axis, ExprWhitespace around an axis's `::`, in front of a node test's bracket (#615), and in front of the bracket it closes with (#639). The axis and opening-bracket squeezes run between a step's own parts, and ask `src/tokens.js`'s `spelling` where a name begins, so the axis of `1-namespace::x` is respelled and the name of `a-namespace::x` is not; the closing one runs wherever a gap stands in front of a `)`, refusing only the `:` in front of it, since `:)` is the one XPath token a bracket ends — a list of what a test may hold instead is what refused `element( * )`. What the retry cannot claim is that it only ever widens what the engine accepts: its guards read characters rather than a parse (#641). Every verdict is kept, because fontoxpath remembers nothing between calls and a corpus asks about `.` and `@name` and `text()` over and over — a second pass over 4000 expressions cost what the first did, and now costs nothing (#689) |
+| `src/helpers.js` | XML parsing (expands internal-subset entities), YAML parsing, file recursion. It refuses what `@xmldom/xmldom` would repair rather than reject: the level of a diagnostic is not consulted, since an attribute written without quotes arrives a mere `warning` and is then invented into a value (#574), and `unescaped` walks the text nodes for an `&` that opens no reference, which the parser accepts in silence. Text nodes come from `src/tree.js`'s `walked`, not from a scan of the source, because an `&` is legal in a comment, a CDATA section and a processing instruction — a text node cannot be any of the three, so those are excluded by construction rather than by finding them. The YAML parser is required inside the function, not at the top: nothing on the linting path reads YAML any more, so a run that has no `.xslint.yml` never loads it |
+| `src/resources/checks.json` | Every check as a run reads it, built from the YAML by `scripts/generate-checks.js`. Never edited by hand — `test/conformance.test.js` re-renders it and fails on any difference |
 | `src/logger.js` | 4-level logger |
 | `scripts/generate-docs.js` | Builds the `docs/` site from checks + motives |
+| `scripts/generate-checks.js` | Builds `src/resources/checks.json` from the check YAML (`npx grunt checks`) |
 | `test/conformance.test.js` | Enforces naming, motives, selector hygiene, pack/test coverage, the `mature` freeze across all kinds, the fast/deep split of the suite itself, and that no test writes a scratch file outside a temporary directory |
 | `test/helpers.js` | The only door to a child process in the suite: `runXslint`/`xslintStatus`/`xslintStreams` run the CLI, `xcopped` runs xcop once over a directory, `cmdAvailable` answers whether a tool is there by running it |
 | `test/xcop.deep.test.js` | Writes every pack's inline XSL to one `mkdtempSync` directory and runs xcop over it once; pending, never absent, where the tool does not run |

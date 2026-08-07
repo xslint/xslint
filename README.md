@@ -500,7 +500,16 @@ New linter rules live in `src/resources/checks/xpath` (per-file) or
 `src/resources/checks/corpus` (cross-file), each with a matching test pack in
 `test/resources`. The validators in `src/resources/checks/validation` and the
 formatting checks in `src/resources/checks/format` are fixed in code; their
-YAML only tunes severity and message. Regenerate the documentation site with
+YAML only tunes severity and message. That YAML is where a check is written, but
+a run reads `src/resources/checks.json`, so rebuild and commit it whenever you
+touch one:
+
+```bash
+npx grunt checks
+```
+
+Forgetting is not a silent mistake — the test suite re-renders the file from the
+YAML and fails on any difference. Regenerate the documentation site with
 `npx grunt docs`.
 
 You will need [npm] and [node] installed

@@ -7,8 +7,7 @@ const {isValid} = require('./xpath')
 const {ATTRIBUTES, PATTERNS} = require('./attributes')
 const {walked} = require('./tree')
 const {XSLT} = require('./xsl-version')
-const {yaml} = require('./helpers')
-const path = require('path')
+const {kinds} = require('./resources/checks.json')
 const {logger} = require('./logger')
 
 /**
@@ -21,9 +20,7 @@ const CHECK = 'invalid-xpath-expression'
  * Defect metadata of the check.
  * @type {{severity: string, message: string}}
  */
-const META = yaml.parsedFromFile(
-  path.join(__dirname, 'resources', 'checks', 'validation', `${CHECK}.yaml`),
-)
+const META = kinds.validation[CHECK]
 
 /**
  * Names of the checks this validator owns.

@@ -6,7 +6,6 @@
 const fs = require('fs')
 const path = require('path')
 const {DOMParser} = require('@xmldom/xmldom')
-const yaml = require('yaml')
 const {GAP} = require('./tokens')
 const {offsetAt, placeAt} = require('./source')
 const {walked} = require('./tree')
@@ -221,14 +220,17 @@ const xmlFromString = function(str) {
 }
 
 /**
- * Parse YAML from string.
+ * Parse YAML from string. The parser is required here rather than at the top,
+ * because nothing on the linting path reads YAML any more — the checks arrive
+ * as JSON — and loading it cost every run 17 ms for the sake of a config file
+ * most runs do not have (#689).
  * @param {string} str - YAML as string
  * @return {any} - Parses YAML
  */
 const yamlFromString = function(str) {
   let parsed
   try {
-    parsed = yaml.parse(str)
+    parsed = require('yaml').parse(str)
   } catch (err) {
     throw new Error(`Couldn't parse YAML:\n${str}\n\nCause: ${err.message}`)
   }
