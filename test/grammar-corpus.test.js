@@ -133,63 +133,6 @@ const GAPS = [
     gap: 'a name no NCName can spell (#708)',
   },
   {
-    xpath: '//( xsl:if | xsl:when)[not(@test)]',
-    accepts: 'engine',
-    gap: 'a parenthesized expression standing as a step (#711)',
-  },
-  {
-    xpath: '//(xsl:variable | xsl:param)[not(@name)]',
-    accepts: 'engine',
-    gap: 'a parenthesized expression standing as a step (#711)',
-  },
-  {
-    xpath: '//(xsl:variable | xsl:param | xsl:with-param)[@select and (* or ' +
-      'text()[normalize-space()])]',
-    accepts: 'engine',
-    gap: 'a parenthesized expression standing as a step (#711)',
-  },
-  {
-    xpath: '(/xsl:stylesheet | /xsl:transform)//(xsl:stylesheet | ' +
-      'xsl:transform)',
-    accepts: 'engine',
-    gap: 'a parenthesized expression standing as a step (#711)',
-  },
-  {
-    xpath: '(/xsl:stylesheet | /xsl:transform)/*//(xsl:function|xsl:template)',
-    accepts: 'engine',
-    gap: 'a parenthesized expression standing as a step (#711)',
-  },
-  {
-    xpath: '//(xsl:function | xsl:template)/xsl:param[not(some $x in ' +
-      '..//(node() | @*) satisfies contains($x, concat(\'$\', @name)))]',
-    accepts: 'engine',
-    gap: 'a parenthesized expression standing as a step (#711)',
-  },
-  {
-    xpath: '/*[if (self::xsl:*) then not(@version) else (not(@xsl:version) ' +
-      'and .//xsl:* and not(.//(xsl:stylesheet | xsl:transform | ' +
-      'xsl:package)))]',
-    accepts: 'engine',
-    gap: 'a parenthesized expression standing as a step (#711)',
-  },
-  {
-    xpath: '/*[(if (self::xsl:stylesheet or self::xsl:transform) then ' +
-      '@version else @xsl:version) = \'1.0\']//(xsl:for-each-group | ' +
-      'xsl:sequence | xsl:analyze-string | xsl:next-match | xsl:perform-sort ' +
-      '| xsl:namespace | xsl:character-map | xsl:result-document | ' +
-      'xsl:import-schema | xsl:*[@as])',
-    accepts: 'engine',
-    gap: 'a parenthesized expression standing as a step (#711)',
-  },
-  {
-    xpath: '((//xsl:template | //xsl:key | //xsl:accumulator-rule)/@match | ' +
-      '//xsl:number/(@count | @from) | //xsl:for-each-group/' +
-      '(@group-starting-with | @group-ending-with))' +
-      '[starts-with(normalize-space(), \'//\')]',
-    accepts: 'engine',
-    gap: 'a parenthesized expression standing as a step (#711)',
-  },
-  {
     xpath: '//xsl:apply-templates[some $var in ancestor::xsl:template[1]' +
       '//xsl:variable satisfies (($var << .) and (starts-with(@select, ' +
       'concat($var/@name, \'/\')) or @select=$var/@name))]',
