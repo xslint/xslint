@@ -145,9 +145,18 @@ const kinds = function(xpath) {
  * comment delimiter is half of, the colon that is its other half, the separator
  * a step carries, a gap, the names a squeeze opens on, and the quote a literal
  * opens with.
+ *
+ * `namespace` earns its place twice over. It is the axis the retry was built
+ * for in the first place, the one the engine has no parse for at all, and it is
+ * the only atom that makes the normalisation in `kinds` fire — without it no
+ * swept expression holds the token, so the line reading `namespace::` as the
+ * `child::` it becomes would be decoration rather than a claim, and the oldest
+ * of the three squeezes would be swept no times at all.
  * @type {Array.<string>}
  */
-const ATOMS = ['(', ')', ':', '::', ' ', 'a', 'child', 'node', '*', '\'']
+const ATOMS = [
+  '(', ')', ':', '::', ' ', 'a', 'child', 'node', '*', '\'', 'namespace',
+]
 
 /**
  * Every sequence of exactly that many atoms.
@@ -163,19 +172,20 @@ const grown = function(depth) {
 }
 
 /**
- * Every sequence of up to four atoms, which is eleven thousand expressions and
+ * Every sequence of up to four atoms, which is sixteen thousand expressions and
  * a moment to sweep. Four is where the reach is: the shortest fabrication the
  * report names is `( ::`, three atoms, and against the retry as it stood when
  * #641 was filed a fourth atom takes the offenders from one to a hundred and
- * five — enough margin that a squeeze which started merging again is caught by
- * the general case rather than by whichever example somebody thought to add.
+ * twenty — enough margin that a squeeze which started merging again is caught
+ * by the general case rather than by whichever example somebody thought to add.
  *
  * A fifth atom is not swept, which is worth a sentence rather than a silence.
- * The sweep would break on two of the hundred thousand, `child:: child::` and
- * `child ::child::`, both respelling to `child::child::`, where the lexer
- * reads the second axis as a name because a name may not end in a separator it
- * has already swallowed. That is #703 rather than anything the retry does, so a
- * deeper sweep would pin a lexer defect inside a test about the respelling.
+ * The sweep would break on eight of the hundred and sixty thousand, every one
+ * of them a pair of axes like `child:: child::` or `namespace ::child::`, all
+ * respelling to a separator the lexer then reads as a name because a name may
+ * not end in one it has already swallowed. That is #703 rather than anything
+ * the retry does, so a deeper sweep would pin a lexer defect inside a test
+ * about the respelling.
  * @type {Array.<string>}
  */
 const SWEPT = [1, 2, 3, 4].flatMap((depth) => grown(depth))
