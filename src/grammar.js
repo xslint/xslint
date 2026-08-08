@@ -539,14 +539,17 @@ const steps = function(cursor) {
     token.type === TOKENS.DOUBLE_DOT || token.type === TOKENS.DOT ||
     token.type === TOKENS.MULTI ||
     (token.type === TOKENS.NAME && !KEYWORDS.includes(token.value)) ||
-    (since(cursor.version, MODERN) && OPENERS.includes(token.type))
+    OPENERS.includes(token.type)
 }
 
 /**
  * The token kinds a primary expression may open with that no axis step does.
  * From 2.0 a step is `PostfixExpr | AxisStep`, so each of these opens a step as
- * readily as a name does; in 1.0 a `FilterExpr` may only open a path, and none
- * of them stands after a slash.
+ * readily as a name does. They are listed without a version test, deliberately:
+ * gating them here changes no verdict, because `parted` refuses them at 1.0
+ * anyway, and only moves the complaint from naming what a step wanted to naming
+ * the end of the expression — the less useful of the two for whoever reads a
+ * report. The version is tested at the one place it decides an answer.
  * @type {Array.<string>}
  */
 const OPENERS = [

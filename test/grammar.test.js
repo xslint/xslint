@@ -154,6 +154,10 @@ const GATED = [
   {xpath: '?a', floor: '3.0', below: '2.0'},
   {xpath: '$m?a', floor: '3.0', below: '2.0'},
   {xpath: 'function () { 1 }', floor: '3.0', below: '2.0'},
+  {xpath: 'a/(b|c)', floor: '2.0', below: '1.0'},
+  {xpath: 'a//(b|c)', floor: '2.0', below: '1.0'},
+  {xpath: 'a/$v', floor: '2.0', below: '1.0'},
+  {xpath: 'a/1', floor: '2.0', below: '1.0'},
 ]
 
 /**
@@ -224,6 +228,12 @@ describe('grammar', function() {
     assert.equal(
       sliced(answer, answer.tree), '@a',
       'a step swallowed the comment standing in front of it',
+    )
+  })
+  it('reads a dot after a slash as a step in 1.0', function() {
+    assert.equal(
+      parsed('a/.', '1.0').fault, '',
+      'the abbreviated step XPath 1.0 spells "." is refused after a slash',
     )
   })
   it('reads a name whose spelling is an operator as a step', function() {
