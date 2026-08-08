@@ -321,13 +321,23 @@ const spelling = function(xpath, at) {
  * and greedily, so an operator's letters inside one — the `or` of `border`, the
  * `and` of `grandchild`, the `union` of `unionist` — stay part of the name they
  * belong to.
+ *
+ * A `::` ends it, though a `:` does not. A QName carries one colon and an
+ * NCName carries none, so two together are never a name being spelled — they
+ * are the axis separator, which has a kind of its own. Reading them as name
+ * characters is how `a::b` arrived as the single token `a::b` while `a ::b`
+ * arrived as three, one grammar read two ways by a gap, with the separator
+ * nowhere in the first of them for a parser to object to (#703).
  * @param {string} xpath - Xpath expression
  * @param {number} start - Offset of the first character
  * @return {number} - Offset just past the name
  */
 const afterName = function(xpath, start) {
   let at = start
-  while (at < xpath.length && NAMED.test(xpath[at])) {
+  while (
+    at < xpath.length && NAMED.test(xpath[at]) &&
+    xpath.slice(at, at + 2) !== '::'
+  ) {
     at += 1
   }
   return at

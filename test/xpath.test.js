@@ -175,9 +175,9 @@ const grown = function(depth) {
  * Every sequence of up to four atoms, which is sixteen thousand expressions and
  * a moment to sweep. Four is where the reach is: the shortest fabrication the
  * report names is `( ::`, three atoms, and against the retry as it stood when
- * #641 was filed a fourth atom takes the offenders from one to a hundred and
- * twenty — enough margin that a squeeze which started merging again is caught
- * by the general case rather than by whichever example somebody thought to add.
+ * #641 was filed a fourth atom takes the offenders from two to fifty — enough
+ * margin that a squeeze which started merging again is caught by the general
+ * case rather than by whichever example somebody thought to add.
  *
  * A fifth atom is not swept, which is worth a sentence rather than a silence.
  * The sweep would break on eight of the hundred and sixty thousand, every one
