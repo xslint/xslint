@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {lintByDoubleNegation} = require('../src/redundant-double-negation-linter')
+const {lintByDoubleNegation} = require('../src/linters/redundant-double-negation-linter')
 const {allFilesFrom, xml, yaml} = require('../src/helpers')
 const path = require('path')
 const assert = require('assert')

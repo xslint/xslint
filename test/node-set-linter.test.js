@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {lintByNodeSet} = require('../src/node-set-linter')
+const {lintByNodeSet} = require('../src/linters/node-set-linter')
 const {allFilesFrom, xml, yaml} = require('../src/helpers')
 const path = require('path')
 const assert = require('assert')

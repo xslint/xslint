@@ -3,12 +3,12 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {nodes} = require('./xpath')
-const {masked, closes} = require('./expressions')
-const {GAP} = require('./tokens')
-const {metaOf, suppressed, defect} = require('./checks')
-const {selectorOf, wholeOf} = require('./attributes')
-const {logger} = require('./logger')
+const {nodes} = require('../xpath')
+const {masked, closes} = require('../expressions')
+const {GAP} = require('../tokens')
+const {metaOf, suppressed, defect} = require('../checks')
+const {selectorOf, wholeOf} = require('../attributes')
+const {logger} = require('../logger')
 
 /**
  * Name of the check this linter owns.

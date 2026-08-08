@@ -3,10 +3,10 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {tokenized, TOKENS} = require('./tokens')
-const {metaOf, suppressed, defect} = require('./checks')
-const {expressionsOf} = require('./attributes')
-const {logger} = require('./logger')
+const {tokenized, TOKENS} = require('../tokens')
+const {metaOf, suppressed, defect} = require('../checks')
+const {expressionsOf} = require('../attributes')
+const {logger} = require('../logger')
 
 /**
  * Name of the check this linter owns.

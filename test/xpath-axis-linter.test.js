@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {lintByAxis} = require('../src/xpath-axis-linter')
+const {lintByAxis} = require('../src/linters/xpath-axis-linter')
 const {allFilesFrom, xml, yaml} = require('../src/helpers')
 const path = require('path')
 const assert = require('assert')

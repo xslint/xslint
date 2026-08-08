@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {lintByPredicatePosition} = require('../src/predicate-position-linter')
+const {lintByPredicatePosition} = require('../src/linters/predicate-position-linter')
 const {allFilesFrom, xml, yaml} = require('../src/helpers')
 const path = require('path')
 const assert = require('assert')

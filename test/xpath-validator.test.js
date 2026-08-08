@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {validate} = require('../src/xpath-validator')
+const {validate} = require('../src/validators/xpath-validator')
 const {allFilesFrom, xml, yaml} = require('../src/helpers')
 const path = require('path')
 const assert = require('assert')
