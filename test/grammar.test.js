@@ -77,6 +77,17 @@ const ACCEPTS = [
   {xpath: 'function () as xs:integer { 1 }', kind: 'inline'},
   {xpath: 'function ($x as xs:integer) as xs:integer { $x }', kind: 'inline'},
   {xpath: '$f(1, 2)', kind: 'apply'},
+  {xpath: '(a|b)/c', kind: 'path'},
+  {xpath: '//(a|b)', kind: 'path'},
+  {xpath: 'x/(a|b)', kind: 'path'},
+  {xpath: '//(xsl:variable | xsl:param)[not(@name)]', kind: 'path'},
+  {xpath: '//xsl:number/(@count | @from)', kind: 'path'},
+  {xpath: 'a/.', kind: 'path'},
+  {xpath: '/.', kind: 'path'},
+  {xpath: '//.', kind: 'path'},
+  {xpath: '/./a', kind: 'path'},
+  {xpath: '/.//a', kind: 'path'},
+  {xpath: 'a/$v', kind: 'path'},
   {xpath: '.', kind: 'context'},
   {xpath: './a', kind: 'path'},
   {xpath: 'function ($x, $y) { $x }', kind: 'inline'},
@@ -147,6 +158,10 @@ const GATED = [
   {xpath: '?a', floor: '3.0', below: '2.0'},
   {xpath: '$m?a', floor: '3.0', below: '2.0'},
   {xpath: 'function () { 1 }', floor: '3.0', below: '2.0'},
+  {xpath: 'a/(b|c)', floor: '2.0', below: '1.0'},
+  {xpath: 'a//(b|c)', floor: '2.0', below: '1.0'},
+  {xpath: 'a/$v', floor: '2.0', below: '1.0'},
+  {xpath: 'a/1', floor: '2.0', below: '1.0'},
 ]
 
 /**
@@ -217,6 +232,12 @@ describe('grammar', function() {
     assert.equal(
       sliced(answer, answer.tree), '@a',
       'a step swallowed the comment standing in front of it',
+    )
+  })
+  it('reads a dot after a slash as a step in 1.0', function() {
+    assert.equal(
+      parsed('a/.', '1.0').fault, '',
+      'the abbreviated step XPath 1.0 spells "." is refused after a slash',
     )
   })
   it('reads a name whose spelling is an operator as a step', function() {
