@@ -1,10 +1,37 @@
 # Redundant import
 
 Referencing the same module twice the same way in one stylesheet adds nothing —
-the second `xsl:import`, or the second `xsl:include`, brings in the same
-templates, functions, and variables the first already did. At best it is noise;
-at worst it muddies import precedence and hides which reference a reader should
-reason about. Keep a single reference per module.
+both references bring in the same templates, functions, and variables. At best
+it is noise; at worst it hides which reference a reader should reason about.
+Keep a single reference per module.
+
+Which one to keep is not a free choice, because import precedence is
+positional: XSLT 1.0 §2.6.2 ranks each `xsl:import` above everything declared
+before it, so a module's precedence is set by its *last* reference and every
+earlier one is shadowed by it. Where another module is imported in between, the
+two references sit on opposite sides of it and only one of them decides which
+module's definitions win. Drop an earlier reference and nothing moves; drop the
+last and the module falls below whatever stood between them.
+
+Incorrect — `alpha` outranks `beta` here, and deleting the third line silently
+reverses that:
+
+```xsl
+<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+  <xsl:import href="alpha.xsl"/>
+  <xsl:import href="beta.xsl"/>
+  <xsl:import href="alpha.xsl"/>
+</xsl:stylesheet>
+```
+
+Correct:
+
+```xsl
+<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+  <xsl:import href="beta.xsl"/>
+  <xsl:import href="alpha.xsl"/>
+</xsl:stylesheet>
+```
 
 The linter resolves each `@href` against the importing file's own directory, so
 two spellings that point at the same file (`lib/util.xsl` and `./lib/util.xsl`)

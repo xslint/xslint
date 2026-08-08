@@ -278,7 +278,9 @@ Today this covers ten checks:
   and `not($x)`.
 - `redundant-import` — a duplicate `xsl:import`/`xsl:include` of a module
   already imported in the same stylesheet is removed; the module stays imported
-  by the first reference. A module reached *both* ways — imported and also
+  by the *last* reference, which is the one that fixes its import precedence,
+  so the references cut are the earlier ones and nothing changes level. A
+  module reached *both* ways — imported and also
   included — is reported without a fix, since `xsl:import` and `xsl:include`
   differ in import precedence, so which of the two to drop is the author's
   decision rather than a deletion the tool can make.

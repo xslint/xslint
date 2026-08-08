@@ -133,6 +133,12 @@ const APPLIED = [
     after: 'redundant-import-many.fixed.xsl',
   },
   {
+    name: 'should keep the higher-precedence duplicate import with --fix',
+    flag: '--fix',
+    before: 'redundant-import-between.xsl',
+    after: 'redundant-import-between.fixed.xsl',
+  },
+  {
     name: 'should unwrap the node-set extension with --fix',
     flag: '--fix',
     before: 'use-node-set-extension.xsl',
