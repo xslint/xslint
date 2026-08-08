@@ -121,20 +121,28 @@ const APPLIED = [
     after: 'starts-with-double-slash-outside-a-template.fixed.xsl',
   },
   {
-    name: 'should delete a redundant import with --fix',
+    name: 'should delete a redundant include with --fix',
     flag: '--fix',
+    before: 'repeated-include.xsl',
+    after: 'repeated-include.fixed.xsl',
+  },
+  {
+    name: 'should delete a redundant import with --fix-suggestions',
+    flag: '--fix-suggestions',
     before: 'redundant-import.xsl',
     after: 'redundant-import.fixed.xsl',
   },
   {
-    name: 'should delete four of five duplicate imports with --fix',
-    flag: '--fix',
+    name: 'should delete four of five duplicate imports with ' +
+      '--fix-suggestions',
+    flag: '--fix-suggestions',
     before: 'redundant-import-many.xsl',
     after: 'redundant-import-many.fixed.xsl',
   },
   {
-    name: 'should keep the higher-precedence duplicate import with --fix',
-    flag: '--fix',
+    name: 'should keep the higher-precedence duplicate import with ' +
+      '--fix-suggestions',
+    flag: '--fix-suggestions',
     before: 'redundant-import-between.xsl',
     after: 'redundant-import-between.fixed.xsl',
   },
@@ -388,6 +396,11 @@ const UNCHANGED = [
     sheet: 'redundant-import.xsl',
   },
   {
+    name: 'cannot delete a redundant import with plain --fix',
+    flag: '--fix',
+    sheet: 'redundant-import.xsl',
+  },
+  {
     name: 'cannot strip a boolean() wrapper with --fix-dry-run',
     flag: '--fix-dry-run',
     sheet: 'redundant-boolean-call.xsl',
@@ -522,7 +535,7 @@ const DROPPED = [
   },
   {
     name: 'should drop the fixed redundant-import defect from the report',
-    flag: '--fix',
+    flag: '--fix-suggestions',
     sheet: 'redundant-import.xsl',
     check: 'redundant-import',
   },

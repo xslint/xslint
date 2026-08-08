@@ -103,15 +103,24 @@ const byCircularity = function(corpus) {
  * is exactly that, so an oddly formatted, single-quoted, or non-self-closing
  * import is reported but left untouched rather than wrongly cut. It is offered
  * only where every reference to that module uses one mechanism, which is what
- * `crossed` decides — the module stays imported by the reference left standing,
- * so the deletion is safe rather than a suggestion. What makes it safe is the
- * choice of reference it cuts. Import precedence is positional (XSLT 1.0
- * §2.6.2), so a module's effective level is the level of its last reference
- * and every earlier one is shadowed by it: cutting an earlier reference leaves
- * the survivors in the order they already stood, while cutting the last drops
- * the module below anything imported between the two, and `A` became `B` under
- * xsltproc on a stylesheet that only asked for its duplicate to be tidied
- * (#667).
+ * `crossed` decides — the module stays reachable through the reference left
+ * standing.
+ *
+ * Which reference that is follows from import precedence being positional
+ * (XSLT 1.0 §2.6.2): a module's level is the level of its last reference, so
+ * cutting the last one drops the module below anything referenced between the
+ * two, and `A` became `B` under xsltproc on a stylesheet that only asked for
+ * its duplicate to be tidied. Cutting an earlier one leaves the survivors in
+ * the order they already stood.
+ *
+ * That is enough for `xsl:include`, which creates no precedence level at all,
+ * so its deletion is safe. It is not enough for `xsl:import`, which creates
+ * one: the earlier reference is shadowed for template *selection* only, while
+ * `xsl:apply-imports` walks the chain and meets every level on it. A module
+ * imported twice therefore answers `AA` where once answers `A`, and no
+ * arrangement of the deletion preserves that — so the import half is a
+ * suggestion, and the tier forks on the mechanism rather than on the shape of
+ * the duplication (#667).
  * @param {Element} node - The duplicate import/include element
  * @return {{line: number, col: number, value: string, replacement: string}} -
  *  The fix
@@ -123,6 +132,7 @@ const removal = function(node) {
     value: `${' '.repeat(node.columnNumber - 1)}` +
       `<${node.nodeName} href="${node.getAttribute('href')}"/>\n`,
     replacement: '',
+    suggestion: node.localName === 'import',
   }
 }
 

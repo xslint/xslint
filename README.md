@@ -276,14 +276,13 @@ Today this covers ten checks:
   `exists($x)` and `count($x) = 0` becomes `empty($x)`; on 1.0 (where those
   functions don't exist), `boolean($x)` — or a bare `$x` in a whole `@test` —
   and `not($x)`.
-- `redundant-import` — a duplicate `xsl:import`/`xsl:include` of a module
-  already imported in the same stylesheet is removed; the module stays imported
-  by the *last* reference, which is the one that fixes its import precedence,
-  so the references cut are the earlier ones and nothing changes level. A
-  module reached *both* ways — imported and also
-  included — is reported without a fix, since `xsl:import` and `xsl:include`
-  differ in import precedence, so which of the two to drop is the author's
-  decision rather than a deletion the tool can make.
+- `redundant-import`, on an `xsl:include` — a repeated include of one module is
+  removed. An include creates no import-precedence level of its own, so the
+  repeat is pure noise and dropping it changes nothing. The `xsl:import` half is
+  a suggestion, below. A module reached *both* ways — imported and also
+  included — is reported without a fix at either tier, since `xsl:import` and
+  `xsl:include` differ in import precedence, so which of the two to drop is the
+  author's decision rather than a deletion the tool can make.
 - `starts-with-double-slash`, outside an `xsl:template` — the redundant leading
   `//` of a pattern is dropped: `match="//keyed"` on an `xsl:key` becomes
   `match="keyed"`. Only a template's pattern is ranked by priority, so on
@@ -322,6 +321,13 @@ Today this covers:
 - `incorrect-use-of-boolean-constants` — the string test `'true'`/`'false'`
   becomes `true()`/`false()`, which changes the truth value of a `'false'` test
   (a non-empty string is always true).
+- `redundant-import`, on an `xsl:import` — a repeated import of one module is
+  removed, and the reference cut is an earlier one, so the module keeps the
+  precedence its last reference gives it. A suggestion because no choice of
+  reference makes the deletion behaviour-preserving: importing a module twice
+  puts it at two precedence levels, and `xsl:apply-imports` (like 2.0's
+  `xsl:next-match`) walks that chain and meets it at both, so a module whose
+  rules reach back down it runs once per reference.
 - `select-starts-with-double-slash` — the leading `//` of a `@select` is
   anchored as `.//`: `select="//title"` becomes `select=".//title"`, scanning
   descendants of the context node instead of the whole document.

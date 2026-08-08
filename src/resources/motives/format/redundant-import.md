@@ -5,19 +5,40 @@ both references bring in the same templates, functions, and variables. At best
 it is noise; at worst it hides which reference a reader should reason about.
 Keep a single reference per module.
 
-Which one to keep is not a free choice, because import precedence is
-positional: XSLT 1.0 §2.6.2 ranks each `xsl:import` above everything declared
-before it, so a module's precedence is set by its *last* reference and every
-earlier one is shadowed by it. Where another module is imported in between, the
-two references sit on opposite sides of it and only one of them decides which
-module's definitions win. Drop an earlier reference and nothing moves; drop the
-last and the module falls below whatever stood between them.
+A repeated `xsl:import` is not simply noise, though, and removing one is not
+simply tidying. Import precedence is positional — XSLT 1.0 §2.6.2 ranks each
+`xsl:import` above everything declared before it — so importing one module
+twice puts that module at two precedence levels at once, and both of them are
+live. Two things follow, and they pull in opposite directions.
 
-Incorrect — `alpha` outranks `beta` here, and deleting the third line silently
-reverses that:
+The later reference is the one that decides which module wins. With another
+module imported in between, the two references sit on opposite sides of it, so
+`alpha` below overrides `beta`, and it would not if the third line were the one
+removed:
 
 ```xsl
-<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+  <xsl:import href="alpha.xsl"/>
+  <xsl:import href="beta.xsl"/>
+  <xsl:import href="alpha.xsl"/>
+</xsl:stylesheet>
+```
+
+The earlier reference is not idle either, because `xsl:apply-imports` walks
+*down* the precedence chain and meets the module at every level it occupies.
+Where `alpha.xsl` ends its rule in an `xsl:apply-imports`, that stylesheet emits
+`ABA` — `alpha` at the top level, then `beta`, then `alpha` again at the bottom
+one. Import it twice with nothing in between and the output is `AA` where a
+single import gives `A`. XSLT 2.0's `xsl:next-match` walks the same chain.
+
+So a duplicate `xsl:import` is a decision to make by hand, with the whole
+stylesheet's overriding in view. Where the module's rules do not reach back
+down the chain, one reference is enough:
+
+Incorrect:
+
+```xsl
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
   <xsl:import href="alpha.xsl"/>
   <xsl:import href="beta.xsl"/>
   <xsl:import href="alpha.xsl"/>
@@ -27,11 +48,16 @@ reverses that:
 Correct:
 
 ```xsl
-<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
   <xsl:import href="beta.xsl"/>
   <xsl:import href="alpha.xsl"/>
 </xsl:stylesheet>
 ```
+
+A repeated `xsl:include` carries none of this. An include has no precedence
+level of its own — the module's definitions land at the level of the stylesheet
+including it — so the chain `xsl:apply-imports` walks is the same whether the
+module is included once or twice, and the repeat really is only noise.
 
 The linter resolves each `@href` against the importing file's own directory, so
 two spellings that point at the same file (`lib/util.xsl` and `./lib/util.xsl`)
