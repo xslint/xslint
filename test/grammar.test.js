@@ -1,0 +1,230 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+ * SPDX-License-Identifier: MIT
+ */
+
+const {parsed} = require('../src/grammar')
+const {isValid} = require('../src/xpath')
+const assert = require('assert')
+
+/**
+ * Expressions XPath 3.1 has, each with the kind its tree comes out rooted at.
+ * Every one of them is handed to the engine as well, so a row cannot claim a
+ * spelling the processor would refuse.
+ * @type {Array.<{xpath: string, kind: string}>}
+ */
+const ACCEPTS = [
+  {xpath: 'title', kind: 'step'},
+  {xpath: '/', kind: 'path'},
+  {xpath: '//*', kind: 'path'},
+  {xpath: '@*', kind: 'step'},
+  {xpath: 'a/b//c', kind: 'path'},
+  {xpath: 'child::a/attribute::b', kind: 'path'},
+  {xpath: '../following-sibling::x', kind: 'path'},
+  {xpath: 'child::                           alpha', kind: 'step'},
+  {xpath: 'a:*', kind: 'step'},
+  {xpath: '*:a', kind: 'step'},
+  {xpath: 'text()', kind: 'step'},
+  {xpath: 'processing-instruction("x")', kind: 'step'},
+  {xpath: 'a[@b = "x"][2]', kind: 'step'},
+  {xpath: '$v[position() = 1]', kind: 'filter'},
+  {xpath: 'count(//a) > 0', kind: 'comparison'},
+  {xpath: 'not(//a)', kind: 'call'},
+  {xpath: 'concat("a", "b", "c")', kind: 'call'},
+  {xpath: '(1, 2, 3)', kind: 'parenthesized'},
+  {xpath: '()', kind: 'parenthesized'},
+  {xpath: '-$a', kind: 'unary'},
+  {xpath: '- -1', kind: 'unary'},
+  {xpath: '1 + 2 * 3 - 4 div 5 mod 6', kind: 'sum'},
+  {xpath: '3 idiv 2', kind: 'idiv'},
+  {xpath: '//a union //b', kind: 'intersect'},
+  {xpath: '//a | //b', kind: 'union'},
+  {xpath: '//a intersect //b', kind: 'intersect'},
+  {xpath: '//a except //b', kind: 'except'},
+  {xpath: '$a eq $b', kind: 'value-comparison'},
+  {xpath: '@a and @b or @c', kind: 'or'},
+  {xpath: 'for $x in //item return $x/@id', kind: 'for'},
+  {xpath: 'for $x in //a, $y in //b return $x', kind: 'for'},
+  {xpath: 'let $n := 1 return $n + 2', kind: 'let'},
+  {xpath: 'some $x in //a satisfies $x/@b', kind: 'some'},
+  {xpath: 'every $x in //a satisfies $x/@b = 1', kind: 'every'},
+  {xpath: 'if (@a) then 1 else 2', kind: 'conditional'},
+  {xpath: '$a instance of xs:string', kind: 'instance'},
+  {xpath: '$a instance of element(x)*', kind: 'instance'},
+  {xpath: '5 cast as xs:integer', kind: 'cast'},
+  {xpath: '5 castable as xs:integer', kind: 'castable'},
+  {xpath: '$a treat as node()', kind: 'treat'},
+  {xpath: 'document-node(element(root))', kind: 'step'},
+  {xpath: '1 to 10', kind: 'range'},
+  {xpath: '"a" || "b"', kind: 'concat'},
+  {xpath: '//a ! string()', kind: 'simple-map'},
+  {xpath: '$name => upper-case()', kind: 'arrow'},
+  {xpath: '$a => fn:concat("x", "y")', kind: 'arrow'},
+  {xpath: 'map {"a": 1, "b": 2}', kind: 'map'},
+  {xpath: 'map {}', kind: 'map'},
+  {xpath: 'array {1, 2}', kind: 'array'},
+  {xpath: 'array {}', kind: 'array'},
+  {xpath: '[1, 2, 3]', kind: 'array'},
+  {xpath: '[]', kind: 'array'},
+  {xpath: 'map{"aa":1}?aa', kind: 'lookup'},
+  {xpath: 'map{"aa":1}?*', kind: 'lookup'},
+  {xpath: '[1, 2]?1', kind: 'lookup'},
+  {xpath: '[[1]]?(1)', kind: 'lookup'},
+  {xpath: '?name', kind: 'lookup'},
+  {xpath: 'abs#1', kind: 'reference'},
+  {xpath: 'function ($x) { $x + 1 }', kind: 'inline'},
+  {xpath: 'function () { 1 }', kind: 'inline'},
+  {xpath: 'function () as xs:integer { 1 }', kind: 'inline'},
+  {xpath: 'function ($x as xs:integer) as xs:integer { $x }', kind: 'inline'},
+  {xpath: '$f(1, 2)', kind: 'apply'},
+  {xpath: '.', kind: 'context'},
+  {xpath: './a', kind: 'path'},
+  {xpath: 'function ($x, $y) { $x }', kind: 'inline'},
+  {xpath: '$a => $f()', kind: 'arrow'},
+  {xpath: '$a => (function ($x) { $x })()', kind: 'arrow'},
+  {xpath: 'concat("a", ?)', kind: 'call'},
+  {xpath: '$a, $b', kind: 'sequence'},
+  {xpath: '  @a  ', kind: 'step'},
+  {xpath: '(: leading :) @a', kind: 'step'},
+]
+
+/**
+ * Expressions the grammar refuses, with the offset the complaint has to point
+ * at. A refusal that lands on the wrong character is the failure this parser
+ * exists to end, so the offset is asserted rather than merely the refusal.
+ * @type {Array.<{name: string, xpath: string, at: number}>}
+ */
+const REFUSES = [
+  {name: 'a step that names no axis', xpath: 'child::', at: 7},
+  {name: 'a bracket that never closes', xpath: 'count(//a', at: 9},
+  {name: 'a predicate that never closes', xpath: 'a[1', at: 3},
+  {name: 'an operator with nothing behind it', xpath: '1 +', at: 3},
+  {name: 'a variable with no name', xpath: '$', at: 1},
+  {name: 'a conditional missing its else', xpath: 'if (1) then 2', at: 13},
+  {name: 'a binding missing its return', xpath: 'for $x in 1', at: 11},
+  {name: 'a let missing its value', xpath: 'let $x 1 return $x', at: 7},
+  {name: 'a quantifier missing satisfies', xpath: 'some $x in 1', at: 12},
+  {name: 'a map entry missing its value', xpath: 'map {"a"}', at: 8},
+  {name: 'a cast missing its as', xpath: '1 cast xs:integer', at: 7},
+  {name: 'a prefix with nothing behind it', xpath: 'a:', at: 2},
+  {name: 'text left over at the end', xpath: '@a @b', at: 3},
+  {name: 'nothing at all', xpath: '', at: 0},
+  {name: 'a kind test that never closes', xpath: 'element(x', at: 9},
+  {name: 'a function reference with no arity', xpath: 'abs#x', at: 4},
+]
+
+/**
+ * Constructs a version older than their own does not have, each with the
+ * version that does. A gate is a lower bound, so the second half of each row
+ * proves the construct is admitted where it belongs rather than merely refused
+ * where it does not.
+ * @type {Array.<{xpath: string, floor: string, below: string}>}
+ */
+const GATED = [
+  {xpath: '1 to 10', floor: '2.0', below: '1.0'},
+  {xpath: '$a instance of xs:string', floor: '2.0', below: '1.0'},
+  {xpath: 'if (@a) then 1 else 2', floor: '2.0', below: '1.0'},
+  {xpath: 'for $x in //a return $x', floor: '2.0', below: '1.0'},
+  {xpath: 'some $x in //a satisfies $x', floor: '2.0', below: '1.0'},
+  {xpath: 'every $x in //a satisfies $x', floor: '2.0', below: '1.0'},
+  {xpath: '1 cast as xs:integer', floor: '2.0', below: '1.0'},
+  {xpath: '1 castable as xs:integer', floor: '2.0', below: '1.0'},
+  {xpath: '$a treat as node()', floor: '2.0', below: '1.0'},
+  {xpath: '$a eq $b', floor: '2.0', below: '1.0'},
+  {xpath: '3 idiv 2', floor: '2.0', below: '1.0'},
+  {xpath: '//a intersect //b', floor: '2.0', below: '1.0'},
+  {xpath: '//a except //b', floor: '2.0', below: '1.0'},
+  {xpath: '//a ! b', floor: '3.0', below: '2.0'},
+  {xpath: '$a => f()', floor: '3.0', below: '2.0'},
+  {xpath: '"a" || "b"', floor: '3.0', below: '2.0'},
+  {xpath: 'let $x := 1 return $x', floor: '3.0', below: '2.0'},
+  {xpath: 'map {"a": 1}', floor: '3.0', below: '2.0'},
+  {xpath: 'array {1}', floor: '3.0', below: '2.0'},
+  {xpath: '[1]', floor: '3.0', below: '2.0'},
+  {xpath: 'abs#1', floor: '3.0', below: '2.0'},
+  {xpath: 'function () { 1 }', floor: '3.0', below: '2.0'},
+]
+
+/**
+ * The text a node's span slices back to, which is the property that makes a
+ * span a position rather than a guess at one.
+ * @param {object} answer - What `parsed` handed back
+ * @param {object} node - A node of its tree
+ * @return {string} - The text the node spans
+ */
+const sliced = function(answer, node) {
+  return answer.tokens
+    .slice(node.from, node.to).map((token) => token.value).join('')
+}
+
+describe('grammar', function() {
+  ACCEPTS.forEach(({xpath, kind}) => {
+    it(`reads ${JSON.stringify(xpath)} as a ${kind}`, function() {
+      assert.equal(parsed(xpath, '3.0').tree.kind, kind)
+    })
+  })
+  ACCEPTS.forEach(({xpath}) => {
+    it(`agrees with the engine about ${JSON.stringify(xpath)}`, function() {
+      assert.ok(isValid(xpath), `${xpath} is not valid XPath at all`)
+    })
+  })
+  REFUSES.forEach(({name, xpath, at}) => {
+    it(`refuses ${name}`, function() {
+      assert.deepEqual(
+        [parsed(xpath, '3.0').fault === '', parsed(xpath, '3.0').at],
+        [false, at],
+        `${xpath} was not refused where it goes wrong`,
+      )
+    })
+  })
+  GATED.forEach(({xpath, floor, below}) => {
+    it(`admits ${JSON.stringify(xpath)} only from ${floor}`, function() {
+      assert.deepEqual(
+        [parsed(xpath, floor).fault === '', parsed(xpath, below).fault === ''],
+        [true, false],
+        `${xpath} is not gated at ${floor}`,
+      )
+    })
+  })
+  it('carries every token, trivia and all, back to the caller', function() {
+    const xpath = '  @a (: why :) and  @b  '
+    assert.equal(
+      parsed(xpath, '3.0').tokens.map((token) => token.value).join(''),
+      xpath,
+      'the token stream does not reproduce the expression it came from',
+    )
+  })
+  it('spans a node over the text it was built from', function() {
+    const answer = parsed('count(//a) > 0', '3.0')
+    assert.equal(
+      sliced(answer, answer.tree.children[0]), 'count(//a)',
+      'a span does not slice back to the text it stands for',
+    )
+  })
+  it('spans a predicate over its own brackets', function() {
+    const answer = parsed('a[@b]', '3.0')
+    assert.equal(
+      sliced(answer, answer.tree.children[0]), '[@b]',
+      'a predicate span does not cover the predicate',
+    )
+  })
+  it('leaves a comment out of what a step spans', function() {
+    const answer = parsed('(: first :) @a', '3.0')
+    assert.equal(
+      sliced(answer, answer.tree), '@a',
+      'a step swallowed the comment standing in front of it',
+    )
+  })
+  it('reads a name whose spelling is an operator as a step', function() {
+    assert.equal(
+      parsed('a/or', '3.0').tree.children.length, 2,
+      'a name spelled like an operator was not read as a step',
+    )
+  })
+  it('cannot swallow a bug as a refusal', function() {
+    assert.throws(
+      () => parsed(undefined, '3.0'),
+      'an error that is not a refusal was reported as one',
+    )
+  })
+})
