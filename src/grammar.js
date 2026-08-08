@@ -4,7 +4,7 @@
  */
 
 const {tokenized, TOKENS} = require('./tokens')
-const {since} = require('./xsl-version')
+const {since, MODERN} = require('./xsl-version')
 
 /**
  * The token kinds that carry no meaning to the grammar and every meaning to the
@@ -519,7 +519,7 @@ const stepped = function(cursor) {
   } else if (sees(cursor, TOKENS.AT)) {
     take(cursor)
     tested(cursor)
-  } else if (sees(cursor, TOKENS.DOUBLE_DOT)) {
+  } else if (sees(cursor, TOKENS.DOUBLE_DOT) || sees(cursor, TOKENS.DOT)) {
     take(cursor)
   } else {
     tested(cursor)
@@ -536,8 +536,43 @@ const stepped = function(cursor) {
 const steps = function(cursor) {
   const token = ahead(cursor)
   return AXES.includes(token.type) || token.type === TOKENS.AT ||
-    token.type === TOKENS.DOUBLE_DOT || token.type === TOKENS.MULTI ||
-    (token.type === TOKENS.NAME && !KEYWORDS.includes(token.value))
+    token.type === TOKENS.DOUBLE_DOT || token.type === TOKENS.DOT ||
+    token.type === TOKENS.MULTI ||
+    (token.type === TOKENS.NAME && !KEYWORDS.includes(token.value)) ||
+    (since(cursor.version, MODERN) && OPENERS.includes(token.type))
+}
+
+/**
+ * The token kinds a primary expression may open with that no axis step does.
+ * From 2.0 a step is `PostfixExpr | AxisStep`, so each of these opens a step as
+ * readily as a name does; in 1.0 a `FilterExpr` may only open a path, and none
+ * of them stands after a slash.
+ * @type {Array.<string>}
+ */
+const OPENERS = [
+  TOKENS.LPAREN, TOKENS.DOLLAR, TOKENS.STRING, TOKENS.NUMBER,
+  TOKENS.LBRACKET, TOKENS.LOOKUP,
+]
+
+/**
+ * One part of a path after the slash that opened it. XPath 1.0 admits an axis
+ * step and nothing else there — its `PathExpr` lets a `FilterExpr` open a path
+ * and stand nowhere after it — while 2.0 generalised the step itself to
+ * `StepExpr ::= PostfixExpr | AxisStep`, which puts a parenthesized expression,
+ * a variable and a call at every position a step may take (#711). The version
+ * is already in hand, so the older shape is kept where it belongs rather than
+ * imposed on the versions that outgrew it.
+ * @param {object} cursor - The cursor
+ * @return {object} - The node
+ */
+const parted = function(cursor) {
+  let node = undefined
+  if (since(cursor.version, MODERN)) {
+    node = postfixed(cursor)
+  } else {
+    node = stepped(cursor)
+  }
+  return node
 }
 
 /**
@@ -555,7 +590,7 @@ const walked = function(cursor) {
     opened = true
     take(cursor)
     if (steps(cursor)) {
-      parts.push(stepped(cursor))
+      parts.push(parted(cursor))
     }
   } else {
     parts.push(postfixed(cursor))
@@ -564,7 +599,7 @@ const walked = function(cursor) {
   while (sees(cursor, TOKENS.SLASH) || sees(cursor, TOKENS.DOUBLE_SLASH)) {
     rooted = true
     take(cursor)
-    parts.push(stepped(cursor))
+    parts.push(parted(cursor))
   }
   let node = shaped('path', from, cursor, parts)
   if (!rooted && parts.length === 1) {
