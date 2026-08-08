@@ -353,5 +353,6 @@ module.exports = {
   nodes,
   strings,
   isValid,
+  compiles,
   squeezed,
 }
