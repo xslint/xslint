@@ -190,6 +190,40 @@ const grown = function(depth) {
  */
 const SWEPT = [1, 2, 3, 4].flatMap((depth) => grown(depth))
 
+/**
+ * One expression per squeeze, each paired with the gap that squeeze closes.
+ * The sweep proves the retry changes no kind, which is worth nothing about a
+ * squeeze it never reaches, and the atoms it reaches with are a list somebody
+ * may shorten: `namespace` was missing until review noticed the normalisation
+ * beside it could not fire, and the count of respelled expressions stayed
+ * healthy throughout, so nothing here said so.
+ *
+ * A row is spelled out rather than derived, because what a squeeze matches is
+ * `src/xpath.js`'s to say and a second copy of it here is the drift #664 is
+ * about. Each must be a sequence the sweep generates and one the retry
+ * rewrites, which is what pins the atoms: `node (a` holds the only atom that
+ * exercises a node test, `(a )` the only one that exercises a closing bracket,
+ * and no token kind tells either of them from an ordinary name.
+ * @type {Array.<Array.<string>>}
+ */
+const REWRITTEN = [
+  ['namespace::a', 'the axis the engine has no parse for'],
+  ['child ::a', 'an axis spaced from its separator'],
+  ['node (a', 'a node test spaced from its bracket'],
+  ['(a )', 'a gap in front of the bracket it closes'],
+]
+
+/**
+ * The kinds the sweep must be able to see, as opposed to rewrite. A merge that
+ * spelled one of them out of a gap is the harm #641 reported, so a sweep that
+ * cannot hold either in the first place would answer about nothing. They are
+ * read as raw token types rather than through `kinds`, since that normalises a
+ * kind away and a guard asking a normalised stream whether a kind is reachable
+ * would be answering about its own arithmetic.
+ * @type {Array.<string>}
+ */
+const SEEN = [TOKENS.COMMENT, TOKENS.STRING]
+
 describe('xpath', function() {
   it('cannot change the kinds an expression is made of', function() {
     assert.deepEqual(
@@ -203,6 +237,24 @@ describe('xpath', function() {
       SWEPT.filter((one) => squeezed(one) !== one),
       [],
       'nothing swept is respelled, so it says nothing about respelling',
+    )
+  })
+  it('cannot leave a squeeze nothing in the sweep to rewrite', function() {
+    assert.deepEqual(
+      REWRITTEN.filter(
+        ([one]) => !SWEPT.includes(one) || squeezed(one) === one,
+      ).map(([one, gap]) => `${one} (${gap})`),
+      [],
+      'a squeeze has no expression in the sweep, so it is swept no times',
+    )
+  })
+  it('cannot leave the sweep blind to a kind it answers about', function() {
+    assert.deepEqual(
+      SEEN.filter((kind) => !SWEPT.some(
+        (one) => tokenized(one).some((token) => token.type === kind),
+      )),
+      [],
+      'no expression swept holds a kind the sweep claims to speak for',
     )
   })
   it('accepts a syntactically valid expression', function() {
