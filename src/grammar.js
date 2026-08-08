@@ -164,13 +164,14 @@ const described = function(token) {
  */
 const offsetOf = function(cursor) {
   const tokens = cursor.tokens
+  const found = significant(cursor)
   let at = 0
   if (tokens.length) {
     const last = tokens[tokens.length - 1]
     at = last.start + last.value.length
   }
-  if (cursor.at < tokens.length) {
-    at = tokens[significant(cursor)].start
+  if (found < tokens.length) {
+    at = tokens[found].start
   }
   return at
 }

@@ -109,6 +109,8 @@ const REFUSES = [
   {name: 'a prefix with nothing behind it', xpath: 'a:', at: 2},
   {name: 'text left over at the end', xpath: '@a @b', at: 3},
   {name: 'nothing at all', xpath: '', at: 0},
+  {name: 'nothing but a gap', xpath: ' ', at: 1},
+  {name: 'nothing but a comment', xpath: '(: c :)', at: 7},
   {name: 'a kind test that never closes', xpath: 'element(x', at: 9},
   {name: 'a function reference with no arity', xpath: 'abs#x', at: 4},
 ]
@@ -142,6 +144,8 @@ const GATED = [
   {xpath: 'array {1}', floor: '3.0', below: '2.0'},
   {xpath: '[1]', floor: '3.0', below: '2.0'},
   {xpath: 'abs#1', floor: '3.0', below: '2.0'},
+  {xpath: '?a', floor: '3.0', below: '2.0'},
+  {xpath: '$m?a', floor: '3.0', below: '2.0'},
   {xpath: 'function () { 1 }', floor: '3.0', below: '2.0'},
 ]
 
