@@ -53,6 +53,11 @@ const SCANS = [
       ['a[.]', TOKENS.DOT],
       ['a/..', TOKENS.DOUBLE_DOT],
       ['foo ::bar', TOKENS.COLONS],
+      ['foo::bar', TOKENS.COLONS],
+      ['a:b::c', TOKENS.COLONS],
+      ['child::a::b', TOKENS.COLONS],
+      ['$v::a', TOKENS.COLONS],
+      ['namespace-node::a', TOKENS.COLONS],
     ],
   },
   {
@@ -224,6 +229,22 @@ const SCANS = [
 ]
 
 /**
+ * Expressions whose axis separator stands against a name, each paired with the
+ * same expression spelling a gap in front of the separator. XPath lets the gap
+ * stand, so the two spell one thing and must arrive as one stream of kinds. It
+ * is the kinds that are compared and not the values, since an axis token folds
+ * the gap in front of its own `::` and so carries it in its text either way.
+ * @type {Array.<Array.<string>>}
+ */
+const SPACED = [
+  ['a::b', 'a ::b'],
+  ['foo::bar', 'foo ::bar'],
+  ['a:b::c', 'a:b ::c'],
+  ['namespace-node::a', 'namespace-node ::a'],
+  ['child::a::b', 'child::a ::b'],
+]
+
+/**
  * Fragments assembled into random expressions for the round-trip properties.
  * @type {Array.<string>}
  */
@@ -266,6 +287,17 @@ describe('tokens', function() {
       tokenized('child ::x').find((token) => token.type === TOKENS.CHILD).value,
       'child ::',
     )
+  })
+  SPACED.forEach(([tight, spaced]) => {
+    it(`reads ${tight} as the kinds ${spaced} reads`, function() {
+      assert.deepEqual(
+        tokenized(tight).map((token) => token.type),
+        tokenized(spaced)
+          .map((token) => token.type)
+          .filter((kind) => kind !== TOKENS.WHITESPACE),
+        `${tight} and ${spaced} spell one expression and arrive as two`,
+      )
+    })
   })
   it('keeps a string literal whole despite the spaces inside it', function() {
     assert.ok(
