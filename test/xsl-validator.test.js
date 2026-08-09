@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {validate} = require('../src/xsl-validator')
+const {validate} = require('../src/validators/xsl-validator')
 const assert = require('assert')
 
 /**

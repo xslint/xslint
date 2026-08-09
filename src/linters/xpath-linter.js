@@ -3,11 +3,11 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {nodes, isValid} = require('./xpath')
-const {FIXERS} = require('./fixers')
-const {expressionsOf} = require('./attributes')
-const {kinds} = require('./resources/checks.json')
-const {logger} = require('./logger')
+const {nodes, isValid} = require('../xpath')
+const {FIXERS} = require('../fixers')
+const {expressionsOf} = require('../attributes')
+const {kinds} = require('../resources/checks.json')
+const {logger} = require('../logger')
 
 /**
  * Xpath packs: the name suppressions match against and the rule the linter

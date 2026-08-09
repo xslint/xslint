@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {lintByResultNamespace} = require('../src/result-namespace-linter')
+const {lintByResultNamespace} = require('../src/linters/result-namespace-linter')
 const {allFilesFrom, xml, yaml} = require('../src/helpers')
 const path = require('path')
 const assert = require('assert')

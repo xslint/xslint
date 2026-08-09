@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {lintByName} = require('../src/name-linter')
+const {lintByName} = require('../src/linters/name-linter')
 const {allFilesFrom, xml, yaml} = require('../src/helpers')
 const path = require('path')
 const assert = require('assert')

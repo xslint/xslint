@@ -3,12 +3,12 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {isValid} = require('./xpath')
-const {ATTRIBUTES, PATTERNS} = require('./attributes')
-const {walked} = require('./tree')
-const {XSLT} = require('./xsl-version')
-const {kinds} = require('./resources/checks.json')
-const {logger} = require('./logger')
+const {isValid} = require('../xpath')
+const {ATTRIBUTES, PATTERNS} = require('../attributes')
+const {walked} = require('../tree')
+const {XSLT} = require('../xsl-version')
+const {kinds} = require('../resources/checks.json')
+const {logger} = require('../logger')
 
 /**
  * Name of the check this validator owns.
