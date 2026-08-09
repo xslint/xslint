@@ -291,6 +291,15 @@ const ENDS = [
 const OPAQUE = [TOKENS.STRING, TOKENS.UNCLOSED, TOKENS.COMMENT]
 
 /**
+ * The kind each axis is lexed as, which is what makes one recognisable behind
+ * another. Derived from {@link AXES} rather than written out again, and derived
+ * once: the question is asked of every token, so building the list per token
+ * put an array per token behind a scan that allocates none.
+ * @type {Array.<string>}
+ */
+const AXIS_KINDS = Object.values(AXES)
+
+/**
  * Whether a comment opens at given offset.
  * @param {string} xpath - Xpath expression
  * @param {number} at - Offset to test
@@ -368,16 +377,35 @@ const afterName = function(xpath, start) {
  * and this had to read the last character of it to guess what had ended — a
  * guess only `.` and `..` ever needed, and neither needs it now that each has a
  * kind `ENDS` can name.
- * @param {Array.<{type: string, value: string}>} tokens - Tokens so far
+ * @param {?{type: string, value: string}} last - The last solid token
  * @return {boolean} - True when an operator may stand here
  */
-const operates = function(tokens) {
-  const solid = tokens.filter(
-    (token) => token.type !== TOKENS.WHITESPACE &&
-      token.type !== TOKENS.COMMENT,
-  )
-  const last = solid[solid.length - 1]
+const operates = function(last) {
   return last !== undefined && ENDS.includes(last.type)
+}
+
+/**
+ * Whether an axis separator is the last thing lexed, so what stands next is a
+ * node test and cannot open an axis of its own. After a separator the grammar
+ * admits a NodeTest and nothing else, so a name there is the element it names
+ * however it is spelled — `child` behind one is the element `child`.
+ *
+ * The character walk in {@link opensAxis} cannot answer this, and answered it
+ * by accident: it asked `spelling` whether a name was already in progress,
+ * which counts a `:` as a name character, so `child::child::b` walked back over
+ * the separator and got the right stream for the wrong reason while
+ * `child:: child::b` stopped at the gap and opened a second axis. One
+ * expression arrived as two streams, told apart by a space (#709). The question
+ * is about what precedes rather than about characters, which is `operates`'s
+ * question, so it is answered the same way, in the same place, and from the
+ * same value — the token itself rather than the list it came from, since the
+ * question is asked of every token and deriving the last one from the whole
+ * list each time is an array per token (#709).
+ * @param {?{type: string, value: string}} last - The last solid token
+ * @return {boolean} - True when it is an axis
+ */
+const separates = function(last) {
+  return last !== undefined && AXIS_KINDS.includes(last.type)
 }
 
 /**
@@ -608,15 +636,22 @@ const afterWhitespace = function(xpath, start) {
  * Split an XPath expression into positioned tokens, preserving whitespace and
  * comments so formatting checks can reason over the original text. Each token
  * carries its type, raw value, and the offset where it starts.
+ *
+ * Two of the decisions read what came before rather than what stands here —
+ * whether a word is an operator, and whether a name may open an axis — and both
+ * want the last token that is not trivia. It is carried forward as the tokens
+ * are pushed, because whitespace and comments are what they must not see and
+ * the scan already knows which it just emitted.
  * @param {string} xpath - Xpath expression
  * @return {Array.<{type: string, value: string, start: number}>} - Tokens
  */
 const tokenized = function(xpath) {
   const tokens = []
+  let last
   let at = 0
   while (at < xpath.length) {
     const start = at
-    const axis = opensAxis(xpath, at)
+    const axis = !separates(last) && opensAxis(xpath, at)
     const more = opensMore(xpath, at)
     const func = opensUserFunction(xpath, at)
     let type
@@ -651,7 +686,7 @@ const tokenized = function(xpath) {
       const word = WORDS.includes(name) ||
         (spelled !== name && MORE[spelled] !== undefined)
       type = TOKENS.NAME
-      if (word && operates(tokens)) {
+      if (word && operates(last)) {
         type = {...DOUBLE, ...TRIPLE, ...MORE}[spelled]
       }
       if (type === TOKENS.NAME) {
@@ -669,7 +704,11 @@ const tokenized = function(xpath) {
       type = TOKENS.OTHER
       at = afterOther(xpath, at)
     }
-    tokens.push({type: type, value: xpath.slice(start, at), start: start})
+    const token = {type: type, value: xpath.slice(start, at), start: start}
+    tokens.push(token)
+    if (type !== TOKENS.WHITESPACE && type !== TOKENS.COMMENT) {
+      last = token
+    }
   }
   return tokens
 }

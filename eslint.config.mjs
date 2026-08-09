@@ -115,6 +115,7 @@ export default defineConfig([
       "local/no-redundant-return-variable": "error",
       "local/no-missing-arguments": "error",
       "local/no-multiple-returns": "error",
+      "local/no-orphan-docblock": "error",
       "valid-jsdoc": "off",
       "require-jsdoc": "off",
       semi: ["error", "never"],

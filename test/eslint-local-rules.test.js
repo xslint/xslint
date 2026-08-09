@@ -106,6 +106,36 @@ tester.run(
 )
 
 tester.run(
+  'no-orphan-docblock',
+  local.rules['no-orphan-docblock'],
+  {
+    valid: [
+      '/** One. */\nconst one = 1',
+      '/** One. */\nconst one = 1\n/** Two. */\nconst two = 2',
+      '/* Plain. */\n/* Also plain. */\nconst one = 1',
+      '/*\n * A licence header, over two lines.\n */\n/** One. */\nconst one = 1',
+      '/** One. */\n// a line comment\nconst one = 1',
+      '/** Only one. */\nconst one = 1\n// trailing',
+      'const one = 1',
+    ],
+    invalid: [
+      {
+        code: '/** Orphan. */\n/** Real. */\nconst one = 1',
+        errors: [{messageId: 'orphan'}],
+      },
+      {
+        code: '/** One. */\nconst one = 1\n/** Orphan. */\n/** Real. */\nconst two = 2',
+        errors: [{messageId: 'orphan'}],
+      },
+      {
+        code: '/** First. */\n/** Second. */\n/** Real. */\nconst one = 1',
+        errors: [{messageId: 'orphan'}, {messageId: 'orphan'}],
+      },
+    ],
+  },
+)
+
+tester.run(
   'no-multiple-returns',
   local.rules['no-multiple-returns'],
   {
