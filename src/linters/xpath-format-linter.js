@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {tokenized, TOKENS, GAP} = require('../tokens')
+const {tokenized, TOKENS, OPAQUE, GAP} = require('../tokens')
 const {wholeOf} = require('../attributes')
 const {metaOf, suppressed, defect, rawly} = require('../checks')
 const {skip} = require('../source')
@@ -49,7 +49,7 @@ const INTERNAL = new RegExp(`${GAP}{2,}`)
  */
 const inside = function(token) {
   let run = null
-  if (token.type !== TOKENS.STRING && token.type !== TOKENS.COMMENT) {
+  if (!OPAQUE.includes(token.type)) {
     run = INTERNAL.exec(token.value)
   }
   let held = null

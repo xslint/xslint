@@ -24,6 +24,7 @@
  */
 const TOKENS = {
   STRING: 'string',
+  UNCLOSED: 'unclosed',
   COMMENT: 'comment',
   WHITESPACE: 'whitespace',
   NUMBER: 'number',
@@ -273,6 +274,23 @@ const ENDS = [
 ]
 
 /**
+ * The kinds whose text is not expression text, so a scan looking for a
+ * construct must not look inside one: it would read a call, an axis or a
+ * comparison that no processor ever evaluates. `UNCLOSED` belongs here for the
+ * same reason `STRING` does — the author opened a literal, and what follows the
+ * quote is its content whether or not the quote ever came back. Leaving it out
+ * made `redundant-double-negation` and `count-compared-to-zero` report inside
+ * `select="'not(not(x))"`, defects in text nobody reads (#708).
+ *
+ * It is one list rather than one per reader, because two readers of the same
+ * question drift: `masked` in `src/expressions.js` and `inside` in
+ * `src/linters/xpath-format-linter.js` each spelled it out, so a kind added to
+ * either was a kind missing from the other.
+ * @type {Array.<string>}
+ */
+const OPAQUE = [TOKENS.STRING, TOKENS.UNCLOSED, TOKENS.COMMENT]
+
+/**
  * Whether a comment opens at given offset.
  * @param {string} xpath - Xpath expression
  * @param {number} at - Offset to test
@@ -451,26 +469,36 @@ const opensMore = function(xpath, at) {
 }
 
 /**
- * Offset just past the string literal opening at given quote. A doubled quote
- * inside the literal escapes the quote and does not end it.
+ * Offset just past the string literal opening at given quote, and whether the
+ * quote that opened it ever came back. A doubled quote inside the literal
+ * escapes the quote and does not end it.
+ *
+ * The second half is what tells a `STRING` from an `UNCLOSED`. The walk ran off
+ * the end and said nothing about it until #708, so `'unclosed` arrived as a
+ * finished literal and the grammar accepted an expression that has no closing
+ * quote — the lexer inventing the character the author did not write, which is
+ * the same fault as reading `=>` as two operators (#685): a stream read wrongly
+ * rather than not at all, with nothing to announce.
  * @param {string} xpath - Xpath expression
  * @param {number} start - Offset of the opening quote
- * @return {number} - Offset just past the closing quote
+ * @return {{at: number, closed: boolean}} - Offset just past the literal, and
+ *  whether a closing quote stood there
  */
 const afterString = function(xpath, start) {
   const quote = xpath[start]
   let at = start + 1
-  while (at < xpath.length) {
+  let closed = false
+  while (!closed && at < xpath.length) {
     if (xpath[at] === quote && xpath[at + 1] === quote) {
       at += 2
     } else if (xpath[at] === quote) {
       at += 1
-      break
+      closed = true
     } else {
       at += 1
     }
   }
-  return at
+  return {at: at, closed: closed}
 }
 
 /**
@@ -593,8 +621,12 @@ const tokenized = function(xpath) {
     const func = opensUserFunction(xpath, at)
     let type
     if (QUOTES.includes(xpath[at])) {
-      type = TOKENS.STRING
-      at = afterString(xpath, at)
+      const literal = afterString(xpath, at)
+      type = TOKENS.UNCLOSED
+      if (literal.closed) {
+        type = TOKENS.STRING
+      }
+      at = literal.at
     } else if (opensComment(xpath, at)) {
       type = TOKENS.COMMENT
       at = afterComment(xpath, at)
@@ -646,6 +678,7 @@ module.exports = {
   tokenized,
   spelling,
   TOKENS,
+  OPAQUE,
   WHITESPACE,
   GAP,
   GAPS,

@@ -143,6 +143,12 @@ export default defineConfig([
             "CallExpression[callee.name='require'][arguments.0.value=/-(linter|validator)(\\.js)?$/], ImportDeclaration[source.value=/-(linter|validator)(\\.js)?$/], ImportExpression[source.value=/-(linter|validator)(\\.js)?$/]",
           message:
             "Only src/xslint.js wires a stage: no linter or validator reads another, and no core module reaches into the pipeline it exists to serve (#715)"
+        },
+        {
+          selector:
+            "ArrayExpression:has(> MemberExpression[object.name='TOKENS'][property.name='STRING']):has(> MemberExpression[object.name='TOKENS'][property.name='COMMENT']):not(:has(> MemberExpression[object.name='TOKENS'][property.name='UNCLOSED']))",
+          message:
+            "Which kinds a scan must read over is OPAQUE in src/tokens.js, never a second list beside it: one that forgot the literal which never closes let a check report inside a string (#708)"
         }
       ]
     }
