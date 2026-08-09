@@ -48,12 +48,54 @@ const decoded = function(content, from, to) {
 }
 
 /**
+ * The offset an attribute's own spelling begins at, which is where its name
+ * stands rather than where xmldom reports it. The parser hands back the
+ * opening delimiter of the value, so the walk goes backwards from there:
+ * across the gap in front of the quote, over the `=`, across the gap in front
+ * of that, and then over the name itself.
+ * @param {Node} attribute - The attribute node
+ * @param {string} content - Raw source text of the file it stands in
+ * @return {number} - Zero-based offset of the name's first character
+ */
+const named = function(attribute, content) {
+  return opens(
+    content,
+    opens(
+      content,
+      offsetAt(content, attribute.lineNumber, attribute.columnNumber),
+    ) - 1,
+  ) - attribute.name.length
+}
+
+/**
+ * Where an attribute stands, in the line and column a defect is reported in.
+ *
+ * Arithmetic over the name answered this until #681 — `columnNumber` less the
+ * name's length less one — which lands on the first letter only where the
+ * source spells the attribute `name="value"` exactly. Every gap the spelling
+ * is allowed moves the delimiter while the name stays put, so
+ * `xmlns:dead = "urn:dead"` was reported two columns right of itself and a
+ * declaration standing on its own line six. That is the invention #594 removed
+ * from {@link deletion} one layer down, left behind in the defect beside it:
+ * the fix cut the right characters while the report pointed elsewhere, and the
+ * two disagreed about where one attribute was.
+ * @param {Node} attribute - The attribute node
+ * @param {string} content - Raw source text of the file it stands in
+ * @return {{line: number, pos: number}} - Where its name begins
+ */
+const standsAt = function(attribute, content) {
+  return placeAt(content, named(attribute, content))
+}
+
+/**
  * A fix that deletes an attribute, leading gap and all. The span is read from
  * the source rather than rebuilt from the attribute. xmldom reports an
  * attribute at its opening delimiter, so the delimiter is whichever quote
  * stands there and the value ends where that same quote returns — XML forbids
  * it inside — while the walk backwards over the `=` and the name crosses gaps
- * of any width, a line ending among them.
+ * of any width, a line ending among them. It reaches one gap further back than
+ * {@link standsAt} does, because a deletion that left the gap in front of the
+ * name behind would close two attributes up against each other.
  *
  * Rebuilding the text as ` name="value"` assumed one spelling of three separate
  * things, and `src/fixer.js` applies a fix only where the source decodes to its
@@ -69,10 +111,7 @@ const decoded = function(content, from, to) {
  */
 const deletion = function(attribute, content) {
   const quote = offsetAt(content, attribute.lineNumber, attribute.columnNumber)
-  const start = opens(
-    content,
-    opens(content, opens(content, quote) - 1) - attribute.name.length,
-  )
+  const start = opens(content, named(attribute, content))
   const where = placeAt(content, start)
   return {
     line: where.line,
@@ -86,4 +125,5 @@ const deletion = function(attribute, content) {
 
 module.exports = {
   deletion,
+  standsAt,
 }

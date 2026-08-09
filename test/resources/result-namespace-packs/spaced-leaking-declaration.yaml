@@ -1,0 +1,18 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: leaking-result-namespace
+found:
+  amount: 1
+  positions: [ [ 3, 3 ] ]
+  fixes: [ " exclude-result-prefixes=\"xs\"" ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+    xmlns:xs  =  "http://www.w3.org/2001/XMLSchema" version="2.0">
+    <xsl:template match="/">
+      <object>
+        <xsl:element name="{xs:string(.)}"/>
+      </object>
+    </xsl:template>
+  </xsl:stylesheet>
