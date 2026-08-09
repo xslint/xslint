@@ -120,14 +120,14 @@ const byCircularity = function(corpus) {
  * module at every level it occupies, so importing one twice answers `AA` where
  * importing it once answers `A`, and no choice of reference preserves that.
  *
- * An `xsl:include` creates no level of its own, but it copies the includee's
- * children in, and those children include its own `xsl:import` elements. So a
+ * An `xsl:include` creates no level of its own, but it copies the included
+ * module's children in, and those hold its own `xsl:import` elements. So a
  * module included twice brings its imports in twice, at two levels, and the
  * same traversal walks both — a stylesheet including a `gamma` that imports
  * `delta` answers `GDD`, and `GD` once the duplicate include is cut.
  *
  * Reading the difference off the corpus was the tempting alternative and does
- * not work: the includee is usually not in the corpus at all — none of this
+ * not work: the module included is usually outside the corpus — none of this
  * repository's own fixtures resolve — so the safe tier would depend on which
  * files the caller happened to pass rather than on the stylesheet (#667).
  * @param {Element} node - The duplicate import/include element

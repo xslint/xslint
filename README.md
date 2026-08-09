@@ -321,11 +321,11 @@ Today this covers:
   puts it at two precedence levels, and `xsl:apply-imports` (like 2.0's
   `xsl:next-match`) walks that chain and meets it at both, so a module whose
   rules reach back down it runs once per reference. An `xsl:include` creates no
-  level of its own but copies in the includee's own `xsl:import` elements, so a
-  repeated include duplicates those the same way. A module reached *both*
-  ways — imported and also included — is reported without a fix at all, since
-  which of the two to drop is a decision about precedence rather than a
-  deletion the tool can make.
+  level of its own but copies in the included module's own `xsl:import`
+  elements, so a repeated include duplicates those the same way. A module
+  reached *both* ways — imported and also included — is reported without a fix
+  at all, since which of the two to drop is a decision about precedence rather
+  than a deletion the tool can make.
 - `select-starts-with-double-slash` — the leading `//` of a `@select` is
   anchored as `.//`: `select="//title"` becomes `select=".//title"`, scanning
   descendants of the context node instead of the whole document.
