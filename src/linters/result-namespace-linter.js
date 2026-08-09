@@ -4,6 +4,7 @@
  */
 
 const {metaOf, suppressed} = require('../checks')
+const {standsAt} = require('../fixes')
 const {GAPS} = require('../tokens')
 const {logger} = require('../logger')
 
@@ -179,8 +180,11 @@ const exclusion = function(root, prefix) {
  * prefix is not the XSLT one, not already excluded (nor `#all`), not an
  * extension prefix, absent from the serialized result, yet used somewhere — so
  * it leaks. Text-only stylesheets are skipped, since they serialize no
- * namespaces.
- * @param {Array.<{file: string, xsl: Document}>} corpus - Parsed stylesheets
+ * namespaces. Where the declaration stands is asked of the source through
+ * `standsAt`, not worked out from the attribute's name, so a gap around its
+ * `=` no longer carries the report along with the delimiter (#681).
+ * @param {Array.<{file: string, content: string, xsl: Document}>} corpus -
+ *  Parsed stylesheets
  * @param {Array.<string>} suppressions - Array of suppressed checks
  * @return {{name: string, severity: string, message: string, file: string,
  *  line: number, pos: number}[]} - Defects found
@@ -189,7 +193,7 @@ const lintByResultNamespace = function(corpus, suppressions = []) {
   logger.debug(`Result-namespace linting started`)
   const defects = []
   if (!suppressed(CHECK, suppressions)) {
-    for (const {file, xsl} of corpus) {
+    for (const {file, content, xsl} of corpus) {
       const root = xsl.documentElement
       const elements = Array.from(xsl.getElementsByTagName('*'))
       const extension = new Set(
@@ -213,13 +217,14 @@ const lintByResultNamespace = function(corpus, suppressions = []) {
         })
       }
       for (const attribute of leaking) {
+        const where = standsAt(attribute, content)
         defects.push({
           name: CHECK,
           severity: META.severity,
           message: META.message,
           file: file,
-          line: attribute.lineNumber,
-          pos: attribute.columnNumber - attribute.name.length - 1,
+          line: where.line,
+          pos: where.pos,
           ...(leaking.length === 1 &&
             {fix: exclusion(root, declared(attribute.name))}),
         })

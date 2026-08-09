@@ -10,8 +10,9 @@ inputs:
   - |-
     <?xml version="1.0"?>
     <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="a">
-      <xsl:include href="shared.xsl"/>
-      <xsl:include href="shared.xsl"/>
+      <xsl:import href="alpha.xsl"/>
+      <xsl:import href="beta.xsl"/>
+      <xsl:import href="alpha.xsl"/>
       <xsl:template match="/">
         <xsl:value-of select="."/>
       </xsl:template>

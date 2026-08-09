@@ -97,17 +97,39 @@ const byCircularity = function(corpus) {
 }
 
 /**
- * A safe fix that deletes a redundant import — its whole line, reconstructed
+ * A suggested fix that deletes a redundant import — its whole line, rebuilt
  * from the element as its indentation, the self-closing tag with its single
  * `href`, and the trailing newline. The fixer applies it only when the source
  * is exactly that, so an oddly formatted, single-quoted, or non-self-closing
  * import is reported but left untouched rather than wrongly cut. It is offered
  * only where every reference to that module uses one mechanism, which is what
- * `crossed` decides — the module stays imported by the reference left standing,
- * so the deletion is safe rather than a suggestion. Safe there is not safe
- * everywhere: import precedence is positional, so where an import of another
- * module stands between two imports of this one, cutting the later of the two
- * drops this module below that one and can change the output (#667).
+ * `crossed` decides — the module stays reachable through the reference left
+ * standing.
+ *
+ * Which reference that is follows from import precedence being positional
+ * (XSLT 1.0 §2.6.2): a module's level is the level of its last reference, so
+ * cutting the last one drops the module below anything referenced between the
+ * two, and `A` became `B` under xsltproc on a stylesheet that only asked for
+ * its duplicate to be tidied. Cutting an earlier one leaves the survivors in
+ * the order they already stood.
+ *
+ * It is not enough to make the deletion safe, at either mechanism, which is
+ * why the fix is a suggestion whatever it cuts. An `xsl:import` creates a
+ * precedence level, and the earlier reference is shadowed for template
+ * selection only: `xsl:apply-imports` walks down the chain and meets the
+ * module at every level it occupies, so importing one twice answers `AA` where
+ * importing it once answers `A`, and no choice of reference preserves that.
+ *
+ * An `xsl:include` creates no level of its own, but it copies the included
+ * module's children in, and those hold its own `xsl:import` elements. So a
+ * module included twice brings its imports in twice, at two levels, and the
+ * same traversal walks both — a stylesheet including a `gamma` that imports
+ * `delta` answers `GDD`, and `GD` once the duplicate include is cut.
+ *
+ * Reading the difference off the corpus was the tempting alternative and does
+ * not work: the module included is usually outside the corpus — none of this
+ * repository's own fixtures resolve — so the safe tier would depend on which
+ * files the caller happened to pass rather than on the stylesheet (#667).
  * @param {Element} node - The duplicate import/include element
  * @return {{line: number, col: number, value: string, replacement: string}} -
  *  The fix
@@ -119,6 +141,7 @@ const removal = function(node) {
     value: `${' '.repeat(node.columnNumber - 1)}` +
       `<${node.nodeName} href="${node.getAttribute('href')}"/>\n`,
     replacement: '',
+    suggestion: true,
   }
 }
 
@@ -144,33 +167,35 @@ const crossed = function(imports) {
 }
 
 /**
- * Defects for `redundant-import` — the second and later `xsl:import`/
- * `xsl:include` of the same resolved target within one stylesheet's own list.
- * The target need not be a corpus file: importing the same external library
- * twice is redundant too. Each carries a fix that deletes the duplicate line,
- * except where the module is reached by both mechanisms, which is reported
- * without one.
+ * Defects for `redundant-import` — every `xsl:import`/`xsl:include` of one
+ * resolved target within a stylesheet's own list except the last of them. The
+ * last is the reference that fixes the module's import precedence, so it is
+ * the one left standing; reporting them the other way round pointed the fix
+ * at the only reference that could not go (#667). The
+ * target need not be a corpus file: importing the same external library twice
+ * is redundant too. Each carries a suggested fix that deletes the duplicate
+ * line, except where the module is reached by both mechanisms, which is
+ * reported without one.
  * @param {Array.<{file: string, xsl: Document}>} corpus - Parsed stylesheets
  * @return {Array.<object>} - Defects found
  */
 const byRedundancy = function(corpus) {
   const imports = importsOf(corpus)
   const mixed = crossed(imports)
-  const seen = new Set()
+  const last = new Map()
+  imports.forEach(({file, to}, at) => last.set(`${file}|${to}`, at))
   const defects = []
-  for (const {file, node, to} of imports) {
+  imports.forEach(({file, node, to}, at) => {
     const key = `${file}|${to}`
-    if (seen.has(key)) {
+    if (last.get(key) !== at) {
       const report = defect(REDUNDANT, file, node)
       if (mixed.has(key)) {
         defects.push(report)
       } else {
         defects.push({...report, fix: removal(node)})
       }
-    } else {
-      seen.add(key)
     }
-  }
+  })
   return defects
 }
 
