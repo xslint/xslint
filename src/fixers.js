@@ -24,11 +24,12 @@ const disableOutputEscaping = function(node, content) {
  * Fix for `output-method-xml`: switch the method to `html`. It changes the
  * serialization, so it is a suggestion.
  * @param {Element} node - The `xsl:output` element
+ * @param {string} content - Raw source text of the file it stands in
  * @return {object} - The suggestion fix
  */
-const outputMethodXml = function(node) {
+const outputMethodXml = function(node, content) {
   return {
-    ...substitution(node.getAttributeNode('method'), 'html'),
+    ...substitution(node.getAttributeNode('method'), 'html', content),
     suggestion: true,
   }
 }
@@ -115,9 +116,10 @@ const modeOrPriority = function(node, content) {
  * characters would leave `/spaced`, turning an unanchored pattern into an
  * absolute one.
  * @param {Node} pattern - The pattern attribute node
+ * @param {string} content - Raw source text of the file it stands in
  * @return {object} - The fix, a suggestion only inside a template
  */
-const startsWithDoubleSlash = function(pattern) {
+const startsWithDoubleSlash = function(pattern, content) {
   const at = pattern.value.indexOf('//')
   let tier = {}
   if (pattern.ownerElement.localName === 'template') {
@@ -125,7 +127,9 @@ const startsWithDoubleSlash = function(pattern) {
   }
   return {
     ...substitution(
-      pattern, `${pattern.value.slice(0, at)}${pattern.value.slice(at + 2)}`,
+      pattern,
+      `${pattern.value.slice(0, at)}${pattern.value.slice(at + 2)}`,
+      content,
     ),
     ...tier,
   }
@@ -137,16 +141,17 @@ const startsWithDoubleSlash = function(pattern) {
  * since `'false'` is a non-empty string that is always true, so the rewrite
  * changes the test's truth value — which is the point.
  * @param {Element} node - The `xsl:if`/`xsl:when` element
+ * @param {string} content - Raw source text of the file it stands in
  * @return {object} - The suggestion fix
  */
-const booleanConstant = function(node) {
+const booleanConstant = function(node, content) {
   const test = node.getAttributeNode('test')
   let constant = 'false()'
   if (test.value.includes('true')) {
     constant = 'true()'
   }
   return {
-    ...substitution(test, constant),
+    ...substitution(test, constant, content),
     suggestion: true,
   }
 }
@@ -157,14 +162,17 @@ const booleanConstant = function(node) {
  * the whole document. A suggestion, since it changes behaviour (absolute to
  * relative) and `.//` is one of several valid anchors.
  * @param {Element} node - The element carrying the `@select`
+ * @param {string} content - Raw source text of the file it stands in
  * @return {object} - The suggestion fix
  */
-const selectDoubleSlash = function(node) {
+const selectDoubleSlash = function(node, content) {
   const select = node.getAttributeNode('select')
   const at = select.value.indexOf('//')
   return {
     ...substitution(
-      select, `${select.value.slice(0, at)}.${select.value.slice(at)}`,
+      select,
+      `${select.value.slice(0, at)}.${select.value.slice(at)}`,
+      content,
     ),
     suggestion: true,
   }
@@ -177,12 +185,13 @@ const selectDoubleSlash = function(node) {
  * of `@select`, so a single insert after the opening quote suffices. A
  * suggestion, since it assumes the variable was intended over a child element.
  * @param {Element} node - The `xsl:apply-templates` element
+ * @param {string} content - Raw source text of the file it stands in
  * @return {object} - The suggestion fix
  */
-const confusingVariable = function(node) {
+const confusingVariable = function(node, content) {
   const select = node.getAttributeNode('select')
   return {
-    ...substitution(select, `$${select.value}`),
+    ...substitution(select, `$${select.value}`, content),
     suggestion: true,
   }
 }

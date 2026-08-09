@@ -313,6 +313,13 @@ const APPLIED = [
     after: 'spaced-attribute.fixed.xsl',
   },
   {
+    name: 'should keep every entity a rewritten value carries with ' +
+      '--fix-suggestions',
+    flag: '--fix-suggestions',
+    before: 'entity-in-a-rewritten-value.xsl',
+    after: 'entity-in-a-rewritten-value.fixed.xsl',
+  },
+  {
     name: 'should append to a spaced exclude-result-prefixes with ' +
       '--fix-suggestions',
     flag: '--fix-suggestions',
