@@ -113,7 +113,7 @@ tester.run(
       '/** One. */\nconst one = 1',
       '/** One. */\nconst one = 1\n/** Two. */\nconst two = 2',
       '/* Plain. */\n/* Also plain. */\nconst one = 1',
-      '/*\n * SPDX-License-Identifier: MIT\n */\n/** One. */\nconst one = 1',
+      '/*\n * A licence header, over two lines.\n */\n/** One. */\nconst one = 1',
       '/** One. */\n// a line comment\nconst one = 1',
       '/** Only one. */\nconst one = 1\n// trailing',
       'const one = 1',
