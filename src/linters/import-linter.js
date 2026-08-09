@@ -3,9 +3,9 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {metaOf, suppressed} = require('./checks')
-const {importsOf, graphOf} = require('./import-graph')
-const {logger} = require('./logger')
+const {metaOf, suppressed} = require('../checks')
+const {importsOf, graphOf} = require('../import-graph')
+const {logger} = require('../logger')
 
 /**
  * Name of the cycle check.

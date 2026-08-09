@@ -3,11 +3,11 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {metaOf, suppressed} = require('./checks')
-const {deletion} = require('./fixes')
-const {logger} = require('./logger')
-const {GAPS} = require('./tokens')
-const {XSLT} = require('./xsl-version')
+const {metaOf, suppressed} = require('../checks')
+const {deletion} = require('../fixes')
+const {logger} = require('../logger')
+const {GAPS} = require('../tokens')
+const {XSLT} = require('../xsl-version')
 
 /**
  * Name of the check this linter owns.

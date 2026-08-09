@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {lintByStringLength} = require('../src/string-length-linter')
+const {lintByStringLength} = require('../src/linters/string-length-linter')
 const {allFilesFrom, xml, yaml} = require('../src/helpers')
 const path = require('path')
 const assert = require('assert')

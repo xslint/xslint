@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {lintByImports} = require('../src/import-linter')
+const {lintByImports} = require('../src/linters/import-linter')
 const {allFilesFrom, xml, yaml} = require('../src/helpers')
 const path = require('path')
 const assert = require('assert')

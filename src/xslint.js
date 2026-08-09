@@ -6,32 +6,37 @@
 const path = require('path')
 const fs = require('fs')
 const {allFilesFrom} = require('./helpers')
-const {validate: validateXsls, names: xslChecks} = require('./xsl-validator')
+const {validate: validateXsls, names: xslChecks} =
+  require('./validators/xsl-validator')
 const {
   validate: validateXpaths, names: xpathValidatorChecks,
-} = require('./xpath-validator')
-const {lintByXpath, names: xpathChecks} = require('./xpath-linter')
-const {lintByCorpus, names: corpusChecks} = require('./corpus-linter')
-const {lintByAxis, names: axisChecks} = require('./xpath-axis-linter')
+} = require('./validators/xpath-validator')
+const {lintByXpath, names: xpathChecks} = require('./linters/xpath-linter')
+const {lintByCorpus, names: corpusChecks} = require('./linters/corpus-linter')
+const {lintByAxis, names: axisChecks} = require('./linters/xpath-axis-linter')
 const {lintByNamespaceAxis, names: namespaceAxisChecks} =
-  require('./using-namespace-axis-linter')
-const {lintByNamespace, names: namespaceChecks} = require('./namespace-linter')
+  require('./linters/using-namespace-axis-linter')
+const {lintByNamespace, names: namespaceChecks} =
+  require('./linters/namespace-linter')
 const {lintByResultNamespace, names: resultNamespaceChecks} =
-  require('./result-namespace-linter')
-const {lintByImports, names: importChecks} = require('./import-linter')
-const {lintByNodeSet, names: nodeSetChecks} = require('./node-set-linter')
-const {lintByCount, names: countChecks} = require('./count-linter')
+  require('./linters/result-namespace-linter')
+const {lintByImports, names: importChecks} = require('./linters/import-linter')
+const {lintByNodeSet, names: nodeSetChecks} =
+  require('./linters/node-set-linter')
+const {lintByCount, names: countChecks} = require('./linters/count-linter')
 const {lintByDoubleNegation, names: doubleNegationChecks} =
-  require('./redundant-double-negation-linter')
+  require('./linters/redundant-double-negation-linter')
 const {lintByPredicatePosition, names: predicatePositionChecks} =
-  require('./predicate-position-linter')
+  require('./linters/predicate-position-linter')
 const {lintByBooleanCall, names: booleanCallChecks} =
-  require('./redundant-boolean-call-linter')
+  require('./linters/redundant-boolean-call-linter')
 const {lintByStringLength, names: stringLengthChecks} =
-  require('./string-length-linter')
-const {lintByName, names: nameChecks} = require('./name-linter')
-const {lintByTranslate, names: translateChecks} = require('./translate-linter')
-const {lintByFormat, names: formatChecks} = require('./xpath-format-linter')
+  require('./linters/string-length-linter')
+const {lintByName, names: nameChecks} = require('./linters/name-linter')
+const {lintByTranslate, names: translateChecks} =
+  require('./linters/translate-linter')
+const {lintByFormat, names: formatChecks} =
+  require('./linters/xpath-format-linter')
 const {fixed} = require('./fixer')
 const {logger, levels} = require('./logger')
 const {reporterOf} = require('./reporters')

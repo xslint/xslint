@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {lintByFormat} = require('../src/xpath-format-linter')
-const {validate} = require('../src/xpath-validator')
+const {lintByFormat} = require('../src/linters/xpath-format-linter')
+const {validate} = require('../src/validators/xpath-validator')
 const {allFilesFrom, xml, yaml} = require('../src/helpers')
 const path = require('path')
 const assert = require('assert')
