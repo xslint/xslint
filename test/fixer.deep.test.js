@@ -121,8 +121,8 @@ const APPLIED = [
     after: 'starts-with-double-slash-outside-a-template.fixed.xsl',
   },
   {
-    name: 'should delete a redundant include with --fix',
-    flag: '--fix',
+    name: 'should delete a redundant include with --fix-suggestions',
+    flag: '--fix-suggestions',
     before: 'repeated-include.xsl',
     after: 'repeated-include.fixed.xsl',
   },
@@ -399,6 +399,11 @@ const UNCHANGED = [
     name: 'cannot delete a redundant import with plain --fix',
     flag: '--fix',
     sheet: 'redundant-import.xsl',
+  },
+  {
+    name: 'cannot delete a redundant include with plain --fix',
+    flag: '--fix',
+    sheet: 'repeated-include.xsl',
   },
   {
     name: 'cannot strip a boolean() wrapper with --fix-dry-run',

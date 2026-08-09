@@ -54,10 +54,23 @@ Correct:
 </xsl:stylesheet>
 ```
 
-A repeated `xsl:include` carries none of this. An include has no precedence
-level of its own — the module's definitions land at the level of the stylesheet
-including it — so the chain `xsl:apply-imports` walks is the same whether the
-module is included once or twice, and the repeat really is only noise.
+A repeated `xsl:include` is not exempt, though it looks it. An include creates
+no precedence level of its own — the module's definitions land at the level of
+the stylesheet including it — but it copies that module's *children* in, and
+those children include its own `xsl:import` elements. Include a module twice and
+its imports arrive twice, at two levels, and the same traversal walks both.
+Where `gamma.xsl` imports `delta.xsl`, this emits `GDD`, and `GD` with one of
+the includes removed:
+
+```xsl
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+  <xsl:include href="gamma.xsl"/>
+  <xsl:include href="gamma.xsl"/>
+</xsl:stylesheet>
+```
+
+Only where the included module imports nothing, directly or through what it
+includes, is the repeat pure noise.
 
 The linter resolves each `@href` against the importing file's own directory, so
 two spellings that point at the same file (`lib/util.xsl` and `./lib/util.xsl`)
