@@ -16,6 +16,8 @@ const ACCEPTS = [
   {xpath: 'para', kind: 'branch'},
   {xpath: '*', kind: 'branch'},
   {xpath: '/', kind: 'branch'},
+  {xpath: '/para', kind: 'branch'},
+  {xpath: '/chapter/para', kind: 'branch'},
   {xpath: '//para', kind: 'branch'},
   {xpath: 'chapter/para', kind: 'branch'},
   {xpath: 'chapter//para', kind: 'branch'},
@@ -38,15 +40,51 @@ const ACCEPTS = [
   {xpath: 'a | b | c', kind: 'pattern'},
   {xpath: '/ | //para', kind: 'pattern'},
   {xpath: 'para|note', kind: 'pattern'},
+  {xpath: 'para union note', kind: 'pattern'},
   {xpath: '(self::node())', kind: 'branch'},
   {xpath: '(a | b)/c', kind: 'branch'},
+  {xpath: 'a intersect b', kind: 'crossing'},
+  {xpath: 'a except b', kind: 'crossing'},
+  {xpath: 'a except b except c', kind: 'crossing'},
+  {xpath: 'a intersect b | c', kind: 'pattern'},
+  {xpath: '$para', kind: 'branch'},
+  {xpath: '$para/note', kind: 'branch'},
+  {xpath: 'doc("u.xml")/a', kind: 'branch'},
+  {xpath: 'root()/a', kind: 'branch'},
+  {xpath: 'root()//a', kind: 'branch'},
+  {xpath: 'element-with-id("x")', kind: 'branch'},
+  {xpath: '.', kind: 'branch'},
+  {xpath: '.[@x]', kind: 'branch'},
   {xpath: '  para  ', kind: 'branch'},
   {xpath: '(: why :) para', kind: 'branch'},
 ]
 
 /**
+ * Pattern productions XSLT 3.0 introduced, when it rewrote the pattern grammar
+ * around the expression one. A gate is a lower bound, so each row proves both
+ * halves: admitted where it belongs, refused where the version does not have
+ * it. Reading a 3.0 pattern under 1.0 would report a stylesheet as valid that
+ * no processor loads.
+ * @type {Array.<{xpath: string, floor: string, below: string}>}
+ */
+const GATED = [
+  {xpath: 'a intersect b', floor: '3.0', below: '2.0'},
+  {xpath: 'a except b', floor: '3.0', below: '2.0'},
+  {xpath: 'para union note', floor: '3.0', below: '2.0'},
+  {xpath: '$para', floor: '3.0', below: '2.0'},
+  {xpath: '$para/note', floor: '3.0', below: '2.0'},
+  {xpath: 'doc("u.xml")/a', floor: '3.0', below: '2.0'},
+  {xpath: 'root()/a', floor: '3.0', below: '2.0'},
+  {xpath: 'element-with-id("x")', floor: '3.0', below: '2.0'},
+  {xpath: '(self::node())', floor: '3.0', below: '2.0'},
+  {xpath: '(a | b)/c', floor: '3.0', below: '2.0'},
+  {xpath: '.', floor: '3.0', below: '2.0'},
+  {xpath: '.[@x]', floor: '3.0', below: '2.0'},
+]
+
+/**
  * Text the pattern grammar refuses, with the offset the complaint points at.
- * Two of them are perfectly good *expressions*, which is the whole reason a
+ * Three of them are perfectly good *expressions*, which is the whole reason a
  * pattern needs a grammar of its own rather than a second reading of the
  * expression one.
  * @type {Array.<{name: string, xpath: string, at: number}>}
@@ -59,7 +97,9 @@ const REFUSES = [
   {name: 'a sum, which is no pattern at all', xpath: '1 + 1', at: 0},
   {name: 'a comparison, which selects nothing', xpath: '@a = "b"', at: 3},
   {name: 'a call that anchors nothing', xpath: 'concat("a")', at: 6},
-  {name: 'a variable, which matches no node', xpath: '$para', at: 0},
+  {name: 'a sequence, which is no pattern', xpath: 'a, b', at: 1},
+  {name: 'a descent that reaches no step', xpath: '//', at: 2},
+  {name: 'a descent that reaches no step in a union', xpath: '// | a', at: 3},
   {name: 'nothing at all', xpath: '', at: 0},
   {name: 'nothing but a gap', xpath: ' ', at: 1},
 ]
@@ -67,28 +107,37 @@ const REFUSES = [
 describe('patterns', function() {
   ACCEPTS.forEach(({xpath, kind}) => {
     it(`reads ${JSON.stringify(xpath)} as a ${kind}`, function() {
-      assert.equal(matched(xpath, '2.0').tree.kind, kind)
+      assert.equal(matched(xpath, '3.0').tree.kind, kind)
     })
   })
   REFUSES.forEach(({name, xpath, at}) => {
     it(`refuses ${name}`, function() {
       assert.deepEqual(
-        [matched(xpath, '2.0').fault === '', matched(xpath, '2.0').at],
+        [matched(xpath, '3.0').fault === '', matched(xpath, '3.0').at],
         [false, at],
         `${xpath} was not refused where it goes wrong`,
+      )
+    })
+  })
+  GATED.forEach(({xpath, floor, below}) => {
+    it(`admits ${JSON.stringify(xpath)} only from ${floor}`, function() {
+      assert.deepEqual(
+        [matched(xpath, floor).fault === '', matched(xpath, below).fault === ''],
+        [true, false],
+        `${xpath} is not gated at ${floor}`,
       )
     })
   })
   it('carries every token, trivia and all, back to the caller', function() {
     const pattern = '  para (: why :) | note  '
     assert.equal(
-      matched(pattern, '2.0').tokens.map((token) => token.value).join(''),
+      matched(pattern, '3.0').tokens.map((token) => token.value).join(''),
       pattern,
       'the token stream does not reproduce the pattern it came from',
     )
   })
   it('spans a branch over its own text', function() {
-    const answer = matched('para | note', '2.0')
+    const answer = matched('para | note', '3.0')
     assert.equal(
       answer.tokens
         .slice(answer.tree.children[1].from, answer.tree.children[1].to)
@@ -99,7 +148,7 @@ describe('patterns', function() {
   })
   it('cannot swallow a bug as a refusal', function() {
     assert.throws(
-      () => matched(undefined, '2.0'),
+      () => matched(undefined, '3.0'),
       'an error that is not a refusal was reported as one',
     )
   })
