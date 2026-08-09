@@ -123,7 +123,80 @@ const deletion = function(attribute, content) {
   }
 }
 
+/**
+ * How each delimiter is spelled where it stands inside the value it opens.
+ * @type {{[quote: string]: string}}
+ */
+const REFERENCES = {'"': '&quot;', '\'': '&apos;'}
+
+/**
+ * The text as an attribute value delimited by the given quote may hold it, with
+ * the three characters XML forbids there written as references: an `&`, which
+ * would otherwise open a reference of its own, a `<`, and the delimiter, which
+ * would otherwise close the value early. The `&` goes first or it would escape
+ * the `&` of the two that follow it.
+ *
+ * A `>` is left as it stands, since an attribute value may hold one — so a
+ * source that spelled it `&gt;` is written back with the bare character. That
+ * is a change in spelling and not in value, which is the line this draws: the
+ * text a fix carries is the *decoded* value, and encoding it again cannot
+ * recover which characters the author chose to write as references.
+ * @param {string} text - The decoded text to write
+ * @param {string} quote - The delimiter the value stands in
+ * @return {string} - The text as that value may spell it
+ */
+const escaped = function(text, quote) {
+  return text
+    .split('&').join('&amp;')
+    .split('<').join('&lt;')
+    .split(quote).join(REFERENCES[quote])
+}
+
+/**
+ * A fix that replaces an attribute's value, leaving its name, the gaps around
+ * its `=` and its delimiter as the source spells them. Nothing about that
+ * spelling has to be known: the value opens one character past the delimiter
+ * xmldom reports, whichever quote stands there, and the value the parser read
+ * is what `src/fixer.js` decodes the source back to.
+ *
+ * Rebuilding the whole attribute as `name="value"` was the shape before, and
+ * it assumed three things at once — that the name stands a fixed distance in
+ * front of the delimiter, that the delimiter is a double quote, and that no gap
+ * surrounds the `=`. Ordinary XML defeats each of them, and they fail together:
+ * the column lands past the name and the text stands nowhere in the file, so
+ * the fixer announced the fix and then declined it as no longer matching,
+ * naming an edit that never happened (#718). Narrowing to the value is what
+ * removes the assumption rather than repairing it — a name nobody rewrites is a
+ * name nobody has to find.
+ *
+ * The delimiter is still read from the source, because the value written back
+ * has to be spelled as a value standing in *that* quote. What a fix carries is
+ * the decoded text, so an expression the source wrote `//a[@x &lt; 1]` arrives
+ * holding a bare `<` and would close the element early were it written as it
+ * stands. Reading the character xmldom points at is not the guess this whole
+ * change removes — the delimiter is the one position the parser reports
+ * exactly, which is why {@link deletion} reads it too; what nobody can find is
+ * the *name*, and no fix here looks for one.
+ * @param {Node} attribute - The attribute whose value is rewritten
+ * @param {string} replacement - The decoded value to write in its place
+ * @param {string} content - Raw source text of the file it stands in
+ * @return {{line: number, col: number, value: string, replacement: string}} -
+ *  The fix
+ */
+const substitution = function(attribute, replacement, content) {
+  return {
+    line: attribute.lineNumber,
+    col: attribute.columnNumber + 1,
+    value: attribute.value,
+    replacement: escaped(
+      replacement,
+      content[offsetAt(content, attribute.lineNumber, attribute.columnNumber)],
+    ),
+  }
+}
+
 module.exports = {
   deletion,
   standsAt,
+  substitution,
 }

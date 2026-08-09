@@ -4,7 +4,7 @@
  */
 
 const {metaOf, suppressed} = require('../checks')
-const {standsAt} = require('../fixes')
+const {standsAt, substitution} = require('../fixes')
 const {GAPS} = require('../tokens')
 const {logger} = require('../logger')
 
@@ -149,10 +149,11 @@ const textual = function(elements) {
  * would each edit the one shared attribute and collide.
  * @param {Element} root - The stylesheet root
  * @param {string} prefix - The leaking prefix to exclude
+ * @param {string} content - Raw source text of the file it stands in
  * @return {{line: number, col: number, value: string, replacement: string,
  *  suggestion: boolean}} - The fix
  */
-const exclusion = function(root, prefix) {
+const exclusion = function(root, prefix, content) {
   const attribute = root.getAttributeNode('exclude-result-prefixes')
   let fix = {
     line: root.lineNumber,
@@ -163,10 +164,7 @@ const exclusion = function(root, prefix) {
   }
   if (attribute) {
     fix = {
-      line: attribute.lineNumber,
-      col: attribute.columnNumber - attribute.name.length - 1,
-      value: `${attribute.name}="${attribute.value}"`,
-      replacement: `${attribute.name}="${attribute.value} ${prefix}"`,
+      ...substitution(attribute, `${attribute.value} ${prefix}`, content),
       suggestion: true,
     }
   }
@@ -226,7 +224,7 @@ const lintByResultNamespace = function(corpus, suppressions = []) {
           line: where.line,
           pos: where.pos,
           ...(leaking.length === 1 &&
-            {fix: exclusion(root, declared(attribute.name))}),
+            {fix: exclusion(root, declared(attribute.name), content)}),
         })
       }
     }

@@ -67,6 +67,12 @@ const RESTRICTED = [
   },
   {
     selector:
+      "BinaryExpression[operator='-'][left.property.name='columnNumber'][right.property.name='length']",
+    message:
+      "Do not work out where an attribute stands by subtracting a name's length from columnNumber, which xmldom reports at the opening delimiter of the value, so every gap XML allows around the '=' moves one and not the other (#594, #681, #718). Ask the source through src/fixes.js: standsAt for where it stands, substitution for a fix that rewrites its value, deletion for one that cuts it"
+  },
+  {
+    selector:
       "CallExpression[callee.property.name='getAttribute'][callee.object.property.name='documentElement'][arguments.0.value='version']",
     message:
       "Read the stylesheet version through versionOf in src/xsl-version.js, which handles a simplified stylesheet's xsl:version; do not read documentElement.getAttribute('version') directly"
