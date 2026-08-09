@@ -14,5 +14,7 @@ input: |-
       <xsl:variable name="b" select="not(not(x) and y)"/>
       <xsl:variable name="c" select="my:not(not(x))"/>
       <xsl:variable name="d" select="not(not(x)"/>
+      <xsl:variable name="e" select="'not(not(x))"/>
+      <xsl:variable name="f" select="concat('a', 'not(not(x))"/>
     </xsl:template>
   </xsl:stylesheet>

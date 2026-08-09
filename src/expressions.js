@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {tokenized, TOKENS} = require('./tokens')
+const {tokenized, OPAQUE} = require('./tokens')
 
 /**
  * An expression with its string and comment spans blanked to spaces, so a call
@@ -15,7 +15,7 @@ const {tokenized, TOKENS} = require('./tokens')
 const masked = function(expression) {
   const chars = Array.from(expression)
   for (const token of tokenized(expression)) {
-    if (token.type === TOKENS.STRING || token.type === TOKENS.COMMENT) {
+    if (OPAQUE.includes(token.type)) {
       for (let at = token.start; at < token.start + token.value.length; at++) {
         chars[at] = ' '
       }

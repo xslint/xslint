@@ -124,6 +124,8 @@ const REFUSES = [
   {name: 'nothing but a comment', xpath: '(: c :)', at: 7},
   {name: 'a kind test that never closes', xpath: 'element(x', at: 9},
   {name: 'a function reference with no arity', xpath: 'abs#x', at: 4},
+  {name: 'a literal that never closes', xpath: '\'unclosed', at: 0},
+  {name: 'a literal that never closes inside a call', xpath: 'f(\'a', at: 2},
 ]
 
 /**

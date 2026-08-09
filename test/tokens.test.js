@@ -119,6 +119,41 @@ const SCANS = [
     ],
   },
   {
+    name: 'refuses to call a literal that never closes a string',
+    count: 1,
+    pairs: [
+      ['\'unclosed', TOKENS.UNCLOSED],
+      ['"unclosed', TOKENS.UNCLOSED],
+      ['\'', TOKENS.UNCLOSED],
+      ['concat(\'a\', \'b', TOKENS.UNCLOSED],
+      ['\'closed\' + \'unclosed', TOKENS.UNCLOSED],
+      ['\'a\'\'b', TOKENS.UNCLOSED],
+    ],
+  },
+  {
+    name: 'keeps a literal that does close a string, doubled quote and all',
+    count: 1,
+    pairs: [
+      ['\'a\'', TOKENS.STRING],
+      ['""', TOKENS.STRING],
+      ['\'\'', TOKENS.STRING],
+      ['\'a\'\'b\'', TOKENS.STRING],
+      ['\'closed\' + \'unclosed', TOKENS.STRING],
+      ['"it\'s"', TOKENS.STRING],
+    ],
+  },
+  {
+    name: 'cannot read a literal out of the quote that opens one',
+    count: 0,
+    pairs: [
+      ['\'unclosed', TOKENS.STRING],
+      ['"unclosed', TOKENS.STRING],
+      ['\'a\'\'b', TOKENS.STRING],
+      ['\'a\'', TOKENS.UNCLOSED],
+      ['\'a\'\'b\'', TOKENS.UNCLOSED],
+    ],
+  },
+  {
     name: 'cannot read an operator behind the colon that spells a name',
     count: 0,
     pairs: [
