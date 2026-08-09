@@ -230,10 +230,12 @@ const SCANS = [
 
 /**
  * Expressions whose axis separator stands against a name, each paired with the
- * same expression spelling a gap in front of the separator. XPath lets the gap
- * stand, so the two spell one thing and must arrive as one stream of kinds. It
- * is the kinds that are compared and not the values, since an axis token folds
- * the gap in front of its own `::` and so carries it in its text either way.
+ * same expression spelling a gap beside the separator — in front of it, and
+ * behind it where the name that follows is itself an axis name. XPath lets the
+ * gap stand either side, so the two spell one thing and must arrive as one
+ * stream of kinds. It is the kinds that are compared and not the values, since
+ * an axis token folds the gap in front of its own `::` and so carries it in its
+ * text either way.
  * @type {Array.<Array.<string>>}
  */
 const SPACED = [
@@ -242,6 +244,9 @@ const SPACED = [
   ['a:b::c', 'a:b ::c'],
   ['namespace-node::a', 'namespace-node ::a'],
   ['child::a::b', 'child::a ::b'],
+  ['child::child::b', 'child:: child::b'],
+  ['descendant::descendant::b', 'descendant:: descendant::b'],
+  ['self::self::*', 'self:: self::*'],
 ]
 
 /**

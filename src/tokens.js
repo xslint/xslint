@@ -344,6 +344,22 @@ const afterName = function(xpath, start) {
 }
 
 /**
+ * The last token lexed that is not trivia, or undefined where nothing but
+ * trivia has been. Two questions the lexer asks about what came before are
+ * answered from it, and neither may see a gap or a comment: whitespace is
+ * insignificant between tokens, so a question it could change would be one the
+ * grammar does not ask.
+ * @param {Array.<{type: string, value: string}>} tokens - Tokens so far
+ * @return {?{type: string, value: string}} - The last solid token
+ */
+const settled = function(tokens) {
+  return tokens.filter(
+    (token) => token.type !== TOKENS.WHITESPACE &&
+      token.type !== TOKENS.COMMENT,
+  ).pop()
+}
+
+/**
  * Whether an operator may stand at the end of what has been lexed, which is
  * what makes a word an operator rather than a name. The kind of the last solid
  * token settles it. Until #676 the punctuation arrived as one undivided `OTHER`
@@ -354,12 +370,30 @@ const afterName = function(xpath, start) {
  * @return {boolean} - True when an operator may stand here
  */
 const operates = function(tokens) {
-  const solid = tokens.filter(
-    (token) => token.type !== TOKENS.WHITESPACE &&
-      token.type !== TOKENS.COMMENT,
-  )
-  const last = solid[solid.length - 1]
+  const last = settled(tokens)
   return last !== undefined && ENDS.includes(last.type)
+}
+
+/**
+ * Whether an axis separator is the last thing lexed, so what stands next is a
+ * node test and cannot open an axis of its own. After a separator the grammar
+ * admits a NodeTest and nothing else, so a name there is the element it names
+ * however it is spelled — `child` behind one is the element `child`.
+ *
+ * The character walk in {@link opensAxis} cannot answer this, and answered it
+ * by accident: it asked `spelling` whether a name was already in progress,
+ * which counts a `:` as a name character, so `child::child::b` walked back over
+ * the separator and got the right stream for the wrong reason while
+ * `child:: child::b` stopped at the gap and opened a second axis. One
+ * expression arrived as two streams, told apart by a space (#709). The question
+ * is about what precedes rather than about characters, which is `operates`'s
+ * question, so it is answered the same way and in the same place.
+ * @param {Array.<{type: string, value: string}>} tokens - Tokens so far
+ * @return {boolean} - True when the last solid token is an axis
+ */
+const separates = function(tokens) {
+  const last = settled(tokens)
+  return last !== undefined && Object.values(AXES).includes(last.type)
 }
 
 /**
@@ -588,7 +622,7 @@ const tokenized = function(xpath) {
   let at = 0
   while (at < xpath.length) {
     const start = at
-    const axis = opensAxis(xpath, at)
+    const axis = !separates(tokens) && opensAxis(xpath, at)
     const more = opensMore(xpath, at)
     const func = opensUserFunction(xpath, at)
     let type
