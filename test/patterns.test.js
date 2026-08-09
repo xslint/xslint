@@ -43,6 +43,9 @@ const ACCEPTS = [
   {xpath: 'para union note', kind: 'pattern'},
   {xpath: '(self::node())', kind: 'branch'},
   {xpath: '(a | b)/c', kind: 'branch'},
+  {xpath: 'a/(b | c)', kind: 'branch'},
+  {xpath: 'a//(b | c)[1]', kind: 'branch'},
+  {xpath: '/(a | b)', kind: 'branch'},
   {xpath: 'a intersect b', kind: 'crossing'},
   {xpath: 'a except b', kind: 'crossing'},
   {xpath: 'a except b except c', kind: 'crossing'},
@@ -78,6 +81,7 @@ const GATED = [
   {xpath: 'element-with-id("x")', floor: '3.0', below: '2.0'},
   {xpath: '(self::node())', floor: '3.0', below: '2.0'},
   {xpath: '(a | b)/c', floor: '3.0', below: '2.0'},
+  {xpath: 'a/(b | c)', floor: '3.0', below: '2.0'},
   {xpath: '.', floor: '3.0', below: '2.0'},
   {xpath: '.[@x]', floor: '3.0', below: '2.0'},
 ]

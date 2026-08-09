@@ -1113,6 +1113,26 @@ const anchors = function(cursor) {
 }
 
 /**
+ * One step of a pattern's path. It is an axis step, or a branch in brackets,
+ * which 3.0's `StepExprP` admits at *any* position in a path and not only where
+ * one opens — so `a/(b|c)` is a pattern as much as `(b|c)/a` is. That is where
+ * a pattern parts from an expression, whose own parenthesized step may only
+ * open a path (#711), and reading the two alike refused a pattern XSLT admits.
+ * @param {object} cursor - The cursor
+ * @return {object} - The `step`, or what the brackets hold
+ */
+const paced = function(cursor) {
+  let node = null
+  if (sees(cursor, TOKENS.LPAREN)) {
+    rewritten(cursor)
+    node = postfixed(cursor)
+  } else {
+    node = stepped(cursor)
+  }
+  return node
+}
+
+/**
  * One branch of a pattern: an optional root, then steps. It is the expression
  * grammar's own path production with the operators taken away — a pattern has
  * no arithmetic, no comparison and no call but the anchors, so what is left is
@@ -1131,12 +1151,12 @@ const branched = function(cursor) {
   if (sees(cursor, TOKENS.SLASH)) {
     take(cursor)
     if (steps(cursor)) {
-      parts.push(stepped(cursor))
+      parts.push(paced(cursor))
     }
   } else if (sees(cursor, TOKENS.DOUBLE_SLASH)) {
     take(cursor)
-    parts.push(stepped(cursor))
-  } else if (sees(cursor, TOKENS.LPAREN) || sees(cursor, TOKENS.DOLLAR)) {
+    parts.push(paced(cursor))
+  } else if (sees(cursor, TOKENS.DOLLAR)) {
     rewritten(cursor)
     parts.push(postfixed(cursor))
   } else if (sees(cursor, TOKENS.DOT)) {
@@ -1146,11 +1166,11 @@ const branched = function(cursor) {
     reaches(cursor, TOKENS.LPAREN)) {
     parts.push(postfixed(cursor))
   } else {
-    parts.push(stepped(cursor))
+    parts.push(paced(cursor))
   }
   while (sees(cursor, TOKENS.SLASH) || sees(cursor, TOKENS.DOUBLE_SLASH)) {
     take(cursor)
-    parts.push(stepped(cursor))
+    parts.push(paced(cursor))
   }
   return shaped('branch', from, cursor, parts)
 }
@@ -1196,10 +1216,12 @@ const crossed = function(cursor) {
  * What it does *not* yet do is refuse the productions a pattern has no room
  * for. The steps come from the expression grammar whole, so an axis a pattern
  * may not name is accepted here, as is a `.` standing as one branch of a union
- * where 3.0 admits it only as the whole pattern; narrowing that to the
- * restricted set each version admits is #679. That direction is the cheap one
- * to defer — an over-acceptance leaves a defect unreported, while refusing a
- * pattern XSLT admits invents one against working code.
+ * where 3.0 admits it only as the whole pattern, and a bracket holds whatever
+ * an expression may hold rather than the `Pattern` its own production names —
+ * `a/(1 + 1)` parses. Narrowing that to the restricted set each version admits
+ * is #679. That direction is the cheap one to defer — an over-acceptance leaves
+ * a defect unreported, while refusing a pattern XSLT admits invents one against
+ * working code.
  * @param {string} pattern - The pattern
  * @param {string} version - The XSLT version in force where it sits
  * @return {{tokens: Array, tree: ?object, fault: string, at: number}} -
