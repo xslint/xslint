@@ -128,28 +128,15 @@ export default defineConfig([
     }
   },
   {
-    files: ["src/linters/**/*.js", "src/validators/**/*.js"],
-    rules: {
-      "no-restricted-syntax": ["error", ...RESTRICTED,
-        {
-          selector:
-            "CallExpression[callee.name='require'][arguments.0.value=/-(linter|validator)$/]",
-          message:
-            "No stage reads another: a linter and a validator take the corpus and the shared modules, and the order they run in is src/xslint.js's business alone (#715)"
-        }
-      ]
-    }
-  },
-  {
-    files: ["src/*.js", "src/*.mjs"],
+    files: ["src/**/*.js", "src/**/*.mjs"],
     ignores: ["src/xslint.js"],
     rules: {
       "no-restricted-syntax": ["error", ...RESTRICTED,
         {
           selector:
-            "CallExpression[callee.name='require'][arguments.0.value=/^\\.\\/(linters|validators)\\//], ImportDeclaration[source.value=/^\\.\\/(linters|validators)\\//], ImportExpression[source.value=/^\\.\\/(linters|validators)\\//]",
+            "CallExpression[callee.name='require'][arguments.0.value=/-(linter|validator)(\\.js)?$/], ImportDeclaration[source.value=/-(linter|validator)(\\.js)?$/], ImportExpression[source.value=/-(linter|validator)(\\.js)?$/]",
           message:
-            "Only src/xslint.js wires a stage: a core module reaching into src/linters or src/validators inverts the pipeline it exists to serve (#715)"
+            "Only src/xslint.js wires a stage: no linter or validator reads another, and no core module reaches into the pipeline it exists to serve (#715)"
         }
       ]
     }

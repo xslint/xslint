@@ -161,11 +161,11 @@ src/index.mjs             CLI entry (commander.js, ESM)
 ```
 
 The two stages have a directory each, and everything else in `src/` is the core
-they consume. That is not filing: it is what makes the two rules below
-expressible, which they were not while a stage and a shared module were the same
-kind of string written from the same place (#715). The `-linter` suffix stays
-inside `src/linters/` for one reason — dropping it would put `linters/xpath.js`
-one word from `src/xpath.js`, the fontoxpath environment.
+they consume. That is not filing: it is what makes the rule below expressible,
+which it was not while a stage and a shared module were the same kind of string
+written from the same place (#715). The `-linter` suffix stays inside
+`src/linters/` for one reason — dropping it would put `linters/xpath.js` one word
+from `src/xpath.js`, the fontoxpath environment.
 
 `src/xslint.js` exposes the whole staging as a pure function,
 `lint(sources, {suppress, overrides}) => defects`: no file I/O, prints nothing,
@@ -194,12 +194,17 @@ test pack:
 | `validation` | `severity` + `message` | code (well-formedness, XPath syntax) | in code |
 | `format` | `severity` + `message` | code (a `src/linters/*-linter.js`) | in code |
 
-No linter imports another, and no validator imports another — a
-`no-restricted-syntax` selector scoped to those two directories bans a `require`
-of anything ending in `-linter` or `-validator`, so the rule fails a build rather
-than a reader. The reverse holds too: only `src/xslint.js` may reach into either
-directory, which a second selector enforces over `src/*.js` with that one file
-ignored. Both were true for a year and enforced by nothing (#715). The
+No linter imports another, no validator imports another, and only
+`src/xslint.js` reaches into either directory. That is one rule rather than
+three: a `no-restricted-syntax` selector over all of `src/`, with that one file
+ignored, refuses a `require` or `import` of any path ending in `-linter` or
+`-validator`. It asks what is being required, never where the requiring file
+sits, which is what makes it hold — the first draft anchored on the requirer's
+directory and three spellings walked past it, an extension (`./name-linter.js`),
+a longer way to the same file (`../src/linters/name-linter`, which resolves), and
+any new `src/` subdirectory at all, since `src/*.js` does not recurse (#715). A
+barrel cannot get around it either: an `src/linters/index.js` would have to
+require the linters it re-exports, and that is the same violation. The
 declarative loaders (`xpath-linter`,
 `corpus-linter`) and the token/DOM linters all share `src/xpath.js` (the
 fontoxpath environment: prefixes, evaluators, `isValid`), `src/tokens.js` (the
