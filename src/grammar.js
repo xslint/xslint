@@ -1072,6 +1072,197 @@ const parsed = function(xpath, version) {
   return {tokens: tokens, tree: tree, fault: fault, at: at}
 }
 
+
+/**
+ * The version that rewrote the pattern grammar around the expression one, and
+ * so the floor every production below belongs to.
+ * @type {string}
+ */
+const REWRITE = '3.0'
+
+/**
+ * Refuse a pattern production an older XSLT does not have. 3.0 rebuilt the
+ * grammar on top of the expression one and brought `intersect` and `except`
+ * between two branches, `union` spelled as a word, a variable or three more
+ * functions rooting a path, a branch in brackets, and `.` for the context node.
+ * 1.0 and 2.0 have a union of paths and nothing else, so admitting any of it
+ * there calls a stylesheet valid that no processor of that version loads.
+ * @param {object} cursor - The cursor, standing at the production
+ */
+const rewritten = function(cursor) {
+  if (!since(cursor.version, REWRITE)) {
+    refuse(cursor, `a construct an XSLT ${cursor.version} pattern has`)
+  }
+}
+
+/**
+ * The functions a pattern may root a path on, which no other call may stand in
+ * front of a path there. They name their nodes outright rather than reaching
+ * them from a context, so a pattern beginning with one is anchored the way an
+ * absolute path is. 1.0 and 2.0 have the two of `IdKeyPattern`; 3.0's
+ * `OuterFunctionName` adds three more.
+ * @param {object} cursor - The cursor
+ * @return {Array.<string>} - The names it may open with
+ */
+const anchors = function(cursor) {
+  let names = ['id', 'key']
+  if (since(cursor.version, REWRITE)) {
+    names = ['doc', 'element-with-id', 'id', 'key', 'root']
+  }
+  return names
+}
+
+/**
+ * One step of a pattern's path. It is an axis step, or a branch in brackets,
+ * which 3.0's `StepExprP` admits at *any* position in a path and not only where
+ * one opens — so `a/(b|c)` is a pattern as much as `(b|c)/a` is. That is where
+ * a pattern parts from an expression, whose own parenthesized step may only
+ * open a path (#711), and reading the two alike refused a pattern XSLT admits.
+ * @param {object} cursor - The cursor
+ * @return {object} - The `step`, or what the brackets hold
+ */
+const paced = function(cursor) {
+  let node = null
+  if (sees(cursor, TOKENS.LPAREN)) {
+    rewritten(cursor)
+    node = postfixed(cursor)
+  } else {
+    node = stepped(cursor)
+  }
+  return node
+}
+
+/**
+ * One branch of a pattern: an optional root, then steps. It is the expression
+ * grammar's own path production with the operators taken away — a pattern has
+ * no arithmetic, no comparison and no call but the anchors, so what is left is
+ * the steps and what hangs off them.
+ *
+ * A `/` may stand alone, and a `//` may not: the step after it is what a
+ * descent descends to, and every version spells that `'//' RelativePathExprP`
+ * with nothing optional about it. Accepting a bare `//` reported as valid a
+ * `match` that Saxon rejects with XTSE0340 and xsltproc refuses outright.
+ * @param {object} cursor - The cursor
+ * @return {object} - The `branch` node
+ */
+const branched = function(cursor) {
+  const from = significant(cursor)
+  const parts = []
+  if (sees(cursor, TOKENS.SLASH)) {
+    take(cursor)
+    if (steps(cursor)) {
+      parts.push(paced(cursor))
+    }
+  } else if (sees(cursor, TOKENS.DOUBLE_SLASH)) {
+    take(cursor)
+    parts.push(paced(cursor))
+  } else if (sees(cursor, TOKENS.DOLLAR)) {
+    rewritten(cursor)
+    parts.push(postfixed(cursor))
+  } else if (sees(cursor, TOKENS.DOT)) {
+    rewritten(cursor)
+    parts.push(stepped(cursor))
+  } else if (anchors(cursor).includes(ahead(cursor).value) &&
+    reaches(cursor, TOKENS.LPAREN)) {
+    parts.push(postfixed(cursor))
+  } else {
+    parts.push(paced(cursor))
+  }
+  while (sees(cursor, TOKENS.SLASH) || sees(cursor, TOKENS.DOUBLE_SLASH)) {
+    take(cursor)
+    parts.push(paced(cursor))
+  }
+  return shaped('branch', from, cursor, parts)
+}
+
+/**
+ * A branch, and the set operators 3.0 lets stand between two of them. They bind
+ * tighter than the union does, which is why they sit between it and a branch
+ * rather than beside either.
+ * @param {object} cursor - The cursor
+ * @return {object} - The `branch`, or the `crossing` around two of them
+ */
+const crossed = function(cursor) {
+  const from = significant(cursor)
+  let node = branched(cursor)
+  while (sees(cursor, TOKENS.INTERSECT) || sees(cursor, TOKENS.EXCEPT)) {
+    rewritten(cursor)
+    take(cursor)
+    node = shaped('crossing', from, cursor, [node, branched(cursor)])
+  }
+  return node
+}
+
+/**
+ * Parse an XSLT pattern, which is a different language from an XPath
+ * expression and needs a grammar of its own.
+ *
+ * A pattern says which nodes a rule matches, not what to select, so its shape
+ * is a union of paths and nothing else: no arithmetic, no comparison, no call
+ * but the anchors. Reading one with the expression grammar accepts what XSLT
+ * refuses — `1 + 1` and `@a = "b"` and `a, b` are fine expressions and no
+ * pattern at all — and refuses what it admits. Nothing parsed a pattern before
+ * this, so a malformed `match="foo["` was silent, which is #589 (#678).
+ *
+ * The version in force decides which language this is, and by more than a
+ * detail: 3.0 rebuilt the pattern grammar on the expression one, so
+ * `a intersect b`, `$v/x`, `doc("u")/a`, `root()/a`, `element-with-id("x")`,
+ * `(self::node())`, `.` and the word `union` are all patterns there and none of
+ * them is one in 1.0 or 2.0, whose whole grammar is `IdKeyPattern` and a union
+ * of relative paths. Every one of those is gated on {@link REWRITE} rather than
+ * admitted everywhere, because a pattern accepted under a version that has no
+ * production for it is a stylesheet called valid that no processor loads.
+ *
+ * What it does *not* yet do is refuse the productions a pattern has no room
+ * for. The steps come from the expression grammar whole, so an axis a pattern
+ * may not name is accepted here, as is a `.` standing as one branch of a union
+ * where 3.0 admits it only as the whole pattern, and a bracket holds whatever
+ * an expression may hold rather than the `Pattern` its own production names —
+ * `a/(1 + 1)` parses. Narrowing that to the restricted set each version admits
+ * is #679. That direction is the cheap one to defer — an over-acceptance leaves
+ * a defect unreported, while refusing a pattern XSLT admits invents one against
+ * working code.
+ * @param {string} pattern - The pattern
+ * @param {string} version - The XSLT version in force where it sits
+ * @return {{tokens: Array, tree: ?object, fault: string, at: number}} -
+ *   The tokens, the tree when it parsed, and the complaint when it did not
+ */
+const matched = function(pattern, version) {
+  let tokens = []
+  let tree = null
+  let fault = ''
+  let at = 0
+  try {
+    tokens = tokenized(pattern)
+    const cursor = cursorOf(tokens, version)
+    const from = significant(cursor)
+    const branches = [crossed(cursor)]
+    while (sees(cursor, TOKENS.PIPE) || sees(cursor, TOKENS.UNION)) {
+      if (sees(cursor, TOKENS.UNION)) {
+        rewritten(cursor)
+      }
+      take(cursor)
+      branches.push(crossed(cursor))
+    }
+    tree = branches[0]
+    if (branches.length > 1) {
+      tree = shaped('pattern', from, cursor, branches)
+    }
+    if (ahead(cursor) !== END) {
+      refuse(cursor, 'the end of the pattern')
+    }
+  } catch (err) {
+    if (!err.fault) {
+      throw err
+    }
+    tree = null
+    fault = err.message
+    at = err.at
+  }
+  return {tokens: tokens, tree: tree, fault: fault, at: at}
+}
+
 module.exports = {
   parsed,
+  matched,
 }
