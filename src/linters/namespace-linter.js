@@ -4,7 +4,7 @@
  */
 
 const {metaOf, suppressed} = require('../checks')
-const {deletion} = require('../fixes')
+const {deletion, standsAt} = require('../fixes')
 const {logger} = require('../logger')
 const {GAPS} = require('../tokens')
 const {XSLT} = require('../xsl-version')
@@ -120,7 +120,10 @@ const used = function(elements, prefix) {
  * nowhere, reporting one defect per dead declaration with the fix that deletes
  * it. The span to cut is read from the source by `deletion`, so a declaration
  * spelled with either delimiter, or with a gap of any width around its `=`, is
- * deleted rather than announced and then declined (#594).
+ * deleted rather than announced and then declined (#594). Where the declaration
+ * stands is read from the source too, by `standsAt`, so the report and the fix
+ * beside it agree about which characters one declaration occupies — arithmetic
+ * over the name put them two columns apart (#681).
  * @param {Array.<{file: string, content: string, xsl: Document}>} corpus -
  *  Parsed stylesheets
  * @param {Array.<string>} suppressions - Array of suppressed checks
@@ -136,13 +139,14 @@ const lintByNamespace = function(corpus, suppressions = []) {
       for (const attribute of Array.from(xsl.documentElement.attributes)) {
         const prefix = declared(attribute.name)
         if (prefix && prefix !== 'xml' && !used(elements, prefix)) {
+          const where = standsAt(attribute, content)
           defects.push({
             name: CHECK,
             severity: META.severity,
             message: META.message,
             file: file,
-            line: attribute.lineNumber,
-            pos: attribute.columnNumber - attribute.name.length - 1,
+            line: where.line,
+            pos: where.pos,
             fix: deletion(attribute, content),
           })
         }

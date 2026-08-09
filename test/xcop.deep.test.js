@@ -57,6 +57,8 @@ const available = cmdAvailable('xcop', ['--version'], false)
  */
 const UNFORMATTED = [
   'redundant-namespace-declarations.yaml',
+  'spaced-namespace-declarations.yaml',
+  'spaced-leaking-declaration.yaml',
   'no-break-space-before-the-bracket.yaml',
   'excluded-result-prefixes.yaml',
   'extension-element-prefixes.yaml',
