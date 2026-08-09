@@ -306,6 +306,20 @@ const APPLIED = [
     after: 'confusing-variable-and-node.fixed.xsl',
   },
   {
+    name: 'should rewrite a value however its attribute is spelled with ' +
+      '--fix-suggestions',
+    flag: '--fix-suggestions',
+    before: 'spaced-attribute.xsl',
+    after: 'spaced-attribute.fixed.xsl',
+  },
+  {
+    name: 'should append to a spaced exclude-result-prefixes with ' +
+      '--fix-suggestions',
+    flag: '--fix-suggestions',
+    before: 'spaced-excluded-prefixes.xsl',
+    after: 'spaced-excluded-prefixes.fixed.xsl',
+  },
+  {
     name: 'should wrap loose text in xsl:text with --fix-suggestions',
     flag: '--fix-suggestions',
     before: 'text-outside-xsl-text.xsl',

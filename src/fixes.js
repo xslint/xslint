@@ -123,7 +123,38 @@ const deletion = function(attribute, content) {
   }
 }
 
+/**
+ * A fix that replaces an attribute's value, leaving its name, the gaps around
+ * its `=` and its delimiter as the source spells them. Nothing about that
+ * spelling has to be known: the value opens one character past the delimiter
+ * xmldom reports, whichever quote stands there, and the value the parser read
+ * is what `src/fixer.js` decodes the source back to.
+ *
+ * Rebuilding the whole attribute as `name="value"` was the shape before, and
+ * it assumed three things at once — that the name stands a fixed distance in
+ * front of the delimiter, that the delimiter is a double quote, and that no gap
+ * surrounds the `=`. Ordinary XML defeats each of them, and they fail together:
+ * the column lands past the name and the text stands nowhere in the file, so
+ * the fixer announced the fix and then declined it as no longer matching,
+ * naming an edit that never happened (#718). Narrowing to the value is what
+ * removes the assumption rather than repairing it — a name nobody rewrites is a
+ * name nobody has to find.
+ * @param {Node} attribute - The attribute whose value is rewritten
+ * @param {string} replacement - The value to write in its place
+ * @return {{line: number, col: number, value: string, replacement: string}} -
+ *  The fix
+ */
+const substitution = function(attribute, replacement) {
+  return {
+    line: attribute.lineNumber,
+    col: attribute.columnNumber + 1,
+    value: attribute.value,
+    replacement: replacement,
+  }
+}
+
 module.exports = {
   deletion,
   standsAt,
+  substitution,
 }

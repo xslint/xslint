@@ -4,7 +4,7 @@
  */
 
 const {metaOf, suppressed} = require('../checks')
-const {standsAt} = require('../fixes')
+const {standsAt, substitution} = require('../fixes')
 const {GAPS} = require('../tokens')
 const {logger} = require('../logger')
 
@@ -163,10 +163,7 @@ const exclusion = function(root, prefix) {
   }
   if (attribute) {
     fix = {
-      line: attribute.lineNumber,
-      col: attribute.columnNumber - attribute.name.length - 1,
-      value: `${attribute.name}="${attribute.value}"`,
-      replacement: `${attribute.name}="${attribute.value} ${prefix}"`,
+      ...substitution(attribute, `${attribute.value} ${prefix}`),
       suggestion: true,
     }
   }

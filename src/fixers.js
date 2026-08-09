@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {deletion} = require('./fixes')
+const {deletion, substitution} = require('./fixes')
 const {XSLT} = require('./xsl-version')
 
 /**
@@ -27,12 +27,8 @@ const disableOutputEscaping = function(node, content) {
  * @return {object} - The suggestion fix
  */
 const outputMethodXml = function(node) {
-  const method = node.getAttributeNode('method')
   return {
-    line: method.lineNumber,
-    col: method.columnNumber + 1,
-    value: 'xml',
-    replacement: 'html',
+    ...substitution(node.getAttributeNode('method'), 'html'),
     suggestion: true,
   }
 }
@@ -128,11 +124,9 @@ const startsWithDoubleSlash = function(pattern) {
     tier = {suggestion: true}
   }
   return {
-    line: pattern.lineNumber,
-    col: pattern.columnNumber - pattern.name.length - 1,
-    value: `${pattern.name}="${pattern.value}"`,
-    replacement: `${pattern.name}="${
-      pattern.value.slice(0, at)}${pattern.value.slice(at + 2)}"`,
+    ...substitution(
+      pattern, `${pattern.value.slice(0, at)}${pattern.value.slice(at + 2)}`,
+    ),
     ...tier,
   }
 }
@@ -152,10 +146,7 @@ const booleanConstant = function(node) {
     constant = 'true()'
   }
   return {
-    line: test.lineNumber,
-    col: test.columnNumber - test.name.length - 1,
-    value: `${test.name}="${test.value}"`,
-    replacement: `${test.name}="${constant}"`,
+    ...substitution(test, constant),
     suggestion: true,
   }
 }
@@ -172,11 +163,9 @@ const selectDoubleSlash = function(node) {
   const select = node.getAttributeNode('select')
   const at = select.value.indexOf('//')
   return {
-    line: select.lineNumber,
-    col: select.columnNumber - select.name.length - 1,
-    value: `${select.name}="${select.value}"`,
-    replacement:
-      `${select.name}="${select.value.slice(0, at)}.${select.value.slice(at)}"`,
+    ...substitution(
+      select, `${select.value.slice(0, at)}.${select.value.slice(at)}`,
+    ),
     suggestion: true,
   }
 }
@@ -193,10 +182,7 @@ const selectDoubleSlash = function(node) {
 const confusingVariable = function(node) {
   const select = node.getAttributeNode('select')
   return {
-    line: select.lineNumber,
-    col: select.columnNumber - select.name.length - 1,
-    value: `${select.name}="`,
-    replacement: `${select.name}="$`,
+    ...substitution(select, `$${select.value}`),
     suggestion: true,
   }
 }
