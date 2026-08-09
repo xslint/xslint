@@ -79,6 +79,20 @@ const RESTRICTED = [
   }
 ];
 
+const STAGED = {
+  selector:
+    "CallExpression[callee.name='require'][arguments.0.value=/-(linter|validator)(\\.js)?$/], ImportDeclaration[source.value=/-(linter|validator)(\\.js)?$/], ImportExpression[source.value=/-(linter|validator)(\\.js)?$/]",
+  message:
+    "Only src/xslint.js wires a stage: no linter or validator reads another, and no core module reaches into the pipeline it exists to serve (#715)"
+};
+
+const OPAQUE = {
+  selector:
+    ":matches(ArrayExpression, LogicalExpression):has(MemberExpression[object.name='TOKENS'][property.name='STRING']):has(MemberExpression[object.name='TOKENS'][property.name='COMMENT'])",
+  message:
+    "Which kinds a scan reads over rather than into is OPAQUE in src/tokens.js and nowhere else: spelling the list out again is how the literal that never closes reached masked and inside as a kind neither of them named, and two checks began reporting inside a string (#708)"
+};
+
 export default defineConfig([
   { ignores: ["eslint.config.mjs", "docs/**"] },
   js.configs.recommended,
@@ -137,14 +151,13 @@ export default defineConfig([
     files: ["src/**/*.js", "src/**/*.mjs"],
     ignores: ["src/xslint.js"],
     rules: {
-      "no-restricted-syntax": ["error", ...RESTRICTED,
-        {
-          selector:
-            "CallExpression[callee.name='require'][arguments.0.value=/-(linter|validator)(\\.js)?$/], ImportDeclaration[source.value=/-(linter|validator)(\\.js)?$/], ImportExpression[source.value=/-(linter|validator)(\\.js)?$/]",
-          message:
-            "Only src/xslint.js wires a stage: no linter or validator reads another, and no core module reaches into the pipeline it exists to serve (#715)"
-        }
-      ]
+      "no-restricted-syntax": ["error", ...RESTRICTED, STAGED, OPAQUE]
+    }
+  },
+  {
+    files: ["src/tokens.js"],
+    rules: {
+      "no-restricted-syntax": ["error", ...RESTRICTED, STAGED]
     }
   },
   {
