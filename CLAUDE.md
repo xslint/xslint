@@ -76,11 +76,19 @@ names in `require`/`import` (no `node:` prefix), no conditional operator
 no redundant return variable
 (`const x = expr; return x` is banned — return the expression), no missing
 argument (a call must fill every parameter the callee declares without a
-default), and one `return` per function (a second exit is banned). The last
-three are project-local rules in `eslint-local-rules.js`, unit-tested in
+default), one `return` per function (a second exit is banned), and no orphaned
+JSDoc block (a `/**` block standing in front of another one documents nothing,
+which is what a deleted function leaves behind). The last four are project-local
+rules in `eslint-local-rules.js`, unit-tested in
 `test/eslint-local-rules.test.js`; the arity of the callee is read from its
 declaration in the same file, or by loading the module a relative `require`
-names. That plugin file sat in ESLint's `ignores` and so was held to none of
+names. The orphan rule has to be one of them rather than a
+`no-restricted-syntax` selector, because a comment is not a node a selector can
+reach, and `jsdoc/require-param` cannot see it either: a block binds to the
+declaration that follows, so the second block wins and the first is judged
+against nothing. Removing `settled` in #709 left its block behind, describing a
+`tokens` parameter and a token return directly above `operates`, which takes
+neither. That plugin file sat in ESLint's `ignores` and so was held to none of
 the rules it implements — nine ternaries lived there. It is linted now, with the
 formatting rules its own style predates (`semi`, `quotes`, `comma-dangle`,
 `quote-props`, `object-curly-spacing`, `space-before-function-paren`) and

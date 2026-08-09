@@ -353,15 +353,6 @@ const afterName = function(xpath, start) {
 }
 
 /**
- * The last token lexed that is not trivia, or undefined where nothing but
- * trivia has been. Two questions the lexer asks about what came before are
- * answered from it, and neither may see a gap or a comment: whitespace is
- * insignificant between tokens, so a question it could change would be one the
- * grammar does not ask.
- * @param {Array.<{type: string, value: string}>} tokens - Tokens so far
- * @return {?{type: string, value: string}} - The last solid token
- */
-/**
  * Whether an operator may stand at the end of what has been lexed, which is
  * what makes a word an operator rather than a name. The kind of the last solid
  * token settles it. Until #676 the punctuation arrived as one undivided `OTHER`
