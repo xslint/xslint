@@ -1072,6 +1072,102 @@ const parsed = function(xpath, version) {
   return {tokens: tokens, tree: tree, fault: fault, at: at}
 }
 
+
+/**
+ * The two functions an XSLT pattern may open with, which no other call may
+ * stand in front of a path there. They select by identity rather than by
+ * position, so a pattern beginning with one is anchored the way an absolute
+ * path is.
+ * @type {Array.<string>}
+ */
+const ANCHORS = ['id', 'key']
+
+/**
+ * One branch of a pattern: an optional root, then steps. It is the expression
+ * grammar's own path production with the operators taken away — a pattern has
+ * no arithmetic, no comparison and no function call except the two anchors, so
+ * what is left is the steps and what hangs off them.
+ * @param {object} cursor - The cursor
+ * @return {object} - The `branch` node
+ */
+const branched = function(cursor) {
+  const from = significant(cursor)
+  const parts = []
+  if (sees(cursor, TOKENS.SLASH) || sees(cursor, TOKENS.DOUBLE_SLASH)) {
+    take(cursor)
+    if (steps(cursor)) {
+      parts.push(stepped(cursor))
+    }
+  } else if (sees(cursor, TOKENS.LPAREN) ||
+    (ANCHORS.includes(ahead(cursor).value) &&
+      reaches(cursor, TOKENS.LPAREN))) {
+    parts.push(postfixed(cursor))
+  } else {
+    parts.push(stepped(cursor))
+  }
+  while (sees(cursor, TOKENS.SLASH) || sees(cursor, TOKENS.DOUBLE_SLASH)) {
+    take(cursor)
+    parts.push(stepped(cursor))
+  }
+  return shaped('branch', from, cursor, parts)
+}
+
+/**
+ * Parse an XSLT pattern, which is a different language from an XPath
+ * expression and needs a grammar of its own.
+ *
+ * A pattern says which nodes a rule matches, not what to select, so its shape
+ * is a union of paths and nothing else: no arithmetic, no comparison, no call
+ * but the two anchors `id()` and `key()`, and a branch in brackets, which 3.0
+ * admits as a `ParenthesizedExprP` and the repository's own fixtures use.
+ * Reading one with the expression
+ * grammar accepts what XSLT refuses — `1 + 1` is a fine expression and no
+ * pattern at all — and refuses what it admits. Nothing parsed a pattern
+ * before this, so a malformed `match="foo["` was silent, which is #589 (#678).
+ *
+ * What it does *not* yet do is refuse the productions a pattern has no room
+ * for. The steps come from the expression grammar whole, so an axis a pattern
+ * may not name is accepted here; narrowing that to the restricted set each
+ * version admits is #679, and doing it before the set is written down would
+ * hard-code one version's answer.
+ * @param {string} pattern - The pattern
+ * @param {string} version - The XSLT version in force where it sits
+ * @return {{tokens: Array, tree: ?object, fault: string, at: number}} -
+ *   The tokens, the tree when it parsed, and the complaint when it did not
+ */
+const matched = function(pattern, version) {
+  let tokens = []
+  let tree = null
+  let fault = ''
+  let at = 0
+  try {
+    tokens = tokenized(pattern)
+    const cursor = cursorOf(tokens, version)
+    const from = significant(cursor)
+    const branches = [branched(cursor)]
+    while (sees(cursor, TOKENS.PIPE) || sees(cursor, TOKENS.UNION)) {
+      take(cursor)
+      branches.push(branched(cursor))
+    }
+    tree = branches[0]
+    if (branches.length > 1) {
+      tree = shaped('pattern', from, cursor, branches)
+    }
+    if (ahead(cursor) !== END) {
+      refuse(cursor, 'the end of the pattern')
+    }
+  } catch (err) {
+    if (!err.fault) {
+      throw err
+    }
+    tree = null
+    fault = err.message
+    at = err.at
+  }
+  return {tokens: tokens, tree: tree, fault: fault, at: at}
+}
+
 module.exports = {
   parsed,
+  matched,
 }
