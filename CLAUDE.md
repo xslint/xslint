@@ -96,9 +96,10 @@ call that omits it.
 
 A function likewise leaves through exactly one `return`, and the branching — not
 the exit — decides what it carries: a lookup keyed on the deciding values
-(`collapses` in `src/count-linter.js`), a binding an `if`/`else if` chain settles
-before the exit (`defectsOf` in `src/corpus-linter.js`, which picks the strategy
-rather than the answer), or a sentinel a scan assigns before its loop ends
+(`collapses` in `src/linters/count-linter.js`), a binding an `if`/`else if`
+chain settles before the exit (`defectsOf` in `src/linters/corpus-linter.js`,
+which picks the strategy rather than the answer), or a sentinel a scan assigns
+before its loop ends
 (`closes` in `src/expressions.js`). A `return` counts against the nearest
 enclosing function, so a `map`/`every` callback carrying its own single `return`
 is fine, and an arrow with an expression body has none at all.
@@ -119,7 +120,8 @@ node carrying it** — a node is an `attribute`, and the record pairing the two 
 `found` (`{node, start, expression, pattern}`, what `expressionsOf` yields).
 `no-restricted-syntax` selectors enforce both halves: reading a node's property
 off an `expression` is an error, and so is handing `defect` a node and its text as
-two arguments. The word named the node in `src/xpath-validator.js` and the text in
+two arguments. The word named the node in `src/validators/xpath-validator.js`
+and the text in
 `src/attributes.js` until #648, which is how one call came to spell both from one
 identifier and how a JSDoc drifted to a key (`file`) the validator never pushed.
 Pass the record, not its pieces: a mismatched pair reported at the wrong place and
@@ -147,16 +149,23 @@ expression, never hides the feedback on everything else.
 ```text
 src/index.mjs             CLI entry (commander.js, ESM)
   src/xslint.js           discovery, config, run order, output; exports lint()
-    validators — partition the input, report the bad part:
-      src/xsl-validator.js       well-formed XML  -> builds the corpus
-      src/xpath-validator.js     XPath syntax     -> keeps the valid expressions
-    document linters — (corpus, suppressions) => defects:
-      src/xpath-linter.js        declarative checks/xpath/*.yaml (per file)
-      src/corpus-linter.js       declarative checks/corpus/*.yaml (cross file)
-      src/*-linter.js            code-based checks/format/*.yaml (one construct each)
-    expression linters — (expressions, suppressions) => defects:
-      src/xpath-format-linter.js checks/format/redundant-whitespace.yaml
+    src/validators/ — partition the input, report the bad part:
+      xsl-validator.js           well-formed XML  -> builds the corpus
+      xpath-validator.js         XPath syntax     -> keeps the valid expressions
+    src/linters/, document — (corpus, suppressions) => defects:
+      xpath-linter.js            declarative checks/xpath/*.yaml (per file)
+      corpus-linter.js           declarative checks/corpus/*.yaml (cross file)
+      *-linter.js                code-based checks/format/*.yaml (one construct each)
+    src/linters/, expression — (expressions, suppressions) => defects:
+      xpath-format-linter.js     checks/format/redundant-whitespace.yaml
 ```
+
+The two stages have a directory each, and everything else in `src/` is the core
+they consume. That is not filing: it is what makes the rule below expressible,
+which it was not while a stage and a shared module were the same kind of string
+written from the same place (#715). The `-linter` suffix stays inside
+`src/linters/` for one reason — dropping it would put `linters/xpath.js` one word
+from `src/xpath.js`, the fontoxpath environment.
 
 `src/xslint.js` exposes the whole staging as a pure function,
 `lint(sources, {suppress, overrides}) => defects`: no file I/O, prints nothing,
@@ -183,9 +192,20 @@ test pack:
 | `xpath` | `xpath` + `severity` + `message` | the XPath selects violations | selected node |
 | `corpus` | `declaration`/`usage` (+ `reference`/`scoped`/`reachable`) | cross-file, declarative | the declaration |
 | `validation` | `severity` + `message` | code (well-formedness, XPath syntax) | in code |
-| `format` | `severity` + `message` | code (a `src/*-linter.js`) | in code |
+| `format` | `severity` + `message` | code (a `src/linters/*-linter.js`) | in code |
 
-No linter imports another. The declarative loaders (`xpath-linter`,
+No linter imports another, no validator imports another, and only
+`src/xslint.js` reaches into either directory. That is one rule rather than
+three: a `no-restricted-syntax` selector over all of `src/`, with that one file
+ignored, refuses a `require` or `import` of any path ending in `-linter` or
+`-validator`. It asks what is being required, never where the requiring file
+sits, which is what makes it hold — the first draft anchored on the requirer's
+directory and three spellings walked past it, an extension (`./name-linter.js`),
+a longer way to the same file (`../src/linters/name-linter`, which resolves), and
+any new `src/` subdirectory at all, since `src/*.js` does not recurse (#715). A
+barrel cannot get around it either: an `src/linters/index.js` would have to
+require the linters it re-exports, and that is the same violation. The
+declarative loaders (`xpath-linter`,
 `corpus-linter`) and the token/DOM linters all share `src/xpath.js` (the
 fontoxpath environment: prefixes, evaluators, `isValid`), `src/tokens.js` (the
 positioned XPath lexer), and `src/helpers.js` (XML/YAML parsing, file
@@ -271,7 +291,8 @@ on any difference, because a check that has drifted is not the check that fires.
 - **corpus rule**: add `checks/corpus/<name>.yaml` and
   `test/resources/corpus-packs/<name>.yaml`.
 - **validation/format check**: the logic is code (a validator, or a
-  `src/*-linter.js` wired into `LINTERS`); the YAML only tunes `severity` and
+  `src/linters/*-linter.js` wired into `LINTERS`); the YAML only tunes
+  `severity` and
   `message`. A code-based format linter builds its defects through `src/checks.js`
   (`metaOf`, `suppressed`, `defect`) and reads its expressions from
   `src/attributes.js`'s `expressionsOf` (every XPath/pattern attribute of an XSLT
@@ -502,7 +523,8 @@ accidentally attached fix turns red.
   not the validated part — so it still reports what it finds there, but `defect`
   withholds the fix, because rewriting text no processor parses is how
   `select="child::"` became `select=""` (#636). A declarative fix never passes
-  through `defect` — `src/xpath-linter.js` attaches it from `src/fixers.js` — so
+  through `defect` — `src/linters/xpath-linter.js` attaches it from
+  `src/fixers.js` — so
   it is gated there instead, against the same `expressionsOf` derivation: no fix
   is offered on an attribute whose expression the engine refuses, nor on the
   element carrying it, since a fixer names the attribute it wants inside itself
@@ -529,11 +551,11 @@ accidentally attached fix turns red.
 | `src/config.js` | Resolves `.xslint.yml` (severities/`off`, excludes, `max-warnings`) |
 | `src/directives.js` | Parses inline `xslint-disable-*` comment directives |
 | `src/reporters.js` | `reporterOf(format)` — `text`, `json`, `sarif`, or `github` output |
-| `src/xsl-validator.js` | Builds the corpus; reports each non-well-formed stylesheet |
-| `src/xpath-validator.js` | Splits corpus expressions into valid (kept) and malformed (reported) via `isValid` |
-| `src/xpath-linter.js` | Loads `checks/xpath/*.yaml`; attaches any `src/fixers.js` fix, unless the node — or the element carrying it — holds an expression the engine refuses (#651) |
-| `src/corpus-linter.js` | Loads `checks/corpus/*.yaml`; cross-file rules |
-| `src/*-linter.js` | Code-based `checks/format/*.yaml`, one construct each (axis, namespace, count, name, ...); see the flow diagram |
+| `src/validators/xsl-validator.js` | Builds the corpus; reports each non-well-formed stylesheet |
+| `src/validators/xpath-validator.js` | Splits corpus expressions into valid (kept) and malformed (reported) via `isValid` |
+| `src/linters/xpath-linter.js` | Loads `checks/xpath/*.yaml`; attaches any `src/fixers.js` fix, unless the node — or the element carrying it — holds an expression the engine refuses (#651) |
+| `src/linters/corpus-linter.js` | Loads `checks/corpus/*.yaml`; cross-file rules |
+| `src/linters/*-linter.js` | Code-based `checks/format/*.yaml`, one construct each (axis, namespace, count, name, ...); see the flow diagram |
 | `src/checks.js` | Shared for code-based linters: `metaOf`, `suppressed`, `defect(check, meta, source, found, offset, fix)` — takes the expression whole, as `expressionsOf` yields it, and adds its `start` to the offset itself (#648); walks the raw text so a wrapped or entity-shifted value reports where it truly stands (#611), and drops the `fix` when the expression does not parse (#636). That walk is `rawly(source, found, offset)`, exported beside it, because a linter needs the raw offset as much as a defect does: an attribute value arrives with its line endings normalised to spaces, so a check reasoning about whitespace cannot see a wrap in the value it holds and has to ask the source (#628) |
 | `src/source.js` | Raw-text walking shared by `checks` and `fixer`: `offsetAt`, `placeAt`, `character`, `skip` |
 | `src/attributes.js` | `expressionsOf(xsl)` — every expression a stylesheet carries: a bare/AVT attribute, a 3.0 text value template, or a shadow attribute, each saying whether it is a `pattern`; `PATTERNS` names the five attributes that hold one; `selectorOf(name)` for a linter that narrows, and `wholeOf(attribute)` to build the same record for the one it narrowed to |

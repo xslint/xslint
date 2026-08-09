@@ -3,9 +3,9 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {xml} = require('./helpers')
-const {kinds} = require('./resources/checks.json')
-const {logger} = require('./logger')
+const {xml} = require('../helpers')
+const {kinds} = require('../resources/checks.json')
+const {logger} = require('../logger')
 
 /**
  * Name of the check this validator owns.

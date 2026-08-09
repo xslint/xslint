@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {lintByNamespaceAxis} = require('../src/using-namespace-axis-linter')
+const {lintByNamespaceAxis} = require('../src/linters/using-namespace-axis-linter')
 const {allFilesFrom, xml, yaml} = require('../src/helpers')
 const path = require('path')
 const assert = require('assert')

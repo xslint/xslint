@@ -3,12 +3,12 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {masked, closes} = require('./expressions')
-const {GAP} = require('./tokens')
-const {metaOf, suppressed, defect} = require('./checks')
-const {expressionsOf} = require('./attributes')
-const {MODERN, since, versionOf} = require('./xsl-version')
-const {logger} = require('./logger')
+const {masked, closes} = require('../expressions')
+const {GAP} = require('../tokens')
+const {metaOf, suppressed, defect} = require('../checks')
+const {expressionsOf} = require('../attributes')
+const {MODERN, since, versionOf} = require('../xsl-version')
+const {logger} = require('../logger')
 
 /**
  * Name of the check this linter owns.

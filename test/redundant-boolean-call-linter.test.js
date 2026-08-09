@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {lintByBooleanCall} = require('../src/redundant-boolean-call-linter')
+const {lintByBooleanCall} = require('../src/linters/redundant-boolean-call-linter')
 const {allFilesFrom, xml, yaml} = require('../src/helpers')
 const path = require('path')
 const assert = require('assert')

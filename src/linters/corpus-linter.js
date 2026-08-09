@@ -3,9 +3,9 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {nodes, strings} = require('./xpath')
-const {kinds} = require('./resources/checks.json')
-const {logger} = require('./logger')
+const {nodes, strings} = require('../xpath')
+const {kinds} = require('../resources/checks.json')
+const {logger} = require('../logger')
 
 /**
  * Corpus checks: the name suppressions match against, plus the
