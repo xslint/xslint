@@ -237,6 +237,46 @@ module.exports = {
         };
       }
     },
+    "no-orphan-docblock": {
+      meta: {
+        type: "problem",
+        docs: {
+          description: "disallow a JSDoc block with no declaration under it"
+        },
+        messages: {
+          orphan:
+            "This block documents nothing: another JSDoc block stands where " +
+            "the declaration it describes should be, so whatever it " +
+            "documented has gone and the block outlived it"
+        }
+      },
+      create(context) {
+        const source = context.sourceCode;
+        const documents = function (comment) {
+          return (
+            comment !== null &&
+            comment.type === "Block" &&
+            comment.value.startsWith("*")
+          );
+        };
+        return {
+          Program() {
+            source
+              .getAllComments()
+              .filter(
+                (comment) =>
+                  documents(comment) &&
+                  documents(
+                    source.getTokenAfter(comment, { includeComments: true })
+                  )
+              )
+              .forEach((comment) =>
+                context.report({ node: comment, messageId: "orphan" })
+              );
+          }
+        };
+      }
+    },
     "no-multiple-returns": {
       meta: {
         type: "suggestion",

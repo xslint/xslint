@@ -180,12 +180,18 @@ const grown = function(depth) {
  * case rather than by whichever example somebody thought to add.
  *
  * A fifth atom is not swept, which is worth a sentence rather than a silence.
- * The sweep would break on eight of the hundred and sixty thousand, every one
- * of them a pair of axes like `child:: child::` or `namespace ::child::`, all
- * respelling to a separator the lexer then reads as a name because a name may
- * not end in one it has already swallowed. That is #703 rather than anything
- * the retry does, so a deeper sweep would pin a lexer defect inside a test
- * about the respelling.
+ * It used to break on eight of the hundred and sixty thousand, every one of
+ * them a pair of axes like `child:: child::` or `namespace ::child::`, where
+ * the lexer opened a second axis behind a separator that admits a node test and
+ * nothing else — a defect in the lexer rather than anything the retry does, so
+ * sweeping deeper would have pinned it inside a test about the respelling.
+ * #709 closed it and all eight now sweep clean.
+ *
+ * What keeps the fifth atom out is cost rather than a defect: it is a hundred
+ * and sixty thousand expressions against fourteen thousand, three quarters of a
+ * second against a twentieth, and it would double the half of the suite meant
+ * to answer inside one. Four already carries the proof, and the family a fifth
+ * atom reached is the one family that can no longer arise.
  * @type {Array.<string>}
  */
 const SWEPT = [1, 2, 3, 4].flatMap((depth) => grown(depth))
