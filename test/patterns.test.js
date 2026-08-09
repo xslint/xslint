@@ -87,6 +87,33 @@ const GATED = [
 ]
 
 /**
+ * Steps XSLT 1.0 and 2.0 refuse and this grammar still admits at 3.0. Their
+ * production below the rewrite is `ChildOrAttributeAxisSpecifier`, which names
+ * the two axes it is called after and the `@` abbreviating the second, so a
+ * reverse axis, a `.` or a `..` spells a pattern no processor of either version
+ * loads. What 3.0's own `ForwardAxisP` admits is *not* settled here, so each
+ * row pins the deferral as much as the narrowing: the third column is today's
+ * answer at 3.0, not a claim about the specification. Should 3.0 turn out to
+ * refuse them too, these rows are where that lands, and until then an
+ * over-acceptance leaves a defect unreported while refusing a pattern XSLT
+ * admits would invent one against working code (#679).
+ * @type {Array.<{xpath: string, name: string}>}
+ */
+const TRODDEN = [
+  {xpath: 'ancestor::para', name: 'a reverse axis'},
+  {xpath: 'self::para', name: 'the self axis'},
+  {xpath: 'descendant::para', name: 'the descendant axis'},
+  {xpath: 'namespace::para', name: 'the namespace axis'},
+  {xpath: 'following-sibling::para', name: 'a sibling axis'},
+  {xpath: 'preceding::para', name: 'a backward axis'},
+  {xpath: 'parent::para', name: 'the parent axis'},
+  {xpath: 'chapter//ancestor::para', name: 'a reverse axis buried in a path'},
+  {xpath: 'chapter | self::para', name: 'an axis in the second branch'},
+  {xpath: 'chapter/.', name: 'a context step'},
+  {xpath: 'chapter/..', name: 'a parent step'},
+]
+
+/**
  * Text the pattern grammar refuses, with the offset the complaint points at.
  * Three of them are perfectly good *expressions*, which is the whole reason a
  * pattern needs a grammar of its own rather than a second reading of the
@@ -129,6 +156,15 @@ describe('patterns', function() {
         [matched(xpath, floor).fault === '', matched(xpath, below).fault === ''],
         [true, false],
         `${xpath} is not gated at ${floor}`,
+      )
+    })
+  })
+  TRODDEN.forEach(({xpath, name}) => {
+    it(`refuses ${name} below the rewrite`, function() {
+      assert.deepEqual(
+        ['1.0', '2.0', '3.0'].map((one) => matched(xpath, one).fault === ''),
+        [false, false, true],
+        `${xpath} is not the step 1.0 and 2.0 refuse and 3.0 still admits`,
       )
     })
   })

@@ -1113,6 +1113,39 @@ const anchors = function(cursor) {
 }
 
 /**
+ * The axes a step of an XSLT 1.0 or 2.0 pattern may name. Their production is
+ * spelled `ChildOrAttributeAxisSpecifier` and admits those two and the `@` that
+ * abbreviates the second, so the other eleven make a pattern no processor of
+ * either version loads. 3.0 rebuilt the grammar and its `ForwardAxisP` is not
+ * settled here, so this narrows below {@link REWRITE} alone — refusing a
+ * pattern XSLT admits invents a defect against working code, which is the
+ * expensive direction, while accepting one it does not leaves a defect
+ * unreported until #679 finishes.
+ * @type {Array.<string>}
+ */
+const TREADS = [TOKENS.CHILD, TOKENS.ATTRIBUTE]
+
+/**
+ * One step of a pattern's path, which is narrower than a step of an
+ * expression's. Below {@link REWRITE} a step is a node test on the child or
+ * attribute axis and nothing else, so neither a reverse axis nor the `.` and
+ * `..` that stand for a context and a parent may spell one: `a/.` is a path in
+ * every expression and a pattern in no version before 3.0.
+ * @param {object} cursor - The cursor
+ * @return {object} - The `step` node
+ */
+const treaded = function(cursor) {
+  const token = ahead(cursor)
+  if (!since(cursor.version, REWRITE) && (
+    (AXES.includes(token.type) && !TREADS.includes(token.type)) ||
+    token.type === TOKENS.DOT || token.type === TOKENS.DOUBLE_DOT
+  )) {
+    refuse(cursor, 'a node test on the child or attribute axis')
+  }
+  return stepped(cursor)
+}
+
+/**
  * One step of a pattern's path. It is an axis step, or a branch in brackets,
  * which 3.0's `StepExprP` admits at *any* position in a path and not only where
  * one opens — so `a/(b|c)` is a pattern as much as `(b|c)/a` is. That is where
@@ -1127,7 +1160,7 @@ const paced = function(cursor) {
     rewritten(cursor)
     node = postfixed(cursor)
   } else {
-    node = stepped(cursor)
+    node = treaded(cursor)
   }
   return node
 }
