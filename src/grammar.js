@@ -931,11 +931,21 @@ const LADDER = [
   {types: [TOKENS.IDIV], kind: 'idiv'},
   {types: [TOKENS.PLUS, TOKENS.MINUS], kind: 'sum'},
   {types: [TOKENS.CONCAT], kind: 'concat'},
+  {types: [TOKENS.AND], kind: 'and'},
+  {types: [TOKENS.OR], kind: 'or'},
+]
+
+/**
+ * The three classes of comparison, which are one level of the grammar and not
+ * three. `ComparisonExpr` takes an operand from either side of one operator
+ * and admits no run of them, so which class an operator belongs to names the
+ * node it builds and settles nothing about what may stand beside it.
+ * @type {Array.<{types: Array.<string>, kind: string}>}
+ */
+const COMPARISONS = [
   {types: GENERALS, kind: 'comparison'},
   {types: VALUES, kind: 'value-comparison'},
   {types: NODES, kind: 'node-comparison'},
-  {types: [TOKENS.AND], kind: 'and'},
-  {types: [TOKENS.OR], kind: 'or'},
 ]
 
 /**
@@ -949,8 +959,10 @@ const operand = function(cursor) {
 
 /**
  * The whole precedence ladder, climbed from the tightest level to the loosest.
- * The range operator sits between the sums and the comparisons and takes one
- * operand rather than a run of them, so it is spelled out rather than folded.
+ * Two of its levels take one operand rather than a run of them and so are
+ * spelled out rather than folded: the range operator between the sums and the
+ * comparisons, and the comparison itself between the concatenations and the
+ * `and`.
  * @param {object} cursor - The cursor
  * @return {object} - The node
  */
@@ -986,6 +998,32 @@ const laddered = function(cursor) {
         return node
       }
       below = ranged
+    }
+    if (level.kind === 'concat') {
+      const concatenated = below
+      /**
+       * A comparison, which stands between the concatenations and the `and`
+       * and holds at most one operator, so `$a is $b` is an expression and
+       * `$a is $b is $c` is not one.
+       * @param {object} cursor - The cursor
+       * @return {object} - The node
+       */
+      const compared = function(cursor) {
+        const from = significant(cursor)
+        let node = concatenated(cursor)
+        const found = COMPARISONS.find(
+          (one) => one.types.includes(ahead(cursor).type),
+        )
+        if (found !== undefined) {
+          admits(cursor, found.kind)
+          take(cursor)
+          node = shaped(
+            found.kind, from, cursor, [node, concatenated(cursor)],
+          )
+        }
+        return node
+      }
+      below = compared
     }
   }
   return below(cursor)

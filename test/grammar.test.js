@@ -111,6 +111,14 @@ const ACCEPTS = [
  * @type {Array.<{name: string, xpath: string, at: number}>}
  */
 const REFUSES = [
+  {name: 'a general comparison chained onto another', xpath: 'a < b < c',
+    at: 6},
+  {name: 'a value comparison chained onto another', xpath: 'a eq b eq c',
+    at: 7},
+  {name: 'a node comparison chained onto another', xpath: 'a << b << c',
+    at: 7},
+  {name: 'a comparison chained onto one of another class',
+    xpath: '$a is $b << $c', at: 9},
   {name: 'a step that names no axis', xpath: 'child::', at: 7},
   {name: 'a bracket that never closes', xpath: 'count(//a', at: 9},
   {name: 'a predicate that never closes', xpath: 'a[1', at: 3},
