@@ -374,7 +374,6 @@ const SPACED = [
 const QUALIFIED = [
   {name: 'a', spells: true},
   {name: 'my:a', spells: true},
-  {name: 'my:', spells: true},
   {name: '_x', spells: true},
   {name: 'a-b', spells: true},
   {name: 'a.b', spells: true},
@@ -384,6 +383,8 @@ const QUALIFIED = [
   {name: '', spells: false},
   {name: ':a', spells: false},
   {name: ':', spells: false},
+  {name: 'my:', spells: false},
+  {name: 'a:', spells: false},
   {name: 'my:25l', spells: false},
   {name: 'my:-x', spells: false},
   {name: 'my:.x', spells: false},

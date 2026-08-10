@@ -344,9 +344,12 @@ const single = function(part) {
 
 /**
  * Whether a name is one XML can spell: an NCName, or two of them joined by a
- * single colon. A prefix with nothing behind it counts, because that is how the
- * `my:` of `my:*` arrives — the `*` is the wildcard's own token and no part of
- * the name.
+ * single colon. Both parts have to hold something, a prefix naming nothing on
+ * its own: `$my:` and `my:(1)` are refused by every engine, and it was this
+ * answer that let them through, permitting a trailing colon because the `my:`
+ * of `my:*` arrives spelled that way — the `*` being the wildcard's own token.
+ * A wildcard is `tested`'s business and it consumes both tokens itself now, so
+ * a name reaching here always spells its local part (#731).
  *
  * The lexer takes a name whole and greedily and never asks how it is spelled,
  * so `my:25l`, `my:-x` and `my:a:b` each arrive as one `NAME` and read as an
@@ -359,11 +362,7 @@ const single = function(part) {
  */
 const qualified = function(name) {
   const parts = name.split(':')
-  let answer = parts.length <= 2 && single(parts[0])
-  if (answer && parts.length === 2 && parts[1] !== '') {
-    answer = single(parts[1])
-  }
-  return answer
+  return parts.length <= 2 && parts.every((one) => single(one))
 }
 
 /**

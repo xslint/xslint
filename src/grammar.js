@@ -546,6 +546,12 @@ const conditional = function(cursor) {
  * rather than asked of the lexer. The fourth is a braced URI literal in front
  * of the `*`, which names every element of one namespace with no prefix bound
  * to it, and is a wildcard rather than a name as much as `*:name` is.
+ *
+ * The prefixed spelling is taken here whole, both tokens of it, rather than
+ * asked of `named` and then held to a `*`. That is the only place a name ending
+ * in a colon belongs, so `qualified` can refuse one everywhere else: while that
+ * permission sat in the lexer's answer it reached a variable and a call too,
+ * and `$my:` and `my:(1)` parsed where no engine accepts either (#731).
  * @param {object} cursor - The cursor
  * @return {object} - The `test` node
  */
@@ -567,12 +573,12 @@ const tested = function(cursor) {
   } else if (reserves(cursor, ahead(cursor).value) &&
     reaches(cursor, TOKENS.LPAREN)) {
     refuse(cursor, 'a name XPath does not reserve')
+  } else if (ahead(cursor).value.endsWith(':') &&
+    reaches(cursor, TOKENS.MULTI)) {
+    take(cursor)
+    take(cursor)
   } else {
-    const prefixed = ahead(cursor).value.endsWith(':')
     named(cursor)
-    if (prefixed) {
-      expect(cursor, TOKENS.MULTI, '"*" after the prefix')
-    }
   }
   return shaped('test', from, cursor, [])
 }
