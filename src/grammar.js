@@ -546,6 +546,12 @@ const conditional = function(cursor) {
  * rather than asked of the lexer. The fourth is a braced URI literal in front
  * of the `*`, which names every element of one namespace with no prefix bound
  * to it, and is a wildcard rather than a name as much as `*:name` is.
+ *
+ * The prefixed spelling is taken here whole, both tokens of it, rather than
+ * asked of `named` and then held to a `*`. That is the only place a name ending
+ * in a colon belongs, so `qualified` can refuse one everywhere else: while that
+ * permission sat in the lexer's answer it reached a variable and a call too,
+ * and `$my:` and `my:(1)` parsed where no engine accepts either (#731).
  * @param {object} cursor - The cursor
  * @return {object} - The `test` node
  */
@@ -567,12 +573,12 @@ const tested = function(cursor) {
   } else if (reserves(cursor, ahead(cursor).value) &&
     reaches(cursor, TOKENS.LPAREN)) {
     refuse(cursor, 'a name XPath does not reserve')
+  } else if (ahead(cursor).value.endsWith(':') &&
+    reaches(cursor, TOKENS.MULTI)) {
+    take(cursor)
+    take(cursor)
   } else {
-    const prefixed = ahead(cursor).value.endsWith(':')
     named(cursor)
-    if (prefixed) {
-      expect(cursor, TOKENS.MULTI, '"*" after the prefix')
-    }
   }
   return shaped('test', from, cursor, [])
 }
@@ -652,13 +658,17 @@ const stepped = function(cursor) {
 /**
  * Whether a step can begin at the cursor. A path stops where one cannot, which
  * is how `a[1]` ends after the predicate rather than reading the `]` as a test.
- * A name is one of the things it begins with, and a name spelling its namespace
- * inline begins with the literal rather than with the name, so `//Q{urn:my}a`
- * opens a step as much as `//a` does — the shape the inline form exists for, a
- * namespace-qualified search with no prefix bound to reach it. No version
- * test here for the same reason `OPENERS` carries none: `named` refuses the
- * literal below 3.0 wherever it stands, and naming the construct is the more
- * useful complaint than naming the end of the expression.
+ * A name is one of the things it begins with, and the lexer kinds a name three
+ * ways — a bare `NAME`, a `USER_FUNCTION` where a prefixed one has a bracket
+ * behind it, a `URI` where it spells its namespace inline — so the question is
+ * asked of `NAMES` rather than of one kind at a time. Asking about one kind is
+ * how `a/Q{urn:my}b` came to be accepted while `//Q{urn:my}a` was refused
+ * (#708), and how `a/my:fn(1)` was accepted while `//my:fn(1)` was refused
+ * (#731): every production that *reads* a name knew all three, and the one that
+ * decides where a name may stand knew one. No version test here, for the reason
+ * `OPENERS` carries none — a call is no step below 2.0 and an inline namespace
+ * no name below 3.0, and each is refused where that is decided, which names the
+ * construct rather than the end of the expression.
  * @param {object} cursor - The cursor
  * @return {boolean} - True when a step stands there
  */
@@ -666,8 +676,8 @@ const steps = function(cursor) {
   const token = ahead(cursor)
   return AXES.includes(token.type) || token.type === TOKENS.AT ||
     token.type === TOKENS.DOUBLE_DOT || token.type === TOKENS.DOT ||
-    token.type === TOKENS.MULTI || token.type === TOKENS.URI ||
-    (token.type === TOKENS.NAME && !KEYWORDS.includes(token.value)) ||
+    token.type === TOKENS.MULTI ||
+    (NAMES.includes(token.type) && !KEYWORDS.includes(token.value)) ||
     OPENERS.includes(token.type)
 }
 
@@ -710,7 +720,14 @@ const parted = function(cursor) {
 /**
  * A path expression: an optional root, then steps separated by one slash or
  * two. A lone `/` is the document node and takes no step after it, which is why
- * the first step is asked for rather than assumed.
+ * the first step is asked for rather than assumed. A lone `//` is not the same
+ * thing spelled shorter: `PathExpr` gives the two separate productions,
+ * `"/" RelativePathExpr?` against `"//" RelativePathExpr`, because `//`
+ * abbreviates `/descendant-or-self::node()/` and that trailing slash needs
+ * something behind it. Reading them alike accepted `//` as a whole expression,
+ * and the wrong verdict then bred a wrong tree: the `-` of `//-x` stood where a
+ * binary operator may, so it came back a subtraction of two paths, and `//|a`
+ * a union with one (#731).
  * @param {object} cursor - The cursor
  * @return {object} - The `path` node
  */
@@ -719,10 +736,13 @@ const walked = function(cursor) {
   const parts = []
   let opened = false
   if (sees(cursor, TOKENS.SLASH) || sees(cursor, TOKENS.DOUBLE_SLASH)) {
+    const descends = sees(cursor, TOKENS.DOUBLE_SLASH)
     opened = true
     take(cursor)
     if (steps(cursor)) {
       parts.push(parted(cursor))
+    } else if (descends) {
+      refuse(cursor, 'a step for the "//" to descend to')
     }
   } else {
     parts.push(postfixed(cursor))
