@@ -1177,6 +1177,59 @@ const paced = function(cursor) {
 }
 
 /**
+ * One argument of the call a pattern anchors on. XSLT narrows `FunctionCallP`
+ * to a literal or a variable reference, which the expression grammar's argument
+ * list does not: a path, a call, a comparison or a bracket there is XTSE0340,
+ * and `key("k", a/b)`, `id("x" | "y")` and `doc(concat("a", "b"))/x` parsed as
+ * patterns until this stood in the way. A variable is 3.0's, as it is wherever
+ * else a pattern names one.
+ *
+ * A numeric literal is a literal, so `key("k", 1)` is a pattern. `id(1)` is not
+ * accepted by a processor either, but for `XPTY0004` rather than `XTSE0340` —
+ * that is `id`'s signature and not the pattern grammar, so it is none of this
+ * function's business.
+ * @param {object} cursor - The cursor
+ * @return {object} - The literal or variable reference
+ */
+const literal = function(cursor) {
+  let node = null
+  if (sees(cursor, TOKENS.DOLLAR)) {
+    rewritten(cursor)
+    node = primary(cursor)
+  } else if (sees(cursor, TOKENS.STRING) || sees(cursor, TOKENS.NUMBER)) {
+    node = primary(cursor)
+  } else {
+    refuse(cursor, 'a literal or a variable reference')
+  }
+  return node
+}
+
+/**
+ * The call a pattern anchors a path on, which {@link anchors} names. Its
+ * arguments are narrower than a call's anywhere else, and `root` takes none at
+ * all — `root($v)` is XTSE0340 where `root()` is a pattern.
+ * @param {object} cursor - The cursor, standing at the name
+ * @return {object} - The `call` node, with any predicates behind it
+ */
+const anchored = function(cursor) {
+  const from = significant(cursor)
+  const name = ahead(cursor).value
+  take(cursor)
+  expect(cursor, TOKENS.LPAREN, '"("')
+  const args = []
+  if (!sees(cursor, TOKENS.RPAREN)) {
+    if (name === 'root') {
+      refuse(cursor, 'no argument, which is all a pattern gives root()')
+    }
+    do {
+      args.push(literal(cursor))
+    } while (sees(cursor, TOKENS.COMMA) && take(cursor))
+  }
+  expect(cursor, TOKENS.RPAREN, '")"')
+  return shaped('call', from, cursor, args.concat(filtered(cursor)))
+}
+
+/**
  * A branch in brackets, which is `ParenthesizedExprP` and holds a *pattern*
  * rather than whatever an expression may hold: `(a | b)/c` is a pattern and
  * `(1 + 1)/a`, `(a = b)/c`, `("s")/a` and `(a, b)/c` are not, though every one
@@ -1249,7 +1302,7 @@ const branched = function(cursor) {
     parts.push(postfixed(cursor))
   } else if (anchors(cursor).includes(ahead(cursor).value) &&
     reaches(cursor, TOKENS.LPAREN)) {
-    parts.push(postfixed(cursor))
+    parts.push(anchored(cursor))
   } else {
     parts.push(entered(cursor))
   }

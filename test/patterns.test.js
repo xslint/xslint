@@ -72,6 +72,9 @@ const ACCEPTS = [
   {xpath: 'root()/a', kind: 'branch'},
   {xpath: 'root()//a', kind: 'branch'},
   {xpath: 'element-with-id("x")', kind: 'branch'},
+  {xpath: 'key("k", 1)', kind: 'branch'},
+  {xpath: 'key("k", $v)', kind: 'branch'},
+  {xpath: 'id(1)', kind: 'branch'},
   {xpath: '.', kind: 'branch'},
   {xpath: '.[@x]', kind: 'branch'},
   {xpath: '  para  ', kind: 'branch'},
@@ -176,6 +179,17 @@ const MISPLACED = [
   {name: 'a context item as either branch', xpath: '. | .'},
   {name: 'a filtered context item in a union', xpath: '.[@x] | a'},
   {name: 'a sum buried in a bracketed branch', xpath: 'a/(b | 1 + 1)'},
+  {name: 'a path as an anchor argument', xpath: 'key("k", a/b)'},
+  {name: 'a sum as an anchor argument', xpath: 'key("k", 1 + 1)'},
+  {name: 'a call as an anchor argument', xpath: 'key("k", concat("a", "b"))'},
+  {name: 'a context item as an anchor argument', xpath: 'key("k", .)'},
+  {name: 'a bracket as an anchor argument', xpath: 'key("k", ("a"))'},
+  {name: 'an attribute path as an anchor argument', xpath: 'id(a/@x)'},
+  {name: 'a union as an anchor argument', xpath: 'id("x" | "y")'},
+  {name: 'a negated number as an anchor argument', xpath: 'id(-1)'},
+  {name: 'a path anchoring element-with-id', xpath: 'element-with-id(a/b)'},
+  {name: 'a call anchoring a document', xpath: 'doc(concat("a", "b"))/x'},
+  {name: 'an argument to the root anchor', xpath: 'root($v)'},
 ]
 
 /**
