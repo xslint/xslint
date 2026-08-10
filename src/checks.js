@@ -87,10 +87,11 @@ const rawly = function(source, found, offset) {
  * @param {{file: string, content: string}} source - The file the node sits
  *  in, with its raw text, which is the only place the line breaks a parser
  *  normalised away are still visible
- * @param {{node: Node, start: number, expression: string}} found - The
- *  expression the defect stands in: its attribute, text or CDATA node, where it
- *  starts in that node's value, and its own text, which decides whether a fix
- *  may be offered at all
+ * @param {{node: Node, start: number, expression: string, pattern: boolean}}
+ *  found - The expression the defect stands in: its attribute, text or CDATA
+ *  node, where it starts in that node's value, its own text, and whether it is
+ *  a pattern. The whole record decides whether a fix may be offered, since the
+ *  language it is read as and the version it is read under are both on it
  * @param {number} offset - Offset of the defect within the expression
  * @param {?{value: string, replacement: string, suggestion?: boolean}} [fix] -
  *  The fix, or undefined for a report-only defect

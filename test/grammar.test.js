@@ -8,23 +8,12 @@ const {compiles, squeezed} = require('../src/xpath')
 const assert = require('assert')
 
 /**
- * Whether a processor accepts the expression: the engine, asked with the
- * respelling retry that covers its own strictness. That is the question these
- * rows have always meant. `isValid` stopped answering it at #732 — it asks our
- * grammar now, at the version in force where the expression stands, and takes
- * the record rather than the text.
- * @param {string} xpath - The expression
- * @return {boolean} - True when fontoxpath takes it, respelled or as written
- */
-const accepts = function(xpath) {
-  return compiles(xpath) || compiles(squeezed(xpath))
-}
-
-
-/**
  * Expressions XPath 3.1 has, each with the kind its tree comes out rooted at.
  * Every one of them is handed to the engine as well, so a row cannot claim a
- * spelling the processor would refuse.
+ * spelling the processor would refuse. The engine is asked as `compiles` with
+ * the respelling retry spelled out beside it, which is what `isValid` was until
+ * #732 took its verdict from this grammar instead: a row here asks whether
+ * fontoxpath takes the expression, and that question now has no other caller.
  * @type {Array.<{xpath: string, kind: string}>}
  */
 const ACCEPTS = [
@@ -289,7 +278,10 @@ describe('grammar', function() {
   })
   ACCEPTS.forEach(({xpath}) => {
     it(`agrees with the engine about ${JSON.stringify(xpath)}`, function() {
-      assert.ok(accepts(xpath), `${xpath} is not valid XPath at all`)
+      assert.ok(
+        compiles(xpath) || compiles(squeezed(xpath)),
+        `${xpath} is not valid XPath at all`,
+      )
     })
   })
   REFUSES.forEach(({name, xpath, at}) => {
