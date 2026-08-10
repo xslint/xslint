@@ -54,6 +54,10 @@ const ACCEPTS = [
   {xpath: '(a)', kind: 'branch'},
   {xpath: '(a[1])/b', kind: 'branch'},
   {xpath: '(a | b)[1]', kind: 'branch'},
+  {xpath: '()', kind: 'branch'},
+  {xpath: '()/a', kind: 'branch'},
+  {xpath: '(())/a', kind: 'branch'},
+  {xpath: '()[1]', kind: 'branch'},
   {xpath: 'b/.', kind: 'branch'},
   {xpath: '/.', kind: 'branch'},
   {xpath: '//.', kind: 'branch'},
@@ -141,6 +145,9 @@ const TRODDEN = [
   {xpath: 'chapter | self::para', name: 'a widened axis in a branch',
     admits: ['3.0']},
   {xpath: 'chapter/.', name: 'a context step', admits: ['3.0']},
+  {xpath: '()', name: 'a bracket holding no pattern', admits: ['3.0']},
+  {xpath: '() | a', name: 'an empty bracket in a union',
+    admits: ['3.0']},
 ]
 
 /**

@@ -1181,18 +1181,26 @@ const paced = function(cursor) {
  * rather than whatever an expression may hold: `(a | b)/c` is a pattern and
  * `(1 + 1)/a`, `(a = b)/c`, `("s")/a` and `(a, b)/c` are not, though every one
  * of them is a fine expression. Reading it through the expression grammar's own
- * parenthesized primary admitted all four, which is the last of #678's
- * borrowings to be paid back.
+ * parenthesized primary admitted all four.
+ *
+ * What it holds is optional, as it is in the expression grammar's own
+ * parenthesized primary: `()` matches nothing and is a pattern all the same, so
+ * `()/a` and `() | a` parse. Requiring a pattern inside refused all eight
+ * spellings of it, and an under-acceptance is the direction that invents a
+ * defect against working code.
  * @param {object} cursor - The cursor, standing at the `(`
  * @return {object} - The `parenthesized` node, with any predicates behind it
  */
 const bracketed = function(cursor) {
   const from = significant(cursor)
   expect(cursor, TOKENS.LPAREN, '"("')
-  const inner = unioned(cursor)
+  const parts = []
+  if (!sees(cursor, TOKENS.RPAREN)) {
+    parts.push(unioned(cursor))
+  }
   expect(cursor, TOKENS.RPAREN, '")"')
   return shaped(
-    'parenthesized', from, cursor, [inner].concat(filtered(cursor)),
+    'parenthesized', from, cursor, parts.concat(filtered(cursor)),
   )
 }
 
