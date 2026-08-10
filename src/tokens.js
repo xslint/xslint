@@ -25,6 +25,7 @@
 const TOKENS = {
   STRING: 'string',
   UNCLOSED: 'unclosed',
+  URI: 'uri',
   COMMENT: 'comment',
   WHITESPACE: 'whitespace',
   NUMBER: 'number',
@@ -536,6 +537,34 @@ const afterString = function(xpath, start) {
 }
 
 /**
+ * Offset just past the braced URI literal opening at given offset, or that
+ * offset itself where none is spelled there. XPath 3.0 writes a name's
+ * namespace inline as `Q{uri}local`, and `BracedURILiteral` is a terminal of
+ * the grammar rather than a `Q` standing beside a brace, which is why the whole
+ * of it is lexed here and not assembled above.
+ *
+ * The content is every character up to the closing brace with a brace itself
+ * excluded, so `Q{a{b}c` spells no literal at all and neither does one that
+ * never closes. Both answer the offset they were handed and lex on as the `Q`
+ * and the brace they were before: a malformed literal is not a kind of
+ * literal, and the grammar already refuses what those tokens make.
+ * @param {string} xpath - Xpath expression
+ * @param {number} start - Offset of the "Q"
+ * @return {number} - Offset just past the closing brace, or `start` for none
+ */
+const afterUri = function(xpath, start) {
+  let at = start
+  if (xpath[start] === 'Q' && xpath[start + 1] === '{') {
+    const closes = xpath.indexOf('}', start + 2)
+    const opens = xpath.indexOf('{', start + 2)
+    if (closes > 0 && (opens === -1 || opens > closes)) {
+      at = closes + 1
+    }
+  }
+  return at
+}
+
+/**
  * Offset just past the comment opening at given offset. Comments nest, so an
  * inner "(:" must be balanced by its own ":)".
  * @param {string} xpath - Xpath expression
@@ -660,6 +689,7 @@ const tokenized = function(xpath) {
     const axis = !separates(last) && opensAxis(xpath, at)
     const more = opensMore(xpath, at)
     const func = opensUserFunction(xpath, at)
+    const uri = afterUri(xpath, at)
     let type
     if (QUOTES.includes(xpath[at])) {
       const literal = afterString(xpath, at)
@@ -683,6 +713,9 @@ const tokenized = function(xpath) {
     } else if (func) {
       type = TOKENS.USER_FUNCTION
       at += func.length
+    } else if (uri > at) {
+      type = TOKENS.URI
+      at = uri
     } else if (STARTS.test(xpath[at])) {
       const name = xpath.slice(at, afterName(xpath, at))
       let spelled = name

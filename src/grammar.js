@@ -26,8 +26,9 @@ const TRIVIA = [TOKENS.WHITESPACE, TOKENS.COMMENT]
 const END = Object.freeze({type: 'end', value: ''})
 
 /**
- * The floor each construct's version gate compares against, keyed by the kind
- * of node it builds. XSLT's version is what a stylesheet declares and what
+ * The floor each construct's version gate compares against, keyed by the
+ * construct rather than by the node it builds, since several build none of
+ * their own. XSLT's version is what a stylesheet declares and what
  * `versionOf` hands back, so these are XSLT versions rather than XPath's: 1.0
  * carries XPath 1.0, 2.0 carries XPath 2.0, and 3.0 carries XPath 3.1. A
  * construct absent from this table is in every version, `1.0` included.
@@ -44,6 +45,7 @@ const SINCE = {
   'except': '2.0',
   'for': '2.0',
   'idiv': '2.0',
+  'inline-namespace': '3.0',
   'instance': '2.0',
   'intersect': '2.0',
   'let': '3.0',
@@ -122,6 +124,15 @@ const KINDS = [
   'document-node', 'schema-element', 'schema-attribute', 'namespace-node',
   'item', 'empty-sequence', 'function', 'map', 'array',
 ]
+
+/**
+ * The kinds a name arrives as: a QName, the prefixed call the lexer tells apart
+ * on its own, and the braced URI literal opening one whose namespace XPath 3.0
+ * writes inline. A reserved name is never one of the last two, since XPath
+ * reserves an *unprefixed* spelling alone.
+ * @type {Array.<string>}
+ */
+const NAMES = [TOKENS.NAME, TOKENS.USER_FUNCTION, TOKENS.URI]
 
 /**
  * A cursor over a token stream: the tokens, and how far into them the parse has
@@ -339,7 +350,11 @@ const folded = function(cursor, below, types, kind) {
  */
 const named = function(cursor) {
   const from = significant(cursor)
-  if (!sees(cursor, TOKENS.USER_FUNCTION)) {
+  if (sees(cursor, TOKENS.URI)) {
+    admits(cursor, 'inline-namespace')
+    take(cursor)
+    expect(cursor, TOKENS.NAME, 'a name behind the inline namespace')
+  } else if (!sees(cursor, TOKENS.USER_FUNCTION)) {
     expect(cursor, TOKENS.NAME, 'a name')
   } else {
     take(cursor)
@@ -456,10 +471,12 @@ const conditional = function(cursor) {
 }
 
 /**
- * A node test: a name, a wildcard in any of its three spellings, or a kind test
+ * A node test: a name, a wildcard in any of its four spellings, or a kind test
  * such as `text()`. A wildcard's parts arrive as separate tokens, since `*` is
- * an operator elsewhere and a prefix is a name, so the three are read here
- * rather than asked of the lexer.
+ * an operator elsewhere and a prefix is a name, so the four are read here
+ * rather than asked of the lexer. The fourth is a braced URI literal in front
+ * of the `*`, which names every element of one namespace with no prefix bound
+ * to it, and is a wildcard rather than a name as much as `*:name` is.
  * @param {object} cursor - The cursor
  * @return {object} - The `test` node
  */
@@ -471,6 +488,10 @@ const tested = function(cursor) {
       take(cursor)
       expect(cursor, TOKENS.NAME, 'a name after the wildcard prefix')
     }
+  } else if (sees(cursor, TOKENS.URI) && reaches(cursor, TOKENS.MULTI)) {
+    admits(cursor, 'inline-namespace')
+    take(cursor)
+    take(cursor)
   } else if (sees(cursor, TOKENS.NAME) && KINDS.includes(ahead(cursor).value) &&
     reaches(cursor, TOKENS.LPAREN)) {
     typed(cursor)
@@ -485,9 +506,9 @@ const tested = function(cursor) {
 }
 
 /**
- * Whether the token after the next one is of the given kind, which is the one
- * place the grammar needs to see past what it is standing on: `text` is a name
- * until a bracket follows it, and then it is a kind test.
+ * Whether the token after the next one is of the given kind, which is how the
+ * grammar sees past what it is standing on: `text` is a name until a bracket
+ * follows it, and then it is a kind test.
  * @param {object} cursor - The cursor
  * @param {string} type - The kind to look for
  * @return {boolean} - True when it stands there
@@ -496,6 +517,24 @@ const reaches = function(cursor, type) {
   const beyond = cursorOf(cursor.tokens, cursor.version)
   beyond.at = significant(cursor) + 1
   return sees(beyond, type)
+}
+
+/**
+ * A cursor of its own, standing just past the name at this one. A name is one
+ * token where it is spelled as a QName and two where XPath writes its namespace
+ * inline, so what *follows* a name is not a question a fixed lookahead can ask:
+ * the bracket behind `Q{urn:my}fn` stands two tokens away and the one behind
+ * `fn` stands one.
+ * @param {object} cursor - The cursor
+ * @return {object} - A cursor standing past the name
+ */
+const pastName = function(cursor) {
+  const beyond = cursorOf(cursor.tokens, cursor.version)
+  beyond.at = significant(cursor) + 1
+  if (sees(cursor, TOKENS.URI)) {
+    beyond.at = significant(beyond) + 1
+  }
+  return beyond
 }
 
 /**
@@ -790,8 +829,8 @@ const primary = function(cursor) {
  */
 const called = function(cursor) {
   const token = ahead(cursor)
-  return (token.type === TOKENS.NAME || token.type === TOKENS.USER_FUNCTION) &&
-    !KINDS.includes(token.value) && reaches(cursor, TOKENS.LPAREN)
+  return NAMES.includes(token.type) && !KINDS.includes(token.value) &&
+    sees(pastName(cursor), TOKENS.LPAREN)
 }
 
 /**

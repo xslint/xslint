@@ -163,6 +163,40 @@ const SCANS = [
     ],
   },
   {
+    name: 'lexes a braced URI literal whole',
+    count: 1,
+    pairs: [
+      ['Q{urn:my}a', TOKENS.URI],
+      ['Q{}a', TOKENS.URI],
+      ['Q{ urn:my }a', TOKENS.URI],
+      ['Q{urn:my}*', TOKENS.URI],
+      ['a/Q{urn:my}b', TOKENS.URI],
+      ['$Q{urn:my}v', TOKENS.URI],
+      ['Q{urn:my}fn(1)', TOKENS.URI],
+    ],
+  },
+  {
+    name: 'reads no braced URI literal where none is spelled',
+    count: 0,
+    pairs: [
+      ['map{"aa":1}', TOKENS.URI],
+      ['aQ{urn:my}b', TOKENS.URI],
+      ['Q{unclosed', TOKENS.URI],
+      ['Q{a{b}c', TOKENS.URI],
+      ['Q:a', TOKENS.URI],
+      ['Q', TOKENS.URI],
+      ['Qa', TOKENS.URI],
+    ],
+  },
+  {
+    name: 'leaves the brace of a map constructor to the map',
+    count: 1,
+    pairs: [
+      ['map{"aa":1}', TOKENS.LBRACE],
+      ['Q{urn:my}a[map{"aa":1}]', TOKENS.LBRACE],
+    ],
+  },
+  {
     name: 'refuses to call a literal that never closes a string',
     count: 1,
     pairs: [
@@ -338,7 +372,7 @@ const PIECES = [
   '\n', '//', '/', '(', ')', '[', ']', '*', '+', '-', '=', '!=', '<=',
   '>=', '|', '||', 'and', 'or', 'div', 'mod', 'instance of', '$v', ',', ':',
   '.', '..', '::', '!', '?', '#', '=>', ':=', '{', '}', 'let ', ' return ',
-  '<<', '>>', ' is ',
+  '<<', '>>', ' is ', 'Q{urn:my}', 'Q{}',
 ]
 
 /**
