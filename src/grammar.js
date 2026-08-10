@@ -652,13 +652,17 @@ const stepped = function(cursor) {
 /**
  * Whether a step can begin at the cursor. A path stops where one cannot, which
  * is how `a[1]` ends after the predicate rather than reading the `]` as a test.
- * A name is one of the things it begins with, and a name spelling its namespace
- * inline begins with the literal rather than with the name, so `//Q{urn:my}a`
- * opens a step as much as `//a` does — the shape the inline form exists for, a
- * namespace-qualified search with no prefix bound to reach it. No version
- * test here for the same reason `OPENERS` carries none: `named` refuses the
- * literal below 3.0 wherever it stands, and naming the construct is the more
- * useful complaint than naming the end of the expression.
+ * A name is one of the things it begins with, and the lexer kinds a name three
+ * ways — a bare `NAME`, a `USER_FUNCTION` where a prefixed one has a bracket
+ * behind it, a `URI` where it spells its namespace inline — so the question is
+ * asked of `NAMES` rather than of one kind at a time. Asking about one kind is
+ * how `a/Q{urn:my}b` came to be accepted while `//Q{urn:my}a` was refused
+ * (#708), and how `a/my:fn(1)` was accepted while `//my:fn(1)` was refused
+ * (#731): every production that *reads* a name knew all three, and the one that
+ * decides where a name may stand knew one. No version test here, for the reason
+ * `OPENERS` carries none — a call is no step below 2.0 and an inline namespace
+ * no name below 3.0, and each is refused where that is decided, which names the
+ * construct rather than the end of the expression.
  * @param {object} cursor - The cursor
  * @return {boolean} - True when a step stands there
  */
@@ -666,8 +670,8 @@ const steps = function(cursor) {
   const token = ahead(cursor)
   return AXES.includes(token.type) || token.type === TOKENS.AT ||
     token.type === TOKENS.DOUBLE_DOT || token.type === TOKENS.DOT ||
-    token.type === TOKENS.MULTI || token.type === TOKENS.URI ||
-    (token.type === TOKENS.NAME && !KEYWORDS.includes(token.value)) ||
+    token.type === TOKENS.MULTI ||
+    (NAMES.includes(token.type) && !KEYWORDS.includes(token.value)) ||
     OPENERS.includes(token.type)
 }
 
