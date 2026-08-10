@@ -25,6 +25,40 @@ const masked = function(expression) {
 }
 
 /**
+ * The brackets a nested construct opens with and the ones it closes with, kept
+ * in step so a depth is one count rather than three.
+ * @type {{opens: string, shuts: string}}
+ */
+const NESTED = {opens: '([{', shuts: ')]}'}
+
+/**
+ * Whether exactly one argument stands between a call's brackets. `fn:count`,
+ * `fn:not` and `fn:boolean` each take one in every XSLT version, so a call
+ * spelling none or several is not the construct the checks scanning for them
+ * name, and the text between its brackets is no argument to rewrite: `count()`
+ * became `empty()` and `not(not())` the empty string, one expression no
+ * processor loads turned into another (#576). A comma nested inside a call, a
+ * predicate or a map constructor separates nothing at this level, and one
+ * inside a literal never arrives, the text being blanked before the scan.
+ * @param {string} inner - The bracketed text, with literals already blanked
+ * @return {boolean} - Whether one argument stands there
+ */
+const lone = function(inner) {
+  let depth = 0
+  let alone = inner.trim() !== ''
+  for (const character of inner) {
+    if (NESTED.opens.includes(character)) {
+      depth++
+    } else if (NESTED.shuts.includes(character)) {
+      depth--
+    } else if (depth === 0 && character === ',') {
+      alone = false
+    }
+  }
+  return alone
+}
+
+/**
  * Offset of the `)` that closes the `(` at `open` in a literal-free expression,
  * or -1 when it is unbalanced.
  * @param {string} expression - Expression with literals already blanked
@@ -107,4 +141,5 @@ module.exports = {
   masked,
   closes,
   enclosed,
+  lone,
 }

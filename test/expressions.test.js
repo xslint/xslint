@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {enclosed} = require('../src/expressions')
+const {enclosed, lone} = require('../src/expressions')
 const assert = require('assert')
 
 /**
@@ -55,6 +55,53 @@ const TEMPLATES = [
   },
 ]
 
+/**
+ * The text between a call's brackets, paired with whether exactly one argument
+ * stands there. A comma nested inside a call, a predicate or a map constructor
+ * separates nothing at this level; one inside a literal never arrives, the text
+ * reaching `lone` already blanked.
+ * @type {Array.<{name: string, inner: string, alone: boolean}>}
+ */
+const ARGUMENTS = [
+  {name: 'counts a plain argument', inner: 'x', alone: true},
+  {name: 'counts a path as one argument', inner: 'a/b/c', alone: true},
+  {name: 'counts an argument a gap pads', inner: ' x ', alone: true},
+  {name: 'counts nothing where nothing stands', inner: '', alone: false},
+  {name: 'counts nothing in a bracket holding a gap', inner: '  ', alone: false},
+  {name: 'counts two arguments as more than one', inner: 'a, b', alone: false},
+  {name: 'counts three arguments as more than one', inner: 'a,b,c', alone: false},
+  {
+    name: 'counts a comma inside a nested call as no separator',
+    inner: 'concat(@a, @b)',
+    alone: true,
+  },
+  {
+    name: 'counts a comma inside a predicate as no separator',
+    inner: 'a[substring(@x, 2) = "y"]',
+    alone: true,
+  },
+  {
+    name: 'counts a comma inside a map constructor as no separator',
+    inner: 'map{"a": 1, "b": 2}',
+    alone: true,
+  },
+  {
+    name: 'counts a separator standing past a nested call',
+    inner: 'concat(@a, @b), @c',
+    alone: false,
+  },
+  {
+    name: 'counts a separator standing in front of a nested call',
+    inner: '@c, concat(@a, @b)',
+    alone: false,
+  },
+  {
+    name: 'counts a comma a blanked literal no longer holds',
+    inner: 'concat(@a,     )',
+    alone: true,
+  },
+]
+
 describe('expressions', function() {
   TEMPLATES.forEach(({name, value, found}) => {
     it(name, function() {
@@ -64,6 +111,15 @@ describe('expressions', function() {
         ),
         found,
         `cannot enclose the expressions of "${value}"`,
+      )
+    })
+  })
+  ARGUMENTS.forEach(({name, inner, alone}) => {
+    it(name, function() {
+      assert.equal(
+        lone(inner),
+        alone,
+        `cannot count the arguments standing in "${inner}"`,
       )
     })
   })
