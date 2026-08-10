@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {tokenized, TOKENS} = require('../tokens')
+const {tokenized, TOKENS, TRIVIA} = require('../tokens')
 const {metaOf, suppressed, defect} = require('../checks')
 const {expressionsOf} = require('../attributes')
 const {logger} = require('../logger')
@@ -98,8 +98,7 @@ const literals = function(expression) {
       const open = opens.pop()
       const replacement = shortened(
         tokens.slice(open + 1, ind).filter(
-          (token) => token.type !== TOKENS.WHITESPACE &&
-            token.type !== TOKENS.COMMENT,
+          (token) => !TRIVIA.includes(token.type),
         ),
       )
       if (replacement !== null) {

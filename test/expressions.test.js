@@ -96,10 +96,56 @@ const ARGUMENTS = [
     alone: false,
   },
   {
-    name: 'counts a comma a blanked literal no longer holds',
-    inner: 'concat(@a,     )',
+    name: 'counts a literal as the one argument it is',
+    inner: `'abc'`,
     alone: true,
   },
+  {
+    name: 'counts an empty literal as an argument all the same',
+    inner: `''`,
+    alone: true,
+  },
+  {
+    name: 'counts a comma inside a literal as no separator',
+    inner: `'a, b'`,
+    alone: true,
+  },
+  {
+    name: 'counts nothing in a bracket holding only a comment',
+    inner: '(: why :)',
+    alone: false,
+  },
+  {
+    name: 'counts a literal standing behind a comment',
+    inner: `(: why :) 'a'`,
+    alone: true,
+  },
+  {
+    name: 'counts a comma inside a comment as no separator',
+    inner: 'concat(@a) (: , :)',
+    alone: true,
+  },
+]
+
+/**
+ * Where `lone` is narrower than XPath is, pinned so that closing the gap turns
+ * these red and a new one does too — the way `GAPS` pins the grammar's own
+ * disagreements in `test/grammar-corpus.test.js`. A binding clause puts its
+ * commas at bracket depth zero inside *one* argument, so they read as
+ * separators and the three checks fall silent on a construct that was reported
+ * and fixed correctly before. The real rule is that a comma in front of
+ * `return` or `satisfies` binds while one behind it separates — two arguments
+ * really do stand in `f(for $x in a return $x, b)` — which a bracket count
+ * cannot tell apart and a
+ * grammar can, so it waits for the tree rather than for more counting (#644,
+ * Phase 4). The direction is the safe one: a report withheld, never a bad fix.
+ * @type {Array.<string>}
+ */
+const BINDINGS = [
+  'for $x in a, $y in b return $x',
+  'let $x := a, $y := b return $x',
+  'some $x in a, $y in b satisfies $x',
+  'every $x in a, $y in b satisfies $x',
 ]
 
 describe('expressions', function() {
@@ -122,5 +168,13 @@ describe('expressions', function() {
         `cannot count the arguments standing in "${inner}"`,
       )
     })
+  })
+  it('reads a binding clause as more than one argument, narrowly', function() {
+    assert.deepEqual(
+      BINDINGS.filter((one) => lone(one)),
+      [],
+      'a binding clause is no longer miscounted, so these rows have earned ' +
+        'their place in ARGUMENTS and this gap is closed',
+    )
   })
 })

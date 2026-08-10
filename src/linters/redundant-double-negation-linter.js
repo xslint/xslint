@@ -70,7 +70,7 @@ const negations = function(expression) {
     const innerOpen = open + inner[0].length
     const innerClose = closes(blanked, innerOpen)
     if (innerClose < 0 || blanked.slice(innerClose + 1, close).trim() !== '' ||
-      !lone(blanked.slice(innerOpen + 1, innerClose))) {
+      !lone(expression.slice(innerOpen + 1, innerClose))) {
       continue
     }
     found.push({

@@ -55,13 +55,12 @@ const collapses = function(operator, zero) {
  * @param {string} operator - The comparison operator
  * @param {string} zero - The compared digit, `0` or `1`
  * @param {string} argument - The call's argument
- * @param {string} blanked - The argument with string/comment spans blanked
  * @return {?{test: string, argument: string}} - The classification, or null
  */
-const decide = function(operator, zero, argument, blanked) {
+const decide = function(operator, zero, argument) {
   const test = collapses(operator, zero)
   let found = null
-  if (test && lone(blanked)) {
+  if (test && lone(argument)) {
     found = {test: test, argument: argument}
   }
   return found

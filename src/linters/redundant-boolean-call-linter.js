@@ -58,7 +58,7 @@ const stripped = function(test) {
     const close = closes(blanked, open)
     const offset = wrapper[0].indexOf('boolean')
     if (close >= 0 && blanked.slice(close + 1).trim() === '' &&
-      lone(blanked.slice(open + 1, close))) {
+      lone(test.slice(open + 1, close))) {
       strip = {
         offset: offset,
         value: test.slice(offset, close + 1),

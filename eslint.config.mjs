@@ -93,6 +93,13 @@ const OPAQUE = {
     "Which kinds a scan reads over rather than into is OPAQUE in src/tokens.js and nowhere else: spelling the list out again is how the literal that never closes reached masked and inside as a kind neither of them named, and two checks began reporting inside a string (#708)"
 };
 
+const TRIVIA = {
+  selector:
+    ":matches(ArrayExpression, LogicalExpression):has(MemberExpression[object.name='TOKENS'][property.name='WHITESPACE']):has(MemberExpression[object.name='TOKENS'][property.name='COMMENT'])",
+  message:
+    "Which kinds carry no meaning to a grammar and every meaning to the source is TRIVIA in src/tokens.js and nowhere else: it was spelled three times over — as TRIVIA in src/grammar.js, as a && chain inside tokenized, and once more in lone — which is how OPAQUE came to be missing a kind (#576, #708)"
+};
+
 export default defineConfig([
   { ignores: ["eslint.config.mjs", "docs/**"] },
   js.configs.recommended,
@@ -152,7 +159,7 @@ export default defineConfig([
     files: ["src/**/*.js", "src/**/*.mjs"],
     ignores: ["src/xslint.js"],
     rules: {
-      "no-restricted-syntax": ["error", ...RESTRICTED, STAGED, OPAQUE]
+      "no-restricted-syntax": ["error", ...RESTRICTED, STAGED, OPAQUE, TRIVIA]
     }
   },
   {
