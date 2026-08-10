@@ -1169,11 +1169,47 @@ const paced = function(cursor) {
   let node = null
   if (sees(cursor, TOKENS.LPAREN)) {
     rewritten(cursor)
-    node = postfixed(cursor)
+    node = bracketed(cursor)
   } else {
     node = treaded(cursor)
   }
   return node
+}
+
+/**
+ * A branch in brackets, which is `ParenthesizedExprP` and holds a *pattern*
+ * rather than whatever an expression may hold: `(a | b)/c` is a pattern and
+ * `(1 + 1)/a`, `(a = b)/c`, `("s")/a` and `(a, b)/c` are not, though every one
+ * of them is a fine expression. Reading it through the expression grammar's own
+ * parenthesized primary admitted all four, which is the last of #678's
+ * borrowings to be paid back.
+ * @param {object} cursor - The cursor, standing at the `(`
+ * @return {object} - The `parenthesized` node, with any predicates behind it
+ */
+const bracketed = function(cursor) {
+  const from = significant(cursor)
+  expect(cursor, TOKENS.LPAREN, '"("')
+  const inner = unioned(cursor)
+  expect(cursor, TOKENS.RPAREN, '")"')
+  return shaped(
+    'parenthesized', from, cursor, [inner].concat(filtered(cursor)),
+  )
+}
+
+/**
+ * The step a path opens with, which is every step but `.`. A context step is
+ * reached rather than named: `b/.`, `/.` and `//.` are patterns because a
+ * separator stands in front of the dot, while `(.)`, `a/(.)` and the `.` of
+ * `a | .` open one and are refused. Standing alone it is not a step at all but
+ * the whole of `PredicatePattern`, which {@link whole} reads before a union.
+ * @param {object} cursor - The cursor
+ * @return {object} - The step
+ */
+const entered = function(cursor) {
+  if (sees(cursor, TOKENS.DOT)) {
+    refuse(cursor, 'a step a pattern may open a path with')
+  }
+  return paced(cursor)
 }
 
 /**
@@ -1203,14 +1239,11 @@ const branched = function(cursor) {
   } else if (sees(cursor, TOKENS.DOLLAR)) {
     rewritten(cursor)
     parts.push(postfixed(cursor))
-  } else if (sees(cursor, TOKENS.DOT)) {
-    rewritten(cursor)
-    parts.push(stepped(cursor))
   } else if (anchors(cursor).includes(ahead(cursor).value) &&
     reaches(cursor, TOKENS.LPAREN)) {
     parts.push(postfixed(cursor))
   } else {
-    parts.push(paced(cursor))
+    parts.push(entered(cursor))
   }
   while (sees(cursor, TOKENS.SLASH) || sees(cursor, TOKENS.DOUBLE_SLASH)) {
     take(cursor)
@@ -1233,6 +1266,51 @@ const crossed = function(cursor) {
     rewritten(cursor)
     take(cursor)
     node = shaped('crossing', from, cursor, [node, branched(cursor)])
+  }
+  return node
+}
+
+/**
+ * A union of pattern branches, which is `UnionExprP` and what both a whole
+ * pattern and a bracketed one are made of. It is one production rather than a
+ * loop written twice, because a bracket admits exactly what the top level does
+ * — `(a | b)/c` is a pattern for the same reason `a | b` is.
+ * @param {object} cursor - The cursor
+ * @return {object} - The `pattern` node, or the lone branch when there is one
+ */
+const unioned = function(cursor) {
+  const from = significant(cursor)
+  const branches = [crossed(cursor)]
+  while (sees(cursor, TOKENS.PIPE) || sees(cursor, TOKENS.UNION)) {
+    if (sees(cursor, TOKENS.UNION)) {
+      rewritten(cursor)
+    }
+    take(cursor)
+    branches.push(crossed(cursor))
+  }
+  let node = branches[0]
+  if (branches.length > 1) {
+    node = shaped('pattern', from, cursor, branches)
+  }
+  return node
+}
+
+/**
+ * The whole pattern: a `PredicatePattern` or a union of branches. The first is
+ * `.` and its predicates and nothing else, so it stands alone or not at all —
+ * `a | .`, `. | a` and `.[@x] | a` are refused — while a `.` reached across a
+ * separator, as in `b/.`, is a step and not this production.
+ * @param {object} cursor - The cursor
+ * @return {object} - The tree the pattern comes out as
+ */
+const whole = function(cursor) {
+  const from = significant(cursor)
+  let node = null
+  if (sees(cursor, TOKENS.DOT)) {
+    rewritten(cursor)
+    node = shaped('branch', from, cursor, [stepped(cursor)])
+  } else {
+    node = unioned(cursor)
   }
   return node
 }
@@ -1279,19 +1357,7 @@ const matched = function(pattern, version) {
   try {
     tokens = tokenized(pattern)
     const cursor = cursorOf(tokens, version)
-    const from = significant(cursor)
-    const branches = [crossed(cursor)]
-    while (sees(cursor, TOKENS.PIPE) || sees(cursor, TOKENS.UNION)) {
-      if (sees(cursor, TOKENS.UNION)) {
-        rewritten(cursor)
-      }
-      take(cursor)
-      branches.push(crossed(cursor))
-    }
-    tree = branches[0]
-    if (branches.length > 1) {
-      tree = shaped('pattern', from, cursor, branches)
-    }
+    tree = whole(cursor)
     if (ahead(cursor) !== END) {
       refuse(cursor, 'the end of the pattern')
     }

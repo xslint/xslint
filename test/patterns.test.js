@@ -51,6 +51,12 @@ const ACCEPTS = [
   {xpath: '(a | b)/c', kind: 'branch'},
   {xpath: 'a/(b | c)', kind: 'branch'},
   {xpath: 'a//(b | c)[1]', kind: 'branch'},
+  {xpath: '(a)', kind: 'branch'},
+  {xpath: '(a[1])/b', kind: 'branch'},
+  {xpath: '(a | b)[1]', kind: 'branch'},
+  {xpath: 'b/.', kind: 'branch'},
+  {xpath: '/.', kind: 'branch'},
+  {xpath: '//.', kind: 'branch'},
   {xpath: '/(a | b)', kind: 'branch'},
   {xpath: 'a intersect b', kind: 'crossing'},
   {xpath: 'a except b', kind: 'crossing'},
@@ -138,6 +144,34 @@ const TRODDEN = [
 ]
 
 /**
+ * Text that is a fine XPath expression and no pattern, because of *where* it
+ * stands rather than what it is. A bracket holds a `Pattern`, not whatever an
+ * expression may hold, and `.` is the whole of `PredicatePattern` rather than a
+ * branch of a union or the step a path opens with — though it is a step once a
+ * separator stands in front of it, so `b/.` and `//.` are patterns while
+ * `(.)` and `a | .` are not.
+ *
+ * Every row was arbitrated against SaxonJ-HE 13.0 at 3.0 and xsltproc at 1.0,
+ * and the neighbours in {@link ACCEPTS} with it: taking a bracket to hold a
+ * pattern is worth nothing if it stops holding `(a | b)/c`.
+ * @type {Array.<{name: string, xpath: string}>}
+ */
+const MISPLACED = [
+  {name: 'a sum in a bracket', xpath: '(1 + 1)/a'},
+  {name: 'a comparison in a bracket', xpath: '(a = b)/c'},
+  {name: 'a literal in a bracket', xpath: '("s")/a'},
+  {name: 'a sequence in a bracket', xpath: '(a, b)/c'},
+  {name: 'a context item in a bracket', xpath: '(.)'},
+  {name: 'a bracketed context item opening a path', xpath: '(.)/a'},
+  {name: 'a bracketed context item behind a step', xpath: 'a/(.)'},
+  {name: 'a context item as the second branch', xpath: 'a | .'},
+  {name: 'a context item as the first branch', xpath: '. | a'},
+  {name: 'a context item as either branch', xpath: '. | .'},
+  {name: 'a filtered context item in a union', xpath: '.[@x] | a'},
+  {name: 'a sum buried in a bracketed branch', xpath: 'a/(b | 1 + 1)'},
+]
+
+/**
  * Text the pattern grammar refuses, with the offset the complaint points at.
  * Three of them are perfectly good *expressions*, which is the whole reason a
  * pattern needs a grammar of its own rather than a second reading of the
@@ -180,6 +214,15 @@ describe('patterns', function() {
         [matched(xpath, floor).fault === '', matched(xpath, below).fault === ''],
         [true, false],
         `${xpath} is not gated at ${floor}`,
+      )
+    })
+  })
+  MISPLACED.forEach(({name, xpath}) => {
+    it(`refuses ${name} at every version`, function() {
+      assert.deepEqual(
+        VERSIONS.filter((one) => matched(xpath, one).fault === ''),
+        [],
+        `${xpath} is a pattern in some version, and it is one in none`,
       )
     })
   })
