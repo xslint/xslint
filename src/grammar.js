@@ -1219,11 +1219,108 @@ const paced = function(cursor) {
   let node = null
   if (sees(cursor, TOKENS.LPAREN)) {
     rewritten(cursor)
-    node = postfixed(cursor)
+    node = bracketed(cursor)
   } else {
     node = treaded(cursor)
   }
   return node
+}
+
+/**
+ * One argument of the call a pattern anchors on. XSLT narrows `FunctionCallP`
+ * to a literal or a variable reference, which the expression grammar's argument
+ * list does not: a path, a call, a comparison or a bracket there is XTSE0340,
+ * and `key("k", a/b)`, `id("x" | "y")` and `doc(concat("a", "b"))/x` parsed as
+ * patterns until this stood in the way. A variable is 3.0's, as it is wherever
+ * else a pattern names one.
+ *
+ * A numeric literal is a literal, so `key("k", 1)` is a pattern. `id(1)` is not
+ * accepted by a processor either, but for `XPTY0004` rather than `XTSE0340` —
+ * that is `id`'s signature and not the pattern grammar, so it is none of this
+ * function's business.
+ * @param {object} cursor - The cursor
+ * @return {object} - The literal or variable reference
+ */
+const literal = function(cursor) {
+  let node = null
+  if (sees(cursor, TOKENS.DOLLAR)) {
+    rewritten(cursor)
+    node = primary(cursor)
+  } else if (sees(cursor, TOKENS.STRING) || sees(cursor, TOKENS.NUMBER)) {
+    node = primary(cursor)
+  } else {
+    refuse(cursor, 'a literal or a variable reference')
+  }
+  return node
+}
+
+/**
+ * The call a pattern anchors a path on, which {@link anchors} names. Its
+ * arguments are narrower than a call's anywhere else, and `root` takes none at
+ * all — `root($v)` is XTSE0340 where `root()` is a pattern.
+ * @param {object} cursor - The cursor, standing at the name
+ * @return {object} - The `call` node, with any predicates behind it
+ */
+const anchored = function(cursor) {
+  const from = significant(cursor)
+  const name = ahead(cursor).value
+  take(cursor)
+  expect(cursor, TOKENS.LPAREN, '"("')
+  const args = []
+  if (!sees(cursor, TOKENS.RPAREN)) {
+    if (name === 'root') {
+      refuse(cursor, 'no argument, which is all a pattern gives root()')
+    }
+    do {
+      args.push(literal(cursor))
+    } while (sees(cursor, TOKENS.COMMA) && take(cursor))
+  }
+  expect(cursor, TOKENS.RPAREN, '")"')
+  return shaped('call', from, cursor, args.concat(filtered(cursor)))
+}
+
+/**
+ * A branch in brackets, which is `ParenthesizedExprP` and holds a *pattern*
+ * rather than whatever an expression may hold: `(a | b)/c` is a pattern and
+ * `(1 + 1)/a`, `(a = b)/c`, `("s")/a` and `(a, b)/c` are not, though every one
+ * of them is a fine expression. Reading it through the expression grammar's own
+ * parenthesized primary admitted all four.
+ *
+ * What it holds is optional, as it is in the expression grammar's own
+ * parenthesized primary: `()` matches nothing and is a pattern all the same, so
+ * `()/a` and `() | a` parse. Requiring a pattern inside refused all eight
+ * spellings of it, and an under-acceptance is the direction that invents a
+ * defect against working code.
+ * @param {object} cursor - The cursor, standing at the `(`
+ * @return {object} - The `parenthesized` node, with any predicates behind it
+ */
+const bracketed = function(cursor) {
+  const from = significant(cursor)
+  expect(cursor, TOKENS.LPAREN, '"("')
+  const parts = []
+  if (!sees(cursor, TOKENS.RPAREN)) {
+    parts.push(unioned(cursor))
+  }
+  expect(cursor, TOKENS.RPAREN, '")"')
+  return shaped(
+    'parenthesized', from, cursor, parts.concat(filtered(cursor)),
+  )
+}
+
+/**
+ * The step a path opens with, which is every step but `.`. A context step is
+ * reached rather than named: `b/.`, `/.` and `//.` are patterns because a
+ * separator stands in front of the dot, while `(.)`, `a/(.)` and the `.` of
+ * `a | .` open one and are refused. Standing alone it is not a step at all but
+ * the whole of `PredicatePattern`, which {@link whole} reads before a union.
+ * @param {object} cursor - The cursor
+ * @return {object} - The step
+ */
+const entered = function(cursor) {
+  if (sees(cursor, TOKENS.DOT)) {
+    refuse(cursor, 'a step a pattern may open a path with')
+  }
+  return paced(cursor)
 }
 
 /**
@@ -1253,14 +1350,11 @@ const branched = function(cursor) {
   } else if (sees(cursor, TOKENS.DOLLAR)) {
     rewritten(cursor)
     parts.push(postfixed(cursor))
-  } else if (sees(cursor, TOKENS.DOT)) {
-    rewritten(cursor)
-    parts.push(stepped(cursor))
   } else if (anchors(cursor).includes(ahead(cursor).value) &&
     reaches(cursor, TOKENS.LPAREN)) {
-    parts.push(postfixed(cursor))
+    parts.push(anchored(cursor))
   } else {
-    parts.push(paced(cursor))
+    parts.push(entered(cursor))
   }
   while (sees(cursor, TOKENS.SLASH) || sees(cursor, TOKENS.DOUBLE_SLASH)) {
     take(cursor)
@@ -1283,6 +1377,51 @@ const crossed = function(cursor) {
     rewritten(cursor)
     take(cursor)
     node = shaped('crossing', from, cursor, [node, branched(cursor)])
+  }
+  return node
+}
+
+/**
+ * A union of pattern branches, which is `UnionExprP` and what both a whole
+ * pattern and a bracketed one are made of. It is one production rather than a
+ * loop written twice, because a bracket admits exactly what the top level does
+ * — `(a | b)/c` is a pattern for the same reason `a | b` is.
+ * @param {object} cursor - The cursor
+ * @return {object} - The `pattern` node, or the lone branch when there is one
+ */
+const unioned = function(cursor) {
+  const from = significant(cursor)
+  const branches = [crossed(cursor)]
+  while (sees(cursor, TOKENS.PIPE) || sees(cursor, TOKENS.UNION)) {
+    if (sees(cursor, TOKENS.UNION)) {
+      rewritten(cursor)
+    }
+    take(cursor)
+    branches.push(crossed(cursor))
+  }
+  let node = branches[0]
+  if (branches.length > 1) {
+    node = shaped('pattern', from, cursor, branches)
+  }
+  return node
+}
+
+/**
+ * The whole pattern: a `PredicatePattern` or a union of branches. The first is
+ * `.` and its predicates and nothing else, so it stands alone or not at all —
+ * `a | .`, `. | a` and `.[@x] | a` are refused — while a `.` reached across a
+ * separator, as in `b/.`, is a step and not this production.
+ * @param {object} cursor - The cursor
+ * @return {object} - The tree the pattern comes out as
+ */
+const whole = function(cursor) {
+  const from = significant(cursor)
+  let node = null
+  if (sees(cursor, TOKENS.DOT)) {
+    rewritten(cursor)
+    node = shaped('branch', from, cursor, [stepped(cursor)])
+  } else {
+    node = unioned(cursor)
   }
   return node
 }
@@ -1329,19 +1468,7 @@ const matched = function(pattern, version) {
   try {
     tokens = tokenized(pattern)
     const cursor = cursorOf(tokens, version)
-    const from = significant(cursor)
-    const branches = [crossed(cursor)]
-    while (sees(cursor, TOKENS.PIPE) || sees(cursor, TOKENS.UNION)) {
-      if (sees(cursor, TOKENS.UNION)) {
-        rewritten(cursor)
-      }
-      take(cursor)
-      branches.push(crossed(cursor))
-    }
-    tree = branches[0]
-    if (branches.length > 1) {
-      tree = shaped('pattern', from, cursor, branches)
-    }
+    tree = whole(cursor)
     if (ahead(cursor) !== END) {
       refuse(cursor, 'the end of the pattern')
     }
