@@ -7,6 +7,12 @@ const {matched} = require('../src/grammar')
 const assert = require('assert')
 
 /**
+ * The XSLT versions every row is asked of.
+ * @type {Array.<string>}
+ */
+const VERSIONS = ['1.0', '2.0', '3.0']
+
+/**
  * Patterns XSLT admits, each with the kind its tree comes out rooted at. A
  * pattern is a union of paths, so a lone branch stays a `branch` and only a
  * real union is a `pattern`.
@@ -87,6 +93,51 @@ const GATED = [
 ]
 
 /**
+ * Steps a pattern may not spell, each naming the versions that do admit it. A
+ * pattern is matched by walking *up* from a node rather than evaluated
+ * forwards, so an axis such a walk cannot answer is a static error and not an
+ * empty match. The four reverse axes, `following`, `following-sibling` and
+ * `preceding-sibling` are refused everywhere, and `..` with them; `self`,
+ * `descendant`, `descendant-or-self` and `namespace` are 3.0's `ForwardAxisP`
+ * widening the `ChildOrAttributeAxisSpecifier` of 1.0 and 2.0, and `.` spells a
+ * step from 3.0 alone.
+ *
+ * Two arbiters were needed and neither would have done on its own. SaxonJ-HE
+ * settles what 3.0 refuses — 12.5 and 13.0 agree, XTSE0340 — but it applies its
+ * own 3.0 pattern syntax whatever the stylesheet declares, admitting `self::a`
+ * and `.` at `version="1.0"` where the older grammar has neither, so it cannot
+ * say what an earlier version refuses. xsltproc answers that half by being 1.0
+ * only. A processor shows that a construct is admitted somewhere; only a
+ * version-aware one shows that a version refuses it.
+ * @type {Array.<{xpath: string, name: string, admits: Array.<string>}>}
+ */
+const TRODDEN = [
+  {xpath: 'ancestor::para', name: 'a reverse axis', admits: []},
+  {xpath: 'ancestor-or-self::para', name: 'a reverse axis with self',
+    admits: []},
+  {xpath: 'following::para', name: 'a forward axis no walk answers',
+    admits: []},
+  {xpath: 'following-sibling::para', name: 'a following sibling', admits: []},
+  {xpath: 'preceding::para', name: 'a backward axis', admits: []},
+  {xpath: 'preceding-sibling::para', name: 'a preceding sibling', admits: []},
+  {xpath: 'parent::para', name: 'the parent axis', admits: []},
+  {xpath: 'chapter//ancestor::para', name: 'a reverse axis buried in a path',
+    admits: []},
+  {xpath: 'chapter | ancestor::para', name: 'a reverse axis in a branch',
+    admits: []},
+  {xpath: 'chapter/..', name: 'a parent step', admits: []},
+  {xpath: '..', name: 'a parent step standing alone', admits: []},
+  {xpath: 'self::para', name: 'the self axis', admits: ['3.0']},
+  {xpath: 'descendant::para', name: 'the descendant axis', admits: ['3.0']},
+  {xpath: 'descendant-or-self::para', name: 'descendant or self',
+    admits: ['3.0']},
+  {xpath: 'namespace::para', name: 'the namespace axis', admits: ['3.0']},
+  {xpath: 'chapter | self::para', name: 'a widened axis in a branch',
+    admits: ['3.0']},
+  {xpath: 'chapter/.', name: 'a context step', admits: ['3.0']},
+]
+
+/**
  * Text the pattern grammar refuses, with the offset the complaint points at.
  * Three of them are perfectly good *expressions*, which is the whole reason a
  * pattern needs a grammar of its own rather than a second reading of the
@@ -129,6 +180,15 @@ describe('patterns', function() {
         [matched(xpath, floor).fault === '', matched(xpath, below).fault === ''],
         [true, false],
         `${xpath} is not gated at ${floor}`,
+      )
+    })
+  })
+  TRODDEN.forEach(({xpath, name, admits}) => {
+    it(`admits ${name} in ${admits.length} of three versions`, function() {
+      assert.deepEqual(
+        VERSIONS.filter((one) => matched(xpath, one).fault === ''),
+        admits,
+        `${xpath} is not the step only ${admits} admits`,
       )
     })
   })
