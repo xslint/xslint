@@ -49,6 +49,7 @@ const SINCE = {
   'let': '3.0',
   'lookup': '3.0',
   'map': '3.0',
+  'node-comparison': '2.0',
   'range': '2.0',
   'reference': '3.0',
   'simple-map': '3.0',
@@ -85,6 +86,16 @@ const VALUES = [
 const GENERALS = [
   TOKENS.EQUAL, TOKENS.NOT_EQUAL, TOKENS.LESS, TOKENS.LESS_EQUAL,
   TOKENS.GREATER, TOKENS.GREAT_EQUAL,
+]
+
+/**
+ * The node comparisons, which 2.0 added beside the other two. They ask about
+ * identity and document order rather than about value, so `$a is $b` is true
+ * only of one node named twice and no amount of equal content makes it so.
+ * @type {Array.<string>}
+ */
+const NODES = [
+  TOKENS.IS, TOKENS.PRECEDES, TOKENS.FOLLOWS,
 ]
 
 /**
@@ -922,6 +933,7 @@ const LADDER = [
   {types: [TOKENS.CONCAT], kind: 'concat'},
   {types: GENERALS, kind: 'comparison'},
   {types: VALUES, kind: 'value-comparison'},
+  {types: NODES, kind: 'node-comparison'},
   {types: [TOKENS.AND], kind: 'and'},
   {types: [TOKENS.OR], kind: 'or'},
 ]
