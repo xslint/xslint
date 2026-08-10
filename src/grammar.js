@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {tokenized, TOKENS, TRIVIA} = require('./tokens')
+const {tokenized, qualified, TOKENS, TRIVIA} = require('./tokens')
 const {since, MODERN} = require('./xsl-version')
 
 /**
@@ -16,8 +16,9 @@ const {since, MODERN} = require('./xsl-version')
 const END = Object.freeze({type: 'end', value: ''})
 
 /**
- * The floor each construct's version gate compares against, keyed by the kind
- * of node it builds. XSLT's version is what a stylesheet declares and what
+ * The floor each construct's version gate compares against, keyed by the
+ * construct rather than by the node it builds, since several build none of
+ * their own. XSLT's version is what a stylesheet declares and what
  * `versionOf` hands back, so these are XSLT versions rather than XPath's: 1.0
  * carries XPath 1.0, 2.0 carries XPath 2.0, and 3.0 carries XPath 3.1. A
  * construct absent from this table is in every version, `1.0` included.
@@ -34,6 +35,7 @@ const SINCE = {
   'except': '2.0',
   'for': '2.0',
   'idiv': '2.0',
+  'inline-namespace': '3.0',
   'instance': '2.0',
   'intersect': '2.0',
   'let': '3.0',
@@ -107,11 +109,83 @@ const AXES = [
  * a step does, a call where a value does.
  * @type {Array.<string>}
  */
-const KINDS = [
+const TESTS = [
   'node', 'text', 'comment', 'processing-instruction', 'element', 'attribute',
   'document-node', 'schema-element', 'schema-attribute', 'namespace-node',
-  'item', 'empty-sequence', 'function', 'map', 'array',
 ]
+
+/**
+ * The item types that are no kind test, so they stand in a sequence type and
+ * nowhere a node test does. `item()` and `map(*)` sat beside the kind tests
+ * until #708, which is why `item()` parsed as a step.
+ * @type {Array.<string>}
+ */
+const ITEMS = ['item', 'empty-sequence', 'function', 'map', 'array']
+
+/**
+ * What a sequence type may name: either of the two above, since `as` and
+ * `instance of` take a kind test as readily as an item type.
+ * @type {Array.<string>}
+ */
+const TYPES = TESTS.concat(ITEMS)
+
+/**
+ * The names XPath reserves, each from the version that reserved it, so an
+ * unprefixed one with a bracket behind it is never a call to a function of that
+ * name. The list grows with the language — 1.0 reserves the four node types
+ * alone, 2.0 adds its kind tests and `empty-sequence`, `if`, `item` and
+ * `typeswitch`, and 3.0 adds `array`, `function`, `map`, `namespace-node` and
+ * `switch` — so the same characters are a syntax error under one version and an
+ * ordinary call under an older one. Which is what the floor is for: below it
+ * `map(*)` is a call to an unregistered function, a semantic question (#576)
+ * and not this parser's, and xsltproc answers exactly that at 1.0 about every
+ * name here, parsing the expression and then looking for the function.
+ *
+ * A name is reserved only where a *call* could stand, which is to say only in
+ * front of a bracket: `item` names an element as well as anything else does, so
+ * `//item` is a path and no concern of this table.
+ * @type {{[name: string]: string}}
+ */
+const RESERVED = {
+  'array': '3.0',
+  'attribute': '2.0',
+  'comment': '1.0',
+  'document-node': '2.0',
+  'element': '2.0',
+  'empty-sequence': '2.0',
+  'function': '3.0',
+  'if': '2.0',
+  'item': '2.0',
+  'map': '3.0',
+  'namespace-node': '3.0',
+  'node': '1.0',
+  'processing-instruction': '1.0',
+  'schema-attribute': '2.0',
+  'schema-element': '2.0',
+  'switch': '3.0',
+  'text': '1.0',
+  'typeswitch': '2.0',
+}
+
+/**
+ * The kinds a name arrives as: a QName, the prefixed call the lexer tells apart
+ * on its own, and the braced URI literal opening one whose namespace XPath 3.0
+ * writes inline. A reserved name is never one of the last two, since XPath
+ * reserves an *unprefixed* spelling alone.
+ * @type {Array.<string>}
+ */
+const NAMES = [TOKENS.NAME, TOKENS.USER_FUNCTION, TOKENS.URI]
+
+/**
+ * Whether the version in force reserves the name, which it does from the
+ * version that added it and every one after.
+ * @param {object} cursor - The cursor, carrying the version
+ * @param {string} name - The name to weigh
+ * @return {boolean} - True when this version reserves it
+ */
+const reserves = function(cursor, name) {
+  return RESERVED[name] !== undefined && since(cursor.version, RESERVED[name])
+}
 
 /**
  * A cursor over a token stream: the tokens, and how far into them the parse has
@@ -329,7 +403,17 @@ const folded = function(cursor, below, types, kind) {
  */
 const named = function(cursor) {
   const from = significant(cursor)
-  if (!sees(cursor, TOKENS.USER_FUNCTION)) {
+  const token = ahead(cursor)
+  if (sees(cursor, TOKENS.URI)) {
+    admits(cursor, 'inline-namespace')
+    take(cursor)
+    if (!sees(cursor, TOKENS.NAME) || ahead(cursor).value.includes(':')) {
+      refuse(cursor, 'a local name behind the inline namespace')
+    }
+    take(cursor)
+  } else if (NAMES.includes(token.type) && !qualified(token.value)) {
+    refuse(cursor, 'a name XML can spell')
+  } else if (!sees(cursor, TOKENS.USER_FUNCTION)) {
     expect(cursor, TOKENS.NAME, 'a name')
   } else {
     take(cursor)
@@ -347,7 +431,7 @@ const named = function(cursor) {
  */
 const typed = function(cursor) {
   const from = significant(cursor)
-  if (sees(cursor, TOKENS.NAME) && KINDS.includes(ahead(cursor).value)) {
+  if (sees(cursor, TOKENS.NAME) && TYPES.includes(ahead(cursor).value)) {
     take(cursor)
     expect(cursor, TOKENS.LPAREN, '"("')
     let depth = 1
@@ -446,10 +530,18 @@ const conditional = function(cursor) {
 }
 
 /**
- * A node test: a name, a wildcard in any of its three spellings, or a kind test
+ * A node test: a name, a wildcard in any of its four spellings, or a kind test
  * such as `text()`. A wildcard's parts arrive as separate tokens, since `*` is
- * an operator elsewhere and a prefix is a name, so the three are read here
- * rather than asked of the lexer.
+ * an operator elsewhere and a prefix is a name, so the four are read here
+ * rather than asked of the lexer. The fourth is a braced URI literal in front
+ * of the `*`, which names every element of one namespace with no prefix bound
+ * to it, and is a wildcard rather than a name as much as `*:name` is.
+ *
+ * The prefixed spelling is taken here whole, both tokens of it, rather than
+ * asked of `named` and then held to a `*`. That is the only place a name ending
+ * in a colon belongs, so `qualified` can refuse one everywhere else: while that
+ * permission sat in the lexer's answer it reached a variable and a call too,
+ * and `$my:` and `my:(1)` parsed where no engine accepts either (#731).
  * @param {object} cursor - The cursor
  * @return {object} - The `test` node
  */
@@ -461,23 +553,30 @@ const tested = function(cursor) {
       take(cursor)
       expect(cursor, TOKENS.NAME, 'a name after the wildcard prefix')
     }
-  } else if (sees(cursor, TOKENS.NAME) && KINDS.includes(ahead(cursor).value) &&
+  } else if (sees(cursor, TOKENS.URI) && reaches(cursor, TOKENS.MULTI)) {
+    admits(cursor, 'inline-namespace')
+    take(cursor)
+    take(cursor)
+  } else if (sees(cursor, TOKENS.NAME) && TESTS.includes(ahead(cursor).value) &&
     reaches(cursor, TOKENS.LPAREN)) {
     typed(cursor)
+  } else if (reserves(cursor, ahead(cursor).value) &&
+    reaches(cursor, TOKENS.LPAREN)) {
+    refuse(cursor, 'a name XPath does not reserve')
+  } else if (ahead(cursor).value.endsWith(':') &&
+    reaches(cursor, TOKENS.MULTI)) {
+    take(cursor)
+    take(cursor)
   } else {
-    const prefixed = ahead(cursor).value.endsWith(':')
     named(cursor)
-    if (prefixed) {
-      expect(cursor, TOKENS.MULTI, '"*" after the prefix')
-    }
   }
   return shaped('test', from, cursor, [])
 }
 
 /**
- * Whether the token after the next one is of the given kind, which is the one
- * place the grammar needs to see past what it is standing on: `text` is a name
- * until a bracket follows it, and then it is a kind test.
+ * Whether the token after the next one is of the given kind, which is how the
+ * grammar sees past what it is standing on: `text` is a name until a bracket
+ * follows it, and then it is a kind test.
  * @param {object} cursor - The cursor
  * @param {string} type - The kind to look for
  * @return {boolean} - True when it stands there
@@ -486,6 +585,24 @@ const reaches = function(cursor, type) {
   const beyond = cursorOf(cursor.tokens, cursor.version)
   beyond.at = significant(cursor) + 1
   return sees(beyond, type)
+}
+
+/**
+ * A cursor of its own, standing just past the name at this one. A name is one
+ * token where it is spelled as a QName and two where XPath writes its namespace
+ * inline, so what *follows* a name is not a question a fixed lookahead can ask:
+ * the bracket behind `Q{urn:my}fn` stands two tokens away and the one behind
+ * `fn` stands one.
+ * @param {object} cursor - The cursor
+ * @return {object} - A cursor standing past the name
+ */
+const pastName = function(cursor) {
+  const beyond = cursorOf(cursor.tokens, cursor.version)
+  beyond.at = significant(cursor) + 1
+  if (sees(cursor, TOKENS.URI)) {
+    beyond.at = significant(beyond) + 1
+  }
+  return beyond
 }
 
 /**
@@ -531,6 +648,17 @@ const stepped = function(cursor) {
 /**
  * Whether a step can begin at the cursor. A path stops where one cannot, which
  * is how `a[1]` ends after the predicate rather than reading the `]` as a test.
+ * A name is one of the things it begins with, and the lexer kinds a name three
+ * ways — a bare `NAME`, a `USER_FUNCTION` where a prefixed one has a bracket
+ * behind it, a `URI` where it spells its namespace inline — so the question is
+ * asked of `NAMES` rather than of one kind at a time. Asking about one kind is
+ * how `a/Q{urn:my}b` came to be accepted while `//Q{urn:my}a` was refused
+ * (#708), and how `a/my:fn(1)` was accepted while `//my:fn(1)` was refused
+ * (#731): every production that *reads* a name knew all three, and the one that
+ * decides where a name may stand knew one. No version test here, for the reason
+ * `OPENERS` carries none — a call is no step below 2.0 and an inline namespace
+ * no name below 3.0, and each is refused where that is decided, which names the
+ * construct rather than the end of the expression.
  * @param {object} cursor - The cursor
  * @return {boolean} - True when a step stands there
  */
@@ -539,7 +667,7 @@ const steps = function(cursor) {
   return AXES.includes(token.type) || token.type === TOKENS.AT ||
     token.type === TOKENS.DOUBLE_DOT || token.type === TOKENS.DOT ||
     token.type === TOKENS.MULTI ||
-    (token.type === TOKENS.NAME && !KEYWORDS.includes(token.value)) ||
+    (NAMES.includes(token.type) && !KEYWORDS.includes(token.value)) ||
     OPENERS.includes(token.type)
 }
 
@@ -582,7 +710,14 @@ const parted = function(cursor) {
 /**
  * A path expression: an optional root, then steps separated by one slash or
  * two. A lone `/` is the document node and takes no step after it, which is why
- * the first step is asked for rather than assumed.
+ * the first step is asked for rather than assumed. A lone `//` is not the same
+ * thing spelled shorter: `PathExpr` gives the two separate productions,
+ * `"/" RelativePathExpr?` against `"//" RelativePathExpr`, because `//`
+ * abbreviates `/descendant-or-self::node()/` and that trailing slash needs
+ * something behind it. Reading them alike accepted `//` as a whole expression,
+ * and the wrong verdict then bred a wrong tree: the `-` of `//-x` stood where a
+ * binary operator may, so it came back a subtraction of two paths, and `//|a`
+ * a union with one (#731).
  * @param {object} cursor - The cursor
  * @return {object} - The `path` node
  */
@@ -591,10 +726,13 @@ const walked = function(cursor) {
   const parts = []
   let opened = false
   if (sees(cursor, TOKENS.SLASH) || sees(cursor, TOKENS.DOUBLE_SLASH)) {
+    const descends = sees(cursor, TOKENS.DOUBLE_SLASH)
     opened = true
     take(cursor)
     if (steps(cursor)) {
       parts.push(parted(cursor))
+    } else if (descends) {
+      refuse(cursor, 'a step for the "//" to descend to')
     }
   } else {
     parts.push(postfixed(cursor))
@@ -780,8 +918,8 @@ const primary = function(cursor) {
  */
 const called = function(cursor) {
   const token = ahead(cursor)
-  return (token.type === TOKENS.NAME || token.type === TOKENS.USER_FUNCTION) &&
-    !KINDS.includes(token.value) && reaches(cursor, TOKENS.LPAREN)
+  return NAMES.includes(token.type) && !TESTS.includes(token.value) &&
+    !reserves(cursor, token.value) && sees(pastName(cursor), TOKENS.LPAREN)
 }
 
 /**

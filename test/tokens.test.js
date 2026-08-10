@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {tokenized, TOKENS} = require('../src/tokens')
+const {tokenized, qualified, TOKENS} = require('../src/tokens')
 const assert = require('assert')
 
 /**
@@ -160,6 +160,51 @@ const SCANS = [
       ['map{"aa":1}', TOKENS.LBRACE],
       ['map{"aa":1}', TOKENS.RBRACE],
       ['map{"aa":1}', TOKENS.COLON],
+    ],
+  },
+  {
+    name: 'takes an extender for a name character',
+    count: 1,
+    pairs: [
+      ['a\u00B7b', TOKENS.NAME],
+      ['a\u203Fb', TOKENS.NAME],
+      ['a\u2040b', TOKENS.NAME],
+      ['my:a\u00B7b', TOKENS.NAME],
+      ['@a\u00B7b', TOKENS.NAME],
+    ],
+  },
+  {
+    name: 'lexes a braced URI literal whole',
+    count: 1,
+    pairs: [
+      ['Q{urn:my}a', TOKENS.URI],
+      ['Q{}a', TOKENS.URI],
+      ['Q{ urn:my }a', TOKENS.URI],
+      ['Q{urn:my}*', TOKENS.URI],
+      ['a/Q{urn:my}b', TOKENS.URI],
+      ['$Q{urn:my}v', TOKENS.URI],
+      ['Q{urn:my}fn(1)', TOKENS.URI],
+    ],
+  },
+  {
+    name: 'reads no braced URI literal where none is spelled',
+    count: 0,
+    pairs: [
+      ['map{"aa":1}', TOKENS.URI],
+      ['aQ{urn:my}b', TOKENS.URI],
+      ['Q{unclosed', TOKENS.URI],
+      ['Q{a{b}c', TOKENS.URI],
+      ['Q:a', TOKENS.URI],
+      ['Q', TOKENS.URI],
+      ['Qa', TOKENS.URI],
+    ],
+  },
+  {
+    name: 'leaves the brace of a map constructor to the map',
+    count: 1,
+    pairs: [
+      ['map{"aa":1}', TOKENS.LBRACE],
+      ['Q{urn:my}a[map{"aa":1}]', TOKENS.LBRACE],
     ],
   },
   {
@@ -329,6 +374,42 @@ const SPACED = [
 ]
 
 /**
+ * Names, and whether XML can spell each one. A name reaches the lexer whole and
+ * greedily, so what it holds is not what XML admits: the classes that spell one
+ * take a colon and a digit and a hyphen anywhere, and a QName takes them only
+ * where XML says. The leading colon and the empty name are here rather than in
+ * `test/grammar.test.js` because no expression reaches this question carrying
+ * either — a `:` opens a token of its own — so the predicate is asked directly.
+ * @type {Array.<{name: string, spells: boolean}>}
+ */
+const QUALIFIED = [
+  {name: 'a', spells: true},
+  {name: 'my:a', spells: true},
+  {name: '_x', spells: true},
+  {name: 'a-b', spells: true},
+  {name: 'a.b', spells: true},
+  {name: 'my:a-b', spells: true},
+  {name: 'ä', spells: true},
+  {name: 'my:ä', spells: true},
+  {name: 'a·b', spells: true},
+  {name: 'a‿b', spells: true},
+  {name: 'a·', spells: true},
+  {name: '', spells: false},
+  {name: ':a', spells: false},
+  {name: ':', spells: false},
+  {name: '·a', spells: false},
+  {name: 'my:', spells: false},
+  {name: 'a:', spells: false},
+  {name: 'my:25l', spells: false},
+  {name: 'my:-x', spells: false},
+  {name: 'my:.x', spells: false},
+  {name: 'my:a:b', spells: false},
+  {name: '25l', spells: false},
+  {name: '-x', spells: false},
+  {name: '.x', spells: false},
+]
+
+/**
  * Fragments assembled into random expressions for the round-trip properties.
  * @type {Array.<string>}
  */
@@ -338,7 +419,7 @@ const PIECES = [
   '\n', '//', '/', '(', ')', '[', ']', '*', '+', '-', '=', '!=', '<=',
   '>=', '|', '||', 'and', 'or', 'div', 'mod', 'instance of', '$v', ',', ':',
   '.', '..', '::', '!', '?', '#', '=>', ':=', '{', '}', 'let ', ' return ',
-  '<<', '>>', ' is ',
+  '<<', '>>', ' is ', 'Q{urn:my}', 'Q{}',
 ]
 
 /**
@@ -421,6 +502,14 @@ describe('tokens', function() {
           count,
         )
       })
+    })
+  })
+  QUALIFIED.forEach(({name, spells}) => {
+    it(`weighs ${JSON.stringify(name)} the way XML spells a name`, function() {
+      assert.equal(
+        qualified(name), spells,
+        `${JSON.stringify(name)} is weighed the wrong way as a name`,
+      )
     })
   })
   it('finds any user functions', function() {
