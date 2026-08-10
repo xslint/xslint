@@ -33,6 +33,13 @@ const ACCEPTS = [
   {xpath: 'my:a.b', kind: 'step'},
   {xpath: 'my:*', kind: 'step'},
   {xpath: '*:name', kind: 'step'},
+  {xpath: 'item', kind: 'step'},
+  {xpath: 'a/item', kind: 'path'},
+  {xpath: '//item', kind: 'path'},
+  {xpath: 'map', kind: 'step'},
+  {xpath: '$a instance of item()', kind: 'instance'},
+  {xpath: '$a instance of map(*)', kind: 'instance'},
+  {xpath: '$a instance of empty-sequence()', kind: 'instance'},
   {xpath: 'a/b//c', kind: 'path'},
   {xpath: 'child::a/attribute::b', kind: 'path'},
   {xpath: '../following-sibling::x', kind: 'path'},
@@ -168,6 +175,35 @@ const REFUSES = [
   {name: 'an unspellable name behind a separator', xpath: 'a/my:25l', at: 2},
   {name: 'a prefixed name behind an inline namespace',
     xpath: 'Q{urn:my}a:b', at: 9},
+  {name: 'an item type where a node test stands', xpath: 'item()', at: 0},
+  {name: 'an empty sequence where a node test stands',
+    xpath: 'empty-sequence()', at: 0},
+  {name: 'a map test where a node test stands', xpath: 'map(*)', at: 0},
+  {name: 'an array test where a node test stands', xpath: 'array(*)', at: 0},
+  {name: 'a call to the reserved switch', xpath: 'switch(1)', at: 0},
+  {name: 'a call to the reserved typeswitch', xpath: 'typeswitch(1)', at: 0},
+  {name: 'an item type behind a separator', xpath: 'a/item()', at: 2},
+  {name: 'an item type inside a predicate', xpath: 'a[item()]', at: 2},
+]
+
+/**
+ * Names a version reserved, each with the version that reserved it and one
+ * below. This is the mirror of a `GATED` row: a reserved name with a bracket
+ * behind it can be no call, so the expression stops parsing from that version
+ * up, where a gated construct starts. Below the floor the same characters are
+ * an ordinary call to a function of that name — unregistered, which is a
+ * semantic question (#576) and not this parser's, and exactly what xsltproc
+ * answers about every one of these at 1.0: it parses them, then looks for the
+ * function.
+ * @type {Array.<{xpath: string, from: string, below: string}>}
+ */
+const RESERVES = [
+  {xpath: 'item()', from: '2.0', below: '1.0'},
+  {xpath: 'empty-sequence()', from: '2.0', below: '1.0'},
+  {xpath: 'typeswitch(1)', from: '2.0', below: '1.0'},
+  {xpath: 'map(*)', from: '3.0', below: '2.0'},
+  {xpath: 'array(*)', from: '3.0', below: '2.0'},
+  {xpath: 'switch(1)', from: '3.0', below: '2.0'},
 ]
 
 /**
@@ -244,6 +280,15 @@ describe('grammar', function() {
         [parsed(xpath, '3.0').fault === '', parsed(xpath, '3.0').at],
         [false, at],
         `${xpath} was not refused where it goes wrong`,
+      )
+    })
+  })
+  RESERVES.forEach(({xpath, from, below}) => {
+    it(`reserves ${JSON.stringify(xpath)} from ${from}`, function() {
+      assert.deepEqual(
+        [parsed(xpath, from).fault === '', parsed(xpath, below).fault === ''],
+        [false, true],
+        `${xpath} is not a call below ${from} and a reserved name from it`,
       )
     })
   })
