@@ -35,6 +35,7 @@ const END = Object.freeze({type: 'end', value: ''})
  * @type {{[kind: string]: string}}
  */
 const SINCE = {
+  'apply': '3.0',
   'arrow': '3.0',
   'array': '3.0',
   'cast': '2.0',
@@ -114,68 +115,50 @@ const AXES = [
 ]
 
 /**
- * The kind tests a node test may be written as, each a name the grammar spells
- * followed by a bracket. They are names to the lexer, so the parser tells one
- * from a function call by what stands in front of it: a node test stands where
- * a step does, a call where a value does.
- * @type {Array.<string>}
- */
-const TESTS = [
-  'node', 'text', 'comment', 'processing-instruction', 'element', 'attribute',
-  'document-node', 'schema-element', 'schema-attribute', 'namespace-node',
-]
-
-/**
- * The item types that are no kind test, so they stand in a sequence type and
- * nowhere a node test does. `item()` and `map(*)` sat beside the kind tests
- * until #708, which is why `item()` parsed as a step.
- * @type {Array.<string>}
- */
-const ITEMS = ['item', 'empty-sequence', 'function', 'map', 'array']
-
-/**
- * What a sequence type may name: either of the two above, since `as` and
- * `instance of` take a kind test as readily as an item type.
- * @type {Array.<string>}
- */
-const TYPES = TESTS.concat(ITEMS)
-
-/**
- * The names XPath reserves, each from the version that reserved it, so an
- * unprefixed one with a bracket behind it is never a call to a function of that
- * name. The list grows with the language — 1.0 reserves the four node types
- * alone, 2.0 adds its kind tests and `empty-sequence`, `if`, `item` and
- * `typeswitch`, and 3.0 adds `array`, `function`, `map`, `namespace-node` and
- * `switch` — so the same characters are a syntax error under one version and an
- * ordinary call under an older one. Which is what the floor is for: below it
- * `map(*)` is a call to an unregistered function, a semantic question (#576)
- * and not this parser's, and xsltproc answers exactly that at 1.0 about every
- * name here, parsing the expression and then looking for the function.
+ * The names XPath has taken for itself, each with the version that took it and
+ * what it took it for. A `test` is a kind test, standing where a node test
+ * stands; an `item` is an item type, standing in a sequence type and nowhere a
+ * node test does; a `keyword` is neither, standing for a construct of its own —
+ * `if` opens a conditional, and `switch` and `typeswitch` open what those two
+ * versions took the words for and this grammar has no production of.
  *
- * A name is reserved only where a *call* could stand, which is to say only in
- * front of a bracket: `item` names an element as well as anything else does, so
- * `//item` is a path and no concern of this table.
- * @type {{[name: string]: string}}
+ * The floor is not a detail beside the name, it is half of what the name means:
+ * below it the same characters are an ordinary call to a function so called.
+ * `element(a)` is a kind test from 2.0 and a call at 1.0, `namespace-node()` a
+ * kind test from 3.0 and a call before it, and xsltproc reads every name here
+ * that way at 1.0 — parsing the expression and then going looking for the
+ * function, which is #576's question and not this parser's. Two lists of names
+ * beside a map of the floors was that fact written twice with the version in
+ * one copy only, so the lists answered the same at every version and
+ * `element(a)` came back a `step` in a 1.0 stylesheet: the verdict agreed with
+ * the engine and the tree did not, which is the half no acceptance diff can see
+ * and the half Phase 4 of #644 walks (#728). One entry per name cannot drift
+ * that way, a kind test with no floor being inexpressible.
+ *
+ * A name is taken only where a *call* could stand, which is to say in front of
+ * a bracket: `item` names an element as well as anything else does, so `//item`
+ * is a path and no concern of this table.
+ * @type {{[name: string]: {from: string, kind: string}}}
  */
 const RESERVED = {
-  'array': '3.0',
-  'attribute': '2.0',
-  'comment': '1.0',
-  'document-node': '2.0',
-  'element': '2.0',
-  'empty-sequence': '2.0',
-  'function': '3.0',
-  'if': '2.0',
-  'item': '2.0',
-  'map': '3.0',
-  'namespace-node': '3.0',
-  'node': '1.0',
-  'processing-instruction': '1.0',
-  'schema-attribute': '2.0',
-  'schema-element': '2.0',
-  'switch': '3.0',
-  'text': '1.0',
-  'typeswitch': '2.0',
+  'array': {from: '3.0', kind: 'item'},
+  'attribute': {from: '2.0', kind: 'test'},
+  'comment': {from: '1.0', kind: 'test'},
+  'document-node': {from: '2.0', kind: 'test'},
+  'element': {from: '2.0', kind: 'test'},
+  'empty-sequence': {from: '2.0', kind: 'item'},
+  'function': {from: '3.0', kind: 'item'},
+  'if': {from: '2.0', kind: 'keyword'},
+  'item': {from: '2.0', kind: 'item'},
+  'map': {from: '3.0', kind: 'item'},
+  'namespace-node': {from: '3.0', kind: 'test'},
+  'node': {from: '1.0', kind: 'test'},
+  'processing-instruction': {from: '1.0', kind: 'test'},
+  'schema-attribute': {from: '2.0', kind: 'test'},
+  'schema-element': {from: '2.0', kind: 'test'},
+  'switch': {from: '3.0', kind: 'keyword'},
+  'text': {from: '1.0', kind: 'test'},
+  'typeswitch': {from: '2.0', kind: 'keyword'},
 }
 
 /**
@@ -195,7 +178,23 @@ const NAMES = [TOKENS.NAME, TOKENS.USER_FUNCTION, TOKENS.URI]
  * @return {boolean} - True when this version reserves it
  */
 const reserves = function(cursor, name) {
-  return RESERVED[name] !== undefined && since(cursor.version, RESERVED[name])
+  return RESERVED[name] !== undefined &&
+    since(cursor.version, RESERVED[name].from)
+}
+
+/**
+ * Whether the name stands here for one of the kinds asked about: reserved by
+ * the version in force, and taken for that. A node test asks for a kind test
+ * and a sequence type for either of the first two, while a call asks nothing —
+ * it takes any name this version has not spoken for, which is `reserves` on its
+ * own.
+ * @param {object} cursor - The cursor, carrying the version
+ * @param {string} name - The name to weigh
+ * @param {Array.<string>} kinds - The kinds that would do
+ * @return {boolean} - True when it is one of them here
+ */
+const taken = function(cursor, name, kinds) {
+  return reserves(cursor, name) && kinds.includes(RESERVED[name].kind)
 }
 
 /**
@@ -483,7 +482,8 @@ const itemed = function(cursor) {
     take(cursor)
     itemed(cursor)
     expect(cursor, TOKENS.RPAREN, '")"')
-  } else if (sees(cursor, TOKENS.NAME) && TYPES.includes(ahead(cursor).value)) {
+  } else if (sees(cursor, TOKENS.NAME) &&
+    taken(cursor, ahead(cursor).value, ['test', 'item'])) {
     kinded(cursor)
   } else {
     named(cursor)
@@ -522,7 +522,8 @@ const sequenced = function(cursor) {
  */
 const singled = function(cursor) {
   const from = significant(cursor)
-  if (sees(cursor, TOKENS.NAME) && TYPES.includes(ahead(cursor).value)) {
+  if (sees(cursor, TOKENS.NAME) &&
+    taken(cursor, ahead(cursor).value, ['test', 'item'])) {
     refuse(cursor, 'the name of an atomic type')
   }
   named(cursor)
@@ -633,7 +634,8 @@ const tested = function(cursor) {
     admits(cursor, 'inline-namespace')
     take(cursor)
     take(cursor)
-  } else if (sees(cursor, TOKENS.NAME) && TESTS.includes(ahead(cursor).value) &&
+  } else if (sees(cursor, TOKENS.NAME) &&
+    taken(cursor, ahead(cursor).value, ['test']) &&
     reaches(cursor, TOKENS.LPAREN)) {
     kinded(cursor)
   } else if (reserves(cursor, ahead(cursor).value) &&
@@ -974,7 +976,8 @@ const primary = function(cursor) {
     node = mapped(cursor)
   } else if (token.value === 'array' && reaches(cursor, TOKENS.LBRACE)) {
     node = arrayed(cursor)
-  } else if (token.value === 'function' && reaches(cursor, TOKENS.LPAREN)) {
+  } else if (token.value === 'function' && reserves(cursor, 'function') &&
+    reaches(cursor, TOKENS.LPAREN)) {
     node = inlined(cursor)
   } else if (referred(cursor)) {
     admits(cursor, 'reference')
@@ -1012,8 +1015,8 @@ const referred = function(cursor) {
  */
 const called = function(cursor) {
   const token = ahead(cursor)
-  return NAMES.includes(token.type) && !TESTS.includes(token.value) &&
-    !reserves(cursor, token.value) && sees(pastName(cursor), TOKENS.LPAREN)
+  return NAMES.includes(token.type) && !reserves(cursor, token.value) &&
+    sees(pastName(cursor), TOKENS.LPAREN)
 }
 
 /**
@@ -1062,6 +1065,14 @@ const keyed = function(cursor) {
 /**
  * A primary expression with whatever hangs off it: predicates, an argument list
  * that applies what the expression answered, and a lookup into a map or array.
+ * Only the predicates are older than 3.0. Applying an expression is what a
+ * function item is for and both arrived together, so `$f(1)` is a dynamic call
+ * from 3.0 and nothing at all before it — where the same characters are not a
+ * call by another reading either, a `FilterExpr` taking predicates and no
+ * argument list, which is why xsltproc calls `count(a)(1)` a syntax error
+ * rather than looking for a function. It stood ungated, so `child::element(b)`
+ * came back an `apply` at 1.0 once `element` stopped being a kind test there
+ * (#728).
  * @param {object} cursor - The cursor
  * @return {object} - The node
  */
@@ -1075,6 +1086,7 @@ const postfixed = function(cursor) {
       if (sees(cursor, TOKENS.LBRACKET)) {
         node = shaped('filter', from, cursor, [node].concat(filtered(cursor)))
       } else if (sees(cursor, TOKENS.LPAREN)) {
+        admits(cursor, 'apply')
         node = shaped('apply', from, cursor, [node].concat(arguments_(cursor)))
       } else {
         admits(cursor, 'lookup')
@@ -1318,7 +1330,8 @@ const single = function(cursor) {
     node = quantified(cursor, 'some')
   } else if (spells(cursor, 'every') && reaches(cursor, TOKENS.DOLLAR)) {
     node = quantified(cursor, 'every')
-  } else if (spells(cursor, 'if') && reaches(cursor, TOKENS.LPAREN)) {
+  } else if (spells(cursor, 'if') && reserves(cursor, 'if') &&
+    reaches(cursor, TOKENS.LPAREN)) {
     node = conditional(cursor)
   } else {
     node = laddered(cursor)
