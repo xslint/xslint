@@ -35,6 +35,7 @@ const END = Object.freeze({type: 'end', value: ''})
  * @type {{[kind: string]: string}}
  */
 const SINCE = {
+  'apply': '3.0',
   'arrow': '3.0',
   'array': '3.0',
   'cast': '2.0',
@@ -956,6 +957,14 @@ const keyed = function(cursor) {
 /**
  * A primary expression with whatever hangs off it: predicates, an argument list
  * that applies what the expression answered, and a lookup into a map or array.
+ * Only the predicates are older than 3.0. Applying an expression is what a
+ * function item is for and both arrived together, so `$f(1)` is a dynamic call
+ * from 3.0 and nothing at all before it — where the same characters are not a
+ * call by another reading either, a `FilterExpr` taking predicates and no
+ * argument list, which is why xsltproc calls `count(a)(1)` a syntax error
+ * rather than looking for a function. It stood ungated, so `child::element(b)`
+ * came back an `apply` at 1.0 once `element` stopped being a kind test there
+ * (#728).
  * @param {object} cursor - The cursor
  * @return {object} - The node
  */
@@ -973,6 +982,7 @@ const postfixed = function(cursor) {
     if (sees(cursor, TOKENS.LBRACKET)) {
       node = shaped('filter', from, cursor, [node].concat(filtered(cursor)))
     } else if (sees(cursor, TOKENS.LPAREN)) {
+      admits(cursor, 'apply')
       node = shaped('apply', from, cursor, [node].concat(arguments_(cursor)))
     } else {
       admits(cursor, 'lookup')

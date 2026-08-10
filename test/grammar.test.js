@@ -285,6 +285,7 @@ const GATED = [
   {xpath: '$a instance of map(*)', floor: '3.0', below: '2.0'},
   {xpath: '$a instance of array(*)', floor: '3.0', below: '2.0'},
   {xpath: 'a/element(b)', floor: '2.0', below: '1.0'},
+  {xpath: '$f(1, 2)', floor: '3.0', below: '2.0'},
   {xpath: 'a/fn(1)', floor: '2.0', below: '1.0'},
   {xpath: '$Q{urn:my}v', floor: '3.0', below: '2.0'},
   {xpath: '//a intersect //b', floor: '2.0', below: '1.0'},
