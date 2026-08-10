@@ -1163,6 +1163,50 @@ const anchors = function(cursor) {
 }
 
 /**
+ * The axes a step of a pattern may name. A pattern is matched by walking up
+ * from a node rather than evaluated forwards, so the axes it admits are the
+ * ones such a walk can answer. 1.0 and 2.0 spell that
+ * `ChildOrAttributeAxisSpecifier` and admit exactly the two it is named after;
+ * 3.0 rebuilt the grammar and its `ForwardAxisP` admits six, adding `self`,
+ * `descendant`, `descendant-or-self` and `namespace`. Neither admits the four
+ * reverse axes, `following`, `following-sibling` or `preceding-sibling`.
+ * @param {object} cursor - The cursor
+ * @return {Array.<string>} - The axis kinds a step may open with
+ */
+const treads = function(cursor) {
+  let axes = [TOKENS.CHILD, TOKENS.ATTRIBUTE]
+  if (since(cursor.version, REWRITE)) {
+    axes = [
+      TOKENS.CHILD, TOKENS.ATTRIBUTE, TOKENS.SELF, TOKENS.DESCENDANT,
+      TOKENS.DESCENDANT_OR_SELF, TOKENS.NAMESPACE,
+    ]
+  }
+  return axes
+}
+
+/**
+ * One step of a pattern's path, which is narrower than a step of an
+ * expression's at every version. A pattern is matched by walking *up* from a
+ * node, so a step it cannot walk back along is refused rather than evaluated:
+ * that is what the two lists have in common, and the seven axes no version
+ * admits — the four reverse ones, `following`, `following-sibling` and
+ * `preceding-sibling` — are the ones an ancestor walk cannot answer. `..` is
+ * refused everywhere for the same reason, while `.` is a step from 3.0.
+ * @param {object} cursor - The cursor
+ * @return {object} - The `step` node
+ */
+const treaded = function(cursor) {
+  const token = ahead(cursor)
+  if ((AXES.includes(token.type) && !treads(cursor).includes(token.type)) ||
+    token.type === TOKENS.DOUBLE_DOT ||
+    (token.type === TOKENS.DOT && !since(cursor.version, REWRITE))
+  ) {
+    refuse(cursor, `an axis an XSLT ${cursor.version} pattern may name`)
+  }
+  return stepped(cursor)
+}
+
+/**
  * One step of a pattern's path. It is an axis step, or a branch in brackets,
  * which 3.0's `StepExprP` admits at *any* position in a path and not only where
  * one opens — so `a/(b|c)` is a pattern as much as `(b|c)/a` is. That is where
@@ -1177,7 +1221,7 @@ const paced = function(cursor) {
     rewritten(cursor)
     node = postfixed(cursor)
   } else {
-    node = stepped(cursor)
+    node = treaded(cursor)
   }
   return node
 }
