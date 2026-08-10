@@ -120,10 +120,12 @@ const REACHES = [
  * retiring the retry is not in the tree, when what is not in the tree is a
  * comparison that can see it.
  *
- * Ten of the eleven here are a selector, though a selector is one expression
- * in twelve: the checks are written in an idiom the stylesheets never use. The
- * eleventh is the one place we are the lenient side, and the engine is right —
- * `25l` opens with a digit and no NCName may.
+ * Eleven stood when #680 wrote this list and one is left, which is the measure
+ * doing its job: nine were a parenthesized step (#711) and one a node
+ * comparison (#724), each of them a selector, though a selector is one
+ * expression in twelve — the checks are written in an idiom the stylesheets
+ * never use. What remains is the one place we are the lenient side, and the
+ * engine is right: `25l` opens with a digit and no NCName may.
  * @type {Array.<{xpath: string, accepts: string, gap: string}>}
  */
 const GAPS = [
@@ -131,13 +133,6 @@ const GAPS = [
     xpath: 'my:25l(3)',
     accepts: 'grammar',
     gap: 'a name no NCName can spell (#708)',
-  },
-  {
-    xpath: '//xsl:apply-templates[some $var in ancestor::xsl:template[1]' +
-      '//xsl:variable satisfies (($var << .) and (starts-with(@select, ' +
-      'concat($var/@name, \'/\')) or @select=$var/@name))]',
-    accepts: 'engine',
-    gap: 'a node comparison operator (#708)',
   },
 ]
 

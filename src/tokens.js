@@ -52,6 +52,9 @@ const TOKENS = {
   NOT_EQUAL: '!=',
   LESS_EQUAL: '<=',
   GREAT_EQUAL: '>=',
+  IS: 'is',
+  PRECEDES: '<<',
+  FOLLOWS: '>>',
   AND: 'and',
   IDIV: 'idiv',
   UNION: 'union',
@@ -208,7 +211,10 @@ const DOUBLE = {
   '::': TOKENS.COLONS,
   '=>': TOKENS.ARROW,
   ':=': TOKENS.ASSIGN,
+  '<<': TOKENS.PRECEDES,
+  '>>': TOKENS.FOLLOWS,
   'or': TOKENS.OR,
+  'is': TOKENS.IS,
 }
 
 /**

@@ -105,6 +105,50 @@ const SCANS = [
     ],
   },
   {
+    name: 'lexes a node comparison as the one operator it is',
+    count: 1,
+    pairs: [
+      ['$a is $b', TOKENS.IS],
+      ['$a << $b', TOKENS.PRECEDES],
+      ['$a >> $b', TOKENS.FOLLOWS],
+      ['a[$v << .]', TOKENS.PRECEDES],
+      ['f($a is $b, 2)', TOKENS.IS],
+      ['not($a >> $b) and c', TOKENS.FOLLOWS],
+    ],
+  },
+  {
+    name: 'lexes every node comparison an expression holds',
+    count: 3,
+    pairs: [
+      ['$a is $b or $c is $d or $e is $f', TOKENS.IS],
+      ['$a << $b and $c << $d and $e << $f', TOKENS.PRECEDES],
+      ['$a >> $b and $c >> $d and $e >> $f', TOKENS.FOLLOWS],
+    ],
+  },
+  {
+    name: 'leaves a single angle bracket the comparison it spells',
+    count: 1,
+    pairs: [
+      ['$a < $b', TOKENS.LESS],
+      ['$a <= $b', TOKENS.LESS_EQUAL],
+      ['$a > $b', TOKENS.GREATER],
+      ['$a >= $b', TOKENS.GREAT_EQUAL],
+    ],
+  },
+  {
+    name: 'reads a name spelled like a node comparison as a node test',
+    count: 0,
+    pairs: [
+      ['is', TOKENS.IS],
+      ['foo/is', TOKENS.IS],
+      ['@is', TOKENS.IS],
+      ['a[is]', TOKENS.IS],
+      ['is(3)', TOKENS.IS],
+      ['island', TOKENS.IS],
+      ['child::is', TOKENS.IS],
+    ],
+  },
+  {
     name: 'gives the operators XSLT 3.1 added a kind of their own',
     count: 1,
     pairs: [
@@ -294,6 +338,7 @@ const PIECES = [
   '\n', '//', '/', '(', ')', '[', ']', '*', '+', '-', '=', '!=', '<=',
   '>=', '|', '||', 'and', 'or', 'div', 'mod', 'instance of', '$v', ',', ':',
   '.', '..', '::', '!', '?', '#', '=>', ':=', '{', '}', 'let ', ' return ',
+  '<<', '>>', ' is ',
 ]
 
 /**
