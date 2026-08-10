@@ -190,6 +190,10 @@ const REFUSES = [
   {name: 'an array test where a node test stands', xpath: 'array(*)', at: 0},
   {name: 'a call to the reserved switch', xpath: 'switch(1)', at: 0},
   {name: 'a call to the reserved typeswitch', xpath: 'typeswitch(1)', at: 0},
+  {name: 'a descendant slash with nothing to descend to', xpath: '//', at: 2},
+  {name: 'a descendant slash behind a sign', xpath: '//-x', at: 2},
+  {name: 'a union with a lone descendant slash', xpath: '//|a', at: 2},
+  {name: 'a lone descendant slash in brackets', xpath: '(//)', at: 3},
   {name: 'an item type behind a separator', xpath: 'a/item()', at: 2},
   {name: 'an item type inside a predicate', xpath: 'a[item()]', at: 2},
 ]

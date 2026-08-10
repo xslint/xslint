@@ -714,7 +714,14 @@ const parted = function(cursor) {
 /**
  * A path expression: an optional root, then steps separated by one slash or
  * two. A lone `/` is the document node and takes no step after it, which is why
- * the first step is asked for rather than assumed.
+ * the first step is asked for rather than assumed. A lone `//` is not the same
+ * thing spelled shorter: `PathExpr` gives the two separate productions,
+ * `"/" RelativePathExpr?` against `"//" RelativePathExpr`, because `//`
+ * abbreviates `/descendant-or-self::node()/` and that trailing slash needs
+ * something behind it. Reading them alike accepted `//` as a whole expression,
+ * and the wrong verdict then bred a wrong tree: the `-` of `//-x` stood where a
+ * binary operator may, so it came back a subtraction of two paths, and `//|a`
+ * a union with one (#731).
  * @param {object} cursor - The cursor
  * @return {object} - The `path` node
  */
@@ -723,10 +730,13 @@ const walked = function(cursor) {
   const parts = []
   let opened = false
   if (sees(cursor, TOKENS.SLASH) || sees(cursor, TOKENS.DOUBLE_SLASH)) {
+    const descends = sees(cursor, TOKENS.DOUBLE_SLASH)
     opened = true
     take(cursor)
     if (steps(cursor)) {
       parts.push(parted(cursor))
+    } else if (descends) {
+      refuse(cursor, 'a step for the "//" to descend to')
     }
   } else {
     parts.push(postfixed(cursor))
