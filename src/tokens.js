@@ -318,10 +318,15 @@ const opensComment = function(xpath, at) {
 
 /**
  * Characters a name is spelled with. XML names reach well past ASCII, so a
- * letter is any letter, not `\w`'s twenty-six.
+ * letter is any letter, not `\w`'s twenty-six. Its `NameChar` also admits the
+ * three extenders no category here covers — the middle dot and the two ties,
+ * `\p{M}` already holding the combining marks of `[#x300-#x36F]` — and leaving
+ * them out refused eight spellings the engine accepts, `a·b` among them (#731).
+ * They are name characters and no more than that: none may open a name, which
+ * is `STARTS`'s answer and stays as it was.
  * @type {RegExp}
  */
-const NAMED = /[\p{L}\p{N}\p{M}_.:-]/u
+const NAMED = /[\p{L}\p{N}\p{M}_.:·‿⁀-]/u
 
 /**
  * Characters a name may begin with.
