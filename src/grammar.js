@@ -1113,34 +1113,45 @@ const anchors = function(cursor) {
 }
 
 /**
- * The axes a step of an XSLT 1.0 or 2.0 pattern may name. Their production is
- * spelled `ChildOrAttributeAxisSpecifier` and admits those two and the `@` that
- * abbreviates the second, so the other eleven make a pattern no processor of
- * either version loads. 3.0 rebuilt the grammar and its `ForwardAxisP` is not
- * settled here, so this narrows below {@link REWRITE} alone — refusing a
- * pattern XSLT admits invents a defect against working code, which is the
- * expensive direction, while accepting one it does not leaves a defect
- * unreported until #679 finishes.
- * @type {Array.<string>}
+ * The axes a step of a pattern may name. A pattern is matched by walking up
+ * from a node rather than evaluated forwards, so the axes it admits are the
+ * ones such a walk can answer. 1.0 and 2.0 spell that
+ * `ChildOrAttributeAxisSpecifier` and admit exactly the two it is named after;
+ * 3.0 rebuilt the grammar and its `ForwardAxisP` admits six, adding `self`,
+ * `descendant`, `descendant-or-self` and `namespace`. Neither admits the four
+ * reverse axes, `following`, `following-sibling` or `preceding-sibling`.
+ * @param {object} cursor - The cursor
+ * @return {Array.<string>} - The axis kinds a step may open with
  */
-const TREADS = [TOKENS.CHILD, TOKENS.ATTRIBUTE]
+const treads = function(cursor) {
+  let axes = [TOKENS.CHILD, TOKENS.ATTRIBUTE]
+  if (since(cursor.version, REWRITE)) {
+    axes = [
+      TOKENS.CHILD, TOKENS.ATTRIBUTE, TOKENS.SELF, TOKENS.DESCENDANT,
+      TOKENS.DESCENDANT_OR_SELF, TOKENS.NAMESPACE,
+    ]
+  }
+  return axes
+}
 
 /**
  * One step of a pattern's path, which is narrower than a step of an
- * expression's. Below {@link REWRITE} a step is a node test on the child or
- * attribute axis and nothing else, so neither a reverse axis nor the `.` and
- * `..` that stand for a context and a parent may spell one: `a/.` is a path in
- * every expression and a pattern in no version before 3.0.
+ * expression's at every version. A pattern is matched by walking *up* from a
+ * node, so a step it cannot walk back along is refused rather than evaluated:
+ * that is what the two lists have in common, and the seven axes no version
+ * admits — the four reverse ones, `following`, `following-sibling` and
+ * `preceding-sibling` — are the ones an ancestor walk cannot answer. `..` is
+ * refused everywhere for the same reason, while `.` is a step from 3.0.
  * @param {object} cursor - The cursor
  * @return {object} - The `step` node
  */
 const treaded = function(cursor) {
   const token = ahead(cursor)
-  if (!since(cursor.version, REWRITE) && (
-    (AXES.includes(token.type) && !TREADS.includes(token.type)) ||
-    token.type === TOKENS.DOT || token.type === TOKENS.DOUBLE_DOT
-  )) {
-    refuse(cursor, 'a node test on the child or attribute axis')
+  if ((AXES.includes(token.type) && !treads(cursor).includes(token.type)) ||
+    token.type === TOKENS.DOUBLE_DOT ||
+    (token.type === TOKENS.DOT && !since(cursor.version, REWRITE))
+  ) {
+    refuse(cursor, `an axis an XSLT ${cursor.version} pattern may name`)
   }
   return stepped(cursor)
 }
