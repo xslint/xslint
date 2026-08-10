@@ -99,10 +99,10 @@ const rawly = function(source, found, offset) {
 const defect = function(
   check, meta, source, found, offset, fix = undefined,
 ) {
-  const {node, expression} = found
+  const {node} = found
   const {line, pos} = placeAt(source.content, rawly(source, found, offset))
   let anchored = {}
-  if (fix !== undefined && isValid(expression)) {
+  if (fix !== undefined && isValid(found)) {
     anchored = {fix: {line: line, col: pos, ...fix}}
   }
   return {

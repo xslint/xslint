@@ -8,6 +8,8 @@ const {
   compileXPathToJavaScript,
 } = require('fontoxpath')
 const {WHITESPACE, spelling} = require('./tokens')
+const {parsed, matched} = require('./grammar')
+const {versionOf, KNOWN} = require('./xsl-version')
 
 /**
  * Namespace URI of the xslint custom XPath functions.
@@ -332,21 +334,50 @@ const squeezed = function(xpath) {
 const VERDICTS = new Map()
 
 /**
- * Whether given Xpath expression is syntactically valid. The same engine that
- * runs the rules parses it, so an expression is valid here exactly when the
- * processor can parse it. Every prefix resolves, isolating syntax from
- * unresolved-prefix errors. What the engine refuses yet the grammar spells —
- * the namespace axis of the older dialects, ExprWhitespace around an axis
- * separator or in front of a node test's bracket (#615) — is retried
- * respelled, and an expression the respelling gets through is valid too.
- * @param {string} xpath - Xpath expression
+ * The version an expression is read under when its stylesheet declares none, or
+ * declares one `versionOf` cannot place. The most permissive version known,
+ * deliberately: a missing `version` is already a defect of its own, and letting
+ * it decide a syntax question would answer one defect with an
+ * `invalid-xpath-expression` for every modern expression the file holds — a
+ * refusal invented against XPath that is valid under the version its author
+ * meant. Derived rather than spelled, so a version added to `KNOWN` becomes the
+ * fallback without anybody remembering to move it.
+ * @type {string}
+ */
+const ASSUMED = KNOWN[KNOWN.length - 1]
+
+/**
+ * Whether an expression is syntactically valid, asked of our own grammar and at
+ * the version in force where it stands. Two things follow that the engine could
+ * not give. The spelling is judged against the specification rather than
+ * against fontoxpath, which is stricter than it — a `namespace::` axis, and
+ * ExprWhitespace around an axis separator or around a node test's bracket
+ * (#615, #639) — so the respelling retry those needed is off this path. And
+ * the version decides, so `1 cast as xs:integer` is valid in a 2.0 sheet and a
+ * syntax error in a 1.0 one, which is the whole of #652 and cannot be
+ * anywhere else: fontoxpath is XPath 3.1 and knows no other dialect (#732).
+ *
+ * A pattern is judged by `matched` rather than by `parsed`, since a `match` is
+ * a different language and not a second reading of this one — `1 + 1` is a fine
+ * expression and no pattern at all.
+ * @param {{node: Node, expression: string, pattern: boolean}} found - The
+ *  expression, whole, as `expressionsOf` and `wholeOf` yield it
  * @return {boolean} - True when the expression parses
  */
-const isValid = function(xpath) {
-  if (!VERDICTS.has(xpath)) {
-    VERDICTS.set(xpath, compiles(xpath) || compiles(squeezed(xpath)))
+const isValid = function(found) {
+  let version = versionOf(found.node)
+  if (!KNOWN.includes(version)) {
+    version = ASSUMED
   }
-  return VERDICTS.get(xpath)
+  const key = `${version} ${found.pattern} ${found.expression}`
+  if (!VERDICTS.has(key)) {
+    let answer = parsed(found.expression, version)
+    if (found.pattern) {
+      answer = matched(found.expression, version)
+    }
+    VERDICTS.set(key, answer.fault === '')
+  }
+  return VERDICTS.get(key)
 }
 
 module.exports = {

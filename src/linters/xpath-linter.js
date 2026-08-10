@@ -78,7 +78,7 @@ const refused = function(xsl) {
   if (!REFUSED.has(xsl)) {
     const found = new Set()
     for (const held of expressionsOf(xsl)) {
-      if (!isValid(held.expression)) {
+      if (!isValid(held)) {
         const owner = held.node.ownerElement || held.node.parentNode
         found.add(held.node)
         found.add(owner)

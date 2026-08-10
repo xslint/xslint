@@ -4,7 +4,7 @@
  */
 
 const {isValid} = require('../xpath')
-const {ATTRIBUTES, PATTERNS} = require('../attributes')
+const {ATTRIBUTES, PATTERNS, wholeOf} = require('../attributes')
 const {walked} = require('../tree')
 const {XSLT} = require('../xsl-version')
 const {kinds} = require('../resources/checks.json')
@@ -92,7 +92,7 @@ const validate = function(corpus, suppressions = []) {
   const suppressed = suppressions.some((sup) => CHECK.includes(sup))
   for (const source of corpus) {
     for (const attribute of walked(source.xsl).filter(bare)) {
-      if (isValid(attribute.nodeValue)) {
+      if (isValid(wholeOf(attribute))) {
         expressions.push({source: source, attribute: attribute})
       } else if (UNRESOLVED.test(attribute.nodeValue)) {
         logger.debug(`Skipping expression with an unresolved entity`)
