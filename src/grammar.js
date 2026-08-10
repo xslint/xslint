@@ -652,6 +652,13 @@ const stepped = function(cursor) {
 /**
  * Whether a step can begin at the cursor. A path stops where one cannot, which
  * is how `a[1]` ends after the predicate rather than reading the `]` as a test.
+ * A name is one of the things it begins with, and a name spelling its namespace
+ * inline begins with the literal rather than with the name, so `//Q{urn:my}a`
+ * opens a step as much as `//a` does — the shape the inline form exists for, a
+ * namespace-qualified search with no prefix bound to reach it. No version
+ * test here for the same reason `OPENERS` carries none: `named` refuses the
+ * literal below 3.0 wherever it stands, and naming the construct is the more
+ * useful complaint than naming the end of the expression.
  * @param {object} cursor - The cursor
  * @return {boolean} - True when a step stands there
  */
@@ -659,7 +666,7 @@ const steps = function(cursor) {
   const token = ahead(cursor)
   return AXES.includes(token.type) || token.type === TOKENS.AT ||
     token.type === TOKENS.DOUBLE_DOT || token.type === TOKENS.DOT ||
-    token.type === TOKENS.MULTI ||
+    token.type === TOKENS.MULTI || token.type === TOKENS.URI ||
     (token.type === TOKENS.NAME && !KEYWORDS.includes(token.value)) ||
     OPENERS.includes(token.type)
 }
