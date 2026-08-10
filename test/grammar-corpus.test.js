@@ -120,21 +120,23 @@ const REACHES = [
  * retiring the retry is not in the tree, when what is not in the tree is a
  * comparison that can see it.
  *
- * Eleven stood when #680 wrote this list and one is left, which is the measure
- * doing its job: nine were a parenthesized step (#711) and one a node
- * comparison (#724), each of them a selector, though a selector is one
+ * Eleven stood when #680 wrote this list and **none** is left, which is the
+ * measure doing its job rather than the measure going quiet: nine were a
+ * parenthesized step (#711), one a node comparison (#724) and the last a name
+ * no NCName can spell (#708), each of them a selector, though a selector is one
  * expression in twelve — the checks are written in an idiom the stylesheets
- * never use. What remains is the one place we are the lenient side, and the
- * engine is right: `25l` opens with a digit and no NCName may.
+ * never use.
+ *
+ * An empty list is an assertion and not the absence of one. Every expression
+ * the repository carries now takes the same verdict from the grammar as from
+ * the engine, so a disagreement of either kind turns this red: one the grammar
+ * invents against working code, and one it lets through. What the emptiness
+ * does not say is that the two agree everywhere — the corpus reaches only what
+ * the corpus holds, and the classes #708 closed which no fixture spells are
+ * pinned by rows in `test/grammar.test.js` instead.
  * @type {Array.<{xpath: string, accepts: string, gap: string}>}
  */
-const GAPS = [
-  {
-    xpath: 'my:25l(3)',
-    accepts: 'grammar',
-    gap: 'a name no NCName can spell (#708)',
-  },
-]
+const GAPS = []
 
 /**
  * A tree flattened, its root included, so a property asserted of a node is

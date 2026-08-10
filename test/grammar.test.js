@@ -28,6 +28,11 @@ const ACCEPTS = [
   {xpath: '$Q{urn:my}v', kind: 'variable'},
   {xpath: 'Q:a', kind: 'step'},
   {xpath: 'Q', kind: 'step'},
+  {xpath: 'my:a-b', kind: 'step'},
+  {xpath: 'my:_x', kind: 'step'},
+  {xpath: 'my:a.b', kind: 'step'},
+  {xpath: 'my:*', kind: 'step'},
+  {xpath: '*:name', kind: 'step'},
   {xpath: 'a/b//c', kind: 'path'},
   {xpath: 'child::a/attribute::b', kind: 'path'},
   {xpath: '../following-sibling::x', kind: 'path'},
@@ -154,6 +159,15 @@ const REFUSES = [
   {name: 'an inline namespace behind a name', xpath: 'a Q{urn:my}b', at: 2},
   {name: 'a braced URI literal that never closes', xpath: 'Q{unclosed', at: 1},
   {name: 'a braced URI literal holding a brace', xpath: 'Q{a{b}c', at: 1},
+  {name: 'a local part opening with a digit', xpath: 'my:25l', at: 0},
+  {name: 'a call whose local part opens with a digit', xpath: 'my:25l(3)',
+    at: 0},
+  {name: 'a local part opening with a hyphen', xpath: 'my:-x', at: 0},
+  {name: 'a local part opening with a dot', xpath: 'my:.x', at: 0},
+  {name: 'a name two colons split', xpath: 'my:a:b', at: 0},
+  {name: 'an unspellable name behind a separator', xpath: 'a/my:25l', at: 2},
+  {name: 'a prefixed name behind an inline namespace',
+    xpath: 'Q{urn:my}a:b', at: 9},
 ]
 
 /**

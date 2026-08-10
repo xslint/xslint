@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {tokenized, TOKENS} = require('../src/tokens')
+const {tokenized, qualified, TOKENS} = require('../src/tokens')
 const assert = require('assert')
 
 /**
@@ -363,6 +363,37 @@ const SPACED = [
 ]
 
 /**
+ * Names, and whether XML can spell each one. A name reaches the lexer whole and
+ * greedily, so what it holds is not what XML admits: the classes that spell one
+ * take a colon and a digit and a hyphen anywhere, and a QName takes them only
+ * where XML says. The leading colon and the empty name are here rather than in
+ * `test/grammar.test.js` because no expression reaches this question carrying
+ * either — a `:` opens a token of its own — so the predicate is asked directly.
+ * @type {Array.<{name: string, spells: boolean}>}
+ */
+const QUALIFIED = [
+  {name: 'a', spells: true},
+  {name: 'my:a', spells: true},
+  {name: 'my:', spells: true},
+  {name: '_x', spells: true},
+  {name: 'a-b', spells: true},
+  {name: 'a.b', spells: true},
+  {name: 'my:a-b', spells: true},
+  {name: 'ä', spells: true},
+  {name: 'my:ä', spells: true},
+  {name: '', spells: false},
+  {name: ':a', spells: false},
+  {name: ':', spells: false},
+  {name: 'my:25l', spells: false},
+  {name: 'my:-x', spells: false},
+  {name: 'my:.x', spells: false},
+  {name: 'my:a:b', spells: false},
+  {name: '25l', spells: false},
+  {name: '-x', spells: false},
+  {name: '.x', spells: false},
+]
+
+/**
  * Fragments assembled into random expressions for the round-trip properties.
  * @type {Array.<string>}
  */
@@ -455,6 +486,14 @@ describe('tokens', function() {
           count,
         )
       })
+    })
+  })
+  QUALIFIED.forEach(({name, spells}) => {
+    it(`weighs ${JSON.stringify(name)} the way XML spells a name`, function() {
+      assert.equal(
+        qualified(name), spells,
+        `${JSON.stringify(name)} is weighed the wrong way as a name`,
+      )
     })
   })
   it('finds any user functions', function() {

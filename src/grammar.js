@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {tokenized, TOKENS} = require('./tokens')
+const {tokenized, qualified, TOKENS} = require('./tokens')
 const {since, MODERN} = require('./xsl-version')
 
 /**
@@ -350,10 +350,16 @@ const folded = function(cursor, below, types, kind) {
  */
 const named = function(cursor) {
   const from = significant(cursor)
+  const token = ahead(cursor)
   if (sees(cursor, TOKENS.URI)) {
     admits(cursor, 'inline-namespace')
     take(cursor)
-    expect(cursor, TOKENS.NAME, 'a name behind the inline namespace')
+    if (!sees(cursor, TOKENS.NAME) || ahead(cursor).value.includes(':')) {
+      refuse(cursor, 'a local name behind the inline namespace')
+    }
+    take(cursor)
+  } else if (NAMES.includes(token.type) && !qualified(token.value)) {
+    refuse(cursor, 'a name XML can spell')
   } else if (!sees(cursor, TOKENS.USER_FUNCTION)) {
     expect(cursor, TOKENS.NAME, 'a name')
   } else {
