@@ -221,11 +221,38 @@ const REFUSES = [
  */
 const RESERVES = [
   {xpath: 'item()', from: '2.0', below: '1.0'},
+  {xpath: 'if(1)', from: '2.0', below: '1.0'},
+  {xpath: 'function(*)', from: '3.0', below: '2.0'},
   {xpath: 'empty-sequence()', from: '2.0', below: '1.0'},
   {xpath: 'typeswitch(1)', from: '2.0', below: '1.0'},
   {xpath: 'map(*)', from: '3.0', below: '2.0'},
   {xpath: 'array(*)', from: '3.0', below: '2.0'},
   {xpath: 'switch(1)', from: '3.0', below: '2.0'},
+]
+
+/**
+ * Names whose *tree* the version in force decides, each read from both sides of
+ * its floor. A kind test and a call to a function of the same name are both
+ * accepted expressions, so no acceptance diff can part them and only the tree
+ * can: `element(a)` is a step from 2.0 and a call at 1.0, which is what
+ * xsltproc reads it as — it parses the expression and then goes looking for the
+ * function. A `RESERVES` row cannot say this, since neither side is a refusal.
+ * @type {Array.<{xpath: string, from: string, reads: string, below: string,
+ *   instead: string}>}
+ */
+const SHAPED = [
+  {xpath: 'element(a)', from: '2.0', reads: 'step',
+    below: '1.0', instead: 'call'},
+  {xpath: 'attribute(a)', from: '2.0', reads: 'step',
+    below: '1.0', instead: 'call'},
+  {xpath: 'document-node()', from: '2.0', reads: 'step',
+    below: '1.0', instead: 'call'},
+  {xpath: 'schema-element(a)', from: '2.0', reads: 'step',
+    below: '1.0', instead: 'call'},
+  {xpath: 'schema-attribute(a)', from: '2.0', reads: 'step',
+    below: '1.0', instead: 'call'},
+  {xpath: 'namespace-node()', from: '3.0', reads: 'step',
+    below: '2.0', instead: 'call'},
 ]
 
 /**
@@ -255,6 +282,9 @@ const GATED = [
   {xpath: 'Q{urn:my}fn(1)', floor: '3.0', below: '2.0'},
   {xpath: '//Q{urn:my}a', floor: '3.0', below: '2.0'},
   {xpath: '//my:fn(1)', floor: '2.0', below: '1.0'},
+  {xpath: '$a instance of map(*)', floor: '3.0', below: '2.0'},
+  {xpath: '$a instance of array(*)', floor: '3.0', below: '2.0'},
+  {xpath: 'a/element(b)', floor: '2.0', below: '1.0'},
   {xpath: 'a/fn(1)', floor: '2.0', below: '1.0'},
   {xpath: '$Q{urn:my}v', floor: '3.0', below: '2.0'},
   {xpath: '//a intersect //b', floor: '2.0', below: '1.0'},
@@ -314,6 +344,16 @@ describe('grammar', function() {
         [parsed(xpath, from).fault === '', parsed(xpath, below).fault === ''],
         [false, true],
         `${xpath} is not a call below ${from} and a reserved name from it`,
+      )
+    })
+  })
+  SHAPED.forEach(({xpath, from, reads, below, instead}) => {
+    const said = `reads ${JSON.stringify(xpath)} as a ${reads} only from ${from}`
+    it(said, function() {
+      assert.deepEqual(
+        [parsed(xpath, from).tree.kind, parsed(xpath, below).tree.kind],
+        [reads, instead],
+        `${xpath} is not read the way ${from} and ${below} read it`,
       )
     })
   })
