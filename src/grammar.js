@@ -52,6 +52,7 @@ const SINCE = {
   'lookup': '3.0',
   'map': '3.0',
   'node-comparison': '2.0',
+  'parenthesized-item-type': '3.0',
   'range': '2.0',
   'reference': '3.0',
   'simple-map': '3.0',
@@ -432,35 +433,100 @@ const named = function(cursor) {
 }
 
 /**
- * A sequence type: a name or a kind test, then an optional occurrence
- * indicator. It is thinner than the full `SequenceType` production, which
- * `xslint:` has no use for yet — what a check asks of a type is which name it
- * mentions, and the shape of an item type is #679's business.
+ * A kind test, and the whole of one: a name XPath reserves for a test, and the
+ * brackets behind it, whatever they hold. What a check asks of a type is which
+ * name it mentions, so the brackets are counted rather than read — the shape of
+ * what stands inside them is #679's business.
+ *
+ * It takes no occurrence indicator, which is the point of it standing alone.
+ * The same characters are read by three productions of different shapes — a
+ * `NodeTest`'s kind test, an `ItemType` inside a `SequenceType`, and the
+ * `SingleType` a cast takes — and one function serving all three took `?`, `*`
+ * and `+` wherever it was called. A step has no occurrence indicator to take,
+ * so `text() + 1` lost its `+` to the type and was refused where every
+ * processor accepts it (#740).
  * @param {object} cursor - The cursor
  * @return {object} - The `type` node
  */
-const typed = function(cursor) {
+const kinded = function(cursor) {
   const from = significant(cursor)
-  if (sees(cursor, TOKENS.NAME) && TYPES.includes(ahead(cursor).value)) {
+  take(cursor)
+  expect(cursor, TOKENS.LPAREN, '"("')
+  let depth = 1
+  while (depth > 0 && ahead(cursor) !== END) {
+    if (sees(cursor, TOKENS.LPAREN)) {
+      depth += 1
+    } else if (sees(cursor, TOKENS.RPAREN)) {
+      depth -= 1
+    }
     take(cursor)
-    expect(cursor, TOKENS.LPAREN, '"("')
-    let depth = 1
-    while (depth > 0 && ahead(cursor) !== END) {
-      if (sees(cursor, TOKENS.LPAREN)) {
-        depth += 1
-      } else if (sees(cursor, TOKENS.RPAREN)) {
-        depth -= 1
-      }
-      take(cursor)
-    }
-    if (depth > 0) {
-      refuse(cursor, '")"')
-    }
+  }
+  if (depth > 0) {
+    refuse(cursor, '")"')
+  }
+  return shaped('type', from, cursor, [])
+}
+
+/**
+ * An item type: a kind test, a name, or another item type in brackets. XPath
+ * 3.0 added that last spelling, `ParenthesizedItemType`, and it holds an item
+ * type rather than a sequence type — so `(xs:integer)` and `((xs:integer))` are
+ * types and `(xs:integer*)` and `()` are not, which is what every processor
+ * says of them too.
+ * @param {object} cursor - The cursor
+ * @return {object} - The `item` node
+ */
+const itemed = function(cursor) {
+  const from = significant(cursor)
+  if (sees(cursor, TOKENS.LPAREN)) {
+    admits(cursor, 'parenthesized-item-type')
+    take(cursor)
+    itemed(cursor)
+    expect(cursor, TOKENS.RPAREN, '")"')
+  } else if (sees(cursor, TOKENS.NAME) && TYPES.includes(ahead(cursor).value)) {
+    kinded(cursor)
   } else {
     named(cursor)
   }
-  if (sees(cursor, TOKENS.LOOKUP) || sees(cursor, TOKENS.MULTI) ||
-    sees(cursor, TOKENS.PLUS)) {
+  return shaped('item', from, cursor, [])
+}
+
+/**
+ * A sequence type: an item type and how many of it, which is what `instance
+ * of`, `treat as` and a function's `as` clause each take. `empty-sequence()` is
+ * the one spelling that carries no occurrence indicator, being a cardinality
+ * already — `SequenceType` gives it its own alternative rather than counting it
+ * among the item types.
+ * @param {object} cursor - The cursor
+ * @return {object} - The `type` node
+ */
+const sequenced = function(cursor) {
+  const from = significant(cursor)
+  const empty = spells(cursor, 'empty-sequence')
+  itemed(cursor)
+  if (!empty && (sees(cursor, TOKENS.LOOKUP) || sees(cursor, TOKENS.MULTI) ||
+    sees(cursor, TOKENS.PLUS))) {
+    take(cursor)
+  }
+  return shaped('type', from, cursor, [])
+}
+
+/**
+ * A single type, which is what `cast as` and `castable as` take: the name of an
+ * atomic type, and an optional `?` for whether the empty sequence will do. A
+ * kind test is not one — a cast makes an atomic value and there is no atomic
+ * type named `node()` — and neither `*` nor `+` may follow, a cast answering
+ * one item or none.
+ * @param {object} cursor - The cursor
+ * @return {object} - The `type` node
+ */
+const singled = function(cursor) {
+  const from = significant(cursor)
+  if (sees(cursor, TOKENS.NAME) && TYPES.includes(ahead(cursor).value)) {
+    refuse(cursor, 'the name of an atomic type')
+  }
+  named(cursor)
+  if (sees(cursor, TOKENS.LOOKUP)) {
     take(cursor)
   }
   return shaped('type', from, cursor, [])
@@ -569,7 +635,7 @@ const tested = function(cursor) {
     take(cursor)
   } else if (sees(cursor, TOKENS.NAME) && TESTS.includes(ahead(cursor).value) &&
     reaches(cursor, TOKENS.LPAREN)) {
-    typed(cursor)
+    kinded(cursor)
   } else if (reserves(cursor, ahead(cursor).value) &&
     reaches(cursor, TOKENS.LPAREN)) {
     refuse(cursor, 'a name XPath does not reserve')
@@ -851,14 +917,14 @@ const inlined = function(cursor) {
       named(cursor)
       if (spells(cursor, 'as')) {
         take(cursor)
-        typed(cursor)
+        sequenced(cursor)
       }
     } while (sees(cursor, TOKENS.COMMA) && take(cursor))
   }
   expect(cursor, TOKENS.RPAREN, '")"')
   if (spells(cursor, 'as')) {
     take(cursor)
-    typed(cursor)
+    sequenced(cursor)
   }
   expect(cursor, TOKENS.LBRACE, '"{"')
   const body = []
@@ -910,13 +976,31 @@ const primary = function(cursor) {
     node = arrayed(cursor)
   } else if (token.value === 'function' && reaches(cursor, TOKENS.LPAREN)) {
     node = inlined(cursor)
-  } else if (called(cursor)) {
+  } else if (referred(cursor)) {
+    admits(cursor, 'reference')
+    named(cursor)
+    take(cursor)
+    expect(cursor, TOKENS.NUMBER, 'the arity of the function')
+    node = shaped('reference', from, cursor, [])
+  } else {
     named(cursor)
     node = shaped('call', from, cursor, arguments_(cursor))
-  } else {
-    node = stepped(cursor)
   }
   return node
+}
+
+/**
+ * Whether a named function reference stands at the cursor: a name with a `#`
+ * behind it, which `NamedFunctionRef` makes a primary expression in its own
+ * right. It was read as a postfix hanging off whatever `primary` answered, so
+ * `abs#1` came back a reference to a *step* — harmless while nothing else could
+ * follow a step, and wrong once the postfixes stopped following one at all.
+ * @param {object} cursor - The cursor
+ * @return {boolean} - True when a function reference opens here
+ */
+const referred = function(cursor) {
+  return NAMES.includes(ahead(cursor).type) &&
+    sees(pastName(cursor), TOKENS.HASH)
 }
 
 /**
@@ -930,6 +1014,29 @@ const called = function(cursor) {
   const token = ahead(cursor)
   return NAMES.includes(token.type) && !TESTS.includes(token.value) &&
     !reserves(cursor, token.value) && sees(pastName(cursor), TOKENS.LPAREN)
+}
+
+/**
+ * Whether a primary expression stands at the cursor, which is the whole of the
+ * fork `StepExpr ::= PostfixExpr | AxisStep` asks. It names the same shapes
+ * `primary` reads, in the same order and by the same tests, so the two cannot
+ * come apart: everything else is an axis step, which carries a predicate list
+ * and nothing more.
+ *
+ * A step reaching `primary` and coming back out of its last branch is what let
+ * the postfixes hang off one — `a?b` came back a lookup into a step and `@a(1)`
+ * a call applied to one, neither of which any processor parses, since `(` and
+ * `?` follow a `PrimaryExpr` and a name in a path is not one (#740).
+ * @param {object} cursor - The cursor
+ * @return {boolean} - True when a primary expression opens here
+ */
+const opens = function(cursor) {
+  const token = ahead(cursor)
+  return OPENERS.includes(token.type) || sees(cursor, TOKENS.DOT) ||
+    (token.value === 'map' && reaches(cursor, TOKENS.LBRACE)) ||
+    (token.value === 'array' && reaches(cursor, TOKENS.LBRACE)) ||
+    (token.value === 'function' && reaches(cursor, TOKENS.LPAREN)) ||
+    referred(cursor) || called(cursor)
 }
 
 /**
@@ -960,24 +1067,48 @@ const keyed = function(cursor) {
  */
 const postfixed = function(cursor) {
   const from = significant(cursor)
-  let node = primary(cursor)
-  if (sees(cursor, TOKENS.HASH)) {
-    admits(cursor, 'reference')
-    take(cursor)
-    expect(cursor, TOKENS.NUMBER, 'the arity of the function')
-    node = shaped('reference', from, cursor, [node])
-  }
-  while (sees(cursor, TOKENS.LBRACKET) || sees(cursor, TOKENS.LPAREN) ||
-    sees(cursor, TOKENS.LOOKUP)) {
-    if (sees(cursor, TOKENS.LBRACKET)) {
-      node = shaped('filter', from, cursor, [node].concat(filtered(cursor)))
-    } else if (sees(cursor, TOKENS.LPAREN)) {
-      node = shaped('apply', from, cursor, [node].concat(arguments_(cursor)))
-    } else {
-      admits(cursor, 'lookup')
-      take(cursor)
-      node = shaped('lookup', from, cursor, [node, keyed(cursor)])
+  let node = undefined
+  if (opens(cursor)) {
+    node = primary(cursor)
+    while (sees(cursor, TOKENS.LBRACKET) || sees(cursor, TOKENS.LPAREN) ||
+      sees(cursor, TOKENS.LOOKUP)) {
+      if (sees(cursor, TOKENS.LBRACKET)) {
+        node = shaped('filter', from, cursor, [node].concat(filtered(cursor)))
+      } else if (sees(cursor, TOKENS.LPAREN)) {
+        node = shaped('apply', from, cursor, [node].concat(arguments_(cursor)))
+      } else {
+        admits(cursor, 'lookup')
+        take(cursor)
+        node = shaped('lookup', from, cursor, [node, keyed(cursor)])
+      }
     }
+  } else {
+    node = stepped(cursor)
+  }
+  return node
+}
+
+/**
+ * A simple map: paths chained with `!`, each evaluated with what the one before
+ * it answered as its context.
+ *
+ * It stands here rather than on the ladder because `ValueExpr` *is* a
+ * `SimpleMapExpr`, so a map binds tighter than the unary signs above it and far
+ * tighter than the four expressions that take a type on their right. Reading it
+ * as a rung of the ladder put it the other side of all of them, and
+ * `a instance of xs:integer ! b` came back a map over what the `instance of`
+ * answered — an expression no processor parses, a sequence type being the end
+ * of what may stand there (#740).
+ * @param {object} cursor - The cursor
+ * @return {object} - The node
+ */
+const chained = function(cursor) {
+  const from = significant(cursor)
+  let node = walked(cursor)
+  while (sees(cursor, TOKENS.SIMPLE_MAP)) {
+    admits(cursor, 'simple-map')
+    take(cursor)
+    node = shaped('simple-map', from, cursor, [node, walked(cursor)])
   }
   return node
 }
@@ -994,7 +1125,7 @@ const signed = function(cursor) {
     take(cursor)
     node = shaped('unary', from, cursor, [signed(cursor)])
   } else {
-    node = walked(cursor)
+    node = chained(cursor)
   }
   return node
 }
@@ -1036,19 +1167,24 @@ const arrowed = function(cursor) {
 const typedExpr = function(cursor) {
   const from = significant(cursor)
   let node = arrowed(cursor)
-  const words = {cast: 'cast', castable: 'castable', treat: 'treat'}
-  for (const word of Object.keys(words)) {
+  for (const word of ['cast', 'castable']) {
     if (spells(cursor, word)) {
       admits(cursor, word)
       take(cursor)
       keyword(cursor, 'as')
-      node = shaped(word, from, cursor, [node, typed(cursor)])
+      node = shaped(word, from, cursor, [node, singled(cursor)])
     }
+  }
+  if (spells(cursor, 'treat')) {
+    admits(cursor, 'treat')
+    take(cursor)
+    keyword(cursor, 'as')
+    node = shaped('treat', from, cursor, [node, sequenced(cursor)])
   }
   if (sees(cursor, TOKENS.INSTANCE_OF)) {
     admits(cursor, 'instance')
     take(cursor)
-    node = shaped('instance', from, cursor, [node, typed(cursor)])
+    node = shaped('instance', from, cursor, [node, sequenced(cursor)])
   }
   return node
 }
@@ -1060,7 +1196,6 @@ const typedExpr = function(cursor) {
  * @type {Array.<{types: Array.<string>, kind: string}>}
  */
 const LADDER = [
-  {types: [TOKENS.SIMPLE_MAP], kind: 'simple-map'},
   {types: [TOKENS.INTERSECT], kind: 'intersect'},
   {types: [TOKENS.EXCEPT], kind: 'except'},
   {types: [TOKENS.PIPE], kind: 'union'},
