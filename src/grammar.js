@@ -292,20 +292,32 @@ const sees = function(cursor, type) {
 }
 
 /**
- * Whether the token ahead stands directly against the one in front of it,
- * where XPath requires a gap. Two terminals neither of which ends at a
- * character the other cannot hold need whitespace or a comment between them,
- * and `GLUES` names the kinds on the near side of that pair.
- *
- * It reads the token before by index rather than by significance, because the
- * whole question is whether trivia stands there: `significant` is written to
- * step over exactly what this has to see (#742).
+ * Whether the token ahead stands directly against the one in front of it, with
+ * neither a gap nor a comment between them. The stream is lossless, so trivia
+ * is a token of its own and adjacency is the absence of one rather than
+ * arithmetic over offsets: it reads the token before by index rather than by
+ * significance, because `significant` is written to step over exactly what this
+ * has to see (#742).
+ * @param {object} cursor - The cursor
+ * @return {boolean} - True when nothing stands between the two
+ */
+const abuts = function(cursor) {
+  const before = cursor.tokens[significant(cursor) - 1]
+  return before !== undefined && !TRIVIA.includes(before.type)
+}
+
+/**
+ * Whether the token ahead abuts one XPath requires a gap after. Two terminals
+ * neither of which ends at a character the other cannot hold need whitespace or
+ * a comment between them, and `GLUES` names the kinds on the near side of that
+ * pair — so this is `abuts` narrowed to them, and every question about a gap in
+ * this file is one adjacency test underneath (#742).
  * @param {object} cursor - The cursor
  * @return {boolean} - True when no gap stands in front of it
  */
 const glued = function(cursor) {
-  const before = cursor.tokens[significant(cursor) - 1]
-  return before !== undefined && GLUES.includes(before.type)
+  return abuts(cursor) &&
+    GLUES.includes(cursor.tokens[significant(cursor) - 1].type)
 }
 
 /**
@@ -671,6 +683,12 @@ const conditional = function(cursor) {
  * in a colon belongs, so `qualified` can refuse one everywhere else: while that
  * permission sat in the lexer's answer it reached a variable and a call too,
  * and `$my:` and `my:(1)` parsed where no engine accepts either (#731).
+ *
+ * Each of the three is spelled with no gap inside it, `Wildcard` being marked
+ * `ws: explicit`, so every one of them asks for adjacency and none refuses on
+ * its own account: a `*` is a whole wildcard already, and what a gap parts from
+ * it is the next production's business rather than a fault here (#736). That is
+ * what leaves the `:` of `map {* : 1}` to the map constructor it separates.
  * @param {object} cursor - The cursor
  * @return {object} - The `test` node
  */
@@ -678,11 +696,12 @@ const tested = function(cursor) {
   const from = significant(cursor)
   if (sees(cursor, TOKENS.MULTI)) {
     take(cursor)
-    if (sees(cursor, TOKENS.COLON)) {
+    if (sees(cursor, TOKENS.COLON) && abuts(cursor) &&
+      welded(cursor, TOKENS.NAME)) {
       take(cursor)
-      expect(cursor, TOKENS.NAME, 'a name after the wildcard prefix')
+      take(cursor)
     }
-  } else if (sees(cursor, TOKENS.URI) && reaches(cursor, TOKENS.MULTI)) {
+  } else if (sees(cursor, TOKENS.URI) && welded(cursor, TOKENS.MULTI)) {
     admits(cursor, 'inline-namespace')
     take(cursor)
     take(cursor)
@@ -694,7 +713,7 @@ const tested = function(cursor) {
     reaches(cursor, TOKENS.LPAREN)) {
     refuse(cursor, 'a name XPath does not reserve')
   } else if (ahead(cursor).value.endsWith(':') &&
-    reaches(cursor, TOKENS.MULTI)) {
+    welded(cursor, TOKENS.MULTI)) {
     take(cursor)
     take(cursor)
   } else {
@@ -715,6 +734,23 @@ const reaches = function(cursor, type) {
   const beyond = cursorOf(cursor.tokens, cursor.version)
   beyond.at = significant(cursor) + 1
   return sees(beyond, type)
+}
+
+/**
+ * Whether the token after the next one is of the given kind *and* stands
+ * against it. `reaches` is what almost every production wants, since a gap
+ * between two terminals is nothing to a grammar; a terminal spelled out of
+ * several tokens is where that stops being true, and a wildcard is the only one
+ * XPath has — `Wildcard` is marked `ws: explicit`, so `Q{urn:my} *` and `my: *`
+ * are not loose spellings of one but expressions no processor loads (#736).
+ * @param {object} cursor - The cursor
+ * @param {string} type - The kind to look for
+ * @return {boolean} - True when it stands there with no gap in front of it
+ */
+const welded = function(cursor, type) {
+  const beyond = cursorOf(cursor.tokens, cursor.version)
+  beyond.at = significant(cursor) + 1
+  return sees(beyond, type) && abuts(beyond)
 }
 
 /**
