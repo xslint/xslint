@@ -150,6 +150,18 @@ const ACCEPTS = [
   {xpath: '$v cast as xs:integer?', kind: 'cast'},
   {xpath: 'a ! b instance of xs:integer', kind: 'instance'},
   {xpath: '(a instance of xs:integer) ! b', kind: 'simple-map'},
+  {xpath: '$v instance of xs:integer? and @b', kind: 'and'},
+  {xpath: '$v instance of xs:integer+ and @b', kind: 'and'},
+  {xpath: '$v instance of xs:integer* and @b', kind: 'and'},
+  {xpath: '$v castable as xs:date? or @c', kind: 'or'},
+  {xpath: 'a cast as xs:integer? div 2', kind: 'product'},
+  {xpath: '$v treat as item()+ union b', kind: 'intersect'},
+  {xpath: '$v instance of xs:integer? to 3', kind: 'range'},
+  {xpath: '$m?div and $m?or', kind: 'and'},
+  {xpath: 'count(a)div 2', kind: 'product'},
+  {xpath: '"s"and b', kind: 'and'},
+  {xpath: 'a[1]union b', kind: 'intersect'},
+  {xpath: '1(: gap :)div 2', kind: 'product'},
 ]
 
 /**
@@ -227,6 +239,12 @@ const REFUSES = [
   {name: 'a lone descendant slash in brackets', xpath: '(//)', at: 3},
   {name: 'an item type behind a separator', xpath: 'a/item()', at: 2},
   {name: 'an item type inside a predicate', xpath: 'a[item()]', at: 2},
+  {name: 'a word operator run against the number in front of it',
+    xpath: '1div 2', at: 1},
+  {name: 'a word operator run against a decimal literal', xpath: '1.5mod 2',
+    at: 3},
+  {name: 'a two-character word operator run against a number', xpath: '1eq 2',
+    at: 1},
 ]
 
 /**

@@ -59,7 +59,6 @@ const TOKENS = {
   AND: 'and',
   IDIV: 'idiv',
   UNION: 'union',
-  INSTANCE_OF: 'instance of',
   INTERSECT: 'intersect',
   EXCEPT: 'except',
   CHILD: 'child',
@@ -229,11 +228,14 @@ const TRIPLE = {
 }
 
 /**
- * Map characters with more than 3 symbols to a token.
+ * Map characters with more than 3 symbols to a token. Every one of them is a
+ * single word, which is what lets a name scan reach them at all — `instance
+ * of` sat here until #742 and was the whole reason the lexer had to match
+ * across a gap, and it is read by the grammar now, one keyword after another,
+ * the way `cast as`, `castable as` and `treat as` always were.
  * @type {{[key: string]: string}}
  */
 const MORE = {
-  'instance of': TOKENS.INSTANCE_OF,
   'intersect': TOKENS.INTERSECT,
   'except': TOKENS.EXCEPT,
   'union': TOKENS.UNION,
@@ -242,9 +244,11 @@ const MORE = {
 
 /**
  * The word operators, one word each, taken from the maps that already spell
- * them rather than listed a fourth time. `instance of` is left out: it is two
- * words with a gap between them, which a name scan can never reach past, so the
- * `more` branch keeps it.
+ * them rather than listed a fourth time. One word each is what they are now:
+ * `instance of` was two with a gap between them, which a name scan cannot
+ * reach past, so the lexer carried a branch of its own to match it and every
+ * name it read had to ask whether a longer spelling stood there. The grammar
+ * reads that one by value instead (#742).
  * @type {Array.<string>}
  */
 const WORDS = Object.keys({...DOUBLE, ...TRIPLE, ...MORE})
@@ -279,6 +283,23 @@ const ENDS = [
   TOKENS.NAME, TOKENS.NUMBER, TOKENS.STRING, TOKENS.RPAREN, TOKENS.RBRACKET,
   TOKENS.MULTI, TOKENS.DOT, TOKENS.DOUBLE_DOT, TOKENS.RBRACE,
 ]
+
+/**
+ * The kinds that cannot delimit what stands behind them, so XPath makes a gap
+ * stand between one of them and a word: whitespace or a comment is required
+ * between two terminals neither of which ends at a character the other cannot
+ * hold, and a numeric literal beside an operator name is that pair. `1div 2`
+ * and `1eq 2` are syntax errors and `1 div 2` and `1(: c :)div 2` are not
+ * (#742).
+ *
+ * A name is here for the same reason and is never reached: a word run against
+ * one is absorbed into it, `adiv` arriving as the single name it spells. Which
+ * is the whole of the list — every other kind `ENDS` names closes at a
+ * character no name can hold, so `count(a)div 2`, `"s"and b` and `a[1]union b`
+ * need no gap and are valid XPath as they stand.
+ * @type {Array.<string>}
+ */
+const GLUES = [TOKENS.NAME, TOKENS.NUMBER]
 
 /**
  * The kinds whose text is not expression text, so a scan looking for a
@@ -425,11 +446,40 @@ const afterName = function(xpath, start) {
  * and this had to read the last character of it to guess what had ended — a
  * guess only `.` and `..` ever needed, and neither needs it now that each has a
  * kind `ENDS` can name.
+ *
+ * Whether a gap stood in front of the word is the one thing about it a kind
+ * cannot say, and XPath asks: a word run against a terminal that cannot
+ * delimit it is no operator, since the two need whitespace or a comment
+ * between them and the author wrote neither. It is the single place a gap
+ * decides what an expression is made of rather than merely how it is written,
+ * which is why the other reader of this plumbing, {@link separates}, is handed
+ * the token alone (#742).
  * @param {?{type: string, value: string}} last - The last solid token
+ * @param {boolean} spaced - Whether trivia stood between it and the word
  * @return {boolean} - True when an operator may stand here
  */
-const operates = function(last) {
-  return last !== undefined && ENDS.includes(last.type)
+const operates = function(last, spaced) {
+  return last !== undefined && ENDS.includes(last.type) &&
+    (spaced || !GLUES.includes(last.type))
+}
+
+/**
+ * The operator a word spells, or `undefined` where it spells none, read off
+ * the same maps the lexer kinds one from rather than a list of its own. The
+ * multi-word operators answer nothing here: `instance of` is one token holding
+ * a gap, so no name a scan takes ever carries its value.
+ *
+ * It is exported for `src/grammar.js`, which settles the one question this
+ * file cannot: whether the `?` of `xs:integer?` ends a type or opens a lookup
+ * key, and so whether the word behind it is `div` the operator or `div` the
+ * key. XPath gives its own lexer a stack of states for that (A.2.4); ours is a
+ * pass that finishes before the grammar starts, so the grammar corrects the
+ * guess where it alone knows better (#742).
+ * @param {string} word - The text of a name
+ * @return {?string} - The operator kind it spells, or undefined
+ */
+const worded = function(word) {
+  return {...DOUBLE, ...TRIPLE, ...MORE}[word]
 }
 
 /**
@@ -526,22 +576,6 @@ const opensUserFunction = function(xpath, at) {
     if (xpath[at - 1] === ':' || xpath[at] !== '(' || colon !== 1) func = ''
   }
   return func
-}
-
-/**
- * Whether an element opens at given offset.
- * @param {string} xpath - Xpath expression
- * @param {number} at - Offset to test
- * @return {string} - token
- */
-const opensMore = function(xpath, at) {
-  let token = ''
-  Object.keys(MORE).forEach((elem) => {
-    if (xpath.slice(at, at + elem.length) === elem) {
-      token = elem
-    }
-  })
-  return token
 }
 
 /**
@@ -683,7 +717,6 @@ const afterOther = function(xpath, start) {
     !SINGLE[xpath[at]] &&
     !DOUBLE[xpath.slice(at, at + 2)] &&
     !TRIPLE[xpath.slice(at, at + 3)] &&
-    !opensMore(xpath, at) &&
     !opensComment(xpath, at) &&
     !opensUserFunction(xpath, at) &&
     !opensNumber(xpath, at) &&
@@ -724,11 +757,11 @@ const afterWhitespace = function(xpath, start) {
 const tokenized = function(xpath) {
   const tokens = []
   let last
+  let spaced = false
   let at = 0
   while (at < xpath.length) {
     const start = at
     const axis = !separates(last) && opensAxis(xpath, at)
-    const more = opensMore(xpath, at)
     const func = opensUserFunction(xpath, at)
     const uri = afterUri(xpath, at)
     let type
@@ -759,21 +792,11 @@ const tokenized = function(xpath) {
       at = uri
     } else if (STARTS.test(xpath[at])) {
       const name = xpath.slice(at, afterName(xpath, at))
-      let spelled = name
-      if (more && more.split(' ')[0] === name) {
-        spelled = more
-      }
-      const word = WORDS.includes(name) ||
-        (spelled !== name && MORE[spelled] !== undefined)
       type = TOKENS.NAME
-      if (word && operates(last)) {
-        type = {...DOUBLE, ...TRIPLE, ...MORE}[spelled]
+      if (WORDS.includes(name) && operates(last, spaced)) {
+        type = worded(name)
       }
-      if (type === TOKENS.NAME) {
-        at += name.length
-      } else {
-        at += spelled.length
-      }
+      at += name.length
     } else if (SYMBOLS[xpath.slice(at, at + 2)]) {
       type = SYMBOLS[xpath.slice(at, at + 2)]
       at += 2
@@ -786,7 +809,8 @@ const tokenized = function(xpath) {
     }
     const token = {type: type, value: xpath.slice(start, at), start: start}
     tokens.push(token)
-    if (type !== TOKENS.WHITESPACE && type !== TOKENS.COMMENT) {
+    spaced = type === TOKENS.WHITESPACE || type === TOKENS.COMMENT
+    if (!spaced) {
       last = token
     }
   }
@@ -797,6 +821,8 @@ module.exports = {
   tokenized,
   spelling,
   qualified,
+  worded,
+  GLUES,
   TOKENS,
   OPAQUE,
   WHITESPACE,
