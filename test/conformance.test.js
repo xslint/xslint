@@ -8,6 +8,7 @@ const {GAP} = require('../src/tokens')
 const {FIXERS} = require('../src/fixers')
 const {DECIMAL} = require('../src/xsl-version')
 const {authored, rendered, PLACE} = require('../scripts/generate-checks')
+const {Linter} = require('eslint')
 const path = require('path')
 const fs = require('fs')
 const assert = require('assert')
@@ -90,6 +91,27 @@ const SPAWNS = /require\('\.\/helpers'\)/
  * @type {string}
  */
 const DEEP = '.deep.test.js'
+
+/**
+ * Whether the line cap reports a file. The rule itself is asked, rather than
+ * the lines counted a second time here, so the guard cannot come to measure
+ * something other than what ESLint measures; a file that is gone answers no,
+ * since an exemption naming nothing is as stale as one naming a short file.
+ * @param {string} named - Path of the file from the repository root
+ * @param {Array} rule - The max-lines rule as eslint.config.mjs sets it
+ * @return {boolean} - TRUE when the rule reports the file
+ */
+const sprawls = function(named, rule) {
+  const whole = path.resolve(__dirname, '..', named)
+  let found = []
+  if (fs.existsSync(whole)) {
+    found = new Linter().verify(
+      fs.readFileSync(whole, 'utf-8'),
+      {rules: {'max-lines': rule}},
+    )
+  }
+  return found.some((one) => one.ruleId === 'max-lines')
+}
 
 /**
  * Names of the checks of a kind.
@@ -250,6 +272,31 @@ describe('conformance', function() {
       'a test that writes a file without asking for a temporary directory ' +
         'leaves it in the working tree, where the run that lints the ' +
         'repository walks over it and loses its count (#687)',
+    )
+  })
+  it('caps how far a source file may grow', async function() {
+    assert.ok(
+      (await import('../eslint.config.mjs')).default
+        .some((entry) => Array.isArray(entry.rules?.['max-lines'])),
+      'nothing in eslint.config.mjs caps the length of a source file, so the ' +
+        'next one to sprawl past what a reader can hold passes lint',
+    )
+  })
+  it('lifts that cap off no file standing under it', async function() {
+    const config = (await import('../eslint.config.mjs')).default
+    const cap = config
+      .map((entry) => entry.rules?.['max-lines'])
+      .filter((rule) => Array.isArray(rule))
+      .pop()
+    assert.deepEqual(
+      config
+        .filter((entry) => entry.rules?.['max-lines'] === 'off')
+        .flatMap((entry) => entry.files)
+        .filter((named) => !sprawls(named, cap)),
+      [],
+      'a file the line cap is switched off for stands under it now, or names ' +
+        'nothing at all, so the exemption in eslint.config.mjs claims a ' +
+        'length the tree no longer holds',
     )
   })
   it('tests every validation check by name in a test file', function() {
