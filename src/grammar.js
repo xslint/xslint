@@ -438,6 +438,12 @@ const folded = function(cursor, below, types, kind) {
  * A name, which the grammar wants wherever a QName may stand: a node test, a
  * variable, a type, a function. The lexer hands a QName over whole, colon and
  * all, so nothing here has to join one back together.
+ *
+ * What `qualified` is still asked about is the *user function* kind, whose scan
+ * takes an ASCII run and a bracket and weighs neither part as an NCName, so
+ * `my:25l(3)` arrives as one token. A bare name cannot fail the question any
+ * more: since #746 a colon runs a name on only where an NCName can start behind
+ * it, so what the lexer calls a `NAME` is a QName by construction.
  * @param {object} cursor - The cursor
  * @return {object} - The `name` node
  */
@@ -712,8 +718,9 @@ const tested = function(cursor) {
   } else if (reserves(cursor, ahead(cursor).value) &&
     reaches(cursor, TOKENS.LPAREN)) {
     refuse(cursor, 'a name XPath does not reserve')
-  } else if (ahead(cursor).value.endsWith(':') &&
-    welded(cursor, TOKENS.MULTI)) {
+  } else if (sees(cursor, TOKENS.NAME) && welded(cursor, TOKENS.COLON) &&
+    welded(pastName(cursor), TOKENS.MULTI)) {
+    take(cursor)
     take(cursor)
     take(cursor)
   } else {
