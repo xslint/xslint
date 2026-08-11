@@ -3,11 +3,10 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {nodes} = require('../xpath')
 const {masked, closes} = require('../expressions')
 const {GAP} = require('../tokens')
 const {metaOf, suppressed, defect} = require('../checks')
-const {selectorOf, wholeOf} = require('../attributes')
+const {whole} = require('../attributes')
 const {MODERN, since, versionOf} = require('../xsl-version')
 const {logger} = require('../logger')
 
@@ -61,34 +60,31 @@ const wrappers = function(select) {
 }
 
 /**
- * Lint the corpus for the `node-set()` extension used in XSLT 2.0 or 3.0, where
- * a variable is already a node sequence, reporting one defect per call with the
- * fix that unwraps it. Only the `@select` of an XSLT element is read: the
- * `select` a literal result element carries is output text, and a call standing
- * in another expression attribute, or inside an attribute value template, is
- * not looked for.
- * @param {Array.<{file: string, xsl: Document}>} corpus - Parsed stylesheets
+ * Lint the valid expressions for the `node-set()` extension used in XSLT 2.0 or
+ * 3.0, where a variable is already a node sequence, reporting one defect per
+ * call with the fix that unwraps it. Only the `@select` of an XSLT element is
+ * read: the `select` a literal result element carries is output text, and a
+ * call standing in another expression attribute, or inside an attribute value
+ * template, is not looked for.
+ * @param {Array.<{source: object, found: object}>} expressions - The valid
+ *  expressions the validator kept, each paired with the file it came from
  * @param {Array.<string>} suppressions - Array of suppressed checks
  * @return {{name: string, severity: string, message: string, file: string,
  *  line: number, pos: number, fix: object}[]} - Defects found
  */
-const lintByNodeSet = function(corpus, suppressions = []) {
+const lintByNodeSet = function(expressions, suppressions = []) {
   logger.debug(`Node-set linting started`)
   const defects = []
   if (!suppressed(CHECK, suppressions)) {
-    for (const source of corpus) {
-      for (const attribute of nodes(source.xsl, selectorOf('select'))) {
-        if (since(versionOf(attribute), MODERN)) {
-          for (const {offset, value, replacement} of wrappers(
-            attribute.nodeValue,
-          )) {
-            defects.push(
-              defect(
-                CHECK, META, source, wholeOf(attribute), offset,
-                {value, replacement},
-              ),
-            )
-          }
+    for (const {source, found} of expressions) {
+      if (whole(found, 'select') && since(versionOf(found.node), MODERN)) {
+        for (const {offset, value, replacement} of wrappers(found.expression)) {
+          defects.push(
+            defect(
+              CHECK, META, source, found, offset,
+              {value, replacement},
+            ),
+          )
         }
       }
     }

@@ -6,7 +6,6 @@
 const {masked, closes, lone} = require('../expressions')
 const {GAP} = require('../tokens')
 const {metaOf, suppressed, defect} = require('../checks')
-const {expressionsOf} = require('../attributes')
 const {logger} = require('../logger')
 
 /**
@@ -60,9 +59,6 @@ const negations = function(expression) {
     const start = match.index + match[1].length
     const open = match.index + match[0].length - 1
     const close = closes(blanked, open)
-    if (close < 0) {
-      continue
-    }
     const inner = INNER.exec(blanked.slice(open + 1, close))
     if (!inner) {
       continue
@@ -83,36 +79,36 @@ const negations = function(expression) {
 }
 
 /**
- * Lint the corpus for `not(not(x))`, a redundant double negation, reporting one
- * defect per occurrence with a safe fix: bare `x` when the double negation is a
- * whole `@test` (which already coerces to a boolean), and `boolean(x)`
- * everywhere else, where the boolean value itself is what is wanted.
- * @param {Array.<{file: string, xsl: Document}>} corpus - Parsed stylesheets
+ * Lint the valid expressions for `not(not(x))`, a redundant double negation,
+ * reporting one defect per occurrence with a safe fix: bare `x` when the double
+ * negation is a whole `@test` (which already coerces to a boolean), and
+ * `boolean(x)` everywhere else, where the boolean value itself is what is
+ * wanted.
+ * @param {Array.<{source: object, found: object}>} expressions - The valid
+ *  expressions the validator kept, each paired with the file it came from
  * @param {Array.<string>} suppressions - Array of suppressed checks
  * @return {{name: string, severity: string, message: string, file: string,
  *  line: number, pos: number, fix: object}[]} - Defects found
  */
-const lintByDoubleNegation = function(corpus, suppressions = []) {
+const lintByDoubleNegation = function(expressions, suppressions = []) {
   logger.debug(`Double-negation linting started`)
   const defects = []
   if (!suppressed(CHECK, suppressions)) {
-    for (const source of corpus) {
-      for (const found of expressionsOf(source.xsl)) {
-        const {node, expression} = found
-        for (const {offset, value, argument} of negations(expression)) {
-          const bare = node.nodeName === 'test' &&
-            node.nodeValue.trim() === value
-          let replacement = `boolean(${argument})`
-          if (bare) {
-            replacement = argument
-          }
-          defects.push(
-            defect(CHECK, META, source, found, offset, {
-              value: value,
-              replacement: replacement,
-            }),
-          )
+    for (const {source, found} of expressions) {
+      const {node, expression} = found
+      for (const {offset, value, argument} of negations(expression)) {
+        const bare = node.nodeName === 'test' &&
+          node.nodeValue.trim() === value
+        let replacement = `boolean(${argument})`
+        if (bare) {
+          replacement = argument
         }
+        defects.push(
+          defect(CHECK, META, source, found, offset, {
+            value: value,
+            replacement: replacement,
+          }),
+        )
       }
     }
   }

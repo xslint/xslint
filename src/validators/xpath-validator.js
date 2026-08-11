@@ -50,10 +50,12 @@ const UNRESOLVED = /&[A-Za-z_][\w.-]*;/
  * the walk reached 286, so a `match` no grammar accepts, an attribute value
  * template holding `{1 +}`, and a 3.0 text value template were each validated
  * by nothing at all — while a code-based linter, staged over the whole corpus,
- * read those same expressions and reported what it found in them. Only
- * `defect`'s parse gate kept a fix off that (#636). A pattern illegal before
- * XSLT 3.0 is reported with them, which is #631: `matched` has refused one
- * since #723 and had nobody to say so.
+ * read those same expressions and reported what it found in them, with only
+ * `defect`'s parse gate keeping a fix off it (#636). What this hands on is what
+ * every one of those linters is staged over since #750, so the gate is gone and
+ * a fault the report already names draws no second defect. A pattern illegal
+ * before XSLT 3.0 is reported with them, which is #631: `matched` has refused
+ * one since #723 and had nobody to say so.
  *
  * The defect stands where the fault does, not where the attribute opens, which
  * is what the offset on the refusal is for — and what the widening makes

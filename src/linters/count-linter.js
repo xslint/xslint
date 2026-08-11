@@ -6,7 +6,6 @@
 const {comparedToZero} = require('../comparisons')
 const {lone} = require('../expressions')
 const {metaOf, suppressed, defect} = require('../checks')
-const {expressionsOf} = require('../attributes')
 const {MODERN, since, versionOf} = require('../xsl-version')
 const {logger} = require('../logger')
 
@@ -103,33 +102,33 @@ const comparisons = function(expression) {
 }
 
 /**
- * Lint the corpus for `count(...)` compared with zero to test existence,
- * reporting one defect per comparison with a safe fix — `exists()`/`empty()` on
- * XSLT 2.0/3.0, and the 1.0-and-later `boolean(x)`/bare `x`/`not(x)` forms
- * otherwise, so the fix is version-appropriate on every stylesheet.
- * @param {Array.<{file: string, xsl: Document}>} corpus - Parsed stylesheets
+ * Lint the valid expressions for `count(...)` compared with zero to test
+ * existence, reporting one defect per comparison with a safe fix —
+ * `exists()`/`empty()` on XSLT 2.0/3.0, and the 1.0-and-later `boolean(x)`/bare
+ * `x`/`not(x)` forms otherwise, so the fix is version-appropriate on every
+ * stylesheet.
+ * @param {Array.<{source: object, found: object}>} expressions - The valid
+ *  expressions the validator kept, each paired with the file it came from
  * @param {Array.<string>} suppressions - Array of suppressed checks
  * @return {{name: string, severity: string, message: string, file: string,
  *  line: number, pos: number, fix: object}[]} - Defects found
  */
-const lintByCount = function(corpus, suppressions = []) {
+const lintByCount = function(expressions, suppressions = []) {
   logger.debug(`Count-comparison linting started`)
   const defects = []
   if (!suppressed(CHECK, suppressions)) {
-    for (const source of corpus) {
-      for (const found of expressionsOf(source.xsl)) {
-        const {node, expression} = found
-        const modern = since(versionOf(node), MODERN)
-        for (const {offset, value, test, argument} of comparisons(expression)) {
-          const whole = node.nodeName === 'test' &&
-            node.nodeValue.trim() === value
-          defects.push(
-            defect(CHECK, META, source, found, offset, {
-              value: value,
-              replacement: rewritten(test, argument, modern, whole),
-            }),
-          )
-        }
+    for (const {source, found} of expressions) {
+      const {node, expression} = found
+      const modern = since(versionOf(node), MODERN)
+      for (const {offset, value, test, argument} of comparisons(expression)) {
+        const whole = node.nodeName === 'test' &&
+          node.nodeValue.trim() === value
+        defects.push(
+          defect(CHECK, META, source, found, offset, {
+            value: value,
+            replacement: rewritten(test, argument, modern, whole),
+          }),
+        )
       }
     }
   }

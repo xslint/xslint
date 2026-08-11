@@ -6,7 +6,6 @@
 const {masked, closes} = require('../expressions')
 const {GAP} = require('../tokens')
 const {metaOf, suppressed, defect} = require('../checks')
-const {expressionsOf} = require('../attributes')
 const {MODERN, since, versionOf} = require('../xsl-version')
 const {logger} = require('../logger')
 
@@ -113,9 +112,6 @@ const folded = function(expression) {
     const start = match.index + match[1].length
     const open = match.index + match[0].length - 1
     const close = closes(blanked, open)
-    if (close < 0) {
-      continue
-    }
     const parts = args(expression, blanked, open + 1, close)
     if (parts.length !== 3) {
       continue
@@ -134,29 +130,28 @@ const folded = function(expression) {
 }
 
 /**
- * Lint the corpus for `translate(x, 'A..Z', 'a..z')` case folding in an XSLT
- * 2.0 or 3.0 stylesheet, reporting one defect per call with a suggestion fix
- * that rewrites it to `lower-case(x)`/`upper-case(x)`.
- * @param {Array.<{file: string, xsl: Document}>} corpus - Parsed stylesheets
+ * Lint the valid expressions for `translate(x, 'A..Z', 'a..z')` case folding in
+ * an XSLT 2.0 or 3.0 stylesheet, reporting one defect per call with a
+ * suggestion fix that rewrites it to `lower-case(x)`/`upper-case(x)`.
+ * @param {Array.<{source: object, found: object}>} expressions - The valid
+ *  expressions the validator kept, each paired with the file it came from
  * @param {Array.<string>} suppressions - Array of suppressed checks
  * @return {{name: string, severity: string, message: string, file: string,
  *  line: number, pos: number, fix: object}[]} - Defects found
  */
-const lintByTranslate = function(corpus, suppressions = []) {
+const lintByTranslate = function(expressions, suppressions = []) {
   logger.debug(`Translate-case linting started`)
   const defects = []
   if (!suppressed(CHECK, suppressions)) {
-    for (const source of corpus) {
-      for (const found of expressionsOf(source.xsl)) {
-        const {node, expression} = found
-        if (since(versionOf(node), MODERN)) {
-          for (const {offset, value, replacement} of folded(expression)) {
-            defects.push(
-              defect(CHECK, META, source, found, offset,
-                {value, replacement, suggestion: true},
-              ),
-            )
-          }
+    for (const {source, found} of expressions) {
+      const {node, expression} = found
+      if (since(versionOf(node), MODERN)) {
+        for (const {offset, value, replacement} of folded(expression)) {
+          defects.push(
+            defect(CHECK, META, source, found, offset,
+              {value, replacement, suggestion: true},
+            ),
+          )
         }
       }
     }

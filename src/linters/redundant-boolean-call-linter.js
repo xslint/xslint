@@ -3,11 +3,10 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {nodes} = require('../xpath')
 const {masked, closes, lone} = require('../expressions')
 const {GAP} = require('../tokens')
 const {metaOf, suppressed, defect} = require('../checks')
-const {selectorOf, wholeOf} = require('../attributes')
+const {whole} = require('../attributes')
 const {logger} = require('../logger')
 
 /**
@@ -70,28 +69,29 @@ const stripped = function(test) {
 }
 
 /**
- * Lint the corpus for a whole `@test` of an XSLT element that is a single
- * `boolean(...)` call, reporting one defect per test with the safe fix that
- * strips the wrapper. Nothing outside such a test coerces the value, so neither
- * a literal result element's `test` — output text — nor the expression of an
- * attribute value template, where the wrapper decides whether `true`/`false` or
- * the node's own text is printed, is read.
- * @param {Array.<{file: string, xsl: Document}>} corpus - Parsed stylesheets
+ * Lint the valid expressions for a whole `@test` of an XSLT element that is a
+ * single `boolean(...)` call, reporting one defect per test with the safe fix
+ * that strips the wrapper. Nothing outside such a test coerces the value, so
+ * neither a literal result element's `test` — output text — nor the expression
+ * of an attribute value template, where the wrapper decides whether
+ * `true`/`false` or the node's own text is printed, is read.
+ * @param {Array.<{source: object, found: object}>} expressions - The valid
+ *  expressions the validator kept, each paired with the file it came from
  * @param {Array.<string>} suppressions - Array of suppressed checks
  * @return {{name: string, severity: string, message: string, file: string,
  *  line: number, pos: number, fix: object}[]} - Defects found
  */
-const lintByBooleanCall = function(corpus, suppressions = []) {
+const lintByBooleanCall = function(expressions, suppressions = []) {
   logger.debug(`Boolean-call linting started`)
   const defects = []
   if (!suppressed(CHECK, suppressions)) {
-    for (const source of corpus) {
-      for (const attribute of nodes(source.xsl, selectorOf('test'))) {
-        const strip = stripped(attribute.nodeValue)
+    for (const {source, found} of expressions) {
+      if (whole(found, 'test')) {
+        const strip = stripped(found.expression)
         if (strip) {
           defects.push(
             defect(
-              CHECK, META, source, wholeOf(attribute), strip.offset,
+              CHECK, META, source, found, strip.offset,
               {value: strip.value, replacement: strip.replacement},
             ),
           )

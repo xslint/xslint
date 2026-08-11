@@ -3,7 +3,6 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {isValid} = require('./xpath')
 const {kinds} = require('./resources/checks.json')
 const {offsetAt, placeAt, skip} = require('./source')
 
@@ -74,6 +73,15 @@ const rawly = function(source, found, offset) {
  * silenced from within it — no comment fits there — so a directive has to reach
  * the whole way down from above the element. Omit `fix` for report-only.
  *
+ * A fix is offered on whatever it is given, with nothing here asking whether
+ * the expression parses. That question was answered here from #636 until #750,
+ * because a code-based linter took the whole corpus and read expressions the
+ * XPath validator had already refused — so `select="child::"` was reported and
+ * a safe fix wrote it to `select=""`. Every one of those linters is staged over
+ * the expressions the validator *kept* now, so a refused one reaches no check
+ * at all and the gate had become a condition no call could fail. A rule a
+ * caller has to remember is worse than a stage that cannot break it.
+ *
  * The expression arrives whole — the node carrying it, where it starts inside
  * that node's value, and its text — as `src/attributes.js` yields it, rather
  * than as a node and a string a caller pairs up itself. Two things came of the
@@ -90,8 +98,7 @@ const rawly = function(source, found, offset) {
  * @param {{node: Node, start: number, expression: string, pattern: boolean}}
  *  found - The expression the defect stands in: its attribute, text or CDATA
  *  node, where it starts in that node's value, its own text, and whether it is
- *  a pattern. The whole record decides whether a fix may be offered, since the
- *  language it is read as and the version it is read under are both on it
+ *  a pattern
  * @param {number} offset - Offset of the defect within the expression
  * @param {?{value: string, replacement: string, suggestion?: boolean}} [fix] -
  *  The fix, or undefined for a report-only defect
@@ -103,7 +110,7 @@ const defect = function(
   const {node} = found
   const {line, pos} = placeAt(source.content, rawly(source, found, offset))
   let anchored = {}
-  if (fix !== undefined && isValid(found)) {
+  if (fix !== undefined) {
     anchored = {fix: {line: line, col: pos, ...fix}}
   }
   return {

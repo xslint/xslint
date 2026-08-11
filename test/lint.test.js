@@ -52,21 +52,18 @@ describe('lint (programmatic API)', function() {
     const sources = [source('stylesheets/xsl-with-no-violations.xsl')]
     assert.equal(fixed(sources, lint(sources)).contents.size, 0)
   })
-  it('offers no fix on the refused axis or the refused comparison', function() {
-    assert.deepEqual(
-      lint([source('refused/refused-expressions.xsl')])
-        .filter((defect) => [9, 10].includes(defect.line) && defect.fix)
-        .map((defect) => `${defect.name} at ${defect.line}:${defect.pos}`),
-      [],
-    )
-  })
-  it('still reports the verbose axis it refused to shorten', function() {
-    assert.ok(
-      lint([source('refused/refused-expressions.xsl')]).some(
-        (defect) => defect.name === 'unabbreviated-axis' && defect.line === 9,
-      ),
-    )
-  })
+  it('draws one defect on the refused axis and the refused comparison',
+    function() {
+      assert.deepEqual(
+        lint([source('refused/refused-expressions.xsl')])
+          .filter((defect) => [9, 10].includes(defect.line))
+          .map((defect) => `${defect.name} at ${defect.line}:${defect.pos}`),
+        [
+          'invalid-xpath-expression at 9:34',
+          'invalid-xpath-expression at 10:36',
+        ],
+      )
+    })
   it('keeps the fix on the two valid axes beside the refused ones', function() {
     assert.deepEqual(
       lint([source('refused/refused-expressions.xsl')])

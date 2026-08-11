@@ -177,9 +177,9 @@ src/index.mjs             CLI entry (commander.js, ESM)
     src/linters/, document — (corpus, suppressions) => defects:
       xpath-linter.js            declarative checks/xpath/*.yaml (per file)
       corpus-linter.js           declarative checks/corpus/*.yaml (cross file)
-      *-linter.js                code-based checks/format/*.yaml (one construct each)
+      namespace, result-namespace, imports — the DOM, not an expression
     src/linters/, expression — (expressions, suppressions) => defects:
-      xpath-format-linter.js     checks/format/redundant-whitespace.yaml
+      *-linter.js                code-based checks/format/*.yaml (one construct each)
 ```
 
 What crosses that last edge is what the validator kept: the `expressionsOf`
@@ -187,6 +187,18 @@ records themselves, not the attributes they hang off, so the expression stage
 reads the derivation rather than rebuilding one from a node (#589). A pattern and
 a brace's expression reach it too, which is why `redundant-whitespace` now
 collapses the leading gap of a `match=" //spaced"`.
+
+Eleven linters cross it, not one. Ten of them scanned the whole corpus and asked
+`expressionsOf` themselves until #750, so each read the expressions the XPath
+validator had already refused and reported a second defect on the same fault —
+`select="child::"` drew an `invalid-xpath-expression` *and* an
+`unabbreviated-axis`, and `test="count(alpha) = 0 ("` drew one and a
+`count-compared-to-zero`. Withholding the fix, which is all #636 could do from
+inside `defect`, left the advice standing on text no processor accepts. One
+fault draws one defect now, and it is the staging that says so rather than a
+gate every new check has to remember: what is refused reaches no check at all.
+Four `close < 0` guards went with the gate, one per scanner — a bracket that
+never closes cannot reach a scanner reading an expression that parsed.
 
 The two stages have a directory each, and everything else in `src/` is the core
 they consume. That is not filing: it is what makes the rule below expressible,
@@ -330,10 +342,13 @@ on any difference, because a check that has drifted is not the check that fires.
   element, plus every expression an attribute value template, a 3.0 text value
   template, or a shadow attribute carries, each flagged `pattern` or not) unless
   it has a documented reason to
-  narrow — then it narrows through `selectorOf`, never a hand-written `//@name`,
-  which an ESLint `no-restricted-syntax` selector bans, and wraps what it narrowed
-  to in `wholeOf` so `defect` still receives one expression rather than a node and
-  a string paired up by hand.
+  narrow — then it narrows through `whole(found, name)`, never a hand-written
+  `//@name`, which an ESLint `no-restricted-syntax` selector bans. That helper
+  asks one question rather than two on purpose: a check taking the *name* alone
+  would start reading the `test="{boolean(x)}"` of a literal result element,
+  where stripping the wrapper prints the node instead of `true`. The linter is
+  handed the records the validator kept, so there is no corpus to scan and no
+  node to pair with its own text.
 
 Then run `npx grunt checks`, `npm test`, `npm run coverage`, and
 `npx grunt docs`.
@@ -549,19 +564,25 @@ accidentally attached fix turns red.
   `xslint-disable-line`, `xslint-disable-file`, each with optional space-separated
   rule names (`src/directives.js`); an unused directive is reported.
 - **Fix tiers**: a defect is fixable when it carries
-  `fix: {line, col, value, replacement, suggestion?}`. A code-based linter still
-  reads an expression the XPath validator refused — it takes the whole corpus,
-  not the validated part — so it still reports what it finds there, but `defect`
-  withholds the fix, because rewriting text no processor parses is how
-  `select="child::"` became `select=""` (#636). A declarative fix never passes
+  `fix: {line, col, value, replacement, suggestion?}`. A code-based linter never
+  sees an expression the XPath validator refused, since #750 stages every one of
+  them over what the validator *kept*, so there is nothing there to fix and
+  nothing to report either. `defect` held a gate of its own from #636 to then —
+  it took the whole corpus, reported what it found in refused text and withheld
+  only the fix, because rewriting text no processor parses is how
+  `select="child::"` became `select=""` — and the exclusion made that condition
+  one no call could fail. A declarative fix never passes
   through `defect` — `src/linters/xpath-linter.js` attaches it from
   `src/fixers.js` — so
   it is gated there instead, against the same `expressionsOf` derivation: no fix
   is offered on an attribute whose expression the grammar refuses, nor on the
   element carrying it, since a fixer names the attribute it wants inside itself
-  where no gate can see it (#651). Withholding every fix on such an element is
+  where no gate can see it (#651). That gate stays, because a declarative
+  selector reads the document rather than the expressions the validator kept, and
+  so can still match an attribute holding text nobody parses. Withholding every
+  fix on such an element is
   deliberate over-reach: an element holding an expression no processor parses is
-  not worth tidying. What "refuses" means moved underneath all three gates at
+  not worth tidying. What "refuses" means moved underneath every gate at
   #732 without any of them changing: `isValid` asks `src/grammar.js` at the
   version in force rather than fontoxpath at 3.1, so a `cast as` in a
   `version="1.0"` sheet now withholds the fix it used to be offered. A *safe* fix
@@ -586,13 +607,13 @@ accidentally attached fix turns red.
 | `src/directives.js` | Parses inline `xslint-disable-*` comment directives |
 | `src/reporters.js` | `reporterOf(format)` — `text`, `json`, `sarif`, or `github` output |
 | `src/validators/xsl-validator.js` | Builds the corpus; reports each non-well-formed stylesheet |
-| `src/validators/xpath-validator.js` | Splits the corpus's expressions into valid (kept) and malformed (reported), asking `refusalOf` about each record `expressionsOf` yields — the same derivation the code-based linters read, rather than a walk of its own over a list of attribute *names* got by subtracting the pattern-holding ones from `ATTRIBUTES`. That subtraction reached 286 of this repository's 453 expressions, so a `match` no grammar accepts, a `{1 +}` in an attribute value template, a 3.0 text value template and a shadow attribute were validated by nothing at all, while the code-based linters — staged over the whole corpus — read those same expressions and reported what they found in them, with only `defect`'s parse gate keeping a fix off it (#589). A pattern illegal before XSLT 3.0 comes with it, which is #631: `matched` has refused one since #723 and had nobody to say so. The defect goes through `defect` in `src/checks.js` rather than being built by hand, so it stands at the offset the refusal carries instead of at the attribute's opening quote — which the widening makes necessary rather than merely nicer, two braces of one attribute value being two expressions that would otherwise report one column |
+| `src/validators/xpath-validator.js` | Splits the corpus's expressions into valid (kept) and malformed (reported), asking `refusalOf` about each record `expressionsOf` yields — the same derivation the code-based linters read, rather than a walk of its own over a list of attribute *names* got by subtracting the pattern-holding ones from `ATTRIBUTES`. That subtraction reached 286 of this repository's 453 expressions, so a `match` no grammar accepts, a `{1 +}` in an attribute value template, a 3.0 text value template and a shadow attribute were validated by nothing at all, while the code-based linters — staged over the whole corpus — read those same expressions and reported what they found in them, with only `defect`'s parse gate keeping a fix off it (#589). What it keeps is what all eleven expression linters are staged over since #750, so a refusal reported here is the only defect that fault draws. A pattern illegal before XSLT 3.0 comes with it, which is #631: `matched` has refused one since #723 and had nobody to say so. The defect goes through `defect` in `src/checks.js` rather than being built by hand, so it stands at the offset the refusal carries instead of at the attribute's opening quote — which the widening makes necessary rather than merely nicer, two braces of one attribute value being two expressions that would otherwise report one column |
 | `src/linters/xpath-linter.js` | Loads `checks/xpath/*.yaml`; attaches any `src/fixers.js` fix, unless the node — or the element carrying it — holds an expression the grammar refuses (#651) |
 | `src/linters/corpus-linter.js` | Loads `checks/corpus/*.yaml`; cross-file rules |
 | `src/linters/*-linter.js` | Code-based `checks/format/*.yaml`, one construct each (axis, namespace, count, name, ...); see the flow diagram |
-| `src/checks.js` | Shared for code-based linters: `metaOf`, `suppressed`, `defect(check, meta, source, found, offset, fix)` — takes the expression whole, as `expressionsOf` yields it, and adds its `start` to the offset itself (#648); walks the raw text so a wrapped or entity-shifted value reports where it truly stands (#611), and drops the `fix` when the expression does not parse (#636). That walk is `rawly(source, found, offset)`, exported beside it, because a linter needs the raw offset as much as a defect does: an attribute value arrives with its line endings normalised to spaces, so a check reasoning about whitespace cannot see a wrap in the value it holds and has to ask the source (#628) |
+| `src/checks.js` | Shared for code-based linters: `metaOf`, `suppressed`, `defect(check, meta, source, found, offset, fix)` — takes the expression whole, as `expressionsOf` yields it, and adds its `start` to the offset itself (#648); walks the raw text so a wrapped or entity-shifted value reports where it truly stands (#611). It asks nothing about whether the expression parses: that gate stood here from #636 until #750 staged every code-based linter over the expressions the validator kept, which left it a condition no call could fail — a rule every caller has to remember is worse than a stage that cannot break it. That walk is `rawly(source, found, offset)`, exported beside it, because a linter needs the raw offset as much as a defect does: an attribute value arrives with its line endings normalised to spaces, so a check reasoning about whitespace cannot see a wrap in the value it holds and has to ask the source (#628) |
 | `src/source.js` | Raw-text walking shared by `checks` and `fixer`: `offsetAt`, `placeAt`, `character`, `skip` |
-| `src/attributes.js` | `expressionsOf(xsl)` — every expression a stylesheet carries: a bare/AVT attribute, a 3.0 text value template, or a shadow attribute, each saying whether it is a `pattern`; `PATTERNS` names the five attributes that hold one; `selectorOf(name)` for a linter that narrows, and `wholeOf(attribute)` to build the same record for the one it narrowed to |
+| `src/attributes.js` | `expressionsOf(xsl)` — every expression a stylesheet carries: a bare/AVT attribute, a 3.0 text value template, or a shadow attribute, each saying whether it is a `pattern`; `PATTERNS` names the five attributes that hold one; and `whole(found, name)` for a linter that narrows to one attribute out of the records it is handed. That helper replaced `selectorOf`, an XPath of this module's own over every XSLT element's attribute of a name, and `wholeOf`, which built a record from the node it selected — both of them the shape a linter needed while it scanned the corpus itself (#750). It asks two things in one call because a linter taking the name alone would read the `test="{boolean(x)}"` of a literal result element, which the old selector's namespace test excluded: an attribute's whole value is a record starting at `0`, and a template's expression never does, a brace standing at least one character in |
 | `src/xsl-version.js` | `versionOf(node)` — the version in force at a node, from the nearest ancestor's `@version` (XSLT element) or `@xsl:version` (literal result element), canonicalised as a decimal; `since(version, floor)` for a lower-bound gate; shared `MODERN`/`KNOWN`/`DECIMAL` |
 | `src/comparisons.js` | `comparedToZero` — shared scan for a call compared with `0`/`1` (count, string-length) |
 | `src/expressions.js` | `masked`/`closes` lexer helpers (node-set, double-negation, boolean-call); `enclosed` — the expressions an AVT holds in its braces. `masked` blanks every kind `OPAQUE` names, so a construct standing inside a string, a comment, or a literal that never closes is invisible to the six linters scanning above it. Beside them `lone` answers whether exactly one argument stands between a call's brackets, counting the commas at depth zero so a nested `count(f(a, b))` still reads as one. It reads the *tokens* and so takes the text as the source spells it rather than blanked, which both halves of the question need: a comma divides only as `TOKENS.COMMA`, so one inside a literal or a comment is a kind of its own and no separator, where a character walk had to be handed masked text; and a bracket holding only a literal is not an empty bracket, where masking turns `count('abc')` into a gap and no emptiness test can tell an absent argument from a blanked one — it did, and the three checks fell silent on `count('abc') = 0`, `boolean('abc')` and `not(not('abc'))`, which all three had reported. So a bracket is empty when nothing but `TRIVIA` stands in it. Where `lone` is still narrower than XPath is the binding clause, whose commas sit at depth zero inside one argument: `count(for $va in a, $vb in b return $va) = 0` goes unreported. The rule there is that a comma in front of `return` or `satisfies` binds while one behind it separates, which no bracket count can tell apart, so it waits for the tree at Phase 4 of #644 and is pinned meanwhile by `BINDINGS` in `test/expressions.test.js`, the way `GAPS` pins the grammar's own gaps. `fn:count`, `fn:not` and `fn:boolean` each take exactly one argument in every version, and the three checks reading them took whatever the brackets held as *the* argument without asking: `count()` is not a count of a node-set and `not(not())` is not a double negation, yet both were reported, and both carried a **safe**-tier fix that plain `--fix` applied — `empty()`, and for the two negation checks the empty string, so `test=""` was written and the next run reported the `invalid-xpath-expression` the last one had manufactured (#576). The parse gate in `defect` cannot supply this: it withholds a fix only where the engine refuses the expression, and fontoxpath's `compileXPathToJavaScript` resolves no signature, so every one of those calls is valid text to it. Nor can the engine be asked one call further — `evaluateXPath` does raise `XPST0017` statically, but against a registry that is not the XSLT one: 26 of 28 XSLT 3.0 functions and 14 of 29 XPath 3.1 ones are absent from it, `current()`, `key()` and `document()` among them, so a check reading that verdict would report the commonest calls in a 1.0 stylesheet as errors. Arity is per function, and each check knows its own by name |

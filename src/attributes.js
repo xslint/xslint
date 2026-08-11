@@ -36,15 +36,25 @@ const PATTERNS = [
 ]
 
 /**
- * XPath selecting the named attribute of every XSLT element, document-wide. The
- * XSLT namespace belongs in the selector because only there does the name mean
- * an expression: an attribute the output vocabulary happens to call `test` or
- * `select` holds text destined for the result tree, not XPath.
- * @param {string} name - Name of the attribute
- * @return {string} - The Xpath selecting it
+ * Whether the expression is the whole value of an attribute of that name — the
+ * one narrowing a linter reading a single attribute needs, now that it is
+ * handed the records the validator kept rather than the corpus to scan itself
+ * (#750). It replaces an XPath of this module's own over the named attribute of
+ * every XSLT element, and asks one question where that selector asked two: the
+ * namespace test is gone rather than moved, since the derivation yields an XSLT
+ * element's attribute whole and every other one only through its braces. Both
+ * halves are one call rather than two conditions, because a linter taking the
+ * name alone would start reading the `test="{boolean(x)}"` of a literal result
+ * element, where stripping the wrapper prints the node instead of `true`. A
+ * brace stands at least one character inside a value, so an expression starting
+ * at `0` is the value itself. A shadow attribute keeps its underscore, so
+ * `_select` is not `select`, which is what the narrowing has always said.
+ * @param {{node: Node, start: number}} found - A record `expressionsOf` yielded
+ * @param {string} name - The name of the attribute a linter narrows to
+ * @return {boolean} - True when the expression is that attribute's whole value
  */
-const selectorOf = function(name) {
-  return `//xsl:*/@${name}`
+const whole = function(found, name) {
+  return found.start === 0 && found.node.nodeName === name
 }
 
 /**
@@ -148,11 +158,11 @@ const wholeOf = function(attribute) {
  * @return {Array.<{node: Node, start: number, expression: string}>} - Found
  */
 const carried = function(node, bare, three) {
-  const whole = node.nodeType === 2 &&
+  const entire = node.nodeType === 2 &&
     (bare.has(node) || (three && shadow(node)))
   const braced = node.nodeType === 2 || (three && expands(node))
   let taken = []
-  if (whole) {
+  if (entire) {
     taken = [wholeOf(node)]
   } else if (braced) {
     taken = enclosed(node.nodeValue).map((brace) => Object.freeze({
@@ -190,7 +200,6 @@ const expressionsOf = function(xsl) {
 module.exports = {
   ATTRIBUTES,
   PATTERNS,
-  selectorOf,
+  whole,
   expressionsOf,
-  wholeOf,
 }

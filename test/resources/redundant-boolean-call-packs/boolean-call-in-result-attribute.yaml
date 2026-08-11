@@ -11,5 +11,6 @@ input: |-
   <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="s">
     <xsl:template match="/">
       <widget test="boolean(@x)" label="{boolean(@x)}"/>
+      <gadget test="{boolean(@x)}"/>
     </xsl:template>
   </xsl:stylesheet>

@@ -6,7 +6,6 @@
 const {masked, closes} = require('../expressions')
 const {GAP} = require('../tokens')
 const {metaOf, suppressed, defect} = require('../checks')
-const {expressionsOf} = require('../attributes')
 const {MODERN, since, versionOf} = require('../xsl-version')
 const {logger} = require('../logger')
 
@@ -98,9 +97,6 @@ const comparisons = function(expression, modern) {
     const start = match.index + match[1].length
     const open = match.index + match[0].length - 1
     const close = closes(blanked, open)
-    if (close < 0) {
-      continue
-    }
     const argument = expression.slice(open + 1, close).trim()
     if (argument !== '' && argument !== '.') {
       continue
@@ -128,33 +124,32 @@ const comparisons = function(expression, modern) {
 }
 
 /**
- * Lint the corpus for `name()`/`local-name()` compared with a string literal,
- * reporting one defect per comparison with the fix that turns it into a node
- * test when one can be built.
- * @param {Array.<{file: string, xsl: Document}>} corpus - Parsed stylesheets
+ * Lint the valid expressions for `name()`/`local-name()` compared with a string
+ * literal, reporting one defect per comparison with the fix that turns it into
+ * a node test when one can be built.
+ * @param {Array.<{source: object, found: object}>} expressions - The valid
+ *  expressions the validator kept, each paired with the file it came from
  * @param {Array.<string>} suppressions - Array of suppressed checks
  * @return {{name: string, severity: string, message: string, file: string,
  *  line: number, pos: number, fix: ?object}[]} - Defects found
  */
-const lintByName = function(corpus, suppressions = []) {
+const lintByName = function(expressions, suppressions = []) {
   logger.debug(`Name-comparison linting started`)
   const defects = []
   if (!suppressed(CHECK, suppressions)) {
-    for (const source of corpus) {
-      for (const found of expressionsOf(source.xsl)) {
-        const {node, expression} = found
-        const modern = since(versionOf(node), MODERN)
-        for (const {offset, value, replacement} of comparisons(
-          expression, modern,
-        )) {
-          let fix
-          if (replacement !== null) {
-            fix = {value, replacement, suggestion: true}
-          }
-          defects.push(
-            defect(CHECK, META, source, found, offset, fix),
-          )
+    for (const {source, found} of expressions) {
+      const {node, expression} = found
+      const modern = since(versionOf(node), MODERN)
+      for (const {offset, value, replacement} of comparisons(
+        expression, modern,
+      )) {
+        let fix
+        if (replacement !== null) {
+          fix = {value, replacement, suggestion: true}
         }
+        defects.push(
+          defect(CHECK, META, source, found, offset, fix),
+        )
       }
     }
   }
