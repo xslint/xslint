@@ -76,15 +76,28 @@
   </div>
   <div class="check-content">
 <h1>Invalid XPath expression</h1>
-<p>An attribute carrying a bare XPath expression — <code>select</code>, <code>test</code>, <code>use</code>,
-<code>value</code>, <code>group-by</code>, <code>group-adjacent</code>, or the XSLT 3.0 <code>key</code>, <code>initial-value</code>,
-<code>xpath</code>, <code>context-item</code>, <code>with-params</code>, <code>namespace-context</code>, the
-<code>for-each-item</code> and <code>for-each-source</code> of an <code>xsl:merge-source</code>, and the static
-<code>use-when</code> — must hold an expression the processor can parse. A malformed
-expression breaks the transformation at runtime, so the sooner it surfaces the
-better. Only the
-expression syntax is checked, not its formatting; pattern attributes such as
-<code>match</code> and attribute value templates are left to other checks.</p>
+<p>Every expression a stylesheet carries must be one the processor can parse, and a
+stylesheet carries them in more places than its <code>select</code>. One is an attribute
+holding a bare XPath — <code>select</code>, <code>test</code>, <code>use</code>, <code>value</code>, <code>group-by</code>,
+<code>group-adjacent</code>, or the XSLT 3.0 <code>key</code>, <code>initial-value</code>, <code>xpath</code>,
+<code>context-item</code>, <code>with-params</code>, <code>namespace-context</code>, the <code>for-each-item</code> and
+<code>for-each-source</code> of an <code>xsl:merge-source</code>, and the static <code>use-when</code>. Another
+is a pattern attribute: <code>match</code>, <code>count</code>, <code>from</code>, <code>group-starting-with</code>,
+<code>group-ending-with</code>. And another is each expression a <code>{...}</code> encloses — in an
+attribute value template, in the text of an XSLT 3.0 element whose <code>expand-text</code>
+is on, or in a shadow attribute such as <code>_select</code>. A malformed expression breaks
+the transformation at runtime wherever it stands, so the sooner it surfaces the
+better. Only the syntax is checked, never the formatting.</p>
+<p>A pattern is judged as a pattern, which is a narrower language than an
+expression rather than a second reading of one. A pattern is matched by walking
+<em>up</em> from a node, so it may only name a step such a walk can answer: <code>child</code> and
+<code>attribute</code> at every version, joined by <code>self</code>, <code>descendant</code>,
+<code>descendant-or-self</code> and <code>namespace</code> in XSLT 3.0, and never <code>parent</code>,
+<code>ancestor</code>, <code>ancestor-or-self</code>, <code>following</code>, <code>following-sibling</code>, <code>preceding</code> or
+<code>preceding-sibling</code>. A predicate inside it is an ordinary expression and may name
+any of them. A pattern is also a union of paths and nothing else, so <code>1 + 1</code>,
+<code>@a = &#39;b&#39;</code> and <code>a, b</code> are all perfectly good expressions and none of them is a
+pattern a processor will load.</p>
 <p>The expression is read under the version the stylesheet declares, because the
 same characters are a different language under a different one. <code>1 cast as xs:integer</code> is an expression in XSLT 2.0 and a syntax error in 1.0, where XPath
 has no <code>cast as</code> and reads the same text as the name <code>cast</code> beside the name
@@ -112,6 +125,16 @@ mistakes are reported.</p>
 <pre><code class="language-xsl">&lt;xsl:if test=&quot;foo(a) = &#39;hello&#39;&quot;&gt;
   &lt;xsl:value-of select=&quot;.&quot;/&gt;
 &lt;/xsl:if&gt;
+</code></pre>
+<p>Incorrect (a pattern cannot look sideways, so no processor loads this):</p>
+<pre><code class="language-xsl">&lt;xsl:template match=&quot;following-sibling::para&quot;&gt;
+  &lt;xsl:value-of select=&quot;.&quot;/&gt;
+&lt;/xsl:template&gt;
+</code></pre>
+<p>Correct (name the nodes that match, and let a predicate look where it likes):</p>
+<pre><code class="language-xsl">&lt;xsl:template match=&quot;para[preceding-sibling::*]&quot;&gt;
+  &lt;xsl:value-of select=&quot;.&quot;/&gt;
+&lt;/xsl:template&gt;
 </code></pre>
 
   </div>
