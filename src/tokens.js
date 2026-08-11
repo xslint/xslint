@@ -426,17 +426,32 @@ const spelling = function(xpath, at) {
 }
 
 /**
+ * Whether the colon at an offset joins the name behind it to a part in front.
+ * A QName is two NCNames and one colon, so a colon runs a name on only where
+ * the name so far holds none and an NCName can start behind it — which is
+ * `STARTS`, the class the lexer already spells a name's first character with.
+ *
+ * That is the whole rule, and the axis separator is it answered twice: a colon
+ * opens no NCName either, so a `::` ends a name without a clause of its own
+ * (#703). The `:` of a map entry ends one for the same reason, a space and a
+ * digit opening no name — where taking every colon swallowed the separator into
+ * the key and refused `map{a: 1}`, which every engine reads (#746).
+ * @param {string} xpath - Xpath expression
+ * @param {number} at - Offset of the colon
+ * @param {number} from - Offset the name started at
+ * @return {boolean} - True when the name runs on through it
+ */
+const joins = function(xpath, at, from) {
+  return !xpath.slice(from, at).includes(':') && at + 1 < xpath.length &&
+    STARTS.test(xpath[at + 1])
+}
+
+/**
  * Offset just past the name spelled at the given offset. A name is taken whole
  * and greedily, so an operator's letters inside one — the `or` of `border`, the
  * `and` of `grandchild`, the `union` of `unionist` — stay part of the name they
- * belong to.
- *
- * A `::` ends it, though a `:` does not. A QName carries one colon and an
- * NCName carries none, so two together are never a name being spelled — they
- * are the axis separator, which has a kind of its own. Reading them as name
- * characters is how `a::b` arrived as the single token `a::b` while `a ::b`
- * arrived as three, one grammar read two ways by a gap, with the separator
- * nowhere in the first of them for a parser to object to (#703).
+ * belong to. A colon is the one character it does not take on sight: `joins`
+ * says whether the name runs on through it.
  * @param {string} xpath - Xpath expression
  * @param {number} start - Offset of the first character
  * @return {number} - Offset just past the name
@@ -445,7 +460,7 @@ const afterName = function(xpath, start) {
   let at = start
   while (
     at < xpath.length && NAMED.test(xpath[at]) &&
-    xpath.slice(at, at + 2) !== '::'
+    (xpath[at] !== ':' || joins(xpath, at, start))
   ) {
     at += 1
   }

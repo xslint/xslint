@@ -163,6 +163,30 @@ const SCANS = [
     ],
   },
   {
+    name: 'ends a name at a colon no name can follow',
+    count: 1,
+    pairs: [
+      ['map{a: 1}', TOKENS.COLON],
+      ['map{a:1}', TOKENS.COLON],
+      ['map{my:a: 1}', TOKENS.COLON],
+      ['map{a/b: 1}', TOKENS.COLON],
+      ['my:*', TOKENS.COLON],
+      ['my:25l', TOKENS.COLON],
+      ['a:', TOKENS.COLON],
+      ['my:a:b', TOKENS.COLON],
+    ],
+  },
+  {
+    name: 'runs a name on through the colon of a prefix',
+    count: 1,
+    pairs: [
+      ['my:a', TOKENS.NAME],
+      ['my:_x', TOKENS.NAME],
+      ['my:ä', TOKENS.NAME],
+      ['my:a·b', TOKENS.NAME],
+    ],
+  },
+  {
     name: 'takes an extender for a name character',
     count: 1,
     pairs: [
