@@ -100,6 +100,8 @@ const TRIVIA = {
     "Which kinds carry no meaning to a grammar and every meaning to the source is TRIVIA in src/tokens.js and nowhere else: it was spelled three times over — as TRIVIA in src/grammar.js, as a && chain inside tokenized, and once more in lone — which is how OPAQUE came to be missing a kind (#576, #708)"
 };
 
+const SPRAWLING = ["src/grammar.js"];
+
 export default defineConfig([
   { ignores: ["eslint.config.mjs", "docs/**"] },
   js.configs.recommended,
@@ -136,6 +138,11 @@ export default defineConfig([
         ignoreTemplateLiterals: true,
         ignoreRegExpLiterals: true
       }],
+      "max-lines": ["error", {
+        max: 1000,
+        skipBlankLines: false,
+        skipComments: false
+      }],
       "jsdoc/no-undefined-types": [
         "error",
         { definedTypes: ["Document", "Node", "Element"] }
@@ -171,6 +178,12 @@ export default defineConfig([
   {
     files: ["**/*.mjs"],
     languageOptions: { sourceType: "module" }
+  },
+  {
+    files: SPRAWLING,
+    rules: {
+      "max-lines": "off"
+    }
   },
   {
     files: ["eslint-local-rules.js"],

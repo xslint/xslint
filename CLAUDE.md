@@ -73,6 +73,7 @@ run by the `lint` job) enforces: spaced operators, no single-letter names
 (`id-length` >= 2), postfix `x++` only (prefix `++x` is banned), bare module
 names in `require`/`import` (no `node:` prefix), no conditional operator
 (`a ? b : c` is banned outright by `no-ternary`, nesting and flat chain alike),
+no file longer than 1000 lines (`max-lines`),
 no redundant return variable
 (`const x = expr; return x` is banned — return the expression), no missing
 argument (a call must fill every parameter the callee declares without a
@@ -95,6 +96,19 @@ formatting rules its own style predates (`semi`, `quotes`, `comma-dangle`,
 `local/no-multiple-returns` switched off for that one file, so a ban that
 matters reaches the plugin too. Shortening that off-list is its own job; only
 `eslint.config.mjs` is still unlinted.
+
+A file stops at 1000 lines, counting the blank ones and the comments, since a
+reader scrolls past those as well. One file stands above it and is named in
+`SPRAWLING` in the config — `src/grammar.js`, 1828 lines of one function per
+production of XPath 3.1 — rather than carrying a disable comment of its own, so
+what is exempted is one list a reviewer reads in the place the cap is set, not a
+mark to be found by opening every file. Neither half can rot in silence.
+`conformance.test.js` asks the rule itself whether each name on that list is
+still reported, so a file that shrinks back under the cap, or is renamed, or is
+deleted, turns its own exemption red instead of quietly un-capping whatever
+takes the name next; and it fails when *nothing* in the config caps a file at
+all, because a rule deleted takes its enforcement with it and leaves the
+exemption list reading like a limit that is still in force.
 
 A parameter a caller may leave out therefore says so in the signature, with a
 default — `fix = undefined` on `defect` in `src/checks.js`. A JSDoc `[fix]`
