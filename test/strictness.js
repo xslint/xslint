@@ -70,6 +70,14 @@ const spaced = function(token) {
  * the engine accepting where the grammar refuses. The second is an
  * under-acceptance — a defect invented against working code — and no account of
  * the engine's strictness can explain one away.
+ *
+ * Nothing in `src/` calls this and nothing should: a run asks `parsed` and
+ * `matched`, which judge against the specification. It exists because the
+ * acceptance diff does, and it goes when that does — `compiles` and this retire
+ * together, on the day the grammar is trusted well enough that a second opinion
+ * from an XPath 3.1 engine is not worth the asking. That day is not today: the
+ * diff is what turned up #711, #724, #740 and #742, and the classes it cannot
+ * see are what turned up #736, #746, #752 and #753.
  * @param {string} xpath - Xpath expression
  * @return {boolean} - True when the engine's own strictness is what refuses it
  */
