@@ -4,7 +4,7 @@
  */
 
 const {nodes} = require('../xpath')
-const {masked, closes} = require('../expressions')
+const {masked, closes, lone} = require('../expressions')
 const {GAP} = require('../tokens')
 const {metaOf, suppressed, defect} = require('../checks')
 const {selectorOf, wholeOf} = require('../attributes')
@@ -40,9 +40,12 @@ const WRAPPER = new RegExp(`^${GAP}*boolean${GAP}*\\(`)
  * is not a single `boolean(...)` call. In a test the value is already coerced
  * to a boolean, so the wrapper adds nothing and its argument stands alone. A
  * `boolean(...)` that is only part of a larger expression (`a = boolean(b)`) is
- * left alone, since there the coercion can matter. The replacement is the
- * argument trimmed, so `boolean( x )` reduces to `x` and never leaves the
- * surrounding whitespace that `redundant-whitespace` would then flag.
+ * left alone, since there the coercion can matter, as is a call holding no
+ * argument or several, `fn:boolean` taking exactly one — `boolean()` wraps
+ * nothing, and stripping the wrapper wrote an empty `@test` (#576). The
+ * replacement is the argument trimmed, so `boolean( x )` reduces to `x` and
+ * never leaves the surrounding whitespace that `redundant-whitespace` would
+ * then flag.
  * @param {string} test - The `@test` value
  * @return {?{offset: number, value: string, replacement: string}} - The strip
  */
@@ -54,7 +57,8 @@ const stripped = function(test) {
     const open = wrapper[0].length - 1
     const close = closes(blanked, open)
     const offset = wrapper[0].indexOf('boolean')
-    if (close >= 0 && blanked.slice(close + 1).trim() === '') {
+    if (close >= 0 && blanked.slice(close + 1).trim() === '' &&
+      lone(test.slice(open + 1, close))) {
       strip = {
         offset: offset,
         value: test.slice(offset, close + 1),
