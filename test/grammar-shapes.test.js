@@ -111,10 +111,10 @@ const noted = function(accepts, xpath) {
 
 /**
  * Every shape the grammar and the engine judge differently, written the way
- * `KNOWN` writes one. The engine is asked as `compiles`, never through the
- * respelling retry beside it, for the reason `test/grammar-corpus.test.js`
- * gives: the retry sits on the engine's side of the question and hides what it
- * rescues. Nothing generated here spells a gap the retry would touch.
+ * `KNOWN` writes one. The engine is asked as `compiles` and nothing stands
+ * between: no shape generated here spells a gap the engine's own strictness
+ * objects to, so the class `test/grammar-corpus.test.js` subtracts by name has
+ * nothing to subtract from this sweep.
  * @type {Array.<string>}
  */
 const PARTED = SHAPES
