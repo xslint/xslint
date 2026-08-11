@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {masked, closes} = require('../expressions')
+const {masked, closes, lone} = require('../expressions')
 const {GAP} = require('../tokens')
 const {metaOf, suppressed, defect} = require('../checks')
 const {expressionsOf} = require('../attributes')
@@ -45,7 +45,10 @@ const INNER = new RegExp(`^${GAP}*not${GAP}*\\(`)
  * inner argument `x` — `not(not(x))` equals `boolean(x)`, so the caller wraps
  * the argument in `boolean(...)` for a value context and drops the wrapper for
  * a whole `@test`, which already coerces. A `not(` whose parentheses do not
- * balance, or whose content is more than a lone inner `not(...)`, is skipped.
+ * balance, or whose content is more than a lone inner `not(...)`, is skipped,
+ * and so is one whose inner call holds no argument or several: `fn:not` takes
+ * exactly one, so `not(not())` negates nothing twice and rewriting it to its
+ * argument wrote an empty `@test` (#576).
  * @param {string} expression - The attribute value
  * @return {Array.<{offset: number, value: string, argument: string}>} -
  *  The negations found
@@ -66,7 +69,8 @@ const negations = function(expression) {
     }
     const innerOpen = open + inner[0].length
     const innerClose = closes(blanked, innerOpen)
-    if (innerClose < 0 || blanked.slice(innerClose + 1, close).trim() !== '') {
+    if (innerClose < 0 || blanked.slice(innerClose + 1, close).trim() !== '' ||
+      !lone(expression.slice(innerOpen + 1, innerClose))) {
       continue
     }
     found.push({

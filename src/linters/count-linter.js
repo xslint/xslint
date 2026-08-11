@@ -4,6 +4,7 @@
  */
 
 const {comparedToZero} = require('../comparisons')
+const {lone} = require('../expressions')
 const {metaOf, suppressed, defect} = require('../checks')
 const {expressionsOf} = require('../attributes')
 const {MODERN, since, versionOf} = require('../xsl-version')
@@ -49,7 +50,8 @@ const collapses = function(operator, zero) {
  * Classify a `count(...)`-versus-`0`/`1` comparison for `comparedToZero`: an
  * existence test carries its kind (`exists`/`empty`) and the argument, for the
  * linter to turn into a version-appropriate rewrite; anything else is left
- * alone.
+ * alone. `fn:count` takes exactly one argument, so a call spelling none or
+ * several counts nothing and is not this construct at all.
  * @param {string} operator - The comparison operator
  * @param {string} zero - The compared digit, `0` or `1`
  * @param {string} argument - The call's argument
@@ -58,7 +60,7 @@ const collapses = function(operator, zero) {
 const decide = function(operator, zero, argument) {
   const test = collapses(operator, zero)
   let found = null
-  if (test) {
+  if (test && lone(argument)) {
     found = {test: test, argument: argument}
   }
   return found

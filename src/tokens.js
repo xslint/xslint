@@ -319,6 +319,19 @@ const GLUES = [TOKENS.NAME, TOKENS.NUMBER]
 const OPAQUE = [TOKENS.STRING, TOKENS.UNCLOSED, TOKENS.COMMENT]
 
 /**
+ * The kinds that carry no meaning to a grammar and every meaning to the source:
+ * a gap and a comment. They stay in the stream rather than being filtered out
+ * of it, because a span is a range of token indexes and the text of a span is
+ * the tokens in it joined back together — drop the trivia and a tree stops
+ * reproducing what it was built from. One list, for the same reason `OPAQUE` is
+ * one: four readers spelled it themselves — `TRIVIA` in `src/grammar.js`, the
+ * solid-token test in `tokenized` below, the predicate-position scan, and the
+ * emptiness test in `lone`.
+ * @type {Array.<string>}
+ */
+const TRIVIA = [TOKENS.WHITESPACE, TOKENS.COMMENT]
+
+/**
  * The kind each axis is lexed as, which is what makes one recognisable behind
  * another. Derived from {@link AXES} rather than written out again, and derived
  * once: the question is asked of every token, so building the list per token
@@ -809,7 +822,7 @@ const tokenized = function(xpath) {
     }
     const token = {type: type, value: xpath.slice(start, at), start: start}
     tokens.push(token)
-    spaced = type === TOKENS.WHITESPACE || type === TOKENS.COMMENT
+    spaced = TRIVIA.includes(type)
     if (!spaced) {
       last = token
     }
@@ -825,6 +838,7 @@ module.exports = {
   GLUES,
   TOKENS,
   OPAQUE,
+  TRIVIA,
   WHITESPACE,
   GAP,
   GAPS,

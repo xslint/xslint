@@ -3,18 +3,10 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {tokenized, qualified, worded, GLUES, TOKENS} = require('./tokens')
+const {
+  tokenized, qualified, worded, GLUES, TOKENS, TRIVIA,
+} = require('./tokens')
 const {since, MODERN} = require('./xsl-version')
-
-/**
- * The token kinds that carry no meaning to the grammar and every meaning to the
- * source: a gap and a comment. They stay in the stream rather than being
- * filtered out of it, because a span is a range of token indexes and the text
- * of a span is the tokens in it joined back together — drop the trivia and the
- * tree stops reproducing what it was built from.
- * @type {Array.<string>}
- */
-const TRIVIA = [TOKENS.WHITESPACE, TOKENS.COMMENT]
 
 /**
  * The token a cursor reads once the stream is spent. It is a token like any
