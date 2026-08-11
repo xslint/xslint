@@ -4,16 +4,17 @@
  */
 
 const {parsed} = require('../src/grammar')
-const {compiles, squeezed} = require('../src/xpath')
+const {compiles} = require('../src/xpath')
+const {insists} = require('./strictness')
 const assert = require('assert')
 
 /**
  * Expressions XPath 3.1 has, each with the kind its tree comes out rooted at.
  * Every one of them is handed to the engine as well, so a row cannot claim a
- * spelling the processor would refuse. The engine is asked as `compiles` with
- * the respelling retry spelled out beside it, which is what `isValid` was until
- * #732 took its verdict from this grammar instead: a row here asks whether
- * fontoxpath takes the expression, and that question now has no other caller.
+ * spelling the processor would refuse. Where the engine refuses one all the
+ * same, `insists` says whether its own strictness is the reason — a spaced axis
+ * separator here, `child::   alpha` — which is the accounting that replaced the
+ * respelling retry #738 retired.
  * @type {Array.<{xpath: string, kind: string}>}
  */
 const ACCEPTS = [
@@ -400,7 +401,7 @@ describe('grammar', function() {
   ACCEPTS.forEach(({xpath}) => {
     it(`agrees with the engine about ${JSON.stringify(xpath)}`, function() {
       assert.ok(
-        compiles(xpath) || compiles(squeezed(xpath)),
+        compiles(xpath) || insists(xpath),
         `${xpath} is not valid XPath at all`,
       )
     })

@@ -4,7 +4,8 @@
  */
 
 const {parsed} = require('../src/grammar')
-const {compiles, squeezed} = require('../src/xpath')
+const {compiles} = require('../src/xpath')
+const {insists} = require('./strictness')
 const {expressionsOf} = require('../src/attributes')
 const {allFilesFrom, xml, yaml} = require('../src/helpers')
 const path = require('path')
@@ -107,20 +108,22 @@ const REACHES = [
 /**
  * What the grammar and the engine judge differently once the engine is asked
  * on its own, one line each, naming the side that accepts and the gap it
- * stands for — everything the diff turns up except the spellings the retry
- * rescues, which `RESCUED` accounts for as a set rather than a list.
+ * stands for — everything the diff turns up except what the engine's own
+ * strictness explains, which `EXPLAINED` subtracts as a class rather than as a
+ * list.
  *
- * The comparison is against `compiles` alone, and never against the respelling
- * retry standing beside it, which is the whole of what #680 asked for. The
- * retry sits on the engine's side of the question, so asked as
- * `compiles(xpath) || compiles(squeezed(xpath))` an expression fontoxpath
- * refuses and the squeeze rescues cannot surface as a disagreement at all.
- * Forty do, and they are the #639 family exactly — a spaced axis, a
- * `namespace::`. Cancelling every one of them reports that the evidence for
- * retiring the retry is not in the tree, when what is not in the tree is a
- * comparison that can see it. That was `isValid`'s definition until #732 took
- * its verdict from this parser, and this file is what keeps both halves alive
- * — which is what #738 has to settle before either can go.
+ * The comparison is against `compiles` alone, which is the whole of what #680
+ * asked for. Until #738 the engine was asked through the respelling retry that
+ * stood beside it in `src/xpath.js`, and a retry sits on the engine's side of
+ * the question: asked as `compiles(xpath) || compiles(squeezed(xpath))` an
+ * expression fontoxpath refuses and the squeeze rescues cannot surface as a
+ * disagreement at all. Forty do, and they are the #639 family exactly — a
+ * spaced axis, a `namespace::`. Cancelling every one of them reported that the
+ * evidence for retiring the retry was not in the tree, when what was not in the
+ * tree was a comparison that could see it. The retry is gone and the class is
+ * read off the token stream now, by `insists`, so nothing rewrites an
+ * expression to account for the engine and nothing on the engine's side of this
+ * comparison answers for the grammar.
  *
  * Eleven stood when #680 wrote this list and **none** is left, which is the
  * measure doing its job rather than the measure going quiet: nine were a
@@ -131,11 +134,14 @@ const REACHES = [
  *
  * An empty list is an assertion and not the absence of one. Every expression
  * the repository carries now takes the same verdict from the grammar as from
- * the engine, so a disagreement of either kind turns this red: one the grammar
- * invents against working code, and one it lets through. What the emptiness
- * does not say is that the two agree everywhere — the corpus reaches only what
- * the corpus holds, and the classes #708 closed which no fixture spells are
- * pinned by rows in `test/grammar.test.js` instead.
+ * the engine, or parts from it inside the one class named above, so a
+ * disagreement of any other kind turns this red: one the grammar invents
+ * against working code, and one it lets through. Nor can the class swallow the
+ * first of those, which is the direction that matters — it may only ever excuse
+ * the grammar accepting where the engine refuses, and the gate below holds it
+ * to that. What the emptiness does not say is that the two agree everywhere —
+ * the corpus reaches only what the corpus holds, and the classes #708 closed
+ * which no fixture spells are pinned by rows in `test/grammar.test.js` instead.
  * @type {Array.<{xpath: string, accepts: string, gap: string}>}
  */
 const GAPS = []
@@ -240,23 +246,29 @@ const sided = function(xpath) {
 }
 
 /**
- * Every expression the engine refuses outright and takes only respelled: what
- * the retry in `src/xpath.js` exists for, and what #639's family is. Read from
- * the engine and `squeezed` alone, never from the grammar, so holding the
- * grammar to it is a comparison rather than a restatement.
- * @type {Array.<string>}
- */
-const RESCUED = CORPUS
-  .filter((one) => !compiles(one) && compiles(squeezed(one)))
-
-/**
- * Every disagreement the corpus holds between the grammar and the bare engine,
- * written the way `GAPS` writes one, so membership and direction are one
- * comparison rather than two.
+ * Every disagreement the corpus holds between the grammar and the bare engine.
  * @type {Array.<string>}
  */
 const PARTED = CORPUS
   .filter((one) => (parsed(one, '3.0').fault === '') !== compiles(one))
+
+/**
+ * The disagreements the engine's own strictness accounts for: a `namespace::`
+ * axis, or a gap XPath spells and fontoxpath reads glued. Read from the token
+ * stream by `test/strictness.js`, never from either verdict, so subtracting the
+ * class below is an account of the engine rather than a restatement of what the
+ * grammar happens to do.
+ * @type {Array.<string>}
+ */
+const EXPLAINED = PARTED.filter((one) => insists(one))
+
+/**
+ * What is left over, written the way `GAPS` writes one, so membership and
+ * direction are one comparison rather than two.
+ * @type {Array.<string>}
+ */
+const UNEXPLAINED = PARTED
+  .filter((one) => !insists(one))
   .map((one) => noted(sided(one), one))
   .sort()
 
@@ -293,27 +305,28 @@ describe('grammar over the corpus', function() {
       'some nodes reach past the construct they were built inside',
     )
   })
-  it('cannot answer having found the retry nothing to rescue', function() {
+  it('cannot answer having found the engine nothing to insist about', function() {
     assert.ok(
-      RESCUED.length >= 40,
-      `the engine takes ${RESCUED.length} of these expressions only respelled, ` +
-        'against the 40 it took when these gates were written, so the gate ' +
-        'below is holding the grammar to almost nothing',
+      EXPLAINED.length >= 40,
+      `${EXPLAINED.length} of these expressions are ones the grammar accepts ` +
+        'and the engine refuses over its own strictness, against the 40 that ' +
+        'stood here when these gates were written: either the class has ' +
+        'stopped naming them or the grammar has stopped accepting them, and ' +
+        'the subtraction below now stands for almost nothing',
     )
   })
-  it('cannot refuse a spelling the retry has to rescue', function() {
+  it('cannot excuse the engine accepting what the grammar refuses', function() {
     assert.deepEqual(
-      RESCUED.filter((one) => parsed(one, '3.0').fault !== ''),
+      EXPLAINED.filter((one) => sided(one) === 'engine'),
       [],
-      'the retry rescues a spelling our own grammar refuses, so retiring it ' +
-        'at Phase 3 would lose that expression rather than free it',
+      'a spelling the engine takes and our own grammar refuses is being read ' +
+        'as the engine being strict, which is an invented defect excused',
     )
   })
-  it('cannot part from the engine anywhere it is not annotated', function() {
+  it('cannot part from the engine anywhere it is not accounted for', function() {
     assert.deepEqual(
-      PARTED,
-      GAPS.map(({accepts, xpath}) => noted(accepts, xpath))
-        .concat(RESCUED.map((one) => noted('grammar', one))).sort(),
+      UNEXPLAINED,
+      GAPS.map(({accepts, xpath}) => noted(accepts, xpath)).sort(),
       'the grammar and the engine part company somewhere unaccounted for',
     )
   })
