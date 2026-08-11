@@ -3,18 +3,10 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {tokenized, qualified, TOKENS} = require('./tokens')
+const {
+  tokenized, qualified, worded, GLUES, TOKENS, TRIVIA,
+} = require('./tokens')
 const {since, MODERN} = require('./xsl-version')
-
-/**
- * The token kinds that carry no meaning to the grammar and every meaning to the
- * source: a gap and a comment. They stay in the stream rather than being
- * filtered out of it, because a span is a range of token indexes and the text
- * of a span is the tokens in it joined back together — drop the trivia and the
- * tree stops reproducing what it was built from.
- * @type {Array.<string>}
- */
-const TRIVIA = [TOKENS.WHITESPACE, TOKENS.COMMENT]
 
 /**
  * The token a cursor reads once the stream is spent. It is a token like any
@@ -300,16 +292,42 @@ const sees = function(cursor, type) {
 }
 
 /**
+ * Whether the token ahead stands directly against the one in front of it,
+ * where XPath requires a gap. Two terminals neither of which ends at a
+ * character the other cannot hold need whitespace or a comment between them,
+ * and `GLUES` names the kinds on the near side of that pair.
+ *
+ * It reads the token before by index rather than by significance, because the
+ * whole question is whether trivia stands there: `significant` is written to
+ * step over exactly what this has to see (#742).
+ * @param {object} cursor - The cursor
+ * @return {boolean} - True when no gap stands in front of it
+ */
+const glued = function(cursor) {
+  const before = cursor.tokens[significant(cursor) - 1]
+  return before !== undefined && GLUES.includes(before.type)
+}
+
+/**
  * Whether the next token is a name spelled the given way, which is how the
  * parser reads the words the lexer leaves as names because only the grammar
  * knows they are operators there.
+ *
+ * A word run against a terminal that cannot delimit it is no keyword, since
+ * XPath makes whitespace or a comment stand between the two and the author
+ * wrote neither: `1to 3`, `1cast as xs:integer` and the `1else` of
+ * `if (1) then 1else 2` are all XPST0003, and every one of them was read here
+ * as the keyword it spells. The lexer answers the same question for the words
+ * it kinds itself, and cannot answer it for these — it hands them over as
+ * names precisely because it does not know they are operators (#742).
  * @param {object} cursor - The cursor
  * @param {string} value - The spelling to look for
  * @return {boolean} - True when it is
  */
 const spells = function(cursor, value) {
   const token = ahead(cursor)
-  return token.type === TOKENS.NAME && token.value === value
+  return token.type === TOKENS.NAME && token.value === value &&
+    !glued(cursor)
 }
 
 /**
@@ -467,6 +485,43 @@ const kinded = function(cursor) {
 }
 
 /**
+ * The occurrence indicator a type ends with, taken where one stands, and the
+ * word behind it read as the operator it spells.
+ *
+ * The lexer settles operator-hood from the last solid token, which cannot tell
+ * the `?` of `xs:integer?` from the `?` of `$m?div`: the first ends a value and
+ * the second opens a lookup key, and one token of lookahead sees the same
+ * character for both. XPath gives its lexer a stack of states for exactly that
+ * (A.2.4); ours is a pass of its own that finishes before this file starts, so
+ * the correction belongs where the answer is known — here, having just read a
+ * type — rather than in a wider `ENDS`, which would answer for the type and
+ * break the lookup. So `xs:integer? div 2` and `item()+ union b` are the
+ * expressions every processor reads them as, where they were refused before
+ * (#742).
+ *
+ * The `*` never needed correcting and gets one anyway, since `MULTI` already
+ * ends a value by spelling the wildcard of `a/*` — an accident that made
+ * `item()* div 2` right for a reason no rule stated, and a rule states it now.
+ * A word that spells no single-token operator is left as the name it arrived
+ * as, which is the whole of what the multi-word ones need: no version of XPath
+ * lets an `instance of` follow a type, so `xs:integer? instance of x` stays
+ * refused, and `to`, `cast`, `castable` and `treat` never reached this at all,
+ * being words the grammar reads by value rather than kinds the lexer hands it.
+ * @param {object} cursor - The cursor
+ * @param {Array.<string>} kinds - The indicators this type admits
+ */
+const counted = function(cursor, kinds) {
+  if (kinds.some((kind) => sees(cursor, kind))) {
+    take(cursor)
+    const word = worded(ahead(cursor).value)
+    if (sees(cursor, TOKENS.NAME) && word !== undefined) {
+      const at = significant(cursor)
+      cursor.tokens[at] = {...cursor.tokens[at], type: word}
+    }
+  }
+}
+
+/**
  * An item type: a kind test, a name, or another item type in brackets. XPath
  * 3.0 added that last spelling, `ParenthesizedItemType`, and it holds an item
  * type rather than a sequence type — so `(xs:integer)` and `((xs:integer))` are
@@ -504,9 +559,8 @@ const sequenced = function(cursor) {
   const from = significant(cursor)
   const empty = spells(cursor, 'empty-sequence')
   itemed(cursor)
-  if (!empty && (sees(cursor, TOKENS.LOOKUP) || sees(cursor, TOKENS.MULTI) ||
-    sees(cursor, TOKENS.PLUS))) {
-    take(cursor)
+  if (!empty) {
+    counted(cursor, [TOKENS.LOOKUP, TOKENS.MULTI, TOKENS.PLUS])
   }
   return shaped('type', from, cursor, [])
 }
@@ -527,9 +581,7 @@ const singled = function(cursor) {
     refuse(cursor, 'the name of an atomic type')
   }
   named(cursor)
-  if (sees(cursor, TOKENS.LOOKUP)) {
-    take(cursor)
-  }
+  counted(cursor, [TOKENS.LOOKUP])
   return shaped('type', from, cursor, [])
 }
 
@@ -1193,9 +1245,10 @@ const typedExpr = function(cursor) {
     keyword(cursor, 'as')
     node = shaped('treat', from, cursor, [node, sequenced(cursor)])
   }
-  if (sees(cursor, TOKENS.INSTANCE_OF)) {
+  if (spells(cursor, 'instance')) {
     admits(cursor, 'instance')
     take(cursor)
+    keyword(cursor, 'of')
     node = shaped('instance', from, cursor, [node, sequenced(cursor)])
   }
   return node

@@ -13,5 +13,9 @@ input: |-
       <xsl:if test="count($items) &gt; 1">
         <xsl:value-of select="count($items)"/>
       </xsl:if>
+      <xsl:variable name="a" select="count() = 0"/>
+      <xsl:variable name="b" select="count(x, y) = 0"/>
+      <xsl:variable name="c" select="0 &lt; count()"/>
+      <xsl:variable name="d" select="count( ) &gt; 0"/>
     </xsl:template>
   </xsl:stylesheet>

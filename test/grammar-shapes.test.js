@@ -55,8 +55,8 @@ const SHAPES = Array.from(new Set(HEADS.concat(
 )))
 
 /**
- * The words XPath spells an operator with, which is what both remaining
- * disagreements are about — whether a word standing somewhere is one.
+ * The words XPath spells an operator with, which is what the one remaining
+ * disagreement is about — whether a word standing somewhere is one.
  * @type {Array.<string>}
  */
 const WORDS = [
@@ -68,38 +68,34 @@ const WORDS = [
 /**
  * The classes the sweep still parts on, each naming the side that accepts and
  * the gap it stands for, the way `GAPS` in `test/grammar-corpus.test.js` names
- * one. They are a class rather than a list because a hundred and twenty-four
- * shapes carry them and one cause is underneath both: `operates` in
- * `src/tokens.js` decides whether a word is an operator from the last solid
- * token alone, where XPath settles it from what the parser is in the middle of
- * reading. So a word behind the indicator a type ends with arrives a name, and
- * a word glued to `1` arrives an operator, and neither is what a processor
- * reads. Filed as #742.
+ * one. The two #742 stood for are gone — a word behind the indicator a type
+ * ends with, and a word run against the numeric literal in front of it — and
+ * what is left is not a gap in the grammar at all: fontoxpath accepts a word
+ * run against the *arity* of a named function reference, and Saxon-HE 12.5
+ * refuses `abs#1div 2` with XPST0003 exactly as it refuses `1div 2`. An arity
+ * is an `IntegerLiteral` like any other, so the two terminals need a gap
+ * between them, and the grammar is the side reading the specification here.
  *
- * The `*` of `item()*` escapes for a reason that is no part of the cause: a `*`
- * already ends a value, being how the wildcard of `a/*` is spelled, so the word
- * behind one is read rightly by accident. Which is why the annotation names the
- * indicator rather than the character — spelled `?` alone, it left the `+` half
- * of its own class both unswept and unaccounted, and `xs:integer+ and @b` is as
- * ordinary a thing to write as `xs:integer?` is.
+ * That is the mirror of the strictnesses `test/grammar-corpus.test.js` carries,
+ * where the engine refuses what the specification allows, and it takes a second
+ * arbiter to tell either from a defect of ours: one engine's verdict is
+ * evidence and not an answer, which is what #717 and #708 each learned the
+ * long way round.
  *
  * A predicate rather than the shapes themselves, because the shapes are an
  * accident of what this file happens to generate and the class is not. It is
  * spelled tightly all the same — an annotation broad enough to swallow the next
  * defect of a different cause is worse than no annotation, since it turns
- * nothing red.
+ * nothing red. Too narrow is the other failure and the one this file was in:
+ * the indicator class was spelled `?` alone over a `TAILS` naming no `+`, so
+ * half of it was neither swept nor accounted.
  * @type {Array.<{accepts: string, gap: string, holds: RegExp}>}
  */
 const KNOWN = [
   {
-    accepts: 'grammar',
-    gap: 'a word operator glued to the numeric literal in front of it (#742)',
-    holds: new RegExp(`[0-9](${WORDS})\\b`),
-  },
-  {
     accepts: 'engine',
-    gap: 'a word operator behind the indicator a type ends with (#742)',
-    holds: new RegExp(`[?+] (${WORDS})\\b`),
+    gap: 'a word operator run against the arity of a function reference',
+    holds: new RegExp(`#[0-9]+(${WORDS})\\b`),
   },
 ]
 
