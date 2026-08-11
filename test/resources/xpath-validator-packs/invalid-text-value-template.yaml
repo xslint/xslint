@@ -1,0 +1,17 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: invalid-xpath-expression
+found:
+  amount: 3
+  positions: [ [ 4, 20 ], [ 5, 31 ], [ 6, 39 ] ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="3.0" expand-text="yes">
+    <xsl:template match="/">
+      <out>plain {1 +} text</out>
+      <out><![CDATA[section {2 *} text]]></out>
+      <xsl:value-of _select="a intersect"/>
+      <out kept="{@alpha}">clean {@beta} text</out>
+    </xsl:template>
+  </xsl:stylesheet>

@@ -1,0 +1,20 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: invalid-xpath-expression
+found:
+  amount: 2
+  positions: [ [ 3, 28 ], [ 6, 34 ] ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0">
+    <xsl:template match="foo[">
+      <xsl:copy-of select="."/>
+    </xsl:template>
+    <xsl:template match="//alpha | 1 + 1">
+      <xsl:copy-of select="."/>
+    </xsl:template>
+    <xsl:template match="beta[@gamma = 'x']">
+      <xsl:copy-of select="."/>
+    </xsl:template>
+  </xsl:stylesheet>

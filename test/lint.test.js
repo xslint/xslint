@@ -104,7 +104,7 @@ describe('lint (programmatic API)', function() {
       lint([source('refused/unvalidated-expression-attributes.xsl')])
         .filter((defect) => defect.name === 'invalid-xpath-expression')
         .map((defect) => `${defect.line}:${defect.pos}`),
-      ['9:41', '11:39', '14:41'],
+      ['9:45', '11:43', '14:45'],
     )
   })
   it('suggests dropping a match, but safely fixes any other pattern', function() {

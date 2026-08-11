@@ -4,7 +4,7 @@
 pack: invalid-xpath-expression
 found:
   amount: 7
-  positions: [ [ 3, 43 ], [ 5, 23 ], [ 7, 26 ], [ 9, 44 ], [ 9, 86 ], [ 9, 62 ], [ 9, 25 ] ]
+  positions: [ [ 3, 47 ], [ 5, 27 ], [ 7, 30 ], [ 9, 48 ], [ 9, 90 ], [ 9, 66 ], [ 9, 29 ] ]
 input: |-
   <?xml version="1.0"?>
   <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="3.0">
