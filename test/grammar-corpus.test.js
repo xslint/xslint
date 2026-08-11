@@ -110,15 +110,17 @@ const REACHES = [
  * stands for — everything the diff turns up except the spellings the retry
  * rescues, which `RESCUED` accounts for as a set rather than a list.
  *
- * The comparison is against `compiles` rather than `isValid` deliberately, and
- * the difference is the whole of what #680 asked for. `isValid` is
- * `compiles(xpath) || compiles(squeezed(xpath))`, so the respelling retry sits
- * on the engine's side of it: an expression fontoxpath refuses and the squeeze
- * rescues cannot surface as a disagreement at all. Forty do, and they are the
- * #639 family exactly — a spaced axis, a `namespace::`. Diffing against
- * `isValid` cancels every one of them and reports that the evidence for
+ * The comparison is against `compiles` alone, and never against the respelling
+ * retry standing beside it, which is the whole of what #680 asked for. The
+ * retry sits on the engine's side of the question, so asked as
+ * `compiles(xpath) || compiles(squeezed(xpath))` an expression fontoxpath
+ * refuses and the squeeze rescues cannot surface as a disagreement at all.
+ * Forty do, and they are the #639 family exactly — a spaced axis, a
+ * `namespace::`. Cancelling every one of them reports that the evidence for
  * retiring the retry is not in the tree, when what is not in the tree is a
- * comparison that can see it.
+ * comparison that can see it. That was `isValid`'s definition until #732 took
+ * its verdict from this parser, and this file is what keeps both halves alive
+ * — which is what #738 has to settle before either can go.
  *
  * Eleven stood when #680 wrote this list and **none** is left, which is the
  * measure doing its job rather than the measure going quiet: nine were a

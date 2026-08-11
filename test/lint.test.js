@@ -118,6 +118,31 @@ describe('lint (programmatic API)', function() {
       [true, true, false, false, false, false, false, false],
     )
   })
+  it('offers no fix on a pattern that is only a valid expression', function() {
+    assert.deepEqual(
+      lint([source('refused/refused-pattern-that-parses-as-an-expression.xsl')])
+        .filter((defect) => defect.line === 8 && defect.fix)
+        .map((defect) => `${defect.name} at ${defect.line}:${defect.pos}`),
+      [],
+    )
+  })
+  it('still reports the double slash of a pattern it will not fix', function() {
+    assert.ok(
+      lint([source('refused/refused-pattern-that-parses-as-an-expression.xsl')])
+        .some(
+          (defect) =>
+            defect.name === 'starts-with-double-slash' && defect.line === 8,
+        ),
+    )
+  })
+  it('keeps the fix on the pattern beside one no XSLT grammar reads', function() {
+    assert.deepEqual(
+      lint([source('refused/refused-pattern-that-parses-as-an-expression.xsl')])
+        .filter((defect) => defect.line === 11)
+        .map((defect) => Boolean(defect.fix)),
+      [true],
+    )
+  })
   it('keeps both declarative fixes on the valid template', function() {
     assert.deepEqual(
       lint([source('refused/refused-by-a-declarative-fix.xsl')])

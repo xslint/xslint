@@ -1,0 +1,20 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: invalid-xpath-expression
+found:
+  amount: 0
+  positions: [ ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xsl:template match="/">
+      <xsl:value-of select="1 cast as xs:integer"/>
+      <xsl:if test="a[b castable as xs:date]">
+        <xsl:value-of select="if (a) then 1 else 2"/>
+        <xsl:value-of select="a intersect b"/>
+        <xsl:value-of select="$name => upper-case()"/>
+        <xsl:value-of select="map {'a': 1}?a"/>
+      </xsl:if>
+    </xsl:template>
+  </xsl:stylesheet>
