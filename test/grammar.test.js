@@ -139,6 +139,17 @@ const ACCEPTS = [
   {xpath: '$a, $b', kind: 'sequence'},
   {xpath: '  @a  ', kind: 'step'},
   {xpath: '(: leading :) @a', kind: 'step'},
+  {xpath: 'text() + 1', kind: 'sum'},
+  {xpath: 'element(x) * 2', kind: 'product'},
+  {xpath: 'a[text() + 1]', kind: 'step'},
+  {xpath: 'count(text() * 2)', kind: 'call'},
+  {xpath: '$v instance of (xs:integer)', kind: 'instance'},
+  {xpath: '$v instance of (xs:integer)*', kind: 'instance'},
+  {xpath: '$v instance of (item())+', kind: 'instance'},
+  {xpath: '$v treat as (node())', kind: 'treat'},
+  {xpath: '$v cast as xs:integer?', kind: 'cast'},
+  {xpath: 'a ! b instance of xs:integer', kind: 'instance'},
+  {xpath: '(a instance of xs:integer) ! b', kind: 'simple-map'},
 ]
 
 /**
@@ -156,6 +167,16 @@ const REFUSES = [
     at: 7},
   {name: 'a comparison chained onto one of another class',
     xpath: '$a is $b << $c', at: 9},
+  {name: 'a lookup hanging off a step', xpath: 'a?b', at: 1},
+  {name: 'an argument list hanging off a step', xpath: '@a(1)', at: 2},
+  {name: 'a cast to something no atomic type names',
+    xpath: '1 cast as node()', at: 10},
+  {name: 'a cast whose star is a multiplication with nothing behind it',
+    xpath: '1 cast as xs:integer*', at: 21},
+  {name: 'a simple map applied to what a type stands behind',
+    xpath: 'a instance of xs:integer ! b', at: 25},
+  {name: 'a sequence type with no item type in it',
+    xpath: '$v instance of ()', at: 16},
   {name: 'a step that names no axis', xpath: 'child::', at: 7},
   {name: 'a bracket that never closes', xpath: 'count(//a', at: 9},
   {name: 'a predicate that never closes', xpath: 'a[1', at: 3},
@@ -221,11 +242,38 @@ const REFUSES = [
  */
 const RESERVES = [
   {xpath: 'item()', from: '2.0', below: '1.0'},
+  {xpath: 'if(1)', from: '2.0', below: '1.0'},
+  {xpath: 'function(*)', from: '3.0', below: '2.0'},
   {xpath: 'empty-sequence()', from: '2.0', below: '1.0'},
   {xpath: 'typeswitch(1)', from: '2.0', below: '1.0'},
   {xpath: 'map(*)', from: '3.0', below: '2.0'},
   {xpath: 'array(*)', from: '3.0', below: '2.0'},
   {xpath: 'switch(1)', from: '3.0', below: '2.0'},
+]
+
+/**
+ * Names whose *tree* the version in force decides, each read from both sides of
+ * its floor. A kind test and a call to a function of the same name are both
+ * accepted expressions, so no acceptance diff can part them and only the tree
+ * can: `element(a)` is a step from 2.0 and a call at 1.0, which is what
+ * xsltproc reads it as — it parses the expression and then goes looking for the
+ * function. A `RESERVES` row cannot say this, since neither side is a refusal.
+ * @type {Array.<{xpath: string, from: string, reads: string, below: string,
+ *   instead: string}>}
+ */
+const SHAPED = [
+  {xpath: 'element(a)', from: '2.0', reads: 'step',
+    below: '1.0', instead: 'call'},
+  {xpath: 'attribute(a)', from: '2.0', reads: 'step',
+    below: '1.0', instead: 'call'},
+  {xpath: 'document-node()', from: '2.0', reads: 'step',
+    below: '1.0', instead: 'call'},
+  {xpath: 'schema-element(a)', from: '2.0', reads: 'step',
+    below: '1.0', instead: 'call'},
+  {xpath: 'schema-attribute(a)', from: '2.0', reads: 'step',
+    below: '1.0', instead: 'call'},
+  {xpath: 'namespace-node()', from: '3.0', reads: 'step',
+    below: '2.0', instead: 'call'},
 ]
 
 /**
@@ -255,6 +303,10 @@ const GATED = [
   {xpath: 'Q{urn:my}fn(1)', floor: '3.0', below: '2.0'},
   {xpath: '//Q{urn:my}a', floor: '3.0', below: '2.0'},
   {xpath: '//my:fn(1)', floor: '2.0', below: '1.0'},
+  {xpath: '$a instance of map(*)', floor: '3.0', below: '2.0'},
+  {xpath: '$a instance of array(*)', floor: '3.0', below: '2.0'},
+  {xpath: 'a/element(b)', floor: '2.0', below: '1.0'},
+  {xpath: '$f(1, 2)', floor: '3.0', below: '2.0'},
   {xpath: 'a/fn(1)', floor: '2.0', below: '1.0'},
   {xpath: '$Q{urn:my}v', floor: '3.0', below: '2.0'},
   {xpath: '//a intersect //b', floor: '2.0', below: '1.0'},
@@ -314,6 +366,16 @@ describe('grammar', function() {
         [parsed(xpath, from).fault === '', parsed(xpath, below).fault === ''],
         [false, true],
         `${xpath} is not a call below ${from} and a reserved name from it`,
+      )
+    })
+  })
+  SHAPED.forEach(({xpath, from, reads, below, instead}) => {
+    const said = `reads ${JSON.stringify(xpath)} as a ${reads} only from ${from}`
+    it(said, function() {
+      assert.deepEqual(
+        [parsed(xpath, from).tree.kind, parsed(xpath, below).tree.kind],
+        [reads, instead],
+        `${xpath} is not read the way ${from} and ${below} read it`,
       )
     })
   })
