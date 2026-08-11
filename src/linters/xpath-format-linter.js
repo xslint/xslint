@@ -4,7 +4,6 @@
  */
 
 const {tokenized, TOKENS, OPAQUE, GAP} = require('../tokens')
-const {wholeOf} = require('../attributes')
 const {metaOf, suppressed, defect, rawly} = require('../checks')
 const {skip} = require('../source')
 const {logger} = require('../logger')
@@ -131,9 +130,15 @@ const redundancies = function(expression) {
  * Lint the valid Xpath expressions for redundant whitespace. The expressions
  * are already known to parse — the validator dropped the malformed ones — so
  * this linter never re-checks validity, it only reasons over their tokens.
- * @param {Array.<{source: object, attribute: Node}>} expressions - Valid
- *  expressions, each the attribute holding one paired with the file it came
- *  from
+ *
+ * Each arrives as the record `expressionsOf` built, which the validator now
+ * hands on rather than re-deriving from the attribute (#589), so a pattern and
+ * an expression an attribute value template encloses are read here as well: a
+ * leading space is as redundant in a `match=" //spaced"` as in a `select`, and
+ * a brace's expression carries the offset it starts at, so the run inside it is
+ * reported and fixed where it truly stands.
+ * @param {Array.<{source: object, found: object}>} expressions - Valid
+ *  expressions, each paired with the file it came from
  * @param {Array.<string>} suppressions - Array of suppressed checks
  * @return {{name: string, severity: string, message: string, file: string,
  *  line: number, pos: number}[]} - Defects found
@@ -142,8 +147,7 @@ const lintByFormat = function(expressions, suppressions = []) {
   logger.debug(`Format linting started`)
   const defects = []
   if (!suppressed(CHECK, suppressions)) {
-    for (const {source, attribute} of expressions) {
-      const found = wholeOf(attribute)
+    for (const {source, found} of expressions) {
       for (const run of redundancies(found.expression)) {
         if (!wrapping(source, found, run)) {
           defects.push(

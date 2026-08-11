@@ -129,7 +129,12 @@ const compiles = function(xpath) {
  * over (#689). One entry per distinct expression is bounded by the corpus that
  * asked, and the answer cannot go stale: the same text parses the same way for
  * the life of a process.
- * @type {Map.<string, boolean>}
+ *
+ * What is kept is the refusal rather than a boolean, because the parse already
+ * knows more than yes or no — what the grammar expected, and the offset it
+ * stood at — and a caller that throws that away leaves the report pointing at
+ * the attribute instead of at the fault. One derivation, one parse (#589).
+ * @type {Map.<string, {fault: string, at: number}>}
  */
 const VERDICTS = new Map()
 
@@ -147,9 +152,9 @@ const VERDICTS = new Map()
 const ASSUMED = KNOWN[KNOWN.length - 1]
 
 /**
- * Whether an expression is syntactically valid, asked of our own grammar and at
- * the version in force where it stands. Two things follow that the engine could
- * not give. The spelling is judged against the specification rather than
+ * Why the grammar refuses an expression, asked at the version in force where it
+ * stands — an empty `fault` when it takes it. Two things follow that the engine
+ * could not give. The spelling is judged against the specification rather than
  * against fontoxpath, which is stricter than it — a `namespace::` axis, and
  * ExprWhitespace around an axis separator or around a node test's bracket
  * (#615, #639) — so the respelling retry those three needed is gone rather than
@@ -162,11 +167,18 @@ const ASSUMED = KNOWN[KNOWN.length - 1]
  * A pattern is judged by `matched` rather than by `parsed`, since a `match` is
  * a different language and not a second reading of this one — `1 + 1` is a fine
  * expression and no pattern at all.
+ *
+ * What comes back is the complaint and the offset it stands at, not the tree
+ * beside them: the answer is remembered for every distinct expression a corpus
+ * holds, and a tree per entry is a different bargain from a sentence per entry.
+ * The offset is what a report needs, and having it is what lets the validator
+ * point at the fault rather than at the attribute holding it (#589).
  * @param {{node: Node, expression: string, pattern: boolean}} found - The
  *  expression, whole, as `expressionsOf` and `wholeOf` yield it
- * @return {boolean} - True when the expression parses
+ * @return {{fault: string, at: number}} - What the grammar expected, and where
+ *  in the expression it wanted it
  */
-const isValid = function(found) {
+const refusalOf = function(found) {
   let version = versionOf(found.node)
   if (!KNOWN.includes(version)) {
     version = ASSUMED
@@ -177,14 +189,28 @@ const isValid = function(found) {
     if (found.pattern) {
       answer = matched(found.expression, version)
     }
-    VERDICTS.set(key, answer.fault === '')
+    VERDICTS.set(key, {fault: answer.fault, at: answer.at})
   }
   return VERDICTS.get(key)
+}
+
+/**
+ * Whether an expression is syntactically valid — `refusalOf` with nothing to
+ * complain about. Most callers want the verdict alone: a fix is withheld on a
+ * defect standing in text no processor parses (#636, #651), and neither gate
+ * has anywhere to say why.
+ * @param {{node: Node, expression: string, pattern: boolean}} found - The
+ *  expression, whole, as `expressionsOf` and `wholeOf` yield it
+ * @return {boolean} - True when the expression parses
+ */
+const isValid = function(found) {
+  return refusalOf(found).fault === ''
 }
 
 module.exports = {
   nodes,
   strings,
+  refusalOf,
   isValid,
   compiles,
 }

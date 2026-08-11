@@ -257,7 +257,8 @@ xslint --fix path/to/dir
 Today this covers nine checks:
 
 - `redundant-whitespace` — a doubled space is collapsed to one, and a space
-  leading or trailing an XPath expression is removed. A run holding a line
+  leading or trailing an XPath expression is removed, in a pattern such as
+  `match` and inside a `{...}` as much as in a `select`. A run holding a line
   ending is the indentation of a wrapped expression, so it is neither reported
   nor collapsed.
 - `unabbreviated-axis` — a verbose axis specifier is shortened: `child::x`
@@ -373,14 +374,14 @@ would rewrite the attribute from the outside rather than the expression within
 it. A stylesheet whose real fault is a missing bracket comes back with that
 fault untouched, so fix the syntax and the corrections appear on the next run.
 
-Where the expression sits decides whether you are told why. A bare one — a
-`select`, a `test`, and the rest listed under `invalid-xpath-expression` — is
-reported as malformed. A **pattern** such as `match`, and the braces of an
-attribute or text value template, are not yet parsed by that check
-([#589](https://github.com/xslint/xslint/issues/589)), so a broken one is silent:
-the corrections around it disappear with nothing said. Until that lands, a defect
-that reports without a correction where you expected one is the sign to check the
-expression's syntax by hand.
+Where the expression sits no longer decides whether you are told why. A bare
+one — a `select`, a `test`, and the rest listed under
+`invalid-xpath-expression` — a **pattern** such as `match`, and each expression
+the braces of an attribute value template, a text value template or a shadow
+attribute enclose are all parsed, and whichever of them is broken is reported as
+malformed. The report points at the character the parser stopped on rather than
+at the attribute holding it, so a fault buried in a long expression, or in the
+second of two `{...}` on one line, names its own column.
 
 Where two corrections cover the same piece of an expression — the redundant
 whitespace in `d[position()  =  1]` sits inside the predicate that becomes

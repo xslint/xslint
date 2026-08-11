@@ -114,6 +114,12 @@ const APPLIED = [
     after: 'starts-with-double-slash.fixed.xsl',
   },
   {
+    name: 'should collapse a pattern leading gap, and no more, with plain --fix',
+    flag: '--fix',
+    before: 'starts-with-double-slash.xsl',
+    after: 'starts-with-double-slash.safely-fixed.xsl',
+  },
+  {
     name: 'should drop the redundant leading slashes of a pattern outside a ' +
       'template with --fix',
     flag: '--fix',
@@ -404,11 +410,6 @@ const UNCHANGED = [
   {
     name: 'cannot drop the leading slashes with --fix-dry-run',
     flag: '--fix-dry-run',
-    sheet: 'starts-with-double-slash.xsl',
-  },
-  {
-    name: 'cannot drop the leading slashes of a pattern with plain --fix',
-    flag: '--fix',
     sheet: 'starts-with-double-slash.xsl',
   },
   {

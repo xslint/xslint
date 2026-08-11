@@ -1,14 +1,28 @@
 # Invalid XPath expression
 
-An attribute carrying a bare XPath expression — `select`, `test`, `use`,
-`value`, `group-by`, `group-adjacent`, or the XSLT 3.0 `key`, `initial-value`,
-`xpath`, `context-item`, `with-params`, `namespace-context`, the
-`for-each-item` and `for-each-source` of an `xsl:merge-source`, and the static
-`use-when` — must hold an expression the processor can parse. A malformed
-expression breaks the transformation at runtime, so the sooner it surfaces the
-better. Only the
-expression syntax is checked, not its formatting; pattern attributes such as
-`match` and attribute value templates are left to other checks.
+Every expression a stylesheet carries must be one the processor can parse, and a
+stylesheet carries them in more places than its `select`. One is an attribute
+holding a bare XPath — `select`, `test`, `use`, `value`, `group-by`,
+`group-adjacent`, or the XSLT 3.0 `key`, `initial-value`, `xpath`,
+`context-item`, `with-params`, `namespace-context`, the `for-each-item` and
+`for-each-source` of an `xsl:merge-source`, and the static `use-when`. Another
+is a pattern attribute: `match`, `count`, `from`, `group-starting-with`,
+`group-ending-with`. And another is each expression a `{...}` encloses — in an
+attribute value template, in the text of an XSLT 3.0 element whose `expand-text`
+is on, or in a shadow attribute such as `_select`. A malformed expression breaks
+the transformation at runtime wherever it stands, so the sooner it surfaces the
+better. Only the syntax is checked, never the formatting.
+
+A pattern is judged as a pattern, which is a narrower language than an
+expression rather than a second reading of one. A pattern is matched by walking
+*up* from a node, so it may only name a step such a walk can answer: `child` and
+`attribute` at every version, joined by `self`, `descendant`,
+`descendant-or-self` and `namespace` in XSLT 3.0, and never `parent`,
+`ancestor`, `ancestor-or-self`, `following`, `following-sibling`, `preceding` or
+`preceding-sibling`. A predicate inside it is an ordinary expression and may name
+any of them. A pattern is also a union of paths and nothing else, so `1 + 1`,
+`@a = 'b'` and `a, b` are all perfectly good expressions and none of them is a
+pattern a processor will load.
 
 The expression is read under the version the stylesheet declares, because the
 same characters are a different language under a different one. `1 cast as
@@ -45,4 +59,20 @@ Correct:
 <xsl:if test="foo(a) = 'hello'">
   <xsl:value-of select="."/>
 </xsl:if>
+```
+
+Incorrect (a pattern cannot look sideways, so no processor loads this):
+
+```xsl
+<xsl:template match="following-sibling::para">
+  <xsl:value-of select="."/>
+</xsl:template>
+```
+
+Correct (name the nodes that match, and let a predicate look where it likes):
+
+```xsl
+<xsl:template match="para[preceding-sibling::*]">
+  <xsl:value-of select="."/>
+</xsl:template>
 ```
