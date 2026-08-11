@@ -22,16 +22,16 @@ const HEADS = [
 /**
  * What may follow one: an operator of every level of the ladder, each postfix,
  * and each of the four expressions that take a type on their right, spelled
- * with the item type, the parenthesized item type, the occurrence indicator and
- * the kind test that tell the three type productions apart.
+ * with the item type, the parenthesized item type, all three occurrence
+ * indicators and the kind test that tell the three type productions apart.
  * @type {Array.<string>}
  */
 const TAILS = [
   '+ 1', '* 2', '- 1', 'div 2', '| b', 'and b', '= 1', 'to 3', '! b', '=> f()',
   '[1]', '(1)', '?k', '/b', 'instance of xs:integer',
-  'instance of (xs:integer)', 'instance of item()*', 'cast as xs:integer',
-  'cast as xs:integer?', 'cast as node()', 'castable as xs:integer',
-  'treat as node()', 'treat as (node())',
+  'instance of (xs:integer)', 'instance of item()*', 'instance of xs:integer+',
+  'cast as xs:integer', 'cast as xs:integer?', 'cast as node()',
+  'castable as xs:integer', 'treat as node()', 'treat as (node())',
 ]
 
 /**
@@ -68,12 +68,20 @@ const WORDS = [
 /**
  * The classes the sweep still parts on, each naming the side that accepts and
  * the gap it stands for, the way `GAPS` in `test/grammar-corpus.test.js` names
- * one. They are a class rather than a list because eighty-one shapes carry them
- * and one cause is underneath both: `operates` in `src/tokens.js` decides
- * whether a word is an operator from the last solid token alone, where XPath
- * settles it from what the parser is in the middle of reading. So a word behind
- * the `?` of `xs:integer?` arrives a name and a word glued to `1` arrives an
- * operator, and neither is what a processor reads. Filed as #742.
+ * one. They are a class rather than a list because a hundred and twenty-four
+ * shapes carry them and one cause is underneath both: `operates` in
+ * `src/tokens.js` decides whether a word is an operator from the last solid
+ * token alone, where XPath settles it from what the parser is in the middle of
+ * reading. So a word behind the indicator a type ends with arrives a name, and
+ * a word glued to `1` arrives an operator, and neither is what a processor
+ * reads. Filed as #742.
+ *
+ * The `*` of `item()*` escapes for a reason that is no part of the cause: a `*`
+ * already ends a value, being how the wildcard of `a/*` is spelled, so the word
+ * behind one is read rightly by accident. Which is why the annotation names the
+ * indicator rather than the character — spelled `?` alone, it left the `+` half
+ * of its own class both unswept and unaccounted, and `xs:integer+ and @b` is as
+ * ordinary a thing to write as `xs:integer?` is.
  *
  * A predicate rather than the shapes themselves, because the shapes are an
  * accident of what this file happens to generate and the class is not. It is
@@ -90,8 +98,8 @@ const KNOWN = [
   },
   {
     accepts: 'engine',
-    gap: 'a word operator behind the "?" of a single type (#742)',
-    holds: new RegExp(`\\? (${WORDS})\\b`),
+    gap: 'a word operator behind the indicator a type ends with (#742)',
+    holds: new RegExp(`[?+] (${WORDS})\\b`),
   },
 ]
 
