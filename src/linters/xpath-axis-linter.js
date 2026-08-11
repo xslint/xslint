@@ -5,7 +5,6 @@
 
 const {tokenized, TOKENS} = require('../tokens')
 const {metaOf, suppressed, defect} = require('../checks')
-const {expressionsOf} = require('../attributes')
 const {MODERN, since, versionOf} = require('../xsl-version')
 const {logger} = require('../logger')
 
@@ -166,29 +165,28 @@ const abbreviable = function(expression, modern, pattern) {
 }
 
 /**
- * Lint the corpus for axis specifiers that have a shorter form, reporting one
- * defect per occurrence with the fix that abbreviates it.
- * @param {Array.<{file: string, xsl: Document}>} corpus - Parsed stylesheets
+ * Lint the valid expressions for axis specifiers that have a shorter form,
+ * reporting one defect per occurrence with the fix that abbreviates it.
+ * @param {Array.<{source: object, found: object}>} expressions - The valid
+ *  expressions the validator kept, each paired with the file it came from
  * @param {Array.<string>} suppressions - Array of suppressed checks
  * @return {{name: string, severity: string, message: string, file: string,
  *  line: number, pos: number, fix: object}[]} - Defects found
  */
-const lintByAxis = function(corpus, suppressions = []) {
+const lintByAxis = function(expressions, suppressions = []) {
   logger.debug(`Axis linting started`)
   const defects = []
   if (!suppressed(CHECK, suppressions)) {
-    for (const source of corpus) {
-      for (const found of expressionsOf(source.xsl)) {
-        const {node, expression} = found
-        for (const {offset, fix} of abbreviable(
-          expression, since(versionOf(node), MODERN), found.pattern,
-        )) {
-          defects.push(
-            defect(
-              CHECK, META, source, found, offset, fix,
-            ),
-          )
-        }
+    for (const {source, found} of expressions) {
+      const {node, expression} = found
+      for (const {offset, fix} of abbreviable(
+        expression, since(versionOf(node), MODERN), found.pattern,
+      )) {
+        defects.push(
+          defect(
+            CHECK, META, source, found, offset, fix,
+          ),
+        )
       }
     }
   }

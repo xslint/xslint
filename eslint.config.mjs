@@ -45,7 +45,7 @@ const RESTRICTED = [
   {
     selector: "Literal[value=/\\/\\/@/]",
     message:
-      "Do not select attributes with a bare '//@name' XPath, which reads a literal result element as XPath; go through src/attributes.js (expressionsOf, selectorOf)"
+      "Do not select attributes with a bare '//@name' XPath, which reads a literal result element as XPath; a linter is handed the expressions the validator kept, and narrows one out of them with whole(found, name) from src/attributes.js"
   },
   {
     selector:
@@ -63,7 +63,7 @@ const RESTRICTED = [
     selector:
       "CallExpression[callee.name='defect'] MemberExpression[property.name='nodeValue']",
     message:
-      "Do not spell a node and its text as two arguments of defect (#648); hand it the {node, start, expression} record that expressionsOf yields, or wholeOf(attribute) for a narrowed one"
+      "Do not spell a node and its text as two arguments of defect (#648); hand it the {node, start, expression} record that expressionsOf yields"
   },
   {
     selector:

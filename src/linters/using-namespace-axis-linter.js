@@ -5,7 +5,6 @@
 
 const {tokenized, TOKENS} = require('../tokens')
 const {metaOf, suppressed, defect} = require('../checks')
-const {expressionsOf} = require('../attributes')
 const {MODERN, since, versionOf} = require('../xsl-version')
 const {logger} = require('../logger')
 
@@ -41,28 +40,27 @@ const axes = function(expression) {
 }
 
 /**
- * Lint the corpus for the deprecated namespace:: axis in any XPath or pattern
- * attribute of an XSLT 2.0 or 3.0 stylesheet, reporting one defect per
- * occurrence. The fix is a structural rewrite to in-scope-prefixes() and
+ * Lint the valid expressions for the deprecated namespace:: axis in any XPath
+ * or pattern attribute of an XSLT 2.0 or 3.0 stylesheet, reporting one defect
+ * per occurrence. The fix is a structural rewrite to in-scope-prefixes() and
  * namespace-uri-for-prefix(), so the defect is report-only.
- * @param {Array.<{file: string, xsl: Document}>} corpus - Parsed stylesheets
+ * @param {Array.<{source: object, found: object}>} expressions - The valid
+ *  expressions the validator kept, each paired with the file it came from
  * @param {Array.<string>} suppressions - Array of suppressed checks
  * @return {{name: string, severity: string, message: string, file: string,
  *  line: number, pos: number}[]} - Defects found
  */
-const lintByNamespaceAxis = function(corpus, suppressions = []) {
+const lintByNamespaceAxis = function(expressions, suppressions = []) {
   logger.debug(`Namespace axis linting started`)
   const defects = []
   if (!suppressed(CHECK, suppressions)) {
-    for (const source of corpus) {
-      for (const found of expressionsOf(source.xsl)) {
-        const {node, expression} = found
-        if (since(versionOf(node), MODERN)) {
-          for (const offset of axes(expression)) {
-            defects.push(
-              defect(CHECK, META, source, found, offset),
-            )
-          }
+    for (const {source, found} of expressions) {
+      const {node, expression} = found
+      if (since(versionOf(node), MODERN)) {
+        for (const offset of axes(expression)) {
+          defects.push(
+            defect(CHECK, META, source, found, offset),
+          )
         }
       }
     }

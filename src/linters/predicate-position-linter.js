@@ -5,7 +5,6 @@
 
 const {tokenized, TOKENS, TRIVIA} = require('../tokens')
 const {metaOf, suppressed, defect} = require('../checks')
-const {expressionsOf} = require('../attributes')
 const {logger} = require('../logger')
 
 /**
@@ -115,29 +114,28 @@ const literals = function(expression) {
 }
 
 /**
- * Lint the corpus for a positional predicate written the long way, reporting
- * one defect per occurrence with a safe fix that rewrites the predicate to its
- * numeric or `last()` short form.
- * @param {Array.<{file: string, xsl: Document}>} corpus - Parsed stylesheets
+ * Lint the valid expressions for a positional predicate written the long way,
+ * reporting one defect per occurrence with a safe fix that rewrites the
+ * predicate to its numeric or `last()` short form.
+ * @param {Array.<{source: object, found: object}>} expressions - The valid
+ *  expressions the validator kept, each paired with the file it came from
  * @param {Array.<string>} suppressions - Array of suppressed checks
  * @return {{name: string, severity: string, message: string, file: string,
  *  line: number, pos: number, fix: object}[]} - Defects found
  */
-const lintByPredicatePosition = function(corpus, suppressions = []) {
+const lintByPredicatePosition = function(expressions, suppressions = []) {
   logger.debug(`Predicate-position linting started`)
   const defects = []
   if (!suppressed(CHECK, suppressions)) {
-    for (const source of corpus) {
-      for (const found of expressionsOf(source.xsl)) {
-        const {expression} = found
-        for (const {offset, value, replacement} of literals(expression)) {
-          defects.push(
-            defect(
-              CHECK, META, source, found, offset,
-              {value, replacement},
-            ),
-          )
-        }
+    for (const {source, found} of expressions) {
+      const {expression} = found
+      for (const {offset, value, replacement} of literals(expression)) {
+        defects.push(
+          defect(
+            CHECK, META, source, found, offset,
+            {value, replacement},
+          ),
+        )
       }
     }
   }

@@ -368,11 +368,13 @@ Checks whose correction needs real judgment (a fresh name, a more specific
 path) stay report-only. A run without `--fix` reports how many defects each
 option would fix.
 
-An expression xslint cannot parse is never rewritten. The other defects standing
-in it are still reported, with no correction offered — including the ones that
-would rewrite the attribute from the outside rather than the expression within
-it. A stylesheet whose real fault is a missing bracket comes back with that
-fault untouched, so fix the syntax and the corrections appear on the next run.
+An expression xslint cannot parse draws one defect, from the validator, and the
+checks that read expressions say nothing further about it: a stylesheet whose
+real fault is a missing bracket comes back with that fault and not with a page
+of advice about text no processor accepts. A rule that matches the attribute
+structurally rather than reading the expression can still report there, and is
+never offered a correction. Fix the syntax and the rest of the feedback appears
+on the next run.
 
 Where the expression sits no longer decides whether you are told why. A bare
 one — a `select`, a `test`, and the rest listed under
@@ -440,16 +442,17 @@ Linters:
   imported module.
 - **Formatting** checks read each XPath expression as a stream of tokens and
   flag stylistic noise — currently redundant whitespace (a doubled space, or a
-  space leading or trailing the expression). Only expressions that already
-  parse are checked, so a malformed one is reported once by the validator and
-  never nagged about its spacing.
+  space leading or trailing the expression).
 
 Every check that reads an expression reads it from an XPath or pattern attribute
 of an XSLT element (`select`, `test`, `match`, …) or from an attribute value
 template — `<div class="{count(item) = 0}"/>` is checked, and fixed, inside the
 braces. An attribute of your own output vocabulary that happens to share a name
 with an XSLT one, as in `<widget test="count(item) = 0"/>`, holds text destined
-for the result tree, so it is never read as XPath and never rewritten.
+for the result tree, so it is never read as XPath and never rewritten. And each
+of them is handed the expressions the validator kept, so a malformed one is
+reported once rather than nagged about its spacing, its axes and its
+`count(...)` calls on top of that.
 
 ## Programmatic use
 

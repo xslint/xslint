@@ -4,6 +4,7 @@
  */
 
 const {lintByAxis} = require('../src/linters/xpath-axis-linter')
+const {validate} = require('../src/validators/xpath-validator')
 const {allFilesFrom, xml, yaml} = require('../src/helpers')
 const path = require('path')
 const assert = require('assert')
@@ -22,7 +23,8 @@ describe('xpath-axis-linter', function() {
     const input = xml.parsedFromString(yml.input)
     describe(`testing ${path.basename(pack)} pack`, function() {
       it(`should find ${yml.found.amount} unabbreviated axes`, function() {
-        const defects = lintByAxis([{file: 'test.xsl', content: yml.input, xsl: input}])
+        const {expressions} = validate([{file: 'test.xsl', content: yml.input, xsl: input}])
+        const defects = lintByAxis(expressions)
         assert.equal(defects.length, yml.found.amount)
         yml.found.positions.forEach((pos, index) => {
           assert.equal(defects[index].line, pos[0])

@@ -65,9 +65,6 @@ const comparedToZero = function(expression, name, decide) {
     const start = match.index + match[1].length
     const open = match.index + match[0].length - 1
     const close = closes(blanked, open)
-    if (close < 0) {
-      continue
-    }
     const argument = expression.slice(open + 1, close)
     const inner = blanked.slice(open + 1, close)
     const tail = TAIL.exec(blanked.slice(close + 1))

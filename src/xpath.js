@@ -174,7 +174,7 @@ const ASSUMED = KNOWN[KNOWN.length - 1]
  * The offset is what a report needs, and having it is what lets the validator
  * point at the fault rather than at the attribute holding it (#589).
  * @param {{node: Node, expression: string, pattern: boolean}} found - The
- *  expression, whole, as `expressionsOf` and `wholeOf` yield it
+ *  expression, whole, as `expressionsOf` yields it
  * @return {{fault: string, at: number}} - What the grammar expected, and where
  *  in the expression it wanted it
  */
@@ -196,11 +196,13 @@ const refusalOf = function(found) {
 
 /**
  * Whether an expression is syntactically valid — `refusalOf` with nothing to
- * complain about. Most callers want the verdict alone: a fix is withheld on a
- * defect standing in text no processor parses (#636, #651), and neither gate
- * has anywhere to say why.
+ * complain about. One caller wants the verdict alone: a declarative fix is
+ * withheld on an attribute whose expression no processor parses (#651), and
+ * that gate has nowhere to say why. The other gate of that pair was in
+ * `defect`, and #750 deleted it — a code-based check is handed the expressions
+ * the validator kept, so it never reads a refused one to begin with.
  * @param {{node: Node, expression: string, pattern: boolean}} found - The
- *  expression, whole, as `expressionsOf` and `wholeOf` yield it
+ *  expression, whole, as `expressionsOf` yields it
  * @return {boolean} - True when the expression parses
  */
 const isValid = function(found) {

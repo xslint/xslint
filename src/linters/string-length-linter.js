@@ -5,7 +5,6 @@
 
 const {comparedToZero} = require('../comparisons')
 const {metaOf, suppressed, defect} = require('../checks')
-const {expressionsOf} = require('../attributes')
 const {logger} = require('../logger')
 
 /**
@@ -107,34 +106,34 @@ const comparisons = function(expression) {
 }
 
 /**
- * Lint the corpus for `string-length(...)` compared with zero to test
- * emptiness, reporting one defect per comparison with a *suggestion* fix that
- * rewrites it to `X != ''` or `X = ''` when the argument is a simple operand.
- * It is a suggestion, not a safe fix, because `X op ''` is not a general
- * equivalent: they differ when `X` is an absent attribute or empty node-set
- * (`string-length(@x) = 0` is true, `@x = ''` is false) and when `X` is a
- * multi-node set (`string-length` reads the first node, `X != ''` any node).
- * @param {Array.<{file: string, xsl: Document}>} corpus - Parsed stylesheets
+ * Lint the valid expressions for `string-length(...)` compared with zero to
+ * test emptiness, reporting one defect per comparison with a *suggestion* fix
+ * that rewrites it to `X != ''` or `X = ''` when the argument is a simple
+ * operand. It is a suggestion, not a safe fix, because `X op ''` is not a
+ * general equivalent: they differ when `X` is an absent attribute or empty
+ * node-set (`string-length(@x) = 0` is true, `@x = ''` is false) and when `X`
+ * is a multi-node set (`string-length` reads the first node, `X != ''` any
+ * node).
+ * @param {Array.<{source: object, found: object}>} expressions - The valid
+ *  expressions the validator kept, each paired with the file it came from
  * @param {Array.<string>} suppressions - Array of suppressed checks
  * @return {{name: string, severity: string, message: string, file: string,
  *  line: number, pos: number, fix: ?object}[]} - Defects found
  */
-const lintByStringLength = function(corpus, suppressions = []) {
+const lintByStringLength = function(expressions, suppressions = []) {
   logger.debug(`String-length-comparison linting started`)
   const defects = []
   if (!suppressed(CHECK, suppressions)) {
-    for (const source of corpus) {
-      for (const found of expressionsOf(source.xsl)) {
-        const {expression} = found
-        for (const {offset, value, replacement} of comparisons(expression)) {
-          let fix
-          if (replacement !== null) {
-            fix = {value, replacement, suggestion: true}
-          }
-          defects.push(
-            defect(CHECK, META, source, found, offset, fix),
-          )
+    for (const {source, found} of expressions) {
+      const {expression} = found
+      for (const {offset, value, replacement} of comparisons(expression)) {
+        let fix
+        if (replacement !== null) {
+          fix = {value, replacement, suggestion: true}
         }
+        defects.push(
+          defect(CHECK, META, source, found, offset, fix),
+        )
       }
     }
   }

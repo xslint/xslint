@@ -47,17 +47,34 @@ const {minimatch} = require('minimatch')
 /**
  * Linters paired with the checks they own, each given the corpus of well-formed
  * stylesheets. `checks` feeds `CHECKS`, so a linter and its names stay in step.
+ * What is left here reads the document rather than the expressions it carries:
+ * the two declarative loaders, which run their selectors over it, and the three
+ * that ask about namespaces and imports.
  * @type {Array.<{run: function(Array.<{file: string, xsl: Document}>,
  *  Array.<string>): Array.<object>, checks: Array.<string>}>}
  */
 const LINTERS = [
   {run: lintByXpath, checks: xpathChecks},
   {run: lintByCorpus, checks: corpusChecks},
-  {run: lintByAxis, checks: axisChecks},
-  {run: lintByNamespaceAxis, checks: namespaceAxisChecks},
   {run: lintByNamespace, checks: namespaceChecks},
   {run: lintByResultNamespace, checks: resultNamespaceChecks},
   {run: lintByImports, checks: importChecks},
+]
+
+/**
+ * Expression linters paired with their checks, each given the valid expressions
+ * the validator kept, so a fault the validator has already reported draws one
+ * defect rather than a second one from every check that reads the same text
+ * (#750). Ten of them scanned the whole corpus and asked `expressionsOf`
+ * themselves, with `defect` withholding the fix on what the grammar refuses;
+ * the exclusion is structural now, and there is no gate for a new check to
+ * remember.
+ * @type {Array.<{run: function(Array.<{source: object, found: object}>,
+ *  Array.<string>): Array.<object>, checks: Array.<string>}>}
+ */
+const EXPRESSION_LINTERS = [
+  {run: lintByAxis, checks: axisChecks},
+  {run: lintByNamespaceAxis, checks: namespaceAxisChecks},
   {run: lintByNodeSet, checks: nodeSetChecks},
   {run: lintByCount, checks: countChecks},
   {run: lintByStringLength, checks: stringLengthChecks},
@@ -66,15 +83,6 @@ const LINTERS = [
   {run: lintByDoubleNegation, checks: doubleNegationChecks},
   {run: lintByBooleanCall, checks: booleanCallChecks},
   {run: lintByPredicatePosition, checks: predicatePositionChecks},
-]
-
-/**
- * Expression linters paired with their checks, each given the valid Xpath
- * expressions the validator kept so they never reason over malformed input.
- * @type {Array.<{run: function(Array.<{source: object, attribute: Node}>,
- *  Array.<string>): Array.<object>, checks: Array.<string>}>}
- */
-const EXPRESSION_LINTERS = [
   {run: lintByFormat, checks: formatChecks},
 ]
 

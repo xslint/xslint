@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {expressionsOf, wholeOf} = require('../src/attributes')
+const {expressionsOf, whole} = require('../src/attributes')
 const {xml} = require('../src/helpers')
 const path = require('path')
 const fs = require('fs')
@@ -52,12 +52,16 @@ describe('attributes', function() {
       'cannot read the expressions of the stylesheet',
     )
   })
-  it('reads a narrowed attribute as the walk reads the same one', function() {
-    const whole = expressionsOf(SHEET).find((found) => found.start === 0)
-    assert.deepEqual(
-      wholeOf(whole.node),
-      whole,
-      'builds a different record for an attribute a linter narrowed to',
+  it('narrows to the whole value of an attribute of that name', function() {
+    assert.ok(
+      expressionsOf(SHEET).some((found) => whole(found, 'select')),
+      'cannot narrow to the select a linter reads alone',
+    )
+  })
+  it('cannot narrow to an expression a template encloses', function() {
+    assert.ok(
+      expressionsOf(SHEET).every((found) => !whole(found, 'label')),
+      'narrows to a template of the result tree as if it were an attribute',
     )
   })
   it('cannot read a literal result attribute as an expression', function() {
