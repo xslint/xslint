@@ -155,37 +155,52 @@ console.log(JSON.stringify({ceiling: low, found: found}))
 
 /**
  * What `allFilesFrom` answers about a directory in a process whose JavaScript
- * stack is that many kilobytes, beside the largest spread that stack allows.
+ * stack is as small as it can be, beside the largest spread that stack allows.
  * Scaling the stack down is how a test reaches the crash of #758 without
  * building the 125,000-file directory it takes to reach it at full size — the
- * ceiling falls with the stack, so a few tens of thousands of files stand well
- * above it. Below about 70 kilobytes node cannot start at all, which is the
- * floor a caller has to keep off.
- * @param {number} kilobytes - The JavaScript stack the child is given
+ * ceiling falls with the stack, so a caller sizes its tree off the answer and
+ * writes a fifth more files than the spread carries rather than a hundred
+ * thousand. How small the stack can be is not ours to decide, though: node
+ * needs some seventy kilobytes to start here and more where a platform's
+ * frames are wider, so the ask doubles until one answers, and the stack that
+ * did comes back for the caller to ask the same of the walk itself.
  * @param {string} dir - Directory to walk
- * @return {{ceiling: number, found: number|string}} - The largest spread that
- *  stack carries, and the number of files the walk found or its complaint
+ * @param {number} kilobytes - The smallest stack worth asking for
+ * @return {{ceiling: number, found: number|string, stack: number}} - The
+ *  largest spread that stack carries, the number of files the walk found or
+ *  its complaint, and the stack it took to answer at all
  */
-const walkedWith = function(kilobytes, dir) {
-  const result = spawnSync(
-    'node',
-    [
-      `--stack-size=${kilobytes}`, '-e', PROBE,
-      path.resolve('./src/helpers'), dir,
-    ],
-    {
-      timeout: 120000,
-      windowsHide: true,
-      encoding: 'utf-8',
-    },
-  )
-  if (!result.stdout.startsWith('{')) {
+const walkedWith = function(dir, kilobytes) {
+  let answer = null
+  const complaints = []
+  for (const stack of [kilobytes, kilobytes * 2, kilobytes * 4]) {
+    if (answer === null) {
+      const result = spawnSync(
+        'node',
+        [
+          `--stack-size=${stack}`, '-e', PROBE,
+          path.resolve('./src/helpers'), dir,
+        ],
+        {
+          timeout: 120000,
+          windowsHide: true,
+          encoding: 'utf-8',
+        },
+      )
+      const said = result.stdout ?? ''
+      complaints.push(`${stack}kB: ${said}${result.stderr ?? ''}`)
+      if (said.startsWith('{')) {
+        answer = {...JSON.parse(said), stack: stack}
+      }
+    }
+  }
+  if (answer === null) {
     throw new Error(
-      `node with a ${kilobytes}kB stack answered nothing about ${dir}: ` +
-        `${result.stdout}${result.stderr}`,
+      `no stack from ${kilobytes}kB up let node answer about ${dir}, ` +
+        `${complaints.join(', ')}`,
     )
   }
-  return JSON.parse(result.stdout)
+  return answer
 }
 
 /**
