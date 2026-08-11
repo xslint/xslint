@@ -298,7 +298,7 @@ const SCANS = [
       ['t eq t', TOKENS.EQ],
       ['2 div 7', TOKENS.DIV],
       ['w union e', TOKENS.UNION],
-      ['w instance of node()', TOKENS.INSTANCE_OF],
+      ['w intersect e', TOKENS.INTERSECT],
     ],
   },
   {
@@ -371,6 +371,24 @@ const SPACED = [
   ['child::child::b', 'child:: child::b'],
   ['descendant::descendant::b', 'descendant:: descendant::b'],
   ['self::self::*', 'self:: self::*'],
+]
+
+/**
+ * Expressions running a word operator against the terminal in front of it,
+ * where XPath requires a gap and this lexer let one be spelled without. Two
+ * terminals that cannot delimit each other need whitespace or a comment
+ * between them, and a numeric literal beside a word is that pair — so `1div 2`
+ * is a syntax error and `1 div 2` is not, the one place a gap decides what an
+ * expression is made of rather than merely where it is written (#742).
+ *
+ * It is the mirror of {@link SPACED}, which pins the far commoner case: a gap
+ * beside an axis separator changes nothing at all, and the two spellings must
+ * arrive as one stream of kinds.
+ * @type {Array.<string>}
+ */
+const GLUED = [
+  '1div 2', '1and b', '1or b', '1eq 2', '1mod 2', '1idiv 2', '1union b',
+  '1intersect b', '1except b', '1is b', '1.5div 2', '1.5le 2',
 ]
 
 /**
@@ -462,6 +480,17 @@ describe('tokens', function() {
           .map((token) => token.type)
           .filter((kind) => kind !== TOKENS.WHITESPACE),
         `${tight} and ${spaced} spell one expression and arrive as two`,
+      )
+    })
+  })
+  GLUED.forEach((xpath) => {
+    it(`reads the word run against the literal of ${xpath} as a name`, () => {
+      assert.equal(
+        tokenized(xpath).filter((token) => token.type !== TOKENS.WHITESPACE)[1]
+          .type,
+        TOKENS.NAME,
+        `${xpath} runs two terminals together that XPath makes a gap stand ` +
+          'between, and the word behind the literal arrived an operator',
       )
     })
   })
