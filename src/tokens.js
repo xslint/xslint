@@ -335,7 +335,9 @@ const TRIVIA = [TOKENS.WHITESPACE, TOKENS.COMMENT]
  * The kind each axis is lexed as, which is what makes one recognisable behind
  * another. Derived from {@link AXES} rather than written out again, and derived
  * once: the question is asked of every token, so building the list per token
- * put an array per token behind a scan that allocates none.
+ * put an array per token behind a scan that allocates none. Exported for
+ * `test/strictness.js`, which reads a spaced separator off the same list rather
+ * than keeping a second one of the thirteen axes.
  * @type {Array.<string>}
  */
 const AXIS_KINDS = Object.values(AXES)
@@ -854,6 +856,7 @@ module.exports = {
   TOKENS,
   OPAQUE,
   TRIVIA,
+  AXIS_KINDS,
   WHITESPACE,
   GAP,
   GAPS,
