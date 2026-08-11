@@ -184,15 +184,14 @@ const leveled = function(quiet, level) {
  */
 const lint = function(sources, {suppress = [], overrides = {}} = {}) {
   const suppressions = validatedSuppressions(suppress)
-  const {corpus, defects} = validateXsls(sources, suppressions)
+  const {corpus, defects: malformed} = validateXsls(sources, suppressions)
   const {expressions, defects: invalid} = validateXpaths(corpus, suppressions)
-  defects.push(...invalid)
-  for (const {run} of LINTERS) {
-    defects.push(...run(corpus, suppressions))
-  }
-  for (const {run} of EXPRESSION_LINTERS) {
-    defects.push(...run(expressions, suppressions))
-  }
+  const defects = [
+    ...malformed,
+    ...invalid,
+    ...LINTERS.flatMap(({run}) => run(corpus, suppressions)),
+    ...EXPRESSION_LINTERS.flatMap(({run}) => run(expressions, suppressions)),
+  ]
   for (const defect of defects) {
     if (overrides[defect.name]) {
       defect.severity = overrides[defect.name]

@@ -43,6 +43,11 @@ const RESTRICTED = [
       "Do not spell a whitespace gap as \\s: JavaScript's class is wider than the XML S that XPath and XSLT mean, so it reads a gap where the grammar has none. Use GAP (or WHITESPACE) from src/tokens.js"
   },
   {
+    selector: "CallExpression[callee.property.name='push'] > SpreadElement",
+    message:
+      "Do not grow an array by spreading into push: a spread hands every element over as an argument, and V8 caps those at roughly 125 per kilobyte of stack, so a directory of 125k files took the whole run down with a RangeError before a byte of XSL was read (#758). Concatenate the list instead — concat, flatMap, or an array literal — none of which spends an argument per element"
+  },
+  {
     selector: "Literal[value=/\\/\\/@/]",
     message:
       "Do not select attributes with a bare '//@name' XPath, which reads a literal result element as XPath; a linter is handed the expressions the validator kept, and narrows one out of them with whole(found, name) from src/attributes.js"

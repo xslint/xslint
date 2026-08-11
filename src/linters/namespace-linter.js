@@ -65,14 +65,14 @@ const LISTS = ['exclude-result-prefixes', 'extension-element-prefixes']
  * @return {Array.<string>} - The tokens its prefix lists hold
  */
 const listed = function(element) {
-  const prefixes = []
+  let prefixes = []
   for (const name of LISTS) {
     let value = element.getAttributeNS(XSLT, name)
     if (element.namespaceURI === XSLT) {
       value = element.getAttribute(name)
     }
     if (value) {
-      prefixes.push(...value.split(GAPS))
+      prefixes = prefixes.concat(value.split(GAPS))
     }
   }
   return prefixes

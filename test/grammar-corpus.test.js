@@ -60,18 +60,22 @@ const gathered = function() {
   for (const dir of FIXTURES) {
     for (const file of allFilesFrom(dir)) {
       if (file.endsWith('.xsl')) {
-        found.stylesheet.push(...carried(fs.readFileSync(file, 'utf8')))
+        found.stylesheet = found.stylesheet.concat(
+          carried(fs.readFileSync(file, 'utf8')),
+        )
       }
       if (file.endsWith('.yaml')) {
         const pack = yaml.parsedFromFile(file)
         for (const input of pack.inputs || [pack.input]) {
           if (typeof input === 'string') {
-            found.pack.push(...carried(input))
+            found.pack = found.pack.concat(carried(input))
           }
         }
-        found.selector.push(...SELECTORS
-          .filter((key) => typeof pack[key] === 'string')
-          .map((key) => pack[key]))
+        found.selector = found.selector.concat(
+          SELECTORS
+            .filter((key) => typeof pack[key] === 'string')
+            .map((key) => pack[key]),
+        )
       }
     }
   }

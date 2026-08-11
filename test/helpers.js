@@ -110,6 +110,85 @@ const xcopped = function(dir) {
 }
 
 /**
+ * What the child is asked to do: report how large a spread this stack allows,
+ * then walk the directory it was given and report what it found — or, when the
+ * walk dies of the very limit just measured, the complaint it died with.
+ *
+ * The measurement is the part that keeps the answer honest. A walk that
+ * survives proves nothing unless the trap was armed, and how many arguments a
+ * spread may carry is V8's business rather than something a test can assert
+ * from outside: it is roughly 125 per kilobyte of stack here, and a Node that
+ * moved that number would leave a test silently proving nothing. So the child
+ * spends the banned shape on purpose, binary-searching the ceiling, and hands
+ * it back beside the walk's own answer for the caller to weigh (#758).
+ * @type {string}
+ */
+const PROBE = `
+const {allFilesFrom} = require(process.argv[1])
+const fits = function(size) {
+  let ok = true
+  try {
+    [].push(...new Array(size).fill('x'))
+  } catch (err) {
+    ok = false
+  }
+  return ok
+}
+let low = 100
+let high = 200000
+while (low < high - 100) {
+  const mid = Math.floor((low + high) / 2)
+  if (fits(mid)) {
+    low = mid
+  } else {
+    high = mid
+  }
+}
+let found = 0
+try {
+  found = allFilesFrom(process.argv[2]).length
+} catch (refusal) {
+  found = refusal.message
+}
+console.log(JSON.stringify({ceiling: low, found: found}))
+`
+
+/**
+ * What `allFilesFrom` answers about a directory in a process whose JavaScript
+ * stack is that many kilobytes, beside the largest spread that stack allows.
+ * Scaling the stack down is how a test reaches the crash of #758 without
+ * building the 125,000-file directory it takes to reach it at full size — the
+ * ceiling falls with the stack, so a few tens of thousands of files stand well
+ * above it. Below about 70 kilobytes node cannot start at all, which is the
+ * floor a caller has to keep off.
+ * @param {number} kilobytes - The JavaScript stack the child is given
+ * @param {string} dir - Directory to walk
+ * @return {{ceiling: number, found: number|string}} - The largest spread that
+ *  stack carries, and the number of files the walk found or its complaint
+ */
+const walkedWith = function(kilobytes, dir) {
+  const result = spawnSync(
+    'node',
+    [
+      `--stack-size=${kilobytes}`, '-e', PROBE,
+      path.resolve('./src/helpers'), dir,
+    ],
+    {
+      timeout: 120000,
+      windowsHide: true,
+      encoding: 'utf-8',
+    },
+  )
+  if (!result.stdout.startsWith('{')) {
+    throw new Error(
+      `node with a ${kilobytes}kB stack answered nothing about ${dir}: ` +
+        `${result.stdout}${result.stderr}`,
+    )
+  }
+  return JSON.parse(result.stdout)
+}
+
+/**
  * Whether the tool runs here, asked by running it with the argument that proves
  * it does. Looking the name up in `PATH` was a proxy for that question, and the
  * two disagree: `which` walks `PATH` literally while the shell that starts the
@@ -133,6 +212,7 @@ const cmdAvailable = function(cmd, args, print) {
 }
 
 module.exports = {
+  walkedWith,
   runXslint,
   xslintStatus,
   xslintStreams,
