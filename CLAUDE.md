@@ -48,7 +48,11 @@ takes at full size. How wide the directory is, it does not decide: the same run
 measures the largest spread that stack carries and the tree is a fifth wider
 than that, some eleven thousand files. A fixed 30,000 was the first spelling and
 it read as cheap on the platform it was written on — a second there, over ten on
-Windows, where the deep target's own timeout took it down.
+Windows, where the deep target's own timeout took it down. Writing those files is
+the whole of what the test costs, and it costs differently: half a second on
+macOS and thirty on Windows, which walks 380 files a second where macOS walks
+25,000. So the slowest deep file is `xslint.deep.test.js` everywhere but there,
+and this one asks for a timeout of its own rather than the target's ten seconds.
 `npm run coverage` runs parallel too: c8 merges what each
 worker writes to `NODE_V8_COVERAGE`, so the 100% gate is unaffected while the
 run went from 48 seconds to 13. `grunt mochacli` runs both targets, so
