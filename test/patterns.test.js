@@ -213,6 +213,15 @@ const REFUSES = [
   {name: 'nothing at all', xpath: '', at: 0},
   {name: 'nothing but a gap', xpath: ' ', at: 1},
   {name: 'a comment that never closes', xpath: 'a (: b', at: 2},
+  {name: 'an argument in a text test', xpath: 'text(a)', at: 5},
+  {name: 'an argument in a text test behind a separator',
+    xpath: 'a/text(b)', at: 7},
+  {name: 'a number where an element test names an element',
+    xpath: 'element(1)', at: 8},
+  {name: 'a second type in an element test',
+    xpath: 'element(a, xs:string, xs:integer)', at: 20},
+  {name: 'a prefixed name in a processing-instruction test',
+    xpath: 'processing-instruction(my:a)', at: 23},
 ]
 
 describe('patterns', function() {
