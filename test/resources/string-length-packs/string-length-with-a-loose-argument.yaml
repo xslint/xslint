@@ -1,0 +1,23 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: string-length-compared-to-zero
+# Each argument binds at least as loosely as the comparison it would be
+# substituted into, so the rewrite would regroup the expression or fail to parse
+# at all — `@a or @b = ''` reads as `@a or (@b = '')` and `@a = @b = ''` chains
+# two comparisons no version admits. The comparison is reported and carries no
+# fix.
+found:
+  amount: 4
+  positions: [ [ 4, 36 ], [ 5, 36 ], [ 6, 36 ], [ 7, 36 ] ]
+  fixes: [ null, null, null, null ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="s">
+    <xsl:template match="/">
+      <xsl:variable name="a" select="string-length(@a or @b) = 0"/>
+      <xsl:variable name="b" select="string-length(@a = @b) != 0"/>
+      <xsl:variable name="c" select="string-length(if (@a) then @b else @c) = 0"/>
+      <xsl:variable name="d" select="string-length(for $v in @a return $v) &gt; 0"/>
+    </xsl:template>
+  </xsl:stylesheet>

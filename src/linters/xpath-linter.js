@@ -3,7 +3,8 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {nodes, isValid} = require('../xpath')
+const {nodes} = require('../xpath')
+const {isValid} = require('../syntax')
 const {FIXERS} = require('../fixers')
 const {expressionsOf} = require('../attributes')
 const {kinds} = require('../resources/checks.json')

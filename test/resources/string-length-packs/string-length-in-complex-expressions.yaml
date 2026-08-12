@@ -2,10 +2,17 @@
 # SPDX-License-Identifier: MIT
 ---
 pack: string-length-compared-to-zero
+# A union binds tighter than the comparison it is rewritten into, so
+# `$a | $b = ''` groups as the whole union against the empty string and the
+# rewrite is offered. It was withheld while a top-level space stood in for a
+# binary operator, which is the same conflation #578 is about; the divergence it
+# was standing in for — one node measured against any node compared — is what
+# makes every rewrite here a suggestion rather than a safe fix, and it reaches
+# the `x[@y]` below just as far.
 found:
   amount: 3
   positions: [ [ 4, 29 ], [ 4, 57 ], [ 5, 29 ] ]
-  fixes: [ "@a != ''", null, "x[@y] = ''" ]
+  fixes: [ "@a != ''", "$a | $b = ''", "x[@y] = ''" ]
 input: |-
   <?xml version="1.0"?>
   <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="s">

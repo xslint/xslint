@@ -5,6 +5,7 @@
 
 const {comparedToZero} = require('../comparisons')
 const {metaOf, suppressed, defect} = require('../checks')
+const {textOf, tight} = require('../syntax')
 const {logger} = require('../logger')
 
 /**
@@ -44,49 +45,52 @@ const empty = function(operator, zero) {
 }
 
 /**
- * Whether an argument is a single operand that binds tighter than `!=`, so
- * `X != ''` keeps the original meaning. An argument carrying a top-level `|` or
- * space (a union or a binary operator) does not, and gets no fix.
- * @param {string} argument - The call's argument, already literal-blanked
- * @return {boolean} - Whether the argument is a simple operand
+ * The context item, which is what the call measures when it is given no
+ * argument — `string-length() = 0` is a perfectly legal emptiness test, and
+ * XPath spells the item it asks about `.`. The rewrite has to spell it too: the
+ * argument was interpolated as it stood, so an absent one wrote `test=" = ''"`,
+ * an expression the next run reported as invalid because it is (#572).
+ * @type {string}
  */
-const simple = function(argument) {
-  let depth = 0
-  let lone = true
-  for (const char of argument) {
-    if (char === '(' || char === '[') {
-      depth++
-    } else if (char === ')' || char === ']') {
-      depth--
-    } else if (depth === 0 && (char === '|' || char === ' ')) {
-      lone = false
-    }
-  }
-  return lone
-}
+const ITEM = '.'
 
 /**
  * Classify a `string-length(...)`-versus-`0`/`1` comparison for
  * `comparedToZero`. An emptiness test is reported; it rewrites to
- * `argument = ''`/`argument != ''` when the argument is a simple operand, and
- * carries no replacement (report-only) otherwise. A genuine length check is
- * left alone.
+ * `argument = ''`/`argument != ''` when the argument can stand as an operand of
+ * that comparison, and carries no replacement (report-only) otherwise. A
+ * genuine length check is left alone, and so is a call spelling two arguments,
+ * no such function taking any.
+ *
+ * Whether the argument can stand there is a question about how tightly it
+ * binds, which the tree answers: `@a or @b` and `a = b` regroup or fail to
+ * parse when the brackets around them go, while everything binding tighter
+ * than a comparison carries over whole. Reading it off the text could only
+ * approximate that — a top-level space stood in for a binary operator, so the
+ * padding of `string-length( @x )` withheld the rewrite (#578) and the tight
+ * `@a!=@b` was handed one that parses for nobody.
+ * @param {{node: Node, expression: string, pattern: boolean}} found - Record
  * @param {string} operator - The comparison operator
  * @param {string} zero - The compared digit, `0` or `1`
- * @param {string} argument - The call's argument
- * @param {string} blanked - The argument with string/comment spans blanked
+ * @param {Array.<object>} args - The call's arguments
  * @return {?{replacement: ?string}} - The rewrite, or null when not emptiness
  */
-const decide = function(operator, zero, argument, blanked) {
+const decide = function(found, operator, zero, args) {
   const hollow = empty(operator, zero)
   let rewrite = null
-  if (hollow !== null) {
+  if (hollow !== null && args.length < 2) {
     let operand = '!='
     if (hollow) {
       operand = '='
     }
+    let argument = ITEM
+    let carries = true
+    if (args.length === 1) {
+      argument = textOf(found, args[0])
+      carries = tight(args[0])
+    }
     let replacement = null
-    if (simple(blanked)) {
+    if (carries) {
       replacement = `${argument} ${operand} ''`
     }
     rewrite = {replacement: replacement}
@@ -95,14 +99,14 @@ const decide = function(operator, zero, argument, blanked) {
 }
 
 /**
- * The `string-length(...)`-versus-zero emptiness tests in an expression, in
+ * The `string-length(...)`-versus-zero emptiness tests an expression holds, in
  * either operand order.
- * @param {string} expression - The attribute value
+ * @param {{node: Node, expression: string, pattern: boolean}} found - Record
  * @return {Array.<{offset: number, value: string, replacement: ?string}>} -
  *  The comparisons found
  */
-const comparisons = function(expression) {
-  return comparedToZero(expression, 'string-length', decide)
+const comparisons = function(found) {
+  return comparedToZero(found, 'string-length', decide)
 }
 
 /**
@@ -125,8 +129,7 @@ const lintByStringLength = function(expressions, suppressions = []) {
   const defects = []
   if (!suppressed(CHECK, suppressions)) {
     for (const {source, found} of expressions) {
-      const {expression} = found
-      for (const {offset, value, replacement} of comparisons(expression)) {
+      for (const {offset, value, replacement} of comparisons(found)) {
         let fix
         if (replacement !== null) {
           fix = {value, replacement, suggestion: true}

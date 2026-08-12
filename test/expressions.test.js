@@ -132,13 +132,21 @@ const ARGUMENTS = [
  * these red and a new one does too — the way `GAPS` pins the grammar's own
  * disagreements in `test/grammar-corpus.test.js`. A binding clause puts its
  * commas at bracket depth zero inside *one* argument, so they read as
- * separators and the three checks fall silent on a construct that was reported
- * and fixed correctly before. The real rule is that a comma in front of
- * `return` or `satisfies` binds while one behind it separates — two arguments
- * really do stand in `f(for $x in a return $x, b)` — which a bracket count
- * cannot tell apart and a
- * grammar can, so it waits for the tree rather than for more counting (#644,
- * Phase 4). The direction is the safe one: a report withheld, never a bad fix.
+ * separators and a check counting them falls silent on a construct that was
+ * reported and fixed correctly before. The real rule is that a comma in front
+ * of `return` or `satisfies` binds while one behind it separates — two
+ * arguments really do stand in `f(for $x in a return $x, b)` — which a count
+ * cannot tell apart and a grammar can, so it waited for the tree rather than
+ * for more counting (#644, Phase 4).
+ *
+ * Two checks read `lone` now rather than the three that did.
+ * `count-compared-to-zero` came off it when its scan moved onto the tree, where
+ * the arguments are the nodes the parse separated and no counting is left to be
+ * narrow about — `count-with-a-binding-clause` in `count-packs` pins the
+ * construct it reports again. `redundant-double-negation` and
+ * `redundant-boolean-call` still count, and still fall silent here, until Phase
+ * 4 reaches them. The direction is the safe one either way: a report withheld,
+ * never a bad fix.
  * @type {Array.<string>}
  */
 const BINDINGS = [

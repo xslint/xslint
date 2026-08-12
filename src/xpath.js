@@ -7,8 +7,6 @@ const {
   evaluateXPath, evaluateXPathToNodes, evaluateXPathToStrings,
   compileXPathToJavaScript,
 } = require('fontoxpath')
-const {parsed, matched} = require('./grammar')
-const {versionOf, KNOWN} = require('./xsl-version')
 
 /**
  * Namespace URI of the xslint custom XPath functions.
@@ -121,98 +119,8 @@ const compiles = function(xpath) {
   return ok
 }
 
-/**
- * What each expression already answered. fontoxpath remembers nothing between
- * calls — a second pass over the same four thousand expressions costs what the
- * first did — while a corpus repeats its expressions constantly, `.` and
- * `@name` and `text()` above all, so the same parse was being paid for over and
- * over (#689). One entry per distinct expression is bounded by the corpus that
- * asked, and the answer cannot go stale: the same text parses the same way for
- * the life of a process.
- *
- * What is kept is the refusal rather than a boolean, because the parse already
- * knows more than yes or no — what the grammar expected, and the offset it
- * stood at — and a caller that throws that away leaves the report pointing at
- * the attribute instead of at the fault. One derivation, one parse (#589).
- * @type {Map.<string, {fault: string, at: number}>}
- */
-const VERDICTS = new Map()
-
-/**
- * The version an expression is read under when its stylesheet declares none, or
- * declares one `versionOf` cannot place. The most permissive version known,
- * deliberately: a missing `version` is already a defect of its own, and letting
- * it decide a syntax question would answer one defect with an
- * `invalid-xpath-expression` for every modern expression the file holds — a
- * refusal invented against XPath that is valid under the version its author
- * meant. Derived rather than spelled, so a version added to `KNOWN` becomes the
- * fallback without anybody remembering to move it.
- * @type {string}
- */
-const ASSUMED = KNOWN[KNOWN.length - 1]
-
-/**
- * Why the grammar refuses an expression, asked at the version in force where it
- * stands — an empty `fault` when it takes it. Two things follow that the engine
- * could not give. The spelling is judged against the specification rather than
- * against fontoxpath, which is stricter than it — a `namespace::` axis, and
- * ExprWhitespace around an axis separator or around a node test's bracket
- * (#615, #639) — so the respelling retry those three needed is gone rather than
- * merely bypassed, and nothing in `src/` rewrites an expression to ask about it
- * any more (#738). And
- * the version decides, so `1 cast as xs:integer` is valid in a 2.0 sheet and a
- * syntax error in a 1.0 one, which is the whole of #652 and cannot be
- * anywhere else: fontoxpath is XPath 3.1 and knows no other dialect (#732).
- *
- * A pattern is judged by `matched` rather than by `parsed`, since a `match` is
- * a different language and not a second reading of this one — `1 + 1` is a fine
- * expression and no pattern at all.
- *
- * What comes back is the complaint and the offset it stands at, not the tree
- * beside them: the answer is remembered for every distinct expression a corpus
- * holds, and a tree per entry is a different bargain from a sentence per entry.
- * The offset is what a report needs, and having it is what lets the validator
- * point at the fault rather than at the attribute holding it (#589).
- * @param {{node: Node, expression: string, pattern: boolean}} found - The
- *  expression, whole, as `expressionsOf` yields it
- * @return {{fault: string, at: number}} - What the grammar expected, and where
- *  in the expression it wanted it
- */
-const refusalOf = function(found) {
-  let version = versionOf(found.node)
-  if (!KNOWN.includes(version)) {
-    version = ASSUMED
-  }
-  const key = `${version} ${found.pattern} ${found.expression}`
-  if (!VERDICTS.has(key)) {
-    let answer = parsed(found.expression, version)
-    if (found.pattern) {
-      answer = matched(found.expression, version)
-    }
-    VERDICTS.set(key, {fault: answer.fault, at: answer.at})
-  }
-  return VERDICTS.get(key)
-}
-
-/**
- * Whether an expression is syntactically valid — `refusalOf` with nothing to
- * complain about. One caller wants the verdict alone: a declarative fix is
- * withheld on an attribute whose expression no processor parses (#651), and
- * that gate has nowhere to say why. The other gate of that pair was in
- * `defect`, and #750 deleted it — a code-based check is handed the expressions
- * the validator kept, so it never reads a refused one to begin with.
- * @param {{node: Node, expression: string, pattern: boolean}} found - The
- *  expression, whole, as `expressionsOf` yields it
- * @return {boolean} - True when the expression parses
- */
-const isValid = function(found) {
-  return refusalOf(found).fault === ''
-}
-
 module.exports = {
   nodes,
   strings,
-  refusalOf,
-  isValid,
   compiles,
 }

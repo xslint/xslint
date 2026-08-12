@@ -1,0 +1,19 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: string-length-compared-to-zero
+# Four comparisons in one expression, which is the first-match case every pack
+# has to pin (#578).
+found:
+  amount: 4
+  positions: [ [ 4, 19 ], [ 4, 44 ], [ 4, 70 ], [ 4, 98 ] ]
+  fixes: [ "@a = ''", "@b != ''", "@c = ''", "@d != ''" ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="s">
+    <xsl:template match="/">
+      <xsl:if test="string-length(@a) = 0 or string-length(@b) != 0 or string-length(@c) &lt; 1 or string-length(@d) &gt;= 1">
+        <hit/>
+      </xsl:if>
+    </xsl:template>
+  </xsl:stylesheet>

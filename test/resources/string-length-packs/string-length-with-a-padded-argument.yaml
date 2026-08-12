@@ -1,0 +1,20 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: string-length-compared-to-zero
+# A gap around the argument is not a binary operator, so the rewrite is offered
+# on a padded call exactly as it is on a tight one (#578).
+found:
+  amount: 4
+  positions: [ [ 4, 36 ], [ 5, 36 ], [ 6, 36 ], [ 7, 36 ] ]
+  fixes: [ "@x = ''", "$v != ''", "@y = ''", "x[@y] != ''" ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="s">
+    <xsl:template match="/">
+      <xsl:variable name="a" select="string-length( @x ) = 0"/>
+      <xsl:variable name="b" select="string-length(  $v  ) != 0"/>
+      <xsl:variable name="c" select="0 = string-length( @y )"/>
+      <xsl:variable name="d" select="string-length( x[@y] ) &gt; 0"/>
+    </xsl:template>
+  </xsl:stylesheet>

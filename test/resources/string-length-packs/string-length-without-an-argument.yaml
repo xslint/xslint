@@ -1,0 +1,22 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: string-length-compared-to-zero
+# The call takes the string value of the context item when it is given no
+# argument, so the rewrite spells that item `.` rather than nothing at all
+# (#572). No such function takes two arguments, so that call is left alone.
+found:
+  amount: 3
+  positions: [ [ 4, 19 ], [ 5, 29 ], [ 6, 29 ] ]
+  fixes: [ ". = ''", ". != ''", ". = ''" ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="s">
+    <xsl:template match="/">
+      <xsl:if test="string-length() = 0">
+        <xsl:value-of select="string-length() != 0"/>
+        <xsl:value-of select="0 = string-length()"/>
+        <xsl:value-of select="string-length(@a, @b) = 0"/>
+      </xsl:if>
+    </xsl:template>
+  </xsl:stylesheet>

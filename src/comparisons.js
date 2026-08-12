@@ -3,33 +3,15 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {masked, closes} = require('./expressions')
-const {GAP} = require('./tokens')
+const {calls, gathered, offsetOf, parting, textOf} = require('./syntax')
 
 /**
- * The comparison that follows a call: an operator, then a `0` or `1` as the
- * whole right operand. The two lookaheads keep the digit off the tail of a
- * longer number (`0.5`, `10`) and off the head of a wider arithmetic operand
- * (`+`, `-`, `*`, `div`, `mod`), so `count(x) > 0 + $n` does not match on `0`.
- * @type {RegExp}
+ * The digits a call is compared against to ask a question about existence
+ * rather than about a number: nothing is smaller than none, and one is where
+ * something begins.
+ * @type {Array.<string>}
  */
-const TAIL = new RegExp(
-  `^${GAP}*(!=|<=|>=|=|<|>)${GAP}*([01])(?![\\w.])` +
-  `(?!${GAP}*(?:[-+*]|div\\b|mod\\b))`,
-)
-
-/**
- * The operand-reversed comparison just before a call, as in `0 < f(x)`. The
- * digit is the whole left operand only when what precedes it — past
- * whitespace — starts the expression, opens `(`/`[`/`,`, or closes a boolean
- * operator (`and`, `or`); an arithmetic operator before it makes the digit
- * part of a wider operand, so `$max + 1 > count(x)` does not match on `1`.
- * @type {RegExp}
- */
-const HEAD = new RegExp(
-  `(^${GAP}*|[([,]${GAP}*|\\b(?:and|or)\\b${GAP}*)` +
-  `([01])${GAP}*(!=|<=|>=|=|<|>)${GAP}*$`,
-)
+const DIGITS = ['0', '1']
 
 /**
  * Each operator with its sides swapped, so a reversed `0 < f(x)` reads as
@@ -41,54 +23,63 @@ const FLIP = {
 }
 
 /**
- * The `name(...)`-versus-`0`/`1` comparisons in an expression, in either
- * operand order (`f(x) > 0` and `0 < f(x)` alike). Each match is handed to a
- * `decide(operator, zero, argument, blanked)` classifier, which returns an
- * object of fields — merged into the found comparison — for a comparison worth
- * reporting (a `{replacement}`, or a classification the linter later turns into
- * one), or null when the comparison is a genuine count/length rather than an
- * existence/emptiness test. A call whose parentheses do not balance is skipped.
- * String and comment spans are blanked first, so a call-looking substring
- * inside a literal is never seen.
- * @param {string} expression - The attribute value
- * @param {string} name - The unprefixed function name, e.g. `count`
- * @param {function(string, string, string, string): ?object} decide - The
- *  per-comparison classifier
+ * The `name(...)`-versus-`0`/`1` comparisons an expression holds, in either
+ * operand order (`f(x) > 0` and `0 < f(x)` alike). Each is handed to a
+ * `decide(found, operator, zero, args)` classifier, which answers an object of
+ * fields — merged into the found comparison — for a comparison worth reporting,
+ * or null when it is a genuine count or length rather than an existence or
+ * emptiness test. The operator reaches `decide` as the forward spelling
+ * whichever side the call stands on, so a classifier has one order to reason
+ * about.
+ *
+ * This reads the tree the grammar built rather than the text (#577, #578).
+ * Three questions the regular expressions underneath it could only approximate
+ * are answered by construction now. **What the comparison's operands are**: a
+ * digit is one when it is the whole operand, which the tree says outright,
+ * where the scan had to bound it by hand and let `$max + 1 > count(x)` through
+ * until #573 spelled the arithmetic out. **What the call is**: the standard
+ * function of that name, told from a user function of the same local name by
+ * the URI its prefix resolves to, where a character class refused every prefix
+ * and so missed the `fn:count` of any 2.0 stylesheet while accepting an inline
+ * `Q{urn:mine}count`. And **what its arguments are**: the nodes the parse has
+ * already separated, so a comma binding a `for` clause is no separator and a
+ * gap around an argument is no operator — `string-length( @x )` carries the
+ * same one operand the tight spelling does, where a scan reading a space as a
+ * binary operator withheld the rewrite from it.
+ * @param {{node: Node, expression: string, pattern: boolean}} found - The
+ *  expression, whole, as `expressionsOf` yields it
+ * @param {string} name - The function's local name, e.g. `count`
+ * @param {function({node: Node}, string, string, Array.<object>): ?object}
+ *  decide - The per-comparison classifier
  * @return {Array.<{offset: number, value: string}>} - The comparisons found,
  *  each carrying the fields `decide` returned
  */
-const comparedToZero = function(expression, name, decide) {
-  const call = new RegExp(`(^|[^\\w:.-])${name}${GAP}*\\(`, 'g')
-  const found = []
-  const blanked = masked(expression)
-  for (const match of blanked.matchAll(call)) {
-    const start = match.index + match[1].length
-    const open = match.index + match[0].length - 1
-    const close = closes(blanked, open)
-    const argument = expression.slice(open + 1, close)
-    const inner = blanked.slice(open + 1, close)
-    const tail = TAIL.exec(blanked.slice(close + 1))
-    const forward = tail && decide(tail[1], tail[2], argument, inner)
-    if (forward) {
-      found.push({
-        offset: start,
-        value: expression.slice(start, close + 1 + tail[0].length),
-        ...forward,
-      })
-      continue
+const comparedToZero = function(found, name, decide) {
+  const results = []
+  for (const node of gathered(found, 'comparison')) {
+    const [left, right] = node.children
+    let call = left
+    let digit = right
+    let operator = parting(found, left, right)[0].value
+    if (calls(found, right, name)) {
+      call = right
+      digit = left
+      operator = FLIP[operator]
     }
-    const head = HEAD.exec(blanked.slice(0, start))
-    const back = head && decide(FLIP[head[3]], head[2], argument, inner)
-    if (back) {
-      const from = start - head[0].length + head[1].length
-      found.push({
-        offset: from,
-        value: expression.slice(from, close + 1),
-        ...back,
+    let carried = null
+    if (calls(found, call, name) && digit.kind === 'literal' &&
+      DIGITS.includes(textOf(found, digit))) {
+      carried = decide(found, operator, textOf(found, digit), call.children)
+    }
+    if (carried) {
+      results.push({
+        offset: offsetOf(found, node),
+        value: textOf(found, node),
+        ...carried,
       })
     }
   }
-  return found
+  return results
 }
 
 module.exports = {
