@@ -477,7 +477,8 @@ const itemed = function(cursor) {
     itemed(cursor)
     expect(cursor, TOKENS.RPAREN, '")"')
   } else if (sees(cursor, TOKENS.NAME) &&
-    taken(cursor, ahead(cursor).value, ['test', 'item'])) {
+    taken(cursor, ahead(cursor).value, ['test', 'item']) &&
+    reaches(cursor, TOKENS.LPAREN)) {
     kinded(cursor)
   } else {
     named(cursor)
@@ -521,16 +522,28 @@ const singled = function(cursor) {
 }
 
 /**
- * The name of an atomic or union type, which is a name and nothing a bracket
- * follows: a kind test is no atomic type, there being no atomic type named
- * `node()`, and a map's key type is the same question one production over — a
- * `map(node(), xs:integer)` is XPST0003 in Saxon-HE 12.5 for exactly the reason
- * a cast to one is.
+ * The name of an atomic or union type, which a cast takes and a map keys on: an
+ * `AtomicOrUnionType` is an `EQName` and a kind test is not one, there being no
+ * atomic type named `node()`, so `1 cast as node()` and
+ * `map(node(), xs:integer)` are both XPST0003 in Saxon-HE 12.5.
+ *
+ * A reserved name is reserved *in front of a bracket* and nowhere else, the
+ * rule `tested` has always applied and the reason `//item` is the path it looks
+ * like. Refusing the name on sight instead reached the bare spelling of
+ * it, so `1 cast as node` and `map(text, xs:integer)` were refused where Saxon
+ * answers XPST0051 — an unknown type, static against an expression it parsed —
+ * and where fontoxpath accepts. 45 such spellings arrived with the brackets
+ * being read for the first time, since a map's key and an array's members are
+ * types this production had never been handed before, and 75 more were already
+ * refused: an invented defect either way, which is the direction that costs a
+ * user an `invalid-xpath-expression` on working XPath and drops the expression
+ * from every check behind the validator (#753).
  * @param {object} cursor - The cursor
  */
 const atomic = function(cursor) {
   if (sees(cursor, TOKENS.NAME) &&
-    taken(cursor, ahead(cursor).value, ['test', 'item'])) {
+    taken(cursor, ahead(cursor).value, ['test', 'item']) &&
+    reaches(cursor, TOKENS.LPAREN)) {
     refuse(cursor, 'the name of an atomic type')
   }
   named(cursor)
