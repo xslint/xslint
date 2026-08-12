@@ -211,12 +211,12 @@ const byRedundancy = function(corpus) {
  */
 const lintByImports = function(corpus, suppressions = []) {
   logger.debug(`Import linting started`)
-  const defects = []
+  let defects = []
   if (!suppressed(CIRCULAR, suppressions)) {
-    defects.push(...byCircularity(corpus))
+    defects = defects.concat(byCircularity(corpus))
   }
   if (!suppressed(REDUNDANT, suppressions)) {
-    defects.push(...byRedundancy(corpus))
+    defects = defects.concat(byRedundancy(corpus))
   }
   logger.debug(`Found ${defects.length} import defects`)
   return defects

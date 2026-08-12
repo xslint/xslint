@@ -114,21 +114,28 @@ const parserFor = function(str, declared) {
 }
 
 /**
- * Get all the files recursively from given directory
+ * Every file under a directory, recursively, in the order the entries are read
+ * and with each directory's own files standing where the directory does.
+ *
+ * The subtree is joined on with `flatMap` rather than spread into a `push`,
+ * because a spread hands each path over as a separate argument and V8 caps
+ * those at roughly 125 per kilobyte of stack: this repository's own checkout
+ * grew to 768,731 files and every run over it died with a `RangeError` before a
+ * byte of XSL was read (#758). The walk is the wrong place to learn that a tree
+ * is large — it is asked before anything is filtered for `.xsl`, so a
+ * dependency directory nobody wants linted counts toward the cap as much as a
+ * stylesheet does.
  * @param {string} dir - Directory path
- * @return {Array.<string>} - Array of file in given directory
+ * @return {Array.<string>} - Every file it holds, at any depth
  */
 const allFilesFrom = function(dir) {
-  const files = fs.readdirSync(dir, {withFileTypes: true})
-  const res = []
-  for (const file of files) {
-    if (file.isDirectory()) {
-      res.push(...allFilesFrom(path.join(dir, file.name)))
-    } else {
-      res.push(path.resolve(dir, file.name))
+  return fs.readdirSync(dir, {withFileTypes: true}).flatMap((entry) => {
+    let found = [path.resolve(dir, entry.name)]
+    if (entry.isDirectory()) {
+      found = allFilesFrom(path.join(dir, entry.name))
     }
-  }
-  return res
+    return found
+  })
 }
 
 /**
