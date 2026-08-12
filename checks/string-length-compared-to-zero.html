@@ -89,21 +89,35 @@ comparing <code>count(...)</code> with zero to test existence.</p>
 <pre><code class="language-xsl">&lt;xsl:if test=&quot;@name != &#39;&#39;&quot;&gt;
 &lt;xsl:if test=&quot;@name = &#39;&#39;&quot;&gt;
 </code></pre>
+<p>Given no argument the call measures the context item, which XPath spells <code>.</code>, so
+<code>string-length() = 0</code> is a legal emptiness test and <code>. = &#39;&#39;</code> is the direct
+reading of it.</p>
+<p>The call is the standard <code>fn:string-length</code> however its namespace is spelled:
+bare, behind a prefix bound to the XPath functions namespace
+(<code>fn:string-length(@name) = 0</code>), or with that namespace written inline. A
+function of your own that happens to be called <code>string-length</code> is another
+function and is left alone.</p>
 <p>The operand order does not matter (<code>0 &amp;lt; string-length(@name)</code> is flagged the
 same way). A <code>0</code> or <code>1</code> that is only part of a wider arithmetic operand — the
 <code>1</code> in <code>$max + 1 &amp;gt; string-length(@a)</code>, the <code>0</code> in
 <code>string-length(@a) &amp;gt; 0 + $n</code> — does not compare the call against zero, and is
-left alone. When the argument is not a single operand — a union such as
-<code>string-length($a | $b)</code>, where <code>X != &#39;&#39;</code> would not mean the same thing — the
-comparison is still reported but carries no fix.</p>
-<p>The rewrite is offered as a <strong>suggestion</strong>, not a safe fix, because <code>X op &#39;&#39;</code> is
-not a general equivalent of <code>string-length(X) op 0</code>. They part ways in two
-cases: an <strong>absent</strong> node — <code>string-length(@x) = 0</code> is true when <code>@x</code> is
-missing (the empty string has length zero), but <code>@x = &#39;&#39;</code> is false, since an
-empty node-set matches nothing; and a <strong>multi-node</strong> <code>X</code> — <code>string-length</code> reads
-the first node&#39;s value while <code>X != &#39;&#39;</code> is true if <em>any</em> node is non-empty. For
-the common single, present node the two agree, so <code>--fix-suggestions</code> applies
-it; plain <code>--fix</code> leaves it. Use <code>normalize-space($x)</code> instead when
+left alone. So is a call spelling two arguments, since no such function takes
+any.</p>
+<p>Where the argument binds at least as loosely as the comparison it would move
+into, the rewrite cannot be written without brackets and the comparison is
+reported on its own: <code>string-length(@a or @b) = 0</code> would become
+<code>@a or @b = &#39;&#39;</code>, which XPath reads as <code>@a or (@b = &#39;&#39;)</code>, and
+<code>string-length(@a = @b) = 0</code> would chain two comparisons, which no version
+admits. Everything binding tighter carries over as it stands, a union
+(<code>string-length($a | $b)</code>) included, since <code>|</code> binds tighter than <code>=</code>.</p>
+<p><code>X op &#39;&#39;</code> is not a general equivalent of <code>string-length(X) op 0</code>, and the two
+part ways in two cases. An <strong>absent</strong> node: <code>string-length(@x) = 0</code> is true when
+<code>@x</code> is missing, the empty string having length zero, but <code>@x = &#39;&#39;</code> is false,
+since an empty node-set matches nothing. And a <strong>multi-node</strong> <code>X</code>, in XPath 1.0:
+there <code>string-length</code> reads the first node&#39;s value while <code>X != &#39;&#39;</code> is true if
+<em>any</em> node is non-empty, whereas on 2.0 and later a sequence of two or more
+items raises <code>XPTY0004</code> and the original is already an error. For the common
+single, present node the two agree. Use <code>normalize-space($x)</code> instead when
 whitespace-only should read as empty — a different test again.</p>
 
   </div>
