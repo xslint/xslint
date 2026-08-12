@@ -670,11 +670,24 @@ const afterUri = function(xpath, start) {
 }
 
 /**
- * Offset just past the comment opening at given offset. Comments nest, so an
- * inner "(:" must be balanced by its own ":)".
+ * Offset just past the comment opening at given offset, and whether the ":)"
+ * that ends one ever stood there. Comments nest, so an inner "(:" must be
+ * balanced by its own ":)".
+ *
+ * The second half is what tells a `COMMENT` from an `UNCLOSED`, and it is the
+ * defect #708 closed for the literal directly above, left standing here for one
+ * ticket longer (#752). The walk ran off the end and said nothing about it, so
+ * `a (: b` came back as a step and a finished comment: a comment is trivia, so
+ * the grammar read over the whole tail and had nothing left to object to, and
+ * the six linters scanning tokens saw nothing after the `(:` either. One
+ * mistyped `:)` and a file linted clean. `Comment ::= "(:" (CommentContents |
+ * Comment)* ":)"` spells no such production and every processor answers
+ * XPST0003, which since #739 is a missing `invalid-xpath-expression` on text a
+ * user asked about.
  * @param {string} xpath - Xpath expression
  * @param {number} start - Offset of the opening "(:"
- * @return {number} - Offset just past the closing ":)"
+ * @return {{at: number, closed: boolean}} - Offset just past the comment, and
+ *  whether the ":)" that closes one stood there
  */
 const afterComment = function(xpath, start) {
   let at = start + 2
@@ -690,7 +703,7 @@ const afterComment = function(xpath, start) {
       at += 1
     }
   }
-  return at
+  return {at: at, closed: depth === 0}
 }
 
 /**
@@ -803,8 +816,12 @@ const tokenized = function(xpath) {
       }
       at = literal.at
     } else if (opensComment(xpath, at)) {
-      type = TOKENS.COMMENT
-      at = afterComment(xpath, at)
+      const comment = afterComment(xpath, at)
+      type = TOKENS.UNCLOSED
+      if (comment.closed) {
+        type = TOKENS.COMMENT
+      }
+      at = comment.at
     } else if (WHITESPACE.includes(xpath[at])) {
       type = TOKENS.WHITESPACE
       at = afterWhitespace(xpath, at)

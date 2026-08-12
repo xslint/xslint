@@ -244,6 +244,28 @@ const SCANS = [
     ],
   },
   {
+    name: 'refuses to call a comment that never closes a comment',
+    count: 1,
+    pairs: [
+      ['a (: b', TOKENS.UNCLOSED],
+      ['(:', TOKENS.UNCLOSED],
+      ['a (: b : )', TOKENS.UNCLOSED],
+      ['(: outer (: inner :)', TOKENS.UNCLOSED],
+      ['(: c :) + (: d', TOKENS.UNCLOSED],
+    ],
+  },
+  {
+    name: 'cannot read a comment out of the bracket that opens one',
+    count: 0,
+    pairs: [
+      ['a (: b', TOKENS.COMMENT],
+      ['a (: b : )', TOKENS.COMMENT],
+      ['(: outer (: inner :)', TOKENS.COMMENT],
+      ['(: c :)', TOKENS.UNCLOSED],
+      ['(: (:n:) :)', TOKENS.UNCLOSED],
+    ],
+  },
+  {
     name: 'keeps a literal that does close a string, doubled quote and all',
     count: 1,
     pairs: [

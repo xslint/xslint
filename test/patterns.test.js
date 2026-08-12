@@ -212,6 +212,7 @@ const REFUSES = [
   {name: 'a descent that reaches no step in a union', xpath: '// | a', at: 3},
   {name: 'nothing at all', xpath: '', at: 0},
   {name: 'nothing but a gap', xpath: ' ', at: 1},
+  {name: 'a comment that never closes', xpath: 'a (: b', at: 2},
 ]
 
 describe('patterns', function() {
