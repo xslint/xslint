@@ -27,12 +27,17 @@ const SMALL = 40
 const STEP = 4
 
 /**
- * The ratio a stage that grows with its input may not exceed. `STEP` is what it
- * should read; the room above that is what a shared machine spends, measured
- * here as 4.42 over ten trials against an ideal of 4.
+ * How far above the middle of its own run a stage may read. Not a ratio but a
+ * multiple of one: `STEP` is what a stage growing with its input should read,
+ * and it does not, because a ratio cancels a machine's speed and not its
+ * character — the same stage measured here at 7.1 read 8.7 on a macOS runner
+ * and the bar it passed at home failed on every runner CI has. What travels is
+ * a stage's standing among the seventeen others timed in the same process: they
+ * grow linearly, so their middle is what linear costs on that machine at that
+ * moment, and a machine that inflates one inflates them all.
  * @type {number}
  */
-const LINEAR = 5.5
+const LINEAR = 1.35
 
 /**
  * Stages that grow faster than their input, each with the ceiling it may not
@@ -48,7 +53,8 @@ const LINEAR = 5.5
  * @type {{[stage: string]: {ceiling: number, issue: number}}}
  */
 const SUPERLINEAR = {
-  'corpus-linter': {ceiling: 8.0, issue: 755},
+  'corpus-linter': {floor: LINEAR, ceiling: 2.0, issue: 755},
+  'import-linter': {floor: 0, ceiling: 1.8, issue: 769},
 }
 
 /**
@@ -166,29 +172,48 @@ const measured = function(from, files) {
 }
 
 /**
- * How much each stage grows when the corpus grows `STEP` times. The quotient of
- * two measurements taken in one process is what survives a shared machine: a
- * slow runner slows both halves and cancels out of it, where an absolute
- * threshold either flakes or is set loose enough to catch nothing.
+ * The middle of a list of readings, which is what linear growth costs on this
+ * machine in this run: sixteen of the eighteen stages grow with their input, so
+ * the median is theirs and a stage that has changed shape cannot move it.
+ * @param {Array.<number>} list - The readings
+ * @return {number} - Their median
+ */
+const middle = function(list) {
+  const sorted = Array.from(list).sort((one, two) => one - two)
+  return (sorted[Math.floor((sorted.length - 1) / 2)] +
+    sorted[Math.ceil((sorted.length - 1) / 2)]) / 2
+}
+
+/**
+ * How each stage grew when the corpus grew `STEP` times, as a multiple of what
+ * the run's middle stage grew. The quotient of two measurements taken in one
+ * process is what survives a shared machine, and dividing by the middle is what
+ * survives a different machine: an absolute threshold either flakes or is set
+ * loose enough to catch nothing.
  * @param {number} attempt - Which attempt this is, deciding the file numbers
- * @return {Map.<string, number>} - Ratio by stage
+ * @return {Map.<string, {ratio: number, relative: number}>} - Growth by stage
  */
 const grown = function(attempt) {
   const small = measured(attempt * SPREAD, SMALL)
   const large = measured(attempt * SPREAD + SPREAD / 2, SMALL * STEP)
-  return new Map(
+  const ratios = new Map(
     Array.from(small, ([name, span]) => [name, large.get(name) / span]),
+  )
+  const centre = middle(Array.from(ratios.values()))
+  return new Map(
+    Array.from(ratios, ([name, ratio]) => [
+      name, {ratio: ratio, relative: ratio / centre},
+    ]),
   )
 }
 
 /**
  * What is wrong with a stage's readings, or an empty string when nothing is.
  * The lowest reading answers whether a stage grew too fast and the highest
- * whether it stopped, since noise only ever makes one attempt disagree with
- * the rest and both questions are asked against the attempt that speaks for
- * the stage rather than for the machine.
+ * whether it stopped, since noise makes one attempt disagree with the rest
+ * while a stage that has changed shape reads the same way in all of them.
  * @param {string} name - Name of the stage
- * @param {Array.<number>} readings - Its ratio in each attempt so far
+ * @param {Array.<number>} readings - Its multiple of the middle, per attempt
  * @return {string} - The fault, or an empty string
  */
 const fault = function(name, readings) {
@@ -197,49 +222,59 @@ const fault = function(name, readings) {
   const known = SUPERLINEAR[name]
   let said = ''
   if (!known && low > LINEAR) {
-    said = `${name} grew ${low.toFixed(1)}x while its corpus grew ${STEP}x, ` +
-      `where ${LINEAR}x is the most a stage that grows with its input reads`
+    said = `${name} grew ${low.toFixed(2)} times what the middle stage of its ` +
+      `own run grew, where ${LINEAR} is the most a stage that grows with its ` +
+      `input reads`
   } else if (known && low > known.ceiling) {
-    said = `${name} grew ${low.toFixed(1)}x, past the ${known.ceiling}x that ` +
-      `#${known.issue} holds it at, so it is worse than the ticket says`
-  } else if (known && high <= LINEAR) {
-    said = `${name} grew only ${high.toFixed(1)}x, so #${known.issue} looks ` +
-      `settled and the entry exempting it is stale`
+    said = `${name} grew ${low.toFixed(2)} times the middle, past the ` +
+      `${known.ceiling} that #${known.issue} holds it at, so it is worse than ` +
+      `the ticket says`
+  } else if (known && known.floor > 0 && high <= known.floor) {
+    said = `${name} grew only ${high.toFixed(2)} times the middle, so ` +
+      `#${known.issue} looks settled and the entry exempting it is stale`
   }
   return said
 }
 
 /**
  * Every stage whose growth disagrees with what its bar says, measured again up
- * to `ATTEMPTS` times while any of them does. A machine under load moves a
- * different stage each time, so a second attempt agrees; a stage that has
- * changed shape disagrees in all three.
- * @return {Array.<string>} - One sentence per stage at fault
+ * to `ATTEMPTS` times while any of them does, beside the whole table of
+ * readings — a gate that fails must say what it measured, or the next reader
+ * has to reproduce a machine to find out.
+ * @return {{faults: Array.<string>, table: string}} - Faults and the readings
  */
-const faults = function() {
+const judged = function() {
   measured(ATTEMPTS * SPREAD, WARMUP)
   const readings = new Map()
   let found = []
+  let table = ''
   for (let attempt = 0; attempt < ATTEMPTS; attempt++) {
-    for (const [name, ratio] of grown(attempt)) {
-      readings.set(name, (readings.get(name) ?? []).concat([ratio]))
+    const grew = grown(attempt)
+    for (const [name, one] of grew) {
+      readings.set(name, (readings.get(name) ?? []).concat([one.relative]))
     }
+    table = Array.from(grew, ([name, one]) =>
+      `${name} ${one.ratio.toFixed(2)}x (${one.relative.toFixed(2)} of the ` +
+      `middle)`).join(', ')
     found = Array.from(readings, ([name, list]) => fault(name, list))
       .filter((said) => said !== '')
     if (found.length === 0) {
       break
     }
   }
-  return found
+  return {faults: found, table: table}
 }
 
 describe('scaling', function() {
   it('holds every stage to the growth its bar allows', function() {
     this.timeout(120000)
+    const judgement = judged()
     assert.deepEqual(
-      faults(),
+      judgement.faults,
       [],
-      'a stage no longer grows the way the bar in test/scaling.test.js says',
+      'a stage no longer grows the way the bar in test/scaling.test.js says, ' +
+        `over a corpus of ${SMALL} stylesheets and one of ${SMALL * STEP}: ` +
+        judgement.table,
     )
   })
   it('measures every linter the pipeline is staged from', function() {

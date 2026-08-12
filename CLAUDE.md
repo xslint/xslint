@@ -92,15 +92,25 @@ README advertises (#755, #756). Two tiers hold it now.
 
 `test/scaling.test.js` is the per-pull-request one. It builds a corpus in
 memory, hands it to every stage at 40 stylesheets and again at 160, and fails
-any stage that grew more than 5.5 times — where 4 is what growing with your
-input means. What is asserted is a **ratio**, never a wall clock: an absolute
+any stage that grew more than 1.35 times what the **middle stage of its own
+run** grew. What is asserted is a ratio and never a wall clock — an absolute
 threshold on a shared runner either flakes or is set so loose it catches
 nothing, while a quotient of two measurements taken in one process cancels the
 machine, a slow runner slowing both halves alike. Each stage is timed
 **directly** rather than by subtracting one run from another, since the error of
-two timings compounds — a stage whose own ratio holds to three percent reads
+two timings compounds: a stage whose own ratio holds to three percent reads
 twenty measured that way. It spawns nothing and writes nothing, so it belongs in
 the fast half, where it costs 2.1 seconds.
+
+The bar is a multiple of that middle rather than a number because a ratio
+cancels a machine's *speed* and not its *character*. Absolute bars were the
+first spelling and they were tuned until nothing flaked here — then failed on
+all six CI runners at once, `corpus-linter` reading 8.7 on macOS where it reads
+7.1 here, which is the pre-#755 range and would have made the ratchet
+unreadable. Sixteen of the eighteen stages grow with their input, so their
+median is what linear costs on that machine at that moment, and a machine that
+inflates one inflates them all. A stage that has changed shape cannot move a
+median it is outnumbered in.
 
 Three things make it a gate rather than a source of red builds. A discarded
 warm-up pass runs first, because the first stage measured cold reads half what
@@ -116,11 +126,15 @@ outside what measures it — the second test asserts exactly that, over the
 
 A stage that grows faster than its input is named in `SUPERLINEAR` with the
 ceiling it may not cross and the ticket that will retire the entry — the
-`SPRAWLING` pattern one property over, a ratchet rather than a licence. One
-entry stands there, `corpus-linter` at 8.0 for #755: it reads 6.9 to 7.4 today
-and 8.4 to 9.3 before that ticket, so reverting the fix turns the gate red four
-times out of four while master passes ten out of ten. Thirteen percent is all
-that parts the two, which is what taking the lowest of three attempts is for. The bar is set
+`SPRAWLING` pattern one property over, a ratchet rather than a licence. Two
+entries stand there. `corpus-linter` is capped at 2.0 for #755: it reads 1.73
+today and 2.14 to 2.21 with that fix reverted, so undoing #755 turns the gate
+red three times out of three. `import-linter` is capped at 1.8 for #769, and it
+is the one entry with no floor under it — at forty stylesheets its growth is
+machine-dependent, 1.1 here and 1.3 on an ubuntu runner, so a floor would call
+the entry stale on one machine and not the other. That entry goes when its
+ticket does rather than when a measurement says so, which is written here
+because nothing enforces it. The bar is set
 *after* the fix on purpose, since one loose enough to pass over a known
 quadratic records it as acceptable.
 
