@@ -1,0 +1,17 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: string-length-compared-to-zero
+# `xsl` is a convention rather than a requirement, so a stylesheet binding the
+# XSLT namespace to another prefix is read the same way (#578).
+found:
+  amount: 1
+  positions: [ [ 4, 34 ] ]
+  fixes: [ "@x = ''" ]
+input: |-
+  <?xml version="1.0"?>
+  <t:stylesheet xmlns:t="http://www.w3.org/1999/XSL/Transform" version="2.0" id="s">
+    <t:template match="/">
+      <t:variable name="a" select="string-length(@x) = 0"/>
+    </t:template>
+  </t:stylesheet>

@@ -309,9 +309,13 @@ Today this covers:
 
 - `string-length-compared-to-zero` — an emptiness test spelled as a length is
   simplified: `string-length(@x) > 0` becomes `@x != ''`, `= 0` becomes
-  `@x = ''`. A suggestion because the two are not general equivalents: they
-  differ for an absent attribute (`string-length(@x) = 0` is true, `@x = ''`
-  is false) and for a multi-node set.
+  `@x = ''`, and the no-argument `string-length() = 0` becomes `. = ''`, the
+  context item being what such a call measures. A suggestion because the two are
+  not general equivalents: they differ for an absent attribute
+  (`string-length(@x) = 0` is true, `@x = ''` is false) and, in XPath 1.0, for a
+  multi-node set. An argument that binds at least as loosely as the comparison
+  it moves into — `string-length(@a or @b) = 0` — is reported with no fix, since
+  the rewrite would regroup the expression.
 - `incorrect-use-of-boolean-constants` — the string test `'true'`/`'false'`
   becomes `true()`/`false()`, which changes the truth value of a `'false'` test
   (a non-empty string is always true).

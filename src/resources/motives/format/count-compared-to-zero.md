@@ -36,6 +36,13 @@ on 2.0/3.0, and `boolean()`/`not()` — or the bare node-set in a whole `@test` 
 on 1.0. The 1.0 forms are valid in every version, so an unversioned stylesheet
 gets them too.
 
+The call is the standard `fn:count` however its namespace is spelled: bare, as
+the default function namespace; behind a prefix bound to that namespace, which is
+the idiomatic `fn:count($items) = 0` of a 2.0 stylesheet; or with the namespace
+written inline. A function of your own that happens to be called `count` is
+another function and is left alone, and so is a call spelling no argument or
+several, `fn:count` taking exactly one.
+
 The operand order does not matter: `0 &lt; count($items)` and
 `0 = count($items)` are flagged the same way. A comparison that is not an
 existence test — `count($x) &gt; 1`, `count($x) = 5` — is a genuine count and is

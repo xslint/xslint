@@ -4,8 +4,8 @@
  */
 
 const {comparedToZero} = require('../comparisons')
-const {lone} = require('../expressions')
 const {metaOf, suppressed, defect} = require('../checks')
+const {textOf} = require('../syntax')
 const {MODERN, since, versionOf} = require('../xsl-version')
 const {logger} = require('../logger')
 
@@ -50,19 +50,21 @@ const collapses = function(operator, zero) {
  * existence test carries its kind (`exists`/`empty`) and the argument, for the
  * linter to turn into a version-appropriate rewrite; anything else is left
  * alone. `fn:count` takes exactly one argument, so a call spelling none or
- * several counts nothing and is not this construct at all.
+ * several counts nothing and is not this construct at all — which the parse
+ * says outright, a comma binding a `for` clause being no separator (#576).
+ * @param {{node: Node, expression: string, pattern: boolean}} found - Record
  * @param {string} operator - The comparison operator
  * @param {string} zero - The compared digit, `0` or `1`
- * @param {string} argument - The call's argument
+ * @param {Array.<object>} args - The call's arguments
  * @return {?{test: string, argument: string}} - The classification, or null
  */
-const decide = function(operator, zero, argument) {
+const decide = function(found, operator, zero, args) {
   const test = collapses(operator, zero)
-  let found = null
-  if (test && lone(argument)) {
-    found = {test: test, argument: argument}
+  let carried = null
+  if (test && args.length === 1) {
+    carried = {test: test, argument: textOf(found, args[0])}
   }
-  return found
+  return carried
 }
 
 /**
@@ -90,15 +92,15 @@ const rewritten = function(test, argument, modern, whole) {
 }
 
 /**
- * The `count(...)`-versus-zero existence tests in an expression, in either
+ * The `count(...)`-versus-zero existence tests an expression holds, in either
  * operand order (`count(x) > 0` and `0 < count(x)` alike), each carrying its
  * classification and argument.
- * @param {string} expression - The attribute value
+ * @param {{node: Node, expression: string, pattern: boolean}} found - Record
  * @return {Array.<{offset: number, value: string, test: string,
  *  argument: string}>} - The comparisons found
  */
-const comparisons = function(expression) {
-  return comparedToZero(expression, 'count', decide)
+const comparisons = function(found) {
+  return comparedToZero(found, 'count', decide)
 }
 
 /**
@@ -118,9 +120,9 @@ const lintByCount = function(expressions, suppressions = []) {
   const defects = []
   if (!suppressed(CHECK, suppressions)) {
     for (const {source, found} of expressions) {
-      const {node, expression} = found
+      const {node} = found
       const modern = since(versionOf(node), MODERN)
-      for (const {offset, value, test, argument} of comparisons(expression)) {
+      for (const {offset, value, test, argument} of comparisons(found)) {
         const whole = node.nodeName === 'test' &&
           node.nodeValue.trim() === value
         defects.push(

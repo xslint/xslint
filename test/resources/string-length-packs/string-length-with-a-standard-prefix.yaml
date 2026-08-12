@@ -1,0 +1,22 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: string-length-compared-to-zero
+# The call is the standard one however its namespace is spelled: bound to a
+# prefix, or written inline. A user function of the same local name is not, and
+# the two are told apart by the URI the prefix resolves to rather than by the
+# prefix itself (#577).
+found:
+  amount: 2
+  positions: [ [ 4, 36 ], [ 5, 36 ] ]
+  fixes: [ "@x = ''", "@y != ''" ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fn="http://www.w3.org/2005/xpath-functions" xmlns:my="urn:m" version="3.0" id="s">
+    <xsl:template match="/">
+      <xsl:variable name="a" select="fn:string-length(@x) = 0"/>
+      <xsl:variable name="b" select="Q{http://www.w3.org/2005/xpath-functions}string-length(@y) != 0"/>
+      <xsl:variable name="c" select="my:string-length(@z) = 0"/>
+      <xsl:variable name="d" select="Q{urn:m}string-length(@w) = 0"/>
+    </xsl:template>
+  </xsl:stylesheet>

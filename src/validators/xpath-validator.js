@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {refusalOf} = require('../xpath')
+const {parseOf} = require('../syntax')
 const {expressionsOf} = require('../attributes')
 const {defect} = require('../checks')
 const {kinds} = require('../resources/checks.json')
@@ -58,7 +58,7 @@ const UNRESOLVED = /&[A-Za-z_][\w.-]*;/
  * one since #723 and had nobody to say so.
  *
  * The defect stands where the fault does, not where the attribute opens, which
- * is what the offset on the refusal is for — and what the widening makes
+ * is what the offset the parse carries is for — and what the widening makes
  * necessary rather than merely nicer, two braces of one attribute value being
  * two expressions that would otherwise report the same column.
  * @param {Array.<{file: string, content: string, xsl: Document}>} corpus -
@@ -75,13 +75,13 @@ const validate = function(corpus, suppressions = []) {
   const suppressed = suppressions.some((sup) => CHECK.includes(sup))
   for (const source of corpus) {
     for (const found of expressionsOf(source.xsl)) {
-      const refusal = refusalOf(found)
-      if (refusal.fault === '') {
+      const reading = parseOf(found)
+      if (reading.fault === '') {
         expressions.push({source: source, found: found})
       } else if (UNRESOLVED.test(found.node.nodeValue)) {
         logger.debug(`Skipping expression with an unresolved entity`)
       } else if (!suppressed) {
-        defects.push(defect(CHECK, META, source, found, refusal.at))
+        defects.push(defect(CHECK, META, source, found, reading.at))
       }
     }
   }

@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: MIT
  */
 
+const {holding} = require('./tree')
+
 /**
  * The XSLT namespace, which distinguishes a stylesheet root from a literal
  * result element standing in as one.
@@ -97,33 +99,6 @@ const declaring = function(element) {
     declared = element.getAttribute('version')
   }
   return declared
-}
-
-/**
- * Where each kind of node keeps the element a version is read from. A node kind
- * not named here — a text node, a comment — hangs off its parent.
- * @type {{[kind: number]: function(Node): ?Node}}
- */
-const HELD = {
-  9: (node) => node.documentElement,
-  2: (node) => node.ownerElement,
-  1: (node) => node,
-}
-
-/**
- * The element a version is read from for the given node: an attribute hangs
- * off the element carrying it, a text node off its parent, and a document off
- * its root.
- * @param {Node} node - Any node of a stylesheet
- * @return {?Node} - Where to begin looking, or null
- */
-const holding = function(node) {
-  const held = HELD[node.nodeType]
-  let where = node.parentNode
-  if (held !== undefined) {
-    where = held(node)
-  }
-  return where
 }
 
 /**

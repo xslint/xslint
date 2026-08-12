@@ -19,6 +19,36 @@ const CARRIED = [2, 3, 4]
 const DECLARED = /^xmlns(:|$)/
 
 /**
+ * Where each kind of node keeps the element it hangs off. A node kind not named
+ * here — a text node, a comment — hangs off its parent.
+ * @type {{[kind: number]: function(Node): ?Node}}
+ */
+const HELD = {
+  9: (node) => node.documentElement,
+  2: (node) => node.ownerElement,
+  1: (node) => node,
+}
+
+/**
+ * The element the given node hangs off: an attribute hangs off the element
+ * carrying it, a text node off its parent, a document off its root, and an
+ * element off itself. It is where anything a stylesheet's structure says about
+ * a node is read — the version in force where an expression stands, and the
+ * namespace a prefix inside it resolves to — so both questions begin here
+ * rather than each walking to an element its own way.
+ * @param {Node} node - Any node of a stylesheet
+ * @return {?Node} - Where to begin looking, or null
+ */
+const holding = function(node) {
+  const held = HELD[node.nodeType]
+  let where = node.parentNode
+  if (held !== undefined) {
+    where = held(node)
+  }
+  return where
+}
+
+/**
  * The walk already taken over a document. Every stage that needs the attributes
  * or the text of a stylesheet wants the same sequence, so it is walked once and
  * remembered against the document — released with it, a `WeakMap` holding no
@@ -82,5 +112,6 @@ const walked = function(xsl) {
 }
 
 module.exports = {
+  holding,
   walked,
 }
