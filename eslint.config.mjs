@@ -98,6 +98,13 @@ const OPAQUE = {
     "Which kinds a scan reads over rather than into is OPAQUE in src/tokens.js and nowhere else: spelling the list out again is how the literal that never closes reached masked and inside as a kind neither of them named, and two checks began reporting inside a string (#708)"
 };
 
+const PAIRED = {
+  selector:
+    "CallExpression[callee.object.name='usages'][callee.property.name=/^(some|every|filter)$/] CallExpression[callee.name='needle']",
+  message:
+    "A declaration's reference string depends on the declaration alone, so building it inside the usages loop builds it once per (declaration, usage) pair: needle was the hottest frame in the whole process, ahead of every fontoxpath one, and its replaceAll allocated a string per pair. Hoist it above the loop, and filter the usages by it before asking anything that walks the tree (#755)"
+};
+
 const TRIVIA = {
   selector:
     ":matches(ArrayExpression, LogicalExpression):has(MemberExpression[object.name='TOKENS'][property.name='WHITESPACE']):has(MemberExpression[object.name='TOKENS'][property.name='COMMENT'])",
@@ -171,7 +178,7 @@ export default defineConfig([
     files: ["src/**/*.js", "src/**/*.mjs"],
     ignores: ["src/xslint.js"],
     rules: {
-      "no-restricted-syntax": ["error", ...RESTRICTED, STAGED, OPAQUE, TRIVIA]
+      "no-restricted-syntax": ["error", ...RESTRICTED, STAGED, OPAQUE, TRIVIA, PAIRED]
     }
   },
   {

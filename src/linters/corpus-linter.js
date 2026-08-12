@@ -18,6 +18,20 @@ const CHECKS = Object.entries(kinds.corpus).map(([name, check]) => ({
 }))
 
 /**
+ * Nodes each xpath selects, per corpus, so several checks naming one selector
+ * pay for it once. Weakly held, so a corpus is collected with its answers.
+ * @type {WeakMap.<Array, Map.<string, Array.<Node>>>}
+ */
+const SELECTED = new WeakMap()
+
+/**
+ * Usages holding each reference string, per usage set, so several declarations
+ * spelling one name pay for the scan once.
+ * @type {WeakMap.<Array, Map.<string, Array.<Node>>>}
+ */
+const MENTIONS = new WeakMap()
+
+/**
  * Names of the checks this linter owns.
  * @type {Array.<string>}
  */
@@ -83,6 +97,51 @@ const needle = function(check, declaration) {
 }
 
 /**
+ * Nodes an xpath selects across the whole corpus, chosen once for each corpus
+ * and xpath rather than once for each check that names it. Three of the four
+ * cross-file checks give `//@*` as their usage, and choosing every attribute of
+ * DocBook-XSL's 291 stylesheets costs 1.7 seconds, so asking per check spent
+ * five of them answering one question three times over (#755).
+ * @param {Array.<{file: string, xsl: Document}>} corpus - Parsed stylesheets
+ * @param {string} xpath - The selector to apply
+ * @return {Array.<Node>} - The nodes it selects
+ */
+const across = function(corpus, xpath) {
+  if (!SELECTED.has(corpus)) {
+    SELECTED.set(corpus, new Map())
+  }
+  const chosen = SELECTED.get(corpus)
+  if (!chosen.has(xpath)) {
+    chosen.set(xpath, corpus.flatMap(({xsl}) => nodes(xsl, xpath)))
+  }
+  return chosen.get(xpath)
+}
+
+/**
+ * The usages whose value holds a reference string, kept for each distinct
+ * reference rather than scanned again for every declaration spelling it —
+ * DocBook-XSL declares 3436 variables under 1207 distinct names, so that scan
+ * ran nearly three times over on average. Asking it is also how a caller asks
+ * the cheap question first: `within` climbs to the document root for every pair
+ * it rejects, and one `includes` rejects almost every pair, so a structural
+ * test placed ahead of this one spent an ancestor walk per (declaration, usage)
+ * pair to learn what a substring already said (#755).
+ * @param {Array.<Node>} usages - Usage attributes across the corpus
+ * @param {string} mark - The reference string of one declaration
+ * @return {Array.<Node>} - The usages holding it
+ */
+const mentioning = function(usages, mark) {
+  if (!MENTIONS.has(usages)) {
+    MENTIONS.set(usages, new Map())
+  }
+  const held = MENTIONS.get(usages)
+  if (!held.has(mark)) {
+    held.set(mark, usages.filter((usage) => usage.value.includes(mark)))
+  }
+  return held.get(mark)
+}
+
+/**
  * The innermost declaration whose subtree holds the usage, or null when the
  * usage sits outside every declaration — a call from a template is such a
  * root, a call from another function's body is not.
@@ -113,11 +172,9 @@ const reachable = function(check, declarations, usages) {
   const subtrees = new Set(declarations.map(({node}) => node))
   const references = declarations.map(({node}) => ({
     node,
-    hosts: usages
+    hosts: mentioning(usages, needle(check, node))
       .filter((usage) =>
-        !within(node, usage) &&
-        usage.value.includes(needle(check, node)) &&
-        inScope(check, node, usage))
+        !within(node, usage) && inScope(check, node, usage))
       .map((usage) => enclosing(subtrees, usage)),
   }))
   const used = new Set()
@@ -146,10 +203,9 @@ const reachable = function(check, declarations, usages) {
  * @return {Array.<object>} - Defects found
  */
 const byCall = function(corpus, check) {
-  const usages = corpus.flatMap(({xsl}) => nodes(xsl, check.usage))
+  const usages = across(corpus, check.usage)
   return corpus.flatMap(({file, xsl}) => nodes(xsl, check.declaration)
-    .filter((node) =>
-      usages.every((usage) => !usage.value.includes(needle(check, node))))
+    .filter((node) => mentioning(usages, needle(check, node)).length === 0)
     .map((node) => defect(check, file, node)))
 }
 
@@ -162,12 +218,10 @@ const byCall = function(corpus, check) {
  * @return {Array.<object>} - Defects found
  */
 const byScope = function(corpus, check) {
-  const usages = corpus.flatMap(({xsl}) => nodes(xsl, check.usage))
+  const usages = across(corpus, check.usage)
   return corpus.flatMap(({file, xsl}) => nodes(xsl, check.declaration)
-    .filter((node) => !usages.some((usage) =>
-      !within(node, usage) &&
-      usage.value.includes(needle(check, node)) &&
-      inScope(check, node, usage)))
+    .filter((node) => !mentioning(usages, needle(check, node)).some((usage) =>
+      !within(node, usage) && inScope(check, node, usage)))
     .map((node) => defect(check, file, node)))
 }
 
@@ -182,14 +236,13 @@ const byScope = function(corpus, check) {
  * @return {Array.<object>} - Defects found
  */
 const byReachability = function(corpus, check) {
-  const usages = corpus.flatMap(({xsl}) => nodes(xsl, check.usage))
+  const usages = across(corpus, check.usage)
   const declarations = corpus.flatMap(({file, xsl}) =>
     nodes(xsl, check.declaration).map((node) => ({file, node})))
   const used = reachable(check, declarations, usages)
   return declarations
     .filter(({node}) => !used.has(node))
-    .filter(({node}) =>
-      usages.some((usage) => usage.value.includes(needle(check, node))))
+    .filter(({node}) => mentioning(usages, needle(check, node)).length > 0)
     .map(({file, node}) => defect(check, file, node))
 }
 
