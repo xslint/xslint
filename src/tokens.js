@@ -868,6 +868,7 @@ module.exports = {
   tokenized,
   qualified,
   worded,
+  WORDS,
   GLUES,
   TOKENS,
   OPAQUE,

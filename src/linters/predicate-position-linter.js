@@ -3,7 +3,9 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {tokenized, TOKENS, TRIVIA} = require('../tokens')
+const {TOKENS} = require('../tokens')
+const {calls, gathered, offsetOf, operatorOf, textOf, tokensOf} =
+  require('../syntax')
 const {metaOf, suppressed, defect} = require('../checks')
 const {logger} = require('../logger')
 
@@ -26,91 +28,92 @@ const META = metaOf(CHECK)
 const names = [CHECK]
 
 /**
- * One-character symbol standing for a significant token, so a predicate's
- * contents reduce to a short signature the matcher compares against.
- * @type {{[type: string]: string}}
+ * The kinds a predicate holding a comparison comes back as. A general and a
+ * value comparison are two kinds and one question here: `[position() eq 1]`
+ * selects the node `[1]` selects, both operands being `xs:integer`, so the word
+ * spelling is the same smell as the symbol one and was reported on neither any
+ * 2.0 stylesheet (#575).
+ * @type {Array.<string>}
  */
-const SIGN = {
-  [TOKENS.LPAREN]: '(',
-  [TOKENS.RPAREN]: ')',
-  [TOKENS.EQUAL]: '=',
-  [TOKENS.NUMBER]: 'N',
+const KINDS = ['comparison', 'value-comparison']
+
+/**
+ * Whether the node is the call `position()` with nothing in its brackets.
+ * `fn:position` takes no argument, so a call spelling one asks something else
+ * and is not this construct, the way `fn:count` spelling two is not a count
+ * (#576). The prefix is no part of the question: bare, behind a prefix bound to
+ * the XPath functions namespace, or with that namespace inline, all three name
+ * the one function, and a `my:position()` of your own names another (#577).
+ * @param {{node: Node, expression: string, pattern: boolean}} found - Record
+ * @param {object} node - A node of its tree
+ * @return {boolean} - True when the node is that call
+ */
+const positional = function(found, node) {
+  return calls(found, node, 'position') && node.children.length === 0
 }
 
 /**
- * The signature symbol of one token: `P` for `position`, `L` for `last`, the
- * mapped punctuation for a bracket/paren/equals/number, and `x` for anything
- * else — an `x` in a signature is what keeps `[position() = 1 and @y]` from
- * matching.
- * @param {{type: string, value: string}} token - The token
- * @return {string} - Its one-character signature symbol
+ * Whether the node is what a positional predicate abbreviates to on its own: a
+ * number, which XPath reads as a test on the context position, or the call
+ * `last()`, which the short form keeps as it stands. A literal is one kind to
+ * the grammar and the token says which spelling it is, so a string literal —
+ * `[position() = '1']`, where `['1']` would be true at every position rather
+ * than the first — is left alone.
+ * @param {{node: Node, expression: string, pattern: boolean}} found - Record
+ * @param {object} node - A node of its tree
+ * @return {boolean} - True when the predicate can be written as this alone
  */
-const symbol = function(token) {
-  let sign = SIGN[token.type]
-  if (token.type === TOKENS.NAME) {
-    sign = {position: 'P', last: 'L'}[token.value]
-  }
-  return sign || 'x'
-}
-
-/**
- * The literal a positional predicate reduces to, or null when the predicate is
- * not a lone `position()` comparison. `[position() = N]` and `[N = position()]`
- * become the number `N`; `[position() = last()]` and `[last() = position()]`
- * become `last()`. Anything else — an extra operand, a different function, a
- * comparison other than `=` — yields null.
- * @param {Array.<{type: string, value: string}>} significant - The predicate's
- *  tokens, whitespace and comments already dropped
- * @return {?string} - The short form, or null
- */
-const shortened = function(significant) {
-  const sign = significant.map(symbol).join('')
-  let short = null
-  if (sign === 'P()=N' || sign === 'N=P()') {
-    short = significant.find((token) => token.type === TOKENS.NUMBER).value
-  } else if (sign === 'P()=L()' || sign === 'L()=P()') {
-    short = 'last()'
-  }
-  return short
+const shortens = function(found, node) {
+  return (node.kind === 'literal' &&
+    tokensOf(found, node)[0].type === TOKENS.NUMBER) ||
+    (calls(found, node, 'last') && node.children.length === 0)
 }
 
 /**
  * The positional predicates in an expression written the long way. Each carries
- * the offset just inside its `[`, the verbatim contents of the brackets, and
- * the short form that replaces them — so `foo[position() = 1]` becomes `foo[1]`
- * and `foo[position() = last()]` becomes `foo[last()]`. Brackets are matched
- * through a stack, so a nested predicate is judged on its own contents and an
- * outer predicate that merely wraps one is left alone; a `[` inside a string or
- * comment is never seen, since the lexer keeps those whole.
- * @param {string} expression - Xpath expression or pattern
+ * the offset of its comparison, that comparison's own text, and the operand
+ * that replaces the whole of it — so `foo[position() = 1]` becomes `foo[1]` and
+ * `foo[position() = last()]` becomes `foo[last()]`.
+ *
+ * It reads the predicates the grammar built rather than matching brackets and
+ * reducing what stands between them to a signature of one character per token
+ * (#575). Three things follow from that. A predicate is judged by what its one
+ * child *is*, so `[position() = 1 and @on]` holds a comparison and is not one:
+ * an `and` is what the predicate holds, and rewriting the comparison inside it
+ * would turn a positional test into the boolean `[1 and @on]`. The operand that
+ * survives keeps the spelling its author gave it — a `fn:last()` stays
+ * prefixed, where a signature reading `TOKENS.NAME` alone never saw a prefixed
+ * call at all and left the predicate unreported. And the defect stands where
+ * its comparison does rather than just inside the `[`, so a padded
+ * `[ position() = 1 ]` is reported at the `p` and the fix replaces the
+ * comparison alone, leaving the gaps the author wrote.
+ * @param {{node: Node, expression: string, pattern: boolean}} found - The
+ *  expression, whole, as `expressionsOf` yields it
  * @return {Array.<{offset: number, value: string, replacement: string}>} -
  *  The predicates found
  */
-const literals = function(expression) {
-  const tokens = tokenized(expression)
-  const found = []
-  const opens = []
-  for (let ind = 0; ind < tokens.length; ind++) {
-    if (tokens[ind].type === TOKENS.LBRACKET) {
-      opens.push(ind)
-    } else if (tokens[ind].type === TOKENS.RBRACKET && opens.length) {
-      const open = opens.pop()
-      const replacement = shortened(
-        tokens.slice(open + 1, ind).filter(
-          (token) => !TRIVIA.includes(token.type),
-        ),
-      )
-      if (replacement !== null) {
-        const offset = tokens[open].start + 1
-        found.push({
-          offset: offset,
-          value: expression.slice(offset, tokens[ind].start),
-          replacement: replacement,
-        })
+const literals = function(found) {
+  const results = []
+  for (const predicate of gathered(found, ['predicate'])) {
+    const [inner] = predicate.children
+    const [left, right] = inner.children
+    let short = null
+    if (KINDS.includes(inner.kind) && operatorOf(found, left, right) === '=') {
+      if (positional(found, left) && shortens(found, right)) {
+        short = right
+      } else if (positional(found, right) && shortens(found, left)) {
+        short = left
       }
     }
+    if (short) {
+      results.push({
+        offset: offsetOf(found, inner),
+        value: textOf(found, inner),
+        replacement: textOf(found, short),
+      })
+    }
   }
-  return found
+  return results
 }
 
 /**
@@ -128,8 +131,7 @@ const lintByPredicatePosition = function(expressions, suppressions = []) {
   const defects = []
   if (!suppressed(CHECK, suppressions)) {
     for (const {source, found} of expressions) {
-      const {expression} = found
-      for (const {offset, value, replacement} of literals(expression)) {
+      for (const {offset, value, replacement} of literals(found)) {
         defects.push(
           defect(
             CHECK, META, source, found, offset,

@@ -30,6 +30,14 @@ bare, behind a prefix bound to the XPath functions namespace
 function of your own that happens to be called `string-length` is another
 function and is left alone.
 
+From XSLT 2.0 the same test is often spelled with the value comparisons, and
+`string-length(@name) eq 0` asks what `= 0` asks. The direct form keeps the class
+it was given — a value comparison becomes `@name eq ''` and a general one
+`@name = ''` — because the two are not interchangeable on a sequence of several
+items, where the general form asks whether any of them is empty and the value
+form raises an error. Dropping the call should not move a comparison from one
+class into the other.
+
 The operand order does not matter (`0 &lt; string-length(@name)` is flagged the
 same way). A `0` or `1` that is only part of a wider arithmetic operand — the
 `1` in `$max + 1 &gt; string-length(@a)`, the `0` in
@@ -48,7 +56,10 @@ admits. Everything binding tighter carries over as it stands, a union
 `X op ''` is not a general equivalent of `string-length(X) op 0`, and the two
 part ways in two cases. An **absent** node: `string-length(@x) = 0` is true when
 `@x` is missing, the empty string having length zero, but `@x = ''` is false,
-since an empty node-set matches nothing. And a **multi-node** `X`, in XPath 1.0:
+since an empty node-set matches nothing. The value comparison goes further and
+answers the empty sequence there, `@x eq ''` having nothing to compare, which
+reads as false in a test and prints as nothing where the original printed
+`false`. And a **multi-node** `X`, in XPath 1.0:
 there `string-length` reads the first node's value while `X != ''` is true if
 *any* node is non-empty, whereas on 2.0 and later a sequence of two or more
 items raises `XPTY0004` and the original is already an error. For the common

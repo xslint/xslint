@@ -1,0 +1,26 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: count-compared-to-zero
+# The same existence tests spelled with the word operators XPath 2.0 added. A
+# value comparison is a node of another kind, so the scan reading only the
+# general comparison walked past every one of these (#763); the digit, the call
+# and the operand order are the same questions either way, and `eq` against `=`
+# is a spelling rather than a construct. `count(d) gt 1` and `count(e) eq 2` ask
+# a real cardinality and are left alone.
+found:
+  amount: 5
+  positions: [ [ 4, 19 ], [ 5, 33 ], [ 6, 29 ], [ 6, 46 ], [ 6, 63 ] ]
+  fixes: [ "empty(kid)", "exists(cell)", "exists(a)", "empty(b)", "exists(c)" ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="s">
+    <xsl:template match="/">
+      <xsl:if test="count(kid) eq 0">
+        <xsl:value-of select="row[0 lt count(cell)]"/>
+        <xsl:value-of select="count(a) ne 0 or count(b) le 0 or 1 le count(c)"/>
+        <xsl:value-of select="count(d) gt 1"/>
+        <xsl:value-of select="count(e) eq 2"/>
+      </xsl:if>
+    </xsl:template>
+  </xsl:stylesheet>

@@ -49,6 +49,33 @@ const ASSUMED = KNOWN[KNOWN.length - 1]
 const PARSES = new Map()
 
 /**
+ * Each operator a general comparison is spelled with, paired with the word
+ * XPath 2.0 spells the same question in. The two classes ask one thing of their
+ * operands and differ in what they do with a sequence of them, so a check about
+ * the *question* — is this a count of nothing, is this string empty, is this
+ * the first position — meets the same construct twice and must know both:
+ * reading only the symbols is how `count(x) eq 0`, `string-length(@x) eq 0` and
+ * `[position() eq 1]` drew nothing at all on any 2.0 stylesheet (#763, #575).
+ *
+ * The node comparisons are not in it. `is`, `<<` and `>>` ask about identity
+ * and document order rather than about a value, so neither spelling has a twin
+ * in the other and no check reading this table is about them.
+ * @type {{[symbol: string]: string}}
+ */
+const WORDED = {
+  '=': 'eq', '!=': 'ne', '<': 'lt', '<=': 'le', '>': 'gt', '>=': 'ge',
+}
+
+/**
+ * Each word paired the other way about, so an operator read off the tree can be
+ * canonicalised to the one spelling a classifier reasons about.
+ * @type {{[word: string]: string}}
+ */
+const SYMBOLED = Object.fromEntries(
+  Object.entries(WORDED).map(([symbol, word]) => [word, symbol]),
+)
+
+/**
  * The kinds that bind at least as loosely as a general comparison, so a node of
  * one cannot stand as an operand of `=` with no brackets around it. A rewrite
  * substituting such a node's text regroups the expression or fails to parse at
@@ -113,6 +140,20 @@ const isValid = function(found) {
 }
 
 /**
+ * The tokens one node of the tree spans. A span is a range of token indexes, so
+ * this is what every other question about a node is answered from: what it
+ * says, where it stands, and what the lexer made of a piece of it the tree
+ * gives one kind to — a `literal` is a number or a string, and only the token
+ * says which.
+ * @param {{node: Node, expression: string, pattern: boolean}} found - Record
+ * @param {object} node - A node of its tree
+ * @return {Array.<{type: string, value: string, start: number}>} - Its tokens
+ */
+const tokensOf = function(found, node) {
+  return parseOf(found).tokens.slice(node.from, node.to)
+}
+
+/**
  * The text of one node of the tree, which is the tokens of its span joined back
  * together. The stream is lossless, so this is the expression as its author
  * spelled that part of it — every gap and every comment included, which is what
@@ -122,8 +163,7 @@ const isValid = function(found) {
  * @return {string} - The text it spans
  */
 const textOf = function(found, node) {
-  return parseOf(found).tokens.slice(node.from, node.to)
-    .map((token) => token.value).join('')
+  return tokensOf(found, node).map((token) => token.value).join('')
 }
 
 /**
@@ -135,26 +175,29 @@ const textOf = function(found, node) {
  * @return {number} - Its offset inside the expression
  */
 const offsetOf = function(found, node) {
-  return parseOf(found).tokens[node.from].start
+  return tokensOf(found, node)[0].start
 }
 
 /**
- * Every node of a kind the record's tree holds, outermost first. A check reads
- * this instead of scanning the text for the shape it is about, which is what
- * makes it blind to the same characters standing inside a string, a comment or
- * a name — no masking, and nothing to keep in step with the lexer.
+ * Every node of one of the kinds the record's tree holds, outermost first. A
+ * check reads this instead of scanning the text for the shape it is about,
+ * which is what makes it blind to the same characters standing inside a
+ * string, a comment or a name — no masking, nothing to keep in step with it.
+ * It takes a list rather than one kind because a construct is often more than
+ * one: the general and the value comparison are two kinds and one question, and
+ * gathering them in one walk keeps them in the order they stand in (#763).
  * @param {{node: Node, expression: string, pattern: boolean}} found - Record
- * @param {string} kind - The kind to collect
- * @return {Array.<object>} - The nodes of that kind
+ * @param {Array.<string>} kinds - The kinds to collect
+ * @return {Array.<object>} - The nodes of those kinds
  */
-const gathered = function(found, kind) {
+const gathered = function(found, kinds) {
   const collected = []
   /**
-   * Take this node when it is of the kind, then the nodes below it.
+   * Take this node when it is of one of the kinds, then the nodes below it.
    * @param {object} node - A node of the tree
    */
   const visit = function(node) {
-    if (node.kind === kind) {
+    if (kinds.includes(node.kind)) {
       collected.push(node)
     }
     node.children.forEach(visit)
@@ -223,15 +266,32 @@ const parting = function(found, left, right) {
     .filter((token) => !TRIVIA.includes(token.type))
 }
 
+/**
+ * The operator standing between two operands, spelled with symbols whichever
+ * spelling its author chose: a word is canonicalised through `WORDED`, so `eq`
+ * arrives as `=` and a classifier keyed on the six symbols answers for both
+ * classes of comparison rather than for one of them (#763).
+ * @param {{node: Node, expression: string, pattern: boolean}} found - Record
+ * @param {object} left - The node on the near side
+ * @param {object} right - The node on the far side
+ * @return {string} - The operator, spelled with symbols
+ */
+const operatorOf = function(found, left, right) {
+  const written = parting(found, left, right)[0].value
+  return SYMBOLED[written] ?? written
+}
+
 module.exports = {
   FUNCTIONS,
   LOOSE,
+  WORDED,
   calls,
   gathered,
   isValid,
   offsetOf,
+  operatorOf,
   parseOf,
-  parting,
   textOf,
   tight,
+  tokensOf,
 }

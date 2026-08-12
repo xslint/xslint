@@ -276,7 +276,8 @@ Today this covers nine checks:
   simplified version-appropriately: on XSLT 2.0+, `count($x) > 0` becomes
   `exists($x)` and `count($x) = 0` becomes `empty($x)`; on 1.0 (where those
   functions don't exist), `boolean($x)` — or a bare `$x` in a whole `@test` —
-  and `not($x)`.
+  and `not($x)`. The value comparisons XSLT 2.0 added say the same thing, so
+  `count($x) eq 0` and `0 lt count($x)` are simplified too.
 - `starts-with-double-slash`, outside an `xsl:template` — the redundant leading
   `//` of a pattern is dropped: `match="//keyed"` on an `xsl:key` becomes
   `match="keyed"`. Only a template's pattern is ranked by priority, so on
@@ -290,7 +291,10 @@ Today this covers nine checks:
   coerces its value to a boolean.
 - `predicate-position-literal` — a positional predicate written the long way is
   shortened: `item[position() = 1]` becomes `item[1]`, and
-  `item[position() = last()]` becomes `item[last()]`.
+  `item[position() = last()]` becomes `item[last()]`. The value comparison
+  `item[position() eq 1]` shortens the same way, both operands being integers,
+  and the operand that survives keeps its own spelling, so a prefixed
+  `fn:last()` stays prefixed.
 
 Only the exact span that was flagged is rewritten — the rest of the file is
 left byte-for-byte intact — and a fix is skipped rather than applied when the
@@ -310,7 +314,12 @@ Today this covers:
 - `string-length-compared-to-zero` — an emptiness test spelled as a length is
   simplified: `string-length(@x) > 0` becomes `@x != ''`, `= 0` becomes
   `@x = ''`, and the no-argument `string-length() = 0` becomes `. = ''`, the
-  context item being what such a call measures. A suggestion because the two are
+  context item being what such a call measures. The value comparisons are read
+  too, and the rewrite keeps the class it was given, so `string-length(@x) eq 0`
+  becomes `@x eq ''` rather than being moved into the general comparison it was
+  not written as — which is one more reason it is a suggestion, a value
+  comparison against an absent node answering the empty sequence where the
+  general one answers false. A suggestion because the two are
   not general equivalents: they differ for an absent attribute
   (`string-length(@x) = 0` is true, `@x = ''` is false) and, in XPath 1.0, for a
   multi-node set. An argument that binds at least as loosely as the comparison
