@@ -50,15 +50,20 @@ const {minimatch} = require('minimatch')
  * What is left here reads the document rather than the expressions it carries:
  * the two declarative loaders, which run their selectors over it, and the three
  * that ask about namespaces and imports.
- * @type {Array.<{run: function(Array.<{file: string, xsl: Document}>,
+ * @type {Array.<{name: string,
+ *  run: function(Array.<{file: string, xsl: Document}>,
  *  Array.<string>): Array.<object>, checks: Array.<string>}>}
  */
 const LINTERS = [
-  {run: lintByXpath, checks: xpathChecks},
-  {run: lintByCorpus, checks: corpusChecks},
-  {run: lintByNamespace, checks: namespaceChecks},
-  {run: lintByResultNamespace, checks: resultNamespaceChecks},
-  {run: lintByImports, checks: importChecks},
+  {name: 'xpath-linter', run: lintByXpath, checks: xpathChecks},
+  {name: 'corpus-linter', run: lintByCorpus, checks: corpusChecks},
+  {name: 'namespace-linter', run: lintByNamespace, checks: namespaceChecks},
+  {
+    name: 'result-namespace-linter',
+    run: lintByResultNamespace,
+    checks: resultNamespaceChecks,
+  },
+  {name: 'import-linter', run: lintByImports, checks: importChecks},
 ]
 
 /**
@@ -69,21 +74,58 @@ const LINTERS = [
  * themselves, with `defect` withholding the fix on what the grammar refuses;
  * the exclusion is structural now, and there is no gate for a new check to
  * remember.
- * @type {Array.<{run: function(Array.<{source: object, found: object}>,
+ * @type {Array.<{name: string,
+ *  run: function(Array.<{source: object, found: object}>,
  *  Array.<string>): Array.<object>, checks: Array.<string>}>}
  */
 const EXPRESSION_LINTERS = [
-  {run: lintByAxis, checks: axisChecks},
-  {run: lintByNamespaceAxis, checks: namespaceAxisChecks},
-  {run: lintByNodeSet, checks: nodeSetChecks},
-  {run: lintByCount, checks: countChecks},
-  {run: lintByStringLength, checks: stringLengthChecks},
-  {run: lintByName, checks: nameChecks},
-  {run: lintByTranslate, checks: translateChecks},
-  {run: lintByDoubleNegation, checks: doubleNegationChecks},
-  {run: lintByBooleanCall, checks: booleanCallChecks},
-  {run: lintByPredicatePosition, checks: predicatePositionChecks},
-  {run: lintByFormat, checks: formatChecks},
+  {name: 'xpath-axis-linter', run: lintByAxis, checks: axisChecks},
+  {
+    name: 'using-namespace-axis-linter',
+    run: lintByNamespaceAxis,
+    checks: namespaceAxisChecks,
+  },
+  {name: 'node-set-linter', run: lintByNodeSet, checks: nodeSetChecks},
+  {name: 'count-linter', run: lintByCount, checks: countChecks},
+  {
+    name: 'string-length-linter',
+    run: lintByStringLength,
+    checks: stringLengthChecks,
+  },
+  {name: 'name-linter', run: lintByName, checks: nameChecks},
+  {name: 'translate-linter', run: lintByTranslate, checks: translateChecks},
+  {
+    name: 'redundant-double-negation-linter',
+    run: lintByDoubleNegation,
+    checks: doubleNegationChecks,
+  },
+  {
+    name: 'redundant-boolean-call-linter',
+    run: lintByBooleanCall,
+    checks: booleanCallChecks,
+  },
+  {
+    name: 'predicate-position-linter',
+    run: lintByPredicatePosition,
+    checks: predicatePositionChecks,
+  },
+  {name: 'xpath-format-linter', run: lintByFormat, checks: formatChecks},
+]
+
+/**
+ * Every linting stage a run passes through, named by the module it lives in and
+ * paired with what it is handed — the corpus for one that reads the document,
+ * the expressions the validator kept for one that reads a derivation. Derived
+ * from the two lists rather than written out beside them, so a linter cannot be
+ * wired into the pipeline and left out of what measures how it grows (#756).
+ * @type {Array.<{name: string, over: string,
+ *  run: function(Array, Array.<string>): Array.<object>}>}
+ */
+const STAGES = [
+  ...LINTERS.map(({name, run}) => ({name: name, run: run, over: 'corpus'})),
+  ...EXPRESSION_LINTERS.map(
+    ({name, run}) => ({name: name, run: run, over: 'expressions'}),
+  ),
 ]
 
 /**
@@ -334,3 +376,4 @@ const xslint = function(pths, options) {
 module.exports = xslint
 module.exports.lint = lint
 module.exports.fixed = fixed
+module.exports.STAGES = STAGES
