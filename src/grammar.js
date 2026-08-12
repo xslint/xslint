@@ -40,6 +40,7 @@ const SINCE = {
   'idiv': '2.0',
   'inline-namespace': '3.0',
   'instance': '2.0',
+  'instruction-name': '2.0',
   'intersect': '2.0',
   'let': '3.0',
   'lookup': '3.0',
@@ -106,52 +107,6 @@ const AXES = [
   TOKENS.ANCESTOR, TOKENS.ANCESTOR_OR_SELF, TOKENS.NAMESPACE,
 ]
 
-/**
- * The names XPath has taken for itself, each with the version that took it and
- * what it took it for. A `test` is a kind test, standing where a node test
- * stands; an `item` is an item type, standing in a sequence type and nowhere a
- * node test does; a `keyword` is neither, standing for a construct of its own —
- * `if` opens a conditional, and `switch` and `typeswitch` open what those two
- * versions took the words for and this grammar has no production of.
- *
- * The floor is not a detail beside the name, it is half of what the name means:
- * below it the same characters are an ordinary call to a function so called.
- * `element(a)` is a kind test from 2.0 and a call at 1.0, `namespace-node()` a
- * kind test from 3.0 and a call before it, and xsltproc reads every name here
- * that way at 1.0 — parsing the expression and then going looking for the
- * function, which is #576's question and not this parser's. Two lists of names
- * beside a map of the floors was that fact written twice with the version in
- * one copy only, so the lists answered the same at every version and
- * `element(a)` came back a `step` in a 1.0 stylesheet: the verdict agreed with
- * the engine and the tree did not, which is the half no acceptance diff can see
- * and the half Phase 4 of #644 walks (#728). One entry per name cannot drift
- * that way, a kind test with no floor being inexpressible.
- *
- * A name is taken only where a *call* could stand, which is to say in front of
- * a bracket: `item` names an element as well as anything else does, so `//item`
- * is a path and no concern of this table.
- * @type {{[name: string]: {from: string, kind: string}}}
- */
-const RESERVED = {
-  'array': {from: '3.0', kind: 'item'},
-  'attribute': {from: '2.0', kind: 'test'},
-  'comment': {from: '1.0', kind: 'test'},
-  'document-node': {from: '2.0', kind: 'test'},
-  'element': {from: '2.0', kind: 'test'},
-  'empty-sequence': {from: '2.0', kind: 'item'},
-  'function': {from: '3.0', kind: 'item'},
-  'if': {from: '2.0', kind: 'keyword'},
-  'item': {from: '2.0', kind: 'item'},
-  'map': {from: '3.0', kind: 'item'},
-  'namespace-node': {from: '3.0', kind: 'test'},
-  'node': {from: '1.0', kind: 'test'},
-  'processing-instruction': {from: '1.0', kind: 'test'},
-  'schema-attribute': {from: '2.0', kind: 'test'},
-  'schema-element': {from: '2.0', kind: 'test'},
-  'switch': {from: '3.0', kind: 'keyword'},
-  'text': {from: '1.0', kind: 'test'},
-  'typeswitch': {from: '2.0', kind: 'keyword'},
-}
 
 /**
  * The kinds a name arrives as: a QName, the prefixed call the lexer tells apart
@@ -467,40 +422,6 @@ const named = function(cursor) {
   return shaped('name', from, cursor, [])
 }
 
-/**
- * A kind test, and the whole of one: a name XPath reserves for a test, and the
- * brackets behind it, whatever they hold. What a check asks of a type is which
- * name it mentions, so the brackets are counted rather than read — the shape of
- * what stands inside them is #679's business.
- *
- * It takes no occurrence indicator, which is the point of it standing alone.
- * The same characters are read by three productions of different shapes — a
- * `NodeTest`'s kind test, an `ItemType` inside a `SequenceType`, and the
- * `SingleType` a cast takes — and one function serving all three took `?`, `*`
- * and `+` wherever it was called. A step has no occurrence indicator to take,
- * so `text() + 1` lost its `+` to the type and was refused where every
- * processor accepts it (#740).
- * @param {object} cursor - The cursor
- * @return {object} - The `type` node
- */
-const kinded = function(cursor) {
-  const from = significant(cursor)
-  take(cursor)
-  expect(cursor, TOKENS.LPAREN, '"("')
-  let depth = 1
-  while (depth > 0 && ahead(cursor) !== END) {
-    if (sees(cursor, TOKENS.LPAREN)) {
-      depth += 1
-    } else if (sees(cursor, TOKENS.RPAREN)) {
-      depth -= 1
-    }
-    take(cursor)
-  }
-  if (depth > 0) {
-    refuse(cursor, '")"')
-  }
-  return shaped('type', from, cursor, [])
-}
 
 /**
  * The occurrence indicator a type ends with, taken where one stands, and the
@@ -556,7 +477,8 @@ const itemed = function(cursor) {
     itemed(cursor)
     expect(cursor, TOKENS.RPAREN, '")"')
   } else if (sees(cursor, TOKENS.NAME) &&
-    taken(cursor, ahead(cursor).value, ['test', 'item'])) {
+    taken(cursor, ahead(cursor).value, ['test', 'item']) &&
+    reaches(cursor, TOKENS.LPAREN)) {
     kinded(cursor)
   } else {
     named(cursor)
@@ -594,12 +516,322 @@ const sequenced = function(cursor) {
  */
 const singled = function(cursor) {
   const from = significant(cursor)
+  atomic(cursor)
+  counted(cursor, [TOKENS.LOOKUP])
+  return shaped('type', from, cursor, [])
+}
+
+/**
+ * The name of an atomic or union type, which a cast takes and a map keys on: an
+ * `AtomicOrUnionType` is an `EQName` and a kind test is not one, there being no
+ * atomic type named `node()`, so `1 cast as node()` and
+ * `map(node(), xs:integer)` are both XPST0003 in Saxon-HE 12.5.
+ *
+ * A reserved name is reserved *in front of a bracket* and nowhere else, the
+ * rule `tested` has always applied and the reason `//item` is the path it looks
+ * like. Refusing the name on sight instead reached the bare spelling of
+ * it, so `1 cast as node` and `map(text, xs:integer)` were refused where Saxon
+ * answers XPST0051 — an unknown type, static against an expression it parsed —
+ * and where fontoxpath accepts. 45 such spellings arrived with the brackets
+ * being read for the first time, since a map's key and an array's members are
+ * types this production had never been handed before, and 75 more were already
+ * refused: an invented defect either way, which is the direction that costs a
+ * user an `invalid-xpath-expression` on working XPath and drops the expression
+ * from every check behind the validator (#753).
+ * @param {object} cursor - The cursor
+ */
+const atomic = function(cursor) {
   if (sees(cursor, TOKENS.NAME) &&
-    taken(cursor, ahead(cursor).value, ['test', 'item'])) {
+    taken(cursor, ahead(cursor).value, ['test', 'item']) &&
+    reaches(cursor, TOKENS.LPAREN)) {
     refuse(cursor, 'the name of an atomic type')
   }
   named(cursor)
-  counted(cursor, [TOKENS.LOOKUP])
+}
+
+/**
+ * The empty bracket, which is the whole of what six of the reserved names
+ * take — `node`, `text`, `comment`, `namespace-node`, `item` and
+ * `empty-sequence`. `TextTest ::= "text" "(" ")"` spells no argument, so
+ * `text(a)` and `comment("x")` are XPST0003 in every processor and were parsed
+ * here as a step until the brackets were read rather than counted (#753).
+ * @param {object} cursor - The cursor
+ */
+const closes = function(cursor) {
+  expect(cursor, TOKENS.RPAREN, '")"')
+}
+
+/**
+ * The name or the wildcard an element or attribute test names its node with,
+ * `ElementNameOrWildcard` and `AttribNameOrWildcard` being one shape twice. A
+ * number, a lookup or a variable is none of it: `element(1)` and `element(?)`
+ * are XPST0003.
+ * @param {object} cursor - The cursor
+ */
+const wildcarded = function(cursor) {
+  if (sees(cursor, TOKENS.MULTI)) {
+    take(cursor)
+  } else {
+    named(cursor)
+  }
+}
+
+/**
+ * What a processing-instruction test takes: nothing, an NCName, or a string
+ * literal. The name is where the versions part, and by more than a spelling —
+ * XPath 1.0's `NodeTest` admits `'processing-instruction' '(' Literal ')'` and
+ * nothing else, so `processing-instruction(a)` is a syntax error there and
+ * xsltproc says so, while 2.0's `PITest` adds the NCName. A prefix is refused
+ * at every version, an NCName carrying no colon, which is what Saxon answers of
+ * `processing-instruction(my:a)`. Whether a literal's content spells an NCName
+ * is a different question and not this one: `processing-instruction('a b')` is
+ * XPTY0004, a type error against text the grammar accepts.
+ * @param {object} cursor - The cursor
+ */
+const instructed = function(cursor) {
+  if (sees(cursor, TOKENS.STRING)) {
+    take(cursor)
+  } else if (!sees(cursor, TOKENS.RPAREN)) {
+    admits(cursor, 'instruction-name')
+    if (!sees(cursor, TOKENS.NAME) || ahead(cursor).value.includes(':')) {
+      refuse(cursor, 'a name with no prefix, or a string literal')
+    }
+    take(cursor)
+  }
+  expect(cursor, TOKENS.RPAREN, '")"')
+}
+
+/**
+ * What an element test takes: nothing, a name or wildcard, and behind a comma
+ * the name of a type with an optional `?` for whether the element may be
+ * nillable. One type and no more, and no occurrence indicator on it — both
+ * `element(a, xs:string, xs:integer)` and `element(a, xs:string*)` are
+ * XPST0003 — and the type is a name rather than a wildcard, which is what
+ * parts `element(*, xs:string)` from `element(a, *)`.
+ * @param {object} cursor - The cursor
+ */
+const elemented = function(cursor) {
+  if (!sees(cursor, TOKENS.RPAREN)) {
+    wildcarded(cursor)
+    if (sees(cursor, TOKENS.COMMA)) {
+      take(cursor)
+      named(cursor)
+      counted(cursor, [TOKENS.LOOKUP])
+    }
+  }
+  expect(cursor, TOKENS.RPAREN, '")"')
+}
+
+/**
+ * What an attribute test takes, which is an element test's shape less the `?`:
+ * an attribute cannot be nillable, so `attribute(a, xs:string?)` is XPST0003
+ * where `element(a, xs:string?)` is the spelling that carries the question.
+ * @param {object} cursor - The cursor
+ */
+const attributed = function(cursor) {
+  if (!sees(cursor, TOKENS.RPAREN)) {
+    wildcarded(cursor)
+    if (sees(cursor, TOKENS.COMMA)) {
+      take(cursor)
+      named(cursor)
+    }
+  }
+  expect(cursor, TOKENS.RPAREN, '")"')
+}
+
+/**
+ * The one name a schema element or schema attribute test takes, and takes
+ * always: `ElementDeclaration` is an EQName, so a wildcard is not one and
+ * neither is nothing at all. Saxon answers XPST0008 to a well-spelled one,
+ * having no schema to look the declaration up in, which is a static error
+ * against an expression it parsed — the difference a reader of error *codes*
+ * sees and a reader of exit statuses does not.
+ * @param {object} cursor - The cursor
+ */
+const declared = function(cursor) {
+  named(cursor)
+  expect(cursor, TOKENS.RPAREN, '")"')
+}
+
+/**
+ * What a document test takes: nothing, or the one element test or schema
+ * element test that says what stands under the root. A text test is not one and
+ * neither is a bare name, both of them XPST0003.
+ * @param {object} cursor - The cursor
+ */
+const documented = function(cursor) {
+  if (!sees(cursor, TOKENS.RPAREN)) {
+    if (!sees(cursor, TOKENS.NAME) ||
+      !DOCUMENTED.includes(ahead(cursor).value)) {
+      refuse(cursor, 'an element test or a schema element test')
+    }
+    kinded(cursor)
+  }
+  expect(cursor, TOKENS.RPAREN, '")"')
+}
+
+/**
+ * What a map test takes: the `*` that stands for any map, or a key type and a
+ * value type with a comma between them. The key is an `AtomicOrUnionType`, so
+ * it takes no occurrence indicator and no kind test, while the value is a whole
+ * `SequenceType` and takes both.
+ * @param {object} cursor - The cursor
+ */
+const paired = function(cursor) {
+  if (sees(cursor, TOKENS.MULTI)) {
+    take(cursor)
+  } else {
+    atomic(cursor)
+    expect(cursor, TOKENS.COMMA, '","')
+    sequenced(cursor)
+  }
+  expect(cursor, TOKENS.RPAREN, '")"')
+}
+
+/**
+ * What an array test takes: the `*` that stands for any array, or the one
+ * sequence type its members have. Two is one too many, `array(xs:integer,
+ * xs:string)` being XPST0003, and the `*` of `array(xs:integer*)` is that one
+ * type's occurrence indicator rather than the wildcard, which is why the
+ * wildcard is read from the front.
+ * @param {object} cursor - The cursor
+ */
+const listed = function(cursor) {
+  if (sees(cursor, TOKENS.MULTI)) {
+    take(cursor)
+  } else {
+    sequenced(cursor)
+  }
+  expect(cursor, TOKENS.RPAREN, '")"')
+}
+
+/**
+ * What a function test takes, which is the one kind test whose shape reaches
+ * past its own closing bracket: `AnyFunctionTest` is `function(*)` and stops
+ * there, while `TypedFunctionTest` takes a sequence type per argument and
+ * then requires an `as` and the type it returns. Both halves were missing — the
+ * bracket count swallowed the arguments and left the `as` standing, so
+ * `$v instance of function() as xs:integer` was refused for text left over at
+ * the end, an invented defect against an expression Saxon accepts, while
+ * `function()` and `function(xs:integer)` were parsed and are XPST0003 for
+ * returning nothing. The star takes no `as`, `function(*) as xs:integer` being
+ * a syntax error too.
+ * @param {object} cursor - The cursor
+ */
+const returned = function(cursor) {
+  let any = false
+  if (sees(cursor, TOKENS.MULTI)) {
+    take(cursor)
+    any = true
+  } else if (!sees(cursor, TOKENS.RPAREN)) {
+    sequenced(cursor)
+    while (sees(cursor, TOKENS.COMMA)) {
+      take(cursor)
+      sequenced(cursor)
+    }
+  }
+  expect(cursor, TOKENS.RPAREN, '")"')
+  if (!any) {
+    keyword(cursor, 'as')
+    sequenced(cursor)
+  }
+}
+
+/**
+ * The names XPath has taken for itself, each with the version that took it and
+ * what it took it for. A `test` is a kind test, standing where a node test
+ * stands; an `item` is an item type, standing in a sequence type and nowhere a
+ * node test does; a `keyword` is neither, standing for a construct of its own —
+ * `if` opens a conditional, and `switch` and `typeswitch` open what those two
+ * versions took the words for and this grammar has no production of.
+ *
+ * The floor is not a detail beside the name, it is half of what the name means:
+ * below it the same characters are an ordinary call to a function so called.
+ * `element(a)` is a kind test from 2.0 and a call at 1.0, `namespace-node()` a
+ * kind test from 3.0 and a call before it, and xsltproc reads every name here
+ * that way at 1.0 — parsing the expression and then going looking for the
+ * function, which is #576's question and not this parser's. Two lists of names
+ * beside a map of the floors was that fact written twice with the version in
+ * one copy only, so the lists answered the same at every version and
+ * `element(a)` came back a `step` in a 1.0 stylesheet: the verdict agreed with
+ * the engine and the tree did not, which is the half no acceptance diff can see
+ * and the half Phase 4 of #644 walks (#728). One entry per name cannot drift
+ * that way, a kind test with no floor being inexpressible.
+ *
+ * A name is taken only where a *call* could stand, which is to say in front of
+ * a bracket: `item` names an element as well as anything else does, so `//item`
+ * is a path and no concern of this table.
+ * The production that reads each name's brackets is the third field, so a name
+ * this grammar takes for a test or an item type cannot lack the production that
+ * reads it — which is why the table stands here, below those productions,
+ * rather than beside the version tables it began among (#753). A keyword has no
+ * `reads`, `if` and `switch` and `typeswitch` opening no bracket this parser
+ * reads a type out of.
+ * @type {{[name: string]: {from: string, kind: string,
+ *   reads?: function(object): void}}}
+ */
+const RESERVED = {
+  'array': {from: '3.0', kind: 'item', reads: listed},
+  'attribute': {from: '2.0', kind: 'test', reads: attributed},
+  'comment': {from: '1.0', kind: 'test', reads: closes},
+  'document-node': {from: '2.0', kind: 'test', reads: documented},
+  'element': {from: '2.0', kind: 'test', reads: elemented},
+  'empty-sequence': {from: '2.0', kind: 'item', reads: closes},
+  'function': {from: '3.0', kind: 'item', reads: returned},
+  'if': {from: '2.0', kind: 'keyword'},
+  'item': {from: '2.0', kind: 'item', reads: closes},
+  'map': {from: '3.0', kind: 'item', reads: paired},
+  'namespace-node': {from: '3.0', kind: 'test', reads: closes},
+  'node': {from: '1.0', kind: 'test', reads: closes},
+  'processing-instruction': {from: '1.0', kind: 'test', reads: instructed},
+  'schema-attribute': {from: '2.0', kind: 'test', reads: declared},
+  'schema-element': {from: '2.0', kind: 'test', reads: declared},
+  'switch': {from: '3.0', kind: 'keyword'},
+  'text': {from: '1.0', kind: 'test', reads: closes},
+  'typeswitch': {from: '2.0', kind: 'keyword'},
+}
+
+/**
+ * The two tests a document test admits inside its brackets, which is the whole
+ * of `DocumentTest`'s own alternation.
+ * @type {Array.<string>}
+ */
+const DOCUMENTED = ['element', 'schema-element']
+
+/**
+ * A kind test, and the whole of one: a name XPath reserves for a test or an
+ * item type, and the brackets behind it read as that name's own production.
+ *
+ * They were *counted* rather than read until #753 — anything at all could stand
+ * inside them — so `text(a)`, `node($v)`, `element(1)` and `element(a b)` all
+ * parsed, in a pattern as much as in an expression, and every one of them is
+ * XPST0003 in fontoxpath and in Saxon-HE 12.5. Since #739 that is a missing
+ * `invalid-xpath-expression`: a `match="text(a)"` no processor loads was
+ * reported by nothing. The counting hid an under-acceptance too, which is the
+ * direction that invents a defect against working code — a function test's
+ * return type stands *behind* the closing bracket, so the count swallowed the
+ * arguments and the `as` was text left over at the end.
+ *
+ * Which production reads which name is the `reads` field of `RESERVED`, beside
+ * the version that reserved the name and what it was reserved for, so a name
+ * this grammar takes cannot lack the production that reads it.
+ *
+ * It takes no occurrence indicator, which is the point of it standing alone.
+ * The same characters are read by three productions of different shapes — a
+ * `NodeTest`'s kind test, an `ItemType` inside a `SequenceType`, and the
+ * `SingleType` a cast takes — and one function serving all three took `?`, `*`
+ * and `+` wherever it was called. A step has no occurrence indicator to take,
+ * so `text() + 1` lost its `+` to the type and was refused where every
+ * processor accepts it (#740).
+ * @param {object} cursor - The cursor
+ * @return {object} - The `type` node
+ */
+const kinded = function(cursor) {
+  const from = significant(cursor)
+  const name = ahead(cursor).value
+  take(cursor)
+  expect(cursor, TOKENS.LPAREN, '"("')
+  RESERVED[name].reads(cursor)
   return shaped('type', from, cursor, [])
 }
 

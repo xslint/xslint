@@ -12,11 +12,18 @@ const assert = require('assert')
  * primary and an axis step alike, since which of the two stands at the front is
  * the decision `StepExpr ::= PostfixExpr | AxisStep` turns on and the one
  * `a?b` and `@a(1)` were let through by (#740).
+ *
+ * Four of them are a kind test carrying arguments, which is what #753 widened
+ * the net for: the brackets of one were counted rather than read, so anything
+ * at all stood inside them and no shape here could tell. A head reaching into
+ * the productions that read them is what makes a later loosening turn red.
  * @type {Array.<string>}
  */
 const HEADS = [
   'a', '@a', 'text()', 'element(x)', '$v', '1', '"s"', '(a)', 'f(1)',
-  'map{"k":1}', '[1]', '.', '//a', 'abs#1',
+  'map{"k":1}', '[1]', '.', '//a', 'abs#1', 'processing-instruction(a)',
+  'element(a, xs:string)', 'attribute(*, xs:string)',
+  'document-node(element(a))',
 ]
 
 /**
@@ -24,6 +31,10 @@ const HEADS = [
  * and each of the four expressions that take a type on their right, spelled
  * with the item type, the parenthesized item type, all three occurrence
  * indicators and the kind test that tell the three type productions apart.
+ * Three of them are the item types whose own brackets hold a type — a map's key
+ * and value, an array's members, and the arguments a function test takes with
+ * the type it returns behind its closing bracket, which is the one shape in
+ * XPath that reaches past it (#753).
  * @type {Array.<string>}
  */
 const TAILS = [
@@ -32,6 +43,8 @@ const TAILS = [
   'instance of (xs:integer)', 'instance of item()*', 'instance of xs:integer+',
   'cast as xs:integer', 'cast as xs:integer?', 'cast as node()',
   'castable as xs:integer', 'treat as node()', 'treat as (node())',
+  'instance of map(xs:string, xs:integer)', 'instance of array(xs:integer*)',
+  'instance of function(node()) as node()',
 ]
 
 /**
@@ -144,8 +157,8 @@ const ACCOUNTED = KNOWN
 describe('grammar over generated shapes', function() {
   it('cannot answer having swept fewer shapes than it was written for', () => {
     assert.ok(
-      SHAPES.length >= 8000,
-      `the sweep generates ${SHAPES.length} shapes, fewer than the 8000 that ` +
+      SHAPES.length >= 14000,
+      `the sweep generates ${SHAPES.length} shapes, fewer than the 14000 that ` +
         'stood here when this gate was written, so it is answering about a ' +
         'space somebody has narrowed',
     )
