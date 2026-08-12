@@ -4,8 +4,9 @@
  */
 
 const {TOKENS} = require('../tokens')
-const {calls, gathered, offsetOf, operatorOf, textOf, tokensOf} =
-  require('../syntax')
+const {
+  VALUED, calls, gathered, offsetOf, operatorOf, textOf, tokensOf,
+} = require('../syntax')
 const {metaOf, suppressed, defect} = require('../checks')
 const {logger} = require('../logger')
 
@@ -26,16 +27,6 @@ const META = metaOf(CHECK)
  * @type {Array.<string>}
  */
 const names = [CHECK]
-
-/**
- * The kinds a predicate holding a comparison comes back as. A general and a
- * value comparison are two kinds and one question here: `[position() eq 1]`
- * selects the node `[1]` selects, both operands being `xs:integer`, so the word
- * spelling is the same smell as the symbol one and was reported on neither any
- * 2.0 stylesheet (#575).
- * @type {Array.<string>}
- */
-const KINDS = ['comparison', 'value-comparison']
 
 /**
  * Whether the node is the call `position()` with nothing in its brackets.
@@ -77,7 +68,11 @@ const shortens = function(found, node) {
  *
  * It reads the predicates the grammar built rather than matching brackets and
  * reducing what stands between them to a signature of one character per token
- * (#575). Three things follow from that. A predicate is judged by what its one
+ * (#575). Which comparison the predicate holds is `VALUED`'s answer, so
+ * `[position() eq 1]` reads as the same smell `[position() = 1]` is — it
+ * selects the node `[1]` selects, both operands being `xs:integer` — and
+ * neither class is a spelling this file has an opinion of its own about. Three
+ * things follow from reading the tree. A predicate is judged by what its one
  * child *is*, so `[position() = 1 and @on]` holds a comparison and is not one:
  * an `and` is what the predicate holds, and rewriting the comparison inside it
  * would turn a positional test into the boolean `[1 and @on]`. The operand that
@@ -98,7 +93,8 @@ const literals = function(found) {
     const [inner] = predicate.children
     const [left, right] = inner.children
     let short = null
-    if (KINDS.includes(inner.kind) && operatorOf(found, left, right) === '=') {
+    if (VALUED.includes(inner.kind) &&
+      operatorOf(found, left, right) === '=') {
       if (positional(found, left) && shortens(found, right)) {
         short = right
       } else if (positional(found, right) && shortens(found, left)) {

@@ -57,9 +57,10 @@ admits. Everything binding tighter carries over as it stands, a union
 part ways in two cases. An **absent** node: `string-length(@x) = 0` is true when
 `@x` is missing, the empty string having length zero, but `@x = ''` is false,
 since an empty node-set matches nothing. The value comparison goes further and
-answers the empty sequence there, `@x eq ''` having nothing to compare, which
-reads as false in a test and prints as nothing where the original printed
-`false`. And a **multi-node** `X`, in XPath 1.0:
+answers the empty sequence there, `@x eq ''` having nothing to compare: it reads
+as false in a test, as `@x = ''` does, and prints as nothing where the general
+comparison prints `false`. Neither says what `string-length(@x) = 0` says of a
+missing node, which is `true`. And a **multi-node** `X`, in XPath 1.0:
 there `string-length` reads the first node's value while `X != ''` is true if
 *any* node is non-empty, whereas on 2.0 and later a sequence of two or more
 items raises `XPTY0004` and the original is already an error. For the common

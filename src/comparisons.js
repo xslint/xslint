@@ -3,7 +3,8 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {calls, gathered, offsetOf, operatorOf, textOf} = require('./syntax')
+const {VALUED, calls, gathered, offsetOf, operatorOf, textOf} =
+  require('./syntax')
 
 /**
  * The digits a call is compared against to ask a question about existence
@@ -12,17 +13,6 @@ const {calls, gathered, offsetOf, operatorOf, textOf} = require('./syntax')
  * @type {Array.<string>}
  */
 const DIGITS = ['0', '1']
-
-/**
- * The two kinds a comparison of a call with a digit comes back as. XPath spells
- * one question two ways from 2.0 on — `count(x) = 0` and `count(x) eq 0` — and
- * the grammar builds a node of a different kind for each, so a scan gathering
- * one of them walks past every stylesheet written in the other (#763). The node
- * comparisons are no part of this: `count(x) is 0` compares node identity
- * with a number and is a type error, not a count of nothing.
- * @type {Array.<string>}
- */
-const KINDS = ['comparison', 'value-comparison']
 
 /**
  * Each operator with its sides swapped, so a reversed `0 < f(x)` reads as
@@ -75,7 +65,7 @@ const FLIP = {
  */
 const comparedToZero = function(found, name, decide) {
   const results = []
-  for (const node of gathered(found, KINDS)) {
+  for (const node of gathered(found, VALUED)) {
     const [left, right] = node.children
     let call = left
     let digit = right

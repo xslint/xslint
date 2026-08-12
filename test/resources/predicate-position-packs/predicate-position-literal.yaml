@@ -28,6 +28,8 @@ input: |-
       <xsl:value-of select="keep[position() = 1 and @on]"/>
       <xsl:value-of select="keep[position() eq 1]"/>
       <xsl:value-of select="keep[@id = 5]"/>
+      <xsl:value-of select="keep[position(1) eq 1]"/>
+      <xsl:value-of select="keep[position() eq last(1)]"/>
       <xsl:value-of select="keep[1]"/>
       <xsl:value-of select="bad]"/>
     </xsl:template>

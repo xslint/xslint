@@ -49,6 +49,32 @@ const ASSUMED = KNOWN[KNOWN.length - 1]
 const PARSES = new Map()
 
 /**
+ * The two kinds a comparison of two values comes back as. XPath spells one
+ * question two ways from 2.0 on — `count(x) = 0` and `count(x) eq 0` — and the
+ * grammar builds a node of a different kind for each, so a check about the
+ * question gathers both or is blind to every stylesheet written in the other
+ * (#763, #575).
+ *
+ * One list here rather than one per check, for the reason `TRIVIA` and `OPAQUE`
+ * are one each in `src/tokens.js`: a list spelled twice is a kind missing from
+ * one of the copies, which is how a scan came to read inside a string literal
+ * (#708). A `no-restricted-syntax` selector refuses a second copy anywhere in
+ * `src/` but this file, which owns this one and `LOOSE` beside it, and
+ * `src/grammar.js`, which mints the kinds and names all three of them in the
+ * table that decides which operator builds which.
+ *
+ * `VALUED` for what the two of them have in common: a general and a value
+ * comparison compare values, where the third class compares nodes.
+ *
+ * The node comparisons are no part of it. `is`, `<<` and `>>` ask about
+ * identity and document order rather than about a value, so `count(x) is 0` is
+ * a type error rather than a count of nothing, and `[position() is 1]` names no
+ * position.
+ * @type {Array.<string>}
+ */
+const VALUED = ['comparison', 'value-comparison']
+
+/**
  * Each operator a general comparison is spelled with, paired with the word
  * XPath 2.0 spells the same question in. The two classes ask one thing of their
  * operands and differ in what they do with a sequence of them, so a check about
@@ -57,9 +83,9 @@ const PARSES = new Map()
  * reading only the symbols is how `count(x) eq 0`, `string-length(@x) eq 0` and
  * `[position() eq 1]` drew nothing at all on any 2.0 stylesheet (#763, #575).
  *
- * The node comparisons are not in it. `is`, `<<` and `>>` ask about identity
- * and document order rather than about a value, so neither spelling has a twin
- * in the other and no check reading this table is about them.
+ * The node comparisons stand outside it as they stand outside `VALUED`,
+ * and one step further out: neither of a node comparison's spellings has a twin
+ * in the other class to pair it with.
  * @type {{[symbol: string]: string}}
  */
 const WORDED = {
@@ -282,6 +308,7 @@ const operatorOf = function(found, left, right) {
 }
 
 module.exports = {
+  VALUED,
   FUNCTIONS,
   LOOSE,
   WORDED,
