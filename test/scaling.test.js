@@ -75,78 +75,43 @@ const SPREAD = 100000
  * Without it the first stage of the first attempt is timed cold and reads half
  * what it costs warm, which puts every ratio of that attempt below what it
  * should be — a bias, not noise, and one no retry corrects because it is the
- * measurement that is wrong rather than the machine.
+ * measurement that is wrong rather than the machine. Small on purpose: it has
+ * only to run every path once, and a warm-up the size of the corpus itself
+ * measurably widened the spread instead of narrowing it, leaving the heap in a
+ * state the first measured pass then collects.
  * @type {number}
  */
 const WARMUP = 10
 
 /**
- * One template, holding an expression of every shape the pipeline reads: an
- * axis, a comparison with zero, a call each linter is about, an attribute value
- * template, a predicate, and a literal result element in a namespace. A stage
- * given nothing it is about cannot be measured at all, which is what the three
- * per-document linters were until this corpus grew namespaces and imports.
- * @param {number} seed - Number of the stylesheet
- * @param {number} at - Number of the template within it
- * @param {number} templates - How many templates the stylesheet holds
- * @return {string} - The XML of one `xsl:template`
+ * The one stylesheet the corpus is built out of, read once. It is a committed
+ * resource rather than a string spelled here, the way every test stylesheet in
+ * this repository is, and it holds an expression of every shape the pipeline
+ * reads: an axis, a comparison with zero, a call each linter is about, an
+ * attribute value template, a predicate, an import, a namespace nothing uses,
+ * and a literal result element in a namespace of its own. A stage handed
+ * nothing it is about cannot be measured at all — the three per-document
+ * linters sat at 0.3 ms with a spread of 358% until this corpus grew namespaces
+ * and imports.
+ * @type {string}
  */
-const template = function(seed, at, templates) {
-  const own = `${seed}x${at}`
-  return [
-    `  <xsl:template name="t${own}" match="node${own}">`,
-    `    <xsl:variable name="v${own}" select="child::a${own}/b${own}"/>`,
-    `    <xsl:if test="count($v${own}/c${own}) = 0">`,
-    `      <svg:g id="g${own}" n="{ name($v${own}) }">`,
-    `        <html:p class="p${own}">`,
-    `          <xsl:value-of select="translate($v${own}, 'a${own}', 'b${own}')"/>`,
-    `        </html:p>`,
-    `        <math:mi>`,
-    `          <xsl:value-of select="not(not($v${own}/d${own}))"/>`,
-    `        </math:mi>`,
-    `        <xsl:value-of select="boolean($v${own}/e${own})"/>`,
-    `        <xsl:value-of select="string-length($v${own}/f${own}) &gt; 0"/>`,
-    `      </svg:g>`,
-    `    </xsl:if>`,
-    `    <xsl:for-each select="descendant::g${own}[1]/namespace::*">`,
-    `      <xsl:call-template name="t${seed}x${(at + 1) % templates}"/>`,
-    `    </xsl:for-each>`,
-    `  </xsl:template>`,
-  ].join('\n')
-}
+const SHEET = fs.readFileSync(
+  path.join(__dirname, 'resources', 'scaling', 'stylesheet.xsl'), 'utf-8',
+)
 
 /**
- * One stylesheet, every name in it carrying the number of the file so no two
- * share an expression, a declaration or a namespace. Sharing them would make
- * the corpus cheaper the larger it grew, which is the one direction a gate
- * against growth must not be generous in.
+ * One stylesheet of the corpus, every name in it carrying the number of its
+ * file so no two share an expression, a declaration or a namespace. Sharing
+ * them would make the corpus cheaper the larger it grew, since an expression is
+ * parsed once and remembered against its text, and that is the one direction a
+ * gate against growth must not be generous in.
  * @param {number} seed - Number of the stylesheet
- * @param {number} templates - How many templates it holds
  * @return {string} - The XML of one stylesheet
  */
-const sheet = function(seed, templates) {
-  const body = []
-  for (let at = 0; at < templates; at++) {
-    body.push(template(seed, at, templates))
-  }
-  return [
-    '<?xml version="1.0"?>',
-    '<xsl:stylesheet version="2.0"',
-    '  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"',
-    '  xmlns:svg="http://www.w3.org/2000/svg"',
-    '  xmlns:html="http://www.w3.org/1999/xhtml"',
-    '  xmlns:math="http://www.w3.org/1998/Math/MathML"',
-    `  xmlns:mine="urn:mine:${seed}"`,
-    `  xmlns:dead="urn:dead:${seed}"`,
-    `  xmlns:gone="urn:gone:${seed}"`,
-    '  exclude-result-prefixes="mine">',
-    `  <xsl:import href="s${seed - 1}.xsl"/>`,
-    '  <xsl:template match="/">',
-    `    <xsl:call-template name="t${seed}x0"/>`,
-    '  </xsl:template>',
-    body.join('\n'),
-    '</xsl:stylesheet>',
-  ].join('\n')
+const sheet = function(seed) {
+  return SHEET
+    .replaceAll('PREVIOUS', String(seed - 1))
+    .replaceAll('SEED', String(seed))
 }
 
 /**
@@ -159,7 +124,7 @@ const sheet = function(seed, templates) {
 const corpus = function(from, files) {
   const sources = []
   for (let at = 0; at < files; at++) {
-    sources.push({file: `s${from + at}.xsl`, content: sheet(from + at, 4)})
+    sources.push({file: `s${from + at}.xsl`, content: sheet(from + at)})
   }
   return sources
 }
