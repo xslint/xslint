@@ -89,10 +89,12 @@ stylesheet the <code>translate</code> spell-out is an anachronism.</p>
 <pre><code class="language-xsl">&lt;xsl:value-of select=&quot;lower-case(@id)&quot;/&gt;
 </code></pre>
 <p>The check fires only in XSLT 2.0 and 3.0 — in 1.0 the <code>translate</code> form is the
-only option, so it is not a defect. The rewrite is offered as a
-<code>--fix-suggestions</code> because <code>lower-case()</code> folds more characters than the ASCII
-<code>translate</code>, so it is not a byte-for-byte equivalent. A <code>translate</code> with any
-other pair of arguments is left alone.</p>
+only option, so it is not a defect. Either alphabet may be quoted either way and
+the two need not agree, so <code>translate(@id, &quot;A...Z&quot;, &#39;a...z&#39;)</code> is the same
+anachronism spelled to suit the attribute it stands in.</p>
+<p>A <code>translate</code> with any other pair of arguments is left alone, a near alphabet
+included: an alphabet missing a letter maps that letter to nothing, which is a
+deletion rather than a case fold.</p>
 
   </div>
 </body>

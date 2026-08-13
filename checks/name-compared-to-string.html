@@ -87,11 +87,18 @@ prefix the source happens to use and breaks under a different but equivalent
 namespace binding; <code>self::div</code> matches by expanded name. <code>local-name() = &#39;x&#39;</code>
 throws the namespace away, which XPath 2.0 writes as the wildcard <code>self::*:x</code>. A
 node test also lets the engine match without building and comparing strings.</p>
-<p>The rewrite is offered as a <code>--fix-suggestions</code>, since it changes lexical-name
-matching to expanded-name matching — the intended correction, but a behavior
-change. Only a comparison over the current node (<code>name()</code> / <code>name(.)</code>) with a
-valid name is rewritten; a <code>local-name()</code> fix needs the <code>*:x</code> wildcard, so it is
-offered only for XSLT 2.0 and 3.0.</p>
+<p>Either quote spells the same string and both classes of equality comparison ask
+the same question, so <code>name() = &#39;div&#39;</code>, <code>name() = &quot;div&quot;</code> and the value comparison
+<code>name() eq &quot;div&quot;</code> are one construct, and <code>name() != &#39;div&#39;</code> is <code>not(self::div)</code>.
+The prefix in front of the call makes no difference either: <code>fn:name()</code> is the
+standard function under whatever prefix a stylesheet binds to the XPath functions
+namespace, while a <code>name()</code> of your own is another function and says nothing
+about the context node.</p>
+<p>An ordering comparison is a different question — <code>name() lt &#39;m&#39;</code> asks where the
+name sorts, which no node test expresses — and so is a comparison about another
+node, <code>name(@a) = &#39;x&#39;</code> speaking of the attribute rather than of the element a
+<code>self::</code> step would match. In a 1.0 stylesheet a <code>local-name()</code> comparison has no
+shorter equivalent at all, the <code>*:x</code> wildcard being XPath 2.0&#39;s.</p>
 
   </div>
 </body>

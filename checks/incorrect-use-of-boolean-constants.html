@@ -72,7 +72,7 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-warning">warning</span>
-    <code class="xpath">//xsl:*[local-name() = ('if', 'when')][normalize-space(@test) = ("'true'", "'false'")]</code>
+    <code class="xpath">//xsl:*[local-name() = ('if', 'when')][normalize-space(@test) = ("'true'", "'false'", '"true"', '"false"')]</code>
   </div>
   <div class="check-content">
 <h1>Incorrect use of boolean constants</h1>
@@ -90,6 +90,10 @@ functions <code>true()</code> and <code>false()</code>.</p>
   &lt;xsl:value-of select=&quot;.&quot;/&gt;
 &lt;/xsl:if&gt;
 </code></pre>
+<p>The quote makes no difference: <code>&#39;true&#39;</code> and <code>&quot;true&quot;</code> are the same string, and an
+attribute already standing in double quotes writes the constant
+<code>test=&quot;&amp;quot;true&amp;quot;&quot;</code>, which is always true exactly as the single-quoted
+spelling is.</p>
 <p>Comparing a value to the string <code>&#39;true&#39;</code> is a different thing and correct —
 XML attributes are strings, so <code>@active = &#39;true&#39;</code> is how you test one. That,
 and literal output like <code>&lt;td hidden=&quot;true&quot;/&gt;</code>, are left alone.</p>
