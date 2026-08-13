@@ -194,8 +194,8 @@ const charged = function() {
  * enough for both would say nothing true about either, so the gate stands down
  * here and speaks in `npm test` and in the `build` job over six runners
  * instead. The coverage gate loses nothing by it: every branch this test
- * reaches is reached by the suite around it, so 100% of 1399 branches still
- * holds with the measurement skipped.
+ * reaches is reached by the suite around it, so the 100% gate still holds with
+ * the measurement skipped.
  * @return {boolean} - Whether this process is instrumented for coverage
  */
 const instrumented = function() {

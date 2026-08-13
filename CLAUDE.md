@@ -109,8 +109,8 @@ shape**: it left the cross-file linter's exponent where it was — 1.46 against
 growth distributions overlap, the fix reading 1.80 to 2.31 and the quadratic
 1.93 to 2.26, while the costs have nothing between them, 9.3 to 10.1 against
 19.3 to 19.6. Reverting `src/linters/corpus-linter.js` to its pre-#755 state
-fails the gate three times out of three at 20.7 to 21.3, against the 14 that
-`SHARES` allows it, and master passes six times out of six. A growth bar tight
+fails the gate three times out of three at 20.9 to 21.7, against the 16 that
+`SHARES` allows it, and master passes fifteen times out of fifteen. A bar tight
 enough to have caught that would have to separate 2.31 from 1.93, which is
 inside the noise of any machine.
 
@@ -147,9 +147,10 @@ it 30. A ceiling wide enough for both would say nothing true about either, so
 the measurement skips itself when `NODE_V8_COVERAGE` is set (in the body, with
 `this.skip()`, never by registering behind a condition) and the coverage run
 reports it pending. Nothing is lost either way: every branch it reaches is
-reached by the suite around it, so 100% of 1399 branches still holds without it,
-and the gate itself still runs in `npm test`, `npm run fast`, and the `build`
-job across six runners.
+reached by the suite around it, so the 100% gate still holds without it — a
+count is deliberately not quoted here, since one goes stale on the next commit
+that adds a branch — and the gate itself still runs in `npm test`,
+`npm run fast`, and the `build` job across six runners.
 
 Three things more make it a gate rather than a source of red builds. A discarded
 warm-up pass runs first, because the first stage measured cold reads half what
