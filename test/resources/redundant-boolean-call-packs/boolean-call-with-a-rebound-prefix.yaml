@@ -1,0 +1,19 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: redundant-boolean-call
+# The prefix reads like the standard one and is bound elsewhere, so the call is a
+# user function of the same local name and the check stays quiet (#561).
+found:
+  amount: 0
+  positions: [ ]
+  fixes: [ ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fn="urn:mine" version="2.0" id="s">
+    <xsl:template match="/">
+      <xsl:if test="fn:boolean(@x)">
+        <p>on</p>
+      </xsl:if>
+    </xsl:template>
+  </xsl:stylesheet>

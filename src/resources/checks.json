@@ -55,11 +55,11 @@
       },
       "redundant-boolean-call": {
         "severity": "warning",
-        "message": "The whole test is wrapped in boolean(); a test already coerces to a boolean, so the wrapper is redundant. Drop it."
+        "message": "A boolean() call stands where nothing but a truth is taken — a test or a use-when, an operand of and/or, the argument of not(), the condition of an if, the body of a satisfies — so the wrapper is redundant. Drop it."
       },
       "redundant-double-negation": {
         "severity": "warning",
-        "message": "A double negation not(not(x)) is redundant; it is just boolean(x), and in a test simply x. Replace it."
+        "message": "A double negation not(not(x)) is redundant; it is just boolean(x), and where nothing but a truth is taken simply x. Replace it."
       },
       "redundant-import": {
         "severity": "warning",

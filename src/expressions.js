@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {tokenized, OPAQUE, TRIVIA, TOKENS} = require('./tokens')
+const {tokenized, OPAQUE} = require('./tokens')
 
 /**
  * An expression with its string and comment spans blanked to spaces, so a call
@@ -22,51 +22,6 @@ const masked = function(expression) {
     }
   }
   return chars.join('')
-}
-
-/**
- * The brackets a nested construct opens with and the ones it closes with, kept
- * in step so a depth is one count rather than three.
- * @type {{opens: Array.<string>, shuts: Array.<string>}}
- */
-const NESTED = {
-  opens: [TOKENS.LPAREN, TOKENS.LBRACKET, TOKENS.LBRACE],
-  shuts: [TOKENS.RPAREN, TOKENS.RBRACKET, TOKENS.RBRACE],
-}
-
-/**
- * Whether exactly one argument stands between a call's brackets. `fn:count`,
- * `fn:not` and `fn:boolean` each take one in every XSLT version, so a call
- * spelling none or several is not the construct the checks scanning for them
- * name, and the text between its brackets is no argument to rewrite: `count()`
- * became `empty()` and `not(not())` the empty string, one expression no
- * processor loads turned into another (#576).
- *
- * It reads the tokens rather than the characters, and so takes the expression
- * as written rather than blanked. Both halves need that. A comma is a separator
- * only as `TOKENS.COMMA`, so one inside a literal or a comment is a kind of its
- * own and divides nothing, where a character walk needed the text masked first;
- * and a bracket holding only a literal is not an empty bracket, where masking
- * turns `count('abc')` into a gap and the emptiness test cannot tell an absent
- * argument from a blanked one. So a bracket is empty when nothing but `TRIVIA`
- * stands in it, which separates `()` and `( (: c :) )` from `('')`.
- * @param {string} inner - The bracketed text, as the source spells it
- * @return {boolean} - Whether one argument stands there
- */
-const lone = function(inner) {
-  const tokens = tokenized(inner)
-  let depth = 0
-  let alone = tokens.some((token) => !TRIVIA.includes(token.type))
-  for (const token of tokens) {
-    if (NESTED.opens.includes(token.type)) {
-      depth++
-    } else if (NESTED.shuts.includes(token.type)) {
-      depth--
-    } else if (depth === 0 && token.type === TOKENS.COMMA) {
-      alone = false
-    }
-  }
-  return alone
 }
 
 /**
@@ -152,5 +107,4 @@ module.exports = {
   masked,
   closes,
   enclosed,
-  lone,
 }

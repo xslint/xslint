@@ -3,9 +3,9 @@
 ---
 pack: redundant-boolean-call
 found:
-  amount: 5
-  positions: [ [ 4, 19 ], [ 7, 19 ], [ 10, 19 ], [ 30, 19 ], [ 33, 19 ] ]
-  fixes: [ "@enabled", "item[@id = 'x']/name and @flag", "count(*)", "concat(@a, @b)", "'abc'" ]
+  amount: 6
+  positions: [ [ 4, 19 ], [ 7, 19 ], [ 10, 19 ], [ 20, 27 ], [ 30, 19 ], [ 33, 19 ] ]
+  fixes: [ "@enabled", "item[@id = 'x']/name and @flag", "count(*)", "@x", "concat(@a, @b)", "'abc'" ]
 input: |-
   <?xml version="1.0"?>
   <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="s">

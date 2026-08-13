@@ -1,0 +1,25 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: redundant-double-negation
+# Negations nested past two report once per pair, and the pairs overlap: the
+# second `not` of one is the first of the next. A scan matching the character in
+# front of each call consumed that character, so a run of them was read every
+# other pair — `not(not(not(not(@deep))))` drew two defects rather than three, the
+# middle pair invisible because the `(` that opened it had already been spent
+# (#596). Only the outermost of an overlapping set can be applied in one run, and
+# the rest stay in the report for the next one.
+found:
+  amount: 5
+  positions: [ [ 4, 36 ], [ 4, 40 ], [ 4, 44 ], [ 5, 19 ], [ 5, 23 ] ]
+  fixes: [ "boolean(not(not(@deep)))", "not(@deep)", "@deep", "not(@three)", "@three" ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="s">
+    <xsl:template match="/">
+      <xsl:variable name="a" select="not(not(not(not(@deep))))"/>
+      <xsl:if test="not(not(not(@three)))">
+        <p>on</p>
+      </xsl:if>
+    </xsl:template>
+  </xsl:stylesheet>

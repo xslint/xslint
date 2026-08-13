@@ -1,0 +1,28 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: redundant-boolean-call
+# The wrapper is redundant under every version: XPath 1.0 takes the effective
+# boolean value of a test, of each operand of `and` and `or`, and of the argument
+# of `not()` exactly as the later ones do, so no version gate stands between the
+# check and a 1.0 stylesheet. What 1.0 has no production for — an `if`
+# expression, a `satisfies` — the grammar refuses before a check sees it (#561).
+# A `use-when` is XSLT's attribute only from 2.0, and it is reported here all the
+# same: where 1.0 has no such attribute the stylesheet is broken for a reason of
+# its own, and gating on the version would make the wrapper read as meaningful
+# there.
+found:
+  amount: 3
+  positions: [ [ 4, 23 ], [ 7, 36 ], [ 8, 50 ] ]
+  fixes: [ "@x", "@a", "system-property('xsl:vendor')" ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" id="s">
+    <xsl:template match="/">
+      <xsl:if test="not(boolean(@x))">
+        <p>on</p>
+      </xsl:if>
+      <xsl:variable name="a" select="boolean(@a) and @b"/>
+      <xsl:variable name="b" select="@c" use-when="boolean(system-property('xsl:vendor'))"/>
+    </xsl:template>
+  </xsl:stylesheet>

@@ -284,11 +284,17 @@ Today this covers nine checks:
   `xsl:key`, `xsl:number`, `xsl:for-each-group` and `xsl:accumulator-rule` the
   same nodes match at the same rank.
 - `redundant-double-negation` — `not(not(x))` becomes `boolean(x)`, the
-  equivalent it spells out the long way; in a whole `@test`, which already
-  coerces to a boolean, it becomes plain `x`.
-- `redundant-boolean-call` — a whole `@test` wrapped in `boolean()` drops the
-  wrapper: `test="boolean(@x)"` becomes `test="@x"`, since a test already
-  coerces its value to a boolean.
+  equivalent it spells out the long way; where nothing but a truth is taken it
+  becomes plain `x`. Those places are a whole `@test` or `use-when`, an operand
+  of `and` or `or`, the argument of another `not()`, the condition of an `if` and
+  the body of a `satisfies`, so `@a and not(not(@b))` becomes `@a and @b`; an
+  argument that binds loosely enough for the operator around it to regroup
+  arrives in brackets.
+- `redundant-boolean-call` — a `boolean()` standing in one of those same places
+  drops the wrapper: `test="boolean(@x)"` becomes `test="@x"` and
+  `not(boolean(@x))` becomes `not(@x)`. An operand of a comparison keeps its
+  wrapper, comparing a value with a truth rather than two values, and so does a
+  predicate, where XPath reads a number as a position rather than a truth.
 - `predicate-position-literal` — a positional predicate written the long way is
   shortened: `item[position() = 1]` becomes `item[1]`, and
   `item[position() = last()]` becomes `item[last()]`. The value comparison

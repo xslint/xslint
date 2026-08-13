@@ -2,4 +2,4 @@
 # SPDX-License-Identifier: MIT
 ---
 severity: warning
-message: The whole test is wrapped in boolean(); a test already coerces to a boolean, so the wrapper is redundant. Drop it.
+message: A boolean() call stands where nothing but a truth is taken — a test or a use-when, an operand of and/or, the argument of not(), the condition of an if, the body of a satisfies — so the wrapper is redundant. Drop it.

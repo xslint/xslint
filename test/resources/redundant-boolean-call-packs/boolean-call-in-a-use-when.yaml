@@ -1,0 +1,25 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: redundant-boolean-call
+# XSLT takes the effective boolean value of a whole `use-when` as it does of a
+# whole `@test`: SaxonJ-HE 12.5 includes a template whose `use-when` wraps its
+# test in `boolean(...)` exactly as it includes the bare spelling, and excludes
+# both `""` and `boolean("")`. Two spellings stay quiet beside them — a `select`,
+# where the truth itself is the value wanted, and the `xsl:use-when` a literal
+# result element carries, which is an XPath attribute outside the XSLT namespace
+# and so reaches no code-based check at all, nor the validator (#654, #561).
+found:
+  amount: 2
+  positions: [ [ 3, 37 ], [ 6, 52 ] ]
+  fixes: [ "system-property('xsl:version')", "system-property('xsl:vendor')" ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="s">
+    <xsl:template match="/" use-when="boolean(system-property('xsl:version'))">
+      <p xsl:use-when="boolean(system-property('xsl:version'))">
+        <xsl:value-of select="boolean(@a)"/>
+        <xsl:variable name="v" select="@z" use-when="boolean(system-property('xsl:vendor'))"/>
+      </p>
+    </xsl:template>
+  </xsl:stylesheet>
