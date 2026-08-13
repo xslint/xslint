@@ -282,14 +282,21 @@ const weighed = function(attempt) {
  * What is wrong with a stage's readings, or an empty string when nothing is.
  * The lowest of them answers every question, since noise makes one attempt
  * disagree with the rest while a stage that has really changed reads the same
- * way in all of them.
+ * way in all of them. A growth that is not a finite number is no reading at
+ * all and is dropped rather than judged: Windows charges processor time in
+ * ticks far coarser than a cheap stage costs over the small corpus, so eight of
+ * the fourteen measured `0` there and their growth came back `Infinity` or
+ * `NaN`. The share, taken over the corpus four times larger, resolves on that
+ * runner as it does here — `corpus-linter` reading 9.30 against 9.28 to 10.13 —
+ * so what a coarse clock costs is the looser of the two questions on one
+ * platform, not the gate.
  * @param {string} name - Name of the stage
  * @param {Array.<{share: number, growth: number}>} readings - Per attempt
  * @return {string} - The fault, or an empty string
  */
 const fault = function(name, readings) {
   const share = Math.min(...readings.map((one) => one.share))
-  const growth = Math.min(...readings.map((one) => one.growth))
+  const growths = readings.map((one) => one.growth).filter(Number.isFinite)
   const named = Object.hasOwn(SHARES, name)
   let ceiling = SHARE
   if (named) {
@@ -300,9 +307,10 @@ const fault = function(name, readings) {
     said = `${name} costs ${share.toFixed(2)} times what the middle stage of ` +
       `its own run costs, past the ${ceiling} that test/scaling.test.js ` +
       `allows it`
-  } else if (!named && growth > GROWTH) {
-    said = `${name} grew ${growth.toFixed(2)} times what the middle stage ` +
-      `grew when the corpus grew ${STEP} times, so its shape has changed`
+  } else if (!named && growths.length > 0 && Math.min(...growths) > GROWTH) {
+    said = `${name} grew ${Math.min(...growths).toFixed(2)} times what the ` +
+      `middle stage grew when the corpus grew ${STEP} times, so its shape has ` +
+      `changed`
   } else if (named && ceiling > SLACK * share) {
     said = `${name} costs only ${share.toFixed(2)} times the middle where it ` +
       `is allowed ${ceiling}, so the entry has stopped being a bar and wants ` +

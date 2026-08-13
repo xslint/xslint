@@ -128,6 +128,17 @@ move it by a tenth: `corpus-linter` reads 8.3 to 8.8 loaded where an idle
 machine reads 9.3 to 10.1, and the gate passes eight runs of eight under the
 load that broke the wall clock.
 
+What processor time costs is resolution, and one platform pays it. Windows
+charges in ticks far coarser than a cheap stage costs over the *small* corpus,
+so eight of the fourteen measure `0` there and their growth arrives `Infinity`
+or `NaN`. A growth that is not a finite number is therefore no reading and is
+dropped rather than judged — verified by quantising the clock to 6 ms here,
+which turns 2 to 4 growths of 18 non-finite and leaves the gate passing. The
+share is unaffected, being taken over the corpus four times larger: that runner
+reads `corpus-linter` at 9.30 where this machine reads 9.28 to 10.13. So a
+coarse clock costs the looser of the two questions on one platform, not the
+gate.
+
 It stands down in one process and says so: `npm run coverage` runs mocha under
 c8, and V8's branch bookkeeping does not fall evenly across the stages — it
 charges `xpath-linter`, the one putting every declarative check through
