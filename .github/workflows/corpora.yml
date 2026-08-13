@@ -63,8 +63,12 @@ jobs:
           set -e
           stylesheets=$(find corpus -name '*.xsl' | wc -l)
           started=$(date +%s)
-          node src/index.mjs corpus --quiet > report.txt || true
+          set +e
+          node src/index.mjs corpus > defects.txt 2> log.txt
+          code=$?
+          set -e
           spent=$(( $(date +%s) - started ))
+          linted=$(sed -n 's/.*Processed files: \([0-9]*\).*/\1/p' log.txt | tail -1)
           {
             echo "### $NAME"
             echo ""
@@ -72,11 +76,28 @@ jobs:
             echo "| --- | --- |"
             echo "| repository | $REPOSITORY |"
             echo "| commit | $COMMIT |"
-            echo "| stylesheets | $stylesheets |"
-            echo "| report lines | $(wc -l < report.txt) |"
+            echo "| stylesheets on disk | $stylesheets |"
+            echo "| stylesheets read | ${linted:-none} |"
+            echo "| defects | $(wc -l < defects.txt) |"
+            echo "| exit code | $code |"
             echo "| seconds | $spent |"
             echo "| budget | $BUDGET |"
           } >> "$GITHUB_STEP_SUMMARY"
+          if [ "$stylesheets" -lt 1 ]; then
+            echo "::error::no stylesheet under corpus, so $NAME never arrived"
+            exit 1
+          fi
+          if [ "${linted:-0}" -ne "$stylesheets" ]; then
+            echo "::error::linting $NAME read ${linted:-none} of the" \
+              "$stylesheets stylesheets on disk"
+            sed -n '1,20p' log.txt
+            exit 1
+          fi
+          if [ "$code" -gt 1 ]; then
+            echo "::error::linting $NAME exited $code, which is neither a" \
+              "clean run nor defects found"
+            exit 1
+          fi
           if [ "$spent" -gt "$BUDGET" ]; then
             echo "::error::linting $NAME took ${spent}s, past its ${BUDGET}s budget"
             exit 1
