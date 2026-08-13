@@ -26,37 +26,39 @@ const STEP = 4
  * What each stage costs beside the middle stage of its own run, and the most it
  * may cost. This is the assertion the gate stands on, because the one speed
  * regression this project has actually had was a constant and not a shape: #755
- * left the cross-file linter's exponent where it was, 1.46 against 1.57 over
- * this corpus, and doubled what it spent at every size. Growth cannot see that
- * — the quadratic reads 1.93 to 2.26 and the fix 1.80 to 2.31, one distribution
- * — while the share reads 19.3 to 19.6 against 9.3 to 10.1, with nothing
- * between them. A share is a quotient taken inside one run, so it cancels a
+ * left the cross-file linter's exponent where it was and multiplied what it
+ * spent at every size. Growth cannot see that: the fix reads 1.85 to 2.04 and
+ * the quadratic 1.66 to 2.43, and since the lowest reading is the one judged,
+ * growth does not merely fail to separate them — at 1.66 against 1.85 it ranks
+ * them backwards. The share reads 9.6 to 10.4 against 16.7 to 17.1, with
+ * nothing between. A share is a quotient taken inside one run, so it cancels a
  * machine's speed the way a growth ratio does, and unlike one it hardly moves
- * when the machine is busy: sixteen processes fighting over ten cores read the
- * cross-file linter at 8.3 to 8.8 where an idle machine reads 9.3 to 10.1.
+ * when the machine is busy: sixteen processes fighting over ten cores leave
+ * every entry below within a tenth of its idle reading.
  *
- * What a share does not cancel is a machine's character, so each ceiling stands
- * about twice what the stage reads here rather than snugly above it. That is CI
- * evidence rather than caution: a first spelling sat four tenths above these
+ * Two things set a ceiling. Where there is a defect to catch, it goes between
+ * the two measured distributions — `corpus-linter` at 13, a quarter above what
+ * the fix costs and a quarter below what the quadratic costs. Everywhere else
+ * it stands about twice the local reading, because a share cancels a machine's
+ * speed and not its character: a first spelling sat four tenths above these
  * readings and a macOS runner refused it, charging `xsl-validator` 1.21 where
- * this machine charges 2.24 and `xpath-validator` 6.13 where it charges 3.75.
- * A band that wide still catches what this tier exists for, the defect and the
- * fix being a factor of two apart: the quadratic reads 20.7 to 21.3 against the
- * 16 below.
+ * this machine charges 2.2 and `xpath-validator` 6.13 where it charges 3.8.
+ * Those two came off a run whose warm-up is now known to have biased the first
+ * attempt, so what they still prove is that headroom is needed, not how much.
  * @type {{[stage: string]: number}}
  */
 const SHARES = {
   'xpath-linter': 55,
-  'corpus-linter': 16,
+  'corpus-linter': 13,
   'xpath-validator': 9,
   'xsl-validator': 4,
 }
 
 /**
  * What any stage not named in `SHARES` may cost beside the middle stage. The
- * fourteen of them read 0.12 to 1.18 here and on every runner, so this is the
- * bar a cheap stage crosses by becoming an expensive one, and crossing it earns
- * an entry above or a fix. Twice what the dearest of them reads, for the same
+ * fourteen of them read 0.13 to 1.27, so this is the bar a cheap stage crosses
+ * by becoming an expensive one, and crossing it earns an entry above or a fix.
+ * Twice what the dearest of them reads, for the same
  * reason the entries above are: a runner of another character moves a share by
  * as much as nine tenths.
  * @type {number}
@@ -70,7 +72,7 @@ const SHARE = 2.5
  * made so much cheaper that the entry it left behind would let the whole
  * regression back in. `SPRAWLING` in `eslint.config.mjs` is the same shape one
  * property over. Four rather than two, and a macOS runner is what set it: it
- * charged `xsl-validator` 1.21 of the middle where this machine charges 2.24,
+ * charged `xsl-validator` 1.21 of the middle where this machine charges 2.2,
  * so a ceiling two and a half times the local reading was more than three times
  * that one and the entry was called stale on a tree nobody had touched. What is
  * left to catch is a stage made several times cheaper, which is what #755's
@@ -86,11 +88,12 @@ const SLACK = 4
  * is the stronger statement, while one without is pinned only by a bar it sits
  * far below — so its shape is what is worth watching, and a cheap stage turning
  * quadratic is what this catches: it would read `STEP` itself, 4.0, where the
- * fourteen of them read 0.29 to 1.58 idle and under load together. Loose on
- * purpose beyond that, because growth is the noisier of the two questions —
- * the cross-file linter reads 1.55 to 2.31 across runs where its share reads
- * 8.3 to 10.1 — and a bar tight enough to catch a constant fires on stages
- * nothing touched.
+ * fourteen of them read 0.52 to 1.70. The highest is `import-linter`, which
+ * really does hold a quadratic (#769) that forty stylesheets are too few to
+ * show. Loose on purpose beyond that, because growth is the noisier of the two
+ * questions — the cross-file linter reads 1.71 to 1.89 across runs where its
+ * share reads 9.6 to 10.4 — and a bar tight enough to catch a constant fires on
+ * stages nothing touched.
  * @type {number}
  */
 const GROWTH = 3.0
@@ -110,17 +113,6 @@ const ATTEMPTS = 3
  * @type {number}
  */
 const SPREAD = 100000
-
-/**
- * Stylesheets in the corpus a first, discarded measurement is taken over.
- * Without it the first stage of the first attempt is timed cold and reads half
- * what it costs warm, which is a bias and not noise, and one no retry corrects.
- * Small on purpose: it has only to run every path once, and a warm-up the size
- * of the corpus itself measurably widened the spread instead of narrowing it,
- * leaving the heap in a state the first measured pass then collects.
- * @type {number}
- */
-const WARMUP = 10
 
 /**
  * The one stylesheet the corpus is built out of, read once. It is a committed
@@ -324,10 +316,23 @@ const fault = function(name, readings) {
  * again up to `ATTEMPTS` times while any of them does, beside the whole table
  * of readings — a gate that fails must say what it measured, or the next reader
  * has to reproduce a machine to find out.
+ *
+ * The first thing it does is take a whole measurement and throw it away, on the
+ * one principle a warm-up has: warm the code with the work that is about to be
+ * timed. A warm-up over ten stylesheets — which is what stood here — leaves the
+ * two validators still cold enough that the first attempt reads them nearly
+ * twice what they cost, `xsl-validator` at 3.96 to 4.38 against a ceiling of 4
+ * and `xpath-validator` at 6.36 to 6.92, and the second attempt at 2.02 to 2.25
+ * and 3.25 to 3.52. That is a bias and not noise, so the retry cannot answer it
+ * — it was answering it, in practice, on nearly every standalone run, which is
+ * a gate leaning on the mechanism meant for something else. Forty stylesheets
+ * only shrink the bias, to 3.2 and 5.1. A discarded `weighed` removes it: over
+ * six processes every stage holds within five percent and no attempt is ever
+ * retried. It is free, too, being the retry that is no longer spent.
  * @return {{faults: Array.<string>, table: string}} - Faults and the readings
  */
 const judged = function() {
-  measured(ATTEMPTS * SPREAD, WARMUP)
+  weighed(ATTEMPTS)
   const readings = new Map()
   let found = []
   let table = ''
