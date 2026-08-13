@@ -76,23 +76,33 @@
   </div>
   <div class="check-content">
 <h1>Redundant boolean call</h1>
-<p>The <code>@test</code> of an <code>xsl:if</code> or <code>xsl:when</code> already coerces its value to a boolean,
-so wrapping the whole thing in <code>boolean(...)</code> adds nothing — <code>test=&quot;boolean(x)&quot;</code>
-and <code>test=&quot;x&quot;</code> behave identically. The wrapper is just noise.</p>
-<p>The check fires only when the entire <code>@test</code> is one <code>boolean(...)</code> call, where
-dropping it is always safe, so <code>--fix</code> removes it. A <code>boolean(...)</code> that is only
-part of a larger expression — <code>a = boolean(b)</code> — is left alone, because there
-the coercion can change what the comparison means.</p>
-<p>Only the <code>@test</code> of an XSLT element is read. Nothing coerces the expression of an
-attribute value template, so <code>&amp;lt;div flag=&quot;{boolean(x)}&quot;/&amp;gt;</code> prints <code>true</code> or
-<code>false</code> where a bare <code>{x}</code> would print the node&#39;s own text — the wrapper is doing
-real work there and is kept. An attribute of your output vocabulary called <code>test</code>
-is text for the result tree, and is never read as XPath.</p>
+<p><code>boolean(x)</code> computes the effective boolean value of <code>x</code> — which is the very
+thing XSLT and XPath compute for themselves wherever a truth is what they are
+after. The <code>@test</code> of an <code>xsl:if</code> or an <code>xsl:when</code> is such a place, and so is the
+<code>use-when</code> that decides whether an element is compiled at all, each operand of
+<code>and</code> and <code>or</code>, the argument of <code>not()</code>, the condition of an <code>if</code> expression and
+the body of a <code>satisfies</code>. In all of them <code>boolean(x)</code> behaves
+exactly as <code>x</code> does, so the wrapper says nothing and the reader has to look past
+it to find the condition.</p>
+<p>Where the value itself is wanted, the call is doing real work and belongs.
+Comparing with it is one such place: <code>@a = boolean(@b)</code> compares a string with a
+boolean, and without the call two strings are compared instead. A predicate is
+another, and a sharper one, because XPath reads a numeric predicate as a test on
+the context position — <code>item[boolean(count(e))]</code> selects every <code>item</code> with an <code>e</code>
+under it, while <code>item[count(e)]</code> selects the one whose position equals that
+count. Printing is a third: <code>&lt;div flag=&quot;{boolean(x)}&quot;/&gt;</code> prints <code>true</code> or
+<code>false</code>, where <code>{x}</code> prints the node&#39;s own text.</p>
+<p>An attribute of your own output vocabulary called <code>test</code> is text for the result
+tree, and is never read as XPath.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:if test=&quot;boolean(@enabled)&quot;&gt;
+&lt;xsl:value-of select=&quot;not(boolean(@enabled))&quot;/&gt;
+&lt;xsl:value-of select=&quot;boolean(@enabled) and normalize-space(title)&quot;/&gt;
 </code></pre>
 <p>Correct:</p>
 <pre><code class="language-xsl">&lt;xsl:if test=&quot;@enabled&quot;&gt;
+&lt;xsl:value-of select=&quot;not(@enabled)&quot;/&gt;
+&lt;xsl:value-of select=&quot;@enabled and normalize-space(title)&quot;/&gt;
 </code></pre>
 
   </div>
