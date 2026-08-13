@@ -97,6 +97,13 @@ bare, behind a prefix bound to the XPath functions namespace
 (<code>fn:string-length(@name) = 0</code>), or with that namespace written inline. A
 function of your own that happens to be called <code>string-length</code> is another
 function and is left alone.</p>
+<p>From XSLT 2.0 the same test is often spelled with the value comparisons, and
+<code>string-length(@name) eq 0</code> asks what <code>= 0</code> asks. The direct form keeps the class
+it was given — a value comparison becomes <code>@name eq &#39;&#39;</code> and a general one
+<code>@name = &#39;&#39;</code> — because the two are not interchangeable on a sequence of several
+items, where the general form asks whether any of them is empty and the value
+form raises an error. Dropping the call should not move a comparison from one
+class into the other.</p>
 <p>The operand order does not matter (<code>0 &amp;lt; string-length(@name)</code> is flagged the
 same way). A <code>0</code> or <code>1</code> that is only part of a wider arithmetic operand — the
 <code>1</code> in <code>$max + 1 &amp;gt; string-length(@a)</code>, the <code>0</code> in
@@ -113,7 +120,11 @@ admits. Everything binding tighter carries over as it stands, a union
 <p><code>X op &#39;&#39;</code> is not a general equivalent of <code>string-length(X) op 0</code>, and the two
 part ways in two cases. An <strong>absent</strong> node: <code>string-length(@x) = 0</code> is true when
 <code>@x</code> is missing, the empty string having length zero, but <code>@x = &#39;&#39;</code> is false,
-since an empty node-set matches nothing. And a <strong>multi-node</strong> <code>X</code>, in XPath 1.0:
+since an empty node-set matches nothing. The value comparison goes further and
+answers the empty sequence there, <code>@x eq &#39;&#39;</code> having nothing to compare: it reads
+as false in a test, as <code>@x = &#39;&#39;</code> does, and prints as nothing where the general
+comparison prints <code>false</code>. Neither says what <code>string-length(@x) = 0</code> says of a
+missing node, which is <code>true</code>. And a <strong>multi-node</strong> <code>X</code>, in XPath 1.0:
 there <code>string-length</code> reads the first node&#39;s value while <code>X != &#39;&#39;</code> is true if
 <em>any</em> node is non-empty, whereas on 2.0 and later a sequence of two or more
 items raises <code>XPTY0004</code> and the original is already an error. For the common

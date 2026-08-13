@@ -80,20 +80,29 @@
 context position: <code>foo[1]</code> means <code>foo[position() = 1]</code>, and <code>foo[last()]</code> means
 <code>foo[position() = last()]</code>. Spelling the <code>position() =</code> out adds nothing — it is
 the same selection, just longer to read.</p>
-<p>The check fires only when the whole predicate is that lone comparison, in either
-operand order — <code>[position() = 1]</code>, <code>[1 = position()]</code>, <code>[position() = last()]</code>,
-<code>[last() = position()]</code>. The rewrite drops to the bare <code>[N]</code> or <code>[last()]</code>, which
-is always the same node set, so <code>--fix</code> applies it safely. A predicate that does
-more — <code>[position() = 1 and @current]</code>, <code>[position() &gt; 1]</code>, or a value
-comparison <code>[position() eq 1]</code> — is left alone, since there the <code>position()</code> is
-load-bearing and cannot be dropped.</p>
+<p>The equality is what makes it redundant, and it counts in either class XPath
+spells equality in. <code>[position() eq 1]</code> compares two <code>xs:integer</code> values and is
+true at exactly the position <code>[1]</code> is true at, so the word spelling abbreviates
+the way the symbol one does. Either operand order reads the same
+(<code>[1 = position()]</code>, <code>[last() eq position()]</code>), and the call is the standard
+<code>fn:position</code> or <code>fn:last</code> however its namespace is spelled — bare, or behind a
+prefix bound to the XPath functions namespace. A function of your own that
+borrows one of those local names is another function and is left alone.</p>
+<p>A predicate that asks anything else keeps its <code>position()</code>, which is
+load-bearing there. <code>[position() = 1 and @current]</code> is a boolean test, and
+<code>[1 and @current]</code> is a different one. <code>[position() &gt; 1]</code> spans every position
+but the first rather than naming one. And <code>[position() = &#39;1&#39;]</code> compares against
+a string, where the abbreviation <code>[&#39;1&#39;]</code> holds a non-empty string and so is true
+at every position instead of the first.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:value-of select=&quot;item[position() = 1]&quot;/&gt;
 &lt;xsl:apply-templates select=&quot;row[position() = last()]&quot;/&gt;
+&lt;xsl:value-of select=&quot;cell[position() eq last()]&quot;/&gt;
 </code></pre>
 <p>Correct:</p>
 <pre><code class="language-xsl">&lt;xsl:value-of select=&quot;item[1]&quot;/&gt;
 &lt;xsl:apply-templates select=&quot;row[last()]&quot;/&gt;
+&lt;xsl:value-of select=&quot;cell[last()]&quot;/&gt;
 </code></pre>
 
   </div>

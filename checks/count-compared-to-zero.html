@@ -106,6 +106,12 @@ the idiomatic <code>fn:count($items) = 0</code> of a 2.0 stylesheet; or with the
 written inline. A function of your own that happens to be called <code>count</code> is
 another function and is left alone, and so is a call spelling no argument or
 several, <code>fn:count</code> taking exactly one.</p>
+<p>Nor does the operator&#39;s spelling. XSLT 2.0 brought the value comparisons, which
+ask the same six questions in words, so <code>count($items) eq 0</code>,
+<code>count($items) ne 0</code> and <code>0 lt count($items)</code> are the existence tests <code>= 0</code>,
+<code>!= 0</code> and <code>0 &amp;lt;</code> are, and collapse to the same <code>exists()</code>/<code>empty()</code> — the
+direct form is a call and carries no operator, so nothing of the original
+spelling is lost in dropping it.</p>
 <p>The operand order does not matter: <code>0 &amp;lt; count($items)</code> and
 <code>0 = count($items)</code> are flagged the same way. A comparison that is not an
 existence test — <code>count($x) &amp;gt; 1</code>, <code>count($x) = 5</code> — is a genuine count and is
