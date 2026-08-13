@@ -12,7 +12,7 @@ pack: redundant-double-negation
 found:
   amount: 3
   positions: [ [ 4, 26 ], [ 7, 36 ], [ 8, 50 ] ]
-  fixes: [ "@q", "@r", "@d" ]
+  fixes: [ "@q", "@r", "system-property('xsl:vendor')" ]
 input: |-
   <?xml version="1.0"?>
   <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" id="s">
@@ -21,6 +21,6 @@ input: |-
         <p>on</p>
       </xsl:if>
       <xsl:variable name="a" select="not(not(@r)) or @s"/>
-      <xsl:variable name="b" select="@c" use-when="not(not(@d))"/>
+      <xsl:variable name="b" select="@c" use-when="not(not(system-property('xsl:vendor')))"/>
     </xsl:template>
   </xsl:stylesheet>

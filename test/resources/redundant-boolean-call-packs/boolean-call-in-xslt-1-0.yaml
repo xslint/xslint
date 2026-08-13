@@ -14,7 +14,7 @@ pack: redundant-boolean-call
 found:
   amount: 3
   positions: [ [ 4, 23 ], [ 7, 36 ], [ 8, 50 ] ]
-  fixes: [ "@x", "@a", "@d" ]
+  fixes: [ "@x", "@a", "system-property('xsl:vendor')" ]
 input: |-
   <?xml version="1.0"?>
   <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" id="s">
@@ -23,6 +23,6 @@ input: |-
         <p>on</p>
       </xsl:if>
       <xsl:variable name="a" select="boolean(@a) and @b"/>
-      <xsl:variable name="b" select="@c" use-when="boolean(@d)"/>
+      <xsl:variable name="b" select="@c" use-when="boolean(system-property('xsl:vendor'))"/>
     </xsl:template>
   </xsl:stylesheet>
