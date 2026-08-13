@@ -156,7 +156,7 @@
         "message": "'xsl:function' requires XSLT 2.0 or later, but this stylesheet is not version 2.0 or 3.0. Use a named template, or set the version to 2.0."
       },
       "incorrect-use-of-boolean-constants": {
-        "xpath": "//xsl:*[local-name() = ('if', 'when')][normalize-space(@test) = (\"'true'\", \"'false'\")]",
+        "xpath": "//xsl:*[local-name() = ('if', 'when')][normalize-space(@test) = (\"'true'\", \"'false'\", '\"true\"', '\"false\"')]",
         "severity": "warning",
         "message": "The test is the string 'true' or 'false', a non-empty string that is always true, not a boolean. Use true() or false() instead."
       },

@@ -1,0 +1,18 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: name-compared-to-string
+# Three comparisons in one expression, each spelled differently, so a scan
+# stopping at the first match or reading one quote or one comparison class
+# reports fewer than three (#598).
+found:
+  amount: 3
+  positions: [ [ 4, 36 ], [ 4, 52 ], [ 4, 78 ] ]
+  fixes: [ "self::p", "self::q", "self::*:r" ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="s">
+    <xsl:template match="/">
+      <xsl:variable name="a" select="name() = 'p' or name() = &quot;q&quot; or local-name() eq 'r'"/>
+    </xsl:template>
+  </xsl:stylesheet>

@@ -11,5 +11,8 @@
     <xsl:if test="'false'">
       <p>no</p>
     </xsl:if>
+    <xsl:if test="&quot;true&quot;">
+      <p>yes, quoted the other way</p>
+    </xsl:if>
   </xsl:template>
 </xsl:stylesheet>

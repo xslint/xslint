@@ -77,6 +77,19 @@ const COUNTED = new RegExp(
 )
 
 /**
+ * A string literal a selector compares an expression's *text* against, which is
+ * a literal whose own content is quoted: `"'true'"` asks whether a `@test`
+ * reads `'true'` character for character. XPath spells one string with either
+ * delimiter and means the same string by both, so a selector naming one
+ * spelling reads half the stylesheets it is about — `test="'true'"` was flagged
+ * and `test="&quot;true&quot;"` walked past, the identical always-true constant
+ * (#549). Whichever way round a selector writes the pair, the twin must stand
+ * beside it.
+ * @type {RegExp}
+ */
+const SPELLED = /"'([^']*)'"|'"([^"]*)"'/g
+
+/**
  * The `require` of `test/helpers.js`, whose every export starts a child process
  * — xslint or xcop run as a user would run it. Nothing else in the suite spawns
  * one, so this single line is what separates a deep test from a fast one. Its
@@ -320,6 +333,30 @@ describe('conformance', function() {
             `${kind}/${name} compares count(...) with 0 in its ${key}; ` +
               'write the node test itself, as count-compared-to-zero asks',
           )
+        }
+      }
+    }
+  })
+  it('names both quotes of a literal it compares text with', function() {
+    for (const [kind, keys] of Object.entries(SELECTORS)) {
+      for (const name of names(kind)) {
+        const check = yaml.parsedFromFile(
+          path.join(CHECKS, kind, `${name}.yaml`),
+        )
+        for (const key of keys) {
+          for (const match of (check[key] ?? '').matchAll(SPELLED)) {
+            const inner = match[1] ?? match[2]
+            let twin = `'"${inner}"'`
+            if (match[2] !== undefined) {
+              twin = `"'${inner}'"`
+            }
+            assert.ok(
+              check[key].includes(twin),
+              `${kind}/${name} compares its ${key} with ${match[0]} and not ` +
+                `with ${twin}, so a stylesheet spelling that string the other ` +
+                'way round goes unreported (#549)',
+            )
+          }
         }
       }
     }

@@ -3,8 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {masked, closes} = require('../expressions')
-const {GAP} = require('../tokens')
+const {calls, gathered, offsetOf, stringOf, textOf} = require('../syntax')
 const {metaOf, suppressed, defect} = require('../checks')
 const {MODERN, since, versionOf} = require('../xsl-version')
 const {logger} = require('../logger')
@@ -28,63 +27,33 @@ const META = metaOf(CHECK)
 const names = [CHECK]
 
 /**
- * A `translate(` call opener, unprefixed so a custom one is left alone.
- * @type {RegExp}
- */
-const CALL = new RegExp(`(^|[^\\w:.-])translate${GAP}*\\(`, 'g')
-
-/**
- * The uppercase ASCII alphabet.
+ * The uppercase ASCII alphabet, as a string rather than as the literal one is
+ * written with: what a `translate` folds is the characters its argument holds,
+ * and the quotes around them are the author's spelling of the same 26 (#562).
  * @type {string}
  */
-const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+const UPPER = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 /**
- * The uppercase alphabet as a quoted XPath string literal.
+ * The lowercase ASCII alphabet.
  * @type {string}
  */
-const UPPER = `'${ALPHABET}'`
+const LOWER = UPPER.toLowerCase()
 
 /**
- * The lowercase alphabet as a quoted XPath string literal.
- * @type {string}
+ * How many arguments a `translate` that folds case takes: the string, the
+ * alphabet to read, the alphabet to write.
+ * @type {number}
  */
-const LOWER = `'${ALPHABET.toLowerCase()}'`
+const ARGUMENTS = 3
 
 /**
- * The top-level, comma-separated arguments of a call, read from the original
- * text while the blanked copy locates the depth-zero commas (so a comma inside
- * a nested call or a literal does not split an argument).
- * @param {string} expression - The original attribute value
- * @param {string} blanked - The same value with literals blanked
- * @param {number} from - Offset just after the opening `(`
- * @param {number} to - Offset of the closing `)`
- * @return {Array.<string>} - The argument strings, in order
- */
-const args = function(expression, blanked, from, to) {
-  const parts = []
-  let depth = 0
-  let start = from
-  for (let at = from; at < to; at++) {
-    const char = blanked[at]
-    if (char === '(' || char === '[') {
-      depth++
-    } else if (char === ')' || char === ']') {
-      depth--
-    } else if (char === ',' && depth === 0) {
-      parts.push(expression.slice(start, at))
-      start = at + 1
-    }
-  }
-  parts.push(expression.slice(start, to))
-  return parts
-}
-
-/**
- * The case-folding function a `translate` collapses to, given its second and
- * third arguments, or null when the two are not the alphabet in both cases.
- * @param {string} from - The second argument, trimmed
- * @param {string} to - The third argument, trimmed
+ * The case-folding function a `translate` collapses to, given the strings its
+ * second and third arguments hold, or null when the two are not the alphabet in
+ * both cases — a near alphabet is no alphabet, and a non-literal argument holds
+ * no string at all.
+ * @param {?string} from - The string the second argument holds
+ * @param {?string} to - The string the third argument holds
  * @return {?string} - `lower-case`, `upper-case`, or null
  */
 const folds = function(from, to) {
@@ -100,33 +69,38 @@ const folds = function(from, to) {
 /**
  * The alphabet-`translate` case folds in an expression: each carries the offset
  * it starts at, its verbatim text, and the `lower-case`/`upper-case` call that
- * replaces it. A call that is not a three-argument alphabet fold is skipped.
- * @param {string} expression - The attribute value
+ * replaces it.
+ *
+ * The call is the standard `translate` whichever of its three spellings names
+ * it, and its arguments are the nodes the parse separated, so a binding clause
+ * is one argument however many commas it holds — a walk counting the commas at
+ * bracket depth zero read `translate(for $va in a, $vb in b return $va, ...)`
+ * as four arguments and skipped it (#562, #576). What decides the fold is the
+ * strings the second and third arguments hold rather than the way they are
+ * quoted (#562).
+ * @param {{node: Node, expression: string, pattern: boolean}} found - The
+ *  expression, whole, as `expressionsOf` yields it
  * @return {Array.<{offset: number, value: string, replacement: string}>} -
  *  The folds found
  */
-const folded = function(expression) {
-  const found = []
-  const blanked = masked(expression)
-  for (const match of blanked.matchAll(CALL)) {
-    const start = match.index + match[1].length
-    const open = match.index + match[0].length - 1
-    const close = closes(blanked, open)
-    const parts = args(expression, blanked, open + 1, close)
-    if (parts.length !== 3) {
-      continue
+const folded = function(found) {
+  const results = []
+  for (const node of gathered(found, ['call'])) {
+    if (calls(found, node, 'translate') &&
+      node.children.length === ARGUMENTS) {
+      const fold = folds(
+        stringOf(found, node.children[1]), stringOf(found, node.children[2]),
+      )
+      if (fold !== null) {
+        results.push({
+          offset: offsetOf(found, node),
+          value: textOf(found, node),
+          replacement: `${fold}(${textOf(found, node.children[0])})`,
+        })
+      }
     }
-    const fold = folds(parts[1].trim(), parts[2].trim())
-    if (!fold) {
-      continue
-    }
-    found.push({
-      offset: start,
-      value: expression.slice(start, close + 1),
-      replacement: `${fold}(${parts[0].trim()})`,
-    })
   }
-  return found
+  return results
 }
 
 /**
@@ -144,9 +118,8 @@ const lintByTranslate = function(expressions, suppressions = []) {
   const defects = []
   if (!suppressed(CHECK, suppressions)) {
     for (const {source, found} of expressions) {
-      const {node, expression} = found
-      if (since(versionOf(node), MODERN)) {
-        for (const {offset, value, replacement} of folded(expression)) {
+      if (since(versionOf(found.node), MODERN)) {
+        for (const {offset, value, replacement} of folded(found)) {
           defects.push(
             defect(CHECK, META, source, found, offset,
               {value, replacement, suggestion: true},

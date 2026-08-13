@@ -1,0 +1,24 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: name-compared-to-string
+# The value comparison XSLT 2.0 added asks the same question of the same two
+# operands, and the grammar builds a node of its own kind for it, so a check
+# gathering the general comparison alone is blind to every stylesheet written
+# in the other — the scan underneath matched `(=|!=)` and no word at all. An
+# ordering comparison is not that question and stays unreported, `lt` no more
+# a test of identity than `<` is (#598, #763).
+found:
+  amount: 3
+  positions: [ [ 4, 36 ], [ 5, 36 ], [ 6, 36 ] ]
+  fixes: [ "self::p", "not(self::*:q)", "self::r" ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="s">
+    <xsl:template match="/">
+      <xsl:variable name="a" select="name() eq 'p'"/>
+      <xsl:variable name="b" select="local-name() ne 'q'"/>
+      <xsl:variable name="c" select="'r' eq name()"/>
+      <xsl:variable name="d" select="name() lt 'z'"/>
+    </xsl:template>
+  </xsl:stylesheet>

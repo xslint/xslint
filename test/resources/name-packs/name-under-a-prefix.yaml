@@ -1,0 +1,20 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: name-compared-to-string
+# A prefix bound to the XPath functions namespace names the standard call as
+# surely as the bare spelling does, and XPath 3.0 lets the namespace be
+# written inline. The scan refused every prefixed spelling with `[^\w:.-]`,
+# so the `fn:name()` of any 2.0 stylesheet drew nothing (#598, #577).
+found:
+  amount: 2
+  positions: [ [ 4, 36 ], [ 5, 36 ] ]
+  fixes: [ "self::p", "self::*:r" ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fn="http://www.w3.org/2005/xpath-functions" version="3.0" id="s">
+    <xsl:template match="/">
+      <xsl:variable name="a" select="fn:name() = 'p'"/>
+      <xsl:variable name="b" select="Q{http://www.w3.org/2005/xpath-functions}local-name() = 'r'"/>
+    </xsl:template>
+  </xsl:stylesheet>

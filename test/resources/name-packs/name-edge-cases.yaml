@@ -2,6 +2,11 @@
 # SPDX-License-Identifier: MIT
 ---
 pack: name-compared-to-string
+# The neighbours that look like the construct and are not: a call about another
+# node, a `name()` of your own behind a prefix, the characters standing inside a
+# string literal, an expression no grammar accepts — which reaches no check at
+# all since #750 — and a comparison against a *number*, a `literal` node of the
+# same kind as a string with only its token telling the two apart (#598, #575).
 found:
   amount: 0
   positions: [ ]
@@ -13,6 +18,7 @@ input: |-
       <xsl:value-of select="name($x) = 'p'"/>
       <xsl:value-of select="my:name() = 'p'"/>
       <xsl:value-of select="'name() = 0'"/>
+      <xsl:value-of select="name() = 5"/>
       <xsl:value-of select="name("/>
     </xsl:template>
   </xsl:stylesheet>

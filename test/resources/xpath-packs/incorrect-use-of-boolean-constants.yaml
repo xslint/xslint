@@ -2,9 +2,15 @@
 # SPDX-License-Identifier: MIT
 ---
 pack: incorrect-use-of-boolean-constants
+# A string constant is a string constant however it is quoted: XPath spells one
+# with either delimiter, and an attribute already standing in double quotes
+# writes it `&quot;true&quot;`, which is the same always-true test as the
+# single-quoted spelling the selector named alone (#549). A value compared with
+# a string is another thing entirely and stays unreported — an XML attribute is
+# a string, so `@active = 'true'` is how one is tested.
 found:
-  amount: 2
-  positions: [ [ 5, 5 ], [ 8, 5 ] ]
+  amount: 4
+  positions: [ [ 5, 5 ], [ 8, 5 ], [ 11, 5 ], [ 14, 5 ] ]
 input: |-
   <?xml version="1.0"?>
   <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="2.0" id="style1">
@@ -15,6 +21,15 @@ input: |-
       </xsl:if>
       <xsl:if test="'false'">
         <p>not OOO</p>
+      </xsl:if>
+      <xsl:if test="&quot;true&quot;">
+        <p>OOO all the same</p>
+      </xsl:if>
+      <xsl:if test="&quot;false&quot;">
+        <p>not OOO all the same</p>
+      </xsl:if>
+      <xsl:if test="@active = 'true'">
+        <p>a value compared with a string</p>
       </xsl:if>
     </xsl:template>
     <xsl:template match="/objects/o/o[1]/o[1]">

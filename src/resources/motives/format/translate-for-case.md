@@ -23,7 +23,10 @@ Correct:
 ```
 
 The check fires only in XSLT 2.0 and 3.0 — in 1.0 the `translate` form is the
-only option, so it is not a defect. The rewrite is offered as a
-`--fix-suggestions` because `lower-case()` folds more characters than the ASCII
-`translate`, so it is not a byte-for-byte equivalent. A `translate` with any
-other pair of arguments is left alone.
+only option, so it is not a defect. Either alphabet may be quoted either way and
+the two need not agree, so `translate(@id, "A...Z", 'a...z')` is the same
+anachronism spelled to suit the attribute it stands in.
+
+A `translate` with any other pair of arguments is left alone, a near alphabet
+included: an alphabet missing a letter maps that letter to nothing, which is a
+deletion rather than a case fold.

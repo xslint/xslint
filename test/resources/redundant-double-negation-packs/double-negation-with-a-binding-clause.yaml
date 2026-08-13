@@ -6,7 +6,8 @@ pack: redundant-double-negation
 # count of them read the clause as several arguments and fell silent on a
 # construct it would otherwise report and fix correctly; the parse separates
 # arguments rather than counting brackets, so the commas that bind are no
-# separators (#596, #576, and `BINDINGS` in test/expressions.test.js).
+# separators (#596, #576). `BINDINGS` in test/expressions.test.js pinned the
+# gap while a check still counted them, and went with `lone` in #596.
 found:
   amount: 2
   positions: [ [ 4, 19 ], [ 5, 29 ] ]

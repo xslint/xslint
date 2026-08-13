@@ -1,0 +1,23 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: name-compared-to-string
+# XPath spells a string literal with either delimiter and means one string by
+# both, so an attribute already standing in double quotes writes the literal
+# with `&quot;` and draws the same comparison. The scan read `'([^']*)'` and
+# saw one of the two spellings, in either operand order and for `local-name()`
+# as much as for `name()` (#598).
+found:
+  amount: 4
+  positions: [ [ 4, 36 ], [ 5, 36 ], [ 6, 36 ], [ 7, 36 ] ]
+  fixes: [ "self::p", "not(self::*:q)", "self::r", "self::s" ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="s">
+    <xsl:template match="/">
+      <xsl:variable name="a" select="name() = &quot;p&quot;"/>
+      <xsl:variable name="b" select="local-name() != &quot;q&quot;"/>
+      <xsl:variable name="c" select="&quot;r&quot; = name()"/>
+      <xsl:variable name="d" select="name(.) = &quot;s&quot;"/>
+    </xsl:template>
+  </xsl:stylesheet>

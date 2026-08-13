@@ -21,6 +21,11 @@ Correct:
 </xsl:if>
 ```
 
+The quote makes no difference: `'true'` and `"true"` are the same string, and an
+attribute already standing in double quotes writes the constant
+`test="&quot;true&quot;"`, which is always true exactly as the single-quoted
+spelling is.
+
 Comparing a value to the string `'true'` is a different thing and correct —
 XML attributes are strings, so `@active = 'true'` is how you test one. That,
 and literal output like `<td hidden="true"/>`, are left alone.
