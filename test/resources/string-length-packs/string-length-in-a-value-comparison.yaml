@@ -1,0 +1,31 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: string-length-compared-to-zero
+# The emptiness tests spelled with XPath 2.0's word operators, which a scan
+# reading only the general comparison never saw (#763). The rewrite keeps the
+# family it was given — an author who compares values gets `eq`/`ne` back, not
+# the general `=` they did not write — and the argument that binds too loosely
+# to stand there is reported without one, exactly as in the symbol spelling.
+found:
+  amount: 6
+  positions:
+    - [ 4, 19 ]
+    - [ 5, 33 ]
+    - [ 6, 29 ]
+    - [ 6, 55 ]
+    - [ 6, 81 ]
+    - [ 8, 29 ]
+  fixes: [ "@a eq ''", "@b ne ''", "@c ne ''", "@d eq ''", "@e ne ''", null ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="s">
+    <xsl:template match="/">
+      <xsl:if test="string-length(@a) eq 0">
+        <xsl:value-of select="row[0 lt string-length(@b)]"/>
+        <xsl:value-of select="string-length(@c) ne 0 or string-length(@d) le 0 or 1 le string-length(@e)"/>
+        <xsl:value-of select="string-length(@f) gt 1"/>
+        <xsl:value-of select="string-length(@g or @h) eq 0"/>
+      </xsl:if>
+    </xsl:template>
+  </xsl:stylesheet>

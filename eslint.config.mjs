@@ -112,6 +112,13 @@ const TRIVIA = {
     "Which kinds carry no meaning to a grammar and every meaning to the source is TRIVIA in src/tokens.js and nowhere else: it was spelled three times over — as TRIVIA in src/grammar.js, as a && chain inside tokenized, and once more in lone — which is how OPAQUE came to be missing a kind (#576, #708)"
 };
 
+const CLASSED = {
+  selector:
+    ":matches(ArrayExpression, LogicalExpression):has(Literal[value='comparison']):has(Literal[value='value-comparison'])",
+  message:
+    "Which kinds a comparison of two values comes back as is VALUED in src/syntax.js and nowhere else, src/grammar.js excepted, which mints the kinds: the general and the value comparison are two kinds and one question, and a check knowing only the first is blind to every 2.0 stylesheet written in the second (#763, #575). Two copies of a kind list are a kind missing from one of them, which is what OPAQUE and TRIVIA are each one list for"
+};
+
 const SPRAWLING = ["src/grammar.js"];
 
 export default defineConfig([
@@ -178,13 +185,21 @@ export default defineConfig([
     files: ["src/**/*.js", "src/**/*.mjs"],
     ignores: ["src/xslint.js"],
     rules: {
-      "no-restricted-syntax": ["error", ...RESTRICTED, STAGED, OPAQUE, TRIVIA, PAIRED]
+      "no-restricted-syntax":
+        ["error", ...RESTRICTED, STAGED, OPAQUE, TRIVIA, PAIRED, CLASSED]
     }
   },
   {
     files: ["src/tokens.js"],
     rules: {
-      "no-restricted-syntax": ["error", ...RESTRICTED, STAGED]
+      "no-restricted-syntax": ["error", ...RESTRICTED, STAGED, CLASSED]
+    }
+  },
+  {
+    files: ["src/grammar.js", "src/syntax.js"],
+    rules: {
+      "no-restricted-syntax":
+        ["error", ...RESTRICTED, STAGED, OPAQUE, TRIVIA, PAIRED]
     }
   },
   {

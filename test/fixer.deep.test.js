@@ -178,6 +178,13 @@ const APPLIED = [
     after: 'predicate-position-literal.fixed.xsl',
   },
   {
+    name: 'should shorten a positional predicate spelled with eq, keeping ' +
+      'the padding and the prefix, with --fix',
+    flag: '--fix',
+    before: 'predicate-position-in-a-value-comparison.xsl',
+    after: 'predicate-position-in-a-value-comparison.fixed.xsl',
+  },
+  {
     name: 'should rewrite a count comparison to exists/empty with --fix',
     flag: '--fix',
     before: 'count-compared-to-zero.xsl',
@@ -243,6 +250,13 @@ const APPLIED = [
     flag: '--fix-suggestions',
     before: 'string-length-compared-to-zero.xsl',
     after: 'string-length-compared-to-zero.fixed.xsl',
+  },
+  {
+    name: 'should rewrite a string-length comparison to ne / eq where that ' +
+      'is the class it was written in, with --fix-suggestions',
+    flag: '--fix-suggestions',
+    before: 'string-length-in-a-value-comparison.xsl',
+    after: 'string-length-in-a-value-comparison.fixed.xsl',
   },
   {
     name: 'should rewrite a name comparison to a node test with ' +
