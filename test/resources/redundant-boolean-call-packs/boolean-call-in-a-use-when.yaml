@@ -8,7 +8,7 @@ pack: redundant-boolean-call
 # both `""` and `boolean("")`. Two spellings stay quiet beside them — a `select`,
 # where the truth itself is the value wanted, and the `xsl:use-when` a literal
 # result element carries, which is an XPath attribute outside the XSLT namespace
-# and so reaches no code-based check at all (#561).
+# and so reaches no code-based check at all, nor the validator (#654, #561).
 found:
   amount: 2
   positions: [ [ 3, 37 ], [ 6, 52 ] ]

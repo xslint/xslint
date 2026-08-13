@@ -7,7 +7,7 @@ pack: redundant-double-negation
 # construct in a `select` reduces to `boolean(...)` — one construct, two
 # equivalents, decided by the attribute holding it. The `xsl:use-when` a literal
 # result element carries is an XPath attribute outside the XSLT namespace, so it
-# reaches no code-based check at all (#596, #561).
+# reaches no code-based check at all, nor the validator (#654, #596).
 found:
   amount: 2
   positions: [ [ 3, 37 ], [ 5, 29 ] ]

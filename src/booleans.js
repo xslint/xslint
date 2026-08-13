@@ -19,7 +19,9 @@ const {calls, parseOf, textOf, tight} = require('./syntax')
  * here, which the 1.0 pack of each check pins. A literal result element spells
  * the attribute `xsl:use-when`, and `expressionsOf` yields no record for an
  * XPath attribute outside the XSLT namespace, so that spelling is out of reach
- * of every code-based check rather than of this list alone.
+ * of every code-based check and of the validator too, which is #654 rather than
+ * this list. Where it lands, the name a record carries is the prefixed one, so
+ * `whole` is what will have to answer for both spellings.
  * @type {Array.<string>}
  */
 const TESTED = ['test', 'use-when']
