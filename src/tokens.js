@@ -326,7 +326,10 @@ const OPAQUE = [TOKENS.STRING, TOKENS.UNCLOSED, TOKENS.COMMENT]
  * reproducing what it was built from. One list, for the same reason `OPAQUE` is
  * one: four readers spelled it themselves — `TRIVIA` in `src/grammar.js`, the
  * solid-token test in `tokenized` below, the predicate-position scan, and the
- * emptiness test in `lone`.
+ * emptiness test in the `lone` that counted a call's arguments before the parse
+ * did. Three of the four are gone, the two scans onto the tree and `lone` with
+ * them (#575, #596, #561), and the list stays one because a reader added back
+ * is a copy nobody would notice.
  * @type {Array.<string>}
  */
 const TRIVIA = [TOKENS.WHITESPACE, TOKENS.COMMENT]

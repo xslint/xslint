@@ -159,17 +159,31 @@ const APPLIED = [
     after: 'use-node-set-extension.fixed.xsl',
   },
   {
-    name: 'should rewrite double negations, to boolean() in a select and to ' +
-      'the bare argument in a whole test, with --fix',
+    name: 'should rewrite double negations to the bare argument wherever a ' +
+      'truth alone is taken, with --fix',
     flag: '--fix',
     before: 'redundant-double-negation.xsl',
     after: 'redundant-double-negation.fixed.xsl',
+  },
+  {
+    name: 'should rewrite a double negation standing in an operand, an if and ' +
+      'a satisfies, bracketing the loose argument, with --fix',
+    flag: '--fix',
+    before: 'double-negation-in-a-boolean-context.xsl',
+    after: 'double-negation-in-a-boolean-context.fixed.xsl',
   },
   {
     name: 'should strip a boolean() wrapping a whole test with --fix',
     flag: '--fix',
     before: 'redundant-boolean-call.xsl',
     after: 'redundant-boolean-call.fixed.xsl',
+  },
+  {
+    name: 'should strip a boolean() standing in a not(), an operand and a ' +
+      'satisfies, bracketing the loose argument, with --fix',
+    flag: '--fix',
+    before: 'boolean-call-in-a-boolean-context.xsl',
+    after: 'boolean-call-in-a-boolean-context.fixed.xsl',
   },
   {
     name: 'should shorten positional predicates with --fix',

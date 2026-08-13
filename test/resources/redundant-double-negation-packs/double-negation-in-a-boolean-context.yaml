@@ -1,0 +1,34 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: redundant-double-negation
+# Where the double negation stands decides which of its two equivalents replaces
+# it. A place taking only the effective boolean value of what stands there — a
+# whole `@test`, an operand of `and` or `or`, the argument of `not()`, the
+# condition of an `if`, the body of a `satisfies`, and a bracket of the author's
+# own standing in one of those — takes the argument bare, bracketed where the
+# argument binds loosely enough for the operator around it to regroup. Anywhere
+# else the value itself is wanted and `boolean()` spells it: a predicate is such a
+# place, since a number there is a position rather than a truth (#596, #561).
+found:
+  amount: 11
+  positions: [ [ 4, 26 ], [ 5, 29 ], [ 6, 29 ], [ 6, 33 ], [ 7, 33 ], [ 8, 53 ], [ 9, 36 ], [ 10, 34 ], [ 11, 34 ], [ 12, 22 ], [ 13, 32 ] ]
+  fixes: [ "@q", "@r", "boolean(not(@t))", "@t", "@u", "$va/@w", "(b or c)", "boolean(@d)", "boolean(@f)", "@g", "boolean(@h)" ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="3.0" id="s">
+    <xsl:template match="/">
+      <xsl:if test="@p and not(not(@q))">
+        <xsl:value-of select="not(not(@r)) or @s"/>
+        <xsl:value-of select="not(not(not(@t)))"/>
+        <xsl:value-of select="if (not(not(@u))) then 'y' else 'n'"/>
+        <xsl:value-of select="some $va in a satisfies not(not($va/@w))"/>
+        <xsl:value-of select="@a and not(not(b or c))"/>
+        <xsl:value-of select="item[not(not(@d))]/name"/>
+        <xsl:value-of select="@e = not(not(@f))"/>
+        <xsl:if test="(not(not(@g)))">
+          <xsl:value-of select="(not(not(@h)))"/>
+        </xsl:if>
+      </xsl:if>
+    </xsl:template>
+  </xsl:stylesheet>

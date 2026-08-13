@@ -1,0 +1,25 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: redundant-boolean-call
+# The call is the standard one however its namespace is spelled: bound to a
+# prefix, or written inline. A user function of the same local name is not, and
+# the two are told apart by the URI the prefix resolves to rather than by the
+# prefix itself (#561, #577).
+found:
+  amount: 2
+  positions: [ [ 4, 19 ], [ 5, 21 ] ]
+  fixes: [ "@x", "@y" ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fn="http://www.w3.org/2005/xpath-functions" xmlns:my="urn:m" version="3.0" id="s">
+    <xsl:template match="/">
+      <xsl:if test="fn:boolean(@x)">
+        <xsl:if test="Q{http://www.w3.org/2005/xpath-functions}boolean(@y)">
+          <xsl:if test="my:boolean(@z)">
+            <p>on</p>
+          </xsl:if>
+        </xsl:if>
+      </xsl:if>
+    </xsl:template>
+  </xsl:stylesheet>

@@ -1,0 +1,26 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: redundant-double-negation
+# Each `not` is the standard one however its namespace is spelled — bare, bound
+# to a prefix, or written inline — so a double negation is one whichever of the
+# three each half of it takes. A user function of the same local name is not,
+# and the two are told apart by the URI the prefix resolves to rather than by
+# the prefix itself (#596, #577).
+found:
+  amount: 4
+  positions: [ [ 4, 36 ], [ 5, 36 ], [ 6, 36 ], [ 7, 36 ] ]
+  fixes: [ "boolean(@x)", "boolean(@y)", "boolean(@z)", "boolean(@w)" ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fn="http://www.w3.org/2005/xpath-functions" xmlns:my="urn:m" version="3.0" id="s">
+    <xsl:template match="/">
+      <xsl:variable name="a" select="fn:not(fn:not(@x))"/>
+      <xsl:variable name="b" select="not(fn:not(@y))"/>
+      <xsl:variable name="c" select="fn:not(not(@z))"/>
+      <xsl:variable name="d" select="Q{http://www.w3.org/2005/xpath-functions}not(not(@w))"/>
+      <xsl:variable name="e" select="my:not(my:not(@v))"/>
+      <xsl:variable name="f" select="my:not(not(@u))"/>
+      <xsl:variable name="g" select="not(my:not(@t))"/>
+    </xsl:template>
+  </xsl:stylesheet>

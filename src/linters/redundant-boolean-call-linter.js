@@ -3,10 +3,9 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {masked, closes, lone} = require('../expressions')
-const {GAP} = require('../tokens')
+const {coerced, unwrapped} = require('../booleans')
+const {calls, gathered, offsetOf, textOf} = require('../syntax')
 const {metaOf, suppressed, defect} = require('../checks')
-const {whole} = require('../attributes')
 const {logger} = require('../logger')
 
 /**
@@ -28,53 +27,54 @@ const META = metaOf(CHECK)
 const names = [CHECK]
 
 /**
- * An unprefixed `boolean(` at the very start of the expression, so a custom
- * `my:boolean()` or a `boolean()` nested in a larger expression is left alone.
- * @type {RegExp}
+ * The redundant `boolean(...)` calls in an expression: each one standing where
+ * nothing but a truth is taken, so the wrapper computes what its own place
+ * computes next anyway. Each carries the offset it stands at, its own text, and
+ * the argument that stands in its place.
+ *
+ * A whole `@test` was the only such place until #561, which is one of five and
+ * the only one outside XPath: an operand of `and` or `or`, the argument of
+ * `not()` or of another `boolean()`, the condition of an `if` and the body of a
+ * `satisfies` all take the effective boolean value of what stands there, so
+ * `not(boolean(@x))` says what `not(@x)` says. What decides is where the call
+ * stands rather than how much of the attribute it covers, which is a question
+ * about the tree, and reading the tree is what lets the prefixed and inline
+ * spellings of `fn:boolean` be the same call as the bare one (#561, #577).
+ *
+ * `fn:boolean` takes exactly one argument in every version, so a call spelling
+ * none or several wraps nothing and stripping it wrote an empty `@test` (#576).
+ * @param {{node: Node, expression: string, pattern: boolean}} found - The
+ *  expression, whole, as `expressionsOf` yields it
+ * @return {Array.<{offset: number, value: string, replacement: string}>} -
+ *  The wrappers found
  */
-const WRAPPER = new RegExp(`^${GAP}*boolean${GAP}*\\(`)
-
-/**
- * The redundant `boolean(...)` wrapping a whole `@test`, or null when the test
- * is not a single `boolean(...)` call. In a test the value is already coerced
- * to a boolean, so the wrapper adds nothing and its argument stands alone. A
- * `boolean(...)` that is only part of a larger expression (`a = boolean(b)`) is
- * left alone, since there the coercion can matter, as is a call holding no
- * argument or several, `fn:boolean` taking exactly one — `boolean()` wraps
- * nothing, and stripping the wrapper wrote an empty `@test` (#576). The
- * replacement is the argument trimmed, so `boolean( x )` reduces to `x` and
- * never leaves the surrounding whitespace that `redundant-whitespace` would
- * then flag.
- * @param {string} test - The `@test` value
- * @return {?{offset: number, value: string, replacement: string}} - The strip
- */
-const stripped = function(test) {
-  const blanked = masked(test)
-  const wrapper = WRAPPER.exec(blanked)
-  let strip = null
-  if (wrapper) {
-    const open = wrapper[0].length - 1
-    const close = closes(blanked, open)
-    const offset = wrapper[0].indexOf('boolean')
-    if (close >= 0 && blanked.slice(close + 1).trim() === '' &&
-      lone(test.slice(open + 1, close))) {
-      strip = {
-        offset: offset,
-        value: test.slice(offset, close + 1),
-        replacement: test.slice(open + 1, close).trim(),
-      }
+const stripped = function(found) {
+  const results = []
+  const places = coerced(found)
+  for (const node of gathered(found, ['call'])) {
+    let bare = null
+    if (calls(found, node, 'boolean') && node.children.length === 1) {
+      bare = unwrapped(found, places, node, node.children[0])
+    }
+    if (bare !== null) {
+      results.push({
+        offset: offsetOf(found, node),
+        value: textOf(found, node),
+        replacement: bare,
+      })
     }
   }
-  return strip
+  return results
 }
 
 /**
- * Lint the valid expressions for a whole `@test` of an XSLT element that is a
- * single `boolean(...)` call, reporting one defect per test with the safe fix
- * that strips the wrapper. Nothing outside such a test coerces the value, so
- * neither a literal result element's `test` — output text — nor the expression
- * of an attribute value template, where the wrapper decides whether
- * `true`/`false` or the node's own text is printed, is read.
+ * Lint the valid expressions for a `boolean(...)` call standing where nothing
+ * but a truth is taken, reporting one defect per occurrence with the safe fix
+ * that strips the wrapper. Nowhere else is the value coerced, so neither an
+ * operand of a comparison nor a predicate — where a number is a position rather
+ * than a truth — nor the expression of an attribute value template, where the
+ * wrapper decides whether `true`/`false` or the node's own text is printed, is
+ * reported.
  * @param {Array.<{source: object, found: object}>} expressions - The valid
  *  expressions the validator kept, each paired with the file it came from
  * @param {Array.<string>} suppressions - Array of suppressed checks
@@ -86,16 +86,13 @@ const lintByBooleanCall = function(expressions, suppressions = []) {
   const defects = []
   if (!suppressed(CHECK, suppressions)) {
     for (const {source, found} of expressions) {
-      if (whole(found, 'test')) {
-        const strip = stripped(found.expression)
-        if (strip) {
-          defects.push(
-            defect(
-              CHECK, META, source, found, strip.offset,
-              {value: strip.value, replacement: strip.replacement},
-            ),
-          )
-        }
+      for (const {offset, value, replacement} of stripped(found)) {
+        defects.push(
+          defect(
+            CHECK, META, source, found, offset,
+            {value, replacement},
+          ),
+        )
       }
     }
   }

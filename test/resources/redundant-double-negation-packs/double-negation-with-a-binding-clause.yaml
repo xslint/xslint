@@ -1,0 +1,22 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: redundant-double-negation
+# One argument holding two bindings, whose commas stand at bracket depth zero. A
+# count of them read the clause as several arguments and fell silent on a
+# construct it would otherwise report and fix correctly; the parse separates
+# arguments rather than counting brackets, so the commas that bind are no
+# separators (#596, #576, and `BINDINGS` in test/expressions.test.js).
+found:
+  amount: 2
+  positions: [ [ 4, 19 ], [ 5, 29 ] ]
+  fixes: [ "for $va in a, $vb in b return $va", "boolean(some $va in a, $vb in b satisfies $va)" ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="3.0" id="s">
+    <xsl:template match="/">
+      <xsl:if test="not(not(for $va in a, $vb in b return $va))">
+        <xsl:value-of select="not(not(some $va in a, $vb in b satisfies $va))"/>
+      </xsl:if>
+    </xsl:template>
+  </xsl:stylesheet>

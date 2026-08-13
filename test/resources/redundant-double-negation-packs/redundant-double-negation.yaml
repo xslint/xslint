@@ -3,9 +3,9 @@
 ---
 pack: redundant-double-negation
 found:
-  amount: 9
-  positions: [ [ 4, 43 ], [ 5, 41 ], [ 6, 36 ], [ 6, 52 ], [ 6, 68 ], [ 7, 19 ], [ 11, 28 ], [ 14, 29 ], [ 17, 28 ] ]
-  fixes: [ "boolean(@q)", "boolean(@r)", "boolean(@x)", "boolean(@y)", "boolean(@z)", "@enabled", "boolean(@sel)", "boolean(concat(@a, @b))", "boolean('abc')" ]
+  amount: 10
+  positions: [ [ 4, 43 ], [ 5, 41 ], [ 6, 36 ], [ 6, 52 ], [ 6, 68 ], [ 7, 19 ], [ 11, 28 ], [ 14, 29 ], [ 17, 28 ], [ 20, 29 ] ]
+  fixes: [ "@q", "boolean(@r)", "@x", "@y", "@z", "@enabled", "boolean(@sel)", "boolean(concat(@a, @b))", "boolean('abc')", "@own" ]
 input: |-
   <?xml version="1.0"?>
   <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="s">
@@ -24,6 +24,9 @@ input: |-
       <hit/>
     </xsl:template>
     <xsl:template match="box[not(not('abc'))]">
+      <hit/>
+    </xsl:template>
+    <xsl:template match="line[not(not(@own)) and @kept]">
       <hit/>
     </xsl:template>
   </xsl:stylesheet>

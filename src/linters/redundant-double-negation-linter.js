@@ -1,10 +1,10 @@
 /*
- * SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
- * SPDX-License-Identifier: MIT
+ * SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov SPDX-License-
+ * Identifier: MIT
  */
 
-const {masked, closes, lone} = require('../expressions')
-const {GAP} = require('../tokens')
+const {coerced, unwrapped} = require('../booleans')
+const {calls, gathered, offsetOf, textOf} = require('../syntax')
 const {metaOf, suppressed, defect} = require('../checks')
 const {logger} = require('../logger')
 
@@ -27,63 +27,69 @@ const META = metaOf(CHECK)
 const names = [CHECK]
 
 /**
- * An unprefixed `not(` opener, so a custom `my:not()` is left alone.
- * @type {RegExp}
- */
-const CALL = new RegExp(`(^|[^\\w:.-])not${GAP}*\\(`, 'g')
-
-/**
- * The inner `not(` that must open the outer `not`'s content.
- * @type {RegExp}
- */
-const INNER = new RegExp(`^${GAP}*not${GAP}*\\(`)
-
-/**
- * The double negations in an expression: an outer `not(...)` whose only content
- * is an inner `not(...)`. Each carries its start offset, verbatim text, and the
- * inner argument `x` — `not(not(x))` equals `boolean(x)`, so the caller wraps
- * the argument in `boolean(...)` for a value context and drops the wrapper for
- * a whole `@test`, which already coerces. A `not(` whose parentheses do not
- * balance, or whose content is more than a lone inner `not(...)`, is skipped,
- * and so is one whose inner call holds no argument or several: `fn:not` takes
- * exactly one, so `not(not())` negates nothing twice and rewriting it to its
+ * Whether the node negates one thing: a call to the standard `not` with exactly
+ * one argument. The prefix is no part of the question — bare, behind a prefix
+ * bound to the XPath functions namespace, or with that namespace written
+ * inline, all three name the one function, and a `my:not()` of your own names
+ * another (#596, #577). `fn:not` takes exactly one argument in every version,
+ * so a call spelling none or several negates nothing and rewriting it to its
  * argument wrote an empty `@test` (#576).
- * @param {string} expression - The attribute value
- * @return {Array.<{offset: number, value: string, argument: string}>} -
+ * @param {{node: Node, expression: string, pattern: boolean}} found - Record
+ * @param {object} node - A node of its tree
+ * @return {boolean} - True when the node is that call
+ */
+const negates = function(found, node) {
+  return calls(found, node, 'not') && node.children.length === 1
+}
+
+/**
+ * The double negations in an expression: a `not(...)` whose one argument is
+ * itself a `not(...)` of one thing. Each carries the offset it stands at, its
+ * own text, and the text that replaces it — `not(not(x))` is `boolean(x)`
+ * everywhere, and where nothing but a truth is taken it is `x`, which is the
+ * same reduction `redundant-boolean-call` would ask for next if the wrapper
+ * were left standing (#596).
+ *
+ * It reads the calls the grammar built rather than matching `not` against the
+ * text, which is what makes the prefixed spellings one construct with the bare
+ * one instead of three shapes to match, and what leaves a `not(not(...))`
+ * inside a string literal or a comment invisible without anything being blanked
+ * first. The argument is the node the parse separated, too, so a binding clause
+ * is one argument however many commas it holds — `not(not(for $va in a, $vb in
+ * b return $va))` is reported and fixed, where counting commas at depth zero
+ * read the clause as several arguments and fell silent (#576).
+ * @param {{node: Node, expression: string, pattern: boolean}} found - The
+ *  expression, whole, as `expressionsOf` yields it
+ * @return {Array.<{offset: number, value: string, replacement: string}>} -
  *  The negations found
  */
-const negations = function(expression) {
-  const found = []
-  const blanked = masked(expression)
-  for (const match of blanked.matchAll(CALL)) {
-    const start = match.index + match[1].length
-    const open = match.index + match[0].length - 1
-    const close = closes(blanked, open)
-    const inner = INNER.exec(blanked.slice(open + 1, close))
-    if (!inner) {
-      continue
+const negations = function(found) {
+  const results = []
+  const places = coerced(found)
+  for (const node of gathered(found, ['call'])) {
+    const [inner] = node.children
+    if (negates(found, node) && negates(found, inner)) {
+      const [argument] = inner.children
+      let replacement = `boolean(${textOf(found, argument)})`
+      const bare = unwrapped(found, places, node, argument)
+      if (bare !== null) {
+        replacement = bare
+      }
+      results.push({
+        offset: offsetOf(found, node),
+        value: textOf(found, node),
+        replacement: replacement,
+      })
     }
-    const innerOpen = open + inner[0].length
-    const innerClose = closes(blanked, innerOpen)
-    if (innerClose < 0 || blanked.slice(innerClose + 1, close).trim() !== '' ||
-      !lone(expression.slice(innerOpen + 1, innerClose))) {
-      continue
-    }
-    found.push({
-      offset: start,
-      value: expression.slice(start, close + 1),
-      argument: expression.slice(innerOpen + 1, innerClose),
-    })
   }
-  return found
+  return results
 }
 
 /**
  * Lint the valid expressions for `not(not(x))`, a redundant double negation,
- * reporting one defect per occurrence with a safe fix: bare `x` when the double
- * negation is a whole `@test` (which already coerces to a boolean), and
- * `boolean(x)` everywhere else, where the boolean value itself is what is
- * wanted.
+ * reporting one defect per occurrence with a safe fix: bare `x` where the place
+ * takes nothing but a truth, and `boolean(x)` everywhere else, where the
+ * boolean value itself is what is wanted.
  * @param {Array.<{source: object, found: object}>} expressions - The valid
  *  expressions the validator kept, each paired with the file it came from
  * @param {Array.<string>} suppressions - Array of suppressed checks
@@ -95,19 +101,12 @@ const lintByDoubleNegation = function(expressions, suppressions = []) {
   const defects = []
   if (!suppressed(CHECK, suppressions)) {
     for (const {source, found} of expressions) {
-      const {node, expression} = found
-      for (const {offset, value, argument} of negations(expression)) {
-        const bare = node.nodeName === 'test' &&
-          node.nodeValue.trim() === value
-        let replacement = `boolean(${argument})`
-        if (bare) {
-          replacement = argument
-        }
+      for (const {offset, value, replacement} of negations(found)) {
         defects.push(
-          defect(CHECK, META, source, found, offset, {
-            value: value,
-            replacement: replacement,
-          }),
+          defect(
+            CHECK, META, source, found, offset,
+            {value, replacement},
+          ),
         )
       }
     }

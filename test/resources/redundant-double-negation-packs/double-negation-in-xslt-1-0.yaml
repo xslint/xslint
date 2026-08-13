@@ -1,0 +1,21 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: redundant-double-negation
+# The reduction holds under every version: XPath 1.0 takes the effective boolean
+# value of a test and of each operand of `and` and `or` exactly as the later ones
+# do, so no version gate stands between the check and a 1.0 stylesheet (#596).
+found:
+  amount: 2
+  positions: [ [ 4, 26 ], [ 7, 36 ] ]
+  fixes: [ "@q", "@r" ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" id="s">
+    <xsl:template match="/">
+      <xsl:if test="@p and not(not(@q))">
+        <p>on</p>
+      </xsl:if>
+      <xsl:variable name="a" select="not(not(@r)) or @s"/>
+    </xsl:template>
+  </xsl:stylesheet>
