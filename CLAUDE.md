@@ -152,14 +152,21 @@ left outside what measures it — one test asserts exactly that over the
 a stage.
 
 `SHARES` names the four stages that legitimately cost more than the rest, each
-with a ceiling about four tenths above what it reads: `xpath-linter` at 45,
-`corpus-linter` at 14, `xpath-validator` at 5.2, `xsl-validator` at 3.1. Every
-other stage answers to one bar, `SHARE` at 2.0, which the fourteen of them sit
-far below at 0.12 to 1.17 — so a cheap stage that becomes an expensive one turns
-red, and earns either a fix or an entry. The table is a ratchet rather than a
-licence, the `SPRAWLING` pattern one property over, and it turns red from both
-sides: past the ceiling, or so far under it that `SLACK` (two and a half) says
-the ceiling has stopped being a bar and wants retightening. Growth is asked only
+with a ceiling about **twice** what it reads here: `xpath-linter` at 55,
+`corpus-linter` at 16, `xpath-validator` at 9, `xsl-validator` at 4. Every
+other stage answers to one bar, `SHARE` at 2.5, which the fourteen of them sit
+far below at 0.12 to 1.18 — so a cheap stage that becomes an expensive one turns
+red, and earns either a fix or an entry. The bands are that wide on CI evidence
+rather than out of caution: a share cancels a machine's speed but not its
+character, and the first spelling sat four tenths above the local readings and
+was refused by a macOS runner, which charges `xsl-validator` 1.21 of the middle
+where this machine charges 2.24 and `xpath-validator` 6.13 where it charges
+3.75. Since the defect and the fix are a factor of two apart, a band of two
+still catches it — the quadratic reads 20.9 to 21.7 against 16. The table is a
+ratchet rather than a licence, the `SPRAWLING` pattern one property over, and it
+turns red from both sides: past the ceiling, or so far under it that `SLACK`
+(four, for the same runner's sake) says the ceiling has stopped being a bar and
+wants retightening. Growth is asked only
 of the stages with no entry, since an entry pins what a stage costs outright,
 which is the stronger statement; those fourteen read 0.29 to 1.58 idle and
 loaded together, against a `GROWTH` bar of 3.0 and the 4.0 a stage that had gone

@@ -34,25 +34,34 @@ const STEP = 4
  * machine's speed the way a growth ratio does, and unlike one it hardly moves
  * when the machine is busy: sixteen processes fighting over ten cores read the
  * cross-file linter at 8.3 to 8.8 where an idle machine reads 9.3 to 10.1.
- * Each ceiling stands about four tenths above what its stage reads, so a stage
- * that has grown has to be looked at whether it grew by a constant or by an
- * exponent.
+ *
+ * What a share does not cancel is a machine's character, so each ceiling stands
+ * about twice what the stage reads here rather than snugly above it. That is CI
+ * evidence rather than caution: a first spelling sat four tenths above these
+ * readings and a macOS runner refused it, charging `xsl-validator` 1.21 where
+ * this machine charges 2.24 and `xpath-validator` 6.13 where it charges 3.75.
+ * A band that wide still catches what this tier exists for, the defect and the
+ * fix being a factor of two apart: the quadratic reads 20.7 to 21.3 against the
+ * 16 below.
  * @type {{[stage: string]: number}}
  */
 const SHARES = {
-  'xpath-linter': 45,
-  'corpus-linter': 14,
-  'xpath-validator': 5.2,
-  'xsl-validator': 3.1,
+  'xpath-linter': 55,
+  'corpus-linter': 16,
+  'xpath-validator': 9,
+  'xsl-validator': 4,
 }
 
 /**
  * What any stage not named in `SHARES` may cost beside the middle stage. The
- * fourteen of them read 0.12 to 1.17, so this is the bar a cheap stage crosses
- * by becoming an expensive one, and crossing it earns an entry above or a fix.
+ * fourteen of them read 0.12 to 1.18 here and on every runner, so this is the
+ * bar a cheap stage crosses by becoming an expensive one, and crossing it earns
+ * an entry above or a fix. Twice what the dearest of them reads, for the same
+ * reason the entries above are: a runner of another character moves a share by
+ * as much as nine tenths.
  * @type {number}
  */
-const SHARE = 2.0
+const SHARE = 2.5
 
 /**
  * How many times its own reading a ceiling may stand above before it has
@@ -60,11 +69,15 @@ const SHARE = 2.0
  * a stage that grew past its entry fails, and so does a stage that has been
  * made so much cheaper that the entry it left behind would let the whole
  * regression back in. `SPRAWLING` in `eslint.config.mjs` is the same shape one
- * property over. Two and a half rather than two, because a machine of another
- * character reads a stage a third cheaper without anybody having touched it.
+ * property over. Four rather than two, and a macOS runner is what set it: it
+ * charged `xsl-validator` 1.21 of the middle where this machine charges 2.24,
+ * so a ceiling two and a half times the local reading was more than three times
+ * that one and the entry was called stale on a tree nobody had touched. What is
+ * left to catch is a stage made several times cheaper, which is what #755's
+ * remainder will do to the cross-file entry.
  * @type {number}
  */
-const SLACK = 2.5
+const SLACK = 4
 
 /**
  * How many times the middle stage's growth a stage with no entry in `SHARES`
