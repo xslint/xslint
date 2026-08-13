@@ -1,0 +1,19 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: translate-for-case
+# A prefix bound to the XPath functions namespace names the standard
+# `translate` as surely as the bare spelling does, and XPath 3.0 lets the
+# namespace be written inline; the scan refused both (#562, #577).
+found:
+  amount: 2
+  positions: [ [ 4, 36 ], [ 5, 36 ] ]
+  fixes: [ "lower-case(@x)", "upper-case(@y)" ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fn="http://www.w3.org/2005/xpath-functions" version="3.0" id="s">
+    <xsl:template match="/">
+      <xsl:variable name="a" select="fn:translate(@x, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')"/>
+      <xsl:variable name="b" select="Q{http://www.w3.org/2005/xpath-functions}translate(@y, 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')"/>
+    </xsl:template>
+  </xsl:stylesheet>

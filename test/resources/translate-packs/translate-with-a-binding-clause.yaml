@@ -1,0 +1,19 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: translate-for-case
+# A binding clause puts its commas at depth zero inside one argument, so a
+# walk counting them read this call as holding four and skipped it, where the
+# parse separates three. The same gap `count-with-a-binding-clause` pins for
+# the comparison checks (#562, #576).
+found:
+  amount: 1
+  positions: [ [ 4, 36 ] ]
+  fixes: [ "lower-case(for $va in @x, $vb in @y return concat($va, $vb))" ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="s">
+    <xsl:template match="/">
+      <xsl:variable name="a" select="translate(for $va in @x, $vb in @y return concat($va, $vb), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')"/>
+    </xsl:template>
+  </xsl:stylesheet>

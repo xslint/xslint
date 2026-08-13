@@ -1,0 +1,20 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: translate-for-case
+# A `translate` of your own, behind a prefix bound to your own vocabulary, is
+# another function: the namespace the prefix resolves to decides, never the
+# prefix — and an inline `Q{...}` naming that vocabulary is foreign the same
+# way, where the scan read it as the bare spelling (#562, #577).
+found:
+  amount: 0
+  positions: [  ]
+  fixes: [  ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fn="urn:mine" version="3.0" id="s">
+    <xsl:template match="/">
+      <xsl:variable name="a" select="fn:translate(@x, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')"/>
+      <xsl:variable name="b" select="Q{urn:mine}translate(@y, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')"/>
+    </xsl:template>
+  </xsl:stylesheet>

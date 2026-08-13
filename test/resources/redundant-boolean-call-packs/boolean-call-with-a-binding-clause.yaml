@@ -5,8 +5,9 @@ pack: redundant-boolean-call
 # One argument holding two bindings, whose commas stand at bracket depth zero. A
 # count of them read the clause as several arguments and fell silent on a wrapper
 # it would otherwise strip correctly; the parse separates arguments rather than
-# counting brackets, so the commas that bind are no separators (#561, #576, and
-# `BINDINGS` in test/expressions.test.js).
+# counting brackets, so the commas that bind are no separators (#561, #576).
+# `BINDINGS` in test/expressions.test.js pinned the gap while a check still
+# counted them, and went with `lone` in #596.
 found:
   amount: 2
   positions: [ [ 4, 19 ], [ 5, 36 ] ]

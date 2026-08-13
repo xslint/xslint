@@ -269,6 +269,36 @@ const calls = function(found, node, name) {
 }
 
 /**
+ * The string a literal node holds, unquoted and unescaped, or null where the
+ * node holds no string at all — a number is a `literal` too and only its token
+ * says which (#575), and every other kind is something else again.
+ *
+ * `textOf` answers what the author wrote and this answers what XPath reads,
+ * which are two questions wherever the answer is a string: XPath spells one
+ * string with either delimiter and escapes that delimiter by doubling it, so
+ * `"it's"` and `'it''s'` are the same four characters. A check comparing the
+ * text saw two different literals there and read only the spelling it was
+ * written against — `'A..Z'` and not `"A..Z"` (#562), `= 'x'` and not `= "x"`
+ * (#598), and an attribute value already standing in double quotes is written
+ * the other way round.
+ *
+ * Null rather than an empty string, since the empty literal is a string a
+ * stylesheet really does hold and no sentinel of that type can mean absence.
+ * @param {{node: Node, expression: string, pattern: boolean}} found - Record
+ * @param {object} node - A node of its tree
+ * @return {?string} - The string it holds, or null
+ */
+const stringOf = function(found, node) {
+  const [token] = tokensOf(found, node)
+  let string = null
+  if (node.kind === 'literal' && token.type === TOKENS.STRING) {
+    string = token.value.slice(1, -1)
+      .replaceAll(`${token.value[0]}${token.value[0]}`, token.value[0])
+  }
+  return string
+}
+
+/**
  * Whether the node's own text can stand as an operand of a general comparison
  * with no brackets around it, which is what a rewrite substituting it needs.
  * @param {object} node - A node of a tree
@@ -318,6 +348,7 @@ module.exports = {
   offsetOf,
   operatorOf,
   parseOf,
+  stringOf,
   textOf,
   tight,
   tokensOf,

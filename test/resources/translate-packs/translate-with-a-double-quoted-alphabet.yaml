@@ -1,0 +1,23 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: translate-for-case
+# The fold is the same fold whichever delimiter spells its alphabets, and the
+# two may differ from each other inside one call. `folds` compared the quoted
+# text against `'A..Z'` and `'a..z'`, so a `&quot;` spelling — which is what
+# an attribute standing in double quotes writes — went unreported. A near
+# alphabet is no alphabet: the row missing its `Z` is left alone (#562).
+found:
+  amount: 3
+  positions: [ [ 4, 36 ], [ 5, 36 ], [ 6, 36 ] ]
+  fixes: [ "lower-case(@x)", "upper-case(@y)", "lower-case(@z)" ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="s">
+    <xsl:template match="/">
+      <xsl:variable name="a" select="translate(@x, &quot;ABCDEFGHIJKLMNOPQRSTUVWXYZ&quot;, &quot;abcdefghijklmnopqrstuvwxyz&quot;)"/>
+      <xsl:variable name="b" select="translate(@y, 'abcdefghijklmnopqrstuvwxyz', &quot;ABCDEFGHIJKLMNOPQRSTUVWXYZ&quot;)"/>
+      <xsl:variable name="c" select="translate(@z, &quot;ABCDEFGHIJKLMNOPQRSTUVWXYZ&quot;, 'abcdefghijklmnopqrstuvwxyz')"/>
+      <xsl:variable name="d" select="translate(@w, &quot;ABCDEFGHIJKLMNOPQRSTUVWXY&quot;, &quot;abcdefghijklmnopqrstuvwxy&quot;)"/>
+    </xsl:template>
+  </xsl:stylesheet>

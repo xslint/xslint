@@ -333,7 +333,8 @@ Today this covers:
   the rewrite would regroup the expression.
 - `incorrect-use-of-boolean-constants` — the string test `'true'`/`'false'`
   becomes `true()`/`false()`, which changes the truth value of a `'false'` test
-  (a non-empty string is always true).
+  (a non-empty string is always true). Either quote spells the same constant, so
+  a `test="&quot;true&quot;"` is reported and rewritten too.
 - `redundant-import` — a repeated `xsl:import`/`xsl:include` of one module is
   removed, and the reference cut is an earlier one, so the module keeps the
   precedence its last reference gives it. A suggestion because no choice of
@@ -372,9 +373,13 @@ Today this covers:
   is removed.
 - `name-compared-to-string` — `name() = 'x'` becomes `self::x` and
   `local-name() = 'x'` becomes `self::*:x`, shifting from lexical-QName to
-  expanded-name matching.
+  expanded-name matching. Either quote spells the string and either class of
+  equality comparison asks the question, so `name() eq "x"` is the same
+  construct; `name() != 'x'` becomes `not(self::x)`. An ordering comparison is
+  left alone, and so is a comparison about another node, `name(@a) = 'x'`.
 - `translate-for-case` — an alphabet `translate(x, 'A…Z', 'a…z')` becomes
   `lower-case(x)` (or `upper-case(x)`), which also folds non-ASCII characters.
+  Either alphabet may be quoted either way, and the two need not agree.
 - `leaking-result-namespace` — the leaking prefix is added to
   `exclude-result-prefixes`, which drops its declaration from the serialized
   output (offered only when a single prefix leaks).

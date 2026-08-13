@@ -2,6 +2,12 @@
 # SPDX-License-Identifier: MIT
 ---
 pack: translate-for-case
+# The neighbours that look like a case fold and are not: another pair of
+# alphabets, a call short of an argument and one holding a fourth, a `translate`
+# of your own behind a prefix, the characters inside a string literal, a bracket
+# that never closes — which reaches no check at all since #750 — and each half of
+# the fold standing without the other, since one alphabet alone maps nothing
+# either way (#562).
 found:
   amount: 0
   positions: [ ]
@@ -12,6 +18,9 @@ input: |-
     <xsl:template match="/">
       <xsl:value-of select="translate(@x, 'abc', 'xyz')"/>
       <xsl:value-of select="translate(@x, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')"/>
+      <xsl:value-of select="translate(@x, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz', 'x')"/>
+      <xsl:value-of select="translate(@x, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abc')"/>
+      <xsl:value-of select="translate(@x, 'abc', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')"/>
       <xsl:value-of select="my:translate(@x, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')"/>
       <xsl:value-of select="'translate(@x, x, y)'"/>
       <xsl:value-of select="translate(@x, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'"/>

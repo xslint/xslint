@@ -4,9 +4,13 @@
  */
 
 const {parsed} = require('../src/grammar')
-const {LOOSE, WORDED, tight} = require('../src/syntax')
+const {LOOSE, WORDED, parseOf, stringOf, tight} = require('../src/syntax')
 const {WORDS} = require('../src/tokens')
+const {expressionsOf} = require('../src/attributes')
+const {xml} = require('../src/helpers')
 const assert = require('assert')
+const fs = require('fs')
+const path = require('path')
 
 /**
  * One expression of every kind the expression grammar builds, at the version
@@ -54,6 +58,51 @@ const SHAPES = [
   {kind: 'array', xpath: '[1]'},
   {kind: 'reference', xpath: 'abs#1'},
 ]
+
+/**
+ * A stylesheet whose every expression is one literal, so a record for each
+ * spelling comes from the derivation a check reads rather than from a node
+ * built by hand.
+ * @type {Document}
+ */
+const LITERALS = xml.parsedFromString(
+  fs.readFileSync(
+    path.resolve(__dirname, 'resources', 'syntax', 'literals.xsl'), 'utf-8',
+  ),
+)
+
+/**
+ * Each literal spelling paired with the string XPath reads it as, or null where
+ * the expression holds no string at all. Either delimiter spells one string, a
+ * doubled delimiter inside spells one character of it, and the other quote
+ * needs no escaping at all — so the text between the quotes is not the answer
+ * and `textOf` is not this question. A number is a `literal` node of the same
+ * kind with only its token telling the two apart, and a step is not a literal.
+ * @type {Array.<{xpath: string, holds: ?string}>}
+ */
+const STRINGS = [
+  {xpath: `'plain'`, holds: 'plain'},
+  {xpath: `"plain"`, holds: 'plain'},
+  {xpath: `'it''s'`, holds: `it's`},
+  {xpath: `"say ""hi"""`, holds: `say "hi"`},
+  {xpath: `''`, holds: ''},
+  {xpath: `"it's"`, holds: `it's`},
+  {xpath: '42', holds: null},
+  {xpath: '@a', holds: null},
+  {xpath: '/', holds: null},
+]
+
+/**
+ * The record the fixture carries for that expression, which is how a check
+ * meets it.
+ * @param {string} xpath - The expression as the stylesheet spells it
+ * @return {{node: Node, start: number, expression: string,
+ *  pattern: boolean}} - Its record
+ */
+const held = function(xpath) {
+  return expressionsOf(LITERALS)
+    .find((found) => found.expression === xpath)
+}
 
 /**
  * Whether the expression really does carry over whole into an operand of a
@@ -108,6 +157,24 @@ describe('syntax', function() {
         `"${symbol}" and "${word}" are not one question spelled two ways`,
       )
     })
+  })
+  STRINGS.forEach(({xpath, holds}) => {
+    it(`reads what ${xpath} holds`, function() {
+      assert.equal(
+        stringOf(held(xpath), parseOf(held(xpath)).tree), holds,
+        `${xpath} does not hold what XPath reads in it`,
+      )
+    })
+  })
+  it('cannot leave a spelling the fixture carries out of the table', function() {
+    assert.deepEqual(
+      expressionsOf(LITERALS)
+        .map((found) => found.expression)
+        .filter((xpath) => !STRINGS.some((one) => one.xpath === xpath)),
+      [],
+      'The literals fixture carries a spelling no row asks about, so what ' +
+        'the helper answers for it is asserted nowhere',
+    )
   })
   it('cannot leave a word comparison out of the pairing', function() {
     assert.deepEqual(

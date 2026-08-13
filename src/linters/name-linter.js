@@ -3,8 +3,9 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {masked, closes} = require('../expressions')
-const {GAP} = require('../tokens')
+const {VALUED, calls, gathered, offsetOf, operatorOf, stringOf,
+  textOf} = require('../syntax')
+const {qualified} = require('../tokens')
 const {metaOf, suppressed, defect} = require('../checks')
 const {MODERN, since, versionOf} = require('../xsl-version')
 const {logger} = require('../logger')
@@ -28,48 +29,88 @@ const META = metaOf(CHECK)
 const names = [CHECK]
 
 /**
- * A `name(` or `local-name(` call opener, unprefixed so a custom one is left
- * alone.
- * @type {RegExp}
+ * The two standard functions that answer a node's name.
+ * @type {Array.<string>}
  */
-const CALL = new RegExp(`(^|[^\\w:.-])(name|local-name)${GAP}*\\(`, 'g')
+const NAMING = ['name', 'local-name']
 
 /**
- * The comparison that follows the call, `= 'x'` or `!= 'x'`.
- * @type {RegExp}
+ * The operators this check is about, spelled as `operatorOf` canonicalises
+ * them, so the `eq` and `ne` of a value comparison arrive here as the symbols
+ * their general-comparison twins are written with. An ordering comparison is a
+ * different question — `name() lt 'z'` asks where the name sorts, not whether
+ * the element is a `z` — and a node test cannot say it.
+ * @type {Array.<string>}
  */
-const TAIL = new RegExp(`^${GAP}*(=|!=)${GAP}*'([^']*)'`)
+const OPERATORS = ['=', '!=']
 
 /**
- * The operand-reversed comparison sitting just before the call, `'x' = `.
- * @type {RegExp}
+ * The standard function a node calls about the *current* node — `name` or
+ * `local-name` — or null where it calls neither, or calls one of them about
+ * some other node. `self::` speaks of the current node alone, so `name()` and
+ * `name(.)` are the question this check is about while `name(@a)` and
+ * `name($v)` are questions about a node a rewrite could not reach. The prefix
+ * is no part of it: bare, behind a prefix bound to the XPath functions
+ * namespace, or with that namespace written inline, all three name the standard
+ * function, and a `my:name()` of your own names another — where a scan reading
+ * `[^\w:.-]` in front of the name refused `fn:name()` outright and read
+ * `Q{urn:mine}name()` as the bare spelling, the `}` being no letter (#598,
+ * #577).
+ * @param {{node: Node, expression: string, pattern: boolean}} found - Record
+ * @param {object} node - A node of its tree
+ * @return {?string} - The local name of the call, or null
  */
-const HEAD = new RegExp(`'([^']*)'${GAP}*(=|!=)${GAP}*$`)
+const naming = function(found, node) {
+  let local = null
+  if (node.children.length === 0 ||
+    (node.children.length === 1 && node.children[0].kind === 'context')) {
+    local = NAMING.find((name) => calls(found, node, name)) ?? null
+  }
+  return local
+}
 
 /**
- * A valid unprefixed or prefixed name, so `self::` can be built from it. A
- * literal with spaces or punctuation is reported but not rewritten.
- * @type {RegExp}
+ * The call and the string of a comparison, whichever side each stands on, or
+ * null where its two operands are not that pair. XPath compares in either
+ * order and a stylesheet is written both ways, so the question is which of the
+ * two operands is which rather than what follows the call.
+ * @param {{node: Node, expression: string, pattern: boolean}} found - Record
+ * @param {object} node - A comparison node of its tree
+ * @return {?{local: string, literal: string}} - The pair, or null
  */
-const NAME = /^[A-Za-z_][\w.-]*(:[A-Za-z_][\w.-]*)?$/
+const paired = function(found, node) {
+  const named = node.children.map((child) => naming(found, child))
+  const held = node.children.map((child) => stringOf(found, child))
+  let pair = null
+  if (named[0] !== null && held[1] !== null) {
+    pair = {local: named[0], literal: held[1]}
+  } else if (named[1] !== null && held[0] !== null) {
+    pair = {local: named[1], literal: held[0]}
+  }
+  return pair
+}
 
 /**
  * The node test that replaces a comparison, or null when it cannot be built
- * with one edit — an invalid name, or a `local-name()` comparison in a 1.0
- * stylesheet where the `*:name` wildcard does not exist.
- * @param {string} fn - The called function, `name` or `local-name`
+ * with one edit — a string XML cannot spell a name with, or a `local-name()`
+ * comparison in a 1.0 stylesheet where the `*:name` wildcard does not exist.
+ * Whether the string is a name is XML's question and the lexer's answer, asked
+ * as `qualified` rather than kept as a second opinion of this file's: an ASCII
+ * class of its own refused `name() = 'é'`, which `self::é` says perfectly well
+ * (#731).
+ * @param {string} local - The called function, `name` or `local-name`
  * @param {string} operator - The comparison operator, `=` or `!=`
  * @param {string} literal - The compared string
  * @param {boolean} modern - Whether the stylesheet is 2.0 or 3.0
  * @return {?string} - The replacement expression, or null
  */
-const test = function(fn, operator, literal, modern) {
+const test = function(local, operator, literal, modern) {
   let node = `self::*:${literal}`
-  if (fn === 'name') {
+  if (local === 'name') {
     node = `self::${literal}`
   }
   let replacement = node
-  if (!NAME.test(literal) || (fn === 'local-name' && !modern)) {
+  if (!qualified(literal) || (local === 'local-name' && !modern)) {
     replacement = null
   } else if (operator === '!=') {
     replacement = `not(${node})`
@@ -78,49 +119,36 @@ const test = function(fn, operator, literal, modern) {
 }
 
 /**
- * The `name()`/`local-name()`-versus-string comparisons in an expression, in
- * either operand order: each carries the offset it starts at, its verbatim
- * text, and the node test that replaces it (or null when it cannot be
- * rewritten). Only a call over the current node — no argument or `.` — is
- * considered, since `self::` speaks of the current node. The literal is read
- * from the original text, as masking blanks it.
- * @param {string} expression - The attribute value
+ * The `name()`/`local-name()`-versus-string comparisons in an expression: each
+ * carries the offset it starts at, its verbatim text, and the node test that
+ * replaces it (or null when it cannot be rewritten).
+ *
+ * Both classes of comparison are gathered, because the question is one and
+ * XPath spells it two ways from 2.0 on: `name() eq 'p'` is `name() = 'p'` over
+ * two single values, and a scan matching `(=|!=)` and no word at all was blind
+ * to it (#763). The string is what the literal *holds* rather than how it is
+ * written, so either delimiter spells it and a doubled one inside is one
+ * character (#598).
+ * @param {{node: Node, expression: string, pattern: boolean}} found - The
+ *  expression, whole, as `expressionsOf` yields it
  * @param {boolean} modern - Whether the stylesheet is 2.0 or 3.0
  * @return {Array.<{offset: number, value: string, replacement: ?string}>} -
  *  The comparisons found
  */
-const comparisons = function(expression, modern) {
-  const found = []
-  const blanked = masked(expression)
-  for (const match of blanked.matchAll(CALL)) {
-    const fn = match[2]
-    const start = match.index + match[1].length
-    const open = match.index + match[0].length - 1
-    const close = closes(blanked, open)
-    const argument = expression.slice(open + 1, close).trim()
-    if (argument !== '' && argument !== '.') {
-      continue
-    }
-    const tail = TAIL.exec(expression.slice(close + 1))
-    if (tail) {
-      found.push({
-        offset: start,
-        value: expression.slice(start, close + 1 + tail[0].length),
-        replacement: test(fn, tail[1], tail[2], modern),
-      })
-      continue
-    }
-    const head = HEAD.exec(expression.slice(0, start))
-    if (head) {
-      const from = start - head[0].length
-      found.push({
-        offset: from,
-        value: expression.slice(from, close + 1),
-        replacement: test(fn, head[2], head[1], modern),
+const comparisons = function(found, modern) {
+  const results = []
+  for (const node of gathered(found, VALUED)) {
+    const pair = paired(found, node)
+    const operator = operatorOf(found, node.children[0], node.children[1])
+    if (pair !== null && OPERATORS.includes(operator)) {
+      results.push({
+        offset: offsetOf(found, node),
+        value: textOf(found, node),
+        replacement: test(pair.local, operator, pair.literal, modern),
       })
     }
   }
-  return found
+  return results
 }
 
 /**
@@ -138,11 +166,8 @@ const lintByName = function(expressions, suppressions = []) {
   const defects = []
   if (!suppressed(CHECK, suppressions)) {
     for (const {source, found} of expressions) {
-      const {node, expression} = found
-      const modern = since(versionOf(node), MODERN)
-      for (const {offset, value, replacement} of comparisons(
-        expression, modern,
-      )) {
+      const modern = since(versionOf(found.node), MODERN)
+      for (const {offset, value, replacement} of comparisons(found, modern)) {
         let fix
         if (replacement !== null) {
           fix = {value, replacement, suggestion: true}
