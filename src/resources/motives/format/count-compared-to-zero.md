@@ -43,6 +43,13 @@ written inline. A function of your own that happens to be called `count` is
 another function and is left alone, and so is a call spelling no argument or
 several, `fn:count` taking exactly one.
 
+Nor does the operator's spelling. XSLT 2.0 brought the value comparisons, which
+ask the same six questions in words, so `count($items) eq 0`,
+`count($items) ne 0` and `0 lt count($items)` are the existence tests `= 0`,
+`!= 0` and `0 &lt;` are, and collapse to the same `exists()`/`empty()` — the
+direct form is a call and carries no operator, so nothing of the original
+spelling is lost in dropping it.
+
 The operand order does not matter: `0 &lt; count($items)` and
 `0 = count($items)` are flagged the same way. A comparison that is not an
 existence test — `count($x) &gt; 1`, `count($x) = 5` — is a genuine count and is

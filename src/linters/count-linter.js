@@ -52,13 +52,17 @@ const collapses = function(operator, zero) {
  * alone. `fn:count` takes exactly one argument, so a call spelling none or
  * several counts nothing and is not this construct at all — which the parse
  * says outright, a comma binding a `for` clause being no separator (#576).
+ *
+ * Which class the comparison was written in it never asks: the rewrite is a
+ * call, and `exists(x)` carries no operator to spell either way, so
+ * `count(x) eq 0` and `count(x) = 0` collapse to the one form (#763).
  * @param {{node: Node, expression: string, pattern: boolean}} found - Record
- * @param {string} operator - The comparison operator
- * @param {string} zero - The compared digit, `0` or `1`
+ * @param {{operator: string, zero: string}} comparison - The operator, in the
+ *  forward direction and spelled with symbols, and the digit compared against
  * @param {Array.<object>} args - The call's arguments
  * @return {?{test: string, argument: string}} - The classification, or null
  */
-const decide = function(found, operator, zero, args) {
+const decide = function(found, {operator, zero}, args) {
   const test = collapses(operator, zero)
   let carried = null
   if (test && args.length === 1) {

@@ -5,7 +5,7 @@
 
 const {comparedToZero} = require('../comparisons')
 const {metaOf, suppressed, defect} = require('../checks')
-const {textOf, tight} = require('../syntax')
+const {WORDED, textOf, tight} = require('../syntax')
 const {logger} = require('../logger')
 
 /**
@@ -69,19 +69,28 @@ const ITEM = '.'
  * approximate that — a top-level space stood in for a binary operator, so the
  * padding of `string-length( @x )` withheld the rewrite (#578) and the tight
  * `@a!=@b` was handed one that parses for nobody.
+ *
+ * The rewrite carries an operator, so unlike the count it does care which class
+ * it was handed: an author comparing values gets `@x eq ''` back and one
+ * comparing generally gets `@x = ''`, rather than either being quietly moved
+ * into the other family by a fix that was only asked to drop a call (#763).
  * @param {{node: Node, expression: string, pattern: boolean}} found - Record
- * @param {string} operator - The comparison operator
- * @param {string} zero - The compared digit, `0` or `1`
+ * @param {{operator: string, zero: string, worded: boolean}} comparison - The
+ *  operator, in the forward direction and spelled with symbols, the digit
+ *  compared against, and whether the class spells its operators in words
  * @param {Array.<object>} args - The call's arguments
  * @return {?{replacement: ?string}} - The rewrite, or null when not emptiness
  */
-const decide = function(found, operator, zero, args) {
+const decide = function(found, {operator, zero, worded}, args) {
   const hollow = empty(operator, zero)
   let rewrite = null
   if (hollow !== null && args.length < 2) {
     let operand = '!='
     if (hollow) {
       operand = '='
+    }
+    if (worded) {
+      operand = WORDED[operand]
     }
     let argument = ITEM
     let carries = true

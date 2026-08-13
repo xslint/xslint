@@ -1,0 +1,23 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: predicate-position-literal
+# Both calls are the standard ones however their namespace is spelled, and a
+# function of your own that borrows a local name is not, the two being told apart
+# by the URI the prefix resolves to (#577). The short form keeps the spelling it
+# was given, so a prefixed `fn:last()` stays prefixed rather than being handed
+# back bare.
+found:
+  amount: 2
+  positions: [ [ 4, 29 ], [ 5, 29 ] ]
+  fixes: [ "1", "fn:last()" ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fn="http://www.w3.org/2005/xpath-functions" xmlns:my="urn:m" version="2.0" id="s">
+    <xsl:template match="/">
+      <xsl:value-of select="a[fn:position() = 1]"/>
+      <xsl:value-of select="b[position() = fn:last()]"/>
+      <xsl:value-of select="c[my:position() = 1]"/>
+      <xsl:value-of select="d[position() = my:last()]"/>
+    </xsl:template>
+  </xsl:stylesheet>

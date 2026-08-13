@@ -3,7 +3,7 @@
 ---
 pack: predicate-position-literal
 found:
-  amount: 8
+  amount: 9
   positions:
     - [ 4, 32 ]
     - [ 5, 31 ]
@@ -13,7 +13,8 @@ found:
     - [ 9, 29 ]
     - [ 9, 47 ]
     - [ 9, 65 ]
-  fixes: [ "1", "1", "last()", "last()", "1", "1", "2", "last()" ]
+    - [ 11, 32 ]
+  fixes: [ "1", "1", "last()", "last()", "1", "1", "2", "last()", "1" ]
 input: |-
   <?xml version="1.0"?>
   <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="s">
@@ -27,6 +28,8 @@ input: |-
       <xsl:value-of select="keep[position() = 1 and @on]"/>
       <xsl:value-of select="keep[position() eq 1]"/>
       <xsl:value-of select="keep[@id = 5]"/>
+      <xsl:value-of select="keep[position(1) eq 1]"/>
+      <xsl:value-of select="keep[position() eq last(1)]"/>
       <xsl:value-of select="keep[1]"/>
       <xsl:value-of select="bad]"/>
     </xsl:template>

@@ -4,7 +4,8 @@
  */
 
 const {parsed} = require('../src/grammar')
-const {LOOSE, tight} = require('../src/syntax')
+const {LOOSE, WORDED, tight} = require('../src/syntax')
+const {WORDS} = require('../src/tokens')
 const assert = require('assert')
 
 /**
@@ -94,6 +95,29 @@ describe('syntax', function() {
     assert.deepEqual(
       LOOSE.filter((kind) => !SHAPES.some((shape) => shape.kind === kind)), [],
       'A kind on the loose list has no expression holding it to the grammar',
+    )
+  })
+  Object.entries(WORDED).forEach(([symbol, word]) => {
+    it(`pairs "${symbol}" with "${word}"`, function() {
+      assert.deepEqual(
+        [
+          parsed(`a ${symbol} b`, '3.0').tree.kind,
+          parsed(`a ${word} b`, '3.0').tree.kind,
+        ],
+        ['comparison', 'value-comparison'],
+        `"${symbol}" and "${word}" are not one question spelled two ways`,
+      )
+    })
+  })
+  it('cannot leave a word comparison out of the pairing', function() {
+    assert.deepEqual(
+      WORDS.filter(
+        (word) => parsed(`a ${word} b`, '3.0').tree?.kind ===
+          'value-comparison',
+      ).filter((word) => !Object.values(WORDED).includes(word)),
+      [],
+      'A word the grammar reads as a value comparison has no symbol paired ' +
+        'with it, so every check reading that table is blind to it',
     )
   })
 })
