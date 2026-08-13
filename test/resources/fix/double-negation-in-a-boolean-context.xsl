@@ -9,6 +9,7 @@
       <xsl:value-of select="not(not(@c)) or @d"/>
       <xsl:value-of select="@e and not(not(f or g))"/>
       <xsl:value-of select="if (not(not(@h))) then 'y' else 'n'"/>
+      <xsl:value-of select="@i" use-when="not(not(@j))"/>
     </xsl:if>
   </xsl:template>
 </xsl:stylesheet>

@@ -285,10 +285,11 @@ Today this covers nine checks:
   same nodes match at the same rank.
 - `redundant-double-negation` — `not(not(x))` becomes `boolean(x)`, the
   equivalent it spells out the long way; where nothing but a truth is taken it
-  becomes plain `x`. Those places are a whole `@test`, an operand of `and` or
-  `or`, the argument of another `not()`, the condition of an `if` and the body of
-  a `satisfies`, so `@a and not(not(@b))` becomes `@a and @b`; an argument that
-  binds loosely enough for the operator around it to regroup arrives in brackets.
+  becomes plain `x`. Those places are a whole `@test` or `use-when`, an operand
+  of `and` or `or`, the argument of another `not()`, the condition of an `if` and
+  the body of a `satisfies`, so `@a and not(not(@b))` becomes `@a and @b`; an
+  argument that binds loosely enough for the operator around it to regroup
+  arrives in brackets.
 - `redundant-boolean-call` — a `boolean()` standing in one of those same places
   drops the wrapper: `test="boolean(@x)"` becomes `test="@x"` and
   `not(boolean(@x))` becomes `not(@x)`. An operand of a comparison keeps its

@@ -32,14 +32,17 @@ const names = [CHECK]
  * computes next anyway. Each carries the offset it stands at, its own text, and
  * the argument that stands in its place.
  *
- * A whole `@test` was the only such place until #561, which is one of five and
- * the only one outside XPath: an operand of `and` or `or`, the argument of
- * `not()` or of another `boolean()`, the condition of an `if` and the body of a
- * `satisfies` all take the effective boolean value of what stands there, so
- * `not(boolean(@x))` says what `not(@x)` says. What decides is where the call
- * stands rather than how much of the attribute it covers, which is a question
- * about the tree, and reading the tree is what lets the prefixed and inline
- * spellings of `fn:boolean` be the same call as the bare one (#561, #577).
+ * A whole `@test` was the only such place until #561. XSLT takes the truth of a
+ * whole `use-when` as well, and inside the expression it is XPath that coerces:
+ * an operand of `and` or `or`, the argument of `not()` or of another
+ * `boolean()`, the condition of an `if` and the body of a `satisfies` all take
+ * the effective boolean value of what stands there, so `not(boolean(@x))` says
+ * what `not(@x)` says. Which places those are is one question in
+ * `src/booleans.js`, asked there rather than listed here, and shared with
+ * `redundant-double-negation`. What decides is where the call stands rather
+ * than how much of the attribute it covers, which is a question about the tree,
+ * and reading the tree is what lets the prefixed and inline spellings of
+ * `fn:boolean` be the same call as the bare one (#561, #577).
  *
  * `fn:boolean` takes exactly one argument in every version, so a call spelling
  * none or several wraps nothing and stripping it wrote an empty `@test` (#576).

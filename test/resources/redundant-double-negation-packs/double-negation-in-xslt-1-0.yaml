@@ -5,10 +5,14 @@ pack: redundant-double-negation
 # The reduction holds under every version: XPath 1.0 takes the effective boolean
 # value of a test and of each operand of `and` and `or` exactly as the later ones
 # do, so no version gate stands between the check and a 1.0 stylesheet (#596).
+# A `use-when` is XSLT's attribute only from 2.0, and its truth is taken here all
+# the same: where 1.0 has no such attribute the stylesheet is broken for a reason
+# of its own, and gating on the version would have the reduction stop at
+# `boolean(...)` as though the wrapper meant something there.
 found:
-  amount: 2
-  positions: [ [ 4, 26 ], [ 7, 36 ] ]
-  fixes: [ "@q", "@r" ]
+  amount: 3
+  positions: [ [ 4, 26 ], [ 7, 36 ], [ 8, 50 ] ]
+  fixes: [ "@q", "@r", "@d" ]
 input: |-
   <?xml version="1.0"?>
   <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" id="s">
@@ -17,5 +21,6 @@ input: |-
         <p>on</p>
       </xsl:if>
       <xsl:variable name="a" select="not(not(@r)) or @s"/>
+      <xsl:variable name="b" select="@c" use-when="not(not(@d))"/>
     </xsl:template>
   </xsl:stylesheet>

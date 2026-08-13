@@ -7,6 +7,24 @@ const {whole} = require('./attributes')
 const {calls, parseOf, textOf, tight} = require('./syntax')
 
 /**
+ * The attributes whose whole expression XSLT itself takes the truth of, rather
+ * than XPath: a `test` decides which branch of a stylesheet runs, and a
+ * `use-when` (XSLT 2.0) whether the element carrying it is there to run at all.
+ * SaxonJ-HE 12.5 includes a template whose `use-when` reads
+ * `system-property('xsl:version') = '3.0'` and one wrapping that same test in
+ * `boolean(...)`, and excludes both `""` and `boolean("")`, so the wrapper
+ * decides nothing in the second place either (#561). No version gate stands in
+ * front of it: below 2.0 a `use-when` is not XSLT's attribute at all, so such a
+ * stylesheet is broken for a reason of its own rather than answered differently
+ * here, which the 1.0 pack of each check pins. A literal result element spells
+ * the attribute `xsl:use-when`, and `expressionsOf` yields no record for an
+ * XPath attribute outside the XSLT namespace, so that spelling is out of reach
+ * of every code-based check rather than of this list alone.
+ * @type {Array.<string>}
+ */
+const TESTED = ['test', 'use-when']
+
+/**
  * The kinds whose every operand is taken as a truth. XPath asks for the
  * effective boolean value of each side of an `and` and an `or`, so a wrapper
  * that computes one is doing what the operator does next anyway.
@@ -39,10 +57,10 @@ const ASKING = ['boolean', 'not']
  * Whether an expression binding loosely may stand in a child's place with no
  * brackets put round it. Every place a truth is taken has brackets round it
  * already, or nothing after it — the argument of a call, the condition of an
- * `if`, the body of a `satisfies`, a whole `@test` — except the operands of
- * `and` and `or`, where what follows binds tighter than what a replacement may
- * carry: `a or b` substituted into `boolean(a or b) and @c` would be read as
- * `a or (b and @c)`.
+ * `if`, the body of a `satisfies`, a whole `@test` or `@use-when` — except the
+ * operands of `and` and `or`, where what follows binds tighter than what a
+ * replacement may carry: `a or b` substituted into `boolean(a or b) and @c`
+ * would be read as `a or (b and @c)`.
  * @param {object} parent - The node the place belongs to
  * @return {boolean} - True when a loose expression stands there unbracketed
  */
@@ -87,13 +105,13 @@ const asks = function(found, parent, index, places) {
  * boolean value is taken, each paired with whether an expression that binds
  * loosely may stand there as it is.
  *
- * The whole expression is one such node when it is the whole `@test` of an XSLT
- * element, XSLT taking the truth of a test and nothing else; inside the
- * expression it is XPath that says so, and it says so about the operands of
- * `and` and `or`, the argument of `fn:not` and `fn:boolean`, the condition of
- * an `if` and the body of a `satisfies`. Walked from the root down rather than
- * asked of one node upwards, because the tree carries no parent to climb to and
- * a bracket inherits what its own place is (#561, #596).
+ * The whole expression is one such node when it is the whole `@test` or
+ * `@use-when` of an XSLT element, XSLT taking the truth of either and nothing
+ * else; inside the expression it is XPath that says so, and it says so about
+ * the operands of `and` and `or`, the argument of `fn:not` and `fn:boolean`,
+ * the condition of an `if` and the body of a `satisfies`. Walked from the root
+ * down rather than asked of one node upwards, because the tree carries no
+ * parent to climb to and a bracket inherits what its own place is (#561, #596).
  * @param {{node: Node, expression: string, pattern: boolean}} found - The
  *  expression, whole, as `expressionsOf` yields it
  * @return {Map.<object, boolean>} - The places a truth alone is taken
@@ -101,7 +119,7 @@ const asks = function(found, parent, index, places) {
 const coerced = function(found) {
   const places = new Map()
   const root = parseOf(found).tree
-  if (whole(found, 'test')) {
+  if (TESTED.some((name) => whole(found, name))) {
     places.set(root, true)
   }
   /**

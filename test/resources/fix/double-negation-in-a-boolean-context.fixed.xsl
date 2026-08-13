@@ -9,6 +9,7 @@
       <xsl:value-of select="@c or @d"/>
       <xsl:value-of select="@e and (f or g)"/>
       <xsl:value-of select="if (@h) then 'y' else 'n'"/>
+      <xsl:value-of select="@i" use-when="@j"/>
     </xsl:if>
   </xsl:template>
 </xsl:stylesheet>

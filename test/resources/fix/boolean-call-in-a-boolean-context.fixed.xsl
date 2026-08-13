@@ -9,6 +9,7 @@
       <xsl:value-of select="@b and @c"/>
       <xsl:value-of select="@d and (e or f)"/>
       <xsl:value-of select="every $va in g satisfies $va/@h"/>
+      <xsl:value-of select="@i" use-when="@j"/>
     </xsl:if>
   </xsl:template>
 </xsl:stylesheet>

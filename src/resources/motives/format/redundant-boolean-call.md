@@ -2,9 +2,10 @@
 
 `boolean(x)` computes the effective boolean value of `x` — which is the very
 thing XSLT and XPath compute for themselves wherever a truth is what they are
-after. The `@test` of an `xsl:if` or an `xsl:when` is such a place, and so is
-each operand of `and` and `or`, the argument of `not()`, the condition of an `if`
-expression and the body of a `satisfies`. In all of them `boolean(x)` behaves
+after. The `@test` of an `xsl:if` or an `xsl:when` is such a place, and so is the
+`use-when` that decides whether an element is compiled at all, each operand of
+`and` and `or`, the argument of `not()`, the condition of an `if` expression and
+the body of a `satisfies`. In all of them `boolean(x)` behaves
 exactly as `x` does, so the wrapper says nothing and the reader has to look past
 it to find the condition.
 
