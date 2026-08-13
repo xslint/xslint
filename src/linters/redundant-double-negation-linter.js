@@ -1,6 +1,6 @@
 /*
- * SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov SPDX-License-
- * Identifier: MIT
+ * SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+ * SPDX-License-Identifier: MIT
  */
 
 const {coerced, unwrapped} = require('../booleans')
