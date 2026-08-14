@@ -1,0 +1,18 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: use-node-set-extension
+# Three wrappers in one expression, each with its own defect and its own fix.
+found:
+  amount: 3
+  positions: [ [ 4, 19 ], [ 4, 48 ], [ 4, 76 ] ]
+  fixes: [ "$one", "$two", "$three" ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:exsl="http://exslt.org/common" version="2.0">
+    <xsl:template match="/">
+      <xsl:if test="exsl:node-set($one)/alpha or exsl:node-set($two)/beta or exsl:node-set($three)/gamma">
+        <xsl:value-of select="."/>
+      </xsl:if>
+    </xsl:template>
+  </xsl:stylesheet>

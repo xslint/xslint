@@ -233,22 +233,32 @@ const gathered = function(found, kinds) {
 }
 
 /**
- * Whether the node is a call to the standard function of that local name.
- * XPath spells its namespace three ways and all three name one function: bare,
- * which is the default function namespace; behind a prefix the stylesheet binds
- * to it, which is the idiomatic `fn:count` of any 2.0 sheet; and with the
- * namespace written inline as `Q{...}`, which XPath 3.0 added. What tells the
- * standard call from a user function of the same local name is the URI, never
- * the prefix — a scan excluding every prefixed spelling missed `fn:count`, and
- * one excluding none read `Q{urn:mine}count` as the standard call (#577). The
- * prefix is resolved against the element the record hangs off, which is the
- * same node the version is read at.
+ * Whether the node is a call to the function of that local name in one of those
+ * namespaces, the standard ones by default. XPath spells a namespace three ways
+ * and all three name one function: bare, which is the default function
+ * namespace; behind a prefix the stylesheet binds to it, which is the idiomatic
+ * `fn:count` of any 2.0 sheet; and with the namespace written inline as
+ * `Q{...}`, which XPath 3.0 added. What tells the call apart from a function of
+ * the same local name somebody else declared is the URI, never the prefix — a
+ * scan excluding every prefixed spelling missed `fn:count`, and one excluding
+ * none read `Q{urn:mine}count` as the standard call (#577), while one taking
+ * any prefix at all on sight read `my:node-set($v)` as the EXSLT extension and
+ * advised dropping a call to somebody's own function (#557). The prefix is
+ * resolved against the element the record hangs off, which is the same node the
+ * version is read at, so a prefix bound to nothing resolves to nothing and
+ * names no function here either.
+ *
+ * A list, because a function is its name and its namespace together and some
+ * are declared in more than one: `node-set` is EXSLT's and Microsoft's for the
+ * same purpose, where every function XPath itself defines is in the one
+ * namespace this defaults to.
  * @param {{node: Node, expression: string, pattern: boolean}} found - Record
  * @param {object} node - A node of its tree
  * @param {string} name - The function's local name, such as `count`
- * @return {boolean} - True when the node calls that standard function
+ * @param {Array.<string>} namespaces - The URIs the name means it in
+ * @return {boolean} - True when the node calls that function
  */
-const calls = function(found, node, name) {
+const calls = function(found, node, name, namespaces = [FUNCTIONS]) {
   const tokens = parseOf(found).tokens
   let same = false
   if (node.kind === 'call') {
@@ -263,7 +273,7 @@ const calls = function(found, node, name) {
       uri = holding(found.node).lookupNamespaceURI(local.slice(0, colon))
       local = local.slice(colon + 1)
     }
-    same = local === name && uri === FUNCTIONS
+    same = local === name && namespaces.includes(uri)
   }
   return same
 }

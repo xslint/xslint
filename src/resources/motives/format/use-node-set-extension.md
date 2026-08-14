@@ -1,8 +1,15 @@
 # Use node-set extension
 
-The `exsl:node-set()` extension function is an XSLT 1.0 workaround for
-converting result tree fragments into node-sets. It is unnecessary in XSLT 2.0
-and later, where temporary trees can be queried directly.
+The `node-set()` extension function is an XSLT 1.0 workaround for converting
+result tree fragments into node-sets. It is unnecessary in XSLT 2.0 and later,
+where temporary trees can be queried directly.
+
+Two namespaces declare it for that one purpose — EXSLT's common module,
+`http://exslt.org/common`, and Microsoft's `urn:schemas-microsoft-com:xslt` —
+and the prefix a stylesheet binds to either is the author's to choose, so
+`exsl:node-set`, `msxsl:node-set` and `common:node-set` can all be the same
+call. A `node-set` of your own, in a namespace of your own, is a different
+function and does whatever you wrote it to do.
 
 Incorrect:
 

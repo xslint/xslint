@@ -3,8 +3,11 @@
 * SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
 * SPDX-License-Identifier: MIT
 -->
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:exsl="http://exslt.org/common" version="2.0">
   <xsl:template match="/">
     <xsl:value-of select="$x/title"/>
+    <xsl:if test="$x/author">
+      <xsl:value-of select="'seen'"/>
+    </xsl:if>
   </xsl:template>
 </xsl:stylesheet>

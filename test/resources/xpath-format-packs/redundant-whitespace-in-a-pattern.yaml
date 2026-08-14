@@ -1,0 +1,25 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: redundant-whitespace
+# A pattern is a different language and its gaps are the same gaps: a leading
+# space is as redundant in a `match` as in a `select`, and the run inside a
+# predicate as much as inside a call. Nothing pinned that until #565 — the
+# validator has handed patterns on since #589, so the widening was working and
+# asserted nowhere, which reads exactly like a check that never scans them.
+# `count` and `from` are here beside `match` because what makes an attribute a
+# pattern is one list in `src/attributes.js`, and a list is what drifts.
+found:
+  amount: 4
+  positions: [ [ 3, 30 ], [ 4, 24 ], [ 4, 43 ], [ 6, 24 ] ]
+  fixes: [ " ", "", "", "" ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0">
+    <xsl:template match="alpha[  @on]">
+      <xsl:number count="  alpha" from="beta "/>
+    </xsl:template>
+    <xsl:template match=" //spaced">
+      <xsl:value-of select="."/>
+    </xsl:template>
+  </xsl:stylesheet>

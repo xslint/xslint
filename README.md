@@ -271,7 +271,8 @@ Today this covers nine checks:
   used, `#all` naming every one of them at once, since cutting a declaration
   one of those refers to leaves the reference unbound.
 - `use-node-set-extension` — the redundant `node-set()` extension is unwrapped
-  in XSLT 2.0 and later: `exsl:node-set($x)` becomes `$x`.
+  in XSLT 2.0 and later, under whichever prefix the stylesheet binds to EXSLT's
+  common namespace or Microsoft's: `exsl:node-set($x)` becomes `$x`.
 - `count-compared-to-zero` — an existence test spelled as a count is
   simplified version-appropriately: on XSLT 2.0+, `count($x) > 0` becomes
   `exists($x)` and `count($x) = 0` becomes `empty($x)`; on 1.0 (where those

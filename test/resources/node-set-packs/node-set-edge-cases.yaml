@@ -2,15 +2,23 @@
 # SPDX-License-Identifier: MIT
 ---
 pack: use-node-set-extension
+# The neighbours that look like the extension and are not: the characters
+# standing inside a string literal, a bracket that never closes — which reaches
+# no check at all since #750 — and a call of the right name in the right
+# namespace holding no argument or two, which the extension never takes. The
+# prefix is bound here on purpose, so each of those is silent for its own
+# reason rather than because nothing resolves (#557, #576).
 found:
   amount: 0
   positions: [ ]
   fixes: [ ]
 input: |-
   <?xml version="1.0"?>
-  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0">
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:exsl="http://exslt.org/common" version="2.0">
     <xsl:template match="/o">
       <xsl:value-of select="concat('exsl:node-set(y)', $x)"/>
+      <xsl:value-of select="exsl:node-set()/alpha"/>
+      <xsl:value-of select="exsl:node-set($one, $two)/beta"/>
       <xsl:value-of select="exsl:node-set(broken"/>
     </xsl:template>
   </xsl:stylesheet>
