@@ -1,0 +1,20 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: use-node-set-extension
+# The wrapper in a `@test` and one buried in a predicate. A scan narrowed to
+# `@select` saw neither, though the extension is as redundant wherever a 2.0
+# processor meets it, and nothing said why the narrowing stood (#557).
+found:
+  amount: 2
+  positions: [ [ 4, 19 ], [ 5, 34 ] ]
+  fixes: [ "$v", "$v" ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:exsl="http://exslt.org/common" version="2.0">
+    <xsl:template match="/">
+      <xsl:if test="exsl:node-set($v)/alpha">
+        <xsl:value-of select="beta[exsl:node-set($v)/gamma]"/>
+      </xsl:if>
+    </xsl:template>
+  </xsl:stylesheet>

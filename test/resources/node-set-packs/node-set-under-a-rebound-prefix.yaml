@@ -1,0 +1,19 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: use-node-set-extension
+# The spelling decides nothing and the URI decides everything: an `exsl` bound
+# to a namespace of the author's own is not the extension, and the extension
+# under any other prefix is (#557).
+found:
+  amount: 1
+  positions: [ [ 5, 27 ] ]
+  fixes: [ "$v" ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:exsl="urn:mine" xmlns:common="http://exslt.org/common" version="2.0">
+    <xsl:template match="/">
+      <xsl:value-of select="exsl:node-set($v)/alpha"/>
+      <xsl:value-of select="common:node-set($v)/beta"/>
+    </xsl:template>
+  </xsl:stylesheet>

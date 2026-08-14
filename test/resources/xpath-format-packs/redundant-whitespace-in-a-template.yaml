@@ -1,0 +1,20 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: redundant-whitespace
+# The braces of an attribute value template hold an expression, so its gaps are
+# read too, and each run is reported where it truly stands rather than where the
+# attribute opens — the record carries the offset the brace's expression starts
+# at (#565, #579). Both edges of one such expression are its own, not the
+# value's: the gap after the closing brace is output text.
+found:
+  amount: 2
+  positions: [ [ 4, 23 ], [ 4, 43 ] ]
+  fixes: [ " ", "" ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0">
+    <xsl:template match="/">
+      <widget id="{alpha  or beta}" title="{ gamma} tail"/>
+    </xsl:template>
+  </xsl:stylesheet>

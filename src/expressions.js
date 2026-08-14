@@ -6,9 +6,15 @@
 const {tokenized, OPAQUE} = require('./tokens')
 
 /**
- * An expression with its string and comment spans blanked to spaces, so a call
- * can be found and its parentheses balanced without tripping over text inside a
- * literal. Blanking keeps every offset intact.
+ * An expression with its string and comment spans blanked to spaces, so a brace
+ * can be balanced without tripping over one standing inside a literal. Blanking
+ * keeps every offset intact.
+ *
+ * Five checks scanned above this and each is on the tree now, where a literal
+ * is one node and nothing needs blanking to be read over. What is left is the
+ * brace scan below, which is text work by nature: an attribute value is not
+ * XPath, and where its expressions begin and end is what `enclosed` is for
+ * (#557).
  * @param {string} expression - The attribute value
  * @return {string} - The value with literals blanked
  */
@@ -22,29 +28,6 @@ const masked = function(expression) {
     }
   }
   return chars.join('')
-}
-
-/**
- * Offset of the `)` that closes the `(` at `open` in a literal-free expression,
- * or -1 when it is unbalanced.
- * @param {string} expression - Expression with literals already blanked
- * @param {number} open - Offset of the opening `(`
- * @return {number} - Offset of the matching `)`, or -1
- */
-const closes = function(expression, open) {
-  let depth = 0
-  let shut = -1
-  for (let at = open; at < expression.length && shut < 0; at++) {
-    if (expression[at] === '(') {
-      depth++
-    } else if (expression[at] === ')') {
-      depth--
-      if (depth === 0) {
-        shut = at
-      }
-    }
-  }
-  return shut
 }
 
 /**
@@ -104,7 +87,5 @@ const enclosed = function(template) {
 }
 
 module.exports = {
-  masked,
-  closes,
   enclosed,
 }

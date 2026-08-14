@@ -224,6 +224,23 @@ describe('conformance', function() {
       assert.ok(packed.has(name), `format/${name} has no test pack`)
     }
   })
+  it('pins every defect a pack expects to a position', function() {
+    assert.deepEqual(
+      allFilesFrom(RESOURCES)
+        .filter((file) => file.endsWith('.yaml'))
+        .map((file) => ({
+          name: path.relative(RESOURCES, file), yml: yaml.parsedFromFile(file),
+        }))
+        .filter((pack) => pack.yml.found)
+        .filter((pack) =>
+          (pack.yml.found.positions ?? []).length !== pack.yml.found.amount)
+        .map((pack) => pack.name),
+      [],
+      'a pack expecting more defects than it gives positions for asserts ' +
+        'nothing about where they stand, since every harness walks the ' +
+        'positions rather than the count',
+    )
+  })
   it('pins the fix of every format pack against its positions', function() {
     const formats = new Set(names('format'))
     const packs = allFilesFrom(RESOURCES)

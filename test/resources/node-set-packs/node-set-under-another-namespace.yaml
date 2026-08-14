@@ -1,0 +1,21 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: use-node-set-extension
+# A `node-set` of your own, and one whose prefix is bound to nothing at all.
+# Neither is the extension, and a scan matching `[\w.-]+:node-set` on sight
+# reported both — advising a rewrite that drops a call to somebody else's
+# function (#557). What names the function is the URI its prefix resolves to.
+found:
+  amount: 0
+  positions: [ ]
+  fixes: [ ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:my="urn:mine" version="2.0">
+    <xsl:template match="/">
+      <xsl:value-of select="my:node-set($v)/alpha"/>
+      <xsl:value-of select="loose:node-set($v)/beta"/>
+      <xsl:value-of select="node-set($v)/gamma"/>
+    </xsl:template>
+  </xsl:stylesheet>
