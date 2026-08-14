@@ -3,7 +3,9 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {calls, gathered, offsetOf, textOf} = require('../syntax')
+const {
+  calls, gathered, offsetOf, parseOf, stepped, textOf,
+} = require('../syntax')
 const {metaOf, suppressed, defect} = require('../checks')
 const {MODERN, since, versionOf} = require('../xsl-version')
 const {logger} = require('../logger')
@@ -46,6 +48,33 @@ const EXTENSIONS = ['http://exslt.org/common', 'urn:schemas-microsoft-com:xslt']
 const ARGUMENTS = 1
 
 /**
+ * The text that stands where the call did once its argument carries over: the
+ * argument as the author wrote it, bracketed where an expression stands around
+ * the call and the argument binds looser than a step.
+ *
+ * A call is a primary expression, so it stands wherever XPath binds most
+ * tightly — a step of a path, and the predicate a step takes — and an argument
+ * looser than that regroups whatever stands around it:
+ * `exsl:node-set($one | $two)/alpha` selects the `alpha` children of the union
+ * where the bare `$one | $two/alpha` selects `$one` beside them, and this fix
+ * is **safe**-tier, so plain `--fix` wrote exactly that (#774). Nothing stands
+ * around a call that is the whole expression, whether the whole of an attribute
+ * or the whole of what one brace of an attribute value template holds, so there
+ * the argument replaces it as it is and `select="exsl:node-set(/*)"` still
+ * becomes `select="/*"` rather than growing a pair of brackets for nobody.
+ * @param {{node: Node, expression: string, pattern: boolean}} found - Record
+ * @param {object} node - The call a fix would replace
+ * @return {string} - The text to write there
+ */
+const carried = function(found, node) {
+  let text = textOf(found, node.children[0])
+  if (node !== parseOf(found).tree && !stepped(node.children[0])) {
+    text = `(${text})`
+  }
+  return text
+}
+
+/**
  * The `node-set()` wrappers an expression holds: each carries the offset it
  * starts at, its verbatim text, and the argument that replaces it.
  *
@@ -67,7 +96,7 @@ const wrappers = function(found) {
       results.push({
         offset: offsetOf(found, node),
         value: textOf(found, node),
-        replacement: textOf(found, node.children[0]),
+        replacement: carried(found, node),
       })
     }
   }

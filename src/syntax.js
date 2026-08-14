@@ -123,6 +123,32 @@ const LOOSE = [
 ]
 
 /**
+ * The kinds a `StepExpr` can be, which is the same ladder read from the other
+ * end: everything XPath admits as a step of a path, a `PrimaryExpr` or a
+ * `PostfixExpr` over one or an `AxisStep`, and so everything that carries over
+ * whole into the place a call stands in. A call is a primary itself, so an
+ * expression standing where one stood needs brackets round it unless it is one
+ * of these — `exsl:node-set($one | $two)/alpha` selects the `alpha` children of
+ * a union where `$one | $two/alpha` selects `$one` beside them (#774).
+ *
+ * A `path` is deliberately not one of them, though it stands as a *step* well
+ * enough: a predicate binds to the last step of a path rather than to the whole
+ * of it, so `exsl:node-set(alpha/beta)[1]` is `(alpha/beta)[1]` and never
+ * `alpha/beta[1]`, and a predicate is the one postfix a node set can carry —
+ * neither an argument list nor a lookup means anything applied to one. Brackets
+ * nobody needs are noise where a missing pair is a rewrite that means something
+ * else, which is why the answer errs this way round. `test/syntax.test.js`
+ * holds the list to the grammar rather than to this comment, asking of a
+ * specimen of every kind whether `b/<specimen>` really does come back a path
+ * whose far step is the specimen whole.
+ * @type {Array.<string>}
+ */
+const STEPPED = [
+  'step', 'filter', 'apply', 'lookup', 'parenthesized', 'literal', 'variable',
+  'call', 'context', 'map', 'array', 'reference', 'inline',
+]
+
+/**
  * What the grammar makes of the expression a record carries, asked at the
  * version in force where it stands and in the language the record says it is:
  * `matched` for a pattern, since a `match` is a different language and not a
@@ -347,6 +373,16 @@ const tight = function(node) {
 }
 
 /**
+ * Whether the node's own text can stand as a step of a path with no brackets
+ * around it, which is what a rewrite substituting it where a call stood needs.
+ * @param {object} node - A node of a tree
+ * @return {boolean} - True when it binds as tightly as a step
+ */
+const stepped = function(node) {
+  return STEPPED.includes(node.kind)
+}
+
+/**
  * The solid tokens standing between two nodes of one tree, which is where an
  * operator the grammar consumed without building a node of its own is read
  * from: a comparison holds its two operands and not the sign between them.
@@ -379,6 +415,7 @@ module.exports = {
   VALUED,
   FUNCTIONS,
   LOOSE,
+  STEPPED,
   WORDED,
   calls,
   gathered,
@@ -386,6 +423,7 @@ module.exports = {
   offsetOf,
   operatorOf,
   parseOf,
+  stepped,
   stringOf,
   textOf,
   tight,
