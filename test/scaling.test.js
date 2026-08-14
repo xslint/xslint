@@ -54,48 +54,61 @@ const STEP = 4
  * it, and lifted every other share by about a quarter.
  *
  * What a sum is not is immune outright, and the residual is worth recording
- * rather than hiding: `xpath-linter` is over half the run, 52.1% to 57.0% here,
- * so an optimisation *there* really would move every other share, and the
- * entries below would want re-deriving rather than reading as regressions of
- * stages nobody touched. What a sum buys is that a change to one of the
- * fourteen *cheap* stages no longer does, which is every optimisation this
- * project has landed so far and #775 exactly.
+ * rather than hiding: `xpath-linter` is over half the run, so an optimisation
+ * of *that* would really move every other share, and the entries below would
+ * want re-deriving rather than reading as regressions of stages nobody
+ * touched. What
+ * a sum buys is that a change to one of the fourteen *cheap* stages no longer
+ * does, which is every optimisation this project had landed when #778 wrote
+ * that and #775 exactly.
+ *
+ * #783 is the case that paragraph names, one stage over. Taking `corpus-linter`
+ * from 14.96%–18.35% of the run to 5.35%–6.05% takes about a ninth out of the
+ * denominator, and the three entries nobody touched rose by it in step —
+ * `xpath-linter` 56.36%–56.80% to 63.77%–63.99%, `xpath-validator` 5.53%–5.64%
+ * to 6.38%–6.89%, `xsl-validator` 3.70%–4.23% to 3.99%–5.00%, which is 1.13,
+ * 1.17 and 1.13 where the arithmetic says 1.12. So their entries are re-derived
+ * by that factor rather than left to tighten by a ninth as a side effect of a
+ * stage they have nothing to do with: 75 to 85, 13 to 15, 8 to 9, each holding
+ * the headroom it had. A gate made stricter by accident is not a ratchet, it is
+ * the next red build nobody can explain.
  *
  * Two things set a ceiling. Where there is a defect to catch, it goes between
- * the two measured distributions — `corpus-linter` at 26, a tenth above the
- * dearest reading the fix has given on any runner, 23.5%, and a *fortieth*
- * below the cheapest the quadratic has given here, 26.54%. That band is narrow,
- * and it is narrow because this is the entry a runner disagrees about most: the
- * four that have reported a table charged the fix 14.4%, 19.1%, 22.0% and 23.5%
- * of the run where this machine charges 15.4%, so a ceiling drawn halfway
- * between the two distributions *here* would fail the fix on macOS. The bar
- * therefore sits at the top of the band rather than in the middle of it, and
- * deliberately: the fix's upper edge is four single readings from four machines
- * where the quadratic's lower edge is thirty-seven from one, so the headroom is
- * spent on the side the evidence is thinner and the catching side leans on 37
- * of 37 instead. The band is also as wide as this corpus can make it, #755
- * having doubled the cross-file linter's cost over forty stylesheets where it
- * multiplied it by 3.4 over DocBook-XSL, which is the second tier's question
- * rather than this one's. Everywhere else the ceiling stands between half again
- * and twice the dearest reading, there being no second distribution to leave
- * room for.
+ * the two measured distributions — `corpus-linter` at 12, twice the dearest
+ * reading the index has given here, 6.05%, and a sixth below the cheapest the
+ * scan has given on any runner, 14.4%. The defect it now catches is the scan
+ * itself: putting `src/linters/corpus-linter.js` back to its pre-#783 state
+ * fails the gate three times out of three at 14.47%, 15.03% and 15.52%, and the
+ * stage read 14.47%–18.35% over six runs here against 14.4%–23.5% on the four
+ * runners that have reported a table, so every one of those readings is caught.
+ * The index passes it five of five at 5.35%–6.05%, and goes on passing as long
+ * as no runner charges the stage more than 1.98 times what this machine does,
+ * where the worst character a runner has shown is 1.53. The entry read 26 while
+ * the scan was what the gate held, a tenth above the dearest reading that
+ * scan gave on any runner and a fortieth below the cheapest #755's quadratic
+ * gave here; the index moved the whole distribution, so the entry moves with
+ * it, and a ceiling five times its own reading would let the scan back in
+ * without a word. Everywhere else the ceiling stands between half again and
+ * twice the dearest reading, there being no second distribution to leave room
+ * for.
  * @type {{[stage: string]: number}}
  */
 const SHARES = {
-  'xpath-linter': 75,
-  'corpus-linter': 26,
-  'xpath-validator': 13,
-  'xsl-validator': 8,
+  'xpath-linter': 85,
+  'corpus-linter': 12,
+  'xpath-validator': 15,
+  'xsl-validator': 9,
 }
 
 /**
  * What percentage of the run any stage not named in `SHARES` may spend. The
- * fourteen of them read 0.42% to 2.15% here and 0.35% to 1.82% on the runner
- * that reported a table, so this is the bar a cheap stage crosses by becoming
- * an expensive one, and crossing it earns an entry above or a fix. More than
- * twice what the dearest of them reads, for the same reason the entries above
- * are: a runner of another character moves a share, and a stage that has
- * really become expensive lands in the tens rather than a tenth above.
+ * fourteen of them read 0.44% to 2.35% here, having risen by the ninth #783
+ * took out of the denominator, and 0.35% to 1.82% on the runner that reported a
+ * table before it. So this is the bar a cheap stage crosses by becoming an
+ * expensive one, and crossing it earns an entry above or a fix. More than twice
+ * what the dearest of them reads, for the same reason the entries above are: a
+ * runner of another character moves a share, and a stage that has really become
+ * expensive lands in the tens rather than a tenth above.
  * @type {number}
  */
 const SHARE = 5
@@ -110,8 +123,10 @@ const SHARE = 5
  * speed and not its character and the runners disagree with this machine by as
  * much as a half — `corpus-linter` at 23.5% of the run where this one charges
  * 15.4%, and `xsl-validator` at 2.8% where it charges 3.3%. What is left to
- * catch is a stage made several times cheaper, which is what #755's remainder
- * will do to the cross-file entry.
+ * catch is a stage made several times cheaper, which is what #783 did to the
+ * cross-file entry: the index took it to a fifth of what it cost, `SLACK` said
+ * so of an entry of 26 standing over a reading of 5.35%, and the entry came
+ * down to 12.
  * @type {number}
  */
 const SLACK = 4
@@ -219,15 +234,19 @@ const charged = function() {
  * process to ask about speed. `npm run coverage` runs mocha under c8, and that
  * bookkeeping does not fall evenly across the stages: it charges `xpath-linter`
  * — the one putting every declarative check through fontoxpath — 65% to 69% of
- * the run where an uninstrumented one charges it 52% to 57%. A ceiling honest
+ * the run where an uninstrumented one charged it 52% to 57%. A ceiling honest
  * about one of those readings says nothing true about the other, which is the
- * whole reason to stand down, and it is not the same thing as a breach: 69% is
- * comfortably under the 75 that entry allows, and no ceiling here is crossed at
- * all. What does fire is the *floor*, and only sometimes. Run alone under c8,
- * `xsl-validator`'s judged reading came to 1.93%, 1.95% and 1.97% against the
- * 2.00 that `SLACK` leaves an entry of 8, and the ratchet called that entry
- * stale in three runs of five; under the parallel command above it read 2.14%
- * to 2.34% and the gate passed three of three. So what an instrumented process
+ * whole reason to stand down, and it is not the same thing as a breach: 69% was
+ * comfortably under the 75 that entry then allowed, and no ceiling here was
+ * crossed at all. What does fire is the *floor*, and only sometimes. Run alone
+ * under c8, `xsl-validator`'s judged reading came to 1.93%, 1.95% and 1.97%
+ * against the 2.00 that `SLACK` then left an entry of 8, and the ratchet called
+ * that entry stale in three runs of five; under the parallel command above it
+ * read 2.14% to 2.34% and the gate passed three of three. Every reading in this
+ * paragraph was taken under the denominator #783 changed, so each stands a
+ * ninth below what the same run would report now, and each entry it names has
+ * been re-derived above; what they are recorded for is the shape, which is that
+ * an instrumented process answers about c8. So what an instrumented process
  * gives is an answer about c8 rather than about the pipeline, intermittently
  * red on a tree nobody has touched. The gate skips here and speaks in
  * `npm test` and in the `build` job over six runners instead, and the coverage

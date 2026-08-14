@@ -1,0 +1,18 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: unused-variable
+found:
+  amount: 2
+  positions: [ [ 0, 3, 3 ], [ 0, 4, 3 ] ]
+inputs:
+  - |-
+    <?xml version="1.0"?>
+    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0">
+      <xsl:variable name="row" select="1"/>
+      <xsl:variable name="ow" select="2"/>
+      <xsl:variable name="rownum" select="3"/>
+      <xsl:template match="/">
+        <xsl:value-of select="$rownum"/>
+      </xsl:template>
+    </xsl:stylesheet>

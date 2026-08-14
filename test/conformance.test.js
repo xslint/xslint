@@ -354,6 +354,21 @@ describe('conformance', function() {
       }
     }
   })
+  it('anchors every reference template at one end of the name', function() {
+    for (const name of names('corpus')) {
+      const check = yaml.parsedFromFile(
+        path.join(CHECKS, 'corpus', `${name}.yaml`),
+      )
+      assert.ok(
+        !check.reference ||
+          check.reference.startsWith('{name}') ||
+          check.reference.endsWith('{name}'),
+        `corpus/${name} spells text on both sides of {name}, and the index ` +
+          'in src/linters/corpus-linter.js reads the name from one side, so ' +
+          'the other would go unchecked and the check would over-report',
+      )
+    }
+  })
   it('names both quotes of a literal it compares text with', function() {
     for (const [kind, keys] of Object.entries(SELECTORS)) {
       for (const name of names(kind)) {

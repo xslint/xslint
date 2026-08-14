@@ -4,6 +4,7 @@
  */
 
 const {nodes, strings} = require('../xpath')
+const {NAMED} = require('../tokens')
 const {kinds} = require('../resources/checks.json')
 const {logger} = require('../logger')
 
@@ -25,11 +26,11 @@ const CHECKS = Object.entries(kinds.corpus).map(([name, check]) => ({
 const SELECTED = new WeakMap()
 
 /**
- * Usages holding each reference string, per usage set, so several declarations
- * spelling one name pay for the scan once.
- * @type {WeakMap.<Array, Map.<string, Array.<Node>>>}
+ * Usages against the names they reference, per usage set and template, so the
+ * corpus is read once for a template rather than once for a declaration.
+ * @type {WeakMap.<Array, Map.<string, Map.<string, Array.<Node>>>>}
  */
-const MENTIONS = new WeakMap()
+const INDEXED = new WeakMap()
 
 /**
  * Names of the checks this linter owns.
@@ -86,14 +87,96 @@ const inScope = function(check, declaration, usage) {
 }
 
 /**
- * The reference string that stands for a declaration in an expression —
- * `name(` for a function, `$name` for a variable.
- * @param {object} check - The check to apply, carrying a `reference` template
- * @param {Node} declaration - Declaring node
- * @return {string} - Substring a referencing usage value contains
+ * The whole run of name characters beginning at an offset, which is the name
+ * a `$` opens — `$rownum` names `rownum` and no shorter name inside it.
+ * @param {string} value - Usage value
+ * @param {number} at - Offset the run begins at
+ * @return {string} - The run, empty where no name stands there
  */
-const needle = function(check, declaration) {
-  return check.reference.replaceAll('{name}', declaration.getAttribute('name'))
+const ahead = function(value, at) {
+  let till = at
+  while (till < value.length && NAMED.test(value[till])) {
+    till++
+  }
+  return value.slice(at, till)
+}
+
+/**
+ * The whole run of name characters ending at an offset, which is the name a
+ * `(` closes — `myfoo(` calls `myfoo` and no shorter name inside it.
+ * @param {string} value - Usage value
+ * @param {number} at - Offset the run ends at
+ * @return {string} - The run, empty where no name stands there
+ */
+const behind = function(value, at) {
+  let from = at
+  while (from > 0 && NAMED.test(value[from - 1])) {
+    from--
+  }
+  return value.slice(from, at)
+}
+
+/**
+ * Every name a usage value references under a check's template — the names
+ * behind each `$` for a variable, the names in front of each `(` for a call.
+ * A template anchors `{name}` at one end and the fixed part at the other is
+ * what a scan finds, the name being the run of name characters beside it, so
+ * a reference is to the *whole* name and never to one spelled inside a longer
+ * one: `$rownum` is no reference to `$row`, though it holds those characters
+ * (#783). `test/conformance.test.js` holds every template to that shape.
+ * @param {string} value - Usage value
+ * @param {string} reference - The check's template, holding `{name}`
+ * @return {Set.<string>} - The names it references
+ */
+const referencing = function(value, reference) {
+  const names = new Set()
+  const opens = reference.slice(0, reference.indexOf('{name}'))
+  let mark = opens
+  if (opens.length === 0) {
+    mark = reference.slice(reference.indexOf('{name}') + '{name}'.length)
+  }
+  let at = value.indexOf(mark)
+  while (at !== -1) {
+    let name = behind(value, at)
+    if (opens.length > 0) {
+      name = ahead(value, at + mark.length)
+    }
+    if (name.length > 0) {
+      names.add(name)
+    }
+    at = value.indexOf(mark, at + 1)
+  }
+  return names
+}
+
+/**
+ * The usages referencing each name, built once for a usage set and template.
+ * A declaration then costs a lookup rather than a scan of every usage: the
+ * scan asked its question once per distinct name, which over DocBook-XSL is
+ * `unused-variable` alone taking 1207 names against 72,077 attributes — 87
+ * million substring tests, and 98% of what this stage spent scanning (#783).
+ * @param {Array.<Node>} usages - Usage attributes across the corpus
+ * @param {string} reference - The check's template, holding `{name}`
+ * @return {Map.<string, Array.<Node>>} - Usages against the names they hold
+ */
+const indexed = function(usages, reference) {
+  if (!INDEXED.has(usages)) {
+    INDEXED.set(usages, new Map())
+  }
+  const held = INDEXED.get(usages)
+  if (!held.has(reference)) {
+    const index = new Map()
+    for (const usage of usages) {
+      for (const name of referencing(usage.value, reference)) {
+        if (!index.has(name)) {
+          index.set(name, [])
+        }
+        index.get(name).push(usage)
+      }
+    }
+    held.set(reference, index)
+  }
+  return held.get(reference)
 }
 
 /**
@@ -118,27 +201,19 @@ const across = function(corpus, xpath) {
 }
 
 /**
- * The usages whose value holds a reference string, kept for each distinct
- * reference rather than scanned again for every declaration spelling it —
- * DocBook-XSL declares 3436 variables under 1207 distinct names, so that scan
- * ran nearly three times over on average. Asking it is also how a caller asks
- * the cheap question first: `within` climbs to the document root for every pair
- * it rejects, and one `includes` rejects almost every pair, so a structural
- * test placed ahead of this one spent an ancestor walk per (declaration, usage)
- * pair to learn what a substring already said (#755).
+ * The usages referencing a declaration, looked up rather than scanned for.
+ * Asking it is still how a caller asks the cheap question first: `within`
+ * climbs to the document root for every pair it rejects, and almost every pair
+ * is rejected, so a structural test placed ahead of this one spent a full
+ * ancestor walk to learn what the index already says (#755).
  * @param {Array.<Node>} usages - Usage attributes across the corpus
- * @param {string} mark - The reference string of one declaration
- * @return {Array.<Node>} - The usages holding it
+ * @param {object} check - The check to apply, carrying a `reference` template
+ * @param {Node} declaration - Declaring node
+ * @return {Array.<Node>} - The usages referencing it
  */
-const mentioning = function(usages, mark) {
-  if (!MENTIONS.has(usages)) {
-    MENTIONS.set(usages, new Map())
-  }
-  const held = MENTIONS.get(usages)
-  if (!held.has(mark)) {
-    held.set(mark, usages.filter((usage) => usage.value.includes(mark)))
-  }
-  return held.get(mark)
+const mentioning = function(usages, check, declaration) {
+  return indexed(usages, check.reference)
+    .get(declaration.getAttribute('name')) ?? []
 }
 
 /**
@@ -172,7 +247,7 @@ const reachable = function(check, declarations, usages) {
   const subtrees = new Set(declarations.map(({node}) => node))
   const references = declarations.map(({node}) => ({
     node,
-    hosts: mentioning(usages, needle(check, node))
+    hosts: mentioning(usages, check, node)
       .filter((usage) =>
         !within(node, usage) && inScope(check, node, usage))
       .map((usage) => enclosing(subtrees, usage)),
@@ -205,7 +280,7 @@ const reachable = function(check, declarations, usages) {
 const byCall = function(corpus, check) {
   const usages = across(corpus, check.usage)
   return corpus.flatMap(({file, xsl}) => nodes(xsl, check.declaration)
-    .filter((node) => mentioning(usages, needle(check, node)).length === 0)
+    .filter((node) => mentioning(usages, check, node).length === 0)
     .map((node) => defect(check, file, node)))
 }
 
@@ -220,7 +295,7 @@ const byCall = function(corpus, check) {
 const byScope = function(corpus, check) {
   const usages = across(corpus, check.usage)
   return corpus.flatMap(({file, xsl}) => nodes(xsl, check.declaration)
-    .filter((node) => !mentioning(usages, needle(check, node)).some((usage) =>
+    .filter((node) => !mentioning(usages, check, node).some((usage) =>
       !within(node, usage) && inScope(check, node, usage)))
     .map((node) => defect(check, file, node)))
 }
@@ -242,7 +317,7 @@ const byReachability = function(corpus, check) {
   const used = reachable(check, declarations, usages)
   return declarations
     .filter(({node}) => !used.has(node))
-    .filter(({node}) => mentioning(usages, needle(check, node)).length > 0)
+    .filter(({node}) => mentioning(usages, check, node).length > 0)
     .map(({file, node}) => defect(check, file, node))
 }
 
