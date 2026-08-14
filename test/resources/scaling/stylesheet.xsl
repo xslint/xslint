@@ -9,12 +9,17 @@
     <xsl:call-template name="tSEEDx0"/>
   </xsl:template>
   <xsl:template name="tSEEDx0" match="nodeSEEDx0">
+    <xsl:param name="pSEEDx0"/>
+    <xsl:param name="qSEEDx0"/>
     <xsl:variable name="vSEEDx0" select="child::aSEEDx0/bSEEDx0"/>
     <xsl:if test="count($vSEEDx0/cSEEDx0) = 0">
       <svg:g id="gSEEDx0" n="{ name($vSEEDx0) }">
         <html:p class="pSEEDx0">
           <xsl:value-of select="translate($vSEEDx0, 'aSEEDx0', 'bSEEDx0')"/>
         </html:p>
+        <html:span>
+          <xsl:value-of select="$pSEEDx0"/>
+        </html:span>
         <math:mi>
           <xsl:value-of select="not(not($vSEEDx0/dSEEDx0))"/>
         </math:mi>
