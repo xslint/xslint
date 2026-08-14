@@ -1,0 +1,36 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: use-node-set-extension
+# The brackets the call itself supplied. An argument binding looser than a step
+# cannot replace the call bare where an expression stands around it, in a
+# `@test` as much as inside the braces of an attribute value template:
+# `exsl:node-set($one | $two)/alpha` selects the `alpha` children of the union
+# where `$one | $two/alpha` selects `$one` beside them. A path is looser than a
+# step for this purpose too, a predicate binding to the last step of one rather
+# than to the whole, so `exsl:node-set(alpha/beta)[1]` takes the first of the
+# path where `alpha/beta[1]` takes the first `beta` of each `alpha`. A variable
+# needs no brackets and gets none, and neither does the union of the last line,
+# where the call is the whole of what the brace holds and nothing stands around
+# it (#774).
+found:
+  amount: 5
+  positions: [ [ 4, 19 ], [ 5, 22 ], [ 6, 29 ], [ 7, 29 ], [ 8, 22 ] ]
+  fixes:
+    - "($one | $two)"
+    - "($one | $two)"
+    - "(alpha/beta)"
+    - "$one"
+    - "$one | $two"
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:exsl="http://exslt.org/common" version="2.0">
+    <xsl:template match="/">
+      <xsl:if test="exsl:node-set($one | $two)/alpha">
+        <widget name="{exsl:node-set($one | $two)/x}"/>
+        <xsl:value-of select="exsl:node-set(alpha/beta)[1]"/>
+        <xsl:value-of select="exsl:node-set($one)/beta"/>
+        <widget name="{exsl:node-set($one | $two)}"/>
+      </xsl:if>
+    </xsl:template>
+  </xsl:stylesheet>

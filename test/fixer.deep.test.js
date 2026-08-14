@@ -159,6 +159,13 @@ const APPLIED = [
     after: 'use-node-set-extension.fixed.xsl',
   },
   {
+    name: 'should unwrap a node-set around a union, a path and a brace, ' +
+      'bracketing what binds looser than a step, with --fix',
+    flag: '--fix',
+    before: 'node-set-with-a-loose-argument.xsl',
+    after: 'node-set-with-a-loose-argument.fixed.xsl',
+  },
+  {
     name: 'should rewrite double negations to the bare argument wherever a ' +
       'truth alone is taken, with --fix',
     flag: '--fix',

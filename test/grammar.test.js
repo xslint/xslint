@@ -124,11 +124,11 @@ const ACCEPTS = [
   {xpath: '-$a', kind: 'unary'},
   {xpath: '- -1', kind: 'unary'},
   {xpath: '1 + 2 * 3 - 4 div 5 mod 6', kind: 'sum'},
-  {xpath: '3 idiv 2', kind: 'idiv'},
-  {xpath: '//a union //b', kind: 'intersect'},
+  {xpath: '3 idiv 2', kind: 'product'},
+  {xpath: '//a union //b', kind: 'union'},
   {xpath: '//a | //b', kind: 'union'},
   {xpath: '//a intersect //b', kind: 'intersect'},
-  {xpath: '//a except //b', kind: 'except'},
+  {xpath: '//a except //b', kind: 'intersect'},
   {xpath: '$a eq $b', kind: 'value-comparison'},
   {xpath: '$a is $b', kind: 'node-comparison'},
   {xpath: '$a << $b', kind: 'node-comparison'},
@@ -217,13 +217,39 @@ const ACCEPTS = [
   {xpath: '$v instance of xs:integer* and @b', kind: 'and'},
   {xpath: '$v castable as xs:date? or @c', kind: 'or'},
   {xpath: 'a cast as xs:integer? div 2', kind: 'product'},
-  {xpath: '$v treat as item()+ union b', kind: 'intersect'},
+  {xpath: '$v treat as item()+ union b', kind: 'union'},
   {xpath: '$v instance of xs:integer? to 3', kind: 'range'},
   {xpath: '$m?div and $m?or', kind: 'and'},
   {xpath: 'count(a)div 2', kind: 'product'},
   {xpath: '"s"and b', kind: 'and'},
-  {xpath: 'a[1]union b', kind: 'intersect'},
+  {xpath: 'a[1]union b', kind: 'union'},
   {xpath: '1(: gap :)div 2', kind: 'product'},
+]
+
+/**
+ * Runs of two operators XPath spells one production with, each with the text
+ * the left of the two has to have folded into. One production is one rung, and
+ * a rung is left-associative, so `a except b intersect c` is
+ * `(a except b) intersect c` and nothing else — where a rung split in two, to
+ * give one spelling a kind or a floor the other has not got, reads the second
+ * operator as the looser of the two and nests the run the other way round. All
+ * three of XPath's mixed rungs were split that way: the word `union` sat above
+ * `|`, `idiv` above the rest of the multiplicatives, and `except` above
+ * `intersect`, so `9 idiv 2 * 3` came back `9 idiv (2 * 3)` and computed 0
+ * where XPath computes 12 (#764).
+ * @type {Array.<{xpath: string, folds: string}>}
+ */
+const RUNS = [
+  {xpath: 'a intersect b except c', folds: 'a intersect b'},
+  {xpath: 'a except b intersect c', folds: 'a except b'},
+  {xpath: 'a | b union c', folds: 'a | b'},
+  {xpath: 'a union b | c', folds: 'a union b'},
+  {xpath: '9 idiv 2 * 3', folds: '9 idiv 2'},
+  {xpath: '9 * 2 idiv 3', folds: '9 * 2'},
+  {xpath: '9 div 2 idiv 3', folds: '9 div 2'},
+  {xpath: '9 idiv 2 mod 3', folds: '9 idiv 2'},
+  {xpath: '9 + 2 - 3', folds: '9 + 2'},
+  {xpath: '9 - 2 + 3', folds: '9 - 2'},
 ]
 
 /**
@@ -476,6 +502,7 @@ const GATED = [
   {xpath: '$Q{urn:my}v', floor: '3.0', below: '2.0'},
   {xpath: '//a intersect //b', floor: '2.0', below: '1.0'},
   {xpath: '//a except //b', floor: '2.0', below: '1.0'},
+  {xpath: '//a union //b', floor: '2.0', below: '1.0'},
   {xpath: '//a ! b', floor: '3.0', below: '2.0'},
   {xpath: '$a => f()', floor: '3.0', below: '2.0'},
   {xpath: '"a" || "b"', floor: '3.0', below: '2.0'},
@@ -491,6 +518,21 @@ const GATED = [
   {xpath: 'a//(b|c)', floor: '2.0', below: '1.0'},
   {xpath: 'a/$v', floor: '2.0', below: '1.0'},
   {xpath: 'a/1', floor: '2.0', below: '1.0'},
+]
+
+/**
+ * Operators XPath 1.0 already had, each of which has to parse at the oldest
+ * version there is. This is a `GATED` row from the other side: a floor claimed
+ * for a construct that never had one is invisible to a table of refusals, and
+ * the ladder is where that mistake lands, since `|` and `div` share a rung with
+ * the `union` and `idiv` 2.0 added, so the two floors `SPELLS` carries stand a
+ * table away from six that must stay absent. Nothing else can see it — no
+ * committed stylesheet declaring 1.0 spells a single one of these (#764).
+ * @type {Array.<string>}
+ */
+const ALWAYS = [
+  'a | b', '9 * 2', '9 div 2', '9 mod 2', '9 + 2', '9 - 2', 'a and b',
+  'a or b', 'a = b',
 ]
 
 /**
@@ -516,6 +558,15 @@ describe('grammar', function() {
       assert.ok(
         compiles(xpath) || insists(xpath),
         `${xpath} is not valid XPath at all`,
+      )
+    })
+  })
+  RUNS.forEach(({xpath, folds}) => {
+    it(`folds ${JSON.stringify(xpath)} left`, function() {
+      const answer = parsed(xpath, '3.0')
+      assert.equal(
+        sliced(answer, answer.tree.children[0]), folds,
+        `${xpath} is not one run of the rung both its operators stand on`,
       )
     })
   })
@@ -553,6 +604,14 @@ describe('grammar', function() {
         [parsed(xpath, floor).fault === '', parsed(xpath, below).fault === ''],
         [true, false],
         `${xpath} is not gated at ${floor}`,
+      )
+    })
+  })
+  ALWAYS.forEach((xpath) => {
+    it(`admits ${JSON.stringify(xpath)} at the oldest version`, function() {
+      assert.equal(
+        parsed(xpath, '1.0').fault, '',
+        `${xpath} is refused by a version that has always had it`,
       )
     })
   })

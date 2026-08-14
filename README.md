@@ -272,7 +272,11 @@ Today this covers nine checks:
   one of those refers to leaves the reference unbound.
 - `use-node-set-extension` — the redundant `node-set()` extension is unwrapped
   in XSLT 2.0 and later, under whichever prefix the stylesheet binds to EXSLT's
-  common namespace or Microsoft's: `exsl:node-set($x)` becomes `$x`.
+  common namespace or Microsoft's: `exsl:node-set($x)` becomes `$x`. An
+  argument binding looser than a step keeps the brackets the call supplied
+  where an expression stands around it, so `exsl:node-set($x | $y)/title`
+  becomes `($x | $y)/title` and not `$x | $y/title`, which selects something
+  else.
 - `count-compared-to-zero` — an existence test spelled as a count is
   simplified version-appropriately: on XSLT 2.0+, `count($x) > 0` becomes
   `exists($x)` and `count($x) = 0` becomes `empty($x)`; on 1.0 (where those

@@ -35,9 +35,7 @@ const SINCE = {
   'concat': '3.0',
   'conditional': '2.0',
   'every': '2.0',
-  'except': '2.0',
   'for': '2.0',
-  'idiv': '2.0',
   'inline-namespace': '3.0',
   'instance': '2.0',
   'instruction-name': '2.0',
@@ -53,6 +51,21 @@ const SINCE = {
   'some': '2.0',
   'treat': '2.0',
   'value-comparison': '2.0',
+}
+
+/**
+ * The floor an *operator* stands from, for the two whose own vintage is younger
+ * than the rung they stand on. A rung of the ladder is one production of XPath
+ * and builds one kind of node, so a floor carried on that kind speaks for every
+ * spelling the rung takes: `union` and `|` are one `UnionExpr`, and an `idiv`
+ * as much a `MultiplicativeExpr` as a `div`. Both of those words arrived in 2.0
+ * where their rung is as old as XPath, which is what this table says and the
+ * kind cannot (#764).
+ * @type {{[type: string]: string}}
+ */
+const SPELLS = {
+  [TOKENS.IDIV]: '2.0',
+  [TOKENS.UNION]: '2.0',
 }
 
 /**
@@ -338,16 +351,26 @@ const keyword = function(cursor, value) {
 }
 
 /**
- * Refuse a construct the version in force does not have. A gate is a lower
- * bound, so a construct 2.0 introduced is in 3.0 too, and one absent from
- * `SINCE` stands in every version.
+ * Refuse a construct whose floor the version in force stands below. A gate is a
+ * lower bound, so a construct 2.0 introduced is in 3.0 too, and no floor at all
+ * stands in every version.
+ * @param {object} cursor - The cursor, standing at the construct
+ * @param {?string} floor - The version it stands from, if any
+ */
+const floored = function(cursor, floor) {
+  if (floor && !since(cursor.version, floor)) {
+    refuse(cursor, `a construct XPath ${cursor.version} has`)
+  }
+}
+
+/**
+ * Refuse a construct the version in force does not have, by the kind of node it
+ * builds. One absent from `SINCE` stands in every version.
  * @param {object} cursor - The cursor, standing at the construct
  * @param {string} kind - The kind of node about to be built
  */
 const admits = function(cursor, kind) {
-  if (SINCE[kind] && !since(cursor.version, SINCE[kind])) {
-    refuse(cursor, `a construct XPath ${cursor.version} has`)
-  }
+  floored(cursor, SINCE[kind])
 }
 
 /**
@@ -372,6 +395,12 @@ const shaped = function(kind, from, cursor, children) {
  * each operator into a node of the given kind. Every binary level of XPath's
  * precedence ladder is this shape, so the ladder is a list of levels rather
  * than a dozen functions that differ only in which tokens they look for.
+ *
+ * Two gates stand over the operator, because a level's vintage and a spelling's
+ * are different questions: what the level builds has to be a kind the version
+ * has, and the word in front of the cursor a spelling it knows. Splitting a
+ * level in two to ask the second question with the first is what nested a mixed
+ * run the wrong way round (#764).
  * @param {object} cursor - The cursor
  * @param {function(object): object} below - The tighter-binding production
  * @param {Array.<string>} types - The operator kinds this level takes
@@ -383,6 +412,7 @@ const folded = function(cursor, below, types, kind) {
   let node = below(cursor)
   while (types.includes(ahead(cursor).type)) {
     admits(cursor, kind)
+    floored(cursor, SPELLS[ahead(cursor).type])
     take(cursor)
     node = shaped(kind, from, cursor, [node, below(cursor)])
   }
@@ -1533,15 +1563,25 @@ const typedExpr = function(cursor) {
  * The binary levels of XPath's precedence ladder, tightest first. Each is one
  * `folded` run, so the ladder reads as the grammar states it rather than as a
  * dozen near-identical functions.
+ *
+ * One production is one level, and every spelling it takes stands on it: the
+ * word `union` beside `|`, `idiv` beside the other multiplicatives, `except`
+ * beside `intersect`. All three pairs were two levels apiece until #764, each
+ * split so the newer or the differently-named spelling could carry a kind or a
+ * floor of its own — and a level is what decides how tightly an operator binds,
+ * so the split made the second of the two the looser and nested a mixed run to
+ * the right: `9 idiv 2 * 3` came back `9 idiv (2 * 3)`, which is 0 where XPath
+ * computes 12, and `a except b intersect c` selected what
+ * `a except (b intersect c)` selects. The kind names the production now — `sum`
+ * covers a `-` the same way — and a spelling younger than its level carries its
+ * floor in `SPELLS`.
  * @type {Array.<{types: Array.<string>, kind: string}>}
  */
 const LADDER = [
-  {types: [TOKENS.INTERSECT], kind: 'intersect'},
-  {types: [TOKENS.EXCEPT], kind: 'except'},
-  {types: [TOKENS.PIPE], kind: 'union'},
-  {types: [TOKENS.UNION], kind: 'intersect'},
-  {types: [TOKENS.MULTI, TOKENS.DIV, TOKENS.MOD], kind: 'product'},
-  {types: [TOKENS.IDIV], kind: 'idiv'},
+  {types: [TOKENS.INTERSECT, TOKENS.EXCEPT], kind: 'intersect'},
+  {types: [TOKENS.PIPE, TOKENS.UNION], kind: 'union'},
+  {types: [TOKENS.MULTI, TOKENS.DIV, TOKENS.MOD, TOKENS.IDIV],
+    kind: 'product'},
   {types: [TOKENS.PLUS, TOKENS.MINUS], kind: 'sum'},
   {types: [TOKENS.CONCAT], kind: 'concat'},
   {types: [TOKENS.AND], kind: 'and'},

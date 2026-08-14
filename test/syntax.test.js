@@ -4,7 +4,9 @@
  */
 
 const {parsed} = require('../src/grammar')
-const {LOOSE, WORDED, parseOf, stringOf, tight} = require('../src/syntax')
+const {
+  LOOSE, STEPPED, WORDED, parseOf, stepped, stringOf, tight,
+} = require('../src/syntax')
 const {WORDS} = require('../src/tokens')
 const {expressionsOf} = require('../src/attributes')
 const {xml} = require('../src/helpers')
@@ -14,10 +16,11 @@ const path = require('path')
 
 /**
  * One expression of every kind the expression grammar builds, at the version
- * that has them all. A rewrite substituting a node's text into a comparison
- * needs to know how tightly that node binds, and `LOOSE` answers it from a
- * list; these are what hold the list to the grammar rather than to the comment
- * beside it, since the ladder is what decides and the ladder can move.
+ * that has them all. A rewrite substituting a node's text into a comparison,
+ * or into the place a call stood in, needs to know how tightly that node
+ * binds, and `LOOSE` and `STEPPED` answer from the two ends of one ladder;
+ * these are what hold both lists to the grammar rather than to the comments
+ * beside them, since the ladder is what decides and the ladder can move.
  * @type {Array.<{kind: string, xpath: string}>}
  */
 const SHAPES = [
@@ -36,10 +39,8 @@ const SHAPES = [
   {kind: 'range', xpath: 'a to b'},
   {kind: 'sum', xpath: 'a + b'},
   {kind: 'product', xpath: 'a * b'},
-  {kind: 'idiv', xpath: 'a idiv b'},
   {kind: 'union', xpath: 'a | b'},
   {kind: 'intersect', xpath: 'a intersect b'},
-  {kind: 'except', xpath: 'a except b'},
   {kind: 'instance', xpath: 'a instance of xs:integer'},
   {kind: 'treat', xpath: 'a treat as xs:integer'},
   {kind: 'castable', xpath: 'a castable as xs:integer'},
@@ -49,6 +50,9 @@ const SHAPES = [
   {kind: 'simple-map', xpath: 'a ! b'},
   {kind: 'path', xpath: 'a/b'},
   {kind: 'step', xpath: '@a'},
+  {kind: 'filter', xpath: '$va[1]'},
+  {kind: 'apply', xpath: '$va(1)'},
+  {kind: 'lookup', xpath: '$va?ka'},
   {kind: 'parenthesized', xpath: '(a)'},
   {kind: 'literal', xpath: '1'},
   {kind: 'variable', xpath: '$va'},
@@ -57,6 +61,7 @@ const SHAPES = [
   {kind: 'map', xpath: 'map{a:1}'},
   {kind: 'array', xpath: '[1]'},
   {kind: 'reference', xpath: 'abs#1'},
+  {kind: 'inline', xpath: 'function($va) { $va }'},
 ]
 
 /**
@@ -123,6 +128,24 @@ const carries = function(xpath) {
   return stands
 }
 
+/**
+ * Whether the expression really does carry over whole into a step of a path:
+ * `b/<xpath>` parses, comes back a path, and its far step is the expression as
+ * it stood rather than the tail of it that binds tightly enough to stand there.
+ * @param {string} xpath - The expression to substitute
+ * @return {boolean} - True when it stands there unchanged
+ */
+const follows = function(xpath) {
+  const grown = parsed(`b/${xpath}`, '3.0')
+  let stands = false
+  if (grown.tree !== null && grown.tree.kind === 'path') {
+    const far = grown.tree.children[grown.tree.children.length - 1]
+    stands = grown.tokens.slice(far.from, far.to)
+      .map((token) => token.value).join('') === xpath
+  }
+  return stands
+}
+
 describe('syntax', function() {
   SHAPES.forEach(({kind, xpath}) => {
     it(`reads "${xpath}" as a ${kind}`, function() {
@@ -144,6 +167,21 @@ describe('syntax', function() {
     assert.deepEqual(
       LOOSE.filter((kind) => !SHAPES.some((shape) => shape.kind === kind)), [],
       'A kind on the loose list has no expression holding it to the grammar',
+    )
+  })
+  SHAPES.forEach(({kind, xpath}) => {
+    it(`agrees with the ladder about a ${kind} as a step`, function() {
+      assert.equal(
+        stepped(parsed(xpath, '3.0').tree), follows(xpath),
+        `A ${kind} does not stand where STEPPED says it stands`,
+      )
+    })
+  })
+  it('cannot name a step kind no shape stands for', function() {
+    assert.deepEqual(
+      STEPPED.filter((kind) => !SHAPES.some((shape) => shape.kind === kind)),
+      [],
+      'A kind on the step list has no expression holding it to the grammar',
     )
   })
   Object.entries(WORDED).forEach(([symbol, word]) => {
