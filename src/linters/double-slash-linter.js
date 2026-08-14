@@ -131,10 +131,11 @@ const separators = function(found) {
  * reporting one that opens a branch as redundant, with the fix that drops it,
  * and every other one as broader than its author meant.
  *
- * Every attribute holding a pattern is read, which is five names over six
- * elements and comes free of the records the validator kept: the redundancy and
- * the breadth are properties of the pattern language rather than of
- * `xsl:template`, and one of the two checks read `xsl:template/@match` alone,
+ * Every attribute holding a pattern is read, which is the five names of
+ * `PATTERNS` standing in seven places over five elements, and comes free of the
+ * records the validator kept: the redundancy and the breadth are properties of
+ * the pattern language rather than of `xsl:template`, and one of the two checks
+ * read `xsl:template/@match` alone,
  * so an `xsl:key` matching `gamma//delta` drew nothing at all (#586). An
  * expression is left to the check that reads one, a leading `//` there being no
  * redundancy but a scan of the whole document from its root.
