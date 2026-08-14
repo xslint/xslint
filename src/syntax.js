@@ -309,6 +309,34 @@ const stringOf = function(found, node) {
 }
 
 /**
+ * The name a variable reference holds, or null where the node is not one.
+ *
+ * `textOf` cannot answer it: XPath lets a gap or a comment stand between the
+ * `$` and the name, so `$ para` and `$(: which :)para` both reference `para`,
+ * and the text a span covers carries whatever the author wrote between them.
+ * The tokens do not, trivia being a kind of its own.
+ *
+ * A namespace stays part of the name, written inline or behind a prefix:
+ * `$Q{urn:my}para` and `$my:para` each reference a variable that `$para` does
+ * not, so both come back spelled as they stand rather than reduced to a local
+ * name a check would then match against the wrong declaration.
+ * @param {{node: Node, expression: string, pattern: boolean}} found - Record
+ * @param {object} node - A node of its tree
+ * @return {?string} - The name it references, or null
+ */
+const variableOf = function(found, node) {
+  let name = null
+  if (node.kind === 'variable') {
+    name = tokensOf(found, node)
+      .filter((token) => !TRIVIA.includes(token.type))
+      .slice(1)
+      .map((token) => token.value)
+      .join('')
+  }
+  return name
+}
+
+/**
  * Whether the node's own text can stand as an operand of a general comparison
  * with no brackets around it, which is what a rewrite substituting it needs.
  * @param {object} node - A node of a tree
@@ -362,4 +390,5 @@ module.exports = {
   textOf,
   tight,
   tokensOf,
+  variableOf,
 }

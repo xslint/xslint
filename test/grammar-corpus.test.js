@@ -106,7 +106,7 @@ const CORPUS = Array.from(new Set(
 const REACHES = [
   {source: 'stylesheet', least: 177},
   {source: 'pack', least: 431},
-  {source: 'selector', least: 51},
+  {source: 'selector', least: 50},
 ]
 
 /**

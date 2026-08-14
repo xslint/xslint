@@ -21,6 +21,8 @@ const {lintByNamespace, names: namespaceChecks} =
 const {lintByResultNamespace, names: resultNamespaceChecks} =
   require('./linters/result-namespace-linter')
 const {lintByImports, names: importChecks} = require('./linters/import-linter')
+const {lintByParameter, names: parameterChecks} =
+  require('./linters/parameter-linter')
 const {lintByNodeSet, names: nodeSetChecks} =
   require('./linters/node-set-linter')
 const {lintByCount, names: countChecks} = require('./linters/count-linter')
@@ -48,8 +50,11 @@ const {minimatch} = require('minimatch')
  * Linters paired with the checks they own, each given the corpus of well-formed
  * stylesheets. `checks` feeds `CHECKS`, so a linter and its names stay in step.
  * What is left here reads the document rather than the expressions it carries:
- * the two declarative loaders, which run their selectors over it, and the three
- * that ask about namespaces and imports.
+ * the two declarative loaders, which run their selectors over it, and the four
+ * that ask about namespaces, imports and parameters. The last of those reads
+ * expressions as well, since a reference to a parameter is one — but it reports
+ * a *declaration*, which is an element no expression names, so it is handed the
+ * corpus and reaches `expressionsOf` itself.
  * @type {Array.<{name: string,
  *  run: function(Array.<{file: string, xsl: Document}>,
  *  Array.<string>): Array.<object>, checks: Array.<string>}>}
@@ -64,6 +69,7 @@ const LINTERS = [
     checks: resultNamespaceChecks,
   },
   {name: 'import-linter', run: lintByImports, checks: importChecks},
+  {name: 'parameter-linter', run: lintByParameter, checks: parameterChecks},
 ]
 
 /**

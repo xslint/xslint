@@ -1,6 +1,5 @@
 # SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
 # SPDX-License-Identifier: MIT
 ---
-xpath: //(xsl:function | xsl:template)/xsl:param[not(some $x in ..//(node() | @*) satisfies contains($x, concat('$', @name)))]
 severity: warning
 message: A parameter is declared but never referenced in the function or template body. Remove it or use it.

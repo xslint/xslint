@@ -85,6 +85,10 @@
         "severity": "warning",
         "message": "Verbose axis specifiers child::, attribute::, parent::node(), or self::node() are used. Replace them with the node name alone, @, .., or . respectively."
       },
+      "unused-function-template-parameter": {
+        "severity": "warning",
+        "message": "A parameter is declared but never referenced in the function or template body. Remove it or use it."
+      },
       "use-node-set-extension": {
         "severity": "warning",
         "message": "The node-set() extension function is unnecessary in XSLT 2.0 and later. Query the variable directly without it."
@@ -279,11 +283,6 @@
         "xpath": "(/xsl:stylesheet | /xsl:transform)[count(//xsl:template) >= 10]",
         "severity": "warning",
         "message": "The stylesheet declares 10 or more templates, too many to read in one file. Split it into imported modules."
-      },
-      "unused-function-template-parameter": {
-        "xpath": "//(xsl:function | xsl:template)/xsl:param[not(some $x in ..//(node() | @*) satisfies contains($x, concat('$', @name)))]",
-        "severity": "warning",
-        "message": "A parameter is declared but never referenced in the function or template body. Remove it or use it."
       },
       "use-choose-without-otherwise": {
         "xpath": "//xsl:choose[not(xsl:otherwise) and count(xsl:when) >= 2]",
