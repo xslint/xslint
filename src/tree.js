@@ -59,8 +59,8 @@ const WALKED = new WeakMap()
 
 /**
  * Every attribute, text node and CDATA section of a document, in document
- * order: each element's attributes in the order they were written, then its
- * children in theirs. Two details keep the sequence the one a descendant scan
+ * order: each element's attributes, then its children in the order they were
+ * written. Two details keep the sequence the one a descendant scan
  * answers, so that swapping the two changes no report: a namespace declaration
  * is left out, XPath counting those as nodes of another kind, and an element's
  * attributes come out sorted by name, which is the order fontoxpath yields them

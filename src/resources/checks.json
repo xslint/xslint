@@ -73,6 +73,10 @@
         "severity": "warning",
         "message": "An XPath expression has redundant whitespace. Remove the extra spaces."
       },
+      "starts-with-double-slash": {
+        "severity": "warning",
+        "message": "A pattern alternative starts with //, which is redundant since every XSLT pattern already matches at any depth, and it lowers the rule's default priority from 0.5 to that of the step alone. Remove the leading // and give the rule an explicit priority if it must keep ranking as it does."
+      },
       "string-length-compared-to-zero": {
         "severity": "warning",
         "message": "string-length(...) is compared with 0 to test emptiness, which measures the whole string. Compare the value with '' instead."
@@ -88,6 +92,10 @@
       "unused-function-template-parameter": {
         "severity": "warning",
         "message": "A parameter is declared but never referenced in the function or template body. Remove it or use it."
+      },
+      "use-double-slash": {
+        "severity": "warning",
+        "message": "A pattern contains //, which matches at any depth and is broader than intended. Use a specific path."
       },
       "use-node-set-extension": {
         "severity": "warning",
@@ -259,11 +267,6 @@
         "severity": "error",
         "message": "'xsl:sort' must come before any other content in its 'xsl:for-each' or 'xsl:apply-templates'. Move it to the front."
       },
-      "starts-with-double-slash": {
-        "xpath": "((//xsl:template | //xsl:key | //xsl:accumulator-rule)/@match | //xsl:number/(@count | @from) | //xsl:for-each-group/(@group-starting-with | @group-ending-with))[starts-with(normalize-space(), '//')]",
-        "severity": "warning",
-        "message": "A pattern starts with //, which is redundant since every XSLT pattern already matches at any depth, and it lowers the rule's default priority from 0.5 to that of the step alone. Remove the leading // and give the rule an explicit priority if it must keep ranking as it does."
-      },
       "stylesheet-has-no-templates": {
         "xpath": "(/xsl:stylesheet | /xsl:transform)[not(xsl:template | xsl:function | xsl:variable)]",
         "severity": "error",
@@ -288,11 +291,6 @@
         "xpath": "//xsl:choose[not(xsl:otherwise) and count(xsl:when) >= 2]",
         "severity": "warning",
         "message": "xsl:choose has no xsl:otherwise branch. Add xsl:otherwise to handle unmatched cases explicitly."
-      },
-      "use-double-slash": {
-        "xpath": "//xsl:template[not(starts-with(normalize-space(@match), '//')) and contains(@match, '//')]",
-        "severity": "warning",
-        "message": "The match attribute of xsl:template contains //, which matches at any depth and is broader than intended. Use a specific path."
       },
       "use-single-option-for-choose": {
         "xpath": "//xsl:choose[count(xsl:when) = 1 and not(xsl:otherwise)]",
