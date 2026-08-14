@@ -32,8 +32,9 @@ const STEP = 4
  * fail to separate them — at 1.66 against 1.85 it ranks them backwards. The
  * share separates them outright: over three alternating pairs on one machine,
  * the fix read 15.10%, 15.27% and 15.69% of its run where the quadratic read
- * 29.06%, 29.98% and 30.12%, and the gate fails the quadratic three times of
- * three at 27.68%, 30.84% and 30.85%.
+ * 29.06%, 29.98% and 30.12%, and over thirty-seven runs of the gate against
+ * that quadratic the judged reading ranged 26.54% to 31.86% and every one was
+ * caught.
  *
  * A share is a quotient taken inside one run, so it cancels a machine's speed
  * the way a growth ratio does, and unlike one it hardly moves when the machine
@@ -52,16 +53,28 @@ const STEP = 4
  * median is made of: #775 halved `node-set-linter`, one of the two straddling
  * it, and lifted every other share by about a quarter.
  *
+ * What a sum is not is immune outright, and the residual is worth recording
+ * rather than hiding: `xpath-linter` is over half the run, 52.1% to 57.0% here,
+ * so an optimisation *there* really would move every other share, and the
+ * entries below would want re-deriving rather than reading as regressions of
+ * stages nobody touched. What a sum buys is that a change to one of the
+ * fourteen *cheap* stages no longer does, which is every optimisation this
+ * project has landed so far and #775 exactly.
+ *
  * Two things set a ceiling. Where there is a defect to catch, it goes between
  * the two measured distributions — `corpus-linter` at 26, a tenth above the
- * dearest reading the fix has given on any runner, 23.5%, and a sixteenth below
- * the cheapest the quadratic has given here, 27.68%. That band is narrower than
- * the readings on one machine suggest, because this is the entry a runner
- * disagrees about most: the four that have reported a table charged the fix
- * 14.4%, 19.1%, 22.0% and 23.5% of the run where this machine charges 15.4%, so
- * a ceiling drawn halfway between the two distributions *here* would fail the
- * fix on macOS. It is also as wide as this corpus can make it, #755 having
- * doubled the cross-file linter's cost over forty stylesheets where it
+ * dearest reading the fix has given on any runner, 23.5%, and a *fortieth*
+ * below the cheapest the quadratic has given here, 26.54%. That band is narrow,
+ * and it is narrow because this is the entry a runner disagrees about most: the
+ * four that have reported a table charged the fix 14.4%, 19.1%, 22.0% and 23.5%
+ * of the run where this machine charges 15.4%, so a ceiling drawn halfway
+ * between the two distributions *here* would fail the fix on macOS. The bar
+ * therefore sits at the top of the band rather than in the middle of it, and
+ * deliberately: the fix's upper edge is four single readings from four machines
+ * where the quadratic's lower edge is thirty-seven from one, so the headroom is
+ * spent on the side the evidence is thinner and the catching side leans on 37
+ * of 37 instead. The band is also as wide as this corpus can make it, #755
+ * having doubled the cross-file linter's cost over forty stylesheets where it
  * multiplied it by 3.4 over DocBook-XSL, which is the second tier's question
  * rather than this one's. Everywhere else the ceiling stands between half again
  * and twice the dearest reading, there being no second distribution to leave
@@ -187,8 +200,10 @@ const corpus = function(from, files) {
  * together. Not the wall clock, which charges a stage for every slice the
  * scheduler hands to something else: under sixteen processes competing for ten
  * cores the wall failed seven runs of eight, naming stages nothing had touched
- * at 2.36 and 2.97 times the middle and reading the cross-file linter at 0.78,
- * which is its bar's other side and would have called #755 settled. The same
+ * at 2.36 and 2.97 of the middle stage and reading the cross-file linter at
+ * 0.78 of it — that being the unit the gate used before #777, so the numbers
+ * are the old one's — which is its bar's other side and would have called #755
+ * settled. The same
  * runs judged on processor time hold every reading within a tenth of what an
  * idle machine gives, because time the stage did not get is time it is not
  * charged for.
@@ -203,13 +218,16 @@ const charged = function() {
  * Whether V8 is counting branches in this process, which makes it the wrong
  * process to ask about speed. `npm run coverage` runs mocha under c8, and that
  * bookkeeping does not fall evenly across the stages: it charges `xpath-linter`
- * — the one putting every declarative check through fontoxpath — 53 to 56 times
- * the middle stage where an uninstrumented run charges it 30. A ceiling wide
- * enough for both would say nothing true about either, so the gate stands down
- * here and speaks in `npm test` and in the `build` job over six runners
- * instead. The coverage gate loses nothing by it: every branch this test
- * reaches is reached by the suite around it, so the 100% gate still holds with
- * the measurement skipped.
+ * — the one putting every declarative check through fontoxpath — 66% of the run
+ * where an uninstrumented one charges it 52% to 54%, and what it takes from
+ * every other share it takes from `xsl-validator` too, which reads 1.85% to
+ * 1.96% over three runs, under the floor `SLACK` sets for an entry of 8. So the
+ * gate would fail from both sides at once, on a tree nobody had touched. A
+ * ceiling wide enough for both would say nothing true about either, so the gate
+ * stands down here and speaks in `npm test` and in the `build` job over six
+ * runners instead. The coverage gate loses nothing by it: every branch this
+ * test reaches is reached by the suite around it, so the 100% gate still holds
+ * with the measurement skipped.
  * @return {boolean} - Whether this process is instrumented for coverage
  */
 const instrumented = function() {
