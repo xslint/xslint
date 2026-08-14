@@ -218,16 +218,21 @@ const charged = function() {
  * Whether V8 is counting branches in this process, which makes it the wrong
  * process to ask about speed. `npm run coverage` runs mocha under c8, and that
  * bookkeeping does not fall evenly across the stages: it charges `xpath-linter`
- * — the one putting every declarative check through fontoxpath — 66% of the run
- * where an uninstrumented one charges it 52% to 54%, and what it takes from
- * every other share it takes from `xsl-validator` too, which reads 1.85% to
- * 1.96% over three runs, under the floor `SLACK` sets for an entry of 8. So the
- * gate would fail from both sides at once, on a tree nobody had touched. A
- * ceiling wide enough for both would say nothing true about either, so the gate
- * stands down here and speaks in `npm test` and in the `build` job over six
- * runners instead. The coverage gate loses nothing by it: every branch this
- * test reaches is reached by the suite around it, so the 100% gate still holds
- * with the measurement skipped.
+ * — the one putting every declarative check through fontoxpath — 65% to 69% of
+ * the run where an uninstrumented one charges it 52% to 57%. A ceiling honest
+ * about one of those readings says nothing true about the other, which is the
+ * whole reason to stand down, and it is not the same thing as a breach: 69% is
+ * comfortably under the 75 that entry allows, and no ceiling here is crossed at
+ * all. What does fire is the *floor*, and only sometimes. Run alone under c8,
+ * `xsl-validator`'s judged reading came to 1.93%, 1.95% and 1.97% against the
+ * 2.00 that `SLACK` leaves an entry of 8, and the ratchet called that entry
+ * stale in three runs of five; under the parallel command above it read 2.14%
+ * to 2.34% and the gate passed three of three. So what an instrumented process
+ * gives is an answer about c8 rather than about the pipeline, intermittently
+ * red on a tree nobody has touched. The gate skips here and speaks in
+ * `npm test` and in the `build` job over six runners instead, and the coverage
+ * gate loses nothing by it: every branch this test reaches is reached by the
+ * suite around it, so the 100% gate still holds with the measurement skipped.
  * @return {boolean} - Whether this process is instrumented for coverage
  */
 const instrumented = function() {

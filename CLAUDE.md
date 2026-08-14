@@ -171,13 +171,19 @@ gate.
 It stands down in one process and says so: `npm run coverage` runs mocha under
 c8, and V8's branch bookkeeping does not fall evenly across the stages — it
 charges `xpath-linter`, the one putting every declarative check through
-fontoxpath, 66% of the run where an uninstrumented run charges it 52% to 54%,
-and leaves `xsl-validator` at 1.85% to 1.96% over three runs, under the floor
-`SLACK` sets for its entry of 8, so the gate would fail from both sides at once
-on a tree nobody had touched. A ceiling wide enough for both would say nothing
-true about either, so the measurement skips itself when `NODE_V8_COVERAGE` is set (in the body, with
-`this.skip()`, never by registering behind a condition) and the coverage run
-reports it pending. Nothing is lost either way: every branch it reaches is
+fontoxpath, 65% to 69% of the run where an uninstrumented run charges it 52% to
+57%. A ceiling honest about one of those readings says nothing true about the
+other, which is the reason to stand down, and it is not the same thing as a
+breach: no ceiling here is crossed at all, 69% sitting comfortably under the 75
+that entry allows. What fires is the **floor**, and only sometimes — run alone
+under c8, `xsl-validator`'s judged reading came to 1.93%, 1.95% and 1.97%
+against the 2.00 that `SLACK` leaves an entry of 8, and the ratchet called that
+entry stale in three runs of five, where under `npm run coverage` itself it read
+2.14% to 2.34% and passed three of three. An instrumented process therefore
+answers about c8 rather than about the pipeline, intermittently red on a tree
+nobody has touched, so the measurement skips itself when `NODE_V8_COVERAGE` is
+set (in the body, with `this.skip()`, never by registering behind a condition)
+and the coverage run reports it pending. Nothing is lost either way: every branch it reaches is
 reached by the suite around it, so the 100% gate still holds without it — a
 count is deliberately not quoted here, since one goes stale on the next commit
 that adds a branch — and the gate itself still runs in `npm test`,
