@@ -1570,7 +1570,7 @@ const typedExpr = function(cursor) {
  * split so the newer or the differently-named spelling could carry a kind or a
  * floor of its own — and a level is what decides how tightly an operator binds,
  * so the split made the second of the two the looser and nested a mixed run to
- * the right: `9 idiv 2 * 3` came back `9 idiv (2 * 3)`, which is 0 where XPath
+ * the right: `9 idiv 2 * 3` came back `9 idiv (2 * 3)`, which is 1 where XPath
  * computes 12, and `a except b intersect c` selected what
  * `a except (b intersect c)` selects. The kind names the production now — `sum`
  * covers a `-` the same way — and a spelling younger than its level carries its

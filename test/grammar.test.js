@@ -235,7 +235,7 @@ const ACCEPTS = [
  * operator as the looser of the two and nests the run the other way round. All
  * three of XPath's mixed rungs were split that way: the word `union` sat above
  * `|`, `idiv` above the rest of the multiplicatives, and `except` above
- * `intersect`, so `9 idiv 2 * 3` came back `9 idiv (2 * 3)` and computed 0
+ * `intersect`, so `9 idiv 2 * 3` came back `9 idiv (2 * 3)` and computed 1
  * where XPath computes 12 (#764).
  * @type {Array.<{xpath: string, folds: string}>}
  */
@@ -526,8 +526,13 @@ const GATED = [
  * for a construct that never had one is invisible to a table of refusals, and
  * the ladder is where that mistake lands, since `|` and `div` share a rung with
  * the `union` and `idiv` 2.0 added, so the two floors `SPELLS` carries stand a
- * table away from six that must stay absent. Nothing else can see it — no
- * committed stylesheet declaring 1.0 spells a single one of these (#764).
+ * table away from six that must stay absent. Eight of the nine have no other
+ * cover at all: no committed stylesheet declaring 1.0 spells one, so nothing
+ * else in the suite would notice a floor invented for `|` or `div`. The ninth
+ * is `=`, which `test/resources/fix/count-in-xslt-1-0.xsl` spells at 1.0 and
+ * `fixer.deep.test.js` lints there, and it is a row all the same: a table of
+ * what the oldest version has should not read as though it were missing an
+ * entry (#764).
  * @type {Array.<string>}
  */
 const ALWAYS = [
