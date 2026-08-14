@@ -1,0 +1,18 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: use-node-set-extension
+# XPath 3.0 writes a name's namespace inline, so the extension is spelled here
+# with no prefix bound to anything. A scan reading the characters in front of
+# the name walked straight past it, the `}` being no letter (#557, #577).
+found:
+  amount: 1
+  positions: [ [ 4, 27 ] ]
+  fixes: [ "$v" ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="3.0">
+    <xsl:template match="/">
+      <xsl:value-of select="Q{http://exslt.org/common}node-set($v)/alpha"/>
+    </xsl:template>
+  </xsl:stylesheet>

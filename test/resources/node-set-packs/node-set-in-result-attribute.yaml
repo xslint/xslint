@@ -2,13 +2,18 @@
 # SPDX-License-Identifier: MIT
 ---
 pack: use-node-set-extension
+# A literal result element carries no XPath in an attribute it happens to call
+# `select` — that text is destined for the result tree — but the braces of an
+# attribute value template hold an expression a processor really does evaluate,
+# so the wrapper inside one is as redundant as any other and is reported where
+# it truly stands (#557, #579).
 found:
-  amount: 0
-  positions: [ ]
-  fixes: [ ]
+  amount: 1
+  positions: [ [ 5, 22 ] ]
+  fixes: [ "$v" ]
 input: |-
   <?xml version="1.0"?>
-  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="s">
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:exsl="http://exslt.org/common" version="2.0">
     <xsl:template match="/">
       <widget select="exsl:node-set($v)/x"/>
       <gadget select="{exsl:node-set($v)/x}"/>

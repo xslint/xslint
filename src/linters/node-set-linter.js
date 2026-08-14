@@ -3,10 +3,8 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {masked, closes} = require('../expressions')
-const {GAP} = require('../tokens')
+const {calls, gathered, offsetOf, textOf} = require('../syntax')
 const {metaOf, suppressed, defect} = require('../checks')
-const {whole} = require('../attributes')
 const {MODERN, since, versionOf} = require('../xsl-version')
 const {logger} = require('../logger')
 
@@ -29,43 +27,64 @@ const META = metaOf(CHECK)
 const names = [CHECK]
 
 /**
- * Pattern of a `prefix:node-set(` call opener.
- * @type {RegExp}
+ * The namespaces a `node-set` reading a result tree fragment as a node set is
+ * declared in: EXSLT's common module, and the one Microsoft's processors put
+ * their extensions in. Two URIs and one function, since both were written for
+ * the same XSLT 1.0 gap and a 2.0 processor closes it for both.
+ * @type {Array.<string>}
  */
-const CALL = new RegExp(`[\\w.-]+:node-set${GAP}*\\(`, 'g')
+const EXTENSIONS = ['http://exslt.org/common', 'urn:schemas-microsoft-com:xslt']
 
 /**
- * The node-set() wrappers in a select value: each carries the offset it starts
- * at, its verbatim text, and the inner argument that replaces it. A call whose
- * parentheses do not balance is skipped.
- * @param {string} select - The `select` attribute value
- * @return {Array.<{offset: number, value: string, replacement: string}>} -
- *  The node-set() calls found
+ * How many arguments the extension takes: the fragment to read, and nothing
+ * else. A call of the right name in the right namespace holding none, or two,
+ * is not it — and unwrapping one wrote `select="/alpha"` where
+ * `exsl:node-set()/alpha` stood, a fix the run then reported as an expression
+ * of its own (#576).
+ * @type {number}
  */
-const wrappers = function(select) {
-  const found = []
-  const blanked = masked(select)
-  for (const match of blanked.matchAll(CALL)) {
-    const open = match.index + match[0].length - 1
-    const close = closes(blanked, open)
-    if (close >= 0) {
-      found.push({
-        offset: match.index,
-        value: select.slice(match.index, close + 1),
-        replacement: select.slice(open + 1, close),
+const ARGUMENTS = 1
+
+/**
+ * The `node-set()` wrappers an expression holds: each carries the offset it
+ * starts at, its verbatim text, and the argument that replaces it.
+ *
+ * The call is the extension whichever of its three spellings names it — behind
+ * any prefix a stylesheet binds to either namespace, or with the namespace
+ * written inline — and a `node-set` of somebody else's is none of them,
+ * where a scan matching `[\w.-]+:node-set` took the local name as the whole of
+ * the question and read every prefix as the extension's (#557).
+ * @param {{node: Node, expression: string, pattern: boolean}} found - The
+ *  expression, whole, as `expressionsOf` yields it
+ * @return {Array.<{offset: number, value: string, replacement: string}>} -
+ *  The wrappers found
+ */
+const wrappers = function(found) {
+  const results = []
+  for (const node of gathered(found, ['call'])) {
+    if (calls(found, node, 'node-set', EXTENSIONS) &&
+      node.children.length === ARGUMENTS) {
+      results.push({
+        offset: offsetOf(found, node),
+        value: textOf(found, node),
+        replacement: textOf(found, node.children[0]),
       })
     }
   }
-  return found
+  return results
 }
 
 /**
  * Lint the valid expressions for the `node-set()` extension used in XSLT 2.0 or
  * 3.0, where a variable is already a node sequence, reporting one defect per
- * call with the fix that unwraps it. Only the `@select` of an XSLT element is
- * read: the `select` a literal result element carries is output text, and a
- * call standing in another expression attribute, or inside an attribute value
- * template, is not looked for.
+ * call with the fix that unwraps it.
+ *
+ * Every expression a stylesheet carries is read, not the `@select` of an XSLT
+ * element alone: the extension is as redundant in a `@test` as anywhere else,
+ * and inside the braces of an attribute value template a processor evaluates
+ * the expression whatever element carries the attribute — while the `select` a
+ * literal result element spells is output text and yields no expression to read
+ * at all (#557).
  * @param {Array.<{source: object, found: object}>} expressions - The valid
  *  expressions the validator kept, each paired with the file it came from
  * @param {Array.<string>} suppressions - Array of suppressed checks
@@ -77,8 +96,8 @@ const lintByNodeSet = function(expressions, suppressions = []) {
   const defects = []
   if (!suppressed(CHECK, suppressions)) {
     for (const {source, found} of expressions) {
-      if (whole(found, 'select') && since(versionOf(found.node), MODERN)) {
-        for (const {offset, value, replacement} of wrappers(found.expression)) {
+      if (since(versionOf(found.node), MODERN)) {
+        for (const {offset, value, replacement} of wrappers(found)) {
           defects.push(
             defect(
               CHECK, META, source, found, offset,
