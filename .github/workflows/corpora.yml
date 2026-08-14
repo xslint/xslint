@@ -1,0 +1,113 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+name: corpora
+'on':
+  schedule:
+    - cron: '45 2 * * *'
+  workflow_dispatch:
+concurrency:
+  group: corpora
+  cancel-in-progress: true
+jobs:
+  lint:
+    name: ${{ matrix.name }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: docbook
+            repository: docbook/xslt10-stylesheets
+            commit: efd62655c11cc8773708df7a843613fa1e932bf8
+            budget: 180
+          - name: tei
+            repository: TEIC/Stylesheets
+            commit: d603656e4addf8cdbd2156c60b2695487d92cf6b
+            budget: 150
+          - name: ditaot
+            repository: dita-ot/dita-ot
+            commit: 2dfffb02aaf09fe1747712161c4d38d03a144fc9
+            budget: 90
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - uses: actions/cache@v4
+        with:
+          path: corpus
+          key: corpus-${{ matrix.name }}-${{ matrix.commit }}
+      - name: Fetch the corpus at the commit it is pinned to
+        env:
+          REPOSITORY: ${{ matrix.repository }}
+          COMMIT: ${{ matrix.commit }}
+        run: |
+          set -e
+          if [ ! -d corpus/.git ]; then
+            rm -rf corpus
+            git init --quiet corpus
+            git -C corpus remote add origin "https://github.com/$REPOSITORY.git"
+            git -C corpus fetch --quiet --depth 1 origin "$COMMIT"
+            git -C corpus checkout --quiet FETCH_HEAD
+          fi
+      - name: Lint it and time the whole run
+        env:
+          BUDGET: ${{ matrix.budget }}
+          COMMIT: ${{ matrix.commit }}
+          NAME: ${{ matrix.name }}
+          REPOSITORY: ${{ matrix.repository }}
+        run: |
+          set -e
+          stylesheets=$(find corpus -name '*.xsl' | wc -l)
+          started=$(date +%s)
+          set +e
+          node src/index.mjs corpus > defects.txt 2> log.txt
+          code=$?
+          set -e
+          spent=$(( $(date +%s) - started ))
+          linted=$(sed -n 's/.*Processed files: \([0-9]*\).*/\1/p' log.txt | tail -1)
+          {
+            echo "### $NAME"
+            echo ""
+            echo "| what | value |"
+            echo "| --- | --- |"
+            echo "| repository | $REPOSITORY |"
+            echo "| commit | $COMMIT |"
+            echo "| stylesheets on disk | $stylesheets |"
+            echo "| stylesheets read | ${linted:-none} |"
+            echo "| defects | $(wc -l < defects.txt) |"
+            echo "| exit code | $code |"
+            echo "| seconds | $spent |"
+            echo "| budget | $BUDGET |"
+          } >> "$GITHUB_STEP_SUMMARY"
+          if [ "$stylesheets" -lt 1 ]; then
+            echo "::error::no stylesheet under corpus, so $NAME never arrived"
+            exit 1
+          fi
+          if [ "${linted:-0}" -ne "$stylesheets" ]; then
+            echo "::error::linting $NAME read ${linted:-none} of the" \
+              "$stylesheets stylesheets on disk"
+            sed -n '1,20p' log.txt
+            exit 1
+          fi
+          if [ "$code" -gt 1 ]; then
+            echo "::error::linting $NAME exited $code, which is neither a" \
+              "clean run nor defects found"
+            exit 1
+          fi
+          if [ "$spent" -gt "$BUDGET" ]; then
+            echo "::error::linting $NAME took ${spent}s, past its ${BUDGET}s budget"
+            exit 1
+          fi
+  report-fail:
+    name: Create issue on failure
+    needs: lint
+    if: failure() && github.event.pull_request == null
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: jayqi/failed-build-issue-action@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
