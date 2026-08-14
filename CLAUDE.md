@@ -28,13 +28,16 @@ npm run coverage                                     # 100% branch gate (CI)
 CI also runs, as separate jobs beyond `npm test`: `coverage`, `xcop`,
 `copyrights` (SPDX header on every source file), `markdown-lint`, `yamllint`,
 `typos`, `pdd`, and `fixtures`. A green local `npm test` does not mean CI is
-green — run `npm run coverage` and the xcop suite too.
+green — run `npm run coverage` and the xcop suite too. Two more run on a
+schedule rather than on a pull request: `daily`, which is `npm test` across
+three platforms and two node versions, and `corpora`, which times a real run
+(see **Speed**).
 
 The suite comes in two halves, and the line between them is a child process. A
 **deep** test starts one — it runs `xslint` or `xcop` the way a user does — and
 is named `*.deep.test.js`; every other test stays in this process. Four files
-are deep, and they still cost most of what the suite costs: 478 of the 1871
-tests, 8 of the 9 seconds. The other 1393 finish inside one, which is why
+are deep, and they still cost most of what the suite costs: 497 of the 2119
+tests, 9 of the 11 seconds. The other 1622 finish inside one, which is why
 `npm run fast` is the loop to work in and `npm test` the one to finish on. The
 deep target runs under `mocha --parallel`, so those four files run at once and
 the slowest of them sets the clock — `xslint.deep.test.js` alone, whose 50 tests
@@ -79,6 +82,154 @@ repository and a file appearing and vanishing under `test/` takes that walk's
 count with it — a race parallel mode turns from theory into one failure in four.
 `conformance.test.js` fails any test file that writes without asking for a
 temporary directory.
+
+## Speed
+
+Speed is machine-enforced like every other convention here, and it was the one
+that was not: the cross-file linter went quadratic and reached master with
+eighteen jobs green, at 52% to 72% of the whole run over the three corpora the
+README advertises (#755, #756). Two tiers hold it now.
+
+`test/scaling.test.js` is the per-pull-request one. It builds a corpus in
+memory, hands it to every stage at 40 stylesheets and again at 160, and asks two
+questions of each: what it **costs** beside the middle stage of the same run,
+and how it **grew** beside that stage's growth. Both are quotients taken inside
+one process, which is what cancels the machine — an absolute threshold on a
+shared runner either flakes or is set so loose it catches nothing. Each stage is
+timed **directly** rather than by subtracting one run from another, since the
+error of two timings compounds: a stage whose own reading holds to three percent
+reads twenty measured that way. It spawns nothing and writes nothing, so it
+belongs in the fast half, where it costs 3.3 seconds — and costs it every run
+rather than on average, one measurement being discarded and none retried.
+
+The cost is the assertion the gate stands on, and growth is the looser check
+beside it, which is the opposite of how it was first written. The reason is
+that #755, the regression this tier exists for, was a **constant and not a
+shape**: it left the cross-file linter's exponent where it was — 1.46 against
+1.57 over this corpus — and doubled what it spent at every size. So the two
+growth distributions overlap, the fix reading 1.85 to 2.04 and the quadratic
+1.66 to 2.43 — and since the lowest reading is the one judged, growth does not
+merely fail to separate them, at 1.66 against 1.85 it ranks them backwards —
+while the costs have nothing between them, 9.6 to 10.4 against 16.7 to 17.1.
+Reverting `src/linters/corpus-linter.js` to its pre-#755 state fails the gate
+three times out of three at 16.2 to 17.4, against the 13 that `SHARES` allows
+it, and master passes ten times of ten idle and six of six under load. A bar
+enough to have caught that would have to separate 2.31 from 1.93, which is
+inside the noise of any machine.
+
+What is timed is **processor time and not the wall clock**, `process.cpuUsage`
+rather than `process.hrtime`. The wall charges a stage for every slice the
+scheduler hands to something else, so the gate it produced was unusable on a
+busy machine: under sixteen processes competing for ten cores it failed seven
+runs of eight, naming stages nothing had touched at 2.36 and 2.97 times the
+middle — indistinguishable, to whoever reads the build, from the one true
+failure — and reading `corpus-linter` itself at 0.78, which is its bar's *other*
+side and would have announced #755 as settled. Retrying does not help, because
+contention lasts longer than a run and inflates the same stage in every attempt.
+Processor time is what the stage itself spent, so the same sixteen processes
+move it by a tenth, every entry staying within that of its idle reading, and the
+gate passes every run under the load that broke the wall clock.
+
+What processor time costs is resolution, and one platform pays it. Windows
+charges in ticks far coarser than a cheap stage costs over the *small* corpus,
+so eight of the fourteen measure `0` there and their growth arrives `Infinity`
+or `NaN`. A growth that is not a finite number is therefore no reading and is
+dropped rather than judged — verified by quantising the clock to 6 ms here,
+which turns 2 to 4 growths of 18 non-finite and leaves the gate passing. The
+share is unaffected, being taken over the corpus four times larger: that runner
+reads `corpus-linter` at 9.30 where this machine reads 9.28 to 10.13. So a
+coarse clock costs the looser of the two questions on one platform, not the
+gate.
+
+It stands down in one process and says so: `npm run coverage` runs mocha under
+c8, and V8's branch bookkeeping does not fall evenly across the stages — it
+charges `xpath-linter`, the one putting every declarative check through
+fontoxpath, 53 to 56 times the middle stage where an uninstrumented run charges
+it 30. A ceiling wide enough for both would say nothing true about either, so
+the measurement skips itself when `NODE_V8_COVERAGE` is set (in the body, with
+`this.skip()`, never by registering behind a condition) and the coverage run
+reports it pending. Nothing is lost either way: every branch it reaches is
+reached by the suite around it, so the 100% gate still holds without it — a
+count is deliberately not quoted here, since one goes stale on the next commit
+that adds a branch — and the gate itself still runs in `npm test`,
+`npm run fast`, and the `build` job across six runners.
+
+Three things more make it a gate rather than a source of red builds. It takes a
+whole measurement first and throws it away, on the one principle a warm-up has:
+warm the code with the work about to be timed. A warm-up over ten stylesheets is
+not that, and it showed — the two validators stayed cold enough that the first
+attempt read them nearly twice what they cost, `xsl-validator` 3.96 to 4.38
+against a ceiling of 4 where the second attempt read 2.02 to 2.25, and
+`xpath-validator` 6.36 to 6.92 against 3.25 to 3.52. A bias is not noise, so the
+retry could not answer it and was nevertheless answering it on nearly every
+standalone `npx mocha test/scaling.test.js`: a gate leaning on the mechanism
+meant for something else, and one failing about a third of those runs. Forty
+stylesheets only shrink it, to 3.2 and 5.1. A discarded measurement removes it —
+every stage within five percent over six processes, no attempt ever retried —
+and costs nothing, being the retry no longer spent. A disagreeing measurement is
+still taken again, up to three times, over a corpus of its own, and the *lowest*
+reading answers: noise inflates, so the floor of three attempts is the honest
+one. And the stages are read from `STAGES`, derived in `src/xslint.js`
+from the two linter lists, so a linter cannot be wired into the pipeline and
+left outside what measures it — one test asserts exactly that over the
+`src/linters/` directory, and another that no name in `SHARES` has stopped being
+a stage.
+
+`SHARES` names the four stages that legitimately cost more than the rest:
+`xpath-linter` at 55, `corpus-linter` at 13, `xpath-validator` at 9,
+`xsl-validator` at 4. Every other stage answers to one bar, `SHARE` at 2.5,
+which the fourteen of them sit far below at 0.13 to 1.27 — so a cheap stage that
+becomes an expensive one turns red, and earns either a fix or an entry. Two
+things set a ceiling. Where there is a defect to catch it goes **between the two
+measured distributions**: `corpus-linter` at 13 is a quarter above what the fix
+costs and a quarter below what the quadratic costs, which is what fails it three
+times of three at 16.2 to 17.4. Everywhere else it stands about **twice** the
+local reading, on CI evidence rather than caution — a share cancels a machine's
+speed but not its character, and a first spelling four tenths above the local
+readings was refused by a macOS runner charging `xsl-validator` 1.21 of the
+middle where this machine charges 2.2 and `xpath-validator` 6.13 where it charges
+3.8. Those two came off a run since found to have a biased warm-up, so what they
+prove is that headroom is needed, not how much. The table is a
+ratchet rather than a licence, the `SPRAWLING` pattern one property over, and it
+turns red from both sides: past the ceiling, or so far under it that `SLACK`
+(four, for the same runner's sake) says the ceiling has stopped being a bar and
+wants retightening. Growth is asked only
+of the stages with no entry, since an entry pins what a stage costs outright,
+which is the stronger statement; those fourteen read 0.29 to 1.58 idle and
+loaded together, against a `GROWTH` bar of 3.0 and the 4.0 a stage that had gone
+quadratic would read.
+
+Two earlier spellings are recorded so nobody spends the week again. Absolute
+growth bars were tuned until nothing flaked here, then failed on all six CI
+runners at once, `corpus-linter` reading 8.7 on macOS where it read 7.1 here.
+Growth as a multiple of the median passed all six — and could neither separate
+the defect it was written for nor survive a loaded runner, which is both halves
+of this design's reason for being.
+
+What a gate measured at one size cannot see is a quadratic whose constant is
+still small there. `circular-import` walks the whole import graph once per edge
+and so costs the square of a chain of imports, confirmed at 2.48, 3.39, 3.53 and
+3.99 per doubling from 100 stylesheets to 1600 — and reads a flat 1.0 to 1.6 at
+forty, where the per-edge cost dominates (#769). That is what the second tier is
+for. `corpora.yml` runs nightly, cloning DocBook-XSL, TEI and DITA-OT **at
+pinned commits** — a branch tip would drift under the numbers — restoring them
+through `actions/cache`, writing what it found to the job summary, and failing
+past a per-corpus budget so `jayqi/failed-build-issue-action` opens an issue the
+way `daily.yml` does. Vendoring those corpora instead is a trap: each carries
+its own licence, and `reuse`, `copyrights` and `xcop` would all have to be told
+to look away.
+
+That tier asserts **what it read** and not only how long it took, because a
+budget alone is blind to the failure it most wants to catch. It timed
+`xslint … --quiet || true` at first, so a run that linted nothing passed: point
+it at a path that does not exist and the exit code is *zero*, no code
+distinguishing "found defects" from "died", and the whole of #758 — a walk that
+crashes before a byte of XSL is read — would have stayed green under it. So the
+step drops `--quiet`, keeps stderr, and compares the stylesheets `find` sees on
+disk against the count the run reports having processed, which are the same
+number or the run did not do its job. Past that it fails on an exit code above
+1, since neither a clean run nor defects found can produce one, and then on the
+budget.
 
 ## Code style
 
@@ -292,9 +443,11 @@ requires — a verdict is the grammar's and an engine no longer stands on the pa
 to one), `src/tokens.js` (the
 positioned XPath lexer), and `src/helpers.js` (XML/YAML parsing, file
 recursion). The staging is wired only in `src/xslint.js`: each linter is one
-`{run, checks}` entry in `LINTERS`/`EXPRESSION_LINTERS`, and the `CHECKS` name
-list that `--suppress` and config globs match is *derived* from those entries, so
-a linter and its suppression names cannot drift apart.
+`{name, run, checks}` entry in `LINTERS`/`EXPRESSION_LINTERS`, and both the
+`CHECKS` name list that `--suppress` and config globs match and the `STAGES`
+list `test/scaling.test.js` times are *derived* from those entries, so a linter
+can drift apart from neither its suppression names nor what measures how it
+grows.
 
 Nothing selects attributes by name on its own — no code-based linter, and no
 validator either since #589, which is the one entry list Phase 3 of #644 asks
@@ -592,7 +745,11 @@ accidentally attached fix turns red.
   sweep in
   the workflow excludes `test/resources/directives/wrapped*.xsl` for the same
   reason: they must keep the wrapped attribute value #611 is about, which xcop
-  joins onto one line.
+  joins onto one line. And `test/resources/scaling/**` for the first reason
+  again: the one stylesheet the speed gate copies must declare namespaces
+  nothing uses, or `namespace-linter` has no defect to build and the stage is
+  measured on a path it never takes. Every other line of it conforms — the root
+  element is the whole of what xcop objects to.
   Where the tool does not run, every fixture is registered and **pending**, never
   absent: a suite that asserts nothing must not read like one that passed, which
   is how 250 assertions went missing on a developer machine for months (#645).
@@ -656,7 +813,7 @@ accidentally attached fix turns red.
 
 | File | Role |
 | --- | --- |
-| `src/xslint.js` | Orchestrates discovery, config, staging, output; exports the pure `lint` (package `main`) and `fixed` |
+| `src/xslint.js` | Orchestrates discovery, config, staging, output; exports the pure `lint` (package `main`), `fixed`, and `STAGES` — every linter the pipeline runs, named by its module and paired with what it is handed, derived from `LINTERS`/`EXPRESSION_LINTERS` rather than written out beside them so the speed gate cannot be measuring a list the run has moved on from |
 | `src/config.js` | Resolves `.xslint.yml` (severities/`off`, excludes, `max-warnings`) |
 | `src/directives.js` | Parses inline `xslint-disable-*` comment directives |
 | `src/reporters.js` | `reporterOf(format)` — `text`, `json`, `sarif`, or `github` output |
@@ -691,4 +848,5 @@ accidentally attached fix turns red.
 | `test/grammar-shapes.test.js` | The same acceptance diff as `grammar-corpus.test.js`, asked of 14112 expressions nobody wrote: every shape a head and one or two tails spell, spaced and glued. A corpus covers only what somebody has already written down, and every class #740 closed stood outside the repository's — so `GAPS` read empty while the grammar refused `text() + 1` and accepted `a?b`, and this sweep parted from the engine 1603 times on the same head. Both classes it was left with are closed by #742, and a generated sweep covers only what its own lists spell, which is the corpus limit one level up: the second was annotated `\? (WORDS)` over a `TAILS` naming no `+` at all, so `xs:integer+ and @b` stood outside its own net, and widening the annotation to `[?+]` uncovered `cast as xs:integer? instance of x` behind it. A predicate too broad to be a class is one failure mode, since an annotation that swallows the next defect turns nothing red; too narrow is the other, and this file was in it. What is annotated now is not a gap in the grammar at all — fontoxpath accepts a word run against the *arity* of a named function reference, where Saxon-HE 12.5 answers `abs#1div 2` with XPST0003 exactly as it answers `1div 2`. One engine's verdict is evidence and not an answer, which is why a second arbiter settles it; `net.sf.saxon.s9api`'s `XPathCompiler` judges them in well under a second, and reading its *code* rather than its exit status is what tells a syntax error from the undeclared prefix or unknown function behind one. That cost is why the fast half now answers in under two seconds rather than under one. The lists grew by four heads and three tails at #753, from 8064 shapes to 14112: a kind test carrying arguments is a head now, and the item types whose brackets hold a type are tails, so the productions that read them stand inside the net rather than beside it. The gate on the count moved with them, since a sweep that has been narrowed reads exactly like one that agrees |
 | `test/strictness.js` | `insists(xpath)` — whether fontoxpath refuses an expression over its own strictness rather than over anything malformed in it: a `namespace::` axis, ExprWhitespace around an axis separator, ExprWhitespace inside a node test (#615, #639). It is the account that replaced the respelling retry #738 deleted, and it is a test-side module because a run has no use for it — nothing in `src/` asks what one engine insists on. Read off the token stream, which is what tells the axis of `1-namespace::x` from the one name of `a-namespace::x`, the lexer having already decided which a `-` is where a lookbehind would be reading characters about a question that is about tokens; the thirteen axis kinds are borrowed from `src/tokens.js`'s `AXIS_KINDS` rather than written down a second time. What it is not is an oracle of validity — `child ::` holds a spaced separator and is no expression — so a gate reads it *beside* `parsed`, never instead of it, and `test/strictness.test.js` pins that with the class it names and refuses all the same |
 | `test/helpers.js` | The only door to a child process in the suite: `runXslint`/`xslintStatus`/`xslintStreams` run the CLI, `xcopped` runs xcop once over a directory, `cmdAvailable` answers whether a tool is there by running it, and `walkedWith(dir, kilobytes)` runs `allFilesFrom` in a process whose JavaScript stack is that small. That last one hands back the largest spread the stack allows beside the walk's own answer, because a walk that survives proves nothing unless the trap was armed and how many arguments a spread carries is V8's business — a Node that moved the number would otherwise leave the test quietly proving nothing (#758). The kilobytes are the smallest stack worth asking for rather than the stack: node needs some seventy to start here and more where a platform's frames are wider, so the ask doubles until one answers and the stack that did comes back, for a caller that has a second question to put to the same size |
+| `test/scaling.test.js` | The speed gate (see **Speed**): charges every stage its own processor time over a generated corpus at 40 stylesheets and again at 160, and fails one that costs more beside the middle stage of its run than `SHARES` allows it, or — where it has no entry there — grew more than `GROWTH` beside that stage's growth. Cost is the sharp question and growth the loose one, because #755 changed a constant and not an exponent, which is a difference the two distributions show plainly: 9.6 to 10.4 against 16.7 to 17.1 in cost, where in growth the fix reads 1.85 to 2.04 and the quadratic 1.66 to 2.43 — the lowest reading being the one judged, growth ranks them backwards. The corpus is the assertion as much as the bar is. It is copied from one committed `test/resources/scaling/stylesheet.xsl`, the way every test stylesheet here lives in a file, with the number of each file substituted into every name it holds — so no two share an expression, a declaration or a namespace, and the memo in `src/syntax.js` cannot make the larger corpus look cheaper than it is. That stylesheet holds a namespace nothing uses, an import, a literal result element and a call of every shape a linter is about, because a stage handed nothing it reads cannot be measured at all: the three per-document linters were exactly that, 0.3 ms with a spread of 358%, until it grew namespaces and imports |
 | `test/xcop.deep.test.js` | Writes every pack's inline XSL to one `mkdtempSync` directory and runs xcop over it once; pending, never absent, where the tool does not run |
