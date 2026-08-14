@@ -72,12 +72,26 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-warning">warning</span>
-    <code class="xpath">//(xsl:function | xsl:template)/xsl:param[not(some $x in ..//(node() | @*) satisfies contains($x, concat('$', @name)))]</code>
+    <code class="xpath">checked over the tokens, not an XPath rule</code>
   </div>
   <div class="check-content">
 <h1>Unused function or template parameter</h1>
-<p>A parameter declared in a function or template but never referenced in its
-body is dead code and should be removed or used.</p>
+<p>A parameter a function or template declares and never references is dead code,
+and it costs more than the line it stands on. A caller has to be told what to
+pass, so every <code>xsl:with-param</code> supplying it is dead too, and the next reader
+has to work out whether the omission is deliberate. On an <code>xsl:function</code> it is
+worse than clutter: the parameter is part of the signature, so the arity every
+call site spells is carrying a value the body never reads.</p>
+<p>A parameter is referenced when an XPath expression in the body names it —
+a <code>select</code>, a <code>test</code>, a <code>match</code>, or the braces of an attribute value template
+or a text value template. Nothing else counts, and three near-misses are worth
+naming, because each is a parameter that reads as used and is not. Its name in
+the output text of a literal result element is characters bound for the result
+tree. Its name inside a string literal, <code>select=&quot;&#39;$name&#39;&quot;</code>, is the same
+characters an expression away. And its name inside an XML comment is a
+reference somebody switched off, which is the strongest evidence there is that
+the parameter is dead: a template whose body is commented out keeps only the
+signature, and the signature is what every caller still pays for.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:template name=&quot;greet&quot;&gt;
   &lt;xsl:param name=&quot;name&quot;/&gt;
@@ -90,6 +104,11 @@ body is dead code and should be removed or used.</p>
   &lt;p&gt;&lt;xsl:value-of select=&quot;concat(&#39;Hello, &#39;, $name)&quot;/&gt;&lt;/p&gt;
 &lt;/xsl:template&gt;
 </code></pre>
+<p>Where the parameter really is unwanted, delete it and every <code>xsl:with-param</code>
+that supplies it — leaving the callers behind turns the dead declaration into a
+dead argument, which no processor reports either. Where it was meant to be read
+and is not, the fault is usually a misspelling one character apart from a name
+the body does reference.</p>
 
   </div>
 </body>
