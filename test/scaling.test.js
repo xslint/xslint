@@ -23,47 +23,69 @@ const SMALL = 40
 const STEP = 4
 
 /**
- * What each stage costs beside the middle stage of its own run, and the most it
- * may cost. This is the assertion the gate stands on, because the one speed
- * regression this project has actually had was a constant and not a shape: #755
- * left the cross-file linter's exponent where it was and multiplied what it
- * spent at every size. Growth cannot see that: the fix reads 1.85 to 2.04 and
- * the quadratic 1.66 to 2.43, and since the lowest reading is the one judged,
- * growth does not merely fail to separate them — at 1.66 against 1.85 it ranks
- * them backwards. The share reads 9.6 to 10.4 against 16.7 to 17.1, with
- * nothing between. A share is a quotient taken inside one run, so it cancels a
- * machine's speed the way a growth ratio does, and unlike one it hardly moves
- * when the machine is busy: sixteen processes fighting over ten cores leave
- * every entry below within a tenth of its idle reading.
+ * What percentage of its own run each stage may spend. This is the assertion
+ * the gate stands on, because the one speed regression this project has
+ * actually had was a constant and not a shape: #755 left the cross-file
+ * linter's exponent where it was and multiplied what it spent at every size.
+ * Growth cannot see that: the fix reads 1.85 to 2.04 and the quadratic 1.66 to
+ * 2.43, and since the lowest reading is the one judged, growth does not merely
+ * fail to separate them — at 1.66 against 1.85 it ranks them backwards. The
+ * share separates them outright: over three alternating pairs on one machine,
+ * the fix read 15.10%, 15.27% and 15.69% of its run where the quadratic read
+ * 29.06%, 29.98% and 30.12%, and the gate fails the quadratic three times of
+ * three at 27.68%, 30.84% and 30.85%.
+ *
+ * A share is a quotient taken inside one run, so it cancels a machine's speed
+ * the way a growth ratio does, and unlike one it hardly moves when the machine
+ * is busy: under a load average of eighteen this machine charged
+ * `corpus-linter` 15.1% to 15.7% where idle it charges 16.1% to 17.9%. What a
+ * share is *of* is the whole run, the readings summed, and that is #777: it was
+ * the middle reading of the run, on the argument that fourteen of the eighteen
+ * stages sit within a factor of two of each other so no one stage can move it.
+ * Fourteen readings within a factor of two are fourteen that keep swapping
+ * places, and the median is the mean of the 9th and 10th, so whichever pair
+ * lands there sets the denominator of every share. Three runs on one idle
+ * machine, nothing touched between them, read the middle at 19.27, 16.79 and
+ * 27.86 ms and `corpus-linter` at 11.44, 14.73 and 10.14 of it, where it spent
+ * 220.52, 247.30 and 282.54 ms and 16.43%, 17.85% and 16.06% of its run. Making
+ * a *cheap* stage cheaper moved it hardest, since a cheap stage is what the
+ * median is made of: #775 halved `node-set-linter`, one of the two straddling
+ * it, and lifted every other share by about a quarter.
  *
  * Two things set a ceiling. Where there is a defect to catch, it goes between
- * the two measured distributions — `corpus-linter` at 13, a quarter above what
- * the fix costs and a quarter below what the quadratic costs. Everywhere else
- * it stands about twice the local reading, because a share cancels a machine's
- * speed and not its character: a first spelling sat four tenths above these
- * readings and a macOS runner refused it, charging `xsl-validator` 1.21 where
- * this machine charges 2.2 and `xpath-validator` 6.13 where it charges 3.8.
- * Those two came off a run whose warm-up is now known to have biased the first
- * attempt, so what they still prove is that headroom is needed, not how much.
+ * the two measured distributions — `corpus-linter` at 26, a tenth above the
+ * dearest reading the fix has given on any runner, 23.5%, and a sixteenth below
+ * the cheapest the quadratic has given here, 27.68%. That band is narrower than
+ * the readings on one machine suggest, because this is the entry a runner
+ * disagrees about most: the four that have reported a table charged the fix
+ * 14.4%, 19.1%, 22.0% and 23.5% of the run where this machine charges 15.4%, so
+ * a ceiling drawn halfway between the two distributions *here* would fail the
+ * fix on macOS. It is also as wide as this corpus can make it, #755 having
+ * doubled the cross-file linter's cost over forty stylesheets where it
+ * multiplied it by 3.4 over DocBook-XSL, which is the second tier's question
+ * rather than this one's. Everywhere else the ceiling stands between half again
+ * and twice the dearest reading, there being no second distribution to leave
+ * room for.
  * @type {{[stage: string]: number}}
  */
 const SHARES = {
-  'xpath-linter': 55,
-  'corpus-linter': 13,
-  'xpath-validator': 9,
-  'xsl-validator': 4,
+  'xpath-linter': 75,
+  'corpus-linter': 26,
+  'xpath-validator': 13,
+  'xsl-validator': 8,
 }
 
 /**
- * What any stage not named in `SHARES` may cost beside the middle stage. The
- * fourteen of them read 0.13 to 1.27, so this is the bar a cheap stage crosses
- * by becoming an expensive one, and crossing it earns an entry above or a fix.
- * Twice what the dearest of them reads, for the same
- * reason the entries above are: a runner of another character moves a share by
- * as much as nine tenths.
+ * What percentage of the run any stage not named in `SHARES` may spend. The
+ * fourteen of them read 0.42% to 2.15% here and 0.35% to 1.82% on the runner
+ * that reported a table, so this is the bar a cheap stage crosses by becoming
+ * an expensive one, and crossing it earns an entry above or a fix. More than
+ * twice what the dearest of them reads, for the same reason the entries above
+ * are: a runner of another character moves a share, and a stage that has
+ * really become expensive lands in the tens rather than a tenth above.
  * @type {number}
  */
-const SHARE = 2.5
+const SHARE = 5
 
 /**
  * How many times its own reading a ceiling may stand above before it has
@@ -71,12 +93,12 @@ const SHARE = 2.5
  * a stage that grew past its entry fails, and so does a stage that has been
  * made so much cheaper that the entry it left behind would let the whole
  * regression back in. `SPRAWLING` in `eslint.config.mjs` is the same shape one
- * property over. Four rather than two, and a macOS runner is what set it: it
- * charged `xsl-validator` 1.21 of the middle where this machine charges 2.2,
- * so a ceiling two and a half times the local reading was more than three times
- * that one and the entry was called stale on a tree nobody had touched. What is
- * left to catch is a stage made several times cheaper, which is what #755's
- * remainder will do to the cross-file entry.
+ * property over. Four rather than two, because a share cancels a machine's
+ * speed and not its character and the runners disagree with this machine by as
+ * much as a half — `corpus-linter` at 23.5% of the run where this one charges
+ * 15.4%, and `xsl-validator` at 2.8% where it charges 3.3%. What is left to
+ * catch is a stage made several times cheaper, which is what #755's remainder
+ * will do to the cross-file entry.
  * @type {number}
  */
 const SLACK = 4
@@ -92,8 +114,8 @@ const SLACK = 4
  * really does hold a quadratic (#769) that forty stylesheets are too few to
  * show. Loose on purpose beyond that, because growth is the noisier of the two
  * questions — the cross-file linter reads 1.71 to 1.89 across runs where its
- * share reads 9.6 to 10.4 — and a bar tight enough to catch a constant fires on
- * stages nothing touched.
+ * share reads 15.1% to 15.7% — and a bar tight enough to catch a constant fires
+ * on stages nothing touched.
  * @type {number}
  */
 const GROWTH = 3.0
@@ -232,10 +254,13 @@ const measured = function(from, files) {
 }
 
 /**
- * The middle of a list of readings, which is what one stage of ordinary cost
- * reads on this machine in this run: fourteen of the eighteen stages sit within
- * a factor of two of each other, so the median is theirs and no one stage can
- * move it.
+ * The middle of a list of readings. It answers the growth question alone, where
+ * the readings are ratios rather than milliseconds: every stage of ordinary
+ * shape grows about as the corpus does, so their median is one stage's growth
+ * whichever stage happens to sit there. The median *cost* is not that and no
+ * longer decides anything (#777) — the fourteen ordinary stages keep swapping
+ * places, so the pair landing 9th and 10th moved the denominator of every share
+ * by as much as a half.
  * @param {Array.<number>} list - The readings
  * @return {number} - Their median
  */
@@ -246,11 +271,19 @@ const middle = function(list) {
 }
 
 /**
- * What each stage costs and how it grew, both as multiples of what the middle
- * stage of the same run did. Two quotients taken inside one process, which is
- * what survives a shared machine, and both divided by the middle, which is what
- * survives a different one: an absolute threshold either flakes or is set loose
- * enough to catch nothing.
+ * What percentage of its run each stage spends, and how it grew as a multiple
+ * of what the middle stage's growth did. Two quotients taken inside one
+ * process, which is what survives a shared machine, and both divided by
+ * something the whole run supplies, which is what survives a different one: an
+ * absolute threshold either flakes or is set loose enough to catch nothing.
+ *
+ * The cost is divided by the readings summed and the growth by their median,
+ * which is not an inconsistency but the two questions being different. A stage
+ * of ordinary shape grows as the corpus does, so a median growth is any
+ * ordinary stage's growth; a stage of ordinary cost does not exist in the same
+ * way, fourteen of them lying within a factor of two and swapping places run to
+ * run, so a median cost is a coin toss between two near-identical readings and
+ * dividing by it made every share depend on which way the coin fell (#777).
  * @param {number} attempt - Which attempt this is, deciding the file numbers
  * @return {Map.<string, {share: number, growth: number}>} - Cost and growth
  */
@@ -260,11 +293,11 @@ const weighed = function(attempt) {
   const ratios = new Map(
     Array.from(small, ([name, span]) => [name, large.get(name) / span]),
   )
-  const centre = middle(Array.from(large.values()))
+  const whole = Array.from(large.values()).reduce((one, two) => one + two, 0)
   const linear = middle(Array.from(ratios.values()))
   return new Map(
     Array.from(large, ([name, span]) => [name, {
-      share: span / centre,
+      share: 100 * span / whole,
       growth: ratios.get(name) / linear,
     }]),
   )
@@ -278,10 +311,12 @@ const weighed = function(attempt) {
  * all and is dropped rather than judged: Windows charges processor time in
  * ticks far coarser than a cheap stage costs over the small corpus, so eight of
  * the fourteen measured `0` there and their growth came back `Infinity` or
- * `NaN`. The share, taken over the corpus four times larger, resolves on that
- * runner as it does here — `corpus-linter` reading 9.30 against 9.28 to 10.13 —
- * so what a coarse clock costs is the looser of the two questions on one
- * platform, not the gate.
+ * `NaN`. The share is unhurt by the same clock, being taken over the corpus
+ * four times larger and against the whole run rather than one reading of it:
+ * with the clock quantised to 6 ms here, which is what turns those growths
+ * non-finite, every entry holds within a tenth of a fine clock's answer. So
+ * what a coarse clock costs is the looser of the two questions on one platform,
+ * not the gate.
  * @param {string} name - Name of the stage
  * @param {Array.<{share: number, growth: number}>} readings - Per attempt
  * @return {string} - The fault, or an empty string
@@ -296,16 +331,15 @@ const fault = function(name, readings) {
   }
   let said = ''
   if (share > ceiling) {
-    said = `${name} costs ${share.toFixed(2)} times what the middle stage of ` +
-      `its own run costs, past the ${ceiling} that test/scaling.test.js ` +
-      `allows it`
+    said = `${name} spends ${share.toFixed(2)}% of its own run, past the ` +
+      `${ceiling}% that test/scaling.test.js allows it`
   } else if (!named && growths.length > 0 && Math.min(...growths) > GROWTH) {
     said = `${name} grew ${Math.min(...growths).toFixed(2)} times what the ` +
       `middle stage grew when the corpus grew ${STEP} times, so its shape has ` +
       `changed`
   } else if (named && ceiling > SLACK * share) {
-    said = `${name} costs only ${share.toFixed(2)} times the middle where it ` +
-      `is allowed ${ceiling}, so the entry has stopped being a bar and wants ` +
+    said = `${name} spends only ${share.toFixed(2)}% of its run where it is ` +
+      `allowed ${ceiling}%, so the entry has stopped being a bar and wants ` +
       `tightening`
   }
   return said
@@ -342,7 +376,7 @@ const judged = function() {
       readings.set(name, (readings.get(name) ?? []).concat([one]))
     }
     table = Array.from(weight, ([name, one]) =>
-      `${name} ${one.share.toFixed(2)} of the middle, grew ` +
+      `${name} ${one.share.toFixed(2)}% of its run, grew ` +
       `${one.growth.toFixed(2)}`).join(', ')
     found = Array.from(readings, ([name, list]) => fault(name, list))
       .filter((said) => said !== '')
