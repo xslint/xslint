@@ -76,9 +76,15 @@
   </div>
   <div class="check-content">
 <h1>Use node-set extension</h1>
-<p>The <code>exsl:node-set()</code> extension function is an XSLT 1.0 workaround for
-converting result tree fragments into node-sets. It is unnecessary in XSLT 2.0
-and later, where temporary trees can be queried directly.</p>
+<p>The <code>node-set()</code> extension function is an XSLT 1.0 workaround for converting
+result tree fragments into node-sets. It is unnecessary in XSLT 2.0 and later,
+where temporary trees can be queried directly.</p>
+<p>Two namespaces declare it for that one purpose — EXSLT&#39;s common module,
+<code>http://exslt.org/common</code>, and Microsoft&#39;s <code>urn:schemas-microsoft-com:xslt</code> —
+and the prefix a stylesheet binds to either is the author&#39;s to choose, so
+<code>exsl:node-set</code>, <code>msxsl:node-set</code> and <code>common:node-set</code> can all be the same
+call. A <code>node-set</code> of your own, in a namespace of your own, is a different
+function and does whatever you wrote it to do.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:stylesheet version=&quot;2.0&quot;
   xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot;
