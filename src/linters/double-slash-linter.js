@@ -135,8 +135,8 @@ const separators = function(found) {
  * `PATTERNS` standing in seven places over five elements, and comes free of the
  * records the validator kept: the redundancy and the breadth are properties of
  * the pattern language rather than of `xsl:template`, and one of the two checks
- * read `xsl:template/@match` alone,
- * so an `xsl:key` matching `gamma//delta` drew nothing at all (#586). An
+ * read `xsl:template/@match` alone, so an `xsl:key` matching `gamma//delta`
+ * drew nothing at all (#586). An
  * expression is left to the check that reads one, a leading `//` there being no
  * redundancy but a scan of the whole document from its root.
  * @param {Array.<{source: object, found: object}>} expressions - The valid
