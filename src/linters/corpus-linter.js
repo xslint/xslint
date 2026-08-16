@@ -117,34 +117,63 @@ const behind = function(value, at) {
 }
 
 /**
- * Every name a usage value references under a check's template — the names
- * behind each `$` for a variable, the names in front of each `(` for a call.
- * A template anchors `{name}` at one end and the fixed part at the other is
- * what a scan finds, the name being the run of name characters beside it, so
- * a reference is to the *whole* name and never to one spelled inside a longer
- * one: `$rownum` is no reference to `$row`, though it holds those characters
- * (#783). `test/conformance.test.js` holds every template to that shape.
- * @param {string} value - Usage value
+ * What a check's template anchors its name against: the fixed text a scan
+ * finds, and which side of it the name stands on — `${name}` puts `$` in front
+ * of the name and `{name}(` puts `(` behind it. Read once for a template
+ * rather than once per usage value, the template being the check's and not the
+ * value's.
+ *
+ * Exactly one end carries that text, and a template failing it is refused here
+ * rather than obeyed. With text at neither end the mark is the empty string,
+ * which `indexOf` finds at every offset and, asked past the end, goes on
+ * answering the length instead of -1: the scan never advances and the run
+ * hangs before it reports anything. With text at both ends only the near side
+ * is ever matched, so a declaration the far side uses is reported as dead.
+ * `test/conformance.test.js` holds every check to the same shape, so this is
+ * the second line rather than the first (#783).
  * @param {string} reference - The check's template, holding `{name}`
+ * @return {{mark: string, precedes: boolean}} - The text and which side it is
+ */
+const anchoring = function(reference) {
+  const stands = reference.indexOf('{name}')
+  const opens = reference.slice(0, stands)
+  const closes = reference.slice(stands + '{name}'.length)
+  if ((opens.length > 0) === (closes.length > 0)) {
+    throw new Error(
+      `The reference template "${reference}" anchors the name against text ` +
+        'at neither end or at both, where exactly one end must carry it',
+    )
+  }
+  let anchor = {mark: closes, precedes: false}
+  if (opens.length > 0) {
+    anchor = {mark: opens, precedes: true}
+  }
+  return anchor
+}
+
+/**
+ * Every name a usage value references under a check's anchor — the names
+ * behind each `$` for a variable, the names in front of each `(` for a call.
+ * The name is the run of name characters beside the anchor's text, so a
+ * reference is to the *whole* name and never to one spelled inside a longer
+ * one: `$rownum` is no reference to `$row`, though it holds those characters
+ * (#783).
+ * @param {string} value - Usage value
+ * @param {{mark: string, precedes: boolean}} anchor - What `anchoring` read
  * @return {Set.<string>} - The names it references
  */
-const referencing = function(value, reference) {
+const referencing = function(value, anchor) {
   const names = new Set()
-  const opens = reference.slice(0, reference.indexOf('{name}'))
-  let mark = opens
-  if (opens.length === 0) {
-    mark = reference.slice(reference.indexOf('{name}') + '{name}'.length)
-  }
-  let at = value.indexOf(mark)
+  let at = value.indexOf(anchor.mark)
   while (at !== -1) {
     let name = behind(value, at)
-    if (opens.length > 0) {
-      name = ahead(value, at + mark.length)
+    if (anchor.precedes) {
+      name = ahead(value, at + anchor.mark.length)
     }
     if (name.length > 0) {
       names.add(name)
     }
-    at = value.indexOf(mark, at + 1)
+    at = value.indexOf(anchor.mark, at + 1)
   }
   return names
 }
@@ -165,9 +194,10 @@ const indexed = function(usages, reference) {
   }
   const held = INDEXED.get(usages)
   if (!held.has(reference)) {
+    const anchor = anchoring(reference)
     const index = new Map()
     for (const usage of usages) {
-      for (const name of referencing(usage.value, reference)) {
+      for (const name of referencing(usage.value, anchor)) {
         if (!index.has(name)) {
           index.set(name, [])
         }
@@ -381,6 +411,7 @@ const lintByCorpus = function(corpus, suppressions = []) {
 }
 
 module.exports = {
+  anchoring,
   lintByCorpus,
   names,
 }
