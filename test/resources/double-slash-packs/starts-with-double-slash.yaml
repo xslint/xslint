@@ -2,13 +2,15 @@
 # SPDX-License-Identifier: MIT
 ---
 pack: starts-with-double-slash
-# The two xsl:for-each-group attributes are pinned column 87 before column 57:
-# a union yields the attributes of one element in no defined order, and this is
-# the order fontoxpath gives, so document order is not what the report follows
-# when one element carries two patterns.
+# The two xsl:for-each-group attributes are pinned column 88 before column 58:
+# `walked` sorts an element's attributes by name, so `group-ending-with` comes
+# out in front of `group-starting-with` however they were written, and the
+# report follows that rather than document order where one element carries two
+# patterns.
 found:
   amount: 10
-  positions: [ [ 4, 23 ], [ 7, 23 ], [ 10, 28 ], [ 12, 23 ], [ 12, 40 ], [ 15, 87 ], [ 15, 57 ], [ 20, 33 ], [ 11, 3, use-double-slash ], [ 14, 3, use-double-slash ] ]
+  positions: [ [ 4, 24 ], [ 7, 25 ], [ 10, 29 ], [ 11, 31, use-double-slash ], [ 12, 24 ], [ 12, 41 ], [ 14, 36, use-double-slash ], [ 15, 88 ], [ 15, 58 ], [ 20, 34 ] ]
+  fixes: [ "", "", "", null, "", "", null, "", "", "" ]
 input: |-
   <?xml version="1.0"?>
   <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="3.0" id="style1">
@@ -23,7 +25,7 @@ input: |-
     <xsl:template match="objects//deep">
       <xsl:number count="//counted" from="//started"/>
     </xsl:template>
-    <xsl:template match=".//anchored">
+    <xsl:template match="self::node()//anchored">
       <xsl:for-each-group select="oo" group-starting-with="//grouped" group-ending-with="//ended">
         <xsl:copy-of select="."/>
       </xsl:for-each-group>

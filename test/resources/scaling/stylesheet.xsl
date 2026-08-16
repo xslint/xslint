@@ -8,7 +8,7 @@
   <xsl:template match="/">
     <xsl:call-template name="tSEEDx0"/>
   </xsl:template>
-  <xsl:template name="tSEEDx0" match="nodeSEEDx0">
+  <xsl:template name="tSEEDx0" match="//nodeSEEDx0">
     <xsl:param name="qSEEDx0"/>
     <xsl:variable name="vSEEDx0" select="child::aSEEDx0/bSEEDx0"/>
     <xsl:if test="count($vSEEDx0/cSEEDx0) = 0">

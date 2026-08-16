@@ -102,10 +102,11 @@ const SHARES = {
 
 /**
  * What percentage of the run any stage not named in `SHARES` may spend. The
- * fourteen of them read 0.44% to 2.35% here, having risen by the ninth #783
- * took out of the denominator, and 0.35% to 1.82% on the runner that reported a
- * table before it. So this is the bar a cheap stage crosses by becoming an
- * expensive one, and crossing it earns an entry above or a fix. More than twice
+ * sixteen of them read 0.18% to 2.44% here over nine runs, having risen by the
+ * ninth #783 took out of the denominator, and 0.35% to 1.82% on the runner that
+ * reported a table before `double-slash-linter` was one of them. So this is the
+ * bar a cheap stage crosses by becoming an expensive one, and crossing it earns
+ * an entry above or a fix. More than twice
  * what the dearest of them reads, for the same reason the entries above are: a
  * runner of another character moves a share, and a stage that has really become
  * expensive lands in the tens rather than a tenth above.
@@ -138,9 +139,10 @@ const SLACK = 4
  * is the stronger statement, while one without is pinned only by a bar it sits
  * far below — so its shape is what is worth watching, and a cheap stage turning
  * quadratic is what this catches: it would read `STEP` itself, 4.0, where the
- * fourteen of them read 0.52 to 1.70. The highest is `import-linter`, which
- * really does hold a quadratic (#769) that forty stylesheets are too few to
- * show. Loose on purpose beyond that, because growth is the noisier of the two
+ * sixteen of them read 0.19 to 1.35 over nine runs. Among the dearest is
+ * `import-linter`, which really does hold a quadratic (#769) that forty
+ * stylesheets are too few to show. Loose on purpose beyond that, because growth
+ * is the noisier of the two
  * questions — the cross-file linter reads 1.71 to 1.89 across runs where its
  * share reads 15.1% to 15.7% — and a bar tight enough to catch a constant fires
  * on stages nothing touched.

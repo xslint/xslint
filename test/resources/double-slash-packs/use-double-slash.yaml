@@ -1,0 +1,31 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: use-double-slash
+# One pattern holding three separators pins that every one of them is reported
+# rather than the first alone, and the `//` of the predicate that it is reported
+# wherever it stands in the pattern. The two xsl:for-each-group attributes come
+# out sorted by name, `group-ending-with` in front of `group-starting-with`,
+# which is the order `walked` yields an element's attributes in.
+found:
+  amount: 10
+  positions: [ [ 4, 34 ], [ 5, 29 ], [ 5, 35 ], [ 5, 42 ], [ 6, 31 ], [ 6, 48 ], [ 7, 96 ], [ 7, 62 ], [ 11, 29 ], [ 15, 36 ] ]
+  fixes: [ null, null, null, null, null, null, null, null, null, null ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="3.0" id="style1">
+    <xsl:output encoding="UTF-8" method="xml"/>
+    <xsl:key name="kk" match="gamma//delta" use="@id"/>
+    <xsl:template match="alpha//beta//gamma//delta">
+      <xsl:number count="epsilon//zeta" from="eta//theta"/>
+      <xsl:for-each-group select="oo" group-starting-with="iota//kappa" group-ending-with="lambda//mu">
+        <xsl:copy-of select="."/>
+      </xsl:for-each-group>
+    </xsl:template>
+    <xsl:template match="nu[xi//omicron]">
+      <xsl:copy-of select="."/>
+    </xsl:template>
+    <xsl:accumulator name="acc" initial-value="0">
+      <xsl:accumulator-rule match="pi//rho" select="1"/>
+    </xsl:accumulator>
+  </xsl:stylesheet>

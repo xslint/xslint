@@ -101,12 +101,17 @@ const CORPUS = Array.from(new Set(
  * How thin a source may run before this file is answering about a corpus of
  * its own imagining rather than about the repository. A gate over a sweep can
  * pass by finding nothing, so the sweep is gated too.
+ *
+ * A floor comes down only where a check has genuinely stopped being declarative
+ * and its selector is gone rather than broken: `starts-with-double-slash` and
+ * `use-double-slash` left `checks/xpath/` for one code-based linter at #586,
+ * and the selectors are two of the fifty this gate was written over.
  * @type {Array.<{source: string, least: number}>}
  */
 const REACHES = [
   {source: 'stylesheet', least: 177},
   {source: 'pack', least: 431},
-  {source: 'selector', least: 50},
+  {source: 'selector', least: 48},
 ]
 
 /**

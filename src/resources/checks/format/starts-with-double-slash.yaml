@@ -1,0 +1,5 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+severity: warning
+message: A pattern alternative starts with //, which is redundant since every XSLT pattern already matches at any depth, and it lowers the rule's default priority from 0.5 to that of the step alone. Remove the leading // and give the rule an explicit priority if it must keep ranking as it does.

@@ -21,9 +21,18 @@ is handled by `DOUBLESLASH`. Remove the `//` and `list/item` keeps 0.5 while the
 bare `item` drops to 0, so the same node is handled by `SPECIFIC` instead. The
 output changes though neither template was touched.
 
-Write the pattern the shape you mean, and where a rule has to keep the rank it
-had, say so with an explicit `priority` rather than leaning on a `//` to buy half
-a point:
+An alternative of a union is matched exactly as a whole pattern is — the node
+matches when any one of them matches it — so the same `//` is as redundant in
+`match="chapter | //item"` as it is alone, and it buys the same half point:
+XSLT computes a default priority for each alternative separately, as though the
+rule had been written out once per branch. Write each branch the shape you mean:
+
+```xsl
+<xsl:template match="chapter | item">CONTENT</xsl:template>
+```
+
+Where a rule has to keep the rank it had, say so with an explicit `priority`
+rather than leaning on a `//` to buy half a point:
 
 Incorrect:
 

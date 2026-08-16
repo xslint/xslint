@@ -1,0 +1,31 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: starts-with-double-slash
+# A branch of a union is matched exactly as a whole pattern is, so a `//`
+# opening one is the same redundancy — including a branch of the pattern a
+# bracket holds. The `//` of the union inside a predicate opens no branch: that
+# is an expression, and there the leading `//` really does scan the document
+# (#586).
+found:
+  amount: 7
+  positions: [ [ 4, 32 ], [ 7, 24 ], [ 7, 39, use-double-slash ], [ 10, 36 ], [ 10, 44 ], [ 11, 32 ], [ 14, 32, use-double-slash ] ]
+  fixes: [ "", "", null, "", "", "", null ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="3.0" id="style1">
+    <xsl:output encoding="UTF-8" method="xml"/>
+    <xsl:template match="alpha | //beta">
+      <xsl:copy-of select="."/>
+    </xsl:template>
+    <xsl:template match="//gamma | delta//epsilon">
+      <xsl:copy-of select="."/>
+    </xsl:template>
+    <xsl:key name="kk" match="zeta | //eta | //theta" use="@id"/>
+    <xsl:template match="(iota | //kappa)/lambda">
+      <xsl:copy-of select="."/>
+    </xsl:template>
+    <xsl:template match="mu[nu | //xi]">
+      <xsl:copy-of select="."/>
+    </xsl:template>
+  </xsl:stylesheet>

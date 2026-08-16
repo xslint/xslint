@@ -1,0 +1,24 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: use-double-slash
+# Three places the characters `//` stand where no step does: inside a string
+# literal, inside a comment, and inside the braced URI literal of an inline
+# namespace. The lexer gives each of those one token of its own, so none of
+# them holds a `//` for this linter to read (#490).
+found:
+  amount: 0
+  positions: [ ]
+  fixes: [ ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="3.0" id="style1">
+    <xsl:output encoding="UTF-8" method="xml"/>
+    <xsl:template match="alpha[@url = 'http://example.com']">
+      <xsl:copy-of select="."/>
+    </xsl:template>
+    <xsl:template match="beta (: a//b :)">
+      <xsl:copy-of select="."/>
+    </xsl:template>
+    <xsl:key name="kk" match="Q{urn://my}gamma" use="@id"/>
+  </xsl:stylesheet>

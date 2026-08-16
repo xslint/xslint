@@ -20,6 +20,19 @@ const source = function(name) {
   }
 }
 
+/**
+ * The two fixtures whose eighth line holds a pattern the grammar refuses: one
+ * whose text no grammar reads at all, one that reads as a fine expression and
+ * as no pattern. Neither draws a word about its `//` any more — the checks that
+ * had one to say are staged over the expressions the validator kept, so the
+ * refusal is the only defect the fault draws (#586, #750).
+ * @type {Array.<string>}
+ */
+const UNREADABLE = [
+  'refused/refused-by-a-declarative-fix.xsl',
+  'refused/refused-pattern-that-parses-as-an-expression.xsl',
+]
+
 describe('lint (programmatic API)', function() {
   it('returns defects for in-memory sources', function() {
     const defects = lint([source('stylesheets/xsl-with-some-violations.xsl')])
@@ -80,20 +93,30 @@ describe('lint (programmatic API)', function() {
       [],
     )
   })
-  it('still reports the double slash it refused to drop', function() {
-    assert.ok(
-      lint([source('refused/refused-by-a-declarative-fix.xsl')]).some(
-        (defect) =>
-          defect.name === 'starts-with-double-slash' && defect.line === 8,
-      ),
+  UNREADABLE.forEach((sheet) => {
+    it(`says nothing but the refusal about the pattern of ${sheet}`, function() {
+      assert.deepEqual(
+        lint([source(sheet)])
+          .filter((defect) => defect.line === 8)
+          .map((defect) => defect.name),
+        ['invalid-xpath-expression'],
+      )
+    })
+  })
+  it('withholds the declarative fix beside a refused text value template', function() {
+    assert.deepEqual(
+      lint([source('refused/refused-by-a-declarative-fix.xsl')])
+        .filter((defect) => defect.name === 'text-outside-xsl-text')
+        .map((defect) => Boolean(defect.fix)),
+      [false],
     )
   })
-  it('offers no declarative fix beside a refused text value template', function() {
+  it('keeps the code-based fix beside a refused text value template', function() {
     assert.deepEqual(
       lint([source('refused/refused-by-a-declarative-fix.xsl')])
         .filter((defect) => defect.line === 14 && defect.fix)
         .map((defect) => defect.name),
-      [],
+      ['starts-with-double-slash'],
     )
   })
   it('reports a malformed expression in every attribute that holds one', function() {
@@ -121,15 +144,6 @@ describe('lint (programmatic API)', function() {
         .filter((defect) => defect.line === 8 && defect.fix)
         .map((defect) => `${defect.name} at ${defect.line}:${defect.pos}`),
       [],
-    )
-  })
-  it('still reports the double slash of a pattern it will not fix', function() {
-    assert.ok(
-      lint([source('refused/refused-pattern-that-parses-as-an-expression.xsl')])
-        .some(
-          (defect) =>
-            defect.name === 'starts-with-double-slash' && defect.line === 8,
-        ),
     )
   })
   it('keeps the fix on the pattern beside one no XSLT grammar reads', function() {

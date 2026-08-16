@@ -25,6 +25,8 @@ const {lintByParameter, names: parameterChecks} =
   require('./linters/parameter-linter')
 const {lintByNodeSet, names: nodeSetChecks} =
   require('./linters/node-set-linter')
+const {lintByDoubleSlash, names: doubleSlashChecks} =
+  require('./linters/double-slash-linter')
 const {lintByCount, names: countChecks} = require('./linters/count-linter')
 const {lintByDoubleNegation, names: doubleNegationChecks} =
   require('./linters/redundant-double-negation-linter')
@@ -92,6 +94,11 @@ const EXPRESSION_LINTERS = [
     checks: namespaceAxisChecks,
   },
   {name: 'node-set-linter', run: lintByNodeSet, checks: nodeSetChecks},
+  {
+    name: 'double-slash-linter',
+    run: lintByDoubleSlash,
+    checks: doubleSlashChecks,
+  },
   {name: 'count-linter', run: lintByCount, checks: countChecks},
   {
     name: 'string-length-linter',

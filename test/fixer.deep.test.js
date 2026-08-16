@@ -127,6 +127,13 @@ const APPLIED = [
     after: 'starts-with-double-slash-outside-a-template.fixed.xsl',
   },
   {
+    name: 'should drop the leading slashes of every branch of one pattern, ' +
+      'and of no branch of a template, with --fix',
+    flag: '--fix',
+    before: 'double-slash-opening-a-branch.xsl',
+    after: 'double-slash-opening-a-branch.fixed.xsl',
+  },
+  {
     name: 'should delete a redundant include with --fix-suggestions',
     flag: '--fix-suggestions',
     before: 'repeated-include.xsl',
