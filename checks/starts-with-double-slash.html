@@ -72,7 +72,7 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-warning">warning</span>
-    <code class="xpath">((//xsl:template | //xsl:key | //xsl:accumulator-rule)/@match | //xsl:number/(@count | @from) | //xsl:for-each-group/(@group-starting-with | @group-ending-with))[starts-with(normalize-space(), '//')]</code>
+    <code class="xpath">checked over the tokens, not an XPath rule</code>
   </div>
   <div class="check-content">
 <h1>Starts with double slash</h1>
@@ -92,9 +92,15 @@ interchangeable are not:</p>
 is handled by <code>DOUBLESLASH</code>. Remove the <code>//</code> and <code>list/item</code> keeps 0.5 while the
 bare <code>item</code> drops to 0, so the same node is handled by <code>SPECIFIC</code> instead. The
 output changes though neither template was touched.</p>
-<p>Write the pattern the shape you mean, and where a rule has to keep the rank it
-had, say so with an explicit <code>priority</code> rather than leaning on a <code>//</code> to buy half
-a point:</p>
+<p>An alternative of a union is matched exactly as a whole pattern is — the node
+matches when any one of them matches it — so the same <code>//</code> is as redundant in
+<code>match=&quot;chapter | //item&quot;</code> as it is alone, and it buys the same half point:
+XSLT computes a default priority for each alternative separately, as though the
+rule had been written out once per branch. Write each branch the shape you mean:</p>
+<pre><code class="language-xsl">&lt;xsl:template match=&quot;chapter | item&quot;&gt;CONTENT&lt;/xsl:template&gt;
+</code></pre>
+<p>Where a rule has to keep the rank it had, say so with an explicit <code>priority</code>
+rather than leaning on a <code>//</code> to buy half a point:</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:template match=&quot;//item&quot;&gt;
   &lt;xsl:value-of select=&quot;.&quot;/&gt;

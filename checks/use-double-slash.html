@@ -72,16 +72,16 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-warning">warning</span>
-    <code class="xpath">//xsl:template[not(starts-with(normalize-space(@match), '//')) and contains(@match, '//')]</code>
+    <code class="xpath">checked over the tokens, not an XPath rule</code>
   </div>
   <div class="check-content">
 <h1>Use double slash</h1>
-<p>A <code>//</code> step in a <code>match</code> pattern matches the node at <em>any</em> depth, so the
-pattern is broader and vaguer than a named path. It is not a performance
-problem — a match pattern is tested against a node, not walked as a query — but
-<code>root//item</code> will also match an <code>item</code> nested far deeper than you meant as the
-document grows, and it hides the structure the template actually expects. When
-you know the shape of the input, name the path.</p>
+<p>A <code>//</code> step in a pattern matches the node at <em>any</em> depth, so the pattern is
+broader and vaguer than a named path. It is not a performance problem — a
+pattern is tested against a node, not walked as a query — but <code>root//item</code> will
+also match an <code>item</code> nested far deeper than you meant as the document grows, and
+it hides the structure the template actually expects. When you know the shape of
+the input, name the path.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:template match=&quot;root//item&quot;&gt;
   &lt;xsl:value-of select=&quot;.&quot;/&gt;
@@ -92,6 +92,17 @@ you know the shape of the input, name the path.</p>
   &lt;xsl:value-of select=&quot;.&quot;/&gt;
 &lt;/xsl:template&gt;
 </code></pre>
+<p>Every attribute holding a pattern reads the same way — <code>xsl:key/@match</code>,
+<code>xsl:accumulator-rule/@match</code>, the <code>@count</code> and <code>@from</code> of <code>xsl:number</code>, and the
+<code>@group-starting-with</code> and <code>@group-ending-with</code> of <code>xsl:for-each-group</code>. A <code>//</code>
+widens what one of those takes in exactly as it widens a template&#39;s <code>@match</code>:</p>
+<pre><code class="language-xsl">&lt;xsl:key name=&quot;lookup&quot; match=&quot;chapter/section/item&quot; use=&quot;@id&quot;/&gt;
+</code></pre>
+<p>Characters that merely look like a step are none: the <code>//</code> of a URL inside a
+string literal, of a comment, or of the namespace an inline <code>Q{...}</code> spells is
+part of the thing it stands in and reaches no depth at all, so
+<code>match=&quot;a[@href = &#39;http://example.com&#39;]&quot;</code> names one child element and nothing
+deeper.</p>
 
   </div>
 </body>
