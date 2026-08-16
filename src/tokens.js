@@ -874,6 +874,7 @@ module.exports = {
   WORDS,
   GLUES,
   TOKENS,
+  NAMED,
   OPAQUE,
   TRIVIA,
   AXIS_KINDS,

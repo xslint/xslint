@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {lintByCorpus} = require('../src/linters/corpus-linter')
+const {anchoring, lintByCorpus} = require('../src/linters/corpus-linter')
 const {allFilesFrom, xml, yaml} = require('../src/helpers')
 const path = require('path')
 const assert = require('assert')
@@ -14,7 +14,30 @@ const assert = require('assert')
  */
 const PACKS = allFilesFrom(path.resolve(__dirname, 'resources', 'corpus-packs'))
 
+/**
+ * Reference templates no check may carry, the name having to stand against
+ * fixed text at exactly one end. Against text at neither end the mark is the
+ * empty string, which `indexOf` finds at every offset and, past the end, goes
+ * on answering the length rather than -1 — so the scan never advances and the
+ * whole run hangs before a defect is reported. Against text at both ends only
+ * the near side is read, so the far one is never matched and a declaration
+ * that is used is reported as dead (#783).
+ * @type {Array.<string>}
+ */
+const UNANCHORED = ['{name}', 'x{name}y', '${name}(']
+
 describe('corpus-linter', function() {
+  UNANCHORED.forEach((reference) => {
+    it(`cannot take the unanchored reference template ${reference}`, function() {
+      assert.throws(
+        () => anchoring(reference),
+        /anchors the name against text at neither end or at both/,
+        `the template ${reference} was taken, where it anchors the name ` +
+          'against text at neither end or at both, and one of those hangs ' +
+          'the scan while the other reports a declaration that is used',
+      )
+    })
+  })
   PACKS.forEach((pack) => {
     const yml = yaml.parsedFromFile(pack)
     const corpus = yml.inputs.map((input, index) => ({

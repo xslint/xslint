@@ -1,0 +1,17 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: unused-variable
+found:
+  amount: 0
+  positions: [ ]
+inputs:
+  - |-
+    <?xml version="1.0"?>
+    <xsl:stylesheet xmlns:my="urn:my" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0">
+      <xsl:variable name="deep" select="1"/>
+      <xsl:variable name="my:qualified" select="2"/>
+      <xsl:template match="/">
+        <xsl:value-of select="concat($deep, substring($deep, $deep), $my:qualified)"/>
+      </xsl:template>
+    </xsl:stylesheet>

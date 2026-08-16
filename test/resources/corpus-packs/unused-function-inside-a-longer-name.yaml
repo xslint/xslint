@@ -1,0 +1,22 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: unused-function
+found:
+  amount: 1
+  positions: [ [ 0, 4, 3 ] ]
+inputs:
+  - |-
+    <?xml version="1.0"?>
+    <xsl:stylesheet xmlns:my="urn:my" xmlns:zmy="urn:zmy"
+      xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0">
+      <xsl:function name="my:fmt">
+        <xsl:sequence select="1"/>
+      </xsl:function>
+      <xsl:function name="zmy:fmt">
+        <xsl:sequence select="2"/>
+      </xsl:function>
+      <xsl:template match="/">
+        <xsl:value-of select="zmy:fmt()"/>
+      </xsl:template>
+    </xsl:stylesheet>

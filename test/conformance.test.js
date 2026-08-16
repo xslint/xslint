@@ -354,6 +354,32 @@ describe('conformance', function() {
       }
     }
   })
+  it('anchors every reference template against text at one end', function() {
+    const loose = names('corpus')
+      .map((name) => ({
+        name,
+        reference: yaml.parsedFromFile(
+          path.join(CHECKS, 'corpus', `${name}.yaml`),
+        ).reference,
+      }))
+      .filter((check) => check.reference)
+      .filter((check) => {
+        const stands = check.reference.indexOf('{name}')
+        return (stands > 0) ===
+          (stands + '{name}'.length < check.reference.length)
+      })
+      .map((check) => check.name)
+    assert.deepStrictEqual(
+      loose, [],
+      `${loose.join(', ')} anchors {name} against text at neither end or at ` +
+        'both, where the index in src/linters/corpus-linter.js reads the ' +
+        'name from the one side the text stands on. Against neither, the ' +
+        'mark is the empty string, which indexOf finds at every offset and ' +
+        'answers the length for past the end rather than -1, so the scan ' +
+        'never advances and the run hangs. Against both, the far side is ' +
+        'never matched and a declaration that is used is reported as dead',
+    )
+  })
   it('names both quotes of a literal it compares text with', function() {
     for (const [kind, keys] of Object.entries(SELECTORS)) {
       for (const name of names(kind)) {
