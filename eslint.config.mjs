@@ -100,9 +100,9 @@ const OPAQUE = {
 
 const PAIRED = {
   selector:
-    "CallExpression[callee.object.name='usages'][callee.property.name=/^(some|every|filter)$/] CallExpression[callee.name='needle']",
+    "CallExpression[callee.object.name='usages'][callee.property.name=/^(some|every|filter|map|flatMap|find)$/] CallExpression[callee.name='referencing']",
   message:
-    "A declaration's reference string depends on the declaration alone, so building it inside the usages loop builds it once per (declaration, usage) pair: needle was the hottest frame in the whole process, ahead of every fontoxpath one, and its replaceAll allocated a string per pair. Hoist it above the loop, and filter the usages by it before asking anything that walks the tree (#755)"
+    "The names a usage value references depend on that value and the check's template alone, so reading them inside a per-declaration scan of the usages reads them once per (declaration, usage) pair: that product is 1207 names against 72,077 attributes over DocBook-XSL, and 98% of what this stage spent. Build the index once with indexed and ask it for the declaration's name (#755, #783)"
 };
 
 const TRIVIA = {
