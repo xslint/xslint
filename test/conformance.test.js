@@ -77,6 +77,27 @@ const COUNTED = new RegExp(
 )
 
 /**
+ * A `name()` call, which answers the *lexical* QName a document happens to
+ * spell a node with and so reads the prefix rather than the namespace. A
+ * selector asking `name() = 'xsl:variable'` is blind to every stylesheet
+ * binding the XSLT namespace to any other prefix, which XSLT permits and real
+ * code uses, so it is a false negative written into the check — three of them
+ * were, and none of the packs bound another prefix, which is why they survived
+ * (#784). A namespace-bound node test answers the question the check means:
+ * `//(xsl:variable | xsl:template)`, not `//*[name() = ...]`. It is also the
+ * cheaper spelling, since a node test narrows the axis where a predicate has
+ * to visit every element to reject it.
+ *
+ * `local-name()` is not banned beside it. That one reads no prefix, so it
+ * answers the same for every spelling of a namespace, and a *negated* set has
+ * no node-test form at all — `text-outside-xsl-text` asks for the XSLT
+ * elements that are not one of eight names, which no union can spell. The gap
+ * before the `(` is part of the call, for the reason `COUNTED` carries.
+ * @type {RegExp}
+ */
+const NAMED = new RegExp(`(^|[^-\\w])name${GAP}*\\(${GAP}*\\)`)
+
+/**
  * A string literal a selector compares an expression's *text* against, which is
  * a literal whose own content is quoted: `"'true'"` asks whether a `@test`
  * reads `'true'` character for character. XPath spells one string with either
@@ -354,6 +375,28 @@ describe('conformance', function() {
       }
     }
   })
+  it('names a node by its namespace, never by its prefix, in a selector',
+    function() {
+      for (const [kind, keys] of Object.entries(SELECTORS)) {
+        for (const name of names(kind)) {
+          const check = yaml.parsedFromFile(
+            path.join(CHECKS, kind, `${name}.yaml`),
+          )
+          for (const key of keys) {
+            assert.ok(
+              !check[key] || !NAMED.test(check[key]),
+              `${kind}/${name} calls name() in its ${key}, which answers the ` +
+                'prefix a document happens to spell a node with, so the check ' +
+                'is blind to every stylesheet binding the XSLT namespace to ' +
+                'another one. Write a namespace-bound node test instead, such ' +
+                'as //(xsl:variable | xsl:template); where the set is negated ' +
+                'and no union can spell it, local-name() reads no prefix and ' +
+                'is allowed',
+            )
+          }
+        }
+      }
+    })
   it('anchors every reference template against text at one end', function() {
     const loose = names('corpus')
       .map((name) => ({

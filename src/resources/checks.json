@@ -143,7 +143,7 @@
         "message": "'xsl:choose' has no 'xsl:when' branch. Add one, or drop the 'xsl:choose' and keep its content directly."
       },
       "empty-content-in-instructions": {
-        "xpath": "//*[name()='xsl:for-each' or name()='xsl:if'][count(node()) = count(text()) and normalize-space() = \"\"]",
+        "xpath": "//(xsl:for-each | xsl:if)[count(node()) = count(text()) and normalize-space() = \"\"]",
         "severity": "warning",
         "message": "An instruction element such as xsl:for-each or xsl:if has no content. Add content or remove the empty element."
       },
@@ -168,12 +168,12 @@
         "message": "'xsl:function' requires XSLT 2.0 or later, but this stylesheet is not version 2.0 or 3.0. Use a named template, or set the version to 2.0."
       },
       "incorrect-use-of-boolean-constants": {
-        "xpath": "//xsl:*[local-name() = ('if', 'when')][normalize-space(@test) = (\"'true'\", \"'false'\", '\"true\"', '\"false\"')]",
+        "xpath": "//(xsl:if | xsl:when)[normalize-space(@test) = (\"'true'\", \"'false'\", '\"true\"', '\"false\"')]",
         "severity": "warning",
         "message": "The test is the string 'true' or 'false', a non-empty string that is always true, not a boolean. Use true() or false() instead."
       },
       "malformed-version-in-stylesheet": {
-        "xpath": "(//xsl:*[not(self::xsl:output)]/@version | //*[not(self::xsl:*)]/@xsl:version)[not(matches(normalize-space(.), '^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$'))]",
+        "xpath": "(//@version[parent::xsl:*][not(parent::xsl:output)] | //@xsl:version[not(parent::xsl:*)])[not(matches(normalize-space(.), '^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$'))]",
         "severity": "error",
         "message": "A declared version is not a number, so it names no XSLT version and every version-dependent check falls back to XSLT 1.0 here, the fixes it writes included. Declare it as a decimal, such as 2.0"
       },
@@ -198,7 +198,7 @@
         "message": "This XSLT 2.0 construct is used in a stylesheet declared version 1.0, which a conformant 1.0 processor rejects. Use a 1.0 equivalent, or set the version to 2.0."
       },
       "name-starts-with-numeric": {
-        "xpath": "//*[name()='xsl:variable' or name()='xsl:template'][@name][contains('0123456789', substring(@name, 1, 1))] | //xsl:function[@name][contains('0123456789', substring(substring-after(@name, \":\"), 1, 1))]",
+        "xpath": "//(xsl:variable | xsl:template)[@name][contains('0123456789', substring(@name, 1, 1))] | //xsl:function[@name][contains('0123456789', substring(substring-after(@name, \":\"), 1, 1))]",
         "severity": "warning",
         "message": "A variable, function, or template name starts with a digit, which is invalid in XPath. Rename it to start with a letter."
       },
@@ -243,12 +243,12 @@
         "message": "The template contains more than 100 XSLT elements. Decompose it with apply-templates into focused templates."
       },
       "param-after-content": {
-        "xpath": "//xsl:template/xsl:param[preceding-sibling::*[not(self::xsl:param) and not(self::xsl:context-item)]] | //xsl:function/xsl:param[preceding-sibling::*[not(self::xsl:param) and not(self::xsl:context-item)]]",
+        "xpath": "//xsl:param[parent::xsl:template or parent::xsl:function][preceding-sibling::*[not(self::xsl:param) and not(self::xsl:context-item)]]",
         "severity": "error",
         "message": "'xsl:param' must be declared before any other content in its 'xsl:template' or 'xsl:function'. Move it above the content."
       },
       "select-starts-with-double-slash": {
-        "xpath": "//*[starts-with(normalize-space(@select), '//')]",
+        "xpath": "//@select[starts-with(normalize-space(.), '//')]/..",
         "severity": "warning",
         "message": "The select attribute starts with //, which scans the whole document from the root. Anchor it with .// or a specific path."
       },
@@ -258,7 +258,7 @@
         "message": "A variable is assigned via a nested xsl:value-of instead of the select attribute. Use select syntax instead."
       },
       "short-names": {
-        "xpath": "//*[name()=\"xsl:variable\" or name()=\"xsl:template\"][string-length(@name) = 1] | //xsl:function[string-length(substring-after(@name, \":\")) = 1]",
+        "xpath": "//(xsl:variable | xsl:template)[string-length(@name) = 1] | //xsl:function[string-length(substring-after(@name, \":\")) = 1]",
         "severity": "warning",
         "message": "A variable, function, or template has a single-character name. Use a descriptive name that reveals intent."
       },
@@ -298,7 +298,7 @@
         "message": "xsl:choose contains only one xsl:when branch. Replace it with xsl:if."
       },
       "using-disable-output-escaping": {
-        "xpath": "//*[@disable-output-escaping = \"yes\"]",
+        "xpath": "//@disable-output-escaping[. = \"yes\"]/..",
         "severity": "warning",
         "message": "disable-output-escaping='yes' is set, which produces implementation-defined output. Use xsl:copy-of or literal elements instead."
       },

@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
 # SPDX-License-Identifier: MIT
 ---
-xpath: //*[starts-with(normalize-space(@select), '//')]
+xpath: //@select[starts-with(normalize-space(.), '//')]/..
 severity: warning
 message: The select attribute starts with //, which scans the whole document from the root. Anchor it with .// or a specific path.

@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
 # SPDX-License-Identifier: MIT
 ---
-xpath: "//xsl:template/xsl:param[preceding-sibling::*[not(self::xsl:param) and not(self::xsl:context-item)]] | //xsl:function/xsl:param[preceding-sibling::*[not(self::xsl:param) and not(self::xsl:context-item)]]"
+xpath: "//xsl:param[parent::xsl:template or parent::xsl:function][preceding-sibling::*[not(self::xsl:param) and not(self::xsl:context-item)]]"
 severity: error
 message: "'xsl:param' must be declared before any other content in its 'xsl:template' or 'xsl:function'. Move it above the content."

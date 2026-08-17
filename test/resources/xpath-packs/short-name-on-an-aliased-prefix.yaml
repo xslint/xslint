@@ -1,0 +1,16 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: short-names
+found:
+  amount: 0
+  positions: [ ]
+input: |-
+  <?xml version="1.0"?>
+  <t:transform xmlns:t="http://www.w3.org/1999/XSL/Transform"
+    xmlns:xsl="urn:not-xslt" version="2.0" id="style1">
+    <t:output encoding="UTF-8" method="xml"/>
+    <t:template match="/">
+      <xsl:variable name="v">a literal result element, not an instruction</xsl:variable>
+    </t:template>
+  </t:transform>

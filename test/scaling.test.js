@@ -102,14 +102,20 @@ const SHARES = {
 
 /**
  * What percentage of the run any stage not named in `SHARES` may spend. The
- * sixteen of them read 0.18% to 2.44% here over nine runs, having risen by the
- * ninth #783 took out of the denominator, and 0.35% to 1.82% on the runner that
- * reported a table before `double-slash-linter` was one of them. So this is the
+ * sixteen of them read 0.24% to 2.77% here over nine runs, having risen twice
+ * over by what #783 and #784 each took out of the denominator, and 0.35% to
+ * 1.82% on the runner that reported a table before `double-slash-linter` was
+ * one of them. So this is the
  * bar a cheap stage crosses by becoming an expensive one, and crossing it earns
- * an entry above or a fix. More than twice
+ * an entry above or a fix. Nearly twice
  * what the dearest of them reads, for the same reason the entries above are: a
  * runner of another character moves a share, and a stage that has really become
- * expensive lands in the tens rather than a tenth above.
+ * expensive lands in the tens rather than a tenth above. It was more than twice
+ * that until #784 narrowed the selectors of the dearest stage there is, which
+ * is the one optimisation that lifts every share here rather than none: this
+ * bar stays where it is because nothing crossed it and a bar raised on nobody's
+ * failure is a bar loosened, and 1.8 is still the distance between a cheap
+ * stage and one that has become expensive.
  * @type {number}
  */
 const SHARE = 5
