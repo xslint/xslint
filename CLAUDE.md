@@ -140,20 +140,37 @@ table would want re-deriving rather than reading as regressions of stages nobody
 touched. What the sum buys is that a change to one of the fourteen *cheap* stages
 no longer does, which is #775 and every other optimisation landed so far. That
 residual is no longer hypothetical: #784 narrowed eight selectors and took
-`xpath-linter` down by a fifth, which lifted every one of the sixteen cheap
-stages by about an eighth — 0.18% to 2.44% became 0.24% to 2.77% — without one
-of them costing a millisecond more. So the prediction held, and the response is
-the one #783 set: re-derive what the denominator moved, or say why an entry
-stays. All
-four entries stay here, each still inside the half-again-to-twice band its
-reading asks for (85 against 58.25%, 12 against 8.15%, 15 against 7.24%, 9
-against 5.43%), and `SHARE` stays at 5 because nothing crossed it — a bar raised
-on nobody's failure is a bar loosened. The one entry worth watching is the
-cross-file linter's: its 12 was drawn a sixth below the cheapest reading the
-scan it replaced gave on any runner, and the runners charge that stage as much
-as 1.53 times what this machine does, so 8.15% here projects to 12.5% there.
-Six runners answer that on the pull request rather than a guess drawn in
-advance.
+`xpath-linter` from 62.41% of the run to 57.95%, which lifted every one of the
+sixteen cheap stages without one of them costing a millisecond more — 1.013 to
+1.258 times what it read before, median 1.122. So the prediction held, and the
+response is the one #783 set: re-derive what the denominator moved, or say why
+an entry stays.
+
+What that lift is measured **by** matters, because the first reading of it here
+was wrong in a way worth recording. A share was read off one printed table and
+divided into each bar, which is a single measurement standing in for a
+distribution: it put the cheap range at 0.24% to 2.77% where an interleaved
+master-branch pair, dearest of nine gate runs a side on one machine, puts it at
+0.21% to 2.25% against 0.21% to 2.48% — endpoints that move more from noise than
+the denominator moves them, since the low end is a stage costing a fifth of a
+millisecond. The **per-stage** lift is the statistic that survives; a range of
+extremes is not. Read the same way, all four entries stay: 85 against a dearest
+57.95%, 12 against 8.15%, 15 against 8.07%, 9 against 4.94%, which is 1.47,
+1.47, 1.86 and 1.82 times each reading.
+
+Two of those four sit inside the half-again-to-twice band an entry is placed by
+and two sit just under its lower edge, which is the safe side — an entry tighter
+than the convention asks catches more and not less — and `SLACK` is untroubled
+by any of them at four. `SHARE` stays at 5 because nothing crossed it: a bar
+raised on nobody's failure is a bar loosened. The cross-file entry answers to a
+different rule and the band is the wrong yardstick for it, since it is the one
+ceiling standing **between two distributions** — 12 sits above the dearest
+reading #783's index has given here and a sixth below the cheapest the scan it
+replaced gave on any runner, 14.4%. What holds all four is CI over six runners rather
+than a factor carried across from another stage: the 1.53 the runners disagree
+with this machine by was measured for that scan, and applying it to a stage it
+was not measured on would have predicted `xpath-linter` failing at 88.7%, where
+all six pass.
 
 What is timed is **processor time and not the wall clock**, `process.cpuUsage`
 rather than `process.hrtime`. The wall charges a stage for every slice the
@@ -228,7 +245,7 @@ a stage.
 `SHARES` names the four stages that legitimately cost more of a run than the
 rest: `xpath-linter` at 85%, `corpus-linter` at 12%, `xpath-validator` at 15%,
 `xsl-validator` at 9%. Every other stage answers to one bar, `SHARE` at 5%,
-which the sixteen of them sit far below at 0.24% to 2.77% — so a cheap stage
+which the sixteen of them sit far below at 0.21% to 2.48% — so a cheap stage
 that becomes an expensive one turns red, and earns either a fix or an entry. Two
 things set a ceiling. Where there is a defect to catch it goes **between the two
 measured distributions**: `corpus-linter` at 12 stands at twice the dearest

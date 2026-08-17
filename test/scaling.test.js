@@ -102,20 +102,25 @@ const SHARES = {
 
 /**
  * What percentage of the run any stage not named in `SHARES` may spend. The
- * sixteen of them read 0.24% to 2.77% here over nine runs, having risen twice
- * over by what #783 and #784 each took out of the denominator, and 0.35% to
- * 1.82% on the runner that reported a table before `double-slash-linter` was
- * one of them. So this is the
+ * sixteen of them read 0.21% to 2.48% here, taking the dearest of nine gate
+ * runs, and 0.35% to 1.82% on the runner that reported a table before
+ * `double-slash-linter` was one of them. So this is the
  * bar a cheap stage crosses by becoming an expensive one, and crossing it earns
- * an entry above or a fix. Nearly twice
+ * an entry above or a fix. Twice
  * what the dearest of them reads, for the same reason the entries above are: a
  * runner of another character moves a share, and a stage that has really become
- * expensive lands in the tens rather than a tenth above. It was more than twice
- * that until #784 narrowed the selectors of the dearest stage there is, which
- * is the one optimisation that lifts every share here rather than none: this
- * bar stays where it is because nothing crossed it and a bar raised on nobody's
- * failure is a bar loosened, and 1.8 is still the distance between a cheap
- * stage and one that has become expensive.
+ * expensive lands in the tens rather than a tenth above.
+ *
+ * #784 is the one optimisation so far that lifts every reading here rather than
+ * none, `xpath-linter` being over half the run and every share a share of the
+ * whole of it: the sixteen came up by 1.013 to 1.258, median 1.122, without one
+ * of them costing a millisecond more. The bar stays at 5 all the same, because
+ * nothing crossed it and a bar raised on nobody's failure is a bar loosened.
+ * What that lift is read by is the **per-stage** ratio and not the range, whose
+ * endpoints move more from noise than a denominator moves them — the low one
+ * belongs to a stage costing a fifth of a millisecond over the small corpus —
+ * and reading a share off one printed table rather than a distribution is how
+ * the first account of this put the range at 0.24% to 2.77%.
  * @type {number}
  */
 const SHARE = 5
