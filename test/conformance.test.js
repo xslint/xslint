@@ -56,29 +56,36 @@ const PACKED = {xpath: 'xpath-packs', corpus: 'corpus-packs'}
 const SELECTORS = {xpath: ['xpath'], corpus: ['declaration', 'usage']}
 
 /**
- * The prose that counts the attribute lists of `src/attributes.js` out loud —
- * the module holding them, and the two documents describing what a run reads.
+ * The prose that may count the attribute lists out loud, which is the module
+ * holding them and nowhere else. A number written beside a list is a fact that
+ * rots — three places said `ATTRIBUTES` held nineteen names where it has held
+ * twenty since #633, one of them wrong on the day the list grew — and the
+ * documents are where it rotted, being far enough from the list that nobody
+ * adding a name passes the sentence. So `CLAUDE.md` and `README.md` state no
+ * count of either list at all, and the one that remains sits three lines above
+ * `NAMED`. Judging their prose too is what the first spelling of this gate did,
+ * and a count is not the only thing prose counts: over three whole files it
+ * judged four true claims, ignored eleven, and failed #794's perfectly correct
+ * "a `//(xsl:variable | xsl:template)` pays for the two names" — a gate
+ * anchored on a phrase alone, red on a branch that had touched no list (#654).
  * @type {Array.<string>}
  */
-const PROSE = ['src/attributes.js', 'CLAUDE.md', 'README.md']
+const PROSE = ['src/attributes.js']
 
 /**
- * The words a count is spelled with, paired with what each counts to. A number
- * written in prose beside a list is a fact that rots: three places said
- * `ATTRIBUTES` held nineteen names where it has held twenty since #633, one of
- * them written wrong on the day the list grew and read past for a year (#654).
- * So a claim about how many names or attributes there are answers to the list
- * it is about, and a count matching neither list is either wrong or a claim
- * nobody can check.
- * @type {{[word: string]: number}}
+ * The words a count is spelled with, paired with what each counts to. A `Map`
+ * and not an object, because membership is the whole of what is asked of it and
+ * `'constructor' in {}` answers true: an object judges a claim about "the
+ * constructor names" against `Object` itself rather than reading past a word
+ * that is no number, so the prototype chain decides what the prose is about.
+ * @type {Map.<string, number>}
  */
-const NUMBERS = {
-  'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5, 'six': 6, 'seven': 7,
-  'eight': 8, 'nine': 9, 'ten': 10, 'eleven': 11, 'twelve': 12,
-  'thirteen': 13, 'fourteen': 14, 'fifteen': 15, 'sixteen': 16,
-  'seventeen': 17, 'eighteen': 18, 'nineteen': 19, 'twenty': 20,
-  'twenty-one': 21, 'twenty-two': 22, 'twenty-three': 23,
-}
+const NUMBERS = new Map([
+  'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine',
+  'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen',
+  'seventeen', 'eighteen', 'nineteen', 'twenty', 'twenty-one', 'twenty-two',
+  'twenty-three',
+].map((word, index) => [word, index + 1]))
 
 /**
  * Kebab-case with no leading or trailing hyphen.
@@ -478,7 +485,7 @@ describe('conformance', function() {
       }
     }
   })
-  it('counts the attribute lists as long as they are, in every prose', function() {
+  it('counts the attribute lists as long as they are, where it counts them', function() {
     const claimed = new RegExp(
       `(?:the|those|these|its|of)${GAP}+([a-z-]+)${GAP}+` +
       `(?:names|attributes|descendant scans)`, 'g',
@@ -488,12 +495,12 @@ describe('conformance', function() {
       const prose = fs.readFileSync(path.resolve(__dirname, '..', file), 'utf-8')
         .split('\n').map((line) => line.replace(/^ *\* ?/, '')).join(' ')
       for (const [claim, word] of prose.matchAll(claimed)) {
-        if (word in NUMBERS) {
+        if (NUMBERS.has(word)) {
           assert.ok(
-            lengths.has(NUMBERS[word]),
+            lengths.has(NUMBERS.get(word)),
             `${file} says "${claim}", and neither ATTRIBUTES nor PATTERNS ` +
-              `holds ${NUMBERS[word]} — say what the list holds, or make the ` +
-              'claim about something a reader can count',
+              `holds ${NUMBERS.get(word)} — say what the list holds, or make ` +
+              'the claim about something a reader can count',
           )
         }
       }
