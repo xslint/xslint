@@ -69,7 +69,7 @@ const whole = function(found, name) {
 
 /**
  * The names that hold a bare XPath, for testing one attribute at a time. Asking
- * XPath for all of them at once — a union of nineteen descendant scans, one per
+ * XPath for all of them at once — a union of twenty descendant scans, one per
  * name — costs more than a single scan of every XSLT attribute filtered by name
  * here, and costs it quadratically: 4.4 s against 0.3 s on a 2000-line
  * stylesheet (#633).

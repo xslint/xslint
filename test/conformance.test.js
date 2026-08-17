@@ -4,6 +4,7 @@
  */
 
 const {allFilesFrom, yaml} = require('../src/helpers')
+const {ATTRIBUTES, PATTERNS} = require('../src/attributes')
 const {GAP} = require('../src/tokens')
 const {FIXERS} = require('../src/fixers')
 const {DECIMAL} = require('../src/xsl-version')
@@ -53,6 +54,31 @@ const PACKED = {xpath: 'xpath-packs', corpus: 'corpus-packs'}
  * @type {{[kind: string]: Array.<string>}}
  */
 const SELECTORS = {xpath: ['xpath'], corpus: ['declaration', 'usage']}
+
+/**
+ * The prose that counts the attribute lists of `src/attributes.js` out loud —
+ * the module holding them, and the two documents describing what a run reads.
+ * @type {Array.<string>}
+ */
+const PROSE = ['src/attributes.js', 'CLAUDE.md', 'README.md']
+
+/**
+ * The words a count is spelled with, paired with what each counts to. A number
+ * written in prose beside a list is a fact that rots: three places said
+ * `ATTRIBUTES` held nineteen names where it has held twenty since #633, one of
+ * them written wrong on the day the list grew and read past for a year (#654).
+ * So a claim about how many names or attributes there are answers to the list
+ * it is about, and a count matching neither list is either wrong or a claim
+ * nobody can check.
+ * @type {{[word: string]: number}}
+ */
+const NUMBERS = {
+  'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5, 'six': 6, 'seven': 7,
+  'eight': 8, 'nine': 9, 'ten': 10, 'eleven': 11, 'twelve': 12,
+  'thirteen': 13, 'fourteen': 14, 'fifteen': 15, 'sixteen': 16,
+  'seventeen': 17, 'eighteen': 18, 'nineteen': 19, 'twenty': 20,
+  'twenty-one': 21, 'twenty-two': 22, 'twenty-three': 23,
+}
 
 /**
  * Kebab-case with no leading or trailing hyphen.
@@ -448,6 +474,27 @@ describe('conformance', function() {
                 'so it misreads a simplified stylesheet',
             )
           }
+        }
+      }
+    }
+  })
+  it('counts the attribute lists as long as they are, in every prose', function() {
+    const claimed = new RegExp(
+      `(?:the|those|these|its|of)${GAP}+([a-z-]+)${GAP}+` +
+      `(?:names|attributes|descendant scans)`, 'g',
+    )
+    const lengths = new Set([ATTRIBUTES.length, PATTERNS.length])
+    for (const file of PROSE) {
+      const prose = fs.readFileSync(path.resolve(__dirname, '..', file), 'utf-8')
+        .split('\n').map((line) => line.replace(/^ *\* ?/, '')).join(' ')
+      for (const [claim, word] of prose.matchAll(claimed)) {
+        if (word in NUMBERS) {
+          assert.ok(
+            lengths.has(NUMBERS[word]),
+            `${file} says "${claim}", and neither ATTRIBUTES nor PATTERNS ` +
+              `holds ${NUMBERS[word]} — say what the list holds, or make the ` +
+              'claim about something a reader can count',
+          )
         }
       }
     }
