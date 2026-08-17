@@ -49,12 +49,22 @@ const PATTERNS = [
  * brace stands at least one character inside a value, so an expression starting
  * at `0` is the value itself. A shadow attribute keeps its underscore, so
  * `_select` is not `select`, which is what the narrowing has always said.
+ * The name asked for is the unprefixed one, and an attribute in the XSLT
+ * namespace answers to it: `use-when` names the `xsl:use-when` a literal result
+ * element carries as much as the bare attribute of an XSLT element, the two
+ * being one attribute XSLT spells twice (#654). A prefix is the document's to
+ * choose, so the namespace is what the question is about, and a shadow
+ * attribute keeps its underscore either way.
  * @param {{node: Node, start: number}} found - A record `expressionsOf` yielded
  * @param {string} name - The name of the attribute a linter narrows to
  * @return {boolean} - True when the expression is that attribute's whole value
  */
 const whole = function(found, name) {
-  return found.start === 0 && found.node.nodeName === name
+  let called = found.node.nodeName
+  if (found.node.namespaceURI === XSLT) {
+    called = found.node.localName
+  }
+  return found.start === 0 && called === name
 }
 
 /**
@@ -127,6 +137,29 @@ const shadow = function(attribute) {
 }
 
 /**
+ * Whether the attribute's whole value is an XPath expression rather than a
+ * template. XSLT spells such an attribute two ways: unprefixed on an XSLT
+ * element, and in the XSLT namespace on an element of the result vocabulary,
+ * which is the only spelling a literal result element has. Until #654 this
+ * asked for the first alone, so the expressions a simplified stylesheet carries
+ * reached nothing at all — no code-based check and not the validator either,
+ * both of them staged over the records this derivation yields. `xsl:use-when`
+ * is the one attribute XSLT allows there and the whole of what the second half
+ * admits in a stylesheet a processor loads: the rest of its reach — an
+ * `xsl:select`, an `xsl:match` — is an attribute no version permits on such an
+ * element, so reading one costs a report on a file already refused rather than
+ * a defect invented against working code. A prefix is the document's own, so
+ * the namespace decides and never the spelling.
+ * @param {Node} attribute - The attribute node
+ * @return {boolean} - True when its whole value is an expression
+ */
+const wholly = function(attribute) {
+  return (NAMED.has(attribute.nodeName) &&
+    attribute.ownerElement.namespaceURI === XSLT) ||
+    (NAMED.has(attribute.localName) && attribute.namespaceURI === XSLT)
+}
+
+/**
  * The whole value of an attribute as one expression, standing where the value
  * itself starts. Every expression this module yields is such a record — the
  * node carrying it, the offset it begins at inside that node's value, its own
@@ -187,8 +220,7 @@ const expressionsOf = function(xsl) {
   if (!DERIVED.has(xsl)) {
     const held = walked(xsl)
     const bare = new Set(held.filter(
-      (one) => one.nodeType === 2 && NAMED.has(one.nodeName) &&
-        one.ownerElement.namespaceURI === XSLT,
+      (one) => one.nodeType === 2 && wholly(one),
     ))
     DERIVED.set(xsl, Object.freeze(held.flatMap(
       (node) => carried(node, bare, since(versionOf(node), '3.0')),
