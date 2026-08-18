@@ -458,7 +458,9 @@ Validators:
   `use`, `value`, `group-by`, `group-adjacent`, and the XSLT 3.0 `key`,
   `initial-value`, `xpath`, `context-item`, `with-params`,
   `namespace-context`, `for-each-item`, `for-each-source` and `use-when`) is
-  parsed; the ones the processor cannot parse are reported.
+  parsed, on an XSLT element or — spelled `xsl:use-when`, the only spelling a
+  simplified stylesheet has — on a literal result element; the ones the processor
+  cannot parse are reported.
 
 Linters:
 

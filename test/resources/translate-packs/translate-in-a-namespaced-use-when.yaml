@@ -1,0 +1,26 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: translate-for-case
+# A check that narrows to no attribute reaches the `xsl:use-when` of a literal
+# result element as it reaches every other expression, because it is handed the
+# records the validator kept rather than a list of attribute names — which is
+# what #654 fixed one level down, in the derivation those records come from. A
+# vendor test folded with `translate` is where the construct really turns up in
+# a static expression, there being no context node to read at that point.
+found:
+  amount: 2
+  positions: [ [ 4, 22 ], [ 7, 19 ] ]
+  fixes: [ "lower-case(system-property('xsl:vendor'))", "lower-case(system-property('xsl:vendor'))" ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="s">
+    <xsl:template match="/">
+      <p xsl:use-when="translate(system-property('xsl:vendor'), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = 'saxonica'">
+        <xsl:value-of select="@a"/>
+      </p>
+      <xsl:if test="translate(system-property('xsl:vendor'), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = 'saxonica'">
+        <xsl:value-of select="@b"/>
+      </xsl:if>
+    </xsl:template>
+  </xsl:stylesheet>

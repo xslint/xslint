@@ -17,11 +17,11 @@ const {calls, parseOf, textOf, tight} = require('./syntax')
  * front of it: below 2.0 a `use-when` is not XSLT's attribute at all, so such a
  * stylesheet is broken for a reason of its own rather than answered differently
  * here, which the 1.0 pack of each check pins. A literal result element spells
- * the attribute `xsl:use-when`, and `expressionsOf` yields no record for an
- * XPath attribute outside the XSLT namespace, so that spelling is out of reach
- * of every code-based check and of the validator too, which is #654 rather than
- * this list. Where it lands, the name a record carries is the prefixed one, so
- * `whole` is what will have to answer for both spellings.
+ * the attribute `xsl:use-when`, which is the only spelling a simplified
+ * stylesheet has, and the two are one entry rather than two: `expressionsOf`
+ * yields a record for either since #654, and `whole` reads the local name of an
+ * attribute in the XSLT namespace, so the unprefixed name on this list answers
+ * for both and the prefix a document happens to bind never comes into it.
  * @type {Array.<string>}
  */
 const TESTED = ['test', 'use-when']
