@@ -74,56 +74,94 @@ const STEP = 4
  * the next red build nobody can explain.
  *
  * Two things set a ceiling. Where there is a defect to catch, it goes between
- * the two measured distributions — `corpus-linter` at 12, twice the dearest
- * reading the index has given here, 6.05%, and a sixth below the cheapest the
- * scan has given on any runner, 14.4%. The defect it now catches is the scan
- * itself: putting `src/linters/corpus-linter.js` back to its pre-#783 state
- * fails the gate three times out of three at 14.47%, 15.03% and 15.52%, and the
- * stage read 14.47%–18.35% over six runs here against 14.4%–23.5% on the four
- * runners that have reported a table, so every one of those readings is caught.
- * The index passes it five of five at 5.35%–6.05%, and goes on passing as long
- * as no runner charges the stage more than 1.98 times what this machine does,
- * where the worst character a runner has shown is 1.53. The entry read 26 while
- * the scan was what the gate held, a tenth above the dearest reading that
- * scan gave on any runner and a fortieth below the cheapest #755's quadratic
- * gave here; the index moved the whole distribution, so the entry moves with
- * it, and a ceiling five times its own reading would let the scan back in
- * without a word. Everywhere else the ceiling stands between half again and
- * twice the dearest reading, there being no second distribution to leave room
- * for.
+ * the two measured distributions, and `corpus-linter` is the one entry drawn
+ * that way; everywhere else the ceiling stands between half again and twice
+ * the dearest reading, there being no second distribution to leave room for.
+ * #783 set that one at 12, twice the dearest reading the index gave then,
+ * 6.05%, and a sixth below the cheapest the scan had given on any runner,
+ * 14.4% — the scan being the defect it catches. Put back in its place it
+ * failed the gate three times out of three at 14.47%, 15.03% and 15.52%, and
+ * read 14.47%–18.35% over six runs here against 14.4%–23.5% on the four
+ * runners that have reported a table. The entry read 26 while the scan was
+ * what the gate held, a tenth above the dearest reading that scan gave on any
+ * runner and a fortieth below the cheapest #755’s quadratic gave here; the
+ * index moved the whole distribution, so the entry moved with it, a ceiling
+ * five times its own reading letting the scan back in without a word.
+ *
+ * Every entry was re-derived a third time at #784, for the cause this design
+ * has always recorded as its one residual: `xpath-linter` was over half the
+ * run, so making it cheaper lifts every other share without any of them
+ * slowing down. Serving a declarative axis from one shared walk took its
+ * dearest reading from 57.99% to 41.90%, and the three entries nobody touched
+ * rose with the denominator by about the 1.38 the arithmetic asks for —
+ * `corpus-linter` 8.20% to 11.55%, which left a ceiling of 12 one twenty-fifth
+ * from red on a stage that had not changed at all, `xpath-validator` 7.90% to
+ * 11.27% and `xsl-validator` 4.88% to 6.81%, measured 1.366, 1.364 and 1.394
+ * over an interleaved pair. So the table is re-derived deliberately rather
+ * than left to tighten as a side effect of a stage it has nothing to do with:
+ * 85 to 75, 15 to 20, 9 to 12, each of those three standing at about 1.77
+ * times the dearest of twelve gate runs here.
+ *
+ * The fourth entry answers the other rule, so it is measured rather than
+ * scaled: both distributions moved with the denominator, and both were taken
+ * again on this tree. The index reads 5.79% to 11.55% over those twelve runs,
+ * and the pre-#783 scan, put back in its place, 20.03% to 33.77% — so the
+ * window a ceiling may stand in is 11.55 to 20.03, and 19 is the value with
+ * room on either side of it. The gate fails three times out of three with that
+ * scan in place, at 23.93%, 20.03% and 22.80%, and the entry stands at 1.64
+ * times the index’s dearest, above the 1.53 that is the worst character a
+ * runner has shown. Twenty would have let the middle of those three runs
+ * through by three hundredths of one point, which is the difference between a
+ * bar standing between two distributions and a bar grazing the top of one.
+ *
+ * That this is the third re-derivation for one cause is why #784 adds a gate
+ * of another kind beside this one: no share bar can stop the shape returning,
+ * only a structural rule can, and `UNINDEXED` in `test/conformance.test.js` is
+ * it.
  * @type {{[stage: string]: number}}
  */
 const SHARES = {
-  'xpath-linter': 85,
-  'corpus-linter': 12,
-  'xpath-validator': 15,
-  'xsl-validator': 9,
+  'xpath-linter': 75,
+  'corpus-linter': 19,
+  'xpath-validator': 20,
+  'xsl-validator': 12,
 }
 
 /**
  * What percentage of the run any stage not named in `SHARES` may spend. The
- * sixteen of them read 0.21% to 2.48% here, taking the dearest of nine gate
+ * sixteen of them read 0.27% to 3.48% here, taking the dearest of twelve gate
  * runs, and 0.35% to 1.82% on the runner that reported a table before
- * `double-slash-linter` was one of them. So this is the
- * bar a cheap stage crosses by becoming an expensive one, and crossing it earns
- * an entry above or a fix. Twice
- * what the dearest of them reads, for the same reason the entries above are: a
- * runner of another character moves a share, and a stage that has really become
- * expensive lands in the tens rather than a tenth above.
+ * `double-slash-linter` was one of them. So this is the bar a cheap stage
+ * crosses by becoming an expensive one, and crossing it earns an entry above
+ * or a fix. Not quite twice what the dearest of them reads, for the same
+ * reason the entries above are: a runner of another character moves a share,
+ * and a stage that has really become expensive lands in the tens rather than a
+ * tenth above.
  *
- * #784 is the one optimisation so far that lifts every reading here rather than
- * none, `xpath-linter` being over half the run and every share a share of the
- * whole of it: the sixteen came up by 1.013 to 1.258, median 1.122, without one
- * of them costing a millisecond more. The bar stays at 5 all the same, because
- * nothing crossed it and a bar raised on nobody's failure is a bar loosened.
- * What that lift is read by is the **per-stage** ratio and not the range, whose
- * endpoints move more from noise than a denominator moves them — the low one
- * belongs to a stage costing a fifth of a millisecond over the small corpus —
- * and reading a share off one printed table rather than a distribution is how
- * the first account of this put the range at 0.24% to 2.77%.
+ * #784 is the one cause so far that lifts every reading here rather than none,
+ * `xpath-linter` being over half the run and every share a share of the whole
+ * of it. Narrowing eight of its selectors brought the sixteen up by 1.013 to
+ * 1.258, median 1.122, without one of them costing a millisecond more, and the
+ * bar stayed at 5 then, because nothing had crossed it and a bar raised on
+ * nobody’s failure is a bar loosened. Serving the axis from one shared walk
+ * brought them up again, by 1.193 to 1.435, median 1.349, and this time the
+ * bar moves — not because a stage crossed it, none having come nearer than
+ * 3.48%, but because 5 had stopped being the bar it was drawn as. Half again
+ * to twice the dearest reading is what every ceiling here stands at, and 5
+ * against 3.48% is 1.44, under the band rather than inside it: a runner
+ * charging this stage the 1.53 the worst of them has charged another would
+ * read 5.3% and turn red on a tree nobody had touched. Six is 1.72 times it,
+ * which is the same bar the entries above are.
+ *
+ * What that lift is read by is the **per-stage** ratio and not the range,
+ * whose endpoints move more from noise than a denominator moves them — the low
+ * one belongs to a stage costing a fifth of a millisecond over the small
+ * corpus — and reading a share off one printed table rather than a
+ * distribution is how the first account of this put the range at 0.24% to
+ * 2.77%.
  * @type {number}
  */
-const SHARE = 5
+const SHARE = 6
 
 /**
  * How many times its own reading a ceiling may stand above before it has

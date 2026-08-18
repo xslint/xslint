@@ -6,6 +6,8 @@
 const {allFilesFrom, yaml} = require('../src/helpers')
 const {ATTRIBUTES, PATTERNS} = require('../src/attributes')
 const {GAP} = require('../src/tokens')
+const {splitOf} = require('../src/selectors')
+const {kinds} = require('../src/resources/checks.json')
 const {FIXERS} = require('../src/fixers')
 const {DECIMAL} = require('../src/xsl-version')
 const {authored, rendered, PLACE} = require('../scripts/generate-checks')
@@ -13,6 +15,46 @@ const {Linter} = require('eslint')
 const path = require('path')
 const fs = require('fs')
 const assert = require('assert')
+
+/**
+ * The xpath selectors no shared walk can serve, each with the shape that puts
+ * it outside. `src/linters/xpath-linter.js` reads an axis of named elements
+ * out of one walk of the document and asks the engine for the predicate alone,
+ * which is what took the stage from 6.03 s to 3.75 s over DocBook-XSL (#784);
+ * a selector of any other shape still costs a descendant traversal of its own,
+ * and fontoxpath performs one over an xmldom tree quadratically (#635).
+ *
+ * So this is a ratchet and not a licence, red from both sides: a new selector
+ * that cannot be served has to be written here with its reason, and one that
+ * has since become servable turns its own entry red rather than sitting on a
+ * list that has stopped describing it. Ten of the eighteen are anchored at the
+ * root and cost nothing anyway, a root element being one node rather than a
+ * sweep. The other eight are what phase 2 of #784 is for: three are a union of
+ * two whole paths rather than a union of names inside one, three anchor on an
+ * attribute where the buckets hold elements, and one is the `//xsl:*` that a
+ * namespace bucket would serve.
+ * @type {{[name: string]: string}}
+ */
+const UNINDEXED = {
+  'function-template-is-not-child-of-stylesheet': 'anchored at the root',
+  'function-use-in-xslt-1': 'anchored at the root',
+  'malformed-version-in-stylesheet': 'anchored on an attribute',
+  'missing-id-in-stylesheet': 'anchored at the root',
+  'missing-version-in-stylesheet': 'anchored at the root',
+  'modern-construct-in-xslt-1': 'anchored at the root',
+  'name-starts-with-numeric': 'a union of two whole paths',
+  'not-using-output': 'anchored at the root',
+  'null-output-from-stylesheet': 'anchored at the root',
+  'output-method-xml': 'anchored at the root',
+  'select-starts-with-double-slash': 'anchored on an attribute',
+  'short-names': 'a union of two whole paths',
+  'stylesheet-has-no-templates': 'anchored at the root',
+  'text-outside-xsl-text': 'a wildcard names no one bucket',
+  'too-many-templates': 'anchored at the root',
+  'using-disable-output-escaping': 'anchored on an attribute',
+  'using-not-outermost-stylesheet': 'anchored at the root',
+  'when-or-otherwise-outside-choose': 'a union of two whole paths',
+}
 
 /**
  * Directory holding the check definitions.
@@ -471,6 +513,28 @@ describe('conformance', function() {
         }
       }
     })
+  it('serves every xpath selector it can from the shared walk', function() {
+    const drifted = names('xpath')
+      .map((name) => ({
+        name: name,
+        served: splitOf(kinds.xpath[name].xpath).names.length > 0,
+        listed: Object.hasOwn(UNINDEXED, name),
+      }))
+      .filter((check) => check.served === check.listed)
+      .map((check) => `${check.name} (served: ${check.served})`)
+    assert.deepStrictEqual(
+      drifted,
+      [],
+      'a selector and the UNINDEXED table in test/conformance.test.js no ' +
+        'longer agree. A selector that cannot be served from the walk in ' +
+        'src/tree.js costs fontoxpath a descendant traversal of its own, which ' +
+        'it performs quadratically over an xmldom tree, so a new one belongs ' +
+        'in that table with the shape that puts it there — or, better, gets ' +
+        'written as a descendant sweep of named elements. A selector listed ' +
+        'there and served anyway has outgrown its entry, and the entry goes: ' +
+        `${drifted.join(', ')}`,
+    )
+  })
   it('anchors every reference template against text at one end', function() {
     const loose = names('corpus')
       .map((name) => ({

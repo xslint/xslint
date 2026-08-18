@@ -3,7 +3,9 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {nodes} = require('../xpath')
+const {nodes, satisfies} = require('../xpath')
+const {named} = require('../tree')
+const {splitOf} = require('../selectors')
 const {isValid} = require('../syntax')
 const {FIXERS} = require('../fixers')
 const {expressionsOf} = require('../attributes')
@@ -17,7 +19,7 @@ const {logger} = require('../logger')
  *  message: string}>}
  */
 const PACKS = Object.entries(kinds.xpath).map(([name, pack]) => ({
-  name, ...pack,
+  name, ...pack, split: splitOf(pack.xpath),
 }))
 
 /**
@@ -97,6 +99,45 @@ const refused = function(xsl) {
 }
 
 /**
+ * The nodes a check selects in a document. Where the selector is a descendant
+ * sweep of named elements, the axis comes from the walk every check shares and
+ * only the predicate reaches the engine, asked of one candidate at a time as
+ * `self::node()` plus the tail the selector spelled. Where it is any other
+ * shape — a wildcard, an attribute, a root-anchored path, a positional
+ * predicate — the whole selector goes to the engine exactly as before.
+ *
+ * The two answers are the same nodes in the same order, which is the whole
+ * requirement: `splitOf` refuses every shape it cannot promise that for, and
+ * `named` merges a union by document-order rank rather than by bucket. What it
+ * buys is the traversal, which fontoxpath performs quadratically over an xmldom
+ * tree and performed once per check — 43 of them over a corpus already walked
+ * before the first one ran (#784).
+ * @param {Document} xsl - XSL document parsed as {@link Document}
+ * @param {{xpath: string, split: object}} pack - The check being applied
+ * @return {Array.<Node>} - The nodes it selects, in document order
+ */
+const selected = function(xsl, pack) {
+  let found = []
+  if (pack.split.names.length === 0) {
+    found = nodes(xsl, pack.xpath)
+  } else {
+    const {buckets, rank} = named(xsl)
+    found = pack.split.names.flatMap(
+      (name) => buckets.get(`${name.uri} ${name.local}`) ?? [],
+    )
+    if (pack.split.names.length > 1) {
+      found.sort((one, two) => rank.get(one) - rank.get(two))
+    }
+    if (pack.split.tail !== '') {
+      found = found.filter(
+        (node) => satisfies(node, `self::node()${pack.split.tail}`),
+      )
+    }
+  }
+  return found
+}
+
+/**
  * Lint the corpus of stylesheets by per-file Xpath packs.
  * @param {Array.<{file: string, xsl: Document}>} corpus - Parsed stylesheets
  * @param {Array.<string>} suppressions - Array of suppressed checks
@@ -111,7 +152,7 @@ const lintByXpath = function(corpus, suppressions = []) {
   )
   for (const {file, content, xsl} of corpus) {
     for (const pack of active) {
-      for (const node of nodes(xsl, pack.xpath)) {
+      for (const node of selected(xsl, pack)) {
         const defect = {
           name: pack.name,
           severity: pack.severity,

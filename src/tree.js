@@ -111,7 +111,67 @@ const walked = function(xsl) {
   return WALKED.get(xsl)
 }
 
+/**
+ * The elements already bucketed for a document. Every declarative check that
+ * sweeps descendants wants the same buckets, so they are built once and
+ * remembered against the document the way `walked` is.
+ * @type {WeakMap}
+ */
+const NAMED = new WeakMap()
+
+/**
+ * Every element of a document bucketed by namespace and local name, each bucket
+ * in document order, beside the rank each element holds in that order. This is
+ * what a `//xsl:variable` selects, reached by walking rather than by asking the
+ * engine to descend: fontoxpath evaluates a descendant step over an xmldom tree
+ * quadratically (#635), so one plain walk of DocBook-XSL's 69,842 elements
+ * costs 0.011 to 0.020 s where a single `//*` through the engine costs 0.87,
+ * and the 43 declarative checks each paid for a traversal of their own — 6.03 s
+ * of an 8.97 s staged run (#784).
+ *
+ * One walk serves every bucket, so the cost is paid once for the whole stage
+ * rather than once per check. Two things keep reading a bucket invisible to a
+ * report rather than a re-ordering of one. The order within a bucket is the
+ * order a descendant sweep answers in, a pre-order walk visiting an element
+ * before its children and a child before its next sibling, which is document
+ * order by definition. And the rank is what a *union* needs: `//(xsl:variable |
+ * xsl:template)` is a path, so XPath answers it in document order with the two
+ * names interleaved, where concatenating one bucket onto another would answer
+ * every variable ahead of every template. Nothing sorts a defect downstream,
+ * the report being the order the linters push in, so the merge happens here.
+ * @param {Document} xsl - Parsed stylesheet
+ * @return {{buckets: Map.<string, Array.<Node>>, rank: Map.<Node, number>}} -
+ *  The buckets, and where each element stands in document order
+ */
+const named = function(xsl) {
+  if (!NAMED.has(xsl)) {
+    const buckets = new Map()
+    const rank = new Map()
+    /**
+     * Bucket the elements below the node, then walk into each of them.
+     * @param {Node} node - The document, or an element within it
+     */
+    const visit = function(node) {
+      for (let kid = node.firstChild; kid !== null; kid = kid.nextSibling) {
+        if (kid.nodeType === 1) {
+          const key = `${kid.namespaceURI} ${kid.localName}`
+          if (!buckets.has(key)) {
+            buckets.set(key, [])
+          }
+          buckets.get(key).push(kid)
+          rank.set(kid, rank.size)
+          visit(kid)
+        }
+      }
+    }
+    visit(xsl)
+    NAMED.set(xsl, {buckets: buckets, rank: rank})
+  }
+  return NAMED.get(xsl)
+}
+
 module.exports = {
   holding,
+  named,
   walked,
 }
