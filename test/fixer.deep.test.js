@@ -160,6 +160,13 @@ const APPLIED = [
     after: 'redundant-import-between.fixed.xsl',
   },
   {
+    name: 'should delete a duplicate import spelled every way XML allows, ' +
+      'with --fix-suggestions',
+    flag: '--fix-suggestions',
+    before: 'redundant-import-spelled-every-way.xsl',
+    after: 'redundant-import-spelled-every-way.fixed.xsl',
+  },
+  {
     name: 'should unwrap the node-set extension with --fix',
     flag: '--fix',
     before: 'use-node-set-extension.xsl',
@@ -470,6 +477,11 @@ const UNCHANGED = [
     name: 'cannot delete a redundant import with plain --fix',
     flag: '--fix',
     sheet: 'redundant-import.xsl',
+  },
+  {
+    name: 'cannot delete an import holding a comment',
+    flag: '--fix-suggestions',
+    sheet: 'redundant-import-holding-a-comment.xsl',
   },
   {
     name: 'cannot delete a redundant include with plain --fix',
@@ -833,6 +845,18 @@ describe('fixer', function() {
     assert.equal(
       fs.readFileSync(file, 'utf-8'),
       fixture('unabbreviated-axis-in-a-wrapped-value.fixed.xsl')
+        .replace(/\n/g, '\r\n'),
+    )
+  })
+  it('should delete a duplicate import from a CRLF file', function() {
+    const file = scratch(
+      fixture('redundant-import-spelled-every-way.xsl')
+        .replace(/\n/g, '\r\n'),
+    )
+    runXslint(['--fix-suggestions', file])
+    assert.equal(
+      fs.readFileSync(file, 'utf-8'),
+      fixture('redundant-import-spelled-every-way.fixed.xsl')
         .replace(/\n/g, '\r\n'),
     )
   })

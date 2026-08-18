@@ -19,6 +19,7 @@ describe('import-linter', function() {
     const yml = yaml.parsedFromFile(pack)
     const corpus = yml.inputs.map((input, index) => ({
       file: `file${index}.xsl`,
+      content: input,
       xsl: xml.parsedFromString(input),
     }))
     describe(`testing ${path.basename(pack)} pack`, function() {
@@ -45,6 +46,7 @@ describe('import-linter', function() {
     )
     const corpus = yml.inputs.map((input, index) => ({
       file: `file${index}.xsl`,
+      content: input,
       xsl: xml.parsedFromString(input),
     }))
     assert.equal(lintByImports(corpus, ['import']).length, 0)

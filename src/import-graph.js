@@ -33,11 +33,16 @@ const target = function(file, href) {
  * is well-formed XML and invalid XSLT — a fault for a check of its own to
  * report (#668), not one to resolve here, since joining its absent href onto
  * the directory threw and took the whole run's report down with it (#597).
- * @param {Array.<{file: string, xsl: Document}>} corpus - Parsed stylesheets
- * @return {Array.<{file: string, node: Element, to: string}>} - The imports
+ * Each import carries the raw text of the file it stands in, because a fix that
+ * cuts one reads its span from the source rather than rebuilding the element
+ * (#793) and reaches this record rather than the corpus entry behind it.
+ * @param {Array.<{file: string, content: string, xsl: Document}>} corpus -
+ *  Parsed stylesheets
+ * @return {Array.<{file: string, content: string, node: Element,
+ *  to: string}>} - The imports
  */
 const importsOf = function(corpus) {
-  return corpus.flatMap(({file, xsl}) =>
+  return corpus.flatMap(({file, content, xsl}) =>
     Array.from(xsl.getElementsByTagName('*'))
       .filter(
         (element) =>
@@ -47,6 +52,7 @@ const importsOf = function(corpus) {
       )
       .map((node) => ({
         file: path.normalize(file),
+        content: content,
         node: node,
         to: target(file, node.getAttribute('href')),
       })))
