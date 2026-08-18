@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
 # SPDX-License-Identifier: MIT
 ---
-xpath: //*[name()='xsl:for-each' or name()='xsl:if'][count(node()) = count(text()) and normalize-space() = ""]
+xpath: '//(xsl:for-each | xsl:if)[count(node()) = count(text()) and normalize-space() = ""]'
 severity: warning
 message: An instruction element such as xsl:for-each or xsl:if has no content. Add content or remove the empty element.

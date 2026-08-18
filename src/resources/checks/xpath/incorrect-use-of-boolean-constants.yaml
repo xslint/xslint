@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
 # SPDX-License-Identifier: MIT
 ---
-xpath: "//xsl:*[local-name() = ('if', 'when')][normalize-space(@test) = (\"'true'\", \"'false'\", '\"true\"', '\"false\"')]"
+xpath: "//(xsl:if | xsl:when)[normalize-space(@test) = (\"'true'\", \"'false'\", '\"true\"', '\"false\"')]"
 severity: warning
 message: "The test is the string 'true' or 'false', a non-empty string that is always true, not a boolean. Use true() or false() instead."

@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
 # SPDX-License-Identifier: MIT
 ---
-xpath: "(//xsl:*[not(self::xsl:output)]/@version | //*[not(self::xsl:*)]/@xsl:version)[not(matches(normalize-space(.), '^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$'))]"
+xpath: "(//@version[parent::xsl:*][not(parent::xsl:output)] | //@xsl:version[not(parent::xsl:*)])[not(matches(normalize-space(.), '^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$'))]"
 severity: error
 message: A declared version is not a number, so it names no XSLT version and every version-dependent check falls back to XSLT 1.0 here, the fixes it writes included. Declare it as a decimal, such as 2.0
