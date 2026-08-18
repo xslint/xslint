@@ -6,12 +6,13 @@ pack: redundant-double-negation
 # does, so the negations there reduce to their argument bare while the same
 # construct in a `select` reduces to `boolean(...)` — one construct, two
 # equivalents, decided by the attribute holding it. The `xsl:use-when` a literal
-# result element carries is an XPath attribute outside the XSLT namespace, so it
-# reaches no code-based check at all, nor the validator (#654, #596).
+# result element carries is that same attribute under the one spelling such an
+# element has, and reduces the same way since #654, where it reached no
+# code-based check at all, nor the validator (#596).
 found:
-  amount: 2
-  positions: [ [ 3, 37 ], [ 5, 29 ] ]
-  fixes: [ "system-property('xsl:version')", "boolean(@a)" ]
+  amount: 3
+  positions: [ [ 3, 37 ], [ 4, 22 ], [ 5, 29 ] ]
+  fixes: [ "system-property('xsl:version')", "system-property('xsl:version')", "boolean(@a)" ]
 input: |-
   <?xml version="1.0"?>
   <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="s">

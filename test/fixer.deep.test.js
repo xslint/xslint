@@ -200,6 +200,13 @@ const APPLIED = [
     after: 'boolean-call-in-a-boolean-context.fixed.xsl',
   },
   {
+    name: 'should rewrite the xsl:use-when of a simplified stylesheet ' +
+      'with --fix',
+    flag: '--fix',
+    before: 'use-when-on-a-literal-result-element.xsl',
+    after: 'use-when-on-a-literal-result-element.fixed.xsl',
+  },
+  {
     name: 'should shorten positional predicates with --fix',
     flag: '--fix',
     before: 'predicate-position-literal.xsl',
