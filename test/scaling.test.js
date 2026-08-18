@@ -102,7 +102,7 @@ const SHARES = {
 
 /**
  * What percentage of the run any stage not named in `SHARES` may spend. The
- * sixteen of them read 0.21% to 2.48% here, taking the dearest of nine gate
+ * nineteen of them read 0.16% to 2.91% here, taking the dearest of five gate
  * runs, and 0.35% to 1.82% on the runner that reported a table before
  * `double-slash-linter` was one of them. So this is the
  * bar a cheap stage crosses by becoming an expensive one, and crossing it earns
@@ -150,7 +150,7 @@ const SLACK = 4
  * is the stronger statement, while one without is pinned only by a bar it sits
  * far below — so its shape is what is worth watching, and a cheap stage turning
  * quadratic is what this catches: it would read `STEP` itself, 4.0, where the
- * sixteen of them read 0.19 to 1.35 over nine runs. Among the dearest is
+ * nineteen of them read 0.19 to 1.64 over five runs. Among the dearest is
  * `import-linter`, which really does hold a quadratic (#769) that forty
  * stylesheets are too few to show. Loose on purpose beyond that, because growth
  * is the noisier of the two
@@ -186,7 +186,13 @@ const SPREAD = 100000
  * and a literal result element in a namespace of its own. A stage handed
  * nothing it is about cannot be measured at all — the three per-document
  * linters sat at 0.3 ms with a spread of 358% until this corpus grew namespaces
- * and imports.
+ * and imports, and `bare-name-linter` arrived at #788 reading 0.04% of the run
+ * with a growth of 2.30 to 2.63 against a bar of 3.0, which is a stage
+ * reporting noise as a shape. Three constructs arm the three stages that came
+ * with it: an `xsl:element` whose name is static, an `xsl:output` beside the
+ * `html` the root template builds, and an `xsl:apply-templates` selecting the
+ * bare name of a variable declared above it. Armed, the three read 0.16% to
+ * 0.32% and grow 0.52 to 1.18.
  * @type {string}
  */
 const SHEET = fs.readFileSync(

@@ -1,6 +1,5 @@
 # SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
 # SPDX-License-Identifier: MIT
 ---
-xpath: //xsl:apply-templates[some $var in ancestor::xsl:template[1]//xsl:variable satisfies (($var << .) and (starts-with(@select, concat($var/@name, '/')) or @select=$var/@name))]
 severity: warning
 message: A variable name is used bare as a node selector. Use $name syntax to reference the variable.

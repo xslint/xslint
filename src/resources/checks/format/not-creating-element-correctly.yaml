@@ -1,6 +1,5 @@
 # SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
 # SPDX-License-Identifier: MIT
 ---
-xpath: //xsl:element[not(contains(@name, '$') or (contains(@name, '(') and contains(@name, ')')) or (contains(@name, '{') and contains(@name, '}')) or (@namespace))]
 severity: warning
 message: xsl:element is used with a static name. Use a literal result element instead.

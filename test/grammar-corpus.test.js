@@ -105,13 +105,18 @@ const CORPUS = Array.from(new Set(
  * A floor comes down only where a check has genuinely stopped being declarative
  * and its selector is gone rather than broken: `starts-with-double-slash` and
  * `use-double-slash` left `checks/xpath/` for one code-based linter at #586,
- * and the selectors are two of the fifty this gate was written over.
+ * and the selectors are two of the fifty this gate was written over. Five more
+ * left at #788 — `select-starts-with-double-slash`,
+ * `not-creating-element-correctly`, `confusing-variable-and-node`,
+ * `null-output-from-stylesheet` and `output-method-xml` — every one of them a
+ * selector that judged the *text* of an expression with `contains` or
+ * `starts-with`, which is a question the tree answers and a string cannot.
  * @type {Array.<{source: string, least: number}>}
  */
 const REACHES = [
   {source: 'stylesheet', least: 177},
   {source: 'pack', least: 431},
-  {source: 'selector', least: 48},
+  {source: 'selector', least: 43},
 ]
 
 /**

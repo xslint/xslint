@@ -5,19 +5,19 @@ pack: not-creating-element-correctly
 found:
   amount: 0
   positions: [ ]
+  fixes: [ ]
 input: |-
   <?xml version="1.0"?>
-  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="2.0" id="style1">
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:tt="http://www.w3.org/1999/XSL/Transform" version="2.0" id="style1">
     <xsl:output encoding="UTF-8" method="xml"/>
     <xsl:template match="o">
       <div class="container"/>
-      <xsl:element name="{concat('xsl',':','template')}" />
+      <xsl:element name="{concat('xsl',':','template')}"/>
       <xsl:element name="xsl:html" namespace="http://www.w3.org/1999/xhtml"/>
       <xsl:element name="{@ooo}"/>
       <xsl:element name="{$ooo}"/>
-    </xsl:template>
-    <xsl:template match="/objects/o/o[1]/o[2]">
-      <xsl:variable name="qw" as="xs:string" select="ooo" />
-      <xsl:copy-of select="$qw"/>
+      <xsl:element name="pre{$ooo}post"/>
+      <xsl:element name="xsl:template"/>
+      <xsl:element name="tt:template"/>
     </xsl:template>
   </xsl:stylesheet>

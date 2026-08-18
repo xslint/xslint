@@ -5,7 +5,8 @@
 
 const {gathered, parseOf} = require('../syntax')
 const {metaOf, suppressed, defect} = require('../checks')
-const {TOKENS} = require('../tokens')
+const {TOKENS, TRIVIA} = require('../tokens')
+const {whole} = require('../attributes')
 const {holding} = require('../tree')
 const {logger} = require('../logger')
 
@@ -22,16 +23,40 @@ const LEADING = 'starts-with-double-slash'
 const INNER = 'use-double-slash'
 
 /**
+ * Name of the check for a `//` opening the expression of a `select`, which is
+ * the same two characters asking a third question: a pattern is matched by
+ * walking up from a node, so a `//` in front of one adds nothing, where an
+ * expression is evaluated forwards and a `//` in front of that one is a scan of
+ * the whole document from its root, run once for every node the template is
+ * applied to.
+ * @type {string}
+ */
+const SCANNING = 'select-starts-with-double-slash'
+
+/**
  * Names of the checks this linter owns.
  * @type {Array.<string>}
  */
-const names = [LEADING, INNER]
+const names = [LEADING, INNER, SCANNING]
 
 /**
- * Defect metadata of both checks, keyed by name.
+ * Defect metadata of the three checks, keyed by name.
  * @type {{[check: string]: {severity: string, message: string}}}
  */
-const META = {[LEADING]: metaOf(LEADING), [INNER]: metaOf(INNER)}
+const META = {
+  [LEADING]: metaOf(LEADING), [INNER]: metaOf(INNER),
+  [SCANNING]: metaOf(SCANNING),
+}
+
+/**
+ * The attribute whose expression is read for a scan from the root. It is one
+ * name rather than every expression a stylesheet carries because that is the
+ * check as it is written and named: a `//` opening a `@test` or a `@group-by`
+ * scans the document exactly as this one does, and reporting it is a widening
+ * with a message of its own to write.
+ * @type {string}
+ */
+const SELECT = 'select'
 
 /**
  * The one XSLT element whose patterns are ranked against one another, which is
@@ -127,6 +152,38 @@ const separators = function(found) {
 }
 
 /**
+ * The `//` opening the expression, where one does, paired with the fix that
+ * anchors it. Opening it means standing in front of every solid token, so a
+ * comment or a gap ahead of the slashes changes nothing — a `select=" //x"`
+ * scans the document as surely as the tight spelling, and one holding a comment
+ * scans it though `starts-with(normalize-space(...), '//')` reads neither.
+ *
+ * The fix writes the `.` where the slashes stand rather than rebuilding the
+ * value around them, so the author's own gap survives and the edit cannot
+ * overlap the one `redundant-whitespace` offers on the same attribute (#571).
+ * It stays a suggestion: `.//` is one of several anchors, and choosing it
+ * changes an absolute scan into a relative one.
+ * @param {{node: Node, expression: string, pattern: boolean}} found - The
+ *  expression, whole, as `expressionsOf` yields it
+ * @return {Array.<{check: string, at: number, fix: object}>} - The scan found
+ */
+const scanning = function(found) {
+  const first = parseOf(found).tokens.find(
+    (token) => !TRIVIA.includes(token.type),
+  )
+  const results = []
+  if (first.type === TOKENS.DOUBLE_SLASH) {
+    results.push({
+      check: SCANNING,
+      at: first.start,
+      fix: {value: first.value, replacement: `.${first.value}`,
+        suggestion: true},
+    })
+  }
+  return results
+}
+
+/**
  * Lint the valid patterns a stylesheet carries for the `//` steps they hold,
  * reporting one that opens a branch as redundant, with the fix that drops it,
  * and every other one as broader than its author meant.
@@ -136,9 +193,17 @@ const separators = function(found) {
  * records the validator kept: the redundancy and the breadth are properties of
  * the pattern language rather than of `xsl:template`, and one of the two checks
  * read `xsl:template/@match` alone, so an `xsl:key` matching `gamma//delta`
- * drew nothing at all (#586). An
- * expression is left to the check that reads one, a leading `//` there being no
- * redundancy but a scan of the whole document from its root.
+ * drew nothing at all (#586).
+ *
+ * A `select` is read for the third check, whose subject is the same two
+ * characters and whose question is neither of the other two: an expression is
+ * evaluated forwards, so a `//` in front of one scans the whole document from
+ * its root rather than standing redundant. What it reads is the record
+ * `expressionsOf` yields, which is what the selector `//@select[...]/..` could
+ * not narrow to: that reads the attribute of *any* element, so a literal result
+ * element's `<widget select="//everything"/>` — output data on its way to the
+ * result tree, evaluated by nobody — drew the warning, and the fix behind it
+ * wrote `.//everything` into the output (#788).
  * @param {Array.<{source: object, found: object}>} expressions - The valid
  *  expressions the validator kept, each paired with the file it came from
  * @param {Array.<string>} suppressions - Array of suppressed checks
@@ -149,11 +214,15 @@ const lintByDoubleSlash = function(expressions, suppressions = []) {
   logger.debug(`Double slash linting started`)
   const defects = []
   for (const {source, found} of expressions) {
+    let entries = []
     if (found.pattern) {
-      for (const {check, at, fix} of separators(found)) {
-        if (!suppressed(check, suppressions)) {
-          defects.push(defect(check, META[check], source, found, at, fix))
-        }
+      entries = separators(found)
+    } else if (whole(found, SELECT)) {
+      entries = scanning(found)
+    }
+    for (const {check, at, fix} of entries) {
+      if (!suppressed(check, suppressions)) {
+        defects.push(defect(check, META[check], source, found, at, fix))
       }
     }
   }

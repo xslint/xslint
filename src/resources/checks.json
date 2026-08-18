@@ -37,6 +37,10 @@
         "severity": "error",
         "message": "The stylesheet is part of an xsl:import/xsl:include cycle — it pulls in, directly or through a chain, a stylesheet that pulls it back (or imports itself). This is a static error. Break the cycle so no module depends on one that depends on it."
       },
+      "confusing-variable-and-node": {
+        "severity": "warning",
+        "message": "A variable name is used bare as a node selector. Use $name syntax to reference the variable."
+      },
       "count-compared-to-zero": {
         "severity": "warning",
         "message": "count(...) is compared with 0 to test existence, which walks the whole sequence. Test existence directly instead (exists()/empty() on XSLT 2.0+, boolean()/not() on 1.0)."
@@ -48,6 +52,18 @@
       "name-compared-to-string": {
         "severity": "warning",
         "message": "name() or local-name() is compared with a string, which is prefix-fragile and slower than a node test. Use self::name instead."
+      },
+      "not-creating-element-correctly": {
+        "severity": "warning",
+        "message": "xsl:element is used with a static name. Use a literal result element instead."
+      },
+      "null-output-from-stylesheet": {
+        "severity": "warning",
+        "message": "The root template contains only variable declarations and produces no output. Add instructions that write to the result tree."
+      },
+      "output-method-xml": {
+        "severity": "warning",
+        "message": "xsl:output declares method='xml' while the root template generates HTML elements. Change the method to 'html'."
       },
       "predicate-position-literal": {
         "severity": "warning",
@@ -72,6 +88,10 @@
       "redundant-whitespace": {
         "severity": "warning",
         "message": "An XPath expression has redundant whitespace. Remove the extra spaces."
+      },
+      "select-starts-with-double-slash": {
+        "severity": "warning",
+        "message": "The select attribute starts with //, which scans the whole document from the root. Anchor it with .// or a specific path."
       },
       "starts-with-double-slash": {
         "severity": "warning",
@@ -121,11 +141,6 @@
         "xpath": "//xsl:if[(count(*) = 1) and (count(xsl:if) = 1)]",
         "severity": "warning",
         "message": "A nested xsl:if inside another xsl:if is prohibited. Combine conditions with 'and' into a single xsl:if."
-      },
-      "confusing-variable-and-node": {
-        "xpath": "//xsl:apply-templates[some $var in ancestor::xsl:template[1]//xsl:variable satisfies (($var << .) and (starts-with(@select, concat($var/@name, '/')) or @select=$var/@name))]",
-        "severity": "warning",
-        "message": "A variable name is used bare as a node selector. Use $name syntax to reference the variable."
       },
       "duplicate-param-name": {
         "xpath": "//xsl:param[@name = preceding-sibling::xsl:param/@name]",
@@ -207,11 +222,6 @@
         "severity": "warning",
         "message": "xsl:attribute with a static name on a literal element can be a literal attribute (an AVT for a computed value). Write it inline."
       },
-      "not-creating-element-correctly": {
-        "xpath": "//xsl:element[not(contains(@name, '$') or (contains(@name, '(') and contains(@name, ')')) or (contains(@name, '{') and contains(@name, '}')) or (@namespace))]",
-        "severity": "warning",
-        "message": "xsl:element is used with a static name. Use a literal result element instead."
-      },
       "not-using-attribute-test-in-if-when-node": {
         "xpath": "//( xsl:if | xsl:when)[not(@test)]",
         "severity": "error",
@@ -222,20 +232,10 @@
         "severity": "error",
         "message": "The xsl:output instruction is missing. Declare it to specify the serialization format explicitly."
       },
-      "null-output-from-stylesheet": {
-        "xpath": "(/xsl:stylesheet | /xsl:transform)//xsl:template[starts-with(@match, '/')][xsl:variable and (count(*) = count(xsl:variable)) and (normalize-space(string-join(text(), '')) = '')]",
-        "severity": "warning",
-        "message": "The root template contains only variable declarations and produces no output. Add instructions that write to the result tree."
-      },
       "otherwise-not-last": {
         "xpath": "//xsl:otherwise[following-sibling::*]",
         "severity": "error",
         "message": "'xsl:otherwise' must be the last child of its 'xsl:choose'. Move it after every 'xsl:when'."
-      },
-      "output-method-xml": {
-        "xpath": "(/xsl:stylesheet | /xsl:transform)/xsl:output[@method = 'xml'][//xsl:template[starts-with(@match, '/') and (.//html | .//HTML)]]",
-        "severity": "warning",
-        "message": "xsl:output declares method='xml' while the root template generates HTML elements. Change the method to 'html'."
       },
       "oversized-template": {
         "xpath": "//xsl:template[count(.//xsl:*) > 100]",
@@ -246,11 +246,6 @@
         "xpath": "//xsl:param[parent::xsl:template or parent::xsl:function][preceding-sibling::*[not(self::xsl:param) and not(self::xsl:context-item)]]",
         "severity": "error",
         "message": "'xsl:param' must be declared before any other content in its 'xsl:template' or 'xsl:function'. Move it above the content."
-      },
-      "select-starts-with-double-slash": {
-        "xpath": "//@select[starts-with(normalize-space(.), '//')]/..",
-        "severity": "warning",
-        "message": "The select attribute starts with //, which scans the whole document from the root. Anchor it with .// or a specific path."
       },
       "setting-value-of-variable-incorrectly": {
         "xpath": "//xsl:variable[(count(*) = 1) and (count(xsl:value-of) = 1)]",
