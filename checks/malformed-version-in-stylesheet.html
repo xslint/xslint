@@ -72,7 +72,7 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-error">error</span>
-    <code class="xpath">(//xsl:*[not(self::xsl:output)]/@version | //*[not(self::xsl:*)]/@xsl:version)[not(matches(normalize-space(.), '^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$'))]</code>
+    <code class="xpath">(//@version[parent::xsl:*][not(parent::xsl:output)] | //@xsl:version[not(parent::xsl:*)])[not(matches(normalize-space(.), '^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$'))]</code>
   </div>
   <div class="check-content">
 <h1>Malformed version in stylesheet</h1>

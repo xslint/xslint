@@ -72,7 +72,7 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-warning">warning</span>
-    <code class="xpath">//*[name()='xsl:for-each' or name()='xsl:if'][count(node()) = count(text()) and normalize-space() = ""]</code>
+    <code class="xpath">//(xsl:for-each | xsl:if)[count(node()) = count(text()) and normalize-space() = ""]</code>
   </div>
   <div class="check-content">
 <h1>Empty content in instructions</h1>
