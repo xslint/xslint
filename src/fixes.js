@@ -124,10 +124,145 @@ const deletion = function(attribute, content) {
 }
 
 /**
+ * Whether nothing but gap stands across the span. Two questions are that one:
+ * whether an element owns the line it stands on, asked of the text in front of
+ * it, and whether it holds anything at all, asked of the text between its tags.
+ * @param {string} content - Raw source text
+ * @param {number} from - Zero-based offset to read from
+ * @param {number} to - Zero-based offset to stop at
+ * @return {boolean} - True when every character of the span is XML `S`
+ */
+const gapped = function(content, from, to) {
+  return Array.from(content.slice(from, to)).every(
+    (one) => WHITESPACE.includes(one),
+  )
+}
+
+/**
  * How each delimiter is spelled where it stands inside the value it opens.
  * @type {{[quote: string]: string}}
  */
 const REFERENCES = {'"': '&quot;', '\'': '&apos;'}
+
+/**
+ * The two characters an attribute value may be delimited by, which is what a
+ * walk over a tag steps across and the same list {@link escaped} spells one
+ * with — asked here as keys rather than written down a second time.
+ * @type {Array.<string>}
+ */
+const QUOTES = Object.keys(REFERENCES)
+
+/**
+ * The offset just past the `>` that closes the tag opening at `at`. A `>` is
+ * legal inside an attribute value — XML forbids only `<` and the delimiter
+ * there — so the walk steps over each quoted value whole rather than stopping
+ * at the first bracket it meets, and the quote it steps over is whichever one
+ * opened the value.
+ * @param {string} content - Raw source text
+ * @param {number} at - Zero-based offset of the tag's `<`
+ * @return {number} - Offset just past the tag's `>`
+ */
+const tagged = function(content, at) {
+  let raw = at
+  while (content[raw] !== '>') {
+    let next = raw + 1
+    if (QUOTES.includes(content[raw])) {
+      next = content.indexOf(content[raw], raw + 1) + 1
+    }
+    raw = next
+  }
+  return raw + 1
+}
+
+/**
+ * The span a cut of the element takes: the whole line where the element owns
+ * it, the element alone where it does not. Owning it means nothing but gap on
+ * either side — indentation in front, spelled in spaces, in tabs, or in any
+ * width of either, and a line ending behind — and then the line goes with the
+ * element rather than staying behind blank. Where anything else stands on that
+ * line, a sibling written beside it, both ends stay where the element does and
+ * the line survives holding whatever was already there. One condition rather
+ * than two, because the indentation of a shared line belongs to the line and
+ * not to the element cut out of it. A line ending is read through
+ * {@link character}, so a CRLF goes as the one character a parser makes of it
+ * rather than half of it.
+ * @param {string} content - Raw source text
+ * @param {number} at - Zero-based offset of the element's `<`
+ * @param {number} past - Zero-based offset just past the element
+ * @return {{from: number, to: number}} - The span the cut takes
+ */
+const lined = function(content, at, past) {
+  let raw = past
+  while (WHITESPACE.includes(content[raw]) && content[raw] !== '\n' &&
+    content[raw] !== '\r') {
+    raw += 1
+  }
+  const start = at - placeAt(content, at).pos + 1
+  let span = {from: at, to: past}
+  if ((content[raw] === '\n' || content[raw] === '\r') &&
+    gapped(content, start, at)) {
+    span = {from: start, to: character(content, raw)[1]}
+  }
+  return span
+}
+
+/**
+ * A fix that deletes a whole element, taking the line it stands on where it
+ * owns one — which is {@link lined}'s question rather than this one's. Every
+ * offset is read from the source: the element opens where xmldom reports it, at
+ * its `<`, and the tag closes at the first `>` standing outside an attribute
+ * value, so no gap, quote or empty-tag spelling has to be guessed at. An
+ * element written the long way, `></xsl:import>`, ends at the `>` of its end
+ * tag instead, which is found only where the source between the two tags is
+ * gap — anything else there, a comment holding a `</` of its own among the
+ * possibilities, and no fix is offered at all rather than a span cut through
+ * the middle of something.
+ *
+ * Rebuilding the line as `' '.repeat(columnNumber - 1)` and then `<name
+ * href="value"/>` was the shape before, and it assumed three things at once:
+ * no gap around the `=`, a double-quoted delimiter, and an empty tag with
+ * nothing in front of the `/>`. `src/fixer.js` applies a fix only where the
+ * source decodes to its `value`, so only the canonical spelling was ever
+ * applied. Eight others stand in one fixture now — a gap around the `=`,
+ * single quotes with a trailing gap behind them, a space in front of the `/>`,
+ * the long form, a wider gap after the element name, an element wrapped across
+ * two lines, one sharing its line with a sibling that survives, and one ending
+ * a line it does not own — and master applies none of them, each announced and
+ * then refused with "the source no longer matches", the wording reserved for a
+ * span an earlier edit had moved, on a file nothing had touched (#793). It is
+ * #594, #681 and #718 one level out, at the element rather than the attribute.
+ * Which tier the cut is offered at stays with the check offering it, the way it
+ * does for the three builders beside this one.
+ * @param {Element} element - The element to delete
+ * @param {string} content - Raw source text of the file it stands in
+ * @return {({line: number, col: number, value: string,
+ *  replacement: string}|undefined)} - The fix, or nothing where the element
+ *  holds more than gap
+ */
+const excision = function(element, content) {
+  const at = offsetAt(content, element.lineNumber, element.columnNumber)
+  const opened = tagged(content, at)
+  let past = opened
+  if (content[opened - 2] !== '/') {
+    const closing = content.indexOf('</', opened)
+    past = 0
+    if (gapped(content, opened, closing)) {
+      past = tagged(content, closing)
+    }
+  }
+  let cut
+  if (past > 0) {
+    const {from, to} = lined(content, at, past)
+    const where = placeAt(content, from)
+    cut = {
+      line: where.line,
+      col: where.pos,
+      value: decoded(content, from, to),
+      replacement: '',
+    }
+  }
+  return cut
+}
 
 /**
  * The text as an attribute value delimited by the given quote may hold it, with
@@ -197,6 +332,7 @@ const substitution = function(attribute, replacement, content) {
 
 module.exports = {
   deletion,
+  excision,
   standsAt,
   substitution,
 }

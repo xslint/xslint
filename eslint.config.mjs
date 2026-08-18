@@ -78,6 +78,12 @@ const RESTRICTED = [
   },
   {
     selector:
+      "Property[key.name='value'] > TemplateLiteral, Property[key.name='value'] > BinaryExpression[operator='+']",
+    message:
+      "A fix's 'value' is the text the source already holds, so read it from there rather than spelling it out (#793). src/linters/import-linter.js built an element's as an indentation repeated columnNumber times plus a tag rebuilt from its name and its href, which assumed a gap, a delimiter and an empty-tag spelling all at once and so matched one file in seven. Ask src/fixes.js: excision for a fix that cuts a whole element, deletion for one that cuts an attribute, substitution for one that rewrites a value"
+  },
+  {
+    selector:
       "CallExpression[callee.property.name='getAttribute'][callee.object.property.name='documentElement'][arguments.0.value='version']",
     message:
       "Read the stylesheet version through versionOf in src/xsl-version.js, which handles a simplified stylesheet's xsl:version; do not read documentElement.getAttribute('version') directly"
