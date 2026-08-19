@@ -3,11 +3,12 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {allFilesFrom, yaml} = require('../src/helpers')
+const {allFilesFrom, xml, yaml} = require('../src/helpers')
 const {ATTRIBUTES, PATTERNS} = require('../src/attributes')
 const {GAP} = require('../src/tokens')
 const {FIXERS} = require('../src/fixers')
-const {DECIMAL} = require('../src/xsl-version')
+const {DECIMAL, XSLT} = require('../src/xsl-version')
+const {walked} = require('../src/tree')
 const {authored, rendered, PLACE} = require('../scripts/generate-checks')
 const {Linter} = require('eslint')
 const path = require('path')
@@ -230,6 +231,25 @@ const names = function(kind) {
   return allFilesFrom(path.join(CHECKS, kind))
     .filter((file) => file.endsWith('.yaml'))
     .map((file) => path.basename(file, '.yaml'))
+}
+
+/**
+ * Whether the document is XSLT at all: an element in the XSLT namespace, or an
+ * attribute in it, which is the whole of what a simplified stylesheet has — its
+ * root is a literal result element and `xsl:version` the one thing marking it.
+ *
+ * A pack whose fixture holds neither is a fixture no check can see a node of,
+ * so every amount it claims passes and a selector rewritten to fire on
+ * everything passes with it. Three packs spelled the namespace `https://` and
+ * asserted nothing for it (#698), which neither #645 nor #607 catches: both ask
+ * whether an assertion was written, and here one was — it just cannot fail.
+ * @param {Document} xsl - The parsed fixture
+ * @return {boolean} - True when something in it is XSLT's
+ */
+const stylish = function(xsl) {
+  return Array.from(xsl.getElementsByTagName('*'))
+    .concat(walked(xsl))
+    .some((node) => node.namespaceURI === XSLT)
 }
 
 describe('conformance', function() {
@@ -604,6 +624,23 @@ describe('conformance', function() {
             `${file} names ${list} and calls it "${claim[0]}", where it holds ` +
               `${LENGTHS.get(list)} — the count beside a list is the one thing ` +
               'a reader takes on trust, so it answers to the list',
+          )
+        }
+      }
+    }
+  })
+  it('cannot let a pack input hold nothing of XSLT', function() {
+    for (const dir of fs.readdirSync(RESOURCES)
+      .filter((one) => one.endsWith('-packs'))) {
+      for (const pack of allFilesFrom(path.join(RESOURCES, dir))
+        .filter((file) => file.endsWith('.yaml'))) {
+        const yml = yaml.parsedFromFile(pack)
+        for (const input of yml.inputs || [yml.input]) {
+          assert.ok(
+            stylish(xml.parsedFromString(input)),
+            `pack ${dir}/${path.basename(pack)} holds a document with ` +
+              'nothing in the XSLT namespace, so no check can see a single ' +
+              'node of it and any amount it claims would pass',
           )
         }
       }

@@ -21,20 +21,6 @@ const disableOutputEscaping = function(node, content) {
 }
 
 /**
- * Fix for `output-method-xml`: switch the method to `html`. It changes the
- * serialization, so it is a suggestion.
- * @param {Element} node - The `xsl:output` element
- * @param {string} content - Raw source text of the file it stands in
- * @return {object} - The suggestion fix
- */
-const outputMethodXml = function(node, content) {
-  return {
-    ...substitution(node.getAttributeNode('method'), 'html', content),
-    suggestion: true,
-  }
-}
-
-/**
  * Fix for `missing-version-in-stylesheet`: declare the version right after the
  * element name. Which attribute that is follows the root's *namespace*, not its
  * name: any element XSLT itself defines takes a plain `version`, while a
@@ -116,46 +102,6 @@ const booleanConstant = function(node, content) {
 }
 
 /**
- * Fix for `select-starts-with-double-slash`: anchor the leading `//` of a
- * `@select` as `.//`, so it scans the context node's descendants rather than
- * the whole document. A suggestion, since it changes behaviour (absolute to
- * relative) and `.//` is one of several valid anchors.
- * @param {Element} node - The element carrying the `@select`
- * @param {string} content - Raw source text of the file it stands in
- * @return {object} - The suggestion fix
- */
-const selectDoubleSlash = function(node, content) {
-  const select = node.getAttributeNode('select')
-  const at = select.value.indexOf('//')
-  return {
-    ...substitution(
-      select,
-      `${select.value.slice(0, at)}.${select.value.slice(at)}`,
-      content,
-    ),
-    suggestion: true,
-  }
-}
-
-/**
- * Fix for `confusing-variable-and-node`: prepend `$` to the bare name in the
- * `xsl:apply-templates` `@select`, turning a node selector into the variable
- * reference the author meant. The rule fires only when the name is at the start
- * of `@select`, so a single insert after the opening quote suffices. A
- * suggestion, since it assumes the variable was intended over a child element.
- * @param {Element} node - The `xsl:apply-templates` element
- * @param {string} content - Raw source text of the file it stands in
- * @return {object} - The suggestion fix
- */
-const confusingVariable = function(node, content) {
-  const select = node.getAttributeNode('select')
-  return {
-    ...substitution(select, `$${select.value}`, content),
-    suggestion: true,
-  }
-}
-
-/**
  * Fix for `text-outside-xsl-text`: wrap the literal text in `xsl:text`. A
  * suggestion, since it is a stylistic rewrite that inserts an element. Only
  * when the instruction holds exactly one non-whitespace text node can a single
@@ -209,12 +155,9 @@ const selectAndContent = function(node, content) {
  */
 const FIXERS = {
   'using-disable-output-escaping': disableOutputEscaping,
-  'output-method-xml': outputMethodXml,
   'missing-version-in-stylesheet': missingVersion,
   'mode-or-priority-without-match': modeOrPriority,
   'incorrect-use-of-boolean-constants': booleanConstant,
-  'select-starts-with-double-slash': selectDoubleSlash,
-  'confusing-variable-and-node': confusingVariable,
   'text-outside-xsl-text': textOutsideXslText,
   'variable-or-param-with-select-and-content': selectAndContent,
 }

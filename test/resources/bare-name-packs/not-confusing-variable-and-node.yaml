@@ -3,8 +3,9 @@
 ---
 pack: confusing-variable-and-node
 found:
-  amount: 1
-  positions: [ [ 7, 7 ] ]
+  amount: 0
+  positions: [ ]
+  fixes: [ ]
 input: |-
   <?xml version="1.0"?>
   <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="2.0" id="style1">
@@ -12,11 +13,14 @@ input: |-
     <xsl:template match="/objects/o/o[1]/o[1]">
       <xsl:variable name="qw" as="xs:string" select="ooo"/>
       <p>
-        <xsl:apply-templates select="qw"/>
+        <xsl:apply-templates select="@qw"/>
+        <xsl:apply-templates select="child::qw"/>
+        <xsl:apply-templates select="oo/qw"/>
+        <xsl:apply-templates select="*[name() = 'qw']"/>
+        <widget select="qw"/>
       </p>
+      <xsl:apply-templates select="later"/>
+      <xsl:variable name="later" as="xs:string" select="ooo"/>
       <xsl:copy-of select="$qw"/>
-    </xsl:template>
-    <xsl:template match="/objects/o/o[1]/o[2]">
-      <xsl:copy-of select="."/>
     </xsl:template>
   </xsl:stylesheet>
