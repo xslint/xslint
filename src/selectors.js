@@ -140,7 +140,10 @@ const bucketed = function(listed) {
  * 1]`, `[number("2")]` and `[count(@name)]` are every bit as positional as
  * `[1]`, and a scan for a digit catches the last of them alone (#784). A
  * predicate that does not parse is refused with them, the grammar being the
- * only thing that could have said what it holds. The version is the one a
+ * only thing that could have said what it holds. A path is a number as much
+ * as a call is, from XPath 2.0 on: `[a/count(.)]` picks the first candidate
+ * where `[a/b]` filters, so what answers for a path is its last step and not
+ * its kind. The version is the one a
  * selector of ours is read at: it carries no `version` of its own and
  * fontoxpath answers it at 3.1, which is the case `ASSUMED` is for.
  * @param {string} text - What one predicate holds, its brackets off

@@ -4,7 +4,11 @@
  */
 
 const assert = require('assert')
+const fs = require('fs')
+const path = require('path')
 const {splitOf} = require('../src/selectors')
+const {nodes, satisfies} = require('../src/xpath')
+const {xml} = require('../src/helpers')
 const {kinds} = require('../src/resources/checks.json')
 
 /**
@@ -76,6 +80,22 @@ const WHOLE = [
     why: 'a positional predicate behind another',
   },
   {xpath: '//xsl:variable[2 - 1]', why: 'arithmetic worth a position'},
+  {
+    xpath: '//xsl:variable[a/count(.)]',
+    why: 'a path whose last step answers a number',
+  },
+  {
+    xpath: '//xsl:variable[a/(count(.))]',
+    why: 'a path ending in a bracket of the author own',
+  },
+  {
+    xpath: '//xsl:variable[a/count(.)[1]]',
+    why: 'a path ending in a predicate of its own',
+  },
+  {
+    xpath: '//xsl:variable[descendant::a/string-length(.)]',
+    why: 'a number behind a descendant step',
+  },
   {xpath: '//xsl:variable[1 + 1]', why: 'arithmetic worth another position'},
   {xpath: '//xsl:variable[1.0]', why: 'a position spelled as a decimal'},
   {xpath: '//xsl:variable[- 1]', why: 'a position behind a sign'},
@@ -104,6 +124,71 @@ const WHOLE = [
   {xpath: '//xsl:template[@a] | //xsl:variable', why: 'a union of paths'},
   {xpath: 'xsl:template[@a]', why: 'no descendant axis at all'},
 ]
+
+/**
+ * The stylesheet the two answers are compared over: four variables of distinct
+ * names, holding one `a`, two, none, and one whose `@x` is zero — so a
+ * predicate that picks a position answers differently from one that filters,
+ * which a document of identical elements could not show.
+ * @type {Document}
+ */
+const SHEET = xml.parsedFromString(
+  fs.readFileSync(
+    path.resolve(__dirname, 'resources', 'selectors', 'candidates.xsl'),
+    'utf-8',
+  ),
+)
+
+/**
+ * The axis every candidate below hangs off, spelled out because what is under
+ * test is the **tail**: whether the predicate a selector wrote answers the
+ * same asked of one candidate at a time as it does asked of the whole sequence
+ * a descendant step produced. How the axis itself is gathered is the index's
+ * question, and `test/conformance.test.js` puts that one.
+ * @type {string}
+ */
+const AXIS = '//xsl:variable'
+
+/**
+ * Predicate spellings the split is judged on, with no verdict written down
+ * beside any of them. The engine answers what each one selects and the test
+ * asks whether serving it from an axis answers the same, so a row is a
+ * question rather than a claim — a table of expectations would have to be
+ * right about XPath twice, once in `filters` and once beside it, where a
+ * spelling nobody predicted is exactly what this is for (#784). That is what
+ * the digit scan of the first spelling could not give: `[count(a)]` and
+ * `[a/count(.)]` hold no digit at all and pick a position all the same.
+ * @type {Array.<string>}
+ */
+const CANDIDATES = [
+  '@name', 'not(@name)', '@name = "one"', 'string-length(@name) = 3',
+  'a', 'a/b', 'a[@x]', 'a/@x', 'b', 'a | b', '(a)',
+  'count(a) = 1', 'count(a) >= 2', 'not(a/count(.))', '@name = a/count(.)',
+  '1', '2 - 1', '1.0', '- 1', 'number("2")', 'count(a)',
+  'string-length(@name)', 'position() = 1', 'last()', 'a[position() = 1]',
+  'a/count(.)', 'a/(count(.))', 'a/count(.)[1]', 'a/number(@x)',
+  'a/string-length(@x)', 'descendant::a/count(.)',
+  'self::xsl:variable/count(.)',
+]
+
+/**
+ * The names a selection carries, or an error where the engine refuses to answer
+ * at all — `[not(a/count(.))]` asks for the effective boolean value of two
+ * numbers, which is FORG0006 whichever way the question is put. Both sides are
+ * read the same way, so a raise on one side alone is a disagreement like any
+ * other rather than a row nobody can judge.
+ * @param {function(): Array.<Node>} selection - What to ask for
+ * @return {Array.<string>} - The names it answers, in order
+ */
+const answered = function(selection) {
+  let names = ['error']
+  try {
+    names = selection().map((node) => node.getAttribute('name'))
+  } catch (refusal) {
+    names = ['error', refusal.message.slice(0, 8)]
+  }
+  return names
+}
 
 describe('selectors', function() {
   SPLIT.forEach((one) => {
@@ -135,5 +220,25 @@ describe('selectors', function() {
           `${one.why}, so the index answers a question the selector never put`,
       )
     })
+  })
+  CANDIDATES.forEach((one) => {
+    const xpath = `${AXIS}[${one}]`
+    it(`answers [${one}] as the engine reads it, or serves it not at all`,
+      function() {
+        const split = splitOf(xpath)
+        let served = () => nodes(SHEET, xpath)
+        if (split.names.length > 0) {
+          served = () => nodes(SHEET, AXIS).filter(
+            (node) => satisfies(node, `self::node()${split.tail}`),
+          )
+        }
+        assert.deepStrictEqual(
+          answered(served),
+          answered(() => nodes(SHEET, xpath)),
+          `serving ${xpath} from an axis answers something else than the ` +
+            'engine answers of the whole selector, so the predicate reads ' +
+            'the sequence it stands in and cannot be asked of one candidate',
+        )
+      })
   })
 })

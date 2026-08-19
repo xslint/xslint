@@ -381,19 +381,32 @@ const tight = function(node) {
  * is a sequence of one, where any position test at all answers true. So a
  * predicate is served only where the parse proves it cannot be a number: the
  * boolean operators and the three comparison classes, the quantified
- * expressions, and the kinds answering a sequence of nodes, whose effective
- * boolean value is what the predicate then takes. Everything else is refused —
- * a `literal` and a `sum` because they are numbers, a `conditional`, a
- * `variable` or a `cast` because nothing here can say what they answer — and a
- * refusal costs only the traversal the run already pays. `test/syntax.test.js`
- * holds the list to the grammar rather than to this comment, asking of a
- * specimen of every kind whether `<specimen>` really does come back the kind
- * named here.
+ * expressions, and the kinds that answer nodes and nothing else, whose
+ * effective boolean value is what the predicate then takes. Everything else is
+ * refused — a `literal` and a `sum` because they are numbers, a
+ * `conditional`, a `variable` or a `cast` because nothing here can say what
+ * they answer — and a refusal costs only the traversal the run already pays.
+ *
+ * A `path` is deliberately **not** on the list, though it was: from XPath 2.0
+ * a path's last step may be a call answering an atomic value, so `a/count(.)`
+ * is a number spelled as a path and `[a/count(.)]` picks the first candidate
+ * exactly as `[1]` does. It is decided by its last step instead, which is
+ * where its value comes from — a `step` answers nodes, a `count` answers a
+ * number, and a bracket or a predicate of the author's own is refused for
+ * being a kind this list does not name. A kind that can answer either thing
+ * cannot be judged by its kind, which is the same reason a `call` is not on
+ * the list either. `test/syntax.test.js` holds the list to the grammar rather
+ * than to this comment, asking of a specimen of every kind whether
+ * `<specimen>` really does come back the kind named here — and
+ * `test/selectors.test.js` holds the whole answer to the engine, asking of
+ * every predicate spelling it carries whether serving it answers what the
+ * engine answers of the selector whole, which is the gate that would have
+ * caught the path.
  * @type {Array.<string>}
  */
 const FILTERS = [
   'and', 'comparison', 'context', 'every', 'intersect', 'node-comparison',
-  'or', 'path', 'some', 'step', 'union', 'value-comparison',
+  'or', 'some', 'step', 'union', 'value-comparison',
 ]
 
 /**
@@ -445,14 +458,18 @@ const positional = function(tokens, node) {
  * picking a position in it, which is what a check served from one shared walk
  * needs of each predicate it wrote: the axis comes off the walk and the
  * predicate is asked of one candidate at a time, where a positional test
- * answers true for every one of them (#784).
+ * answers true for every one of them (#784). Three questions rather than one,
+ * because two kinds do not settle what they answer: a `path` is its last
+ * step, which is asked the same question again, and a `call` is its name.
  * @param {Array} tokens - The tokens the tree was parsed from
  * @param {object} node - The node a predicate holds, whole
  * @return {boolean} - True when it filters rather than picks
  */
 const filters = function(tokens, node) {
   let sound = FILTERS.includes(node.kind)
-  if (!sound && node.kind === 'call') {
+  if (node.kind === 'path') {
+    sound = filters(tokens, node.children[node.children.length - 1])
+  } else if (!sound && node.kind === 'call') {
     sound = tokens[node.from].type !== TOKENS.URI &&
       BOOLEAN.includes(tokens[node.from].value)
   }
