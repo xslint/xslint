@@ -3,12 +3,23 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {runXslint, xslintStatus, xslintStreams} = require('./helpers')
+const {
+  runXslint, xslintStatus, xslintStreams, xslintUnread,
+} = require('./helpers')
 const assert = require('assert')
 const version = require('../src/version')
 const path = require('path')
 const fs = require('fs')
 const os = require('os')
+
+/**
+ * How many stylesheets the piped run is given. Each copy of the scaling sheet
+ * draws some thirty-six defects and eight kilobytes of report, so twenty of
+ * them come to more than twice what a pipe holds before it stops taking any —
+ * which is what leaves the run writing into a pipe that is already full.
+ * @type {number}
+ */
+const PIPED = 20
 
 describe('xslint', function() {
   it('should print its own version', function() {
@@ -390,6 +401,27 @@ describe('xslint', function() {
       '--format=github',
     ])
     assert.ok(/::(warning|error) file=/.test(streams.stdout))
+  })
+  it('should write the whole report into a pipe nobody reads', async function() {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-'))
+    const sheet = fs.readFileSync(
+      path.resolve('test/resources/scaling/stylesheet.xsl'), 'utf-8',
+    )
+    for (let at = 0; at < PIPED; at++) {
+      fs.writeFileSync(
+        path.join(dir, `sheet-${at}.xsl`),
+        sheet
+          .replaceAll('PREVIOUS', String(at - 1))
+          .replaceAll('SEED', String(at)),
+      )
+    }
+    const said = await xslintUnread([dir, '--max-warnings=0'], 250)
+    fs.rmSync(dir, {recursive: true, force: true})
+    assert.equal(
+      said.report.split('\n').filter((line) => line !== '').length,
+      Number(said.log.match(/Defects found: (\d+)/)[1]),
+      'a report cannot lose the lines the run counted, whoever is reading',
+    )
   })
   it('should reject an unknown --format value', function() {
     const status = xslintStatus([

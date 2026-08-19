@@ -4,7 +4,7 @@
  */
 
 const path = require('path')
-const {execSync, spawnSync} = require('child_process')
+const {execSync, spawn, spawnSync} = require('child_process')
 
 /**
  * Run the console command. A run told not to print captures nothing, and
@@ -76,6 +76,84 @@ const xslintStatus = function(args) {
 const xslintStreams = function(args) {
   const result = spawnXslint(args)
   return {stdout: result.stdout, stderr: result.stderr}
+}
+
+/**
+ * The line a run prints to stderr just before it writes its report, which is
+ * what tells a reader the writing is about to start. Reading it beats waiting a
+ * fixed time: what takes the run its while is the linting, and how long that
+ * takes is the machine's business, where the writing that follows is prompt
+ * everywhere.
+ * @type {string}
+ */
+const COUNTED = 'Defects found:'
+
+/**
+ * What xslint writes into a pipe nobody reads until it has finished writing,
+ * beside the log it kept while doing it.
+ *
+ * Node's stdout is asynchronous to a pipe on POSIX, so a run that leaves
+ * through `process.exit` abandons every write the kernel has not taken — which
+ * is the whole of the report where the reader is slow enough, the report being
+ * the last thing written (#767). A reader that stays paused until the run says
+ * how many defects it found forces that: the writes queue behind a pipe nobody
+ * is emptying, and only then does the reader drain.
+ * The trigger has a fallback behind it, since a run that never reaches the
+ * summary would otherwise leave the pipe unread and the promise unsettled.
+ * @param {Array.<string>} args - Array of args
+ * @param {number} settling - Milliseconds to leave the pipe unread once the
+ *  summary says the report is coming
+ * @return {Promise<{report: string, log: string}>} - What arrived on stdout,
+ *  and the whole of stderr
+ */
+const xslintUnread = function(args, settling) {
+  return new Promise((resolve) => {
+    const child = spawn(
+      'node',
+      [path.resolve('./src/index.mjs'), ...args],
+      {windowsHide: true},
+    )
+    const said = {report: '', log: '', status: null, ended: false}
+    let drained = false
+    /**
+     * Hand back what arrived, once the pipe has ended and the child has gone.
+     */
+    const settle = function() {
+      if (said.ended && said.status !== null) {
+        resolve({report: said.report, log: said.log})
+      }
+    }
+    /**
+     * Start reading the pipe the run has been writing into.
+     */
+    const drain = function() {
+      if (!drained) {
+        drained = true
+        child.stdout.on('data', (chunk) => {
+          said.report += chunk
+        })
+        child.stdout.resume()
+      }
+    }
+    child.stdout.setEncoding('utf-8')
+    child.stderr.setEncoding('utf-8')
+    child.stdout.pause()
+    child.stdout.on('end', () => {
+      said.ended = true
+      settle()
+    })
+    child.stderr.on('data', (chunk) => {
+      said.log += chunk
+      if (said.log.includes(COUNTED)) {
+        setTimeout(drain, settling)
+      }
+    })
+    child.on('close', (code) => {
+      said.status = code
+      settle()
+    })
+    setTimeout(drain, settling * 20)
+  })
 }
 
 /**
@@ -231,6 +309,7 @@ module.exports = {
   runXslint,
   xslintStatus,
   xslintStreams,
+  xslintUnread,
   runXcop,
   xcopped,
   cmdAvailable,

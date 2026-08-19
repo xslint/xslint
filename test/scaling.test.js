@@ -73,38 +73,55 @@ const STEP = 4
  * the headroom it had. A gate made stricter by accident is not a ratchet, it is
  * the next red build nobody can explain.
  *
+ * #800 moved the whole table again, and by changing the corpus rather than any
+ * stage. The cross-file linter read 6.72%–9.06% of the run here where TEI
+ * charges it 13.73% and DocBook-XSL 21.95%, and the gap is neither declaration
+ * density — which is what that ticket blamed — nor corpus size. Almost all of
+ * the stage is one selector: `//@*` is 60% of it over TEI and 74% over
+ * DocBook-XSL, against 4.5% and 3.1% for the `within` walk #783 left behind.
+ * fontoxpath evaluates a descendant step over an xmldom tree quadratically
+ * (#635), so what that selector costs per node is flat at 1.3 to 3.2 us up to
+ * some 350 nodes and then climbs — 4.2 at 689, 5.2 at 1491, 8.7 at 2829 and
+ * 50.4 at 4853 — and five of DocBook-XSL's 315 stylesheets are two thirds of
+ * what it spends over the whole corpus. A corpus of one uniform size cannot
+ * show that at any density: twelve more variables in each of the four
+ * templates read 9.18%–10.75%, forty more attributes read 7.39%–9.81%, and
+ * twenty stylesheets of 393 elements — the same bulk in fewer, larger files —
+ * read 7.87%. One heavy stylesheet in every forty reads 15.95%–18.94%, which
+ * is where the real corpora put it. Over four gate runs a side, interleaved on
+ * one machine, `xpath-linter` went 49.69%–56.08% to 44.61%–48.23%,
+ * `xpath-validator` 7.50%–11.53% to 7.23%–12.34% and `xsl-validator`
+ * 4.05%–6.11% to 3.85%–6.62%, so those three entries are re-derived by their
+ * dearest readings — 85 to 73, 15 to 16, 9 to 10 — and keep the headroom they
+ * had. What it costs is the gate's own three and a third seconds becoming six
+ * and a half.
+ *
  * Two things set a ceiling. Where there is a defect to catch, it goes between
- * the two measured distributions — `corpus-linter` at 12, twice the dearest
- * reading the index has given here, 6.05%, and a sixth below the cheapest the
- * scan has given on any runner, 14.4%. The defect it now catches is the scan
- * itself: putting `src/linters/corpus-linter.js` back to its pre-#783 state
- * fails the gate three times out of three at 14.47%, 15.03% and 15.52%, and the
- * stage read 14.47%–18.35% over six runs here against 14.4%–23.5% on the four
- * runners that have reported a table, so every one of those readings is caught.
- * The index passes it five of five at 5.35%–6.05%, and goes on passing as long
- * as no runner charges the stage more than 1.98 times what this machine does,
- * where the worst character a runner has shown is 1.53. The entry read 26 while
- * the scan was what the gate held, a tenth above the dearest reading that
- * scan gave on any runner and a fortieth below the cheapest #755's quadratic
- * gave here; the index moved the whole distribution, so the entry moves with
- * it, and a ceiling five times its own reading would let the scan back in
- * without a word. Everywhere else the ceiling stands between half again and
- * twice the dearest reading, there being no second distribution to leave room
- * for.
+ * the two measured distributions — `corpus-linter` at 30, the geometric middle
+ * of the dearest reading the index has given here, 18.94%, and the cheapest
+ * the scan it replaced gives over the same corpus, 45.27%. The defect it
+ * catches is that scan: putting `src/linters/corpus-linter.js` back to its
+ * pre-#783 state fails the gate three times out of three at 43.18%, 44.98% and
+ * 45.02%, where the index passes it five of five. Geometric rather than
+ * arithmetic because the risk is multiplicative on either side, a runner of
+ * another character moving a share by as much as a half: 30 stands 1.58 times
+ * the index's dearest reading and 1.51 times below the scan's cheapest.
+ * Everywhere else the ceiling stands between half again and twice the dearest
+ * reading, there being no second distribution to leave room for.
  * @type {{[stage: string]: number}}
  */
 const SHARES = {
-  'xpath-linter': 85,
-  'corpus-linter': 12,
-  'xpath-validator': 15,
-  'xsl-validator': 9,
+  'xpath-linter': 73,
+  'corpus-linter': 30,
+  'xpath-validator': 16,
+  'xsl-validator': 10,
 }
 
 /**
  * What percentage of the run any stage not named in `SHARES` may spend. The
- * nineteen of them read 0.16% to 2.91% here, taking the dearest of five gate
- * runs, and 0.35% to 1.82% on the runner that reported a table before
- * `double-slash-linter` was one of them. So this is the
+ * nineteen of them read 0.15% to 2.53% here, taking the dearest of four gate
+ * runs over the corpus #800 gave it, and 0.35% to 1.82% on the runner that
+ * reported a table before `double-slash-linter` was one of them. So this is the
  * bar a cheap stage crosses by becoming an expensive one, and crossing it earns
  * an entry above or a fix. Twice
  * what the dearest of them reads, for the same reason the entries above are: a
@@ -138,7 +155,8 @@ const SHARE = 5
  * catch is a stage made several times cheaper, which is what #783 did to the
  * cross-file entry: the index took it to a fifth of what it cost, `SLACK` said
  * so of an entry of 26 standing over a reading of 5.35%, and the entry came
- * down to 12.
+ * down to 12. It stands at 30 since #800, the corpus having changed under it
+ * rather than the stage.
  * @type {number}
  */
 const SLACK = 4
@@ -150,7 +168,7 @@ const SLACK = 4
  * is the stronger statement, while one without is pinned only by a bar it sits
  * far below — so its shape is what is worth watching, and a cheap stage turning
  * quadratic is what this catches: it would read `STEP` itself, 4.0, where the
- * nineteen of them read 0.19 to 1.64 over five runs. Among the dearest is
+ * nineteen of them read 0.42 to 1.19 over four runs. Among the dearest is
  * `import-linter`, which really does hold a quadratic (#769) that forty
  * stylesheets are too few to show. Loose on purpose beyond that, because growth
  * is the noisier of the two
@@ -192,7 +210,12 @@ const SPREAD = 100000
  * with it: an `xsl:element` whose name is static, an `xsl:output` beside the
  * `html` the root template builds, and an `xsl:apply-templates` selecting the
  * bare name of a variable declared above it. Armed, the three read 0.16% to
- * 0.32% and grow 0.52 to 1.18.
+ * 0.32% and grow 0.52 to 1.18. The cross-file stage was the same thing one
+ * ticket later: it built no defect at all over this corpus, every variable in
+ * the sheet being referenced a line or two below itself, so the one path a
+ * declaration takes when nothing uses it went untimed. One top-level variable
+ * nothing references arms it, which is 160 `unused-variable` over the large
+ * corpus (#800).
  * @type {string}
  */
 const SHEET = fs.readFileSync(
@@ -200,23 +223,84 @@ const SHEET = fs.readFileSync(
 )
 
 /**
- * One stylesheet of the corpus, every name in it carrying the number of its
- * file so no two share an expression, a declaration or a namespace. Sharing
- * them would make the corpus cheaper the larger it grew, since an expression is
- * parsed once and remembered against its text, and that is the one direction a
- * gate against growth must not be generous in.
+ * The comment the sheet marks its repeatable part with — everything from there
+ * to the closing tag, which is the root template's four callees and nothing
+ * else. A heavy stylesheet is that part written out again under names of its
+ * own, so one file grows without the corpus growing a second root template or
+ * a second import. Where the part begins is the stylesheet's to say rather
+ * than a start tag spelled here: the `fixtures` job fails any `.test.js`
+ * holding one, and a marker a test matches on is a fixture detail whether or
+ * not it is a whole element.
+ * @type {string}
+ */
+const MARK = '<!-- repeated -->'
+
+/**
+ * The part of the sheet a heavy stylesheet repeats, the marker excluded so a
+ * copy does not carry one of its own.
+ * @type {string}
+ */
+const BODY = SHEET.slice(
+  SHEET.indexOf(MARK) + MARK.length, SHEET.lastIndexOf('</xsl:'),
+)
+
+/**
+ * Every how many stylesheets one is heavy. A corpus of forty holds one and a
+ * corpus of a hundred and sixty holds four, so both carry the same fraction of
+ * them and a stage's growth still answers about the corpus rather than about
+ * which sizes happened to land in it.
+ * @type {number}
+ */
+const HEAVY = 40
+
+/**
+ * How many times over a heavy stylesheet writes the body, which decides how
+ * large the largest file in the corpus is. Forty-eight makes one of some five
+ * thousand elements and attributes, where DocBook-XSL's largest holds 8790 and
+ * TEI's some four thousand. That the corpus needs such a file at all is what
+ * #800 turned up, and the reason is in `SHARES` above: what the cross-file
+ * stage costs is almost all one selector, `//@*`, whose cost per node is flat
+ * until a document passes some 350 of them and then climbs, so a handful of
+ * very large stylesheets is where a real corpus spends that stage and a corpus
+ * of one uniform size cannot show it at any density.
+ * @type {number}
+ */
+const WEIGHT = 48
+
+/**
+ * The body written out again under names of its own, once per copy.
  * @param {number} seed - Number of the stylesheet
+ * @param {number} weight - How many times the body stands in it
+ * @return {string} - The copies, joined
+ */
+const copied = function(seed, weight) {
+  const copies = []
+  for (let copy = 1; copy < weight; copy++) {
+    copies.push(BODY.replaceAll('SEED', `${seed}c${copy}`))
+  }
+  return copies.join('')
+}
+
+/**
+ * One stylesheet of the corpus, every name in it carrying the number of its
+ * file so no two share an expression, a declaration or a namespace — and, in a
+ * heavy one, the number of the copy it stands in as well. Sharing them would
+ * make the corpus cheaper the larger it grew, since an expression is parsed
+ * once and remembered against its text, and that is the one direction a gate
+ * against growth must not be generous in.
+ * @param {number} seed - Number of the stylesheet
+ * @param {number} weight - How many times the body stands in it
  * @return {string} - The XML of one stylesheet
  */
-const sheet = function(seed) {
-  return SHEET
+const sheet = function(seed, weight) {
+  return SHEET.replace(MARK, MARK + copied(seed, weight))
     .replaceAll('PREVIOUS', String(seed - 1))
     .replaceAll('SEED', String(seed))
 }
 
 /**
  * A corpus of stylesheets numbered from one file on, each importing the one
- * before it.
+ * before it, and every `HEAVY`th of them heavy.
  * @param {number} from - Number of the first stylesheet
  * @param {number} files - How many to build
  * @return {Array.<{file: string, content: string}>} - Sources to lint
@@ -224,7 +308,13 @@ const sheet = function(seed) {
 const corpus = function(from, files) {
   const sources = []
   for (let at = 0; at < files; at++) {
-    sources.push({file: `s${from + at}.xsl`, content: sheet(from + at)})
+    let weight = 1
+    if (at % HEAVY === 0) {
+      weight = WEIGHT
+    }
+    sources.push({
+      file: `s${from + at}.xsl`, content: sheet(from + at, weight),
+    })
   }
   return sources
 }

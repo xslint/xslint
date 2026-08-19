@@ -54,5 +54,5 @@ try {
 } catch (error) {
   console.error(error.message)
   console.error(error.stack)
-  process.exit(1)
+  process.exitCode = 1
 }
