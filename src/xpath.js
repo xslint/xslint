@@ -4,7 +4,8 @@
  */
 
 const {
-  evaluateXPath, evaluateXPathToNodes, evaluateXPathToStrings,
+  evaluateXPath, evaluateXPathToBoolean, evaluateXPathToNodes,
+  evaluateXPathToStrings,
   compileXPathToJavaScript,
 } = require('fontoxpath')
 
@@ -119,8 +120,25 @@ const compiles = function(xpath) {
   return ok
 }
 
+/**
+ * Whether the node satisfies the expression, its effective boolean value taken
+ * with that node as the context item. It is how a predicate is asked of one
+ * candidate the index handed over, where the selector it came from would have
+ * asked the engine to find the candidate as well (#784).
+ * @param {Node} node - The node to judge
+ * @param {string} xpath - Xpath to take the truth of
+ * @return {boolean} - Whether it holds there
+ */
+const satisfies = function(node, xpath) {
+  return evaluateXPathToBoolean(
+    xpath, node, null, {}, {namespaceResolver: resolvePrefix},
+  )
+}
+
 module.exports = {
+  PREFIXES,
   nodes,
+  satisfies,
   strings,
   compiles,
 }

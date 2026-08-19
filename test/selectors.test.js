@@ -1,0 +1,244 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+ * SPDX-License-Identifier: MIT
+ */
+
+const assert = require('assert')
+const fs = require('fs')
+const path = require('path')
+const {splitOf} = require('../src/selectors')
+const {nodes, satisfies} = require('../src/xpath')
+const {xml} = require('../src/helpers')
+const {kinds} = require('../src/resources/checks.json')
+
+/**
+ * The XSLT namespace, which is the only one a declarative selector names on the
+ * axis today.
+ * @type {string}
+ */
+const XSLT = 'http://www.w3.org/1999/XSL/Transform'
+
+/**
+ * Selectors an index can serve, each with the local names its axis yields and
+ * the tail left for the predicate. A union is one entry rather than several,
+ * since what the axis answers is one sequence in document order.
+ * @type {Array.<{xpath: string, locals: Array.<string>, tail: string}>}
+ */
+const SPLIT = [
+  {xpath: '//xsl:variable', locals: ['variable'], tail: ''},
+  {xpath: '//xsl:variable[@name]', locals: ['variable'], tail: '[@name]'},
+  {
+    xpath: '//(xsl:variable | xsl:template)[string-length(@name) = 1]',
+    locals: ['variable', 'template'],
+    tail: '[string-length(@name) = 1]',
+  },
+  {
+    xpath: '//xsl:param[parent::xsl:template][preceding-sibling::*]',
+    locals: ['param'],
+    tail: '[parent::xsl:template][preceding-sibling::*]',
+  },
+  {
+    xpath: `//xsl:template[contains(@match, '[')]`,
+    locals: ['template'],
+    tail: `[contains(@match, '[')]`,
+  },
+  {
+    xpath: '//(xsl:if|xsl:when)[normalize-space(@test) = "x"]',
+    locals: ['if', 'when'],
+    tail: '[normalize-space(@test) = "x"]',
+  },
+  {
+    xpath: '//xsl:variable[ancestor::xsl:template[1]]',
+    locals: ['variable'],
+    tail: '[ancestor::xsl:template[1]]',
+  },
+]
+
+/**
+ * Selectors no index may serve, each with why. A wildcard names no bucket; a
+ * root-anchored path is not a descendant sweep; an attribute is not an element;
+ * a step behind the predicate reaches past what the axis answered; a prefix
+ * this project does not bind cannot be resolved to a namespace; and a
+ * positional predicate reads the position of the whole descendant sequence,
+ * which one candidate at a time cannot supply.
+ * @type {Array.<{xpath: string, why: string}>}
+ */
+const WHOLE = [
+  {xpath: '//xsl:*', why: 'a wildcard names no one bucket'},
+  {xpath: '//*', why: 'every element is not a name'},
+  {xpath: '//(xsl:variable | xsl:*)', why: 'a wildcard inside a union'},
+  {xpath: '/*[not(@version)]', why: 'anchored at the root, not a sweep'},
+  {xpath: '//xsl:template[@match]/xsl:param', why: 'a step behind the tail'},
+  {xpath: '//mine:thing[@a]', why: 'a prefix nothing binds'},
+  {xpath: '//xsl:template[1]', why: 'a positional predicate'},
+  {
+    xpath: '//xsl:template[1][@match]',
+    why: 'a positional predicate ahead of another',
+  },
+  {
+    xpath: '//xsl:template[@match][1]',
+    why: 'a positional predicate behind another',
+  },
+  {xpath: '//xsl:variable[2 - 1]', why: 'arithmetic worth a position'},
+  {
+    xpath: '//xsl:variable[a/count(.)]',
+    why: 'a path whose last step answers a number',
+  },
+  {
+    xpath: '//xsl:variable[a/(count(.))]',
+    why: 'a path ending in a bracket of the author own',
+  },
+  {
+    xpath: '//xsl:variable[a/count(.)[1]]',
+    why: 'a path ending in a predicate of its own',
+  },
+  {
+    xpath: '//xsl:variable[descendant::a/string-length(.)]',
+    why: 'a number behind a descendant step',
+  },
+  {xpath: '//xsl:variable[1 + 1]', why: 'arithmetic worth another position'},
+  {xpath: '//xsl:variable[1.0]', why: 'a position spelled as a decimal'},
+  {xpath: '//xsl:variable[- 1]', why: 'a position behind a sign'},
+  {xpath: '//xsl:variable[number("2")]', why: 'a call answering a number'},
+  {xpath: '//xsl:variable[count(@name)]', why: 'a count answering a number'},
+  {
+    xpath: '//xsl:variable[@name][2 - 1]',
+    why: 'arithmetic behind another predicate',
+  },
+  {
+    xpath: '//xsl:variable[@name = position()]',
+    why: 'position() inside a comparison',
+  },
+  {
+    xpath: '//xsl:variable[not(@name = last())]',
+    why: 'last() buried two calls deep',
+  },
+  {
+    xpath: '//xsl:variable[Q{http://www.w3.org/2005/xpath-functions}not(@a)]',
+    why: 'a call naming its namespace inline',
+  },
+  {xpath: '//xsl:variable[(@name)]', why: 'a bracket of the author own'},
+  {xpath: '//xsl:variable[@name and]', why: 'a predicate that cannot parse'},
+  {xpath: '//xsl:template[position() = 1]', why: 'position() in the tail'},
+  {xpath: '//xsl:template[last()]', why: 'last() in the tail'},
+  {xpath: '//xsl:template[@a] | //xsl:variable', why: 'a union of paths'},
+  {xpath: 'xsl:template[@a]', why: 'no descendant axis at all'},
+]
+
+/**
+ * The stylesheet the two answers are compared over: four variables of distinct
+ * names, holding one `a`, two, none, and one whose `@x` is zero — so a
+ * predicate that picks a position answers differently from one that filters,
+ * which a document of identical elements could not show.
+ * @type {Document}
+ */
+const SHEET = xml.parsedFromString(
+  fs.readFileSync(
+    path.resolve(__dirname, 'resources', 'selectors', 'candidates.xsl'),
+    'utf-8',
+  ),
+)
+
+/**
+ * The axis every candidate below hangs off, spelled out because what is under
+ * test is the **tail**: whether the predicate a selector wrote answers the
+ * same asked of one candidate at a time as it does asked of the whole sequence
+ * a descendant step produced. How the axis itself is gathered is the index's
+ * question, and `test/conformance.test.js` puts that one.
+ * @type {string}
+ */
+const AXIS = '//xsl:variable'
+
+/**
+ * Predicate spellings the split is judged on, with no verdict written down
+ * beside any of them. The engine answers what each one selects and the test
+ * asks whether serving it from an axis answers the same, so a row is a
+ * question rather than a claim — a table of expectations would have to be
+ * right about XPath twice, once in `filters` and once beside it, where a
+ * spelling nobody predicted is exactly what this is for (#784). That is what
+ * the digit scan of the first spelling could not give: `[count(a)]` and
+ * `[a/count(.)]` hold no digit at all and pick a position all the same.
+ * @type {Array.<string>}
+ */
+const CANDIDATES = [
+  '@name', 'not(@name)', '@name = "one"', 'string-length(@name) = 3',
+  'a', 'a/b', 'a[@x]', 'a/@x', 'b', 'a | b', '(a)',
+  'count(a) = 1', 'count(a) >= 2', 'not(a/count(.))', '@name = a/count(.)',
+  '1', '2 - 1', '1.0', '- 1', 'number("2")', 'count(a)',
+  'string-length(@name)', 'position() = 1', 'last()', 'a[position() = 1]',
+  'a/count(.)', 'a/(count(.))', 'a/count(.)[1]', 'a/number(@x)',
+  'a/string-length(@x)', 'descendant::a/count(.)',
+  'self::xsl:variable/count(.)',
+]
+
+/**
+ * The names a selection carries, or an error where the engine refuses to answer
+ * at all — `[not(a/count(.))]` asks for the effective boolean value of two
+ * numbers, which is FORG0006 whichever way the question is put. Both sides are
+ * read the same way, so a raise on one side alone is a disagreement like any
+ * other rather than a row nobody can judge.
+ * @param {function(): Array.<Node>} selection - What to ask for
+ * @return {Array.<string>} - The names it answers, in order
+ */
+const answered = function(selection) {
+  let names = ['error']
+  try {
+    names = selection().map((node) => node.getAttribute('name'))
+  } catch (refusal) {
+    names = ['error', refusal.message.slice(0, 8)]
+  }
+  return names
+}
+
+describe('selectors', function() {
+  SPLIT.forEach((one) => {
+    it(`splits ${one.xpath} into an axis and a tail`, function() {
+      assert.deepStrictEqual(
+        splitOf(one.xpath),
+        {
+          names: one.locals.map((local) => ({uri: XSLT, local: local})),
+          tail: one.tail,
+        },
+        `the selector ${one.xpath} is not split the way an index needs it`,
+      )
+    })
+  })
+  it('refuses the attribute-anchored selector a real check is written in', function() {
+    assert.deepStrictEqual(
+      splitOf(kinds.xpath['using-disable-output-escaping'].xpath).names,
+      [],
+      'a selector anchored on an attribute rather than an element is served ' +
+        'from a bucket of elements, which cannot hold the attribute it selects',
+    )
+  })
+  WHOLE.forEach((one) => {
+    it(`refuses ${one.xpath}, being ${one.why}`, function() {
+      assert.deepStrictEqual(
+        splitOf(one.xpath).names,
+        [],
+        `the selector ${one.xpath} is served from an index though it is ` +
+          `${one.why}, so the index answers a question the selector never put`,
+      )
+    })
+  })
+  CANDIDATES.forEach((one) => {
+    const xpath = `${AXIS}[${one}]`
+    it(`answers [${one}] as the engine reads it, or serves it not at all`,
+      function() {
+        const split = splitOf(xpath)
+        let served = () => nodes(SHEET, xpath)
+        if (split.names.length > 0) {
+          served = () => nodes(SHEET, AXIS).filter(
+            (node) => satisfies(node, `self::node()${split.tail}`),
+          )
+        }
+        assert.deepStrictEqual(
+          answered(served),
+          answered(() => nodes(SHEET, xpath)),
+          `serving ${xpath} from an axis answers something else than the ` +
+            'engine answers of the whole selector, so the predicate reads ' +
+            'the sequence it stands in and cannot be asked of one candidate',
+        )
+      })
+  })
+})

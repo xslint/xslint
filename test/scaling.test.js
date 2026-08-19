@@ -94,32 +94,47 @@ const STEP = 4
  * 4.05%–6.11% to 3.85%–6.62%, so those three entries are re-derived by their
  * dearest readings — 85 to 73, 15 to 16, 9 to 10 — and keep the headroom they
  * had. What it costs is the gate's own three and a third seconds becoming six
- * and a half.
+ * and a half, of which #784 gives back a second and a half.
+ *
+ * #784 moved it a fourth time, and what moves with it is the stage that got
+ * cheaper rather than the three it lifted. Serving a declarative axis from one
+ * shared walk took `xpath-linter` from 43.84%–44.88% of the run to
+ * 27.20%–31.02%, dearest of six gate runs a side interleaved on one machine, so
+ * `corpus-linter` came up from 15.89%–16.73% to 19.51%–20.08%,
+ * `xpath-validator` from 7.35%–7.65% to 9.39%–9.94% and `xsl-validator` from
+ * 4.36%–4.51% to 4.97%–5.94%, none of the three costing a millisecond more.
+ * Its own entry comes down by its own ratio, 73 to 50, where against a dearest
+ * 31.02% the old one would stand at 2.35 times a reading the band allows twice.
+ * The three keep theirs: 16 and 10 stand 1.61 and 1.68 times their dearest
+ * readings, which is where an entry belongs, and a bar raised on nobody's
+ * failure is a bar loosened.
  *
  * Two things set a ceiling. Where there is a defect to catch, it goes between
- * the two measured distributions — `corpus-linter` at 30, the geometric middle
- * of the dearest reading the index has given here, 18.94%, and the cheapest
- * the scan it replaced gives over the same corpus, 45.27%. The defect it
+ * the two measured distributions — `corpus-linter` at 32, the geometric middle
+ * of the dearest reading the index has given here, 20.08%, and the cheapest
+ * the scan it replaced gives over the same corpus, 50.34%. Both edges move with
+ * the denominator, so both are taken again on the tree in hand rather than
+ * scaled: they read 18.94% and 45.27% before the shared walk. The defect it
  * catches is that scan: putting `src/linters/corpus-linter.js` back to its
- * pre-#783 state fails the gate three times out of three at 43.18%, 44.98% and
- * 45.02%, where the index passes it five of five. Geometric rather than
+ * pre-#783 state fails the gate three times out of three at 50.80%, 51.42% and
+ * 50.96%, where the index passes it five of five. Geometric rather than
  * arithmetic because the risk is multiplicative on either side, a runner of
- * another character moving a share by as much as a half: 30 stands 1.58 times
- * the index's dearest reading and 1.51 times below the scan's cheapest.
+ * another character moving a share by as much as a half: 32 stands 1.59 times
+ * the index's dearest reading and 1.57 times below the scan's cheapest.
  * Everywhere else the ceiling stands between half again and twice the dearest
  * reading, there being no second distribution to leave room for.
  * @type {{[stage: string]: number}}
  */
 const SHARES = {
-  'xpath-linter': 73,
-  'corpus-linter': 30,
+  'xpath-linter': 50,
+  'corpus-linter': 32,
   'xpath-validator': 16,
   'xsl-validator': 10,
 }
 
 /**
  * What percentage of the run any stage not named in `SHARES` may spend. The
- * nineteen of them read 0.15% to 2.53% here, taking the dearest of four gate
+ * nineteen of them read 0.19% to 3.27% here, taking the dearest of ten gate
  * runs over the corpus #800 gave it, and 0.35% to 1.82% on the runner that
  * reported a table before `double-slash-linter` was one of them. So this is the
  * bar a cheap stage crosses by becoming an expensive one, and crossing it earns
@@ -129,10 +144,15 @@ const SHARES = {
  * expensive lands in the tens rather than a tenth above.
  *
  * #784 is the one optimisation so far that lifts every reading here rather than
- * none, `xpath-linter` being over half the run and every share a share of the
- * whole of it: the sixteen came up by 1.013 to 1.258, median 1.122, without one
- * of them costing a millisecond more. The bar stays at 5 all the same, because
- * nothing crossed it and a bar raised on nobody's failure is a bar loosened.
+ * none, `xpath-linter` being the dearest stage by far and every share a share
+ * of the whole run: narrowing eight selectors brought the sixteen up by 1.013
+ * to 1.258, median 1.122, and serving a declarative axis from one shared walk
+ * brought the nineteen up by 1.217 to 1.439, median 1.334, without one of them
+ * costing a millisecond more either time. The bar stays at 5 all the same,
+ * because nothing crossed it and a bar raised on nobody's failure is a bar
+ * loosened: the dearest of them reads 3.27%, which 5 stands 1.53 times above,
+ * and the one runner table on record charges the dearest 1.82% where this
+ * machine charged it 2.53%.
  * What that lift is read by is the **per-stage** ratio and not the range, whose
  * endpoints move more from noise than a denominator moves them — the low one
  * belongs to a stage costing a fifth of a millisecond over the small corpus —
@@ -155,8 +175,9 @@ const SHARE = 5
  * catch is a stage made several times cheaper, which is what #783 did to the
  * cross-file entry: the index took it to a fifth of what it cost, `SLACK` said
  * so of an entry of 26 standing over a reading of 5.35%, and the entry came
- * down to 12. It stands at 30 since #800, the corpus having changed under it
- * rather than the stage.
+ * down to 12. It stands at 32 since #784, the corpus having changed under it
+ * at #800 and the denominator at #784, rather than the stage itself either
+ * time.
  * @type {number}
  */
 const SLACK = 4
@@ -168,7 +189,7 @@ const SLACK = 4
  * is the stronger statement, while one without is pinned only by a bar it sits
  * far below — so its shape is what is worth watching, and a cheap stage turning
  * quadratic is what this catches: it would read `STEP` itself, 4.0, where the
- * nineteen of them read 0.42 to 1.19 over four runs. Among the dearest is
+ * nineteen of them read 0.47 to 1.24 over four runs. Among the dearest is
  * `import-linter`, which really does hold a quadratic (#769) that forty
  * stylesheets are too few to show. Loose on purpose beyond that, because growth
  * is the noisier of the two

@@ -6,6 +6,8 @@
 const {allFilesFrom, xml, yaml} = require('../src/helpers')
 const {ATTRIBUTES, PATTERNS} = require('../src/attributes')
 const {GAP} = require('../src/tokens')
+const {splitOf} = require('../src/selectors')
+const {kinds} = require('../src/resources/checks.json')
 const {FIXERS} = require('../src/fixers')
 const {DECIMAL, XSLT} = require('../src/xsl-version')
 const {walked} = require('../src/tree')
@@ -14,6 +16,55 @@ const {Linter} = require('eslint')
 const path = require('path')
 const fs = require('fs')
 const assert = require('assert')
+
+/**
+ * The xpath selectors no shared walk can serve, each with the shape that puts
+ * it outside. `src/linters/xpath-linter.js` reads an axis of named elements
+ * out of one walk of the document and asks the engine for the predicate alone,
+ * which is what took the stage from 5.64 s to 3.64 s over DocBook-XSL (#784);
+ * a selector of any other shape still costs a descendant traversal of its own,
+ * and fontoxpath performs one over an xmldom tree quadratically (#635).
+ *
+ * So this is a ratchet and not a licence, red from both sides: a new selector
+ * that cannot be served has to be written here with its reason, and one that
+ * has since become servable turns its own entry red rather than sitting on a
+ * list that has stopped describing it. What a reason here is not is a statement
+ * about cost. Nine of the fifteen are anchored at the root, which keeps them
+ * out because a root step is not a descendant sweep of named elements — and it
+ * leaves only three of them without a descendant step, the six others
+ * descending below the anchor, so the nine still spend 1.23 of the 2.78 seconds
+ * the fifteen spend over DocBook-XSL, and the dearest single selector left is
+ * one of them: `modern-construct-in-xslt-1` at 0.60 s, whose union ends in the
+ * `xsl:*[@as]` a namespace bucket would answer. Phase 2 of #784 is therefore
+ * drawn by what a selector costs rather than by the shape that excluded it —
+ * that union, the three spelling a union of two whole paths (0.41, 0.32 and
+ * 0.17 s), the wildcard of `text-outside-xsl-text` (0.29), and the two anchored
+ * on an attribute where the buckets hold elements (0.26 and 0.09).
+ *
+ * A name that has stopped being an `xpath` check at all is the third way this
+ * can rot, and the one the sweep below cannot see, since it walks the checks
+ * and not the table: #788 took five selectors into code and three of them were
+ * listed here, so the entries outlived the checks they were written for. A test
+ * of its own holds the table to `checks/xpath/`.
+ * @type {{[name: string]: string}}
+ */
+const UNINDEXED = {
+  'function-template-is-not-child-of-stylesheet': 'anchored at the root',
+  'function-use-in-xslt-1': 'anchored at the root',
+  'malformed-version-in-stylesheet': 'anchored on an attribute',
+  'missing-id-in-stylesheet': 'anchored at the root',
+  'missing-version-in-stylesheet': 'anchored at the root',
+  'modern-construct-in-xslt-1': 'anchored at the root',
+  'name-starts-with-numeric': 'a union of two whole paths',
+  'not-using-output': 'anchored at the root',
+  'short-names': 'a union of two whole paths',
+  'stylesheet-has-no-templates': 'anchored at the root',
+  'text-outside-xsl-text': 'a wildcard names no one bucket',
+  'too-many-templates': 'anchored at the root',
+  'using-disable-output-escaping': 'anchored on an attribute',
+  'using-not-outermost-stylesheet': 'anchored at the root',
+  'when-or-otherwise-outside-choose': 'a union of two whole paths',
+}
 
 /**
  * Directory holding the check definitions.
@@ -491,6 +542,38 @@ describe('conformance', function() {
         }
       }
     })
+  it('cannot list a check that is no longer written as a selector', function() {
+    assert.deepStrictEqual(
+      Object.keys(UNINDEXED).filter((name) => !names('xpath').includes(name)),
+      [],
+      'a name in the UNINDEXED table of test/conformance.test.js is not an ' +
+        'xpath check any more, so its entry is asserting nothing: a check that ' +
+        'has moved to code, or been renamed, or been deleted takes its ' +
+        'exemption with it',
+    )
+  })
+  it('serves every xpath selector it can from the shared walk', function() {
+    const drifted = names('xpath')
+      .map((name) => ({
+        name: name,
+        served: splitOf(kinds.xpath[name].xpath).names.length > 0,
+        listed: Object.hasOwn(UNINDEXED, name),
+      }))
+      .filter((check) => check.served === check.listed)
+      .map((check) => `${check.name} (served: ${check.served})`)
+    assert.deepStrictEqual(
+      drifted,
+      [],
+      'a selector and the UNINDEXED table in test/conformance.test.js no ' +
+        'longer agree. A selector that cannot be served from the walk in ' +
+        'src/tree.js costs fontoxpath a descendant traversal of its own, which ' +
+        'it performs quadratically over an xmldom tree, so a new one belongs ' +
+        'in that table with the shape that puts it there — or, better, gets ' +
+        'written as a descendant sweep of named elements. A selector listed ' +
+        'there and served anyway has outgrown its entry, and the entry goes: ' +
+        `${drifted.join(', ')}`,
+    )
+  })
   it('anchors every reference template against text at one end', function() {
     const loose = names('corpus')
       .map((name) => ({
