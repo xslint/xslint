@@ -110,7 +110,7 @@ const refused = function(xsl) {
  * requirement: `splitOf` refuses every shape it cannot promise that for, and
  * `named` merges a union by document-order rank rather than by bucket. What it
  * buys is the traversal, which fontoxpath performs quadratically over an xmldom
- * tree and performed once per check — 43 of them over a corpus already walked
+ * tree and performed once per check — 38 of them over a corpus already walked
  * before the first one ran (#784).
  * @param {Document} xsl - XSL document parsed as {@link Document}
  * @param {{xpath: string, split: object}} pack - The check being applied

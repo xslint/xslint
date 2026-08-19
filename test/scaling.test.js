@@ -92,27 +92,33 @@ const STEP = 4
  * has always recorded as its one residual: `xpath-linter` was over half the
  * run, so making it cheaper lifts every other share without any of them
  * slowing down. Serving a declarative axis from one shared walk took its
- * dearest reading from 57.99% to 41.90%, and the three entries nobody touched
- * rose with the denominator by about the 1.38 the arithmetic asks for —
- * `corpus-linter` 8.20% to 11.55%, which left a ceiling of 12 one twenty-fifth
- * from red on a stage that had not changed at all, `xpath-validator` 7.90% to
- * 11.27% and `xsl-validator` 4.88% to 6.81%, measured 1.366, 1.364 and 1.394
- * over an interleaved pair. So the table is re-derived deliberately rather
- * than left to tighten as a side effect of a stage it has nothing to do with:
- * 85 to 75, 15 to 20, 9 to 12, each of those three standing at about 1.77
- * times the dearest of twelve gate runs here.
+ * dearest reading from 55.00% to 39.11%, and the three entries nobody touched
+ * rose with the denominator by about the 1.37 the arithmetic asks for —
+ * `corpus-linter` 8.91% to 12.13%, `xpath-validator` 8.16% to 11.07%,
+ * `xsl-validator` 5.02% to 7.09%, measured 1.361, 1.351 and 1.384 over an
+ * interleaved pair. The cross-file stage is the case for doing this
+ * deliberately rather than letting it happen: it did not change by a
+ * millisecond and its reading crossed the ceiling of 12 it had been given,
+ * which would have read as a regression in a stage nobody had touched. So the
+ * three are re-derived, 85 to 75, 15 to 20 and 9 to 12, each standing at 1.88,
+ * 1.77 and 1.62 times the dearest of thirty-six readings here.
  *
  * The fourth entry answers the other rule, so it is measured rather than
- * scaled: both distributions moved with the denominator, and both were taken
- * again on this tree. The index reads 5.79% to 11.55% over those twelve runs,
- * and the pre-#783 scan, put back in its place, 20.03% to 33.77% — so the
- * window a ceiling may stand in is 11.55 to 20.03, and 19 is the value with
- * room on either side of it. The gate fails three times out of three with that
- * scan in place, at 23.93%, 20.03% and 22.80%, and the entry stands at 1.64
- * times the index’s dearest, above the 1.53 that is the worst character a
- * runner has shown. Twenty would have let the middle of those three runs
- * through by three hundredths of one point, which is the difference between a
- * bar standing between two distributions and a bar grazing the top of one.
+ * scaled: both distributions moved with the denominator, and both are taken
+ * again on the tree in hand. The index reads 7.02% to 12.24% over those
+ * thirty-six readings, and the pre-#783 scan, put back in its place, 21.31% to
+ * 27.37% over ten runs of the gate itself — so the window a ceiling may stand
+ * in is 12.24 to 21.31, and 20 stands at 1.63 times the index’s dearest, above
+ * the 1.53 that is the worst character a runner has shown, and a sixteenth
+ * below the cheapest reading the scan gives. It catches that scan ten times out
+ * of ten.
+ *
+ * Both halves of that window move, which is why neither is carried over.
+ * Before #788 armed the corpus for its own new stages, the same scan floored
+ * at 20.03% here and 20 would have let one run of three through by three
+ * hundredths of a point, where 19 was the value with room on both sides; the
+ * index read 11.55% then and reads 12.24% now. A ceiling drawn against one
+ * tree and reused on the next is a ceiling nobody has measured.
  *
  * That this is the third re-derivation for one cause is why #784 adds a gate
  * of another kind beside this one: no share bar can stop the shape returning,
@@ -122,15 +128,15 @@ const STEP = 4
  */
 const SHARES = {
   'xpath-linter': 75,
-  'corpus-linter': 19,
+  'corpus-linter': 20,
   'xpath-validator': 20,
   'xsl-validator': 12,
 }
 
 /**
  * What percentage of the run any stage not named in `SHARES` may spend. The
- * sixteen of them read 0.27% to 3.48% here, taking the dearest of twelve gate
- * runs, and 0.35% to 1.82% on the runner that reported a table before
+ * nineteen of them read 0.20% to 3.48% here, taking the dearest of thirty-six
+ * readings, and 0.35% to 1.82% on the runner that reported a table before
  * `double-slash-linter` was one of them. So this is the bar a cheap stage
  * crosses by becoming an expensive one, and crossing it earns an entry above
  * or a fix. Not quite twice what the dearest of them reads, for the same
@@ -140,11 +146,11 @@ const SHARES = {
  *
  * #784 is the one cause so far that lifts every reading here rather than none,
  * `xpath-linter` being over half the run and every share a share of the whole
- * of it. Narrowing eight of its selectors brought the sixteen up by 1.013 to
- * 1.258, median 1.122, without one of them costing a millisecond more, and the
- * bar stayed at 5 then, because nothing had crossed it and a bar raised on
+ * of it. Narrowing eight of its selectors brought the cheap stages up by 1.013
+ * to 1.258, median 1.122, without one of them costing a millisecond more, and
+ * the bar stayed at 5 then, because nothing had crossed it and a bar raised on
  * nobody’s failure is a bar loosened. Serving the axis from one shared walk
- * brought them up again, by 1.193 to 1.435, median 1.349, and this time the
+ * brought them up again, by 1.209 to 1.465, median 1.376, and this time the
  * bar moves — not because a stage crossed it, none having come nearer than
  * 3.48%, but because 5 had stopped being the bar it was drawn as. Half again
  * to twice the dearest reading is what every ceiling here stands at, and 5
@@ -188,7 +194,7 @@ const SLACK = 4
  * is the stronger statement, while one without is pinned only by a bar it sits
  * far below — so its shape is what is worth watching, and a cheap stage turning
  * quadratic is what this catches: it would read `STEP` itself, 4.0, where the
- * sixteen of them read 0.19 to 1.35 over nine runs. Among the dearest is
+ * nineteen of them read 0.19 to 1.64 over five runs. Among the dearest is
  * `import-linter`, which really does hold a quadratic (#769) that forty
  * stylesheets are too few to show. Loose on purpose beyond that, because growth
  * is the noisier of the two
@@ -224,7 +230,13 @@ const SPREAD = 100000
  * and a literal result element in a namespace of its own. A stage handed
  * nothing it is about cannot be measured at all — the three per-document
  * linters sat at 0.3 ms with a spread of 358% until this corpus grew namespaces
- * and imports.
+ * and imports, and `bare-name-linter` arrived at #788 reading 0.04% of the run
+ * with a growth of 2.30 to 2.63 against a bar of 3.0, which is a stage
+ * reporting noise as a shape. Three constructs arm the three stages that came
+ * with it: an `xsl:element` whose name is static, an `xsl:output` beside the
+ * `html` the root template builds, and an `xsl:apply-templates` selecting the
+ * bare name of a variable declared above it. Armed, the three read 0.16% to
+ * 0.32% and grow 0.52 to 1.18.
  * @type {string}
  */
 const SHEET = fs.readFileSync(

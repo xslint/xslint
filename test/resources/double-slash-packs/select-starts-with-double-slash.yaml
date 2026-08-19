@@ -3,14 +3,19 @@
 ---
 pack: select-starts-with-double-slash
 found:
-  amount: 2
-  positions: [ [ 5, 5 ], [ 6, 5 ] ]
+  amount: 4
+  positions: [ [ 5, 26 ], [ 6, 27 ], [ 7, 36 ], [ 8, 27 ] ]
+  fixes: [ ".//", ".//", ".//", ".//" ]
 input: |-
   <?xml version="1.0"?>
   <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="style1">
     <xsl:output encoding="UTF-8" method="xml"/>
     <xsl:template match="/objects/o">
       <xsl:copy-of select="//title"/>
-      <xsl:copy-of select="//summary"/>
+      <xsl:copy-of select=" //spaced"/>
+      <xsl:copy-of select="(: note :)//commented"/>
+      <xsl:for-each select="//grouped">
+        <xsl:value-of select="."/>
+      </xsl:for-each>
     </xsl:template>
   </xsl:stylesheet>

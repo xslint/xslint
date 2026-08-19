@@ -27,4 +27,6 @@ Correct:
 ```
 
 An inner `//` (`items//item`), a `//` inside a string literal, or one reached
-through a variable (`$root//item`) is left alone.
+through a variable (`$root//item`) is left alone. So is the `select` of a
+literal result element, which is output data on its way to the result tree
+rather than an expression any processor evaluates.

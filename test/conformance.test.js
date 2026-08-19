@@ -3,13 +3,14 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {allFilesFrom, yaml} = require('../src/helpers')
+const {allFilesFrom, xml, yaml} = require('../src/helpers')
 const {ATTRIBUTES, PATTERNS} = require('../src/attributes')
 const {GAP} = require('../src/tokens')
 const {splitOf} = require('../src/selectors')
 const {kinds} = require('../src/resources/checks.json')
 const {FIXERS} = require('../src/fixers')
-const {DECIMAL} = require('../src/xsl-version')
+const {DECIMAL, XSLT} = require('../src/xsl-version')
+const {walked} = require('../src/tree')
 const {authored, rendered, PLACE} = require('../scripts/generate-checks')
 const {Linter} = require('eslint')
 const path = require('path')
@@ -20,19 +21,25 @@ const assert = require('assert')
  * The xpath selectors no shared walk can serve, each with the shape that puts
  * it outside. `src/linters/xpath-linter.js` reads an axis of named elements
  * out of one walk of the document and asks the engine for the predicate alone,
- * which is what took the stage from 6.03 s to 3.75 s over DocBook-XSL (#784);
+ * which is what took the stage from 5.32 s to 3.20 s over DocBook-XSL (#784);
  * a selector of any other shape still costs a descendant traversal of its own,
  * and fontoxpath performs one over an xmldom tree quadratically (#635).
  *
  * So this is a ratchet and not a licence, red from both sides: a new selector
  * that cannot be served has to be written here with its reason, and one that
  * has since become servable turns its own entry red rather than sitting on a
- * list that has stopped describing it. Ten of the eighteen are anchored at the
- * root and cost nothing anyway, a root element being one node rather than a
- * sweep. The other eight are what phase 2 of #784 is for: three are a union of
- * two whole paths rather than a union of names inside one, three anchor on an
- * attribute where the buckets hold elements, and one is the `//xsl:*` that a
- * namespace bucket would serve.
+ * list that has stopped describing it. Eight of the fifteen are anchored at
+ * the root and cost nothing anyway, a root element being one node rather than a
+ * sweep. The other seven are what phase 2 of #784 is for: three are a union of
+ * two whole paths rather than a union of names inside one, two anchor on an
+ * attribute where the buckets hold elements, one is the `//xsl:*` that a
+ * namespace bucket would serve, and one is a wildcard no bucket can name.
+ *
+ * A name that has stopped being an `xpath` check at all is the third way this
+ * can rot, and the one the sweep below cannot see, since it walks the checks
+ * and not the table: #788 took five selectors into code and three of them were
+ * listed here, so the entries outlived the checks they were written for. A test
+ * of its own holds the table to `checks/xpath/`.
  * @type {{[name: string]: string}}
  */
 const UNINDEXED = {
@@ -44,9 +51,6 @@ const UNINDEXED = {
   'modern-construct-in-xslt-1': 'anchored at the root',
   'name-starts-with-numeric': 'a union of two whole paths',
   'not-using-output': 'anchored at the root',
-  'null-output-from-stylesheet': 'anchored at the root',
-  'output-method-xml': 'anchored at the root',
-  'select-starts-with-double-slash': 'anchored on an attribute',
   'short-names': 'a union of two whole paths',
   'stylesheet-has-no-templates': 'anchored at the root',
   'text-outside-xsl-text': 'a wildcard names no one bucket',
@@ -272,6 +276,25 @@ const names = function(kind) {
   return allFilesFrom(path.join(CHECKS, kind))
     .filter((file) => file.endsWith('.yaml'))
     .map((file) => path.basename(file, '.yaml'))
+}
+
+/**
+ * Whether the document is XSLT at all: an element in the XSLT namespace, or an
+ * attribute in it, which is the whole of what a simplified stylesheet has — its
+ * root is a literal result element and `xsl:version` the one thing marking it.
+ *
+ * A pack whose fixture holds neither is a fixture no check can see a node of,
+ * so every amount it claims passes and a selector rewritten to fire on
+ * everything passes with it. Three packs spelled the namespace `https://` and
+ * asserted nothing for it (#698), which neither #645 nor #607 catches: both ask
+ * whether an assertion was written, and here one was — it just cannot fail.
+ * @param {Document} xsl - The parsed fixture
+ * @return {boolean} - True when something in it is XSLT's
+ */
+const stylish = function(xsl) {
+  return Array.from(xsl.getElementsByTagName('*'))
+    .concat(walked(xsl))
+    .some((node) => node.namespaceURI === XSLT)
 }
 
 describe('conformance', function() {
@@ -513,6 +536,16 @@ describe('conformance', function() {
         }
       }
     })
+  it('cannot list a check that is no longer written as a selector', function() {
+    assert.deepStrictEqual(
+      Object.keys(UNINDEXED).filter((name) => !names('xpath').includes(name)),
+      [],
+      'a name in the UNINDEXED table of test/conformance.test.js is not an ' +
+        'xpath check any more, so its entry is asserting nothing: a check that ' +
+        'has moved to code, or been renamed, or been deleted takes its ' +
+        'exemption with it',
+    )
+  })
   it('serves every xpath selector it can from the shared walk', function() {
     const drifted = names('xpath')
       .map((name) => ({
@@ -668,6 +701,23 @@ describe('conformance', function() {
             `${file} names ${list} and calls it "${claim[0]}", where it holds ` +
               `${LENGTHS.get(list)} — the count beside a list is the one thing ` +
               'a reader takes on trust, so it answers to the list',
+          )
+        }
+      }
+    }
+  })
+  it('cannot let a pack input hold nothing of XSLT', function() {
+    for (const dir of fs.readdirSync(RESOURCES)
+      .filter((one) => one.endsWith('-packs'))) {
+      for (const pack of allFilesFrom(path.join(RESOURCES, dir))
+        .filter((file) => file.endsWith('.yaml'))) {
+        const yml = yaml.parsedFromFile(pack)
+        for (const input of yml.inputs || [yml.input]) {
+          assert.ok(
+            stylish(xml.parsedFromString(input)),
+            `pack ${dir}/${path.basename(pack)} holds a document with ` +
+              'nothing in the XSLT namespace, so no check can see a single ' +
+              'node of it and any amount it claims would pass',
           )
         }
       }

@@ -9,6 +9,6 @@
     <xsl:value-of select = ".//b[@y = &quot;z&quot;]"/>
     <xsl:value-of select='.//c[@w = &apos;q&apos;]'/>
     <xsl:value-of select = ".//d[@v = 'p &amp; q']"/>
-    <xsl:value-of select = ".//e[@u > 3]"/>
+    <xsl:value-of select = ".//e[@u &gt; 3]"/>
   </xsl:template>
 </xsl:stylesheet>

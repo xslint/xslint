@@ -23,6 +23,10 @@ const {lintByResultNamespace, names: resultNamespaceChecks} =
 const {lintByImports, names: importChecks} = require('./linters/import-linter')
 const {lintByParameter, names: parameterChecks} =
   require('./linters/parameter-linter')
+const {lintByElement, names: elementChecks} =
+  require('./linters/element-linter')
+const {lintByRootTemplate, names: rootTemplateChecks} =
+  require('./linters/root-template-linter')
 const {lintByNodeSet, names: nodeSetChecks} =
   require('./linters/node-set-linter')
 const {lintByDoubleSlash, names: doubleSlashChecks} =
@@ -39,6 +43,8 @@ const {lintByStringLength, names: stringLengthChecks} =
 const {lintByName, names: nameChecks} = require('./linters/name-linter')
 const {lintByTranslate, names: translateChecks} =
   require('./linters/translate-linter')
+const {lintByBareName, names: bareNameChecks} =
+  require('./linters/bare-name-linter')
 const {lintByFormat, names: formatChecks} =
   require('./linters/xpath-format-linter')
 const {fixed} = require('./fixer')
@@ -72,6 +78,12 @@ const LINTERS = [
   },
   {name: 'import-linter', run: lintByImports, checks: importChecks},
   {name: 'parameter-linter', run: lintByParameter, checks: parameterChecks},
+  {name: 'element-linter', run: lintByElement, checks: elementChecks},
+  {
+    name: 'root-template-linter',
+    run: lintByRootTemplate,
+    checks: rootTemplateChecks,
+  },
 ]
 
 /**
@@ -122,6 +134,7 @@ const EXPRESSION_LINTERS = [
     run: lintByPredicatePosition,
     checks: predicatePositionChecks,
   },
+  {name: 'bare-name-linter', run: lintByBareName, checks: bareNameChecks},
   {name: 'xpath-format-linter', run: lintByFormat, checks: formatChecks},
 ]
 
