@@ -73,101 +73,94 @@ const STEP = 4
  * the headroom it had. A gate made stricter by accident is not a ratchet, it is
  * the next red build nobody can explain.
  *
+ * #800 moved the whole table again, and by changing the corpus rather than any
+ * stage. The cross-file linter read 6.72%–9.06% of the run here where TEI
+ * charges it 13.73% and DocBook-XSL 21.95%, and the gap is neither declaration
+ * density — which is what that ticket blamed — nor corpus size. Almost all of
+ * the stage is one selector: `//@*` is 60% of it over TEI and 74% over
+ * DocBook-XSL, against 4.5% and 3.1% for the `within` walk #783 left behind.
+ * fontoxpath evaluates a descendant step over an xmldom tree quadratically
+ * (#635), so what that selector costs per node is flat at 1.3 to 3.2 us up to
+ * some 350 nodes and then climbs — 4.2 at 689, 5.2 at 1491, 8.7 at 2829 and
+ * 50.4 at 4853 — and five of DocBook-XSL's 315 stylesheets are two thirds of
+ * what it spends over the whole corpus. A corpus of one uniform size cannot
+ * show that at any density: twelve more variables in each of the four
+ * templates read 9.18%–10.75%, forty more attributes read 7.39%–9.81%, and
+ * twenty stylesheets of 393 elements — the same bulk in fewer, larger files —
+ * read 7.87%. One heavy stylesheet in every forty reads 15.95%–18.94%, which
+ * is where the real corpora put it. Over four gate runs a side, interleaved on
+ * one machine, `xpath-linter` went 49.69%–56.08% to 44.61%–48.23%,
+ * `xpath-validator` 7.50%–11.53% to 7.23%–12.34% and `xsl-validator`
+ * 4.05%–6.11% to 3.85%–6.62%, so those three entries are re-derived by their
+ * dearest readings — 85 to 73, 15 to 16, 9 to 10 — and keep the headroom they
+ * had. What it costs is the gate's own three and a third seconds becoming six
+ * and a half, of which #784 gives back a second and a half.
+ *
+ * #784 moved it a fourth time, and what moves with it is the stage that got
+ * cheaper rather than the three it lifted. Serving a declarative axis from one
+ * shared walk took `xpath-linter` from 43.84%–44.88% of the run to
+ * 27.20%–31.02%, dearest of six gate runs a side interleaved on one machine, so
+ * `corpus-linter` came up from 15.89%–16.73% to 19.51%–20.08%,
+ * `xpath-validator` from 7.35%–7.65% to 9.39%–9.94% and `xsl-validator` from
+ * 4.36%–4.51% to 4.97%–5.94%, none of the three costing a millisecond more.
+ * Its own entry comes down by its own ratio, 73 to 50, where against a dearest
+ * 31.02% the old one would stand at 2.35 times a reading the band allows twice.
+ * The three keep theirs: 16 and 10 stand 1.61 and 1.68 times their dearest
+ * readings, which is where an entry belongs, and a bar raised on nobody's
+ * failure is a bar loosened.
+ *
  * Two things set a ceiling. Where there is a defect to catch, it goes between
- * the two measured distributions, and `corpus-linter` is the one entry drawn
- * that way; everywhere else the ceiling stands between half again and twice
- * the dearest reading, there being no second distribution to leave room for.
- * #783 set that one at 12, twice the dearest reading the index gave then,
- * 6.05%, and a sixth below the cheapest the scan had given on any runner,
- * 14.4% — the scan being the defect it catches. Put back in its place it
- * failed the gate three times out of three at 14.47%, 15.03% and 15.52%, and
- * read 14.47%–18.35% over six runs here against 14.4%–23.5% on the four
- * runners that have reported a table. The entry read 26 while the scan was
- * what the gate held, a tenth above the dearest reading that scan gave on any
- * runner and a fortieth below the cheapest #755’s quadratic gave here; the
- * index moved the whole distribution, so the entry moved with it, a ceiling
- * five times its own reading letting the scan back in without a word.
- *
- * Every entry was re-derived a third time at #784, for the cause this design
- * has always recorded as its one residual: `xpath-linter` was over half the
- * run, so making it cheaper lifts every other share without any of them
- * slowing down. Serving a declarative axis from one shared walk took its
- * dearest reading from 55.00% to 39.11%, and the three entries nobody touched
- * rose with the denominator by about the 1.37 the arithmetic asks for —
- * `corpus-linter` 8.91% to 12.13%, `xpath-validator` 8.16% to 11.07%,
- * `xsl-validator` 5.02% to 7.09%, measured 1.361, 1.351 and 1.384 over an
- * interleaved pair. The cross-file stage is the case for doing this
- * deliberately rather than letting it happen: it did not change by a
- * millisecond and its reading crossed the ceiling of 12 it had been given,
- * which would have read as a regression in a stage nobody had touched. So the
- * three are re-derived, 85 to 75, 15 to 20 and 9 to 12, each standing at 1.88,
- * 1.77 and 1.62 times the dearest of thirty-six readings here.
- *
- * The fourth entry answers the other rule, so it is measured rather than
- * scaled: both distributions moved with the denominator, and both are taken
- * again on the tree in hand. The index reads 7.02% to 12.24% over those
- * thirty-six readings, and the pre-#783 scan, put back in its place, 21.31% to
- * 27.37% over ten runs of the gate itself — so the window a ceiling may stand
- * in is 12.24 to 21.31, and 20 stands at 1.63 times the index’s dearest, above
- * the 1.53 that is the worst character a runner has shown, and a sixteenth
- * below the cheapest reading the scan gives. It catches that scan ten times out
- * of ten.
- *
- * Both halves of that window move, which is why neither is carried over.
- * Before #788 armed the corpus for its own new stages, the same scan floored
- * at 20.03% here and 20 would have let one run of three through by three
- * hundredths of a point, where 19 was the value with room on both sides; the
- * index read 11.55% then and reads 12.24% now. A ceiling drawn against one
- * tree and reused on the next is a ceiling nobody has measured.
- *
- * That this is the third re-derivation for one cause is why #784 adds a gate
- * of another kind beside this one: no share bar can stop the shape returning,
- * only a structural rule can, and `UNINDEXED` in `test/conformance.test.js` is
- * it.
+ * the two measured distributions — `corpus-linter` at 32, the geometric middle
+ * of the dearest reading the index has given here, 20.08%, and the cheapest
+ * the scan it replaced gives over the same corpus, 50.34%. Both edges move with
+ * the denominator, so both are taken again on the tree in hand rather than
+ * scaled: they read 18.94% and 45.27% before the shared walk. The defect it
+ * catches is that scan: putting `src/linters/corpus-linter.js` back to its
+ * pre-#783 state fails the gate three times out of three at 50.80%, 51.42% and
+ * 50.96%, where the index passes it five of five. Geometric rather than
+ * arithmetic because the risk is multiplicative on either side, a runner of
+ * another character moving a share by as much as a half: 32 stands 1.59 times
+ * the index's dearest reading and 1.57 times below the scan's cheapest.
+ * Everywhere else the ceiling stands between half again and twice the dearest
+ * reading, there being no second distribution to leave room for.
  * @type {{[stage: string]: number}}
  */
 const SHARES = {
-  'xpath-linter': 75,
-  'corpus-linter': 20,
-  'xpath-validator': 20,
-  'xsl-validator': 12,
+  'xpath-linter': 50,
+  'corpus-linter': 32,
+  'xpath-validator': 16,
+  'xsl-validator': 10,
 }
 
 /**
  * What percentage of the run any stage not named in `SHARES` may spend. The
- * nineteen of them read 0.20% to 3.48% here, taking the dearest of thirty-six
- * readings, and 0.35% to 1.82% on the runner that reported a table before
- * `double-slash-linter` was one of them. So this is the bar a cheap stage
- * crosses by becoming an expensive one, and crossing it earns an entry above
- * or a fix. Not quite twice what the dearest of them reads, for the same
- * reason the entries above are: a runner of another character moves a share,
- * and a stage that has really become expensive lands in the tens rather than a
- * tenth above.
+ * nineteen of them read 0.19% to 3.27% here, taking the dearest of ten gate
+ * runs over the corpus #800 gave it, and 0.35% to 1.82% on the runner that
+ * reported a table before `double-slash-linter` was one of them. So this is the
+ * bar a cheap stage crosses by becoming an expensive one, and crossing it earns
+ * an entry above or a fix. Twice
+ * what the dearest of them reads, for the same reason the entries above are: a
+ * runner of another character moves a share, and a stage that has really become
+ * expensive lands in the tens rather than a tenth above.
  *
- * #784 is the one cause so far that lifts every reading here rather than none,
- * `xpath-linter` being over half the run and every share a share of the whole
- * of it. Narrowing eight of its selectors brought the cheap stages up by 1.013
- * to 1.258, median 1.122, without one of them costing a millisecond more, and
- * the bar stayed at 5 then, because nothing had crossed it and a bar raised on
- * nobody’s failure is a bar loosened. Serving the axis from one shared walk
- * brought them up again, by 1.209 to 1.465, median 1.376, and this time the
- * bar moves — not because a stage crossed it, none having come nearer than
- * 3.48%, but because 5 had stopped being the bar it was drawn as. Half again
- * to twice the dearest reading is what every ceiling here stands at, and 5
- * against 3.48% is 1.44, under the band rather than inside it: a runner
- * charging this stage the 1.53 the worst of them has charged another would
- * read 5.3% and turn red on a tree nobody had touched. Six is 1.72 times it,
- * which is the same bar the entries above are.
- *
- * What that lift is read by is the **per-stage** ratio and not the range,
- * whose endpoints move more from noise than a denominator moves them — the low
- * one belongs to a stage costing a fifth of a millisecond over the small
- * corpus — and reading a share off one printed table rather than a
- * distribution is how the first account of this put the range at 0.24% to
- * 2.77%.
+ * #784 is the one optimisation so far that lifts every reading here rather than
+ * none, `xpath-linter` being the dearest stage by far and every share a share
+ * of the whole run: narrowing eight selectors brought the sixteen up by 1.013
+ * to 1.258, median 1.122, and serving a declarative axis from one shared walk
+ * brought the nineteen up by 1.217 to 1.439, median 1.334, without one of them
+ * costing a millisecond more either time. The bar stays at 5 all the same,
+ * because nothing crossed it and a bar raised on nobody's failure is a bar
+ * loosened: the dearest of them reads 3.27%, which 5 stands 1.53 times above,
+ * and the one runner table on record charges the dearest 1.82% where this
+ * machine charged it 2.53%.
+ * What that lift is read by is the **per-stage** ratio and not the range, whose
+ * endpoints move more from noise than a denominator moves them — the low one
+ * belongs to a stage costing a fifth of a millisecond over the small corpus —
+ * and reading a share off one printed table rather than a distribution is how
+ * the first account of this put the range at 0.24% to 2.77%.
  * @type {number}
  */
-const SHARE = 6
+const SHARE = 5
 
 /**
  * How many times its own reading a ceiling may stand above before it has
@@ -182,7 +175,9 @@ const SHARE = 6
  * catch is a stage made several times cheaper, which is what #783 did to the
  * cross-file entry: the index took it to a fifth of what it cost, `SLACK` said
  * so of an entry of 26 standing over a reading of 5.35%, and the entry came
- * down to 12.
+ * down to 12. It stands at 32 since #784, the corpus having changed under it
+ * at #800 and the denominator at #784, rather than the stage itself either
+ * time.
  * @type {number}
  */
 const SLACK = 4
@@ -194,7 +189,7 @@ const SLACK = 4
  * is the stronger statement, while one without is pinned only by a bar it sits
  * far below — so its shape is what is worth watching, and a cheap stage turning
  * quadratic is what this catches: it would read `STEP` itself, 4.0, where the
- * nineteen of them read 0.19 to 1.64 over five runs. Among the dearest is
+ * nineteen of them read 0.47 to 1.24 over four runs. Among the dearest is
  * `import-linter`, which really does hold a quadratic (#769) that forty
  * stylesheets are too few to show. Loose on purpose beyond that, because growth
  * is the noisier of the two
@@ -236,7 +231,12 @@ const SPREAD = 100000
  * with it: an `xsl:element` whose name is static, an `xsl:output` beside the
  * `html` the root template builds, and an `xsl:apply-templates` selecting the
  * bare name of a variable declared above it. Armed, the three read 0.16% to
- * 0.32% and grow 0.52 to 1.18.
+ * 0.32% and grow 0.52 to 1.18. The cross-file stage was the same thing one
+ * ticket later: it built no defect at all over this corpus, every variable in
+ * the sheet being referenced a line or two below itself, so the one path a
+ * declaration takes when nothing uses it went untimed. One top-level variable
+ * nothing references arms it, which is 160 `unused-variable` over the large
+ * corpus (#800).
  * @type {string}
  */
 const SHEET = fs.readFileSync(
@@ -244,23 +244,84 @@ const SHEET = fs.readFileSync(
 )
 
 /**
- * One stylesheet of the corpus, every name in it carrying the number of its
- * file so no two share an expression, a declaration or a namespace. Sharing
- * them would make the corpus cheaper the larger it grew, since an expression is
- * parsed once and remembered against its text, and that is the one direction a
- * gate against growth must not be generous in.
+ * The comment the sheet marks its repeatable part with — everything from there
+ * to the closing tag, which is the root template's four callees and nothing
+ * else. A heavy stylesheet is that part written out again under names of its
+ * own, so one file grows without the corpus growing a second root template or
+ * a second import. Where the part begins is the stylesheet's to say rather
+ * than a start tag spelled here: the `fixtures` job fails any `.test.js`
+ * holding one, and a marker a test matches on is a fixture detail whether or
+ * not it is a whole element.
+ * @type {string}
+ */
+const MARK = '<!-- repeated -->'
+
+/**
+ * The part of the sheet a heavy stylesheet repeats, the marker excluded so a
+ * copy does not carry one of its own.
+ * @type {string}
+ */
+const BODY = SHEET.slice(
+  SHEET.indexOf(MARK) + MARK.length, SHEET.lastIndexOf('</xsl:'),
+)
+
+/**
+ * Every how many stylesheets one is heavy. A corpus of forty holds one and a
+ * corpus of a hundred and sixty holds four, so both carry the same fraction of
+ * them and a stage's growth still answers about the corpus rather than about
+ * which sizes happened to land in it.
+ * @type {number}
+ */
+const HEAVY = 40
+
+/**
+ * How many times over a heavy stylesheet writes the body, which decides how
+ * large the largest file in the corpus is. Forty-eight makes one of some five
+ * thousand elements and attributes, where DocBook-XSL's largest holds 8790 and
+ * TEI's some four thousand. That the corpus needs such a file at all is what
+ * #800 turned up, and the reason is in `SHARES` above: what the cross-file
+ * stage costs is almost all one selector, `//@*`, whose cost per node is flat
+ * until a document passes some 350 of them and then climbs, so a handful of
+ * very large stylesheets is where a real corpus spends that stage and a corpus
+ * of one uniform size cannot show it at any density.
+ * @type {number}
+ */
+const WEIGHT = 48
+
+/**
+ * The body written out again under names of its own, once per copy.
  * @param {number} seed - Number of the stylesheet
+ * @param {number} weight - How many times the body stands in it
+ * @return {string} - The copies, joined
+ */
+const copied = function(seed, weight) {
+  const copies = []
+  for (let copy = 1; copy < weight; copy++) {
+    copies.push(BODY.replaceAll('SEED', `${seed}c${copy}`))
+  }
+  return copies.join('')
+}
+
+/**
+ * One stylesheet of the corpus, every name in it carrying the number of its
+ * file so no two share an expression, a declaration or a namespace — and, in a
+ * heavy one, the number of the copy it stands in as well. Sharing them would
+ * make the corpus cheaper the larger it grew, since an expression is parsed
+ * once and remembered against its text, and that is the one direction a gate
+ * against growth must not be generous in.
+ * @param {number} seed - Number of the stylesheet
+ * @param {number} weight - How many times the body stands in it
  * @return {string} - The XML of one stylesheet
  */
-const sheet = function(seed) {
-  return SHEET
+const sheet = function(seed, weight) {
+  return SHEET.replace(MARK, MARK + copied(seed, weight))
     .replaceAll('PREVIOUS', String(seed - 1))
     .replaceAll('SEED', String(seed))
 }
 
 /**
  * A corpus of stylesheets numbered from one file on, each importing the one
- * before it.
+ * before it, and every `HEAVY`th of them heavy.
  * @param {number} from - Number of the first stylesheet
  * @param {number} files - How many to build
  * @return {Array.<{file: string, content: string}>} - Sources to lint
@@ -268,7 +329,13 @@ const sheet = function(seed) {
 const corpus = function(from, files) {
   const sources = []
   for (let at = 0; at < files; at++) {
-    sources.push({file: `s${from + at}.xsl`, content: sheet(from + at)})
+    let weight = 1
+    if (at % HEAVY === 0) {
+      weight = WEIGHT
+    }
+    sources.push({
+      file: `s${from + at}.xsl`, content: sheet(from + at, weight),
+    })
   }
   return sources
 }

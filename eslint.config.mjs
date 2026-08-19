@@ -84,6 +84,12 @@ const RESTRICTED = [
   },
   {
     selector:
+      "CallExpression[callee.object.name='process'][callee.property.name='exit']",
+    message:
+      "Do not end a run with process.exit, which abandons whatever stdout has not taken: node writes to a pipe asynchronously on POSIX, so a report going anywhere but a terminal lost its tail and, past the buffer, every line of it (#767). Set process.exitCode and let the process end once its writes are done"
+  },
+  {
+    selector:
       "CallExpression[callee.property.name='getAttribute'][callee.object.property.name='documentElement'][arguments.0.value='version']",
     message:
       "Read the stylesheet version through versionOf in src/xsl-version.js, which handles a simplified stylesheet's xsl:version; do not read documentElement.getAttribute('version') directly"

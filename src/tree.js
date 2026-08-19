@@ -126,8 +126,8 @@ const NAMED = new WeakMap()
  * engine to descend: fontoxpath evaluates a descendant step over an xmldom tree
  * quadratically (#635), so one plain walk of DocBook-XSL's 69,842 elements
  * costs 0.011 to 0.020 s where a single `//*` through the engine costs 0.87,
- * and the 43 declarative checks each paid for a traversal of their own — 6.03 s
- * of an 8.97 s staged run (#784).
+ * and the 38 declarative checks each paid for a traversal of their own — 5.64 s
+ * of a 10.34 s staged run (#784).
  *
  * One walk serves every bucket, so the cost is paid once for the whole stage
  * rather than once per check. Two things keep reading a bucket invisible to a
