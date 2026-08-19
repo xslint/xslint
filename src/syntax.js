@@ -373,6 +373,93 @@ const tight = function(node) {
 }
 
 /**
+ * The kinds a predicate may come back as without picking one node out of the
+ * sequence it filters, which is the question a check served from a shared walk
+ * has to put of each of its predicates (#784). XPath reads a predicate whose
+ * value is a **number** as a test on the context position, so `[1]` selects
+ * the first node and not every node — and a candidate handed over on its own
+ * is a sequence of one, where any position test at all answers true. So a
+ * predicate is served only where the parse proves it cannot be a number: the
+ * boolean operators and the three comparison classes, the quantified
+ * expressions, and the kinds answering a sequence of nodes, whose effective
+ * boolean value is what the predicate then takes. Everything else is refused —
+ * a `literal` and a `sum` because they are numbers, a `conditional`, a
+ * `variable` or a `cast` because nothing here can say what they answer — and a
+ * refusal costs only the traversal the run already pays. `test/syntax.test.js`
+ * holds the list to the grammar rather than to this comment, asking of a
+ * specimen of every kind whether `<specimen>` really does come back the kind
+ * named here.
+ * @type {Array.<string>}
+ */
+const FILTERS = [
+  'and', 'comparison', 'context', 'every', 'intersect', 'node-comparison',
+  'or', 'path', 'some', 'step', 'union', 'value-comparison',
+]
+
+/**
+ * The standard functions XPath declares to answer `xs:boolean`, which are the
+ * calls a predicate may stand as. A call is the one kind the kind alone does
+ * not settle — `not(@a)` is a truth and `count(@a)` is a number, and both come
+ * back a `call` — so the name decides, and a name this list does not hold is
+ * refused whatever it answers.
+ * @type {Array.<string>}
+ */
+const BOOLEAN = [
+  'boolean', 'contains', 'deep-equal', 'empty', 'ends-with', 'exists', 'lang',
+  'matches', 'not', 'starts-with',
+]
+
+/**
+ * Whether the node, or anything under it, asks about the sequence it stands
+ * in. `position()` and `last()` answer about the sequence a predicate filters,
+ * so a predicate reading either is a question one candidate cannot be asked —
+ * and being boolean, either hides inside a comparison the kind alone would
+ * pass, `[@name = position()]` coming back a `comparison` like any other. A
+ * call naming its namespace inline is refused with them, `Q{...}position()`
+ * needing no prefix bound to reach the standard function; a prefixed spelling
+ * is not, since `PREFIXES` in `src/xpath.js` binds `xsl` and `xslint` alone
+ * and an `fn:position()` in a selector of ours resolves to no namespace at
+ * all. It is read here rather than through `calls`, which resolves a prefix
+ * against the document a record hangs off and there is no record here — a
+ * check's selector is ours and stands in no stylesheet. A nested `position()`
+ * is about the inner sequence and would be safe, and is refused all the same.
+ * Every node the grammar builds carries a `children` array, empty where it has
+ * none, so the walk asks for one outright rather than guarding against a case
+ * the grammar has not got.
+ * @param {Array} tokens - The tokens the tree was parsed from
+ * @param {object} node - The node to walk
+ * @return {boolean} - Whether the sequence is read anywhere within it
+ */
+const positional = function(tokens, node) {
+  let asks = false
+  if (node.kind === 'call') {
+    const token = tokens[node.from]
+    asks = token.type === TOKENS.URI || token.value === 'position' ||
+      token.value === 'last'
+  }
+  return asks || node.children.some((kid) => positional(tokens, kid))
+}
+
+/**
+ * Whether the node can stand as a predicate filtering a sequence, rather than
+ * picking a position in it, which is what a check served from one shared walk
+ * needs of each predicate it wrote: the axis comes off the walk and the
+ * predicate is asked of one candidate at a time, where a positional test
+ * answers true for every one of them (#784).
+ * @param {Array} tokens - The tokens the tree was parsed from
+ * @param {object} node - The node a predicate holds, whole
+ * @return {boolean} - True when it filters rather than picks
+ */
+const filters = function(tokens, node) {
+  let sound = FILTERS.includes(node.kind)
+  if (!sound && node.kind === 'call') {
+    sound = tokens[node.from].type !== TOKENS.URI &&
+      BOOLEAN.includes(tokens[node.from].value)
+  }
+  return sound && !positional(tokens, node)
+}
+
+/**
  * Whether the node's own text can stand as a step of a path with no brackets
  * around it, which is what a rewrite substituting it where a call stood needs.
  * @param {object} node - A node of a tree
@@ -412,12 +499,15 @@ const operatorOf = function(found, left, right) {
 }
 
 module.exports = {
+  ASSUMED,
+  FILTERS,
   VALUED,
   FUNCTIONS,
   LOOSE,
   STEPPED,
   WORDED,
   calls,
+  filters,
   gathered,
   isValid,
   offsetOf,

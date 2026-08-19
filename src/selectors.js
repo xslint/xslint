@@ -5,6 +5,8 @@
 
 const {GAP, WHITESPACE} = require('./tokens')
 const {PREFIXES} = require('./xpath')
+const {parsed} = require('./grammar')
+const {ASSUMED, filters} = require('./syntax')
 
 /**
  * The answer for a selector no index can serve: an axis naming no bucket. An
@@ -37,29 +39,6 @@ const SWEEP = new RegExp(
  */
 const QUALIFIED =
   /^(?:([\p{L}_][\p{L}\p{N}\p{M}_.-]*):)?([\p{L}_][\p{L}\p{N}\p{M}_.-]*)$/u
-
-/**
- * What a tail must not read, because one candidate at a time cannot supply it.
- * A predicate of the original selector is evaluated against the whole
- * descendant sequence, so `position()` and `last()` answer about that sequence,
- * where a tail asked of one node sees a sequence of one. Refused wherever it
- * stands, nested included: an inner `b[position() = 1]` is a question about the
- * inner sequence and would be safe, and refusing it costs only the traversal
- * the run already pays.
- * @type {RegExp}
- */
-const POSITIONAL = new RegExp('(^|[^-\\w])(position|last)' + GAP + '*\\(')
-
-/**
- * A predicate that is a number and nothing else, which is the positional
- * question spelled shorter. It is refused at the top level alone, where it
- * picks one node out of the sequence the axis answered: nested inside a path of
- * its
- * own — the `[1]` of `[ancestor::xsl:template[1]]` — it picks out of that path
- * and is evaluated the same way for one candidate as for a thousand.
- * @type {RegExp}
- */
-const NUMERIC = new RegExp('^' + GAP + '*[0-9]+' + GAP + '*$')
 
 /**
  * The top-level predicates a tail holds, or none at all where it is not a chain
@@ -154,6 +133,25 @@ const bucketed = function(listed) {
 }
 
 /**
+ * Whether the predicate filters the sequence rather than picking a position in
+ * it, which is the whole of what one candidate at a time can be asked. The
+ * verdict is `src/syntax.js`'s, taken off the parse and never off the text,
+ * because a number wears more spellings than a digit: `[2 - 1]`, `[1.0]`, `[-
+ * 1]`, `[number("2")]` and `[count(@name)]` are every bit as positional as
+ * `[1]`, and a scan for a digit catches the last of them alone (#784). A
+ * predicate that does not parse is refused with them, the grammar being the
+ * only thing that could have said what it holds. The version is the one a
+ * selector of ours is read at: it carries no `version` of its own and
+ * fontoxpath answers it at 3.1, which is the case `ASSUMED` is for.
+ * @param {string} text - What one predicate holds, its brackets off
+ * @return {boolean} - Whether the split may serve it
+ */
+const filtered = function(text) {
+  const {tokens, tree} = parsed(text, ASSUMED)
+  return tree !== null && filters(tokens, tree)
+}
+
+/**
  * A selector split into the axis an index can answer and the tail a predicate
  * still has to. `//(xsl:variable | xsl:template)[P]` is every element of two
  * buckets filtered by `P`; the buckets come from one walk of the document that
@@ -188,7 +186,7 @@ const splitOf = function(xpath) {
     const names = bucketed(listed)
     const parts = predicated(tail)
     if (names.length > 0 && (tail === '' || parts.length > 0) &&
-      !POSITIONAL.test(tail) && !parts.some((one) => NUMERIC.test(one))) {
+      parts.every((one) => filtered(one))) {
       split = {names: names, tail: tail}
     }
   }

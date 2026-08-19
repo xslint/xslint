@@ -5,7 +5,7 @@
 
 const {parsed} = require('../src/grammar')
 const {
-  LOOSE, STEPPED, WORDED, parseOf, stepped, stringOf, tight,
+  FILTERS, LOOSE, STEPPED, WORDED, filters, parseOf, stepped, stringOf, tight,
 } = require('../src/syntax')
 const {WORDS} = require('../src/tokens')
 const {expressionsOf} = require('../src/attributes')
@@ -146,6 +146,36 @@ const follows = function(xpath) {
   return stands
 }
 
+/**
+ * What each expression answers when asked whether it can stand as a predicate
+ * one candidate at a time is handed, which is what a check served from a shared
+ * walk needs (#784). The kinds are swept from `SHAPES` above; these are the
+ * pairs a kind cannot settle on its own — a `call` judged by the name it holds,
+ * and the spellings a number wears beyond the digit a scan would look for.
+ * @type {Array.<{xpath: string, filters: boolean}>}
+ */
+const FILTERED = [
+  {xpath: 'not(@a)', filters: true},
+  {xpath: 'contains(@a, "b")', filters: true},
+  {xpath: 'count(@a)', filters: false},
+  {xpath: 'number("2")', filters: false},
+  {xpath: 'position()', filters: false},
+  {xpath: 'last()', filters: false},
+  {xpath: '@a = position()', filters: false},
+  {xpath: 'not(@a = last())', filters: false},
+  {xpath: 'Q{http://www.w3.org/2005/xpath-functions}not(@a)', filters: false},
+  {xpath: '1', filters: false},
+  {xpath: '1.0', filters: false},
+  {xpath: '2 - 1', filters: false},
+  {xpath: '- 1', filters: false},
+  {xpath: '(@a)', filters: false},
+  {xpath: '@a', filters: true},
+  {xpath: 'a/b', filters: true},
+  {xpath: 'a | b', filters: true},
+  {xpath: '@a and @b', filters: true},
+  {xpath: 'some $va in a satisfies $va', filters: true},
+]
+
 describe('syntax', function() {
   SHAPES.forEach(({kind, xpath}) => {
     it(`reads "${xpath}" as a ${kind}`, function() {
@@ -176,6 +206,22 @@ describe('syntax', function() {
         `A ${kind} does not stand where STEPPED says it stands`,
       )
     })
+  })
+  FILTERED.forEach(({xpath, filters: sound}) => {
+    it(`reads "${xpath}" as ${sound} for a predicate`, function() {
+      const {tokens, tree} = parsed(xpath, '3.0')
+      assert.equal(
+        filters(tokens, tree), sound,
+        `Whether "${xpath}" filters rather than picks a position has moved`,
+      )
+    })
+  })
+  it('cannot name a filtering kind no shape stands for', function() {
+    assert.deepEqual(
+      FILTERS.filter((kind) => !SHAPES.some((shape) => shape.kind === kind)),
+      [],
+      'A kind on the filtering list has no expression holding it to the grammar',
+    )
   })
   it('cannot name a step kind no shape stands for', function() {
     assert.deepEqual(
