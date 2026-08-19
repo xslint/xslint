@@ -116,12 +116,6 @@
     <td>A nested xsl:if inside another xsl:if is prohibited. Combine conditions with 'and' into a single xsl:if.</td>
   </tr>
   <tr>
-    <td><a href="checks/confusing-variable-and-node.html">confusing-variable-and-node</a></td>
-    <td>xpath</td>
-    <td><span class="severity-warning">warning</span></td>
-    <td>A variable name is used bare as a node selector. Use $name syntax to reference the variable.</td>
-  </tr>
-  <tr>
     <td><a href="checks/duplicate-param-name.html">duplicate-param-name</a></td>
     <td>xpath</td>
     <td><span class="severity-error">error</span></td>
@@ -218,12 +212,6 @@
     <td>xsl:attribute with a static name on a literal element can be a literal attribute (an AVT for a computed value). Write it inline.</td>
   </tr>
   <tr>
-    <td><a href="checks/not-creating-element-correctly.html">not-creating-element-correctly</a></td>
-    <td>xpath</td>
-    <td><span class="severity-warning">warning</span></td>
-    <td>xsl:element is used with a static name. Use a literal result element instead.</td>
-  </tr>
-  <tr>
     <td><a href="checks/not-using-attribute-test-in-if-when-node.html">not-using-attribute-test-in-if-when-node</a></td>
     <td>xpath</td>
     <td><span class="severity-error">error</span></td>
@@ -236,22 +224,10 @@
     <td>The xsl:output instruction is missing. Declare it to specify the serialization format explicitly.</td>
   </tr>
   <tr>
-    <td><a href="checks/null-output-from-stylesheet.html">null-output-from-stylesheet</a></td>
-    <td>xpath</td>
-    <td><span class="severity-warning">warning</span></td>
-    <td>The root template contains only variable declarations and produces no output. Add instructions that write to the result tree.</td>
-  </tr>
-  <tr>
     <td><a href="checks/otherwise-not-last.html">otherwise-not-last</a></td>
     <td>xpath</td>
     <td><span class="severity-error">error</span></td>
     <td>'xsl:otherwise' must be the last child of its 'xsl:choose'. Move it after every 'xsl:when'.</td>
-  </tr>
-  <tr>
-    <td><a href="checks/output-method-xml.html">output-method-xml</a></td>
-    <td>xpath</td>
-    <td><span class="severity-warning">warning</span></td>
-    <td>xsl:output declares method='xml' while the root template generates HTML elements. Change the method to 'html'.</td>
   </tr>
   <tr>
     <td><a href="checks/oversized-template.html">oversized-template</a></td>
@@ -264,12 +240,6 @@
     <td>xpath</td>
     <td><span class="severity-error">error</span></td>
     <td>'xsl:param' must be declared before any other content in its 'xsl:template' or 'xsl:function'. Move it above the content.</td>
-  </tr>
-  <tr>
-    <td><a href="checks/select-starts-with-double-slash.html">select-starts-with-double-slash</a></td>
-    <td>xpath</td>
-    <td><span class="severity-warning">warning</span></td>
-    <td>The select attribute starts with //, which scans the whole document from the root. Anchor it with .// or a specific path.</td>
   </tr>
   <tr>
     <td><a href="checks/setting-value-of-variable-incorrectly.html">setting-value-of-variable-incorrectly</a></td>
@@ -410,6 +380,12 @@
     <td>The stylesheet is part of an xsl:import/xsl:include cycle — it pulls in, directly or through a chain, a stylesheet that pulls it back (or imports itself). This is a static error. Break the cycle so no module depends on one that depends on it.</td>
   </tr>
   <tr>
+    <td><a href="checks/confusing-variable-and-node.html">confusing-variable-and-node</a></td>
+    <td>format</td>
+    <td><span class="severity-warning">warning</span></td>
+    <td>A variable name is used bare as a node selector. Use $name syntax to reference the variable.</td>
+  </tr>
+  <tr>
     <td><a href="checks/count-compared-to-zero.html">count-compared-to-zero</a></td>
     <td>format</td>
     <td><span class="severity-warning">warning</span></td>
@@ -426,6 +402,24 @@
     <td>format</td>
     <td><span class="severity-warning">warning</span></td>
     <td>name() or local-name() is compared with a string, which is prefix-fragile and slower than a node test. Use self::name instead.</td>
+  </tr>
+  <tr>
+    <td><a href="checks/not-creating-element-correctly.html">not-creating-element-correctly</a></td>
+    <td>format</td>
+    <td><span class="severity-warning">warning</span></td>
+    <td>xsl:element is used with a static name. Use a literal result element instead.</td>
+  </tr>
+  <tr>
+    <td><a href="checks/null-output-from-stylesheet.html">null-output-from-stylesheet</a></td>
+    <td>format</td>
+    <td><span class="severity-warning">warning</span></td>
+    <td>The root template contains only variable declarations and produces no output. Add instructions that write to the result tree.</td>
+  </tr>
+  <tr>
+    <td><a href="checks/output-method-xml.html">output-method-xml</a></td>
+    <td>format</td>
+    <td><span class="severity-warning">warning</span></td>
+    <td>xsl:output declares method='xml' while the root template generates HTML elements. Change the method to 'html'.</td>
   </tr>
   <tr>
     <td><a href="checks/predicate-position-literal.html">predicate-position-literal</a></td>
@@ -462,6 +456,12 @@
     <td>format</td>
     <td><span class="severity-warning">warning</span></td>
     <td>An XPath expression has redundant whitespace. Remove the extra spaces.</td>
+  </tr>
+  <tr>
+    <td><a href="checks/select-starts-with-double-slash.html">select-starts-with-double-slash</a></td>
+    <td>format</td>
+    <td><span class="severity-warning">warning</span></td>
+    <td>The select attribute starts with //, which scans the whole document from the root. Anchor it with .// or a specific path.</td>
   </tr>
   <tr>
     <td><a href="checks/starts-with-double-slash.html">starts-with-double-slash</a></td>

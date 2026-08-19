@@ -72,13 +72,21 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-warning">warning</span>
-    <code class="xpath">//xsl:element[not(contains(@name, '$') or (contains(@name, '(') and contains(@name, ')')) or (contains(@name, '{') and contains(@name, '}')) or (@namespace))]</code>
+    <code class="xpath">checked over the tokens, not an XPath rule</code>
   </div>
   <div class="check-content">
 <h1>Not creating element correctly</h1>
 <p><code>xsl:element</code> with a static, literal name is unnecessarily verbose. Use a
-literal result element directly, reserving <code>xsl:element</code> for cases where the
-element name is dynamic (contains a variable reference, function call, or AVT).</p>
+literal result element directly, and keep <code>xsl:element</code> for a name the
+stylesheet computes — one written as an attribute value template, <code>{...}</code>,
+which is the only spelling XSLT evaluates there. A <code>$</code> or a bracket standing
+outside those braces is part of the name itself, not a computation.</p>
+<p>Two static names still want the instruction. A name whose prefix binds to the
+XSLT namespace has no literal form at all: <code>&lt;xsl:element name=&quot;xsl:template&quot;/&gt;</code>
+writes an element into the result tree, where <code>&lt;xsl:template&gt;</code> is an
+instruction the processor runs. And a <code>namespace</code> attribute puts the element in
+a namespace named outright, which a literal result element cannot do — it takes
+its own from the prefixes in scope.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:element name=&quot;div&quot;&gt;
   &lt;xsl:value-of select=&quot;.&quot;/&gt;
