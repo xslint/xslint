@@ -223,20 +223,26 @@ const SHEET = fs.readFileSync(
 )
 
 /**
- * Where the repeatable part of that stylesheet begins — everything from the
- * first named template to the closing tag, which is the root template's four
- * callees and nothing else. A heavy stylesheet is that part written out again
- * under names of its own, so one file grows without the corpus growing a
- * second root template or a second import.
+ * The comment the sheet marks its repeatable part with — everything from there
+ * to the closing tag, which is the root template's four callees and nothing
+ * else. A heavy stylesheet is that part written out again under names of its
+ * own, so one file grows without the corpus growing a second root template or
+ * a second import. Where the part begins is the stylesheet's to say rather
+ * than a start tag spelled here: the `fixtures` job fails any `.test.js`
+ * holding one, and a marker a test matches on is a fixture detail whether or
+ * not it is a whole element.
  * @type {string}
  */
-const OPENS = '  <xsl:template name="tSEEDx0"'
+const MARK = '<!-- repeated -->'
 
 /**
- * The part of the sheet a heavy stylesheet repeats.
+ * The part of the sheet a heavy stylesheet repeats, the marker excluded so a
+ * copy does not carry one of its own.
  * @type {string}
  */
-const BODY = SHEET.slice(SHEET.indexOf(OPENS), SHEET.lastIndexOf('</xsl:'))
+const BODY = SHEET.slice(
+  SHEET.indexOf(MARK) + MARK.length, SHEET.lastIndexOf('</xsl:'),
+)
 
 /**
  * Every how many stylesheets one is heavy. A corpus of forty holds one and a
@@ -287,7 +293,7 @@ const copied = function(seed, weight) {
  * @return {string} - The XML of one stylesheet
  */
 const sheet = function(seed, weight) {
-  return (SHEET.replace(OPENS, copied(seed, weight) + OPENS))
+  return SHEET.replace(MARK, MARK + copied(seed, weight))
     .replaceAll('PREVIOUS', String(seed - 1))
     .replaceAll('SEED', String(seed))
 }

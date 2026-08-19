@@ -13,6 +13,7 @@
       <xsl:call-template name="tSEEDx0"/>
     </html>
   </xsl:template>
+  <!-- repeated -->
   <xsl:template name="tSEEDx0" match="//nodeSEEDx0">
     <xsl:param name="qSEEDx0"/>
     <xsl:variable name="vSEEDx0" select="child::aSEEDx0/bSEEDx0"/>
