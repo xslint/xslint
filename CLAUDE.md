@@ -151,9 +151,10 @@ half of #784 answers it again and further, over the corpus #800 gave the gate:
 serving a declarative axis from one shared walk took `xpath-linter` from 44.88%
 of the run to 31.02%, so the dearest stage is no longer near half of it, and the
 nineteen cheap stages came up once more, by 1.217 to 1.439 times what they read
-before, median 1.334. Three re-derivations
-of one table for one cause is the argument for a gate of another kind, which is
-why that change carries a structural one beside the bars: no share ceiling can
+before, median 1.334. Three re-derivations of one table for one cause — those
+of #783, #800 and this one, the fourth move of it being #777's change of divisor
+rather than any stage's cost — is the argument for a gate of another kind, which
+is why that change carries a structural one beside the bars: no share ceiling can
 stop a selector asking the engine to descend a tree the run has already walked,
 and `UNINDEXED` in `test/conformance.test.js` can.
 
@@ -191,7 +192,7 @@ So `xpath-linter`'s own entry comes down by its own ratio, 73 to 50, where
 against a dearest 31.02% the old one would stand at 2.35 times a reading the
 band allows twice — and the two that answer to the band keep theirs, 16 and 10
 standing 1.61 and 1.68 times their dearest readings, which is where an entry
-belongs. `SHARE` stays at 5 for the reason it stayed there at #783: the
+belongs. `SHARE` stays at 5 for the reason it has stayed there before: the
 dearest cheap stage reads 3.27%, which 5 stands 1.53 times above, and the one
 runner table on record charges the dearest of them 1.82% where this machine
 charged it 2.53% — a bar raised on nobody's failure is a bar loosened. The
