@@ -6,6 +6,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:svg="http://www.w3.org/2000/svg" xmlns:html="http://www.w3.org/1999/xhtml" xmlns:math="http://www.w3.org/1998/Math/MathML" xmlns:mine="urn:mine:SEED" xmlns:dead="urn:dead:SEED" xmlns:gone="urn:gone:SEED" version="2.0" exclude-result-prefixes="mine">
   <xsl:import href="sPREVIOUS.xsl"/>
   <xsl:output method="xml"/>
+  <xsl:variable name="uSEED"/>
   <xsl:template match="/">
     <html>
       <xsl:element name="eSEEDx0"/>
