@@ -28,12 +28,18 @@ const assert = require('assert')
  * So this is a ratchet and not a licence, red from both sides: a new selector
  * that cannot be served has to be written here with its reason, and one that
  * has since become servable turns its own entry red rather than sitting on a
- * list that has stopped describing it. Eight of the fifteen are anchored at
- * the root and cost nothing anyway, a root element being one node rather than a
- * sweep. The other seven are what phase 2 of #784 is for: three are a union of
- * two whole paths rather than a union of names inside one, two anchor on an
- * attribute where the buckets hold elements, one is the `//xsl:*` that a
- * namespace bucket would serve, and one is a wildcard no bucket can name.
+ * list that has stopped describing it. What a reason here is not is a statement
+ * about cost. Nine of the fifteen are anchored at the root, which keeps them
+ * out because a root step is not a descendant sweep of named elements — and it
+ * leaves only three of them without a descendant step, the six others
+ * descending below the anchor, so the nine still spend 1.31 of the 2.97 seconds
+ * the fifteen spend over DocBook-XSL, and the dearest single selector left is
+ * one of them: `modern-construct-in-xslt-1` at 0.63 s, whose union ends in the
+ * `xsl:*[@as]` a namespace bucket would answer. Phase 2 of #784 is therefore
+ * drawn by what a selector costs rather than by the shape that excluded it —
+ * that union, the three spelling a union of two whole paths (0.43, 0.34 and
+ * 0.19 s), the wildcard of `text-outside-xsl-text` (0.32), and the two anchored
+ * on an attribute where the buckets hold elements (0.27 and 0.09).
  *
  * A name that has stopped being an `xpath` check at all is the third way this
  * can rot, and the one the sweep below cannot see, since it walks the checks
