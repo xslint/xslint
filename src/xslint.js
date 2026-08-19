@@ -395,7 +395,7 @@ const xslint = function(pths, options) {
     errors.length > 0 ||
     (maxWarnings >= 0 && warnings.length > maxWarnings)
   ) {
-    process.exit(1)
+    process.exitCode = 1
   }
 }
 

@@ -505,7 +505,20 @@ from `src/xpath.js`, the fontoxpath environment.
 `lint(sources, {suppress, overrides}) => defects`: no file I/O, prints nothing,
 never exits. The command-line `xslint(paths, options)` in the same module wraps
 it — resolves config, reads the `.xsl` files, calls `lint`, applies `--fix`,
-reports, and sets the exit code. The package `main` re-exports `lint` and
+reports, and sets the exit code. It sets it as `process.exitCode` and never
+`process.exit`, which ends the process where it stands and abandons every write
+the kernel has not taken: node's stdout is asynchronous to a pipe on POSIX —
+synchronous to a file, to a terminal, and to a pipe on Windows — so whether the
+report arrived whole depended on how fast the other end read it. Twenty
+stylesheets draw 720 defects here, 165,500 bytes of report: a file or a terminal
+takes all of it, a shell pipe whose reader stalls for two seconds takes 65,492
+bytes, and the socket `spawn` hands a child takes none at all. The exit code was
+right in each of those, so nothing announced the loss (#767). A
+`no-restricted-syntax` selector bans the call across the repository, nothing
+here having a use for it — the `catch` around the parse in `src/index.mjs` sets
+the same field. What pins it is a run over twenty stylesheets whose reader stays
+paused until stderr says how many defects were found, counting the report's
+lines against that number. The package `main` re-exports `lint` and
 `fixed` so an embedder (the planned LSP server, #336) can lint a buffer without
 shelling out; the bin stays `src/index.mjs`.
 
