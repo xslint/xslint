@@ -66,12 +66,36 @@ const SERIALIZED = {attribute: 'method', value: 'xml'}
 const HTML = ['html', 'HTML']
 
 /**
- * The XSLT declarations whose content binds a value rather than reaching the
- * result tree, so an element built inside one is a variable's and not the
- * output's.
+ * The XSLT instructions whose content does not flow into the result tree the
+ * enclosing element builds, so an element inside one is not standing where the
+ * enclosing element stands. Three of them bind a value (`variable`, `param`,
+ * `with-param`); `element` builds the wrapper its content becomes children of;
+ * three reduce their content to a string (`attribute`, `comment`,
+ * `processing-instruction`); `message` writes to the message stream; and
+ * `result-document` opens a secondary document with a serialization of its own,
+ * which is why it is here rather than merely unhelpful — a stylesheet already
+ * declaring `method="html"` there drew the warning against its *primary*
+ * output, and the fix would have rewritten that.
+ *
+ * xsltproc settles the eight of these XSLT 1.0 has, by showing what each
+ * actually builds: an `html` under `xsl:element` comes out
+ * `<wrapper><html/></wrapper>`, one under `xsl:attribute` comes out `att=""`,
+ * and one under `xsl:message` or `xsl:with-param` never reaches the output at
+ * all. `result-document` is 2.0 and reasoned from the specification instead,
+ * no 2.0 processor being installed to ask.
+ *
+ * `xsl:copy` is deliberately absent, and it is the one that looks like it
+ * belongs. Copying the *document node* is transparent — its content becomes
+ * the children of the copy, which is the result document — so under a root
+ * template an `html` inside one really is the document element, and xsltproc
+ * agrees, answering `<html><body/></html>` where `xsl:element` answers a
+ * wrapper. A list is only as good as the reason each name is on it.
  * @type {Array.<string>}
  */
-const BOUND = ['variable', 'param']
+const DIVERTED = [
+  'attribute', 'comment', 'element', 'message', 'param',
+  'processing-instruction', 'result-document', 'variable', 'with-param',
+]
 
 /**
  * Whether the pattern matches the root of the document. A pattern is a union of
@@ -146,12 +170,14 @@ const silent = function(template) {
 }
 
 /**
- * Whether the element stands at the outermost level of what the template
- * builds: every element between it and the template is an XSLT instruction,
- * and none of them binds its content to a name. An `html` under a literal
- * result element is a fragment of a larger document rather than the document,
- * which is what an Atom `content` or an XHTML island holds — and one under an
- * `xsl:variable` is not output at all.
+ * Whether the element stands where the template's own result stands: every
+ * element between it and the template is an XSLT instruction that passes its
+ * content through, which is every one of them but `DIVERTED`. An `html` under
+ * a literal result element is a fragment of a larger document rather than the
+ * document — what an Atom `content` or an XHTML island holds — and one under
+ * an `xsl:message` or an `xsl:result-document` is not this document at all.
+ * `xsl:if`, `xsl:choose` and `xsl:for-each` are transparent and so keep it
+ * outermost, which is what makes this a walk rather than a test on the parent.
  * @param {Element} element - The element being judged
  * @param {Element} template - The root template holding it
  * @return {boolean} - True when the template builds it outermost
@@ -160,7 +186,7 @@ const outermost = function(element, template) {
   let node = element.parentNode
   let outside = true
   while (outside && node !== template) {
-    outside = node.namespaceURI === XSLT && !BOUND.includes(node.localName)
+    outside = node.namespaceURI === XSLT && !DIVERTED.includes(node.localName)
     node = node.parentNode
   }
   return outside
