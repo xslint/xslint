@@ -83,6 +83,7 @@ jobs:
             echo "| seconds | $spent |"
             echo "| budget | $BUDGET |"
           } >> "$GITHUB_STEP_SUMMARY"
+          echo "::notice::linting $NAME took ${spent}s of its ${BUDGET}s budget"
           if [ "$stylesheets" -lt 1 ]; then
             echo "::error::no stylesheet under corpus, so $NAME never arrived"
             exit 1
