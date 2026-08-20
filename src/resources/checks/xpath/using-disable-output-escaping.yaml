@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
 # SPDX-License-Identifier: MIT
 ---
-xpath: '//@disable-output-escaping[. = "yes"]/..'
+xpath: '//(xsl:value-of | xsl:text)[@disable-output-escaping = "yes"]'
 severity: warning
 message: "disable-output-escaping='yes' is set, which produces implementation-defined output. Use xsl:copy-of or literal elements instead."

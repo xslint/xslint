@@ -58,12 +58,61 @@ const ELEMENTS = {template: 'template', variable: 'variable', output: 'output'}
 const SERIALIZED = {attribute: 'method', value: 'xml'}
 
 /**
- * The two spellings of the element that gives an HTML result away. A name test
- * asks for one spelling of one name, so the check has always named both, and
- * neither of them reaches an `html` a prefix puts in a namespace of its own.
+ * The two spellings of the element that gives an HTML result away, which the
+ * check has always named both of because a name test asks for one spelling of
+ * one name.
  * @type {Array.<string>}
  */
 const HTML = ['html', 'HTML']
+
+/**
+ * The XSLT instructions whose content does not flow into the result tree the
+ * enclosing element builds, so an element inside one is not standing where the
+ * enclosing element stands. Three of them bind a value (`variable`, `param`,
+ * `with-param`); `element` builds the wrapper its content becomes children of;
+ * three reduce their content to a string (`attribute`, `comment`,
+ * `processing-instruction`); `message` writes to the message stream; and
+ * `result-document` opens a secondary document with a serialization of its own,
+ * which is why it is here rather than merely unhelpful — a stylesheet already
+ * declaring `method="html"` there drew the warning against its *primary*
+ * output, and the fix would have rewritten that.
+ *
+ * xsltproc settles the eight of these XSLT 1.0 has, by showing what each
+ * actually builds: an `html` under `xsl:element` comes out
+ * `<wrapper><html/></wrapper>`, one under `xsl:attribute` comes out `att=""`,
+ * and one under `xsl:message` or `xsl:with-param` never reaches the output at
+ * all. `result-document` is 2.0 and reasoned from the specification instead,
+ * no 2.0 processor being installed to ask.
+ *
+ * `map-entry` and `array-member` are here for the same reason and from a
+ * version further on: the content of either builds a map's value or an array's
+ * member, which is a value and not a node the enclosing element holds. Their
+ * containers are not, and the asymmetry is deliberate — the content of an
+ * `xsl:map` is a sequence of maps and of an `xsl:array` a sequence of arrays,
+ * so an `html` standing directly inside one is invalid XSLT rather than output
+ * standing anywhere, and there is nothing there worth a name.
+ *
+ * `xsl:copy` is deliberately absent, and it is the one that looks like it
+ * belongs. Copying the *document node* is transparent — its content becomes
+ * the children of the copy, which is the result document — so under a root
+ * template an `html` inside one really is the document element, and xsltproc
+ * agrees, answering `<html><body/></html>` where `xsl:element` answers a
+ * wrapper.
+ *
+ * A list is only as good as the reason each name is on it, and only as good as
+ * the test that would notice one leaving. Every name here is dropped in turn
+ * against `test/resources/root-template-packs/`, and each drop turns a pack
+ * red: two did not when this list was first written, `param` inherited from a
+ * two-name spelling and never asserted, and four masked by a literal result
+ * element standing between the instruction and the `html` — a zero produced by
+ * another mechanism than the one under test, which is #645's shape.
+ * @type {Array.<string>}
+ */
+const DIVERTED = [
+  'array-member', 'attribute', 'comment', 'element', 'map-entry', 'message',
+  'param', 'processing-instruction', 'result-document', 'variable',
+  'with-param',
+]
 
 /**
  * Whether the pattern matches the root of the document. A pattern is a union of
@@ -138,12 +187,44 @@ const silent = function(template) {
 }
 
 /**
- * Whether the template builds an HTML element somewhere inside it.
+ * Whether the element stands where the template's own result stands: every
+ * element between it and the template is an XSLT instruction that passes its
+ * content through, which is every one of them but `DIVERTED`. An `html` under
+ * a literal result element is a fragment of a larger document rather than the
+ * document — what an Atom `content` or an XHTML island holds — and one under
+ * an `xsl:message` or an `xsl:result-document` is not this document at all.
+ * `xsl:if`, `xsl:choose` and `xsl:for-each` are transparent and so keep it
+ * outermost, which is what makes this a walk rather than a test on the parent.
+ * @param {Element} element - The element being judged
+ * @param {Element} template - The root template holding it
+ * @return {boolean} - True when the template builds it outermost
+ */
+const outermost = function(element, template) {
+  let node = element.parentNode
+  let outside = true
+  while (outside && node !== template) {
+    outside = node.namespaceURI === XSLT && !DIVERTED.includes(node.localName)
+    node = node.parentNode
+  }
+  return outside
+}
+
+/**
+ * Whether the template builds an HTML document. Holding an `html` element
+ * somewhere inside it was the question until #495, and it is a different one:
+ * an XML document may embed an HTML fragment — an Atom entry's `content`, an
+ * XHTML island — and stay XML, so a check reading any descendant told a valid
+ * feed to serialize itself as HTML, and `--fix-suggestions` rewrote it. The
+ * namespace answers the other half: an `html` a document puts in the XHTML
+ * namespace is XHTML, whose serialization is `xml` in 1.0 and `xhtml` from
+ * 2.0, never the `html` this check recommends.
  * @param {Element} template - The root template
- * @return {boolean} - True when it holds one
+ * @return {boolean} - True when it builds one
  */
 const html = function(template) {
-  return HTML.some((name) => template.getElementsByTagName(name).length > 0)
+  return HTML.some((name) => Array.from(template.getElementsByTagName(name))
+    .some((element) => element.namespaceURI === null &&
+      outermost(element, template)))
 }
 
 /**
@@ -224,6 +305,8 @@ const lintByRootTemplate = function(corpus, suppressions = []) {
 }
 
 module.exports = {
+  DIVERTED,
+  HTML,
   lintByRootTemplate,
   names,
 }

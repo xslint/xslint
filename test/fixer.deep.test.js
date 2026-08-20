@@ -595,6 +595,11 @@ const UNCHANGED = [
     flag: '--fix',
     sheet: 'a-wrap-behind-a-trailing-space.xsl',
   },
+  {
+    name: 'cannot strip an escaping attribute off a literal result element',
+    flag: '--fix-suggestions',
+    sheet: 'disable-output-escaping-on-a-literal-result-element.xsl',
+  },
 ]
 
 /**
