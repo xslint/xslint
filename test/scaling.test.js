@@ -112,8 +112,9 @@ const STEP = 4
  * #811 moves it a fifth time, and this time an entry leaves the table rather
  * than moving within it. Serving `//@*` off the same walk took
  * `corpus-linter` from 20.89% of the run to 1.23%, dearest of five gate runs a
- * side interleaved on one machine, and over the real corpora from 2.15 s to
- * 0.07 s on DocBook-XSL, 1.16 to 0.06 on TEI and 0.55 to 0.03 on DITA-OT. An
+ * side interleaved on one machine, and over the real corpora from 2.26 s to
+ * 0.11 s on DocBook-XSL, 1.23 to 0.09 on TEI and 0.60 to 0.06 on DITA-OT, that
+ * being this file's own clock rather than the wall one. An
  * entry is for a stage that legitimately costs more of a run than the rest, and
  * that stage no longer does: it answers to `SHARE` now, which is a bar more
  * than five times tighter than the 32 it leaves behind and asks the growth
