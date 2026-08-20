@@ -189,9 +189,13 @@ const SLACK = 4
  * is the stronger statement, while one without is pinned only by a bar it sits
  * far below — so its shape is what is worth watching, and a cheap stage turning
  * quadratic is what this catches: it would read `STEP` itself, 4.0, where the
- * nineteen of them read 0.47 to 1.24 over four runs. Among the dearest is
- * `import-linter`, which really does hold a quadratic (#769) that forty
- * stylesheets are too few to show. Loose on purpose beyond that, because growth
+ * nineteen of them read 0.47 to 1.24 over four runs. What it cannot catch is a
+ * quadratic whose constant is still small at this size, which is what
+ * `import-linter` held: forty stylesheets left it reading 1.0 to 1.6 while it
+ * cost the square of an import chain, and a corpus long enough to show that is
+ * one every other stage would have to lint too. So that shape is asked about in
+ * `test/import-linter.test.js`, over a chain of its own and against a bar of
+ * its own (#769). Loose on purpose beyond that, because growth
  * is the noisier of the two
  * questions — the cross-file linter reads 1.71 to 1.89 across runs where its
  * share reads 15.1% to 15.7% — and a bar tight enough to catch a constant fires

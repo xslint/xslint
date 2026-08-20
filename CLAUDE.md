@@ -364,12 +364,34 @@ the defect it was written for nor survive a loaded runner, which is both halves
 of this design's reason for being.
 
 What a gate measured at one size cannot see is a quadratic whose constant is
-still small there. `circular-import` walks the whole import graph once per edge
-and so costs the square of a chain of imports, confirmed at 2.48, 3.39, 3.53 and
-3.99 per doubling from 100 stylesheets to 1600 — and reads a flat 1.0 to 1.6 at
-forty, where the per-edge cost dominates (#769). That is what the second tier is
-for. `corpora.yml` runs nightly, cloning DocBook-XSL, TEI and DITA-OT **at
-pinned commits** — a branch tip would drift under the numbers — restoring them
+still small there. `circular-import` asked whether one edge's target reaches
+back to its source by walking the whole import graph, once per edge, and so cost
+the square of a chain of imports: 2.48, 3.39, 3.53 and 3.99 per doubling from 100
+stylesheets to 1600, converging on the 4.0 a quadratic predicts, where at forty
+it read a flat 1.0 to 1.6 and the per-edge cost was the whole of what the gate
+could see (#769). Cycle membership is a property of the graph rather than of an
+edge — two files sit on one cycle exactly when each reaches the other — so one
+pass of Kosaraju's answers every edge at once, and the check is linear in them
+at 3.4 to 4.2 microseconds a file, flat over the same range.
+
+What holds that is a third instrument, neither tier being able to. The
+per-pull-request gate cannot grow its corpus to the size the shape shows at,
+since every stage lints that corpus and the nineteen cheap ones would each pay
+for the size one of them needs; the nightly tier would meet the shape as a
+budget overrun, a night late and over a corpus chosen for something else. So
+`test/import-linter.test.js` times the one check over a chain of 200 stylesheets
+and again over 800, and fails past a growth of **8** — the geometric middle of
+the 4.0 a single pass predicts and the 16.0 a walk-per-edge predicts, and of the
+two measured distributions with it, 3.10 to 4.56 over ten runs of the test
+against 13.74 to 15.36 over ten more. Putting the walk back fails it three times
+of three, at 13.98, 14.50 and 15.50. It costs ninety milliseconds, timing one
+stage over a chain it builds itself rather than a whole pipeline over a corpus
+every stage reads — which is what lets it ask about a corpus five times the size
+of the one the first tier can afford.
+
+The second tier is for what a corpus of our own making cannot show at all.
+`corpora.yml` runs nightly, cloning DocBook-XSL, TEI and DITA-OT **at pinned
+commits** — a branch tip would drift under the numbers — restoring them
 through `actions/cache`, writing what it found to the job summary, and failing
 past a per-corpus budget so `jayqi/failed-build-issue-action` opens an issue the
 way `daily.yml` does. Vendoring those corpora instead is a trap: each carries
