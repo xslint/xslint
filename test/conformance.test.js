@@ -317,6 +317,18 @@ const stylish = function(xsl) {
  */
 const EXPECTS = /found\.(amount|positions|fixes|values)/
 
+/**
+ * The pack directory a harness call names. One call per directory and one
+ * directory per call, which is what stands between a pack directory and going
+ * unread: the harness is one function now, so deleting the call that hands it a
+ * directory deletes every assertion over that directory's packs at once, and
+ * nothing in the tree objected. Eleven of the twenty-two could be dropped that
+ * way with the coverage gate still reading 100%, `xpath-packs` and its
+ * thirty-eight declarative checks among them (#660).
+ * @type {RegExp}
+ */
+const READS = /dir: '([\w-]+-packs)'/g
+
 describe('conformance', function() {
   it('keeps the generated checks abreast of the YAML that authors them', function() {
     assert.equal(
@@ -436,6 +448,30 @@ describe('conformance', function() {
         .map((pack) => pack.name),
       [],
       'a format pack whose fixes do not stand one per position asserts nothing about them',
+    )
+  })
+  it('hands every pack directory to the harness exactly once', function() {
+    assert.deepEqual(
+      allFilesFrom(__dirname)
+        .filter((file) => file.endsWith('.test.js'))
+        .flatMap((file) => [...fs.readFileSync(file, 'utf-8').matchAll(READS)]
+          .map((match) => match[1]))
+        .sort(),
+      [...new Set(
+        allFilesFrom(RESOURCES)
+          .filter((file) => file.endsWith('.yaml'))
+          .map((file) => path.basename(path.dirname(file)))
+          .filter((dir) => dir.endsWith('-packs')),
+      )].sort(),
+      'a pack directory no harness call names goes unread, and every ' +
+        'assertion over its packs goes with it, which nothing else here can ' +
+        'notice: the harness being one function, the call handing it a ' +
+        'directory is the whole of what runs that directory. Deleting the ' +
+        'call for xpath-packs took all thirty-eight declarative checks out ' +
+        'of the suite and left eslint, npm test and a 100% coverage run ' +
+        'green (#660). A name matched twice is the same hole the other way, ' +
+        'a directory read under one call and a second name spelled for ' +
+        'nothing',
     )
   })
   it('reads what a pack expects in the one harness and nowhere else',
