@@ -58,12 +58,20 @@ const ELEMENTS = {template: 'template', variable: 'variable', output: 'output'}
 const SERIALIZED = {attribute: 'method', value: 'xml'}
 
 /**
- * The two spellings of the element that gives an HTML result away. A name test
- * asks for one spelling of one name, so the check has always named both, and
- * neither of them reaches an `html` a prefix puts in a namespace of its own.
+ * The two spellings of the element that gives an HTML result away, which the
+ * check has always named both of because a name test asks for one spelling of
+ * one name.
  * @type {Array.<string>}
  */
 const HTML = ['html', 'HTML']
+
+/**
+ * The XSLT declarations whose content binds a value rather than reaching the
+ * result tree, so an element built inside one is a variable's and not the
+ * output's.
+ * @type {Array.<string>}
+ */
+const BOUND = ['variable', 'param']
 
 /**
  * Whether the pattern matches the root of the document. A pattern is a union of
@@ -138,12 +146,42 @@ const silent = function(template) {
 }
 
 /**
- * Whether the template builds an HTML element somewhere inside it.
+ * Whether the element stands at the outermost level of what the template
+ * builds: every element between it and the template is an XSLT instruction,
+ * and none of them binds its content to a name. An `html` under a literal
+ * result element is a fragment of a larger document rather than the document,
+ * which is what an Atom `content` or an XHTML island holds — and one under an
+ * `xsl:variable` is not output at all.
+ * @param {Element} element - The element being judged
+ * @param {Element} template - The root template holding it
+ * @return {boolean} - True when the template builds it outermost
+ */
+const outermost = function(element, template) {
+  let node = element.parentNode
+  let outside = true
+  while (outside && node !== template) {
+    outside = node.namespaceURI === XSLT && !BOUND.includes(node.localName)
+    node = node.parentNode
+  }
+  return outside
+}
+
+/**
+ * Whether the template builds an HTML document. Holding an `html` element
+ * somewhere inside it was the question until #495, and it is a different one:
+ * an XML document may embed an HTML fragment — an Atom entry's `content`, an
+ * XHTML island — and stay XML, so a check reading any descendant told a valid
+ * feed to serialize itself as HTML, and `--fix-suggestions` rewrote it. The
+ * namespace answers the other half: an `html` a document puts in the XHTML
+ * namespace is XHTML, whose serialization is `xml` in 1.0 and `xhtml` from
+ * 2.0, never the `html` this check recommends.
  * @param {Element} template - The root template
- * @return {boolean} - True when it holds one
+ * @return {boolean} - True when it builds one
  */
 const html = function(template) {
-  return HTML.some((name) => template.getElementsByTagName(name).length > 0)
+  return HTML.some((name) => Array.from(template.getElementsByTagName(name))
+    .some((element) => element.namespaceURI === null &&
+      outermost(element, template)))
 }
 
 /**

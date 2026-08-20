@@ -63,7 +63,7 @@
       },
       "output-method-xml": {
         "severity": "warning",
-        "message": "xsl:output declares method='xml' while the root template generates HTML elements. Change the method to 'html'."
+        "message": "xsl:output declares method='xml' while the root template builds an HTML document. Change the method to 'html'."
       },
       "predicate-position-literal": {
         "severity": "warning",
