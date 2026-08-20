@@ -4,11 +4,18 @@
  */
 
 /**
+ * The kind of node an attribute is, which is the one kind of the three below a
+ * selector reaches by an axis of its own.
+ * @type {number}
+ */
+const ATTRIBUTE = 2
+
+/**
  * Node kinds a walk collects: an attribute, a text node, and the CDATA section
  * that is a text node written another way.
  * @type {Array.<number>}
  */
-const CARRIED = [2, 3, 4]
+const CARRIED = [ATTRIBUTE, 3, 4]
 
 /**
  * Namespace declarations, which XPath does not count among an element's
@@ -63,9 +70,16 @@ const WALKED = new WeakMap()
  * written. Two details keep the sequence the one a descendant scan
  * answers, so that swapping the two changes no report: a namespace declaration
  * is left out, XPath counting those as nodes of another kind, and an element's
- * attributes come out sorted by name, which is the order fontoxpath yields them
- * in — XPath leaves it to the implementation, and matching the old one is what
- * makes this change invisible rather than a re-ordering of every report.
+ * attributes come out sorted by **local** name, ties left in the order they
+ * were written, which is the order fontoxpath yields them in — XPath leaves it
+ * to the implementation, and matching the old one is what makes this change
+ * invisible rather than a re-ordering of every report. The prefix is no part of
+ * that answer, and sorting by the whole name said otherwise wherever an
+ * attribute carried one: the engine answers a `table` written
+ * `summary border xml:id` with `border xml:id summary`, where the name sorts
+ * `summary` ahead of `xml:id` — 37 files of the three corpora hold such an
+ * element, so the claim above held for every other one and the two orders
+ * parted here (#811).
  *
  * This is the set a descendant scan for every attribute and every text node
  * answers, reached by walking rather than by XPath, which is the point.
@@ -88,9 +102,11 @@ const walked = function(xsl) {
       const carried = Array.from(node.attributes || [])
         .filter((one) => !DECLARED.test(one.nodeName))
         .sort((one, two) => {
-          let order = 1
-          if (one.nodeName < two.nodeName) {
+          let order = 0
+          if (one.localName < two.localName) {
             order = -1
+          } else if (two.localName < one.localName) {
+            order = 1
           }
           return order
         })
@@ -109,6 +125,37 @@ const walked = function(xsl) {
     WALKED.set(xsl, Object.freeze(found))
   }
   return WALKED.get(xsl)
+}
+
+/**
+ * The attributes already parted from a walk. The question is asked once for
+ * each document a cross-file check reads, so the answer is remembered beside
+ * the walk it comes off rather than filtered again.
+ * @type {WeakMap}
+ */
+const ATTRIBUTED = new WeakMap()
+
+/**
+ * Every attribute of a document, in the order a descendant sweep for one
+ * answers: the sequence `//@*` selects, which three of the four cross-file
+ * checks are written in and which costs fontoxpath 1.613 s over DocBook-XSL
+ * where these 72,077 attributes come off a walk the run has already taken in 8
+ * ms — 18% of a whole run for one selector, and #635's quadratic showing as a
+ * per-node climb: 5.50 microseconds an attribute under 200 nodes and 64.28
+ * above 3200, so six files of 291 are 70% of what it spends (#811).
+ * @param {Document} xsl - Parsed stylesheet
+ * @return {Array.<Node>} - Every attribute it carries, in document order
+ */
+const attributed = function(xsl) {
+  if (!ATTRIBUTED.has(xsl)) {
+    ATTRIBUTED.set(
+      xsl,
+      Object.freeze(walked(xsl).filter(
+        (node) => node.nodeType === ATTRIBUTE,
+      )),
+    )
+  }
+  return ATTRIBUTED.get(xsl)
 }
 
 /**
@@ -171,6 +218,7 @@ const named = function(xsl) {
 }
 
 module.exports = {
+  attributed,
   holding,
   named,
   walked,

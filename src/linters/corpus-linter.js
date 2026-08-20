@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {nodes, strings} = require('../xpath')
+const {chosen, valued} = require('../selectors')
 const {NAMED} = require('../tokens')
 const {kinds} = require('../resources/checks.json')
 const {logger} = require('../logger')
@@ -63,8 +63,8 @@ const within = function(declaration, attribute) {
  * @return {Array.<object>} - Defects found
  */
 const byName = function(corpus, check) {
-  const used = new Set(corpus.flatMap(({xsl}) => strings(xsl, check.usage)))
-  return corpus.flatMap(({file, xsl}) => nodes(xsl, check.declaration)
+  const used = new Set(corpus.flatMap(({xsl}) => valued(xsl, check.usage)))
+  return corpus.flatMap(({file, xsl}) => chosen(xsl, check.declaration)
     .filter((node) => !used.has(node.getAttribute('name')))
     .map((node) => defect(check, file, node)))
 }
@@ -223,11 +223,11 @@ const across = function(corpus, xpath) {
   if (!SELECTED.has(corpus)) {
     SELECTED.set(corpus, new Map())
   }
-  const chosen = SELECTED.get(corpus)
-  if (!chosen.has(xpath)) {
-    chosen.set(xpath, corpus.flatMap(({xsl}) => nodes(xsl, xpath)))
+  const remembered = SELECTED.get(corpus)
+  if (!remembered.has(xpath)) {
+    remembered.set(xpath, corpus.flatMap(({xsl}) => chosen(xsl, xpath)))
   }
-  return chosen.get(xpath)
+  return remembered.get(xpath)
 }
 
 /**
@@ -309,7 +309,7 @@ const reachable = function(check, declarations, usages) {
  */
 const byCall = function(corpus, check) {
   const usages = across(corpus, check.usage)
-  return corpus.flatMap(({file, xsl}) => nodes(xsl, check.declaration)
+  return corpus.flatMap(({file, xsl}) => chosen(xsl, check.declaration)
     .filter((node) => mentioning(usages, check, node).length === 0)
     .map((node) => defect(check, file, node)))
 }
@@ -324,7 +324,7 @@ const byCall = function(corpus, check) {
  */
 const byScope = function(corpus, check) {
   const usages = across(corpus, check.usage)
-  return corpus.flatMap(({file, xsl}) => nodes(xsl, check.declaration)
+  return corpus.flatMap(({file, xsl}) => chosen(xsl, check.declaration)
     .filter((node) => !mentioning(usages, check, node).some((usage) =>
       !within(node, usage) && inScope(check, node, usage)))
     .map((node) => defect(check, file, node)))
@@ -343,7 +343,7 @@ const byScope = function(corpus, check) {
 const byReachability = function(corpus, check) {
   const usages = across(corpus, check.usage)
   const declarations = corpus.flatMap(({file, xsl}) =>
-    nodes(xsl, check.declaration).map((node) => ({file, node})))
+    chosen(xsl, check.declaration).map((node) => ({file, node})))
   const used = reachable(check, declarations, usages)
   return declarations
     .filter(({node}) => !used.has(node))
