@@ -304,7 +304,29 @@ const cmdAvailable = function(cmd, args, print) {
   return available
 }
 
+/**
+ * What a script of `scripts/` says and answers when the shell runs it, which is
+ * the only way a caller learns either: the nightly workflow reads the exit code
+ * of `scripts/budget.js` and prints its line, so a test of the message alone
+ * would leave the half that arms the gate untested (#785).
+ * @param {string} script - Path of the script, from the repository root
+ * @param {Array.<string>} args - What the shell hands it
+ * @return {{code: number, said: string}} - Its status and what it printed
+ */
+const ranScript = function(script, args) {
+  const result = spawnSync(
+    'node',
+    [path.resolve(script)].concat(args),
+    {timeout: 120000, windowsHide: true, encoding: 'utf-8'},
+  )
+  return {
+    code: result.status,
+    said: `${result.stdout ?? ''}${result.stderr ?? ''}`,
+  }
+}
+
 module.exports = {
+  ranScript,
   walkedWith,
   runXslint,
   xslintStatus,
