@@ -15,25 +15,23 @@ input: |-
         <html/>
       </xsl:message>
       <xsl:result-document href="page.html" method="html">
-        <html>
-          <xsl:apply-templates/>
-        </html>
+        <html/>
       </xsl:result-document>
-      <report>
+      <xsl:comment>
+        <html/>
+      </xsl:comment>
+      <xsl:processing-instruction name="pp">
+        <html/>
+      </xsl:processing-instruction>
+      <xsl:apply-templates select="alpha">
+        <xsl:with-param name="para">
+          <html/>
+        </xsl:with-param>
+      </xsl:apply-templates>
+      <xsl:copy>
         <xsl:attribute name="att">
           <html/>
         </xsl:attribute>
-        <xsl:comment>
-          <html/>
-        </xsl:comment>
-        <xsl:processing-instruction name="pp">
-          <html/>
-        </xsl:processing-instruction>
-        <xsl:apply-templates select="alpha">
-          <xsl:with-param name="para">
-            <html/>
-          </xsl:with-param>
-        </xsl:apply-templates>
-      </report>
+      </xsl:copy>
     </xsl:template>
   </xsl:stylesheet>

@@ -84,17 +84,34 @@ const HTML = ['html', 'HTML']
  * all. `result-document` is 2.0 and reasoned from the specification instead,
  * no 2.0 processor being installed to ask.
  *
+ * `map-entry` and `array-member` are here for the same reason and from a
+ * version further on: the content of either builds a map's value or an array's
+ * member, which is a value and not a node the enclosing element holds. Their
+ * containers are not, and the asymmetry is deliberate — the content of an
+ * `xsl:map` is a sequence of maps and of an `xsl:array` a sequence of arrays,
+ * so an `html` standing directly inside one is invalid XSLT rather than output
+ * standing anywhere, and there is nothing there worth a name.
+ *
  * `xsl:copy` is deliberately absent, and it is the one that looks like it
  * belongs. Copying the *document node* is transparent — its content becomes
  * the children of the copy, which is the result document — so under a root
  * template an `html` inside one really is the document element, and xsltproc
  * agrees, answering `<html><body/></html>` where `xsl:element` answers a
- * wrapper. A list is only as good as the reason each name is on it.
+ * wrapper.
+ *
+ * A list is only as good as the reason each name is on it, and only as good as
+ * the test that would notice one leaving. Every name here is dropped in turn
+ * against `test/resources/root-template-packs/`, and each drop turns a pack
+ * red: two did not when this list was first written, `param` inherited from a
+ * two-name spelling and never asserted, and four masked by a literal result
+ * element standing between the instruction and the `html` — a zero produced by
+ * another mechanism than the one under test, which is #645's shape.
  * @type {Array.<string>}
  */
 const DIVERTED = [
-  'attribute', 'comment', 'element', 'message', 'param',
-  'processing-instruction', 'result-document', 'variable', 'with-param',
+  'array-member', 'attribute', 'comment', 'element', 'map-entry', 'message',
+  'param', 'processing-instruction', 'result-document', 'variable',
+  'with-param',
 ]
 
 /**
@@ -288,6 +305,8 @@ const lintByRootTemplate = function(corpus, suppressions = []) {
 }
 
 module.exports = {
+  DIVERTED,
+  HTML,
   lintByRootTemplate,
   names,
 }

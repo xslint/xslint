@@ -1,0 +1,25 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: output-method-xml
+found:
+  amount: 0
+  positions: [ ]
+  fixes: [ ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="4.0" id="mapped1">
+    <xsl:output encoding="UTF-8" method="xml"/>
+    <xsl:template match="/">
+      <xsl:map>
+        <xsl:map-entry key="'page'">
+          <html/>
+        </xsl:map-entry>
+      </xsl:map>
+      <xsl:array>
+        <xsl:array-member>
+          <html/>
+        </xsl:array-member>
+      </xsl:array>
+    </xsl:template>
+  </xsl:stylesheet>

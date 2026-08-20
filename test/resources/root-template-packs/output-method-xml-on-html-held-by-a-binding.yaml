@@ -11,6 +11,9 @@ input: |-
   <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="held1">
     <xsl:output encoding="UTF-8" method="xml"/>
     <xsl:template match="/">
+      <xsl:param name="para">
+        <html/>
+      </xsl:param>
       <xsl:variable name="page">
         <html>
           <xsl:apply-templates/>
@@ -18,6 +21,7 @@ input: |-
       </xsl:variable>
       <report>
         <xsl:value-of select="$page"/>
+        <xsl:value-of select="$para"/>
       </report>
     </xsl:template>
   </xsl:stylesheet>
