@@ -5,38 +5,12 @@
 
 const {lintByName} = require('../src/linters/name-linter')
 const {validate} = require('../src/validators/xpath-validator')
-const {allFilesFrom, xml, yaml} = require('../src/helpers')
-const path = require('path')
-const assert = require('assert')
-
-/**
- * Yaml name linter test packs.
- * @type {Array<string>}
- */
-const PACKS = allFilesFrom(
-  path.resolve(__dirname, 'resources', 'name-packs'),
-)
+const {harness} = require('./packs')
 
 describe('name-linter', function() {
-  PACKS.forEach((pack) => {
-    const yml = yaml.parsedFromFile(pack)
-    const input = xml.parsedFromString(yml.input)
-    describe(`testing ${path.basename(pack)} pack`, function() {
-      it(`should find ${yml.found.amount} name comparisons`, function() {
-        const {expressions} = validate([{file: 'test.xsl', content: yml.input, xsl: input}])
-        const defects = lintByName(expressions)
-        assert.equal(defects.length, yml.found.amount)
-        yml.found.positions.forEach((pos, index) => {
-          assert.equal(defects[index].line, pos[0])
-          assert.equal(defects[index].pos, pos[1])
-        })
-        yml.found.fixes.forEach((expected, index) => {
-          assert.equal(
-            defects[index].fix?.replacement ?? null,
-            expected,
-          )
-        })
-      })
-    })
+  harness({
+    dir: 'name-packs',
+    noun: 'name comparisons',
+    run: (corpus, off) => lintByName(validate(corpus).expressions, off),
   })
 })

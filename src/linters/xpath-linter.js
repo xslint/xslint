@@ -3,7 +3,6 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {nodes} = require('../xpath')
 const {chosen} = require('../selectors')
 const {isValid} = require('../syntax')
 const {FIXERS} = require('../fixers')
@@ -26,21 +25,6 @@ const PACKS = Object.entries(kinds.xpath).map(([name, pack]) => ({
  * @type {Array.<string>}
  */
 const names = PACKS.map((pack) => pack.name)
-
-/**
- * Evaluate Xpath on given XSL and return found nodes.
- * @param {Document} xsl - XSL document parsed as {@link Document}
- * @param {string} xpath - Xpath
- * @return {{name: string, line: number, pos: number}[]} - Matching
- *  nodes in the order defined by the XPath
- */
-const evaluateXpath = function(xsl, xpath) {
-  return nodes(xsl, xpath).map((node) => ({
-    name: node.nodeName,
-    line: node.lineNumber,
-    pos: node.columnNumber,
-  }))
-}
 
 /**
  * The refusal already worked out for a document. A declarative fix is offered
@@ -136,6 +120,5 @@ const lintByXpath = function(corpus, suppressions = []) {
 
 module.exports = {
   lintByXpath,
-  evaluateXpath,
   names,
 }

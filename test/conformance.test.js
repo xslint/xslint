@@ -327,6 +327,26 @@ const stylish = function(xsl) {
     .some((node) => node.namespaceURI === XSLT)
 }
 
+/**
+ * What a pack expects of a run — the keys a harness walks to assert it. Only
+ * `test/packs.js` may read them, so that an assertion the packs carry is
+ * written once rather than once per linter (#660).
+ * @type {RegExp}
+ */
+const EXPECTS = /found\.(amount|positions|fixes|values)/
+
+/**
+ * The pack directory a harness call names. One call per directory and one
+ * directory per call, which is what stands between a pack directory and going
+ * unread: the harness is one function now, so deleting the call that hands it a
+ * directory deletes every assertion over that directory's packs at once, and
+ * nothing in the tree objected. Eleven of the twenty-two could be dropped that
+ * way with the coverage gate still reading 100%, `xpath-packs` and its
+ * thirty-eight declarative checks among them (#660).
+ * @type {RegExp}
+ */
+const READS = /dir: '([\w-]+-packs)'/g
+
 describe('conformance', function() {
   it('keeps the generated checks abreast of the YAML that authors them', function() {
     assert.equal(
@@ -448,24 +468,48 @@ describe('conformance', function() {
       'a format pack whose fixes do not stand one per position asserts nothing about them',
     )
   })
-  it('reads the fixes of every format pack in the harness owning it', function() {
-    const formats = new Set(names('format'))
-    const suites = allFilesFrom(path.resolve(__dirname))
-      .filter((file) => file.endsWith('.test.js'))
-      .map((file) => fs.readFileSync(file, 'utf-8'))
+  it('hands every pack directory to the harness exactly once', function() {
     assert.deepEqual(
+      allFilesFrom(__dirname)
+        .filter((file) => file.endsWith('.test.js'))
+        .flatMap((file) => [...fs.readFileSync(file, 'utf-8').matchAll(READS)]
+          .map((match) => match[1]))
+        .sort(),
       [...new Set(
         allFilesFrom(RESOURCES)
           .filter((file) => file.endsWith('.yaml'))
-          .filter((file) => formats.has(yaml.parsedFromFile(file).pack))
-          .map((file) => path.basename(path.dirname(file))),
-      )].filter((dir) => !suites.some(
-        (suite) => suite.includes(`'${dir}'`) && suite.includes('found.fixes'),
-      )),
-      [],
-      'a pack directory whose harness never reads found.fixes leaves every fix in it unasserted',
+          .map((file) => path.basename(path.dirname(file)))
+          .filter((dir) => dir.endsWith('-packs')),
+      )].sort(),
+      'a pack directory no harness call names goes unread, and every ' +
+        'assertion over its packs goes with it, which nothing else here can ' +
+        'notice: the harness being one function, the call handing it a ' +
+        'directory is the whole of what runs that directory. Deleting the ' +
+        'call for xpath-packs took all thirty-eight declarative checks out ' +
+        'of the suite and left eslint, npm test and a 100% coverage run ' +
+        'green (#660). A name matched twice is the same hole the other way, ' +
+        'a directory read under one call and a second name spelled for ' +
+        'nothing',
     )
   })
+  it('reads what a pack expects in the one harness and nowhere else',
+    function() {
+      assert.deepEqual(
+        allFilesFrom(__dirname)
+          .filter((file) => file.endsWith('.test.js'))
+          .filter((file) => file !== __filename)
+          .filter((file) => EXPECTS.test(fs.readFileSync(file, 'utf-8')))
+          .map((file) => path.basename(file)),
+        [],
+        'a test file reading what a pack expects is a second copy of the ' +
+          'harness, and an assertion written into every copy but one fails ' +
+          'nowhere: that is how import-packs came to assert no fix while ' +
+          'redundant-import attached a real deletion (#660). Read the ' +
+          'directory through the harness in test/packs.js, which asserts ' +
+          'the amount, the positions, the name, the severity, the message, ' +
+          'the fixes and the values of every pack it is given',
+      )
+    })
   it('names every test file after the resources it takes', function() {
     assert.deepEqual(
       allFilesFrom(__dirname)
