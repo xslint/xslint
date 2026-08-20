@@ -1,0 +1,23 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: using-disable-output-escaping
+found:
+  amount: 3
+  positions: [ [ 6, 7 ], [ 9, 9 ], [ 11, 7 ] ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="mixed">
+    <xsl:output encoding="UTF-8" method="xml"/>
+    <xsl:template match="/alpha">
+      <bravo disable-output-escaping="yes">
+        <xsl:text disable-output-escaping="yes">&lt;</xsl:text>
+        <charlie>
+          <delta disable-output-escaping="no"/>
+          <xsl:value-of select="echo" disable-output-escaping="yes"/>
+        </charlie>
+        <xsl:text disable-output-escaping="yes">&gt;</xsl:text>
+        <xsl:copy-of select="foxtrot"/>
+      </bravo>
+    </xsl:template>
+  </xsl:stylesheet>

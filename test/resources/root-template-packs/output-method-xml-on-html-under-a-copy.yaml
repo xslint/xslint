@@ -1,0 +1,20 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: output-method-xml
+found:
+  amount: 1
+  positions: [ [ 3, 3 ] ]
+  fixes: [ "html" ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" id="copied1">
+    <xsl:output encoding="UTF-8" method="xml"/>
+    <xsl:template match="/">
+      <xsl:copy>
+        <html>
+          <xsl:apply-templates/>
+        </html>
+      </xsl:copy>
+    </xsl:template>
+  </xsl:stylesheet>
