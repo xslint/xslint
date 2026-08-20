@@ -382,12 +382,27 @@ budget overrun, a night late and over a corpus chosen for something else. So
 `test/import-linter.test.js` times the one check over a chain of 200 stylesheets
 and again over 800, and fails past a growth of **8** — the geometric middle of
 the 4.0 a single pass predicts and the 16.0 a walk-per-edge predicts, and of the
-two measured distributions with it, 3.10 to 4.56 over ten runs of the test
-against 13.74 to 15.36 over ten more. Putting the walk back fails it three times
-of three, at 13.98, 14.50 and 15.50. It costs ninety milliseconds, timing one
-stage over a chain it builds itself rather than a whole pipeline over a corpus
-every stage reads — which is what lets it ask about a corpus five times the size
-of the one the first tier can afford.
+two measured distributions with it, 4.34 to 4.66 over eight runs of the test
+against 14.58 to 16.22 over eight more. Putting the walk back fails it three
+times of three, at 15.10, 15.26 and 15.32. It costs a third of a second, timing
+one stage over a chain it builds itself rather than a whole pipeline over a
+corpus every stage reads — which is what lets it ask about a corpus five times
+the size of the one the first tier can afford.
+
+What a window holds is sixty-four passes over the short chain and sixteen over
+the long one, not one apiece, because a reading has to clear the clock's own
+granularity and one platform's is coarse. Windows charges processor time in
+scheduler ticks of some sixteen milliseconds, where a pass over the short chain
+costs a millisecond and one over the long chain four, so a single pass read
+`0` on both and the growth arrived `NaN` there — and worse than a gate
+answering nothing, two readings of one tick apiece would have answered 1.0 and
+passed with the defect in place, which is the failure a dropped non-finite
+reading does not cover. Sixty-four of them make each window some sixty
+milliseconds, four ticks even there, and the fine-clocked platforms gain by it
+too: a window of one pass needed a whole measurement discarded in front of it,
+the way the speed gate does, and read the growth 3.10 to 4.56 over ten runs even
+so, where a window of sixty-four is warm by its own fourth pass and reads 4.34
+to 4.66 with no warm-up at all.
 
 The second tier is for what a corpus of our own making cannot show at all.
 `corpora.yml` runs nightly, cloning DocBook-XSL, TEI and DITA-OT **at pinned
