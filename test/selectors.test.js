@@ -205,7 +205,7 @@ describe('selectors', function() {
   })
   it('refuses the attribute-anchored selector a real check is written in', function() {
     assert.deepStrictEqual(
-      splitOf(kinds.xpath['using-disable-output-escaping'].xpath).names,
+      splitOf(kinds.xpath['malformed-version-in-stylesheet'].xpath).names,
       [],
       'a selector anchored on an attribute rather than an element is served ' +
         'from a bucket of elements, which cannot hold the attribute it selects',

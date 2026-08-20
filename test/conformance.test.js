@@ -29,17 +29,24 @@ const assert = require('assert')
  * that cannot be served has to be written here with its reason, and one that
  * has since become servable turns its own entry red rather than sitting on a
  * list that has stopped describing it. What a reason here is not is a statement
- * about cost. Nine of the fifteen are anchored at the root, which keeps them
+ * about cost. Nine of the fourteen are anchored at the root, which keeps them
  * out because a root step is not a descendant sweep of named elements — and it
  * leaves only three of them without a descendant step, the six others
  * descending below the anchor, so the nine still spend 1.23 of the 2.78 seconds
- * the fifteen spend over DocBook-XSL, and the dearest single selector left is
- * one of them: `modern-construct-in-xslt-1` at 0.60 s, whose union ends in the
- * `xsl:*[@as]` a namespace bucket would answer. Phase 2 of #784 is therefore
- * drawn by what a selector costs rather than by the shape that excluded it —
- * that union, the three spelling a union of two whole paths (0.41, 0.32 and
- * 0.17 s), the wildcard of `text-outside-xsl-text` (0.29), and the two anchored
- * on an attribute where the buckets hold elements (0.26 and 0.09).
+ * the fifteen spent when that reading was taken, and the dearest single
+ * selector left is one of them: `modern-construct-in-xslt-1` at 0.60 s, whose
+ * union ends in the `xsl:*[@as]` a namespace bucket would answer. Phase 2 of
+ * #784 is therefore drawn by what a selector costs rather than by the shape
+ * that excluded it — that union, the three spelling a union of two whole paths
+ * (0.41, 0.32 and 0.17 s), the wildcard of `text-outside-xsl-text` (0.29), and
+ * the one anchored on an attribute where the buckets hold elements (0.26). That
+ * pair was two until #556 gave `using-disable-output-escaping` the element test
+ * it never had: a union of the two instructions that carry the attribute is a
+ * shape the walk serves, so it left the table by becoming servable rather than
+ * by anybody editing the list. Which of the pair's readings went with it is the
+ * 0.09, settled by timing both selectors in one process over DocBook-XSL, where
+ * the one left reads 170 ms against the departing 81 — the same order, on a
+ * measurement of selection alone rather than of the whole stage.
  *
  * A name that has stopped being an `xpath` check at all is the third way this
  * can rot, and the one the sweep below cannot see, since it walks the checks
@@ -61,7 +68,6 @@ const UNINDEXED = {
   'stylesheet-has-no-templates': 'anchored at the root',
   'text-outside-xsl-text': 'a wildcard names no one bucket',
   'too-many-templates': 'anchored at the root',
-  'using-disable-output-escaping': 'anchored on an attribute',
   'using-not-outermost-stylesheet': 'anchored at the root',
   'when-or-otherwise-outside-choose': 'a union of two whole paths',
 }
