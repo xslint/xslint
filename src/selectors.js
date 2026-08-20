@@ -319,14 +319,24 @@ const axised = function(xsl, split) {
  * is the one door onto that promise, and it is here rather than inside a linter
  * because both the per-file and the cross-file kind ask it — no linter may
  * import another, and a selector is what this module is about.
+ *
+ * The engine is asked inside the branch that needs it rather than as the
+ * binding's initial value, though a value that branches is initialised to its
+ * fallback everywhere else in this project: the fallback here is the very
+ * traversal being avoided, so spelling it that way asked fontoxpath for every
+ * served selector as well and then dropped the answer — `xpath-linter` read
+ * 50.78% of its run against master's 31.64% before this was seen, the whole
+ * saving spent twice over.
  * @param {Document} xsl - Parsed stylesheet
  * @param {string} xpath - The selector a declarative check is written in
  * @return {Array.<Node>} - The nodes it selects, in document order
  */
 const chosen = function(xsl, xpath) {
   const split = splitOf(xpath)
-  let found = nodes(xsl, xpath)
-  if (split.names.length + split.attributes.length > 0) {
+  let found = []
+  if (split.names.length + split.attributes.length === 0) {
+    found = nodes(xsl, xpath)
+  } else {
     found = axised(xsl, split)
     if (split.tail !== '') {
       found = found.filter(
@@ -348,8 +358,10 @@ const chosen = function(xsl, xpath) {
  * @return {Array.<string>} - The values it selects, in document order
  */
 const valued = function(xsl, xpath) {
-  let found = strings(xsl, xpath)
-  if (splitOf(xpath).attributes.length > 0) {
+  let found = []
+  if (splitOf(xpath).attributes.length === 0) {
+    found = strings(xsl, xpath)
+  } else {
     found = chosen(xsl, xpath).map((node) => node.value)
   }
   return found

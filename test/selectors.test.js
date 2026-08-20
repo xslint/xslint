@@ -6,8 +6,8 @@
 const assert = require('assert')
 const fs = require('fs')
 const path = require('path')
-const {EVERY, splitOf} = require('../src/selectors')
-const {nodes, satisfies} = require('../src/xpath')
+const {EVERY, chosen, splitOf, valued} = require('../src/selectors')
+const {nodes, strings} = require('../src/xpath')
 const {xml} = require('../src/helpers')
 const {kinds} = require('../src/resources/checks.json')
 
@@ -213,6 +213,40 @@ const CANDIDATES = [
 ]
 
 /**
+ * Whole selectors the two doors are judged on, served and unserved alike, since
+ * what they promise is one answer whichever way it was reached. Four of these
+ * six are served — elements of one bucket, of two merged by rank, one attribute
+ * off each element, and every attribute of the document, which is the usage
+ * three of the four cross-file checks are written in and is read off the check
+ * rather than spelled again. The other two are refused, at the root and on a
+ * positional predicate, and go whole to the engine.
+ * @type {Array.<string>}
+ */
+const DOORS = [
+  AXIS,
+  '//(xsl:variable | xsl:param)',
+  '//xsl:variable/@name',
+  kinds.corpus['unused-variable'].usage,
+  '/xsl:stylesheet/xsl:variable',
+  '//xsl:variable[1]',
+]
+
+/**
+ * Where each node of a selection stands, which is how two answers are compared
+ * without asking either of them what kind of node it holds: an attribute
+ * answers no `getAttribute` and an element no `value`, where both carry the
+ * place the parser read them at. Order is part of the answer, a report being
+ * printed in the order the linters push.
+ * @param {Array.<Node>} found - What a selector answered
+ * @return {Array.<string>} - Each node's name and place, in order
+ */
+const placed = function(found) {
+  return found.map(
+    (node) => `${node.nodeName} ${node.lineNumber}:${node.columnNumber}`,
+  )
+}
+
+/**
  * The names a selection carries, or an error where the engine refuses to answer
  * at all — `[not(a/count(.))]` asks for the effective boolean value of two
  * numbers, which is FORG0006 whichever way the question is put. Both sides are
@@ -292,14 +326,6 @@ describe('selectors', function() {
           'one is refused with it',
       )
     })
-  it('refuses the attribute-anchored selector a real check is written in', function() {
-    assert.deepStrictEqual(
-      splitOf(kinds.xpath['malformed-version-in-stylesheet'].xpath).names,
-      [],
-      'a selector anchored on an attribute rather than an element is served ' +
-        'from a bucket of elements, which cannot hold the attribute it selects',
-    )
-  })
   WHOLE.forEach((one) => {
     it(`refuses ${one.xpath}, being ${one.why}`, function() {
       assert.deepStrictEqual(
@@ -314,20 +340,35 @@ describe('selectors', function() {
     const xpath = `${AXIS}[${one}]`
     it(`answers [${one}] as the engine reads it, or serves it not at all`,
       function() {
-        const split = splitOf(xpath)
-        let served = () => nodes(SHEET, xpath)
-        if (split.names.length > 0) {
-          served = () => nodes(SHEET, AXIS).filter(
-            (node) => satisfies(node, `self::node()${split.tail}`),
-          )
-        }
         assert.deepStrictEqual(
-          answered(served),
+          answered(() => chosen(SHEET, xpath)),
           answered(() => nodes(SHEET, xpath)),
           `serving ${xpath} from an axis answers something else than the ` +
             'engine answers of the whole selector, so the predicate reads ' +
             'the sequence it stands in and cannot be asked of one candidate',
         )
       })
+  })
+  DOORS.forEach((one) => {
+    it(`chooses ${one} where the engine chooses the same nodes`, function() {
+      assert.deepStrictEqual(
+        placed(chosen(SHEET, one)),
+        placed(nodes(SHEET, one)),
+        `the nodes served for ${one} are not the nodes the engine chooses in ` +
+          'the order it chooses them, and a report is printed in the order ' +
+          'the linters push',
+      )
+    })
+  })
+  DOORS.forEach((one) => {
+    it(`values ${one} where the engine reads the same strings`, function() {
+      assert.deepStrictEqual(
+        valued(SHEET, one),
+        strings(SHEET, one),
+        `the strings served for ${one} are not the string values the engine ` +
+          'reads, so a cross-file check would judge a declaration against ' +
+          'usage text nobody wrote',
+      )
+    })
   })
 })
