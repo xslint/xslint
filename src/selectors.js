@@ -4,7 +4,8 @@
  */
 
 const {GAP, WHITESPACE} = require('./tokens')
-const {PREFIXES} = require('./xpath')
+const {PREFIXES, nodes, satisfies, strings} = require('./xpath')
+const {attributed, named} = require('./tree')
 const {parsed} = require('./grammar')
 const {ASSUMED, filters} = require('./syntax')
 
@@ -12,22 +13,40 @@ const {ASSUMED, filters} = require('./syntax')
  * The answer for a selector no index can serve: an axis naming no bucket. An
  * empty list of names rather than a null, so a caller reads one shape whichever
  * way the question went, and the whole selector goes to the engine as before.
- * @type {{names: Array, tail: string}}
+ * @type {{names: Array, attributes: Array, tail: string}}
  */
-const WHOLE = Object.freeze({names: [], tail: ''})
+const WHOLE = Object.freeze({names: [], attributes: [], tail: ''})
+
+/**
+ * How a selector spells every name there is, which is a shape of axis rather
+ * than a name to bucket: `@*` behind a descendant step is every attribute of a
+ * document, and that is a sequence one walk answers whole.
+ * @type {string}
+ */
+const EVERY = '*'
+
+/**
+ * The splits already taken. A selector is one string and its split one answer,
+ * where the question is put once for each document a cross-file check reads and
+ * a predicate costs a parse to weigh.
+ * @type {Map.<string, object>}
+ */
+const SPLITS = new Map()
 
 /**
  * What a descendant sweep looks like: `//` then either one name or a union of
- * them in brackets, then whatever is left. The name itself is weighed
- * separately, since a wildcard and a prefix nothing binds are refusals rather
- * than shapes. A gap is spelled `WHITESPACE` inside the character class and
- * `GAP` outside one, those being the same four characters written the two ways
- * a regular expression needs them.
+ * them in brackets, then an optional attribute the elements carry, then
+ * whatever is left. Each name is weighed separately, since a wildcard and a
+ * prefix nothing binds are refusals rather than shapes. A gap is spelled
+ * `WHITESPACE` inside the character class and `GAP` outside one, those being
+ * the same four characters written the two ways a regular expression needs
+ * them.
  * @type {RegExp}
  */
 const SWEEP = new RegExp(
   '^//(?:\\(' + GAP + '*([^()\\[\\]]+?)' + GAP + '*\\)' +
-    '|([^()\\[\\]|/' + WHITESPACE + ']+))([^]*)$',
+    '|([^()\\[\\]|/' + WHITESPACE + ']+))' +
+    '(?:/@([^()\\[\\]|/' + WHITESPACE + ']+))?([^]*)$',
 )
 
 /**
@@ -133,6 +152,52 @@ const bucketed = function(listed) {
 }
 
 /**
+ * The attribute one axis takes off each element it named, or an empty list
+ * where the selector spells a shape the walk cannot answer. An unprefixed
+ * attribute stands in no namespace, which is XPath's own answer rather than the
+ * refusal an unprefixed *element* name earns: a default namespace reaches an
+ * element and never an attribute, so there is nothing here to guess at. A
+ * wildcard is refused, no selector spelling one behind an element name and the
+ * order fontoxpath yields an element's attributes in being a thing `walked`
+ * answers for a document rather than for one element.
+ * @param {string} marked - The attribute name, its `@` off
+ * @return {Array.<{uri: string, local: string}>} - The attribute to take
+ */
+const pointed = function(marked) {
+  const hit = QUALIFIED.exec(marked)
+  const answer = []
+  if (hit !== null && (hit[1] === undefined || namespaced(hit[1]) !== '')) {
+    answer.push({uri: namespaced(hit[1]), local: hit[2]})
+  }
+  return answer
+}
+
+/**
+ * The axis a selector opens with: the element buckets to read, and the
+ * attribute to take off each of them. Two shapes carry an attribute — every
+ * attribute of a document, which no element name narrows, and one named
+ * attribute of named elements — and a third is refused outright: an attribute
+ * spelled in a way `pointed` cannot read clears the names with it, since
+ * answering the elements alone would be answering a different selector.
+ * @param {string} listed - The names as the selector spells them
+ * @param {string} marked - The attribute behind them, or undefined
+ * @return {{names: Array, attributes: Array}} - What the walk is asked for
+ */
+const opened = function(listed, marked) {
+  let names = bucketed(listed)
+  let attributes = []
+  if (marked === undefined && names.length === 0 && listed === `@${EVERY}`) {
+    attributes = [{uri: '', local: EVERY}]
+  } else if (marked !== undefined) {
+    attributes = pointed(marked)
+    if (attributes.length === 0) {
+      names = []
+    }
+  }
+  return {names: names, attributes: attributes}
+}
+
+/**
  * Whether the predicate filters the sequence rather than picking a position in
  * it, which is the whole of what one candidate at a time can be asked. The
  * verdict is `src/syntax.js`'s, taken off the parse and never off the text,
@@ -177,25 +242,122 @@ const filtered = function(text) {
  * @return {{names: Array.<{uri: string, local: string}>, tail: string}} - The
  *  buckets and the tail, or no names at all where the engine must answer
  */
-const splitOf = function(xpath) {
+const parted = function(xpath) {
   const hit = SWEEP.exec(xpath.trim())
   let split = WHOLE
   if (hit !== null) {
-    const tail = hit[3]
+    const tail = hit[4]
     let listed = hit[1]
     if (listed === undefined) {
       listed = hit[2]
     }
-    const names = bucketed(listed)
+    const axis = opened(listed, hit[3])
     const parts = predicated(tail)
-    if (names.length > 0 && (tail === '' || parts.length > 0) &&
+    if (axis.names.length + axis.attributes.length > 0 &&
+      (tail === '' || parts.length > 0) &&
       parts.every((one) => filtered(one))) {
-      split = {names: names, tail: tail}
+      split = {names: axis.names, attributes: axis.attributes, tail: tail}
     }
   }
   return split
 }
 
+/**
+ * The split of a selector, taken once and remembered against its text.
+ * @param {string} xpath - The selector a declarative check is written in
+ * @return {{names: Array.<{uri: string, local: string}>,
+ *  attributes: Array.<{uri: string, local: string}>, tail: string}} - The
+ *  buckets, the attribute they carry, and the tail, or nothing to serve
+ */
+const splitOf = function(xpath) {
+  if (!SPLITS.has(xpath)) {
+    SPLITS.set(xpath, parted(xpath))
+  }
+  return SPLITS.get(xpath)
+}
+
+/**
+ * The nodes an axis answers, before any predicate narrows them: every attribute
+ * of the document where no name stands in front of one, otherwise the elements
+ * of each bucket merged by document-order rank — which is what a union needs,
+ * XPath answering a path in document order where concatenating one bucket onto
+ * another would answer every `xsl:variable` ahead of every `xsl:template` — and
+ * then the named attribute of each, where the selector asked for one.
+ * @param {Document} xsl - Parsed stylesheet
+ * @param {object} split - What `splitOf` made of the selector
+ * @return {Array.<Node>} - What the axis yields, in document order
+ */
+const axised = function(xsl, split) {
+  let found = attributed(xsl)
+  if (split.names.length > 0) {
+    const {buckets, rank} = named(xsl)
+    found = split.names.flatMap(
+      (name) => buckets.get(`${name.uri} ${name.local}`) ?? [],
+    )
+    if (split.names.length > 1) {
+      found.sort((one, two) => rank.get(one) - rank.get(two))
+    }
+    if (split.attributes.length > 0) {
+      found = found.flatMap((node) => Array.from(node.attributes).filter(
+        (one) => one.localName === split.attributes[0].local &&
+          (one.namespaceURI ?? '') === split.attributes[0].uri,
+      ))
+    }
+  }
+  return found
+}
+
+/**
+ * The nodes a selector chooses in a document. Where it opens with a descendant
+ * sweep the walk can serve, the axis comes off that walk and only the predicate
+ * reaches the engine, asked of one candidate at a time as `self::node()` plus
+ * the tail the selector spelled; where it is any other shape the whole selector
+ * goes to the engine exactly as before.
+ *
+ * The two answers are the same nodes in the same order, which is the whole
+ * requirement: `splitOf` refuses every shape it cannot promise that for. This
+ * is the one door onto that promise, and it is here rather than inside a linter
+ * because both the per-file and the cross-file kind ask it — no linter may
+ * import another, and a selector is what this module is about.
+ * @param {Document} xsl - Parsed stylesheet
+ * @param {string} xpath - The selector a declarative check is written in
+ * @return {Array.<Node>} - The nodes it selects, in document order
+ */
+const chosen = function(xsl, xpath) {
+  const split = splitOf(xpath)
+  let found = nodes(xsl, xpath)
+  if (split.names.length + split.attributes.length > 0) {
+    found = axised(xsl, split)
+    if (split.tail !== '') {
+      found = found.filter(
+        (node) => satisfies(node, `self::node()${split.tail}`),
+      )
+    }
+  }
+  return found
+}
+
+/**
+ * The string values a selector chooses, served the same way `chosen` is where
+ * the axis it opens with carries an **attribute**: the string value of an
+ * attribute is the value it holds, which is the whole of what an XPath asks of
+ * one. An element's is the text of everything below it, and no usage selector
+ * asks for that, so nothing here answers it and the engine keeps the question.
+ * @param {Document} xsl - Parsed stylesheet
+ * @param {string} xpath - The selector a declarative check is written in
+ * @return {Array.<string>} - The values it selects, in document order
+ */
+const valued = function(xsl, xpath) {
+  let found = strings(xsl, xpath)
+  if (splitOf(xpath).attributes.length > 0) {
+    found = chosen(xsl, xpath).map((node) => node.value)
+  }
+  return found
+}
+
 module.exports = {
+  EVERY,
+  chosen,
+  valued,
   splitOf,
 }
