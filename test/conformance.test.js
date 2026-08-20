@@ -309,6 +309,14 @@ const stylish = function(xsl) {
     .some((node) => node.namespaceURI === XSLT)
 }
 
+/**
+ * What a pack expects of a run — the keys a harness walks to assert it. Only
+ * `test/packs.js` may read them, so that an assertion the packs carry is
+ * written once rather than once per linter (#660).
+ * @type {RegExp}
+ */
+const EXPECTS = /found\.(amount|positions|fixes|values)/
+
 describe('conformance', function() {
   it('keeps the generated checks abreast of the YAML that authors them', function() {
     assert.equal(
@@ -430,24 +438,24 @@ describe('conformance', function() {
       'a format pack whose fixes do not stand one per position asserts nothing about them',
     )
   })
-  it('reads the fixes of every format pack in the harness owning it', function() {
-    const formats = new Set(names('format'))
-    const suites = allFilesFrom(path.resolve(__dirname))
-      .filter((file) => file.endsWith('.test.js'))
-      .map((file) => fs.readFileSync(file, 'utf-8'))
-    assert.deepEqual(
-      [...new Set(
-        allFilesFrom(RESOURCES)
-          .filter((file) => file.endsWith('.yaml'))
-          .filter((file) => formats.has(yaml.parsedFromFile(file).pack))
-          .map((file) => path.basename(path.dirname(file))),
-      )].filter((dir) => !suites.some(
-        (suite) => suite.includes(`'${dir}'`) && suite.includes('found.fixes'),
-      )),
-      [],
-      'a pack directory whose harness never reads found.fixes leaves every fix in it unasserted',
-    )
-  })
+  it('reads what a pack expects in the one harness and nowhere else',
+    function() {
+      assert.deepEqual(
+        allFilesFrom(__dirname)
+          .filter((file) => file.endsWith('.test.js'))
+          .filter((file) => file !== __filename)
+          .filter((file) => EXPECTS.test(fs.readFileSync(file, 'utf-8')))
+          .map((file) => path.basename(file)),
+        [],
+        'a test file reading what a pack expects is a second copy of the ' +
+          'harness, and an assertion written into every copy but one fails ' +
+          'nowhere: that is how import-packs came to assert no fix while ' +
+          'redundant-import attached a real deletion (#660). Read the ' +
+          'directory through the harness in test/packs.js, which asserts ' +
+          'the amount, the positions, the name, the severity, the message, ' +
+          'the fixes and the values of every pack it is given',
+      )
+    })
   it('names every test file after the resources it takes', function() {
     assert.deepEqual(
       allFilesFrom(__dirname)

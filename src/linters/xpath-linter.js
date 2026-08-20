@@ -29,21 +29,6 @@ const PACKS = Object.entries(kinds.xpath).map(([name, pack]) => ({
 const names = PACKS.map((pack) => pack.name)
 
 /**
- * Evaluate Xpath on given XSL and return found nodes.
- * @param {Document} xsl - XSL document parsed as {@link Document}
- * @param {string} xpath - Xpath
- * @return {{name: string, line: number, pos: number}[]} - Matching
- *  nodes in the order defined by the XPath
- */
-const evaluateXpath = function(xsl, xpath) {
-  return nodes(xsl, xpath).map((node) => ({
-    name: node.nodeName,
-    line: node.lineNumber,
-    pos: node.columnNumber,
-  }))
-}
-
-/**
  * The refusal already worked out for a document. A declarative fix is offered
  * per defect, and the answer is a property of the stylesheet, so it is derived
  * once and remembered against the document itself the way `expressionsOf` is —
@@ -176,6 +161,5 @@ const lintByXpath = function(corpus, suppressions = []) {
 
 module.exports = {
   lintByXpath,
-  evaluateXpath,
   names,
 }
