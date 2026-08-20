@@ -51,50 +51,130 @@ const defect = function(check, file, node) {
 }
 
 /**
- * Whether the goal file is reachable from the start file by following import
- * edges — so an edge sits on a cycle exactly when its target can reach back to
- * its source.
- * @param {Map.<string, Array.<{to: string}>>} adjacency - Edges by source file
- * @param {string} start - File to walk from
- * @param {string} goal - File to look for
- * @return {boolean} - True when goal is reachable from start
+ * Add one file to the list another is indexed against.
+ * @param {Map.<string, Array.<string>>} sides - Files by file
+ * @param {string} key - File the list belongs to
+ * @param {string} file - File to add to it
  */
-const reaches = function(adjacency, start, goal) {
-  const stack = [start]
-  const seen = new Set()
-  let reached = false
-  while (stack.length > 0 && !reached) {
-    const current = stack.pop()
-    reached = current === goal
-    if (!reached && !seen.has(current)) {
-      seen.add(current)
-      for (const edge of adjacency.get(current) || []) {
-        stack.push(edge.to)
-      }
-    }
+const join = function(sides, key, file) {
+  if (!sides.has(key)) {
+    sides.set(key, [])
   }
-  return reached
+  sides.get(key).push(file)
 }
 
 /**
- * Defects for `circular-import` — each import/include edge whose target can
- * reach back to its own source, so the stylesheet is part of a cycle (or
+ * Every import edge by the file it leaves, and again by the file it enters. The
+ * second index is the graph reversed, which is what the component pass below
+ * walks.
+ * @param {Array.<{from: string, to: string}>} edges - The import edges
+ * @return {{ahead: Map.<string, Array.<string>>,
+ *  back: Map.<string, Array.<string>>}} - The graph both ways round
+ */
+const linked = function(edges) {
+  const ahead = new Map()
+  const back = new Map()
+  for (const edge of edges) {
+    join(ahead, edge.from, edge.to)
+    join(back, edge.to, edge.from)
+  }
+  return {ahead, back}
+}
+
+/**
+ * The files in the order a depth-first walk of the imports finishes them, every
+ * file standing after each one it reaches. Iterative rather than recursive,
+ * because the depth is the length of an import chain and a corpus decides that,
+ * not this file (#758).
+ *
+ * Starting from the files that import something is enough to reach them all: a
+ * file only ever imported is the target of an edge whose source starts a walk,
+ * so it is finished by that walk. A file no edge touches is absent, and has no
+ * edge to report either.
+ * @param {Map.<string, Array.<string>>} ahead - Targets by importing file
+ * @return {Array.<string>} - The files, in finishing order
+ */
+const finished = function(ahead) {
+  const order = []
+  const seen = new Set()
+  for (const start of ahead.keys()) {
+    if (!seen.has(start)) {
+      seen.add(start)
+      const work = [{file: start, at: 0}]
+      while (work.length > 0) {
+        const frame = work[work.length - 1]
+        const targets = ahead.get(frame.file) || []
+        if (frame.at === targets.length) {
+          order.push(frame.file)
+          work.pop()
+        } else {
+          const target = targets[frame.at]
+          frame.at++
+          if (!seen.has(target)) {
+            seen.add(target)
+            work.push({file: target, at: 0})
+          }
+        }
+      }
+    }
+  }
+  return order
+}
+
+/**
+ * Which strongly connected component each file falls in — Kosaraju's second
+ * walk, over the reversed graph, taking the files in the order the first walk
+ * finished them, latest first. Two files land in one component exactly when
+ * each reaches the other.
+ * @param {Map.<string, Array.<string>>} back - Importing files by target
+ * @param {Array.<string>} order - The files in finishing order
+ * @return {Map.<string, number>} - Component number by file
+ */
+const grouped = function(back, order) {
+  const groups = new Map()
+  let group = 0
+  for (let at = order.length - 1; at >= 0; at--) {
+    if (!groups.has(order[at])) {
+      groups.set(order[at], group)
+      const work = [order[at]]
+      while (work.length > 0) {
+        const current = work.pop()
+        for (const source of back.get(current) || []) {
+          if (!groups.has(source)) {
+            groups.set(source, group)
+            work.push(source)
+          }
+        }
+      }
+      group++
+    }
+  }
+  return groups
+}
+
+/**
+ * Defects for `circular-import` — each import/include edge whose two ends fall
+ * in one strongly connected component, so the stylesheet is part of a cycle (or
  * imports itself).
+ *
+ * That is the same question as whether the edge's target reaches back to its
+ * source, and it is asked of the graph once rather than of every edge in turn.
+ * Walking the whole graph per edge costs the square of an import chain, which
+ * a corpus is long enough to feel: a chain of stylesheets read 2.48, 3.39,
+ * 3.53 and 3.99 times dearer per doubling from a hundred files to sixteen
+ * hundred, converging on the 4.0 a quadratic predicts, where one pass reads
+ * about the 2.0 of the edges themselves (#769). A single-node component
+ * answers a self-import, its one edge having both ends in it.
  * @param {Array.<{file: string, content: string, xsl: Document}>} corpus -
  *  Parsed stylesheets
  * @return {Array.<object>} - Defects found
  */
 const byCircularity = function(corpus) {
   const edges = graphOf(corpus)
-  const adjacency = new Map()
-  for (const edge of edges) {
-    if (!adjacency.has(edge.from)) {
-      adjacency.set(edge.from, [])
-    }
-    adjacency.get(edge.from).push(edge)
-  }
+  const {ahead, back} = linked(edges)
+  const groups = grouped(back, finished(ahead))
   return edges
-    .filter((edge) => reaches(adjacency, edge.to, edge.from))
+    .filter((edge) => groups.get(edge.from) === groups.get(edge.to))
     .map((edge) => defect(CIRCULAR, edge.from, edge.node))
 }
 
