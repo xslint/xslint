@@ -76,9 +76,16 @@
   </div>
   <div class="check-content">
 <h1>Output method xml</h1>
-<p>Using <code>method=&quot;xml&quot;</code> while the root template generates <code>html</code> or <code>HTML</code>
-elements causes incorrect serialization. Switch to <code>method=&quot;html&quot;</code> when
-producing HTML output.</p>
+<p>Serializing an HTML document with <code>method=&quot;xml&quot;</code> writes XML where a browser
+expects HTML: an empty element comes out <code>&lt;br/&gt;</code> rather than <code>&lt;br&gt;</code>, a script
+or style body is escaped, and no <code>&lt;!DOCTYPE html&gt;</code> is emitted. Switch to
+<code>method=&quot;html&quot;</code> when the document being built is HTML.</p>
+<p>What makes the document HTML is its outermost element, not an <code>html</code>
+somewhere inside it. An XML document may embed an HTML fragment and stay
+XML — an Atom entry&#39;s <code>content</code>, an XHTML island in a larger vocabulary — and
+there <code>method=&quot;xml&quot;</code> is the right serialization. An <code>html</code> in the XHTML
+namespace is a third case: XHTML serializes as <code>xml</code> in XSLT 1.0 and as
+<code>xhtml</code> from 2.0, never as <code>html</code>.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:stylesheet version=&quot;1.0&quot; xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot;&gt;
   &lt;xsl:output method=&quot;xml&quot;/&gt;

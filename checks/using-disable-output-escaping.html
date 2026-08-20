@@ -72,13 +72,18 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-warning">warning</span>
-    <code class="xpath">//@disable-output-escaping[. = "yes"]/..</code>
+    <code class="xpath">//(xsl:value-of | xsl:text)[@disable-output-escaping = "yes"]</code>
   </div>
   <div class="check-content">
 <h1>Using disable-output-escaping</h1>
 <p>Setting <code>disable-output-escaping=&quot;yes&quot;</code> bypasses XML serialization rules and
 produces implementation-defined, non-portable results. Use <code>xsl:copy-of</code> or
 proper element construction to emit pre-formed markup.</p>
+<p>The attribute is XSLT&#39;s own, and <code>xsl:value-of</code> and <code>xsl:text</code> are the only
+two instructions that carry it. An element of the result vocabulary spelling
+the same name is not using the feature at all: there the attribute is output
+data, copied into the result tree like any other, and no processor reads it as
+an instruction.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:value-of select=&quot;raw-html&quot; disable-output-escaping=&quot;yes&quot;/&gt;
 </code></pre>
