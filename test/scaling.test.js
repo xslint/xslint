@@ -109,32 +109,50 @@ const STEP = 4
  * readings, which is where an entry belongs, and a bar raised on nobody's
  * failure is a bar loosened.
  *
+ * #811 moves it a fifth time, and this time an entry leaves the table rather
+ * than moving within it. Serving `//@*` off the same walk took
+ * `corpus-linter` from 20.89% of the run to 1.23%, dearest of five gate runs a
+ * side interleaved on one machine, and over the real corpora from 2.26 s to
+ * 0.11 s on DocBook-XSL, 1.23 to 0.09 on TEI and 0.60 to 0.06 on DITA-OT, that
+ * being this file's own clock rather than the wall one. An
+ * entry is for a stage that legitimately costs more of a run than the rest, and
+ * that stage no longer does: it answers to `SHARE` now, which is a bar more
+ * than five times tighter than the 32 it leaves behind and asks the growth
+ * question of it besides, which an entry does not — it reads 1.00. The scan
+ * that entry was drawn against is still caught, and by a wider margin than
+ * before: it read 50.34% of a run whose denominator was a fifth larger than
+ * this one's. The three that remain are re-derived where they stand, by the
+ * cause every re-derivation here has had — a share is a share of the whole run,
+ * so taking a fifth out of the denominator lifts every stage that had nothing
+ * to do with it. `xpath-linter` goes 31.86% to 40.60%, `xpath-validator` 9.49%
+ * to 11.98% and `xsl-validator` 5.86% to 8.23%, none of them costing a
+ * millisecond more — 3.09 s against 3.12 over DocBook-XSL for the dearest of
+ * them — so their entries move by their own ratios, 50 to 64, 16 to 20 and 10
+ * to 14.
+ *
  * Two things set a ceiling. Where there is a defect to catch, it goes between
- * the two measured distributions — `corpus-linter` at 32, the geometric middle
- * of the dearest reading the index has given here, 20.08%, and the cheapest
- * the scan it replaced gives over the same corpus, 50.34%. Both edges move with
- * the denominator, so both are taken again on the tree in hand rather than
- * scaled: they read 18.94% and 45.27% before the shared walk. The defect it
- * catches is that scan: putting `src/linters/corpus-linter.js` back to its
- * pre-#783 state fails the gate three times out of three at 50.80%, 51.42% and
- * 50.96%, where the index passes it five of five. Geometric rather than
- * arithmetic because the risk is multiplicative on either side, a runner of
- * another character moving a share by as much as a half: 32 stands 1.59 times
- * the index's dearest reading and 1.57 times below the scan's cheapest.
- * Everywhere else the ceiling stands between half again and twice the dearest
- * reading, there being no second distribution to leave room for.
+ * the two measured distributions, which is where `corpus-linter` stood at 32:
+ * the geometric middle of the dearest reading the index had given here, 20.08%,
+ * and the cheapest the scan it replaced gave over the same corpus, 50.34% —
+ * both edges taken again on the tree in hand rather than scaled, since both
+ * move with the denominator, and they read 18.94% and 45.27% before the shared
+ * walk. Geometric rather than arithmetic because the risk is multiplicative on
+ * either side, a runner of another character moving a share by as much as a
+ * half. Everywhere else the ceiling stands between half again and twice the
+ * dearest reading, there being no second distribution to leave room for, which
+ * is where the three left stand: 64, 20 and 14 against 40.60%, 11.98% and
+ * 8.23% is 1.58, 1.67 and 1.70 times each.
  * @type {{[stage: string]: number}}
  */
 const SHARES = {
-  'xpath-linter': 50,
-  'corpus-linter': 32,
-  'xpath-validator': 16,
-  'xsl-validator': 10,
+  'xpath-linter': 64,
+  'xpath-validator': 20,
+  'xsl-validator': 14,
 }
 
 /**
  * What percentage of the run any stage not named in `SHARES` may spend. The
- * nineteen of them read 0.19% to 3.27% here, taking the dearest of ten gate
+ * twenty of them read 0.27% to 3.80% here, taking the dearest of eight gate
  * runs over the corpus #800 gave it, and 0.35% to 1.82% on the runner that
  * reported a table before `double-slash-linter` was one of them. So this is the
  * bar a cheap stage crosses by becoming an expensive one, and crossing it earns
@@ -148,11 +166,21 @@ const SHARES = {
  * of the whole run: narrowing eight selectors brought the sixteen up by 1.013
  * to 1.258, median 1.122, and serving a declarative axis from one shared walk
  * brought the nineteen up by 1.217 to 1.439, median 1.334, without one of them
- * costing a millisecond more either time. The bar stays at 5 all the same,
+ * costing a millisecond more either time. The bar stayed at 5 through both,
  * because nothing crossed it and a bar raised on nobody's failure is a bar
- * loosened: the dearest of them reads 3.27%, which 5 stands 1.53 times above,
- * and the one runner table on record charges the dearest 1.82% where this
- * machine charged it 2.53%.
+ * loosened: the dearest of them read 3.27%, which 5 stood 1.53 times above, and
+ * the one runner table on record charges the dearest 1.82% where this machine
+ * charged it 2.53%.
+ *
+ * #811 lifts them a third time and by the same mechanism, serving the
+ * cross-file linter's `//@*` off the walk: the twenty come up by 1.18 to 1.41,
+ * median 1.26, and this time the bar comes up with them, by the ratio of the
+ * dearest reading among them — 3.06% to 3.80%, which is 5 to 6. What moved is
+ * the denominator and not a stage, so leaving the bar where it stood would
+ * tighten it by a quarter as a side effect of a stage these twenty have nothing
+ * to do with, and 5 against 3.80% stands 1.34 times above it, under the half
+ * again the rule above asks of a ceiling, where 6 stands 1.58 times above. The
+ * cross-file linter is one of the twenty from here, at 1.23%.
  * What that lift is read by is the **per-stage** ratio and not the range, whose
  * endpoints move more from noise than a denominator moves them — the low one
  * belongs to a stage costing a fifth of a millisecond over the small corpus —
@@ -160,7 +188,7 @@ const SHARES = {
  * the first account of this put the range at 0.24% to 2.77%.
  * @type {number}
  */
-const SHARE = 5
+const SHARE = 6
 
 /**
  * How many times its own reading a ceiling may stand above before it has
@@ -175,9 +203,12 @@ const SHARE = 5
  * catch is a stage made several times cheaper, which is what #783 did to the
  * cross-file entry: the index took it to a fifth of what it cost, `SLACK` said
  * so of an entry of 26 standing over a reading of 5.35%, and the entry came
- * down to 12. It stands at 32 since #784, the corpus having changed under it
- * at #800 and the denominator at #784, rather than the stage itself either
- * time.
+ * down to 12, and to 32 as the corpus changed under it at #800 and the
+ * denominator at #784, rather than the stage itself any of those times. #811 is
+ * the time the stage itself moved, and far enough that the entry is gone rather
+ * than re-derived: at 1.23% of the run the cross-file linter is no longer one
+ * of the stages that legitimately cost more than the rest, and `SHARE` is the
+ * bar it answers to.
  * @type {number}
  */
 const SLACK = 4
@@ -189,7 +220,9 @@ const SLACK = 4
  * is the stronger statement, while one without is pinned only by a bar it sits
  * far below — so its shape is what is worth watching, and a cheap stage turning
  * quadratic is what this catches: it would read `STEP` itself, 4.0, where the
- * nineteen of them read 0.47 to 1.24 over four runs. What it cannot catch is a
+ * twenty of them read 0.70 to 1.19 over three runs — the cross-file linter
+ * among them since #811, reading 1.00, which is the question its old entry in
+ * `SHARES` was not asking of it. What it cannot catch is a
  * quadratic whose constant is still small at this size, which is what
  * `import-linter` held: forty stylesheets left it reading 1.0 to 1.6 while it
  * cost the square of an import chain, and a corpus long enough to show that is

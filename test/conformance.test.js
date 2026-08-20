@@ -39,13 +39,18 @@ const assert = require('assert')
  * #784 is therefore drawn by what a selector costs rather than by the shape
  * that excluded it — that union, the three spelling a union of two whole paths
  * (0.41, 0.32 and 0.17 s), the wildcard of `text-outside-xsl-text` (0.29), and
- * the one anchored on an attribute where the buckets hold elements (0.26). That
- * pair was two until #556 gave `using-disable-output-escaping` the element test
- * it never had: a union of the two instructions that carry the attribute is a
- * shape the walk serves, so it left the table by becoming servable rather than
- * by anybody editing the list. Which of the pair's readings went with it is the
- * 0.09, settled by timing both selectors in one process over DocBook-XSL, where
- * the one left reads 170 ms against the departing 81 — the same order, on a
+ * the union of two attribute paths `malformed-version-in-stylesheet` opens with
+ * (0.26). An attribute axis is no longer a reason of its own, #811 having given
+ * the walk every attribute of a document and one named attribute of named
+ * elements, so what keeps that last one out is the union and nothing else —
+ * which is the second way an entry rots, a reason that has stopped being the
+ * reason while the refusal stands. The other spelling of it left the table
+ * outright at #556, which gave `using-disable-output-escaping` the element test
+ * it never had: a union of the two instructions carrying the attribute is a
+ * shape the walk serves, so it went by becoming servable rather than by anybody
+ * editing the list. Which of the pair's readings went with it is the 0.09,
+ * settled by timing both selectors in one process over DocBook-XSL, where the
+ * one left reads 170 ms against the departing 81 — the same order, on a
  * measurement of selection alone rather than of the whole stage.
  *
  * A name that has stopped being an `xpath` check at all is the third way this
@@ -58,7 +63,7 @@ const assert = require('assert')
 const UNINDEXED = {
   'function-template-is-not-child-of-stylesheet': 'anchored at the root',
   'function-use-in-xslt-1': 'anchored at the root',
-  'malformed-version-in-stylesheet': 'anchored on an attribute',
+  'malformed-version-in-stylesheet': 'a union of two whole paths',
   'missing-id-in-stylesheet': 'anchored at the root',
   'missing-version-in-stylesheet': 'anchored at the root',
   'modern-construct-in-xslt-1': 'anchored at the root',
@@ -70,6 +75,19 @@ const UNINDEXED = {
   'too-many-templates': 'anchored at the root',
   'using-not-outermost-stylesheet': 'anchored at the root',
   'when-or-otherwise-outside-choose': 'a union of two whole paths',
+}
+
+/**
+ * Whether a shared walk can serve the axis a selector opens with, elements out
+ * of a bucket or attributes off the same walk — either being an axis the run
+ * has already paid for, where any other shape costs fontoxpath a descendant
+ * traversal of its own (#635, #784, #811).
+ * @param {string} xpath - The selector a declarative check is written in
+ * @return {boolean} - Whether the axis comes off the walk
+ */
+const serves = function(xpath) {
+  const split = splitOf(xpath)
+  return split.names.length + split.attributes.length > 0
 }
 
 /**
@@ -602,11 +620,31 @@ describe('conformance', function() {
         'exemption with it',
     )
   })
+  it('serves every selector a cross-file check is written in', function() {
+    assert.deepStrictEqual(
+      names('corpus')
+        .flatMap((name) => SELECTORS.corpus.map((key) => ({
+          name: `${name}/${key}`,
+          xpath: kinds.corpus[name][key],
+        })))
+        .filter((one) => one.xpath !== undefined && !serves(one.xpath))
+        .map((one) => one.name),
+      [],
+      'a cross-file selector is no longer served from the walk in ' +
+        'src/tree.js. Both sides of such a check grow with the project and the ' +
+        'work is their product, so a descendant traversal here is the dearest ' +
+        'one there is: the every-attribute usage three of the four are written in cost ' +
+        'fontoxpath 1.613 s over DocBook-XSL, 18% of the whole run, against 8 ' +
+        'ms off the walk. Unlike the per-file kind there is no table of ' +
+        'exemptions, four selectors of one shape each being few enough that a ' +
+        'fifth belongs in that shape too (#811)',
+    )
+  })
   it('serves every xpath selector it can from the shared walk', function() {
     const drifted = names('xpath')
       .map((name) => ({
         name: name,
-        served: splitOf(kinds.xpath[name].xpath).names.length > 0,
+        served: serves(kinds.xpath[name].xpath),
         listed: Object.hasOwn(UNINDEXED, name),
       }))
       .filter((check) => check.served === check.listed)
