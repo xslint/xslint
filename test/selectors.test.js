@@ -84,6 +84,55 @@ const ATTRIBUTED = [
 ]
 
 /**
+ * Selectors that are a union of branches, each branch an axis of its own and a
+ * tail of its own, with the local names and the tail each carries. A union is
+ * what three of the checks are written in and no shape of theirs is served
+ * without it: XPath answers a union in document order over both sides at once,
+ * so the branches are merged by rank rather than one appended to the other
+ * (#811).
+ * @type {Array.<{xpath: string,
+ *  branches: Array.<{locals: Array.<string>, tail: string}>}>}
+ */
+const UNIONS = [
+  {
+    xpath: '//xsl:variable | //xsl:template',
+    branches: [
+      {locals: ['variable'], tail: ''},
+      {locals: ['template'], tail: ''},
+    ],
+  },
+  {
+    xpath: '//(xsl:variable | xsl:template)[@name] | //xsl:function[@name]',
+    branches: [
+      {locals: ['variable', 'template'], tail: '[@name]'},
+      {locals: ['function'], tail: '[@name]'},
+    ],
+  },
+  {
+    xpath: `//xsl:template[contains(@match, '|')] | //xsl:when[@test]`,
+    branches: [
+      {locals: ['template'], tail: `[contains(@match, '|')]`},
+      {locals: ['when'], tail: '[@test]'},
+    ],
+  },
+  {
+    xpath: '//xsl:template[@a] | //xsl:variable',
+    branches: [
+      {locals: ['template'], tail: '[@a]'},
+      {locals: ['variable'], tail: ''},
+    ],
+  },
+  {
+    xpath: '//xsl:when[not(parent::xsl:choose)] | ' +
+      '//xsl:otherwise[not(parent::xsl:choose)]',
+    branches: [
+      {locals: ['when'], tail: '[not(parent::xsl:choose)]'},
+      {locals: ['otherwise'], tail: '[not(parent::xsl:choose)]'},
+    ],
+  },
+]
+
+/**
  * Selectors no index may serve, each with why. A wildcard names no bucket; a
  * root-anchored path is not a descendant sweep; an attribute is not an element;
  * a step behind the predicate reaches past what the axis answered; a prefix
@@ -100,6 +149,22 @@ const WHOLE = [
   {xpath: '//xsl:template[@match]/xsl:param', why: 'a step behind the tail'},
   {xpath: '//mine:thing[@a]', why: 'a prefix nothing binds'},
   {xpath: '//xsl:template[1]', why: 'a positional predicate'},
+  {
+    xpath: '//xsl:variable | /xsl:stylesheet',
+    why: 'a union whose second branch is anchored at the root',
+  },
+  {
+    xpath: '//xsl:variable | //xsl:template[1]',
+    why: 'a union whose second branch reads a position',
+  },
+  {
+    xpath: '//xsl:variable | //xsl:*',
+    why: 'a union whose second branch names no bucket',
+  },
+  {
+    xpath: '//xsl:variable/@name | //xsl:template/@match',
+    why: 'a union of attribute axes, the walk ranking elements alone',
+  },
   {
     xpath: '//xsl:template[1][@match]',
     why: 'a positional predicate ahead of another',
@@ -150,7 +215,6 @@ const WHOLE = [
   {xpath: '//xsl:variable[@name and]', why: 'a predicate that cannot parse'},
   {xpath: '//xsl:template[position() = 1]', why: 'position() in the tail'},
   {xpath: '//xsl:template[last()]', why: 'last() in the tail'},
-  {xpath: '//xsl:template[@a] | //xsl:variable', why: 'a union of paths'},
   {xpath: 'xsl:template[@a]', why: 'no descendant axis at all'},
   {xpath: '//xsl:template/@*', why: 'every attribute of a named element'},
   {xpath: '//xsl:template/@mine:thing', why: 'a prefix nothing binds'},
@@ -189,6 +253,53 @@ const SHEET = xml.parsedFromString(
  * @type {string}
  */
 const AXIS = '//xsl:variable'
+
+/**
+ * A stylesheet where every union's branches interleave, which is the whole of
+ * what a union has to be judged on. Each branch finding something is not
+ * enough: what a merge gets wrong is **order**, so for each union under test
+ * one of the second branch's hits stands *ahead* of one of the first branch's,
+ * and appending bucket to bucket therefore answers the right nodes in the wrong
+ * order. A digit-named variable and a single-character one stand on both sides
+ * of the two functions, and the `otherwise` outside any `xsl:choose` stands
+ * ahead of the `when` outside one, for that reason and no other.
+ *
+ * The first spelling of this fixture armed every branch and interleaved none of
+ * the three real checks: their second-branch hits all stood behind their
+ * first-branch hits, so appended order happened to equal document order and
+ * removing the rank sort from `merged` left six of the seven rows green. That
+ * is #645's shape — a zero coming from where the fixture put its elements
+ * rather than from the code under test — and the corpora cannot cover for it:
+ * over the 868 stylesheets of DocBook-XSL, TEI and DITA-OT, **no file holds
+ * both branches** of any of the three, 89 holding `short-names`' first branch
+ * and none its second. The ordering guarantee for the checks this change is for
+ * rests here alone, and it is pinned by the probe rather than by an arrangement
+ * that reads plausibly: with the sort gone, five of these seven rows turn red.
+ * @type {Document}
+ */
+const MERGING = xml.parsedFromString(
+  fs.readFileSync(
+    path.resolve(__dirname, 'resources', 'selectors', 'unions.xsl'),
+    'utf-8',
+  ),
+)
+
+/**
+ * Unions the door is judged on against the engine, the three checks written as
+ * one plus four spellings of what a merge can get wrong: two buckets that
+ * interleave, one bucket entered twice under different tails, the same branch
+ * written twice, and a branch that finds nothing.
+ * @type {Array.<string>}
+ */
+const MERGED = [
+  kinds.xpath['short-names'].xpath,
+  kinds.xpath['name-starts-with-numeric'].xpath,
+  kinds.xpath['when-or-otherwise-outside-choose'].xpath,
+  '//xsl:variable | //xsl:template',
+  '//xsl:template[@name] | //xsl:template[@match]',
+  '//xsl:template[@name] | //xsl:template[@name]',
+  '//xsl:variable | //xsl:sort',
+]
 
 /**
  * Predicate spellings the split is judged on, with no verdict written down
@@ -270,11 +381,13 @@ describe('selectors', function() {
     it(`splits ${one.xpath} into an axis and a tail`, function() {
       assert.deepStrictEqual(
         splitOf(one.xpath),
-        {
-          names: one.locals.map((local) => ({uri: XSLT, local: local})),
-          attributes: [],
-          tail: one.tail,
-        },
+        [
+          {
+            names: one.locals.map((local) => ({uri: XSLT, local: local})),
+            attributes: [],
+            tail: one.tail,
+          },
+        ],
         `the selector ${one.xpath} is not split the way an index needs it`,
       )
     })
@@ -283,11 +396,13 @@ describe('selectors', function() {
     it(`splits ${one.xpath} into an attribute axis and a tail`, function() {
       assert.deepStrictEqual(
         splitOf(one.xpath),
-        {
-          names: one.locals.map((local) => ({uri: XSLT, local: local})),
-          attributes: [one.attribute],
-          tail: one.tail,
-        },
+        [
+          {
+            names: one.locals.map((local) => ({uri: XSLT, local: local})),
+            attributes: [one.attribute],
+            tail: one.tail,
+          },
+        ],
         `the selector ${one.xpath} is not split the way an index needs it`,
       )
     })
@@ -296,7 +411,7 @@ describe('selectors', function() {
     function() {
       assert.deepStrictEqual(
         splitOf(kinds.corpus['unused-variable'].usage),
-        {names: [], attributes: [{uri: '', local: EVERY}], tail: ''},
+        [{names: [], attributes: [{uri: '', local: EVERY}], tail: ''}],
         'the usage selector of three of the four cross-file checks chooses ' +
           'every attribute of a document, which is the sequence the walk in ' +
           'src/tree.js already holds and remembers, and it is not being split ' +
@@ -306,33 +421,61 @@ describe('selectors', function() {
   it('serves the named-attribute usage the fourth is written in', function() {
     assert.deepStrictEqual(
       splitOf(kinds.corpus['unused-named-template'].usage),
-      {
-        names: [{uri: XSLT, local: 'call-template'}],
-        attributes: [{uri: '', local: 'name'}],
-        tail: '',
-      },
+      [
+        {
+          names: [{uri: XSLT, local: 'call-template'}],
+          attributes: [{uri: '', local: 'name'}],
+          tail: '',
+        },
+      ],
       'the usage selector naming one attribute of one element is not being ' +
         'split off the engine',
     )
   })
-  it('refuses an attribute axis standing in a union of two whole paths',
+  UNIONS.forEach((one) => {
+    it(`parts ${one.xpath} into a branch apiece`, function() {
+      assert.deepStrictEqual(
+        splitOf(one.xpath),
+        one.branches.map((branch) => ({
+          names: branch.locals.map((local) => ({uri: XSLT, local: local})),
+          attributes: [],
+          tail: branch.tail,
+        })),
+        `the union ${one.xpath} is not parted into the branches an index ` +
+          'serves one at a time, so both halves go to the engine as one ' +
+          'descendant sweep apiece',
+      )
+    })
+  })
+  it('refuses an attribute axis standing in a bracketed union',
     function() {
       assert.deepStrictEqual(
-        splitOf(kinds.xpath['malformed-version-in-stylesheet'].xpath)
-          .attributes,
+        splitOf(kinds.xpath['malformed-version-in-stylesheet'].xpath),
         [],
-        'a union of two whole paths is one selector the split does not part, ' +
-          'whichever axis each half stands on, so an attribute axis inside ' +
+        'a union wearing one predicate outside its brackets is a shape the ' +
+          'split does not part, so the attribute axis inside each half of ' +
           'one is refused with it',
       )
     })
   WHOLE.forEach((one) => {
     it(`refuses ${one.xpath}, being ${one.why}`, function() {
       assert.deepStrictEqual(
-        [splitOf(one.xpath).names, splitOf(one.xpath).attributes],
-        [[], []],
+        splitOf(one.xpath),
+        [],
         `the selector ${one.xpath} is served from an index though it is ` +
           `${one.why}, so the index answers a question the selector never put`,
+      )
+    })
+  })
+  MERGED.forEach((one) => {
+    it(`merges ${one} as the engine orders it`, function() {
+      assert.deepStrictEqual(
+        placed(chosen(MERGING, one)),
+        placed(nodes(MERGING, one)),
+        `the nodes served for the union ${one} are not the nodes the engine ` +
+          'chooses in the order it chooses them, so a union is being ' +
+          'appended bucket after bucket rather than merged by rank, or a ' +
+          'node standing in two branches is reported twice',
       )
     })
   })
