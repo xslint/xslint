@@ -36,8 +36,8 @@ three platforms and two node versions, and `corpora`, which times a real run
 The suite comes in two halves, and the line between them is a child process. A
 **deep** test starts one — it runs `xslint` or `xcop` the way a user does — and
 is named `*.deep.test.js`; every other test stays in this process. Four files
-are deep, and they still cost most of what the suite costs: 604 of the 2470
-tests, 9 of the 14 seconds. The other 1866 finish inside one, which is why
+are deep, and they still cost most of what the suite costs: 604 of the 2485
+tests, 12 of the 17 seconds. The other 1881 finish inside one, which is why
 `npm run fast` is the loop to work in and `npm test` the one to finish on. The
 deep target runs under `mocha --parallel`, so those four files run at once and
 the slowest of them sets the clock — `xslint.deep.test.js` alone, whose 50 tests

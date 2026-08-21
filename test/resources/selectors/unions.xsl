@@ -5,6 +5,7 @@
 -->
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:my="urn:my" version="3.0">
   <xsl:variable name="1st" select="'digit'"/>
+  <xsl:template match="gamma"/>
   <xsl:template name="alpha">
     <xsl:variable name="a" select="'one'"/>
     <xsl:choose>
@@ -15,16 +16,17 @@
         <xsl:variable name="beside" select="'three'"/>
       </xsl:otherwise>
     </xsl:choose>
+    <xsl:otherwise/>
     <xsl:when test="@y"/>
   </xsl:template>
-  <xsl:function name="my:9th">
+  <xsl:function name="my:z">
     <xsl:sequence select="'four'"/>
   </xsl:function>
-  <xsl:otherwise/>
-  <xsl:template match="beta">
-    <xsl:variable name="b" select="'five'"/>
-  </xsl:template>
-  <xsl:function name="my:z">
-    <xsl:sequence select="'six'"/>
+  <xsl:function name="my:9th">
+    <xsl:sequence select="'five'"/>
   </xsl:function>
+  <xsl:template match="beta">
+    <xsl:variable name="b" select="'six'"/>
+    <xsl:variable name="2nd" select="'digit'"/>
+  </xsl:template>
 </xsl:stylesheet>

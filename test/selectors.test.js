@@ -255,14 +255,26 @@ const SHEET = xml.parsedFromString(
 const AXIS = '//xsl:variable'
 
 /**
- * A stylesheet whose buckets interleave, which is what a union has to be judged
- * on: its variables, templates, functions, whens and otherwises stand in an
- * order no bucket reproduces, so a merge that appends one bucket to another
- * answers the right nodes in the wrong order and the fixture says so. Each
- * branch of each check under test finds something here — a name opening with a
- * digit and a single-character one on both sides of every union, a `when` and
- * an `otherwise` outside any `xsl:choose` — since a branch nothing reaches is
- * a branch asserted by nobody (#645).
+ * A stylesheet where every union's branches interleave, which is the whole of
+ * what a union has to be judged on. Each branch finding something is not
+ * enough: what a merge gets wrong is **order**, so for each union under test
+ * one of the second branch's hits stands *ahead* of one of the first branch's,
+ * and appending bucket to bucket therefore answers the right nodes in the wrong
+ * order. A digit-named variable and a single-character one stand on both sides
+ * of the two functions, and the `otherwise` outside any `xsl:choose` stands
+ * ahead of the `when` outside one, for that reason and no other.
+ *
+ * The first spelling of this fixture armed every branch and interleaved none of
+ * the three real checks: their second-branch hits all stood behind their
+ * first-branch hits, so appended order happened to equal document order and
+ * removing the rank sort from `merged` left six of the seven rows green. That
+ * is #645's shape — a zero coming from where the fixture put its elements
+ * rather than from the code under test — and the corpora cannot cover for it:
+ * over the 868 stylesheets of DocBook-XSL, TEI and DITA-OT, **no file holds
+ * both branches** of any of the three, 89 holding `short-names`' first branch
+ * and none its second. The ordering guarantee for the checks this change is for
+ * rests here alone, and it is pinned by the probe rather than by an arrangement
+ * that reads plausibly: with the sort gone, five of these seven rows turn red.
  * @type {Document}
  */
 const MERGING = xml.parsedFromString(
