@@ -268,10 +268,10 @@ const TEXTED = new RegExp(`text${GAP}*\\(${GAP}*\\)`)
  *
  * The one entry is there because of what its advice writes rather than what
  * its selector reads: an attribute value template holds literal text beside
- * the expression, so `Prefix: <xsl:value-of select="heading"/>` inside an
- * `xsl:attribute` becomes `class="Prefix: {heading}"` and loses nothing. Where
- * the two above collapse a construct into one that has nowhere to put the
- * text, this one moves the text along with the value.
+ * the expression, so an `xsl:attribute` holding the text `Prefix:` and an
+ * `xsl:value-of` of `heading` becomes `class="Prefix: {heading}"` and loses
+ * nothing. Where the two above collapse a construct into one that has nowhere
+ * to put the text, this one moves the text along with the value.
  * @type {{[key: string]: string}}
  */
 const COUNTING = {
