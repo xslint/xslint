@@ -1,0 +1,31 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: not-creating-attribute-correctly
+found:
+  amount: 3
+  positions: [ [ 6, 7 ], [ 10, 7 ], [ 17, 9 ] ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="style1">
+    <xsl:output encoding="UTF-8" method="xml"/>
+    <xsl:template match="/objects/o">
+      <div>
+        <xsl:attribute name="commented">
+          <!-- a comment reaches no result tree -->
+          <xsl:value-of select="@one"/>
+        </xsl:attribute>
+        <xsl:attribute name="instructed">
+          <?nor-does a processing instruction?>
+          <xsl:value-of select="@two"/>
+        </xsl:attribute>
+      </div>
+      <xsl:for-each select="beta">
+        <p>
+          <xsl:attribute name="buried">
+            <xsl:value-of select="@three"/>
+          </xsl:attribute>
+        </p>
+      </xsl:for-each>
+    </xsl:template>
+  </xsl:stylesheet>

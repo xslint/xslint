@@ -1,0 +1,24 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: not-creating-attribute-correctly
+found:
+  amount: 4
+  positions: [ [ 6, 7 ], [ 7, 7 ], [ 8, 7 ], [ 12, 9 ] ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="style1">
+    <xsl:output encoding="UTF-8" method="xml"/>
+    <xsl:template match="/objects/o">
+      <div>
+        <xsl:attribute name="leading">Prefix: <xsl:value-of select="@one"/></xsl:attribute>
+        <xsl:attribute name="trailing"><xsl:value-of select="@two"/> and a suffix</xsl:attribute>
+        <xsl:attribute name="sectioned"><![CDATA[Prefix: ]]><xsl:value-of select="@three"/></xsl:attribute>
+      </div>
+      <xsl:for-each select="beta">
+        <p>
+          <xsl:attribute name="buried">Prefix: <xsl:value-of select="@four"/></xsl:attribute>
+        </p>
+      </xsl:for-each>
+    </xsl:template>
+  </xsl:stylesheet>
