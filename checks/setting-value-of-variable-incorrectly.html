@@ -72,13 +72,15 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-warning">warning</span>
-    <code class="xpath">//xsl:variable[(count(*) = 1) and (count(xsl:value-of) = 1)]</code>
+    <code class="xpath">//xsl:variable[(count(*) = 1) and (count(xsl:value-of) = 1) and not(text()[normalize-space()])]</code>
   </div>
   <div class="check-content">
 <h1>Setting value of variable incorrectly</h1>
-<p>When the sole content of a variable is an <code>xsl:value-of</code> instruction, use
-the <code>select</code> attribute shorthand instead. It is more concise and avoids
-wrapping the value in a document fragment.</p>
+<p>A variable whose body is one <code>xsl:value-of</code> builds a result tree fragment to
+hold a value it has already computed: the instruction evaluates its <code>select</code>,
+turns the result into a string, and writes that string into a fragment the
+variable then names. The <code>select</code> attribute binds the value itself, without the
+fragment. It is shorter to read and cheaper to run.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:variable name=&quot;title&quot;&gt;
   &lt;xsl:value-of select=&quot;heading&quot;/&gt;
@@ -87,6 +89,23 @@ wrapping the value in a document fragment.</p>
 <p>Correct:</p>
 <pre><code class="language-xsl">&lt;xsl:variable name=&quot;title&quot; select=&quot;heading&quot;/&gt;
 </code></pre>
+<p>The two forms are close in intent and not equal in type, so the change is one to
+make deliberately. The body binds a fragment whose string value is the first
+<code>heading</code>; <code>select</code> binds the <code>heading</code> nodes themselves. Where the variable is
+only ever read as a string the two agree, and where it is not they part:
+<code>count($title)</code> counts one fragment against however many headings there are,
+<code>$title/@lang</code> reaches an attribute the fragment does not carry, and node
+identity is the fragment&#39;s rather than the document&#39;s. Read how the variable is
+used before rewriting it, and where the string is what is wanted, say so —
+<code>select=&quot;string(heading)&quot;</code> states the conversion the body was doing silently.</p>
+<p>The shorthand needs the <code>xsl:value-of</code> to be the whole of the body. Text beside
+it belongs to the fragment too, and <code>select</code> has nowhere to put it:</p>
+<pre><code class="language-xsl">&lt;xsl:variable name=&quot;title&quot;&gt;Chapter: &lt;xsl:value-of select=&quot;heading&quot;/&gt;&lt;/xsl:variable&gt;
+</code></pre>
+<p>There the value is the <code>Chapter:</code> text and the heading, which one attribute cannot
+express — use <code>select=&quot;concat(&#39;Chapter: &#39;, heading)&quot;</code> instead. Indentation is
+not content, XSLT stripping whitespace-only text from a stylesheet, and neither
+a comment nor a processing instruction reaches the fragment.</p>
 
   </div>
 </body>
