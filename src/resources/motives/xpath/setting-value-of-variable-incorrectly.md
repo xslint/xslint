@@ -1,8 +1,10 @@
 # Setting value of variable incorrectly
 
-When the sole content of a variable is an `xsl:value-of` instruction, use
-the `select` attribute shorthand instead. It is more concise and avoids
-wrapping the value in a document fragment.
+A variable whose body is one `xsl:value-of` builds a result tree fragment to
+hold a value it has already computed: the instruction evaluates its `select`,
+turns the result into a string, and writes that string into a fragment the
+variable then names. The `select` attribute binds the value itself, without the
+fragment. It is shorter to read and cheaper to run.
 
 Incorrect:
 
@@ -17,3 +19,25 @@ Correct:
 ```xsl
 <xsl:variable name="title" select="heading"/>
 ```
+
+The two forms are close in intent and not equal in type, so the change is one to
+make deliberately. The body binds a fragment whose string value is the first
+`heading`; `select` binds the `heading` nodes themselves. Where the variable is
+only ever read as a string the two agree, and where it is not they part:
+`count($title)` counts one fragment against however many headings there are,
+`$title/@lang` reaches an attribute the fragment does not carry, and node
+identity is the fragment's rather than the document's. Read how the variable is
+used before rewriting it, and where the string is what is wanted, say so —
+`select="string(heading)"` states the conversion the body was doing silently.
+
+The shorthand needs the `xsl:value-of` to be the whole of the body. Text beside
+it belongs to the fragment too, and `select` has nowhere to put it:
+
+```xsl
+<xsl:variable name="title">Chapter: <xsl:value-of select="heading"/></xsl:variable>
+```
+
+There the value is the `Chapter:` text and the heading, which one attribute cannot
+express — use `select="concat('Chapter: ', heading)"` instead. Indentation is
+not content, XSLT stripping whitespace-only text from a stylesheet, and neither
+a comment nor a processing instruction reaches the fragment.

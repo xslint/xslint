@@ -229,6 +229,52 @@ const COUNTED = new RegExp(
 const NAMED = new RegExp(`(^|[^-\\w])name${GAP}*\\(${GAP}*\\)`)
 
 /**
+ * A `count(*)` call, which counts the *element* children of a node and sees no
+ * text among them at all. A selector spelling `count(*) = 1` means "this holds
+ * nothing but that one instruction", and text standing beside the instruction
+ * answers that question as much as a second element does — so the count alone
+ * reports a construct the check's own advice cannot be given about. Three
+ * checks spell it and two were false positives on real stylesheets:
+ * `blank-nested-if` on an `xsl:if` whose text the collapse would drop, and
+ * `setting-value-of-variable-incorrectly` on a variable whose body
+ * concatenates a prefix onto a value, which one `select` cannot express
+ * (#491, #492).
+ *
+ * What a node holds is settled by its text as well as its elements, so a
+ * selector asking one asks the other: `not(text()[normalize-space()])` beside
+ * the count, which reads the whitespace of an indented stylesheet as the
+ * nothing a processor strips it to. What the check writes *instead* is what
+ * decides it, though, which is why the third of the three is exempt rather
+ * than wrong — see `COUNTING`.
+ * @type {RegExp}
+ */
+const CHILDREN = new RegExp(`count${GAP}*\\(${GAP}*\\*${GAP}*\\)`)
+
+/**
+ * A `text()` step, the other half of what a node holds — see `CHILDREN`.
+ * @type {RegExp}
+ */
+const TEXTED = new RegExp(`text${GAP}*\\(${GAP}*\\)`)
+
+/**
+ * The checks that count the elements a node holds for a reason its text does
+ * not disturb, each beside the shape that exempts it. `CHILDREN` asks the rest
+ * to weigh both.
+ *
+ * The one entry is there because of what its advice writes rather than what
+ * its selector reads: an attribute value template holds literal text beside
+ * the expression, so an `xsl:attribute` holding the text `Prefix:` and an
+ * `xsl:value-of` of `heading` becomes `class="Prefix: {heading}"` and loses
+ * nothing. Where the two above collapse a construct into one that has nowhere
+ * to put the text, this one moves the text along with the value.
+ * @type {{[key: string]: string}}
+ */
+const COUNTING = {
+  'not-creating-attribute-correctly':
+    'an attribute value template carries the text beside the expression',
+}
+
+/**
  * A string literal a selector compares an expression's *text* against, which is
  * a literal whose own content is quoted: `"'true'"` asks whether a `@test`
  * reads `'true'` character for character. XPath spells one string with either
@@ -583,6 +629,43 @@ describe('conformance', function() {
       }
     }
   })
+  it('weighs the text a node holds wherever a selector counts its elements',
+    function() {
+      for (const [kind, keys] of Object.entries(SELECTORS)) {
+        for (const name of names(kind)) {
+          const check = yaml.parsedFromFile(
+            path.join(CHECKS, kind, `${name}.yaml`),
+          )
+          for (const key of keys) {
+            assert.ok(
+              !check[key] || !CHILDREN.test(check[key]) ||
+                TEXTED.test(check[key]) || COUNTING[name] !== undefined,
+              `${kind}/${name} counts the elements a node holds in its ` +
+                `${key} and asks nothing about its text, which answers the ` +
+                'same question: a construct holding one instruction and a ' +
+                'string of text holds more than the instruction, and the ' +
+                'check reports it as though it did not. Weigh the text ' +
+                'beside the count, as not(text()[normalize-space()]) does',
+            )
+          }
+        }
+      }
+    })
+  it('exempts a selector from weighing text only while it counts elements',
+    function() {
+      for (const name of Object.keys(COUNTING)) {
+        const check = yaml.parsedFromFile(
+          path.join(CHECKS, 'xpath', `${name}.yaml`),
+        )
+        assert.ok(
+          CHILDREN.test(check.xpath) && !TEXTED.test(check.xpath),
+          `xpath/${name} is exempt from weighing the text a node holds, ` +
+            `on the grounds that ${COUNTING[name]}, and its selector has ` +
+            'stopped needing the exemption: it either no longer counts the ' +
+            'elements or weighs the text already. Drop the entry',
+        )
+      }
+    })
   it('names a node by its namespace, never by its prefix, in a selector',
     function() {
       for (const [kind, keys] of Object.entries(SELECTORS)) {

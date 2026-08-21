@@ -1,0 +1,33 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: blank-nested-if
+found:
+  amount: 3
+  positions: [ [ 5, 5 ], [ 11, 5 ], [ 18, 7 ] ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" id="style1">
+    <xsl:output encoding="UTF-8" method="xml"/>
+    <xsl:template match="/alpha">
+      <xsl:if test="$one">
+        <!-- a comment reaches no result tree -->
+        <xsl:if test="$two">
+          <held/>
+        </xsl:if>
+      </xsl:if>
+      <xsl:if test="$three">
+        <?nor-does a processing instruction?>
+        <xsl:if test="$four">
+          <held/>
+        </xsl:if>
+      </xsl:if>
+      <xsl:for-each select="beta">
+        <xsl:if test="$five">
+          <xsl:if test="$six">
+            <held/>
+          </xsl:if>
+        </xsl:if>
+      </xsl:for-each>
+    </xsl:template>
+  </xsl:stylesheet>
