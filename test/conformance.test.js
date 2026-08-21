@@ -63,31 +63,29 @@ const assert = require('assert')
 const UNINDEXED = {
   'function-template-is-not-child-of-stylesheet': 'anchored at the root',
   'function-use-in-xslt-1': 'anchored at the root',
-  'malformed-version-in-stylesheet': 'a union of two whole paths',
+  'malformed-version-in-stylesheet': 'a bracketed union of attribute paths',
   'missing-id-in-stylesheet': 'anchored at the root',
   'missing-version-in-stylesheet': 'anchored at the root',
   'modern-construct-in-xslt-1': 'anchored at the root',
-  'name-starts-with-numeric': 'a union of two whole paths',
   'not-using-output': 'anchored at the root',
-  'short-names': 'a union of two whole paths',
   'stylesheet-has-no-templates': 'anchored at the root',
   'text-outside-xsl-text': 'a wildcard names no one bucket',
   'too-many-templates': 'anchored at the root',
   'using-not-outermost-stylesheet': 'anchored at the root',
-  'when-or-otherwise-outside-choose': 'a union of two whole paths',
 }
 
 /**
- * Whether a shared walk can serve the axis a selector opens with, elements out
- * of a bucket or attributes off the same walk — either being an axis the run
- * has already paid for, where any other shape costs fontoxpath a descendant
- * traversal of its own (#635, #784, #811).
+ * Whether a shared walk can serve every branch of a selector, each branch's
+ * axis being elements out of a bucket or attributes off the same walk — either
+ * being an axis the run has already paid for, where any other shape costs
+ * fontoxpath a descendant traversal of its own. A union is served whole or not
+ * at all, so one branch it cannot reach answers for the selector (#635, #784,
+ * #811).
  * @param {string} xpath - The selector a declarative check is written in
  * @return {boolean} - Whether the axis comes off the walk
  */
 const serves = function(xpath) {
-  const split = splitOf(xpath)
-  return split.names.length + split.attributes.length > 0
+  return splitOf(xpath).length > 0
 }
 
 /**
