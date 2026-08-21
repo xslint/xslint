@@ -145,6 +145,58 @@ const branched = function(xpath) {
 }
 
 /**
+ * A selector parted at its descendant step: whatever stands in front of the
+ * first `//` outside brackets and quotes, and the sweep from that `//` on. What
+ * stands in front is the **anchor**, and it is one question the engine answers
+ * once for a document where the sweep behind it is a traversal per check: a
+ * selector reads `P//X` as every `X` standing below a node `P` chose, so the
+ * anchor is asked whole and the candidates are those with one of its answers
+ * above them.
+ *
+ * Nothing is asked of the anchor's own shape. A path holding no `//` outside
+ * brackets reaches a bounded depth from wherever it starts, which is what makes
+ * it cheap, and it is handed to the engine exactly as the selector spelled it —
+ * where a rule admitting only `/name` or `/*[guard]` would be a second opinion
+ * about which shapes those are. A `//` standing inside a predicate stays in the
+ * anchor with it, so `/*[count(//xsl:template) >= 10]` is one anchor and not
+ * two halves of a sweep.
+ * @param {string} xpath - One branch of a selector, its unions already parted
+ * @return {{anchor: string, sweep: string}} - What to ask once, and what to
+ *  serve
+ */
+const anchored = function(xpath) {
+  let depth = 0
+  let quote = ''
+  let at = 0
+  let opens = -1
+  while (at < xpath.length && opens < 0) {
+    const character = xpath.charAt(at)
+    if (quote !== '') {
+      if (character === quote) {
+        quote = ''
+      }
+    } else if (character === '\'' || character === '"') {
+      quote = character
+    } else if (character === '(' || character === '[') {
+      depth++
+    } else if (character === ')' || character === ']') {
+      depth--
+    } else if (character === '/' && depth === 0 &&
+      xpath.charAt(at + 1) === '/') {
+      opens = at
+    }
+    at++
+  }
+  let anchor = ''
+  let sweep = xpath
+  if (opens > 0) {
+    anchor = xpath.slice(0, opens)
+    sweep = xpath.slice(opens)
+  }
+  return {anchor: anchor, sweep: sweep}
+}
+
+/**
  * The namespace a name on the axis stands in, or an empty string where this
  * project binds no such prefix. The prefixes are the ones `src/xpath.js` binds
  * for every expression it issues, borrowed rather than written down again: the
@@ -274,17 +326,26 @@ const filtered = function(text) {
  * came from cannot be served — `//x[1]`, `//x[1][@a]` and `//x[@a][1]` alike,
  * a number picking one node out of the sequence wherever it stands among the
  * predicates — and neither can an axis naming no single bucket —
- * a wildcard, an attribute, a root-anchored path, or a prefix this project does
+ * a wildcard, an attribute, or a prefix this project does
  * not bind. A step standing behind the tail reaches past what the axis
  * answered. Every refusal leaves the selector exactly as it was, going whole to
  * the engine, so the cost of not recognising a shape is the run that is already
  * there and the cost of recognising one wrongly would be a report that changed.
+ *
+ * An **attribute** axis is refused where an anchor stands in front of it, which
+ * is a refusal about the walk rather than about the shape: an anchor keeps the
+ * candidates standing below it, and the walk climbs to a node's parent to
+ * answer that, where an attribute has none — its element is not its parent.
+ * No selector spells one, and a wrong answer here would be a report that
+ * changed rather than a run that stayed as it was.
  * @param {string} xpath - The selector a declarative check is written in
- * @return {{names: Array.<{uri: string, local: string}>, tail: string}} - The
- *  buckets and the tail, or no names at all where the engine must answer
+ * @return {{names: Array.<{uri: string, local: string}>, anchor: string,
+ *  tail: string}} - The buckets, the anchor and the tail, or no names at all
+ *  where the engine must answer
  */
 const swept = function(xpath) {
-  const hit = SWEEP.exec(xpath.trim())
+  const {anchor, sweep} = anchored(xpath.trim())
+  const hit = SWEEP.exec(sweep)
   let branch = NOTHING
   if (hit !== null) {
     const tail = hit[4]
@@ -295,9 +356,17 @@ const swept = function(xpath) {
     const axis = opened(listed, hit[3])
     const parts = predicated(tail)
     if (axis.names.length + axis.attributes.length > 0 &&
+      (anchor === '' || axis.attributes.length === 0) &&
       (tail === '' || parts.length > 0) &&
       parts.every((one) => filtered(one))) {
-      branch = [{names: axis.names, attributes: axis.attributes, tail: tail}]
+      branch = [
+        {
+          names: axis.names,
+          attributes: axis.attributes,
+          anchor: anchor,
+          tail: tail,
+        },
+      ]
     }
   }
   return branch
@@ -380,15 +449,43 @@ const axised = function(xsl, split) {
 }
 
 /**
- * What one branch answers: the nodes its axis yields, narrowed by the tail it
- * carries, asked of one candidate at a time as `self::node()` plus what the
- * branch spelled.
+ * The candidates standing below one of the anchor's answers, which is what a
+ * `//` between them means: every node the sweep found that has one of those
+ * nodes above it, and never one of them itself. The walk climbs to a parent
+ * rather than descending from the anchor, so an anchor that answered nothing
+ * keeps nothing — the direction that matters, since the other way round would
+ * report the whole sweep wherever a guard failed.
+ * @param {Array.<Node>} found - What the sweep yielded
+ * @param {Set.<Node>} roots - What the anchor chose
+ * @return {Array.<Node>} - Those of them standing below one of the roots
+ */
+const descended = function(found, roots) {
+  return found.filter((node) => {
+    let up = node.parentNode
+    let below = false
+    while (up !== null && !below) {
+      below = roots.has(up)
+      up = up.parentNode
+    }
+    return below
+  })
+}
+
+/**
+ * What one branch answers: the nodes its axis yields, kept to those standing
+ * below the anchor it carries, and narrowed by the tail, asked of one candidate
+ * at a time as `self::node()` plus what the branch spelled. The anchor is asked
+ * first because the walk answers it and the engine answers the tail, which is
+ * the same order the cross-file linter learned to put its two tests in.
  * @param {Document} xsl - Parsed stylesheet
  * @param {object} branch - One branch of what `splitOf` made of the selector
  * @return {Array.<Node>} - The nodes it selects, in document order
  */
 const narrowed = function(xsl, branch) {
   let found = axised(xsl, branch)
+  if (branch.anchor !== '') {
+    found = descended(found, new Set(nodes(xsl, branch.anchor)))
+  }
   if (branch.tail !== '') {
     found = found.filter(
       (node) => satisfies(node, `self::node()${branch.tail}`),
