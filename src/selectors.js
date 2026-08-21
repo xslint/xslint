@@ -10,12 +10,12 @@ const {parsed} = require('./grammar')
 const {ASSUMED, filters} = require('./syntax')
 
 /**
- * The answer for a selector no index can serve: an axis naming no bucket. An
- * empty list of names rather than a null, so a caller reads one shape whichever
- * way the question went, and the whole selector goes to the engine as before.
- * @type {{names: Array, attributes: Array, tail: string}}
+ * The answer for a selector no index can serve: no branch at all. An empty list
+ * rather than a null, so a caller reads one shape whichever way the question
+ * went, and the whole selector goes to the engine as before.
+ * @type {Array}
  */
-const WHOLE = Object.freeze({names: [], attributes: [], tail: ''})
+const NOTHING = Object.freeze([])
 
 /**
  * How a selector spells every name there is, which is a shape of axis rather
@@ -101,6 +101,47 @@ const predicated = function(text) {
     answer = parts
   }
   return answer
+}
+
+/**
+ * The branches a selector unions, which is one branch for a selector that
+ * unions nothing. XPath's `|` takes a path on either side and answers both in
+ * document order, so each side carries an axis of its own and a tail of its
+ * own and neither can stand for the other:
+ * `//xsl:when[not(parent::xsl:choose)] | //xsl:otherwise[...]` is two sweeps
+ * the engine pays for separately and two buckets the walk already holds.
+ *
+ * A `|` the selector did not union with is left where it stands — inside
+ * brackets it parts the names of one axis, `//(xsl:variable | xsl:template)`,
+ * and inside a literal it is a character, `contains(@match, '|')` — so the scan
+ * walks characters and counts depth rather than splitting on the symbol, for
+ * the reason `predicated` does one bracket over.
+ * @param {string} xpath - The selector a declarative check is written in
+ * @return {Array.<string>} - What each branch holds, the unions off
+ */
+const branched = function(xpath) {
+  const parts = []
+  let depth = 0
+  let quote = ''
+  let opened = 0
+  for (let at = 0; at < xpath.length; at++) {
+    const character = xpath.charAt(at)
+    if (quote !== '') {
+      if (character === quote) {
+        quote = ''
+      }
+    } else if (character === '\'' || character === '"') {
+      quote = character
+    } else if (character === '(' || character === '[') {
+      depth++
+    } else if (character === ')' || character === ']') {
+      depth--
+    } else if (character === '|' && depth === 0) {
+      parts.push(xpath.slice(opened, at))
+      opened = at + 1
+    }
+  }
+  return parts.concat([xpath.slice(opened)])
 }
 
 /**
@@ -242,9 +283,9 @@ const filtered = function(text) {
  * @return {{names: Array.<{uri: string, local: string}>, tail: string}} - The
  *  buckets and the tail, or no names at all where the engine must answer
  */
-const parted = function(xpath) {
+const swept = function(xpath) {
   const hit = SWEEP.exec(xpath.trim())
-  let split = WHOLE
+  let branch = NOTHING
   if (hit !== null) {
     const tail = hit[4]
     let listed = hit[1]
@@ -256,8 +297,38 @@ const parted = function(xpath) {
     if (axis.names.length + axis.attributes.length > 0 &&
       (tail === '' || parts.length > 0) &&
       parts.every((one) => filtered(one))) {
-      split = {names: axis.names, attributes: axis.attributes, tail: tail}
+      branch = [{names: axis.names, attributes: axis.attributes, tail: tail}]
     }
+  }
+  return branch
+}
+
+/**
+ * Every branch of a selector split, or nothing to serve where any one of them
+ * is a shape the walk cannot answer. A union is served whole or not at all: a
+ * branch left to the engine would need the two answers merged in document order
+ * across a sequence one side of the merge never enumerated, where refusing
+ * leaves the selector exactly as it was.
+ *
+ * A union of **attribute** axes is refused for a reason of that kind rather
+ * than of shape. Two branches are merged by the document-order rank `named`
+ * remembers, and that rank covers elements: an attribute has none, so
+ * `(//@version | //@xsl:version)` — the one selector spelling it — stays with
+ * the engine until the walk ranks an attribute too. One branch carrying an
+ * attribute needs no merge and is served as it was (#811).
+ * @param {string} xpath - The selector a declarative check is written in
+ * @return {Array.<{names: Array.<{uri: string, local: string}>,
+ *  attributes: Array.<{uri: string, local: string}>, tail: string}>} - A branch
+ *  apiece, or nothing where the engine must answer
+ */
+const parted = function(xpath) {
+  const spelled = branched(xpath.trim())
+  const branches = spelled.flatMap((one) => swept(one))
+  let split = NOTHING
+  if (branches.length === spelled.length &&
+    (branches.length === 1 ||
+      branches.every((one) => one.attributes.length === 0))) {
+    split = branches
   }
   return split
 }
@@ -265,9 +336,10 @@ const parted = function(xpath) {
 /**
  * The split of a selector, taken once and remembered against its text.
  * @param {string} xpath - The selector a declarative check is written in
- * @return {{names: Array.<{uri: string, local: string}>,
- *  attributes: Array.<{uri: string, local: string}>, tail: string}} - The
- *  buckets, the attribute they carry, and the tail, or nothing to serve
+ * @return {Array.<{names: Array.<{uri: string, local: string}>,
+ *  attributes: Array.<{uri: string, local: string}>, tail: string}>} - The
+ *  buckets each branch reads, the attribute they carry, and the tail, or
+ *  nothing to serve
  */
 const splitOf = function(xpath) {
   if (!SPLITS.has(xpath)) {
@@ -284,7 +356,7 @@ const splitOf = function(xpath) {
  * another would answer every `xsl:variable` ahead of every `xsl:template` — and
  * then the named attribute of each, where the selector asked for one.
  * @param {Document} xsl - Parsed stylesheet
- * @param {object} split - What `splitOf` made of the selector
+ * @param {object} split - One branch of what `splitOf` made of the selector
  * @return {Array.<Node>} - What the axis yields, in document order
  */
 const axised = function(xsl, split) {
@@ -305,6 +377,44 @@ const axised = function(xsl, split) {
     }
   }
   return found
+}
+
+/**
+ * What one branch answers: the nodes its axis yields, narrowed by the tail it
+ * carries, asked of one candidate at a time as `self::node()` plus what the
+ * branch spelled.
+ * @param {Document} xsl - Parsed stylesheet
+ * @param {object} branch - One branch of what `splitOf` made of the selector
+ * @return {Array.<Node>} - The nodes it selects, in document order
+ */
+const narrowed = function(xsl, branch) {
+  let found = axised(xsl, branch)
+  if (branch.tail !== '') {
+    found = found.filter(
+      (node) => satisfies(node, `self::node()${branch.tail}`),
+    )
+  }
+  return found
+}
+
+/**
+ * What a union of branches answers: every branch's nodes, deduplicated and put
+ * back into document order. Both halves of that are XPath's own answer rather
+ * than a convenience — a union is a set, so a node standing in two branches is
+ * selected once, and a path answers in document order, so the branches are
+ * merged by the rank `named` remembers rather than appended one to the other.
+ * Appending would report every `xsl:otherwise` after every `xsl:when`, which
+ * is the same defect two buckets of one axis had before they were merged this
+ * way, one union further out (#784, #811).
+ * @param {Document} xsl - Parsed stylesheet
+ * @param {Array.<object>} branches - What `splitOf` made of the selector
+ * @return {Array.<Node>} - What they select between them, in document order
+ */
+const merged = function(xsl, branches) {
+  const {rank} = named(xsl)
+  return Array.from(
+    new Set(branches.flatMap((branch) => narrowed(xsl, branch))),
+  ).sort((one, two) => rank.get(one) - rank.get(two))
 }
 
 /**
@@ -332,17 +442,14 @@ const axised = function(xsl, split) {
  * @return {Array.<Node>} - The nodes it selects, in document order
  */
 const chosen = function(xsl, xpath) {
-  const split = splitOf(xpath)
+  const branches = splitOf(xpath)
   let found = []
-  if (split.names.length + split.attributes.length === 0) {
+  if (branches.length === 0) {
     found = nodes(xsl, xpath)
+  } else if (branches.length === 1) {
+    found = narrowed(xsl, branches[0])
   } else {
-    found = axised(xsl, split)
-    if (split.tail !== '') {
-      found = found.filter(
-        (node) => satisfies(node, `self::node()${split.tail}`),
-      )
-    }
+    found = merged(xsl, branches)
   }
   return found
 }
@@ -358,11 +465,12 @@ const chosen = function(xsl, xpath) {
  * @return {Array.<string>} - The values it selects, in document order
  */
 const valued = function(xsl, xpath) {
+  const branches = splitOf(xpath)
   let found = []
-  if (splitOf(xpath).attributes.length === 0) {
-    found = strings(xsl, xpath)
-  } else {
+  if (branches.length === 1 && branches[0].attributes.length > 0) {
     found = chosen(xsl, xpath).map((node) => node.value)
+  } else {
+    found = strings(xsl, xpath)
   }
   return found
 }

@@ -130,6 +130,21 @@ const STEP = 4
  * them — so their entries move by their own ratios, 50 to 64, 16 to 20 and 10
  * to 14.
  *
+ * #811's second phase moves it a sixth time, and both directions of the one
+ * cause show in one table. Serving a **union** off the same walk — three checks
+ * are written as one and no shape of theirs was served without it — takes
+ * `xpath-linter` from 41.14% of the run to 33.93%, dearest of five gate runs a
+ * side interleaved on one machine, and over the real corpora from 3.83 s to
+ * 3.11 s on DocBook-XSL, 2.93 to 2.38 on TEI and 1.37 to 1.14 on DITA-OT, the
+ * lowest of three interleaved rounds a side. So its own entry comes down by its
+ * own ratio, 64 to 53, which stands 1.56 times its dearest reading. The other
+ * twenty-two stages cost what they always did and every one of them reads
+ * dearer, by 1.02 to 1.19, because a fifth of what they are a share **of** has
+ * gone: `xpath-validator` at 12.29% reads 14.15%, which puts its entry of 20 at
+ * 1.41 times a reading the band allows no closer than half again, so it goes to
+ * 22. `xsl-validator` goes 8.05% to 9.18% and keeps its 14 at 1.52, inside the
+ * band, a bar raised on nobody's failure being a bar loosened.
+ *
  * Two things set a ceiling. Where there is a defect to catch, it goes between
  * the two measured distributions, which is where `corpus-linter` stood at 32:
  * the geometric middle of the dearest reading the index had given here, 20.08%,
@@ -145,14 +160,14 @@ const STEP = 4
  * @type {{[stage: string]: number}}
  */
 const SHARES = {
-  'xpath-linter': 64,
-  'xpath-validator': 20,
+  'xpath-linter': 53,
+  'xpath-validator': 22,
   'xsl-validator': 14,
 }
 
 /**
  * What percentage of the run any stage not named in `SHARES` may spend. The
- * twenty of them read 0.27% to 3.80% here, taking the dearest of eight gate
+ * twenty of them read 0.28% to 4.08% here, taking the dearest of five gate
  * runs over the corpus #800 gave it, and 0.35% to 1.82% on the runner that
  * reported a table before `double-slash-linter` was one of them. So this is the
  * bar a cheap stage crosses by becoming an expensive one, and crossing it earns
@@ -181,6 +196,14 @@ const SHARES = {
  * to do with, and 5 against 3.80% stands 1.34 times above it, under the half
  * again the rule above asks of a ceiling, where 6 stands 1.58 times above. The
  * cross-file linter is one of the twenty from here, at 1.23%.
+ *
+ * #811's second phase lifts them a fourth time and by that same mechanism,
+ * serving the three checks written as a union: the twenty come up by 1.02 to
+ * 1.19 with none of them costing a millisecond more, the dearest reading 3.72%
+ * to 4.08%, and the bar comes up with them by that ratio, 6 to 7. Left at 6 it
+ * would stand 1.47 times the dearest reading, under the half again a ceiling is
+ * placed by, and tightened by a tenth as a side effect of a stage these twenty
+ * have nothing to do with; at 7 it stands 1.72 times above.
  * What that lift is read by is the **per-stage** ratio and not the range, whose
  * endpoints move more from noise than a denominator moves them — the low one
  * belongs to a stage costing a fifth of a millisecond over the small corpus —
@@ -188,7 +211,7 @@ const SHARES = {
  * the first account of this put the range at 0.24% to 2.77%.
  * @type {number}
  */
-const SHARE = 6
+const SHARE = 7
 
 /**
  * How many times its own reading a ceiling may stand above before it has
