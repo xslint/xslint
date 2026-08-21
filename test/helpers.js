@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
+const fs = require('fs')
 const path = require('path')
 const {execSync, spawn, spawnSync} = require('child_process')
 
@@ -157,34 +158,136 @@ const xslintUnread = function(args, settling) {
 }
 
 /**
- * Helper to run xcop command line tool.
- * @param {string} arg - arg
- * @param {boolean} print - Capture logs
- * @return {string} Stdout
+ * The line xcop prints about a stylesheet it accepts.
+ * @type {RegExp}
  */
-const runXcop = function(arg, print = true) {
-  return execCmd('xcop', [arg], print)
-}
+const GOOD = /^(.*) looks good$/
 
 /**
- * What xcop says about every stylesheet in a directory, in one run. It reports
- * a line per file, so a caller asking about 257 of them learns the same from
- * one interpreter as from 257 — which is the difference between 0.1 seconds and
- * 25 of them (#687). A file it rejects makes the whole process exit non-zero
- * and `execSync` announces that by throwing, so the report is read off the
- * failure rather than lost with it; a tool that is not there throws too, with
- * nothing to read, and `cmdAvailable` is what tells those two apart.
- * @param {string} dir - Directory holding the stylesheets
- * @return {string} Stdout, one line per file
+ * The line it prints about one that is not XML at all, which it steps over
+ * rather than stopping at.
+ * @type {RegExp}
  */
-const xcopped = function(dir) {
+const SKIPPED = /^(.*) is not a well-formed XML, skipping it$/
+
+/**
+ * The two lines it stops on: a stylesheet whose formatting it refuses, and one
+ * its schema refuses. Both end the run where they stand, so both are what
+ * leaves the files behind them unjudged.
+ * @type {RegExp}
+ */
+const REFUSED = /^(?:Invalid XML formatting in|XSD validation failed in) (.*)$/
+
+/**
+ * What a refused stylesheet is renamed to, so the next pass steps over it: xcop
+ * globs five extensions and this is none of them, which is a narrower promise
+ * than moving the file away and keeps it where whoever reads the failure can
+ * find it.
+ * @type {string}
+ */
+const SHELVED = '.refused'
+
+/**
+ * What xcop prints about the stylesheets a directory holds, in one run. A file
+ * it refuses makes the process exit non-zero and `execSync` announces that by
+ * throwing, so the report is read off the failure rather than lost with it; a
+ * tool that is not there throws too, with nothing to read, and `cmdAvailable`
+ * is what tells those two apart. Colour is turned off because what this output
+ * becomes is a test failure message, read as often in a CI log as in a
+ * terminal.
+ * @param {string} dir - Directory holding the stylesheets
+ * @return {string} - Stdout, whether xcop finished or stopped
+ */
+const printedBy = function(dir) {
   let printed
   try {
-    printed = runXcop(dir, true)
+    printed = execCmd('xcop', ['--nocolor', dir], true)
   } catch (refusal) {
     printed = (refusal.stdout ?? '').toString()
   }
   return printed
+}
+
+/**
+ * What one run of xcop said about each file it named. Three of its lines are a
+ * verdict on one stylesheet — it looks good, it is not well-formed and was
+ * skipped, or it is refused — and everything between two verdicts belongs to
+ * the one that follows, a refusal being printed behind the diff explaining it.
+ * @param {string} printed - What one run printed
+ * @return {Map.<string, {good: boolean, refused: boolean, said: string}>} -
+ *  Each file it named, against its verdict
+ */
+const parted = function(printed) {
+  const said = new Map()
+  let held = []
+  printed.split('\n').forEach((line) => {
+    const good = GOOD.exec(line)
+    const skipped = SKIPPED.exec(line)
+    const refused = REFUSED.exec(line)
+    if (good !== null) {
+      said.set(good[1], {good: true, refused: false, said: line})
+      held = []
+    } else if (skipped !== null) {
+      said.set(skipped[1], {good: false, refused: false, said: line})
+      held = []
+    } else if (refused !== null) {
+      said.set(refused[1], {
+        good: false, refused: true, said: held.concat([line]).join('\n'),
+      })
+      held = []
+    } else {
+      held = held.concat([line])
+    }
+  })
+  return said
+}
+
+/**
+ * What xcop makes of every stylesheet a directory holds, one verdict per file.
+ *
+ * It is asked over the directory rather than once per file, which is the
+ * difference between 0.1 seconds and 25 of them (#687), and a directory is
+ * what it is asked over rather than a list of paths because `cmd.exe` takes a
+ * command line of 8191 characters and 356 of these are four times that.
+ *
+ * What one run cannot give is a verdict on every file, xcop stopping at the
+ * first stylesheet it refuses: everything behind that one goes unmentioned, so
+ * every assertion over it failed, all with the same message, and none naming
+ * the file that actually broke — 204 of them at once, the one real complaint
+ * printed by nobody (#694). So a refusal is recorded against the file it names
+ * and that file is renamed out of the extensions xcop globs, and the run is
+ * asked again from there. Each pass either finds a fresh refusal or is the
+ * last, so a sound directory costs one process and a directory holding two bad
+ * files costs three, and nothing but a bad file ever fails.
+ *
+ * A file the run never mentioned at all is not left to assert against nothing
+ * either: it takes the whole of what xcop printed as its verdict, since a tool
+ * that answers about nobody has still said the only thing there is to know.
+ * @param {string} dir - Directory holding the stylesheets
+ * @param {Array.<string>} files - The stylesheets a caller expects a verdict on
+ * @return {Map.<string, {good: boolean, refused: boolean, said: string}>} -
+ *  Each of those files, against what xcop made of it
+ */
+const xcopped = function(dir, files) {
+  const judged = new Map()
+  let printed = ''
+  let more = true
+  while (more) {
+    const pass = printedBy(dir)
+    printed = `${printed}${pass}`
+    const fresh = Array.from(parted(pass))
+      .filter(([file]) => !judged.has(file))
+    fresh.forEach(([file, verdict]) => judged.set(file, verdict))
+    const stopped = fresh.filter(([, verdict]) => verdict.refused)
+    stopped.forEach(([file]) => fs.renameSync(file, `${file}${SHELVED}`))
+    more = stopped.length > 0
+  }
+  files.filter((file) => !judged.has(file)).forEach((file) => judged.set(file, {
+    good: false,
+    refused: false,
+    said: `xcop named no verdict for this file, and printed:\n${printed}`,
+  }))
+  return judged
 }
 
 /**
@@ -332,7 +435,6 @@ module.exports = {
   xslintStatus,
   xslintStreams,
   xslintUnread,
-  runXcop,
   xcopped,
   cmdAvailable,
 }
