@@ -142,6 +142,22 @@ if (available) {
 }
 
 /**
+ * The two committed stylesheets a mixed directory is built out of: one xcop
+ * accepts and one it refuses. They are files under `test/resources` rather
+ * than strings here, the way every test stylesheet in this repository is, and
+ * the refused one is excluded from the repo-wide sweep in the xcop workflow —
+ * being written the way xcop refuses is the whole of what it is for.
+ * @type {string}
+ */
+const SOUND = path.resolve(RESOURCES, 'xcop', 'sound.xsl')
+
+/**
+ * The one it refuses, whose content is the same stylesheet on one line.
+ * @type {string}
+ */
+const REFUSED = path.resolve(RESOURCES, 'xcop', 'refused.xsl')
+
+/**
  * A directory of three stylesheets, the middle one written the way xcop
  * refuses, so a run over the directory stops before it reaches the third. They
  * are named so that they sort in that order, xcop globbing what a directory
@@ -153,13 +169,13 @@ const mixed = function() {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-mixed-'))
   return {
     dir: dir,
-    files: ['alpha', 'beta', 'gamma'].map((name) => {
-      const file = path.join(dir, `${name}.xsl`)
-      let body = '<root>\n  <held/>\n</root>'
-      if (name === 'beta') {
-        body = '<root><held/></root>'
-      }
-      fs.writeFileSync(file, `<?xml version="1.0"?>\n${body}\n`)
+    files: [
+      {name: 'alpha', from: SOUND},
+      {name: 'beta', from: REFUSED},
+      {name: 'gamma', from: SOUND},
+    ].map((one) => {
+      const file = path.join(dir, `${one.name}.xsl`)
+      fs.copyFileSync(one.from, file)
       return file
     }),
   }

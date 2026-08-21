@@ -30,3 +30,4 @@ jobs:
           --exclude 'test/resources/fix/**'
           --exclude 'test/resources/directives/wrapped*.xsl'
           --exclude 'test/resources/scaling/**'
+          --exclude 'test/resources/xcop/refused.xsl'
