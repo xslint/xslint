@@ -12,6 +12,7 @@ const {FIXERS} = require('../src/fixers')
 const {DECIMAL, XSLT} = require('../src/xsl-version')
 const {walked} = require('../src/tree')
 const {authored, rendered, PLACE} = require('../scripts/generate-checks')
+const {GUIDES} = require('./guides')
 const {Linter} = require('eslint')
 const path = require('path')
 const fs = require('fs')
@@ -142,11 +143,18 @@ const PROSE = ['src/attributes.js']
  * red on #794's perfectly correct "a `//(xsl:variable | xsl:template)` pays for
  * the two names" — a branch that had touched no list. Anchoring on the
  * identifier is what tells the two apart, and it reaches what dropping these
- * files would have left standing: `CLAUDE.md` counts `PATTERNS` twice, in prose
- * older than #654, so a sixth pattern attribute would rot both.
+ * files would have left standing: `PATTERNS` is counted twice, in prose older
+ * than #654, so a sixth pattern attribute would rot both.
+ *
+ * Both of those counts stand in a guide rather than in the root, #821 having
+ * relocated the derivation behind each module into the `CLAUDE.md` of its own
+ * directory — one in `src/CLAUDE.md` and one in `src/linters/CLAUDE.md`. So the
+ * guides are walked rather than written down: a claim that moves out of the
+ * root is judged where it went, and one written into a guide nobody listed
+ * would be judged nowhere.
  * @type {Array.<string>}
  */
-const DOCUMENTS = ['CLAUDE.md', 'README.md']
+const DOCUMENTS = GUIDES.concat(['README.md'])
 
 /**
  * Each list as a document may name it, paired with what it holds. `NAMED` is
