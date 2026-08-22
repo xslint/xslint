@@ -170,7 +170,7 @@ of DocBook-XSL — where the sweep behind it was a traversal apiece.
 TEI and 1.13 to 1.06 over DITA-OT, lowest of three interleaved rounds a side of
 processor time, which is 17%, 12% and 6% off the stage, and the three checks
 themselves go from 442 ms to 25 over DocBook-XSL, 334 to 30 over TEI and 132 to
-21 over DITA-OT — the report byte-identical on all three at 3843, 5716 and 1266
+21 over DITA-OT — the report byte-identical on all three at 3843, 5713 and 1266
 defects. Over the gate's own corpus the stage reads 29.44% where it read 34.03%,
 dearest of five gate runs a side, so its entry comes down by its own ratio, 53
 to 46, and the twenty-two stages that cost what they always did read dearer by
