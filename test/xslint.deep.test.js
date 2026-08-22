@@ -13,13 +13,28 @@ const fs = require('fs')
 const os = require('os')
 
 /**
- * How many stylesheets the piped run is given. Each copy of the scaling sheet
- * draws some thirty-six defects and eight kilobytes of report, so twenty of
- * them come to more than twice what a pipe holds before it stops taking any —
- * which is what leaves the run writing into a pipe that is already full.
- * @type {number}
+ * The two sizes of report a piped run is asked for, and what each is about.
+ * Each copy of the scaling sheet draws some thirty-six defects and eight
+ * kilobytes of report, so twenty of them stand past what a pipe takes before
+ * it stops taking more and the run is left writing into a full one — a write
+ * the kernel has not taken, which is #767's shape. Two fit wherever they are
+ * read, so the run is over before the reader looks, which is node's own
+ * flush's: an untouched stdio stream is resumed one tick after the child goes,
+ * and whatever the reader has not taken by then is read and thrown away
+ * (#822). How wide a pipe the host gives decides which of the two shapes a run
+ * of this suite meets, so both are asked and neither may lose a line.
+ * @type {Array.<{name: string, piped: number}>}
  */
-const PIPED = 20
+const PIPES = [
+  {
+    name: 'should write a report wider than the pipe nobody reads',
+    piped: 20,
+  },
+  {
+    name: 'should write a report narrower than the pipe nobody reads',
+    piped: 2,
+  },
+]
 
 describe('xslint', function() {
   it('should print its own version', function() {
@@ -402,26 +417,28 @@ describe('xslint', function() {
     ])
     assert.ok(/::(warning|error) file=/.test(streams.stdout))
   })
-  it('should write the whole report into a pipe nobody reads', async function() {
-    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-'))
-    const sheet = fs.readFileSync(
-      path.resolve('test/resources/scaling/stylesheet.xsl'), 'utf-8',
-    )
-    for (let at = 0; at < PIPED; at++) {
-      fs.writeFileSync(
-        path.join(dir, `sheet-${at}.xsl`),
-        sheet
-          .replaceAll('PREVIOUS', String(at - 1))
-          .replaceAll('SEED', String(at)),
+  PIPES.forEach((row) => {
+    it(row.name, async function() {
+      const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-'))
+      const sheet = fs.readFileSync(
+        path.resolve('test/resources/scaling/stylesheet.xsl'), 'utf-8',
       )
-    }
-    const said = await xslintUnread([dir, '--max-warnings=0'], 250)
-    fs.rmSync(dir, {recursive: true, force: true})
-    assert.equal(
-      said.report.split('\n').filter((line) => line !== '').length,
-      Number(said.log.match(/Defects found: (\d+)/)[1]),
-      'a report cannot lose the lines the run counted, whoever is reading',
-    )
+      for (let at = 0; at < row.piped; at++) {
+        fs.writeFileSync(
+          path.join(dir, `sheet-${at}.xsl`),
+          sheet
+            .replaceAll('PREVIOUS', String(at - 1))
+            .replaceAll('SEED', String(at)),
+        )
+      }
+      const said = await xslintUnread([dir, '--max-warnings=0'], 250)
+      fs.rmSync(dir, {recursive: true, force: true})
+      assert.equal(
+        said.report.split('\n').filter((line) => line !== '').length,
+        Number(said.log.match(/Defects found: (\d+)/)[1]),
+        'a report cannot lose the lines the run counted, whoever is reading',
+      )
+    })
   })
   it('should reject an unknown --format value', function() {
     const status = xslintStatus([
