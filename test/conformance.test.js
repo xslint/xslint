@@ -61,17 +61,14 @@ const assert = require('assert')
  * @type {{[name: string]: string}}
  */
 const UNINDEXED = {
-  'function-template-is-not-child-of-stylesheet': 'anchored at the root',
-  'function-use-in-xslt-1': 'anchored at the root',
   'malformed-version-in-stylesheet': 'a bracketed union of attribute paths',
-  'missing-id-in-stylesheet': 'anchored at the root',
-  'missing-version-in-stylesheet': 'anchored at the root',
-  'modern-construct-in-xslt-1': 'anchored at the root',
-  'not-using-output': 'anchored at the root',
-  'stylesheet-has-no-templates': 'anchored at the root',
+  'missing-id-in-stylesheet': 'the root itself, not a descendant sweep',
+  'missing-version-in-stylesheet': 'the root itself, not a descendant sweep',
+  'modern-construct-in-xslt-1': 'a union arm carrying a predicate of its own',
+  'not-using-output': 'the root itself, not a descendant sweep',
+  'stylesheet-has-no-templates': 'the root itself, not a descendant sweep',
   'text-outside-xsl-text': 'a wildcard names no one bucket',
-  'too-many-templates': 'anchored at the root',
-  'using-not-outermost-stylesheet': 'anchored at the root',
+  'too-many-templates': 'the root itself, not a descendant sweep',
 }
 
 /**

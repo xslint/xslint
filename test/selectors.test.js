@@ -84,6 +84,45 @@ const ATTRIBUTED = [
 ]
 
 /**
+ * Selectors standing below an anchor: whatever a selector spells in front of
+ * its descendant step, which the engine answers once for the document where
+ * the sweep behind it costs a traversal per check. Each carries the anchor, the
+ * local names the sweep yields and the tail left for the predicate. Three of
+ * the four are checks as they are written, and the fourth interposes a step of
+ * its own, so what the candidates must stand below is a child of the root
+ * rather than the root (#811).
+ * @type {Array.<{xpath: string, anchor: string, locals: Array.<string>,
+ *  tail: string}>}
+ */
+const ANCHORED = [
+  {
+    xpath: kinds.xpath['using-not-outermost-stylesheet'].xpath,
+    anchor: '(/xsl:stylesheet | /xsl:transform)',
+    locals: ['stylesheet', 'transform'],
+    tail: '',
+  },
+  {
+    xpath: kinds.xpath['function-template-is-not-child-of-stylesheet'].xpath,
+    anchor: '(/xsl:stylesheet | /xsl:transform)/*',
+    locals: ['function', 'template'],
+    tail: '',
+  },
+  {
+    xpath: kinds.xpath['function-use-in-xslt-1'].xpath,
+    anchor: '/*[not((if (self::xsl:stylesheet or self::xsl:transform) then ' +
+      `@version else @xsl:version) = ('2.0', '3.0'))]`,
+    locals: ['function'],
+    tail: '',
+  },
+  {
+    xpath: '/xsl:stylesheet//xsl:variable[@name]',
+    anchor: '/xsl:stylesheet',
+    locals: ['variable'],
+    tail: '[@name]',
+  },
+]
+
+/**
  * Selectors that are a union of branches, each branch an axis of its own and a
  * tail of its own, with the local names and the tail each carries. A union is
  * what three of the checks are written in and no shape of theirs is served
@@ -143,15 +182,23 @@ const UNIONS = [
  */
 const WHOLE = [
   {xpath: '//xsl:*', why: 'a wildcard names no one bucket'},
+  {
+    xpath: '/*[not(@version)]//xsl:template/@match',
+    why: 'an attribute axis below an anchor',
+  },
+  {
+    xpath: `/*[not(@version)]${kinds.corpus['unused-variable'].usage}`,
+    why: 'every attribute below an anchor',
+  },
   {xpath: '//*', why: 'every element is not a name'},
   {xpath: '//(xsl:variable | xsl:*)', why: 'a wildcard inside a union'},
-  {xpath: '/*[not(@version)]', why: 'anchored at the root, not a sweep'},
+  {xpath: '/*[not(@version)]', why: 'the root itself, not a descendant sweep'},
   {xpath: '//xsl:template[@match]/xsl:param', why: 'a step behind the tail'},
   {xpath: '//mine:thing[@a]', why: 'a prefix nothing binds'},
   {xpath: '//xsl:template[1]', why: 'a positional predicate'},
   {
     xpath: '//xsl:variable | /xsl:stylesheet',
-    why: 'a union whose second branch is anchored at the root',
+    why: 'a union whose second branch is the root itself',
   },
   {
     xpath: '//xsl:variable | //xsl:template[1]',
@@ -288,17 +335,57 @@ const MERGING = xml.parsedFromString(
  * Unions the door is judged on against the engine, the three checks written as
  * one plus four spellings of what a merge can get wrong: two buckets that
  * interleave, one bucket entered twice under different tails, the same branch
- * written twice, and a branch that finds nothing.
+ * written twice, and a branch that finds nothing. A fourth check rides along
+ * for the other half of an anchor: this stylesheet declares `version="3.0"`, so
+ * the guard `function-use-in-xslt-1` opens with answers nothing and the two
+ * functions below it must go unreported — an anchor that selects no node
+ * selects no candidate either, where a served axis that ignored one would
+ * report every function there is (#811).
  * @type {Array.<string>}
  */
 const MERGED = [
   kinds.xpath['short-names'].xpath,
+  kinds.xpath['function-use-in-xslt-1'].xpath,
   kinds.xpath['name-starts-with-numeric'].xpath,
   kinds.xpath['when-or-otherwise-outside-choose'].xpath,
   '//xsl:variable | //xsl:template',
   '//xsl:template[@name] | //xsl:template[@match]',
   '//xsl:template[@name] | //xsl:template[@name]',
   '//xsl:variable | //xsl:sort',
+]
+
+/**
+ * A stylesheet whose elements stand at depths an anchor tells apart: a template
+ * and a function directly below the root, an `xsl:stylesheet` nested inside a
+ * template, a template and a function inside *that*, and an `xsl:transform`
+ * below the root again. So each anchor under test excludes something the sweep
+ * behind it would otherwise reach — the root itself for one, everything at the
+ * root's own depth for the next — and a served axis that answered the sweep
+ * alone reports nodes the selector never selected (#811).
+ * @type {Document}
+ */
+const ANCHORING = xml.parsedFromString(
+  fs.readFileSync(
+    path.resolve(__dirname, 'resources', 'selectors', 'anchored.xsl'),
+    'utf-8',
+  ),
+)
+
+/**
+ * Anchored selectors the door is judged on against the engine: the three checks
+ * as they are written, one whose branches carry an anchor apiece, and one whose
+ * anchor names an element the stylesheet does not hold. That last one is the
+ * assertion the others cannot make — an anchor answering nothing must answer no
+ * candidates, where a filter written the other way round would report every
+ * template in the document.
+ * @type {Array.<string>}
+ */
+const DESCENDED = [
+  kinds.xpath['using-not-outermost-stylesheet'].xpath,
+  kinds.xpath['function-template-is-not-child-of-stylesheet'].xpath,
+  kinds.xpath['function-use-in-xslt-1'].xpath,
+  '/xsl:stylesheet/*//xsl:function | /xsl:stylesheet//xsl:transform',
+  '/xsl:nothing//xsl:template',
 ]
 
 /**
@@ -377,7 +464,7 @@ const answered = function(selection) {
 }
 
 describe('selectors', function() {
-  SPLIT.forEach((one) => {
+  SPLIT.concat(ANCHORED).forEach((one) => {
     it(`splits ${one.xpath} into an axis and a tail`, function() {
       assert.deepStrictEqual(
         splitOf(one.xpath),
@@ -385,6 +472,7 @@ describe('selectors', function() {
           {
             names: one.locals.map((local) => ({uri: XSLT, local: local})),
             attributes: [],
+            anchor: one.anchor ?? '',
             tail: one.tail,
           },
         ],
@@ -400,6 +488,7 @@ describe('selectors', function() {
           {
             names: one.locals.map((local) => ({uri: XSLT, local: local})),
             attributes: [one.attribute],
+            anchor: '',
             tail: one.tail,
           },
         ],
@@ -411,7 +500,12 @@ describe('selectors', function() {
     function() {
       assert.deepStrictEqual(
         splitOf(kinds.corpus['unused-variable'].usage),
-        [{names: [], attributes: [{uri: '', local: EVERY}], tail: ''}],
+        [
+          {
+            names: [], attributes: [{uri: '', local: EVERY}],
+            anchor: '', tail: '',
+          },
+        ],
         'the usage selector of three of the four cross-file checks chooses ' +
           'every attribute of a document, which is the sequence the walk in ' +
           'src/tree.js already holds and remembers, and it is not being split ' +
@@ -425,6 +519,7 @@ describe('selectors', function() {
         {
           names: [{uri: XSLT, local: 'call-template'}],
           attributes: [{uri: '', local: 'name'}],
+          anchor: '',
           tail: '',
         },
       ],
@@ -439,6 +534,7 @@ describe('selectors', function() {
         one.branches.map((branch) => ({
           names: branch.locals.map((local) => ({uri: XSLT, local: local})),
           attributes: [],
+          anchor: '',
           tail: branch.tail,
         })),
         `the union ${one.xpath} is not parted into the branches an index ` +
@@ -476,6 +572,18 @@ describe('selectors', function() {
           'chooses in the order it chooses them, so a union is being ' +
           'appended bucket after bucket rather than merged by rank, or a ' +
           'node standing in two branches is reported twice',
+      )
+    })
+  })
+  DESCENDED.forEach((one) => {
+    it(`serves ${one} where the engine reaches the same nodes`, function() {
+      assert.deepStrictEqual(
+        placed(chosen(ANCHORING, one)),
+        placed(nodes(ANCHORING, one)),
+        `the nodes served for ${one} are not the nodes the engine reaches ` +
+          'below its anchor, so an axis is being answered without the anchor ' +
+          'that stands in front of it and reports nodes the selector never ' +
+          'selected',
       )
     })
   })
