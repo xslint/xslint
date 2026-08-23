@@ -6,6 +6,8 @@
 const assert = require('assert')
 const fs = require('fs')
 const path = require('path')
+const {GAPS} = require('../src/tokens')
+const {ROOT, GUIDES} = require('./guides')
 const {STAGES} = require('../src/xslint')
 const {validate: validateXsls} = require('../src/validators/xsl-validator')
 const {validate: validateXpaths} = require('../src/validators/xpath-validator')
@@ -644,6 +646,64 @@ const judged = function() {
   return {faults: found, table: table}
 }
 
+/**
+ * Every bar of this file as a guide must spell it, the number carrying the unit
+ * it is quoted in: a share is a percentage of a run and a growth a multiple of
+ * the middle stage's. The tables above are re-derived whenever a stage made
+ * cheaper moves the denominator every share is taken against — four times for
+ * the cross-file linter alone — while the prose saying what they now hold
+ * stands in another file, so the two drift with nothing between them: #811 took
+ * the three entries from 53, 22 and 14 to 46, 24 and 16 in the commit that made
+ * the stage cheaper, and the root guide was still quoting the older three a
+ * merge later (#821). What the unit buys is the reading and the ratio staying
+ * out of it: `test/CLAUDE.md` spells `xpath-validator` at 12.29% and `SHARE` at
+ * 1.47, and neither of those is a bar.
+ * @type {{[name: string]: string}}
+ */
+const QUOTED = Object.assign(
+  {SHARE: `${SHARE}%`, GROWTH: GROWTH.toFixed(1)},
+  Object.fromEntries(
+    Object.keys(SHARES).map((name) => [name, `${SHARES[name]}%`]),
+  ),
+)
+
+/**
+ * How a bar of one unit is written, as the pattern matching every number a
+ * guide may have put where that bar belongs: a share to the whole percent and a
+ * growth to the tenth. Neither shape reaches the other's, which is what keeps a
+ * measurement quoted beside a bar from being read as one.
+ * @param {string} bar - What the bar must be quoted as
+ * @return {string} - Pattern for a number quoted in the same unit
+ */
+const shaped = function(bar) {
+  let pattern = '(\\d+\\.\\d+)'
+  if (bar.endsWith('%')) {
+    pattern = '(\\d+%)'
+  }
+  return pattern
+}
+
+/**
+ * Every bar a guide quotes at a number this file does not hold. A gap collapses
+ * first, because a bar is prose and prose wraps: the root guide spells one of
+ * them across a line ending.
+ * @param {string} guide - Path of the guide from the repository root
+ * @return {Array.<string>} - One line per bar quoted wrongly
+ */
+const misquoted = function(guide) {
+  const prose = fs.readFileSync(path.join(ROOT, guide), 'utf-8')
+    .split(GAPS).join(' ')
+  return Object.keys(QUOTED).flatMap(
+    (name) => Array.from(
+      prose.matchAll(new RegExp(`\`${name}\` at ${shaped(QUOTED[name])}`, 'g')),
+    )
+      .filter((found) => found[1] !== QUOTED[name])
+      .map(
+        (found) => `${guide} quotes \`${name}\` at ${found[1]}, not ${
+          QUOTED[name]}`,
+      ),
+  )
+}
 describe('scaling', function() {
   it('holds every stage to the cost and growth its bar allows', function() {
     this.timeout(120000)
@@ -678,6 +738,30 @@ describe('scaling', function() {
         .filter((name) => !STAGES.some((stage) => stage.name === name)),
       [],
       'a linter reaches no stage of the pipeline, so nothing measures it',
+    )
+  })
+  it('holds every bar a guide quotes to the table it stands in', function() {
+    assert.deepEqual(
+      GUIDES.flatMap(misquoted),
+      [],
+      'a guide quotes a bar at a number the tables above no longer hold, and ' +
+        'the prose is the half a session reads before it touches either one, ' +
+        'so a share left behind by the re-derivation that moved it is a bar ' +
+        'loosened by nobody',
+    )
+  })
+  it('states every bar of those tables in the guide read first', function() {
+    const prose = fs.readFileSync(path.join(ROOT, 'CLAUDE.md'), 'utf-8')
+      .split(GAPS).join(' ')
+    assert.deepEqual(
+      Object.keys(QUOTED).filter(
+        (name) => !new RegExp(`\`${name}\` at ${shaped(QUOTED[name])}`)
+          .test(prose),
+      ),
+      [],
+      'a bar stands in no guide every turn loads, so the gate above holds it ' +
+        'to nothing and a session meets it for the first time in the file ' +
+        'that sets it',
     )
   })
 })

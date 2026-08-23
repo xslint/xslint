@@ -7,12 +7,16 @@ not done.
 This file holds the rules and the map. The **derivation** behind any one module
 — the ticket it answers, the measurement a number in it stands on, the arbiter
 that settled a refusal — lives in the `CLAUDE.md` of the directory that module
-sits in, and arrives when that directory is opened: `src/CLAUDE.md`,
-`src/linters/CLAUDE.md`, `src/validators/CLAUDE.md`, `test/CLAUDE.md`,
-`scripts/CLAUDE.md`. So a claim goes where the code it is about goes, and the
-`Key files` index below names every file in one line. Both halves are machine-enforced —
-`test/guides.test.js` for the size and the index, `test/conformance.test.js` for the
-claims themselves (#821).
+sits in, and arrives with that directory rather than with every turn:
+`src/CLAUDE.md`, `src/linters/CLAUDE.md`, `src/validators/CLAUDE.md`,
+`test/CLAUDE.md`, `scripts/CLAUDE.md`. A turn loads this file and the guide of
+every directory on the way down to whatever it touches, so a chain of them is
+what a bar on their size answers to, and the two notes that outgrew even that
+stand at the top of `src/grammar.js` and `src/syntax.js` themselves. So a claim
+goes where the code it is about goes, and the `Key files` index below names
+every file in one line. Both halves are machine-enforced — `test/guides.test.js`
+for the size and the index, `test/conformance.test.js` for the claims themselves
+(#821).
 
 ## Git workflow
 
@@ -109,8 +113,8 @@ builds at 40 stylesheets and again at 160, and asks two questions of each: what
 percentage of the whole run it cost, and how it grew beside the middle stage's
 growth. Both are quotients taken inside one process, which is what cancels the
 machine. `SHARES` names the three stages that legitimately cost more of a run
-than the rest — `xpath-linter` at 53%, `xpath-validator` at 22%,
-`xsl-validator` at 14% — and every other stage answers to one bar, `SHARE` at
+than the rest — `xpath-linter` at 46%, `xpath-validator` at 24%,
+`xsl-validator` at 16% — and every other stage answers to one bar, `SHARE` at
 7%; growth is asked only of the stages with no entry, against `GROWTH` at 3.0,
 since an entry pins what a stage costs outright and that is the stronger
 statement. `corpora.yml` is the nightly tier, timing DocBook-XSL, TEI and
@@ -936,8 +940,8 @@ one of them.
 | `scripts/generate-checks.js` | Builds `src/resources/checks.json` from the check YAML (`npx grunt checks`) |
 | `scripts/budget.js` | Judges what a corpus cost the nightly tier against its budget, from both sides |
 | `test/conformance.test.js` | Enforces naming, motives, selector hygiene, the `mature` freeze, the suite's own shape, and this file's |
-| `test/guides.js` | What a turn may load in guides and what one may hold, with the reading each bar stands on |
-| `test/guides.test.js` | The guides themselves: a ceiling on what one holds and on what a turn loads, and the index held to the tree from both sides |
+| `test/guides.js` | The chain of guides a turn loads on its way to one file, and what that chain may cost |
+| `test/guides.test.js` | The guides themselves: a bar on what a chain of them costs a turn, and the index held to the tree from both sides |
 | `test/grammar-corpus.test.js` | Round trip and acceptance diff over every expression the repository carries |
 | `test/grammar-shapes.test.js` | The same acceptance diff over 14112 expressions nobody wrote |
 | `test/strictness.js` | `insists` — whether fontoxpath refuses an expression over its own strictness rather than over anything malformed in it |

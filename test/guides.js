@@ -64,30 +64,62 @@ const sized = function(named) {
 
 /**
  * What a turn may load in guides, which is the harness's own number rather than
- * one of ours: Claude Code warns past 150,000 characters of them, and a turn
- * that opens a module loads the root guide and the guide beside that module.
- * The pair reads 130,933 here — 64,535 for the root and 66,398 for
- * `src/CLAUDE.md`, dearest of the five — which is 0.87 of it. How fast that
- * moves is worth knowing beside the bar: two changes landed while this one was
- * being written, #818 spending 4,382 characters and #822 another 2,529, and of
- * that second one the root kept 1,167 where `test/CLAUDE.md` took 1,362 — the
- * split's own point, that the derivation grows in the guide beside the code
- * rather than in the one every turn reads.
+ * one of ours: Claude Code warns past 150,000 characters of them. What arrives
+ * against it is a **chain** and not a pair — the root guide, and the guide of
+ * every directory on the way down to a file the turn touches, each injected
+ * once — and that was measured rather than assumed, two throwaway guides
+ * planted at `src/resources/` and `src/resources/motives/` and neither ever
+ * read as a file both arriving the moment a motive under them was opened. The
+ * first spelling of this bar weighed the root against the dearest single guide,
+ * which is a whole directory short: it read 130,933 and called that 0.87 of the
+ * bar while a turn touching `src/linters/` was loading 157,504 and over it. So
+ * the two dearest notes moved one step further down, out of `src/CLAUDE.md` and
+ * into the top of `src/grammar.js` and `src/syntax.js` — 24,681 characters —
+ * and the dearest chain is that same one at 133,092, which is 0.89. How fast
+ * that moves is worth knowing beside the bar: two changes landed while this one
+ * was being written, #818 spending 5,238 characters of the root and #822
+ * another 2,529, and of that second one the root now keeps 1,183 where
+ * `test/CLAUDE.md` takes 1,362 — the split's own point, that the derivation
+ * grows in the guide beside the code rather than in the one every turn reads.
+ *
+ * A guide answers to nothing on its own account beside this, and a ceiling of
+ * half the bar stood here until it was seen to be one no tree could fail: the
+ * root stands in every chain, so the chain holding it above weighs each other
+ * guide against the bar less what stands over it — 43,479 for
+ * `src/linters/CLAUDE.md`, where half of the bar is 75,000 — and holds the root
+ * itself to 81,712, a number derived from the dearest chain rather than chosen.
+ * A gate no tree can fail is removed and not kept (#750, #660).
  * @type {number}
  */
 const LOADED = 150000
 
 /**
- * What one guide may hold, which is half of what a turn loads, a turn loading
- * two of them. The two dearest stand at 0.86 and 0.89 of it, thinner than every
- * other bar in this suite and deliberately so: what answers a guide reaching
- * this is the same move one directory down — a module's derivation into that
- * module's own docblocks — and never a ceiling widened to fit what has grown
- * past it, which is how the root came to hold 205,113 characters with the one
- * gate that reads it saying nothing about size (#821).
- * @type {number}
+ * The guides a turn loads on its way to one file: the root, and one for each
+ * directory standing over it that carries a guide of its own. The guide named
+ * is the last of them, so a chain is what its own directory costs a turn.
+ * @param {string} named - Path of a guide from the repository root
+ * @return {Array.<string>} - The guides loaded with it, the root first
  */
-const CEILING = LOADED / 2
+const chained = function(named) {
+  const directories = path.dirname(named).split('/')
+  return ['CLAUDE.md'].concat(
+    directories.filter((one) => one !== '.')
+      .map(
+        (one, index) => `${directories.slice(0, index + 1).join('/')}/CLAUDE.md`,
+      )
+      .filter((one) => GUIDES.includes(one)),
+  )
+}
+
+/**
+ * What a turn touching one directory is charged in guides, the whole chain
+ * summed.
+ * @param {string} named - Path of a guide from the repository root
+ * @return {number} - Characters of guide that arrive with it
+ */
+const loaded = function(named) {
+  return chained(named).reduce((total, one) => total + sized(one), 0)
+}
 
 /**
  * The paths the root guide's index names, read out of its `Key files` section
@@ -136,5 +168,6 @@ const globbed = function(row) {
 }
 
 module.exports = {
-  ROOT, GUIDES, CEILING, LOADED, slashed, sized, indexed, noted, globbed,
+  ROOT, GUIDES, LOADED, slashed, sized, chained, loaded, indexed, noted,
+  globbed,
 }

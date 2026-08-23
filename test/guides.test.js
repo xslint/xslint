@@ -5,7 +5,8 @@
 
 const {allFilesFrom} = require('../src/helpers')
 const {
-  ROOT, GUIDES, CEILING, LOADED, slashed, sized, indexed, noted, globbed,
+  ROOT, GUIDES, LOADED, slashed, sized, chained, loaded, indexed, noted,
+  globbed,
 } = require('./guides')
 const path = require('path')
 const assert = require('assert')
@@ -21,26 +22,19 @@ describe('guides', function() {
         'judged by nobody',
     )
   })
-  it('cannot let one guide hold more than half a turn', function() {
+  it('cannot fill a turn with the guides one directory loads', function() {
     assert.deepEqual(
-      GUIDES.filter((one) => sized(one) > CEILING), [],
-      `cannot hold a guide past ${CEILING} characters, which is half of the ` +
-        `${LOADED} a turn loads: ` +
-        `${GUIDES.map((one) => `${one} at ${sized(one)}`).join(', ')} — what ` +
-        'answers this is the derivation moving one directory down, into the ' +
-        'docblocks of the module it is about, and never a ceiling widened to ' +
-        'fit what has grown past it',
-    )
-  })
-  it('cannot fill a turn with the root and one module guide', function() {
-    const dearest = GUIDES.filter((one) => one !== 'CLAUDE.md')
-      .reduce((most, one) => Math.max(most, sized(one)), 0)
-    assert.ok(
-      sized('CLAUDE.md') + dearest <= LOADED,
-      `cannot load ${sized('CLAUDE.md') + dearest} characters of guide in ` +
-        `one turn, which is what the root's ${sized('CLAUDE.md')} and the ` +
-        `dearest module guide's ${dearest} come to against the ${LOADED} the ` +
-        'harness warns past — a turn that opens a module reads both of them',
+      GUIDES.filter((one) => loaded(one) > LOADED).map(
+        (one) => `${one} loads ${loaded(one)} in ${
+          chained(one).map((each) => `${each} at ${sized(each)}`).join(' + ')}`,
+      ),
+      [],
+      `cannot load a chain of guides past the ${LOADED} characters the ` +
+        'harness warns at, a turn touching a file loading the root guide and ' +
+        'the guide of every directory over it — what answers this is the ' +
+        'derivation moving one directory further down, into the docblocks of ' +
+        'the module it is about, and never a bar widened to fit what has ' +
+        'grown past it',
     )
   })
   it('names in its index only files the tree holds', function() {

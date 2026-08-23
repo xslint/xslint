@@ -446,12 +446,23 @@ lists in the code — said nothing at all about its size, in the file that says 
 be machine-enforced. What answers it is a relocation and never a summary, those derivations being
 what stops a later session loosening a bar that was placed on evidence: each note moved into the
 `CLAUDE.md` of the directory its module sits in, where it arrives when that directory is opened, and
-the root keeps the rules, the bars, and one line per file. `CEILING` is half of the 150,000
-characters the harness warns past, a turn loading the root guide and the guide beside whatever
-module it opens, and `LOADED` is that number itself asked of the pair — 62,518 and 65,401 here,
-which is 0.85 of it, thinner than every other bar in this suite and deliberately so: what answers a
-guide reaching the ceiling is the same move one directory down, a module's derivation into that
-module's own docblocks, and never a ceiling widened to fit what has grown past it. The index answers
+the root keeps the rules, the bars, and one line per file. `LOADED` is the 150,000 characters the
+harness warns past, and what arrives against it is a **chain** and not a pair: the root guide, and
+the guide of every directory on the way down to a file the turn touches, each injected once. That
+was measured rather than assumed — two throwaway guides planted at `src/resources/` and
+`src/resources/motives/`, neither of them ever read as a file, both arrived the moment a motive
+under them was opened. The first spelling of the bar weighed the root against the dearest single
+guide instead, which is a whole directory short: it read 130,933 and called that 0.87 of the bar
+while a turn touching `src/linters/` was loading 157,504 and over it. So the two dearest notes moved
+one step further down, out of `src/CLAUDE.md` and into the top of `src/grammar.js` and
+`src/syntax.js` — 24,681 characters — and the dearest chain is that same one at 133,092, which is
+0.89. What answers a chain reaching the bar is that move again, a module's derivation into the
+docblocks of the module itself, and never a bar widened to fit what has grown past it. A `CEILING`
+of half the bar stood beside it until it was seen to be a gate no tree could fail: the root stands
+in every chain, so the chain holding it above weighs each other guide against the bar less what
+stands over it — 43,479 for `src/linters/CLAUDE.md`, where half of the bar is 75,000 — and holds the
+root itself to 81,712, a number derived from the dearest chain rather than chosen. A gate no tree
+can fail is removed and not kept (#750, #660). The index answers
 to the tree from both sides, every path it names existing and every module under `src/` being named
 by a row — the twenty-one linters by one of them, the `*` standing for a name and never for a
 directory — and a note answers to the index and to its own directory both, so a derivation the root
