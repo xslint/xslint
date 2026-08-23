@@ -436,6 +436,30 @@ attribute value template holding literal text beside the expression so that
 ratchets from both sides as the rest do: an entry whose selector has started weighing text, or
 stopped counting elements, turns red.
 
+## `test/guides.test.js`
+
+The size and the shape of the guides themselves, and so the one gate whose subject is this
+repository's own documentation (#821). The root guide held 198,202 characters before it, most of
+them a per-module archive loaded on every turn, including every turn that never opens the module;
+and the gate that already read that file — holding its counts of `ATTRIBUTES` and `PATTERNS` to the
+lists in the code — said nothing at all about its size, in the file that says every convention must
+be machine-enforced. What answers it is a relocation and never a summary, those derivations being
+what stops a later session loosening a bar that was placed on evidence: each note moved into the
+`CLAUDE.md` of the directory its module sits in, where it arrives when that directory is opened, and
+the root keeps the rules, the bars, and one line per file. `CEILING` is half of the 150,000
+characters the harness warns past, a turn loading the root guide and the guide beside whatever
+module it opens, and `LOADED` is that number itself asked of the pair — 62,518 and 65,401 here,
+which is 0.85 of it, thinner than every other bar in this suite and deliberately so: what answers a
+guide reaching the ceiling is the same move one directory down, a module's derivation into that
+module's own docblocks, and never a ceiling widened to fit what has grown past it. The index answers
+to the tree from both sides, every path it names existing and every module under `src/` being named
+by a row — the twenty-one linters by one of them, the `*` standing for a name and never for a
+directory — and a note answers to the index and to its own directory both, so a derivation the root
+has stopped pointing at turns red, and so does one standing where the reader who needs it will never
+load it. `test/guides.js` is the walk itself rather than a list of the five, since a guide left off
+a hand-written list would take its claims out of every gate at once, and `test/conformance.test.js`
+reads that walk: `DOCUMENTS` is it, so a count relocated into a guide is judged where it went.
+
 ## `test/grammar-corpus.test.js`
 
 The two gates #680 stands in front of the parser, asked of every expression the repository carries —
@@ -524,7 +548,21 @@ armed and how many arguments a spread carries is V8's business — a Node that m
 otherwise leave the test quietly proving nothing (#758). The kilobytes are the smallest stack worth
 asking for rather than the stack: node needs some seventy to start here and more where a platform's
 frames are wider, so the ask doubles until one answers and the stack that did comes back, for a
-caller that has a second question to put to the same size.
+caller that has a second question to put to the same size. `xslintUnread` is the one reader here
+that deliberately does not read: it leaves the pipe alone until stderr says how many defects were
+found, so the run is left writing into a pipe nobody is emptying, which is the write `process.exit`
+abandons (#767). What it must not do is leave that data there for somebody else to flush. It reads
+in **paused** mode with a `'readable'` listener standing on it from the start and takes the data
+with `read` once the stall is over, because one `process.nextTick` after a child exits `flushStdio`
+resumes every readable stdio stream of it — deliberately, so the stream can reach eof — and `resume`
+sets `state.flowing` to `!state.readableListening`, so a listener is what makes the paused mode
+node's own rather than merely this reader's. Attaching the reader at the end of the stall instead
+left that resume flowing, so wherever the run finished first the whole report was read and thrown
+away: the row asking for a report narrower than the pipe lost every line of it, and the wider row
+lost every line on a host whose buffer takes those 147,620 bytes whole, rultor's docker container
+among them — eleven merges in a row reading `-0` on a commit six GitHub runners passed (#822).
+Behind the trigger stands a fallback, since a run that never reaches the summary would otherwise
+leave the pipe unread and the promise unsettled.
 
 ## `test/packs.js`
 
@@ -607,27 +645,3 @@ must refuse, by the path each stands at, and every entry is asserted rather than
 pack xcop accepts turns red, which is how four stale exemptions were found. Two gates need no xcop
 at all and so run wherever the suite does — every entry names a pack that is there, and no two
 fixtures share a path.
-
-## `test/guides.test.js`
-
-The size and the shape of the guides themselves, and so the one gate whose subject is this
-repository's own documentation (#821). The root guide held 198,202 characters before it, most of
-them a per-module archive loaded on every turn, including every turn that never opens the module;
-and the gate that already read that file — holding its counts of `ATTRIBUTES` and `PATTERNS` to the
-lists in the code — said nothing at all about its size, in the file that says every convention must
-be machine-enforced. What answers it is a relocation and never a summary, those derivations being
-what stops a later session loosening a bar that was placed on evidence: each note moved into the
-`CLAUDE.md` of the directory its module sits in, where it arrives when that directory is opened, and
-the root keeps the rules, the bars, and one line per file. `CEILING` is half of the 150,000
-characters the harness warns past, a turn loading the root guide and the guide beside whatever
-module it opens, and `LOADED` is that number itself asked of the pair — 62,518 and 65,401 here,
-which is 0.85 of it, thinner than every other bar in this suite and deliberately so: what answers a
-guide reaching the ceiling is the same move one directory down, a module's derivation into that
-module's own docblocks, and never a ceiling widened to fit what has grown past it. The index answers
-to the tree from both sides, every path it names existing and every module under `src/` being named
-by a row — the twenty-one linters by one of them, the `*` standing for a name and never for a
-directory — and a note answers to the index and to its own directory both, so a derivation the root
-has stopped pointing at turns red, and so does one standing where the reader who needs it will never
-load it. `test/guides.js` is the walk itself rather than a list of the five, since a guide left off
-a hand-written list would take its claims out of every gate at once, and `test/conformance.test.js`
-reads that walk: `DOCUMENTS` is it, so a count relocated into a guide is judged where it went.

@@ -66,22 +66,24 @@ const sized = function(named) {
  * What a turn may load in guides, which is the harness's own number rather than
  * one of ours: Claude Code warns past 150,000 characters of them, and a turn
  * that opens a module loads the root guide and the guide beside that module.
- * The pair reads 129,750 here — 63,352 for the root and 66,398 for
- * `src/CLAUDE.md`, dearest of the five — which is 0.86 of it. How fast that
- * moves is worth knowing beside the bar: #818, the change that landed while
- * this one was being written, spent 4,382 characters in one sitting, of which
- * the root took 721 and the module guides the rest.
+ * The pair reads 130,933 here — 64,535 for the root and 66,398 for
+ * `src/CLAUDE.md`, dearest of the five — which is 0.87 of it. How fast that
+ * moves is worth knowing beside the bar: two changes landed while this one was
+ * being written, #818 spending 4,382 characters and #822 another 2,529, and of
+ * that second one the root kept 1,167 where `test/CLAUDE.md` took 1,362 — the
+ * split's own point, that the derivation grows in the guide beside the code
+ * rather than in the one every turn reads.
  * @type {number}
  */
 const LOADED = 150000
 
 /**
  * What one guide may hold, which is half of what a turn loads, a turn loading
- * two of them. The two dearest stand at 0.84 and 0.89 of it, thinner than every
+ * two of them. The two dearest stand at 0.86 and 0.89 of it, thinner than every
  * other bar in this suite and deliberately so: what answers a guide reaching
  * this is the same move one directory down — a module's derivation into that
  * module's own docblocks — and never a ceiling widened to fit what has grown
- * past it, which is how the root came to hold 202,584 characters with the one
+ * past it, which is how the root came to hold 205,113 characters with the one
  * gate that reads it saying nothing about size (#821).
  * @type {number}
  */

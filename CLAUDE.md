@@ -46,11 +46,11 @@ three platforms and two node versions, and `corpora`, which times a real run
 The suite comes in two halves, and the line between them is a child process. A
 **deep** test starts one — it runs `xslint` or `xcop` the way a user does — and
 is named `*.deep.test.js`; every other test stays in this process. Four files
-are deep, and they still cost most of what the suite costs: 610 of the 2518
+are deep, and they still cost most of what the suite costs: 611 of the 2519
 tests, 9 of the 14 seconds. The other 1908 finish inside one, which is why
 `npm run fast` is the loop to work in and `npm test` the one to finish on. The
 deep target runs under `mocha --parallel`, so those four files run at once and
-the slowest of them sets the clock — `xslint.deep.test.js` alone, whose 50 tests
+the slowest of them sets the clock — `xslint.deep.test.js` alone, whose 52 tests
 each try the CLI with different arguments and so cannot share a process the way
 the other three now do. The fourth, `walk.deep.test.js`, is the one that starts
 node rather than `xslint`: it walks a wide directory in a process given the
@@ -333,9 +333,24 @@ bytes, and the socket `spawn` hands a child takes none at all. The exit code was
 right in each of those, so nothing announced the loss (#767). A
 `no-restricted-syntax` selector bans the call across the repository, nothing
 here having a use for it — the `catch` around the parse in `src/index.mjs` sets
-the same field. What pins it is a run over twenty stylesheets whose reader stays
-paused until stderr says how many defects were found, counting the report's
-lines against that number. The package `main` re-exports `lint` and
+the same field. What pins it is a pair of runs whose reader stays paused until
+stderr says how many defects were found, counting the report's lines against
+that number: one report wider than the pipe and one narrower, since how wide a
+pipe the host gives is what decides which of the two shapes a run of this suite
+meets. The wide one leaves the run writing into a pipe nobody is emptying, which
+is the write `process.exit` abandons and the whole of what #767 is
+about — put back, it reports 312 of the 760 lines it counted. The narrow one is
+taken whole before the reader looks, so the run is over and the hazard is node's
+own rather than this project's: one `process.nextTick` after a child exits,
+`flushStdio` resumes every readable stdio stream of it, deliberately, so the
+stream can reach eof, and an untouched one is read and thrown away. A stalled
+reader must therefore own the data rather than leave it for that flush, which is
+`test/helpers.js`'s business and what the narrow row pins. Twenty stylesheets
+were the whole of the test until #822, so its verdict stood on the host's socket
+buffer and not on the run: those twenty are 147,620 bytes of report now, which
+fits whatever rultor's docker container gives, so the run finished first, node
+discarded the report, and eleven merges in a row read `-0` on a commit six
+GitHub runners passed. The package `main` re-exports `lint` and
 `fixed` so an embedder (the planned LSP server, #336) can lint a buffer without
 shelling out; the bin stays `src/index.mjs`.
 
@@ -926,7 +941,7 @@ one of them.
 | `test/grammar-corpus.test.js` | Round trip and acceptance diff over every expression the repository carries |
 | `test/grammar-shapes.test.js` | The same acceptance diff over 14112 expressions nobody wrote |
 | `test/strictness.js` | `insists` — whether fontoxpath refuses an expression over its own strictness rather than over anything malformed in it |
-| `test/helpers.js` | The only door to a child process in the suite: `runXslint`, `xslintStatus`, `xslintStreams`, `xcopped`, `walkedWith` |
+| `test/helpers.js` | The only door to a child process in the suite: `runXslint`, `xslintStatus`, `xslintStreams`, `xslintUnread`, `xcopped`, `walkedWith` |
 | `test/packs.js` | The one harness every pack directory is read through |
 | `test/scaling.test.js` | The speed gate: every stage's own processor time as a share of the run, at two corpus sizes |
 | `test/xcop.deep.test.js` | Writes every pack's inline XSL to one directory and runs xcop over it |

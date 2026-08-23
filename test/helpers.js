@@ -99,6 +99,20 @@ const COUNTED = 'Defects found:'
  * the last thing written (#767). A reader that stays paused until the run says
  * how many defects it found forces that: the writes queue behind a pipe nobody
  * is emptying, and only then does the reader drain.
+ *
+ * The pipe is read in paused mode, with a `'readable'` listener standing on it
+ * from the start and `read` taking the data once the stall is over. A listener
+ * is what makes that mode node's own, and not merely this reader's: one
+ * `process.nextTick` after a child exits, `flushStdio` resumes every readable
+ * stdio stream of it, deliberately, so the stream can reach eof — and a resume
+ * flows only where nothing is listening for `'readable'`, `resume` setting
+ * `state.flowing` to `!state.readableListening`. Attaching the reader at the
+ * end of the stall instead left that resume flowing, so the whole report was
+ * read and thrown away wherever the run finished first, which is any host
+ * whose pipe takes the report whole: the row asking for one narrower than the
+ * pipe lost every line of it, and the wider row lost every line on the hosts
+ * with the wider buffer, rultor's among them (#822).
+ *
  * The trigger has a fallback behind it, since a run that never reaches the
  * summary would otherwise leave the pipe unread and the promise unsettled.
  * @param {Array.<string>} args - Array of args
@@ -125,20 +139,31 @@ const xslintUnread = function(args, settling) {
       }
     }
     /**
+     * Take everything the pipe is holding, and nothing until the stall is over.
+     */
+    const swallow = function() {
+      let chunk = child.stdout.read()
+      while (chunk !== null) {
+        said.report += chunk
+        chunk = child.stdout.read()
+      }
+    }
+    /**
      * Start reading the pipe the run has been writing into.
      */
     const drain = function() {
       if (!drained) {
         drained = true
-        child.stdout.on('data', (chunk) => {
-          said.report += chunk
-        })
-        child.stdout.resume()
+        swallow()
       }
     }
     child.stdout.setEncoding('utf-8')
     child.stderr.setEncoding('utf-8')
-    child.stdout.pause()
+    child.stdout.on('readable', () => {
+      if (drained) {
+        swallow()
+      }
+    })
     child.stdout.on('end', () => {
       said.ended = true
       settle()
