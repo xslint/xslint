@@ -15,8 +15,9 @@ what a bar on their size answers to, and the two notes that outgrew even that
 stand at the top of `src/grammar.js` and `src/syntax.js` themselves. So a claim
 goes where the code it is about goes, and the `Key files` index below names
 every file in one line. Both halves are machine-enforced — `test/guides.test.js`
-for the size and the index, `test/conformance.test.js` for the claims themselves
-(#821).
+for the size, the index, and the counts a guide states of a list in the code,
+`test/conformance.test.js` for the length one states of a file the line cap is
+lifted off (#821, #825).
 
 ## Git workflow
 
@@ -960,9 +961,9 @@ one of them.
 | `scripts/generate-docs.js` | Builds the `docs/` site from checks + motives |
 | `scripts/generate-checks.js` | Builds `src/resources/checks.json` from the check YAML (`npx grunt checks`) |
 | `scripts/budget.js` | Judges what a corpus cost the nightly tier against its budget, from both sides |
-| `test/conformance.test.js` | Enforces naming, motives, selector hygiene, the `mature` freeze, the suite's own shape, and this file's |
-| `test/guides.js` | The chain of guides a turn loads on its way to one file, and what that chain may cost |
-| `test/guides.test.js` | The guides themselves: a bar on what a chain of them costs a turn, and the index held to the tree from both sides |
+| `test/conformance.test.js` | Enforces naming, motives, selector hygiene, the `mature` freeze, the suite's own shape, and the length a guide states of the file the line cap is lifted off |
+| `test/guides.js` | The guides as data: the chain a turn loads on its way to one file, what that chain may cost, and how a claim standing in one is read |
+| `test/guides.test.js` | The guides themselves: a bar on what a chain of them costs a turn, the index held to the tree from both sides, and the counts a guide states of a list in the code |
 | `test/grammar-corpus.test.js` | Round trip and acceptance diff over every expression the repository carries |
 | `test/grammar-shapes.test.js` | The same acceptance diff over 14112 expressions nobody wrote |
 | `test/strictness.js` | `insists` — whether fontoxpath refuses an expression over its own strictness rather than over anything malformed in it |

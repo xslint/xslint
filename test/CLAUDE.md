@@ -472,7 +472,7 @@ file stands at today, and a history spelled the other way is a stale claim it ri
 The size and the shape of the guides themselves, and so the one gate whose subject is this
 repository's own documentation (#821). The root guide held 198,202 characters before it, most of
 them a per-module archive loaded on every turn, including every turn that never opens the module;
-and the gate that already read that file — holding its counts of `ATTRIBUTES` and `PATTERNS` to the
+and the gate that read that file then — holding its counts of `ATTRIBUTES` and `PATTERNS` to the
 lists in the code — said nothing at all about its size, in the file that says every convention must
 be machine-enforced. What answers it is a relocation and never a summary, those derivations being
 what stops a later session loosening a bar that was placed on evidence: each note moved into the
@@ -486,12 +486,12 @@ under them was opened. The first spelling of the bar weighed the root against th
 guide instead, which is a whole directory short: it read 130,933 and called that 0.87 of the bar
 while a turn touching `src/linters/` was loading 157,504 and over it. So the two dearest notes moved
 one step further down, out of `src/CLAUDE.md` and into the top of `src/grammar.js` and
-`src/syntax.js` — 24,681 characters — and the dearest chain is that same one at 133,739, which is
-0.89. What answers a chain reaching the bar is that move again, a module's derivation into the
+`src/syntax.js` — 24,681 characters — and the dearest chain is that same one at 134,642, which is
+0.90. What answers a chain reaching the bar is that move again, a module's derivation into the
 docblocks of the module itself, and never a bar widened to fit what has grown past it. A `CEILING`
 of half the bar stood beside it until it was seen to be a gate no tree could fail: the root stands
 in every chain, so the chain holding it above weighs each other guide against the bar less what
-stands over it — 42,832 for `src/linters/CLAUDE.md`, where half of the bar is 75,000 — and holds the
+stands over it — 41,929 for `src/linters/CLAUDE.md`, where half of the bar is 75,000 — and holds the
 root itself to 81,712, a number derived from the dearest chain rather than chosen. A gate no tree
 can fail is removed and not kept (#750, #660). The index answers
 to the tree from both sides, every path it names existing and every module under `src/` being named
@@ -499,8 +499,14 @@ by a row — the twenty-one linters by one of them, the `*` standing for a name 
 directory — and a note answers to the index and to its own directory both, so a derivation the root
 has stopped pointing at turns red, and so does one standing where the reader who needs it will never
 load it. `test/guides.js` is the walk itself rather than a list of the five, since a guide left off
-a hand-written list would take its claims out of every gate at once, and `test/conformance.test.js`
-reads that walk: `DOCUMENTS` is it, so a count relocated into a guide is judged where it went.
+a hand-written list would take its claims out of every gate at once, and the reading of a claim
+stands beside the walk: `worded` flattening a wrapped paragraph into one line, `DOCUMENTS` naming
+the guides and the README together, `NEARBY` bounding how far past a name a number may stand and
+still be a claim about it. Both gates ask it, so a count relocated into a guide is judged where it
+went, and so is the length a guide states of the file the line cap is lifted off, which is
+`test/conformance.test.js`'s to ask beside the cap it is an exemption from. The counts came the
+other way at that same sitting: `ATTRIBUTES` and `PATTERNS` are held to the lists in the code from
+here now, the file that held them having reached the 1000 lines it caps every other file at (#825).
 
 ## `test/grammar-corpus.test.js`
 
