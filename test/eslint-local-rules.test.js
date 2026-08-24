@@ -179,3 +179,65 @@ tester.run(
     ],
   },
 )
+
+tester.run(
+  'no-sprawling-docblock',
+  local.rules['no-sprawling-docblock'],
+  {
+    valid: [
+      'const one = 1',
+      '/** One line. */\nconst one = 1',
+      '/**\n * One.\n * Two.\n * Three.\n * Four.\n * Five.\n */\nconst one = 1',
+      '/**\n * One.\n *\n * Two.\n *\n * Three.\n *\n * Four.\n *\n * Five.\n */\nconst one = 1',
+      '/**\n * **One** in bold.\n */\nconst one = 1',
+      '/**\n * @param {object} one - Thing\n * @return {boolean} - Verdict\n */\nfunction pair(one) {}',
+      '/**\n * One.\n * @param {object} one - A description that\n *  wraps onto a second line and then\n *  onto a third\n */\nfunction pair(one) {}',
+      '/*\n * One.\n * Two.\n * Three.\n * Four.\n * Five.\n * Six.\n */\nconst one = 1',
+      '// One.\n// Two.\n// Three.\n// Four.\n// Five.\n// Six.\nconst one = 1',
+      {
+        code: '/**\n * One.\n * Two.\n * Three.\n * Four.\n * Five.\n * Six.\n * Seven.\n */\nconst one = 1',
+        options: [{description: 8}],
+      },
+      {
+        code: '/**\n * One.\n * @param {object} one - A description that\n *  wraps once\n */\nfunction pair(one) {}',
+        options: [{tag: 2}],
+      },
+    ],
+    invalid: [
+      {
+        code: '/**\n * One.\n * Two.\n * Three.\n * Four.\n * Five.\n * Six.\n */\nconst one = 1',
+        errors: [{messageId: 'sprawling', line: 7}],
+      },
+      {
+        code: '/**\n * One.\n * Two.\n * Three.\n * Four.\n * Five.\n * Six.\n */\nconst one = 1\n/**\n * One.\n * Two.\n * Three.\n * Four.\n * Five.\n * Six.\n */\nconst two = 2',
+        errors: [
+          {messageId: 'sprawling', line: 7},
+          {messageId: 'sprawling', line: 16},
+        ],
+      },
+      {
+        code: '/**\n * One.\n * Two.\n * Three.\n */\nconst one = 1',
+        options: [{description: 2}],
+        errors: [{messageId: 'sprawling', line: 4}],
+      },
+      {
+        code: '/**\n * One.\n * @param {object} one - A description that\n *  wraps onto a second line and then\n *  onto a third and then\n *  onto a fourth\n */\nfunction pair(one) {}',
+        errors: [{messageId: 'wordy', line: 6}],
+      },
+      {
+        code: '/**\n * One.\n * @param {object} one - A description that\n *  wraps onto a second line and then\n *  onto a third and then\n *  onto a fourth\n * @return {boolean} - A verdict that\n *  wraps onto a second line and then\n *  onto a third and then\n *  onto a fourth\n */\nfunction pair(one) {}',
+        errors: [
+          {messageId: 'wordy', line: 6},
+          {messageId: 'wordy', line: 10},
+        ],
+      },
+      {
+        code: '/**\n * One.\n * Two.\n * Three.\n * Four.\n * Five.\n * Six.\n * @param {object} one - A description that\n *  wraps onto a second line and then\n *  onto a third and then\n *  onto a fourth\n */\nfunction pair(one) {}',
+        errors: [
+          {messageId: 'sprawling', line: 7},
+          {messageId: 'wordy', line: 11},
+        ],
+      },
+    ],
+  },
+)

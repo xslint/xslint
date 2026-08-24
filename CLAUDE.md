@@ -50,8 +50,8 @@ three platforms and two node versions, and `corpora`, which times a real run
 The suite comes in two halves, and the line between them is a child process. A
 **deep** test starts one — it runs `xslint` or `xcop` the way a user does — and
 is named `*.deep.test.js`; every other test stays in this process. Four files
-are deep, and they still cost most of what the suite costs: 619 of the 2537
-tests, 9 of the 14 seconds. The other 1918 finish inside one, which is why
+are deep, and they still cost most of what the suite costs: 619 of the 2554
+tests, 9 of the 14 seconds. The other 1935 finish inside one, which is why
 `npm run fast` is the loop to work in and `npm test` the one to finish on. The
 deep target runs under `mocha --parallel`, so those four files run at once and
 the slowest of them sets the clock — `xslint.deep.test.js` alone, whose 52 tests
@@ -151,10 +151,11 @@ no file longer than 1000 lines (`max-lines`),
 no redundant return variable
 (`const x = expr; return x` is banned — return the expression), no missing
 argument (a call must fill every parameter the callee declares without a
-default), one `return` per function (a second exit is banned), and no orphaned
+default), one `return` per function (a second exit is banned), no orphaned
 JSDoc block (a `/**` block standing in front of another one documents nothing,
-which is what a deleted function leaves behind). The last four are project-local
-rules in `eslint-local-rules.js`, unit-tested in
+which is what a deleted function leaves behind), and no sprawling one (a
+description past five lines, or a single `@`-tag entry past three). The last
+five are project-local rules in `eslint-local-rules.js`, unit-tested in
 `test/eslint-local-rules.test.js`; the arity of the callee is read from its
 declaration in the same file, or by loading the module a relative `require`
 names. The orphan rule has to be one of them rather than a
@@ -173,7 +174,7 @@ matters reaches the plugin too. Shortening that off-list is its own job; only
 
 A file stops at 1000 lines, counting the blank ones and the comments, since a
 reader scrolls past those as well. One file stands above it and is named in
-`SPRAWLING` in the config — `src/grammar.js`, 1828 lines of one function per
+`SPRAWLING` in the config — `src/grammar.js`, 2170 lines of one function per
 production of XPath 3.1 — rather than carrying a disable comment of its own, so
 what is exempted is one list a reviewer reads in the place the cap is set, not a
 mark to be found by opening every file. Neither half can rot in silence.
@@ -183,6 +184,17 @@ deleted, turns its own exemption red instead of quietly un-capping whatever
 takes the name next; and it fails when *nothing* in the config caps a file at
 all, because a rule deleted takes its enforcement with it and leaves the
 exemption list reading like a limit that is still in force.
+
+A docblock stops at five lines of description, and at three for any one `@`-tag
+entry — the tag line and the two wraps behind it — with the delimiters and the
+blank `*` separators counted in neither, both numbers set beside the rule in
+`eslint.config.mjs`. Nothing weighed a comment before: 266 descriptions in 64
+files stood past that bar, the dearest of them 142 lines, so a derivation grew
+wherever one was written the way the cross-file linter's cost grew before #755
+(#832). The bar is not a licence to respell what a block cannot hold as a
+`/* */` beside it either — such prose is cut and not moved, the dearest chain of
+guides standing at 0.90 of `LOADED` with nowhere to put it, so the ticket number
+left standing in the surviving sentence is what keeps a derivation recoverable.
 
 A parameter a caller may leave out therefore says so in the signature, with a
 default — `fix = undefined` on `defect` in `src/checks.js`. A JSDoc `[fix]`

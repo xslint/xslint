@@ -18,12 +18,11 @@ const NAMED = {lt: '<', gt: '>', amp: '&', quot: '"', apos: '\''}
 const ENDINGS = /\r\n|\r|\n/g
 
 /**
- * The text indexed most recently and where its lines begin. Positions are asked
- * for one source at a time — every defect in a file, then every fix in it — so
- * remembering the last one spares the rescan without keeping any earlier source
- * alive. A table of every text ever seen would do that, and `lint` is exported
- * for an embedder to call on a buffer per keystroke (#336), where each version
- * of each open file would then be held for the life of the process.
+ * The text indexed most recently and where its lines begin. Positions are
+ * asked for one source at a time — every defect in a file, then every fix in
+ * it — so remembering the last one spares the rescan without keeping any
+ * earlier source alive, which a table of every text ever seen would do to an
+ * embedder linting a buffer per keystroke (#336).
  * @type {{text: ?string, offsets: Array.<number>}}
  */
 const LAST = {text: null, offsets: []}
@@ -72,13 +71,10 @@ const placeAt = function(text, at) {
 
 /**
  * The decoded character at a raw offset and the offset just past it. A named
- * XML entity (`&lt;`, `&gt;`, `&amp;`, …) reads as the single character it
- * stands for, and a line ending reads as the `\n` a parser turns it into before
- * parsing begins — XML 1.0 §2.11 normalises `\r\n` and a lone `\r` alike — so a
- * CRLF source is one character two offsets wide and a walk over it keeps count.
- * Anything else an `&` opens, a numeric or unknown entity or one no `;` ever
- * closes, yields `undefined`, so a match over it fails and the caller backs off
- * rather than decoding it wrongly.
+ * XML entity reads as the single character it stands for, and a line ending as
+ * the `\n` a parser turns it into, so a CRLF source is one character two
+ * offsets wide. Anything else an `&` opens yields `undefined`, so a match over
+ * it fails and the caller backs off.
  * @param {string} content - Raw source text
  * @param {number} at - Zero-based offset to read from
  * @return {[(string|undefined), number]} - The decoded character (or undefined)
@@ -102,15 +98,11 @@ const character = function(content, at) {
 }
 
 /**
- * The raw offset reached after skipping the given number of decoded characters,
- * so an offset into a parsed value maps back to its true place in the source
- * even when an entity ahead of it spans several source characters. Where the
- * span holds no `&` and no `\r` nothing in it can be wider than one character,
- * and the answer is the count itself — the ordinary case, and worth not walking
- * a character at a time to reach. Testing only that span is enough: every
- * character before the first wide one is read one for one, so the first `&` or
- * `\r` a walk could reach always sits below `at + count`, inside the span
- * tested. A count below zero takes the walk, which answers `at`.
+ * The raw offset reached after skipping that many decoded characters, so an
+ * offset into a parsed value maps back to its true place even when an entity
+ * ahead of it is several characters wide. Where the span holds no `&` and no
+ * `\r` the answer is the count itself, the first wide one always sitting
+ * inside it. A count below zero answers `at`.
  * @param {string} content - Raw source text
  * @param {number} at - Zero-based offset to start from
  * @param {number} count - Number of decoded characters to skip

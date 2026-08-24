@@ -118,19 +118,10 @@ const behind = function(value, at) {
 
 /**
  * What a check's template anchors its name against: the fixed text a scan
- * finds, and which side of it the name stands on — `${name}` puts `$` in front
- * of the name and `{name}(` puts `(` behind it. Read once for a template
- * rather than once per usage value, the template being the check's and not the
- * value's.
- *
- * Exactly one end carries that text, and a template failing it is refused here
- * rather than obeyed. With text at neither end the mark is the empty string,
- * which `indexOf` finds at every offset and, asked past the end, goes on
- * answering the length instead of -1: the scan never advances and the run
- * hangs before it reports anything. With text at both ends only the near side
- * is ever matched, so a declaration the far side uses is reported as dead.
- * `test/conformance.test.js` holds every check to the same shape, so this is
- * the second line rather than the first (#783).
+ * finds, and which side of it the name stands on. Read once for a template
+ * rather than once per usage value. Exactly one end carries that text, and a
+ * template failing it is refused here rather than obeyed — neither end hangs
+ * the run on an empty mark, both ends report a live declaration dead (#783).
  * @param {string} reference - The check's template, holding `{name}`
  * @return {{mark: string, precedes: boolean}} - The text and which side it is
  */
@@ -156,8 +147,7 @@ const anchoring = function(reference) {
  * behind each `$` for a variable, the names in front of each `(` for a call.
  * The name is the run of name characters beside the anchor's text, so a
  * reference is to the *whole* name and never to one spelled inside a longer
- * one: `$rownum` is no reference to `$row`, though it holds those characters
- * (#783).
+ * one: `$rownum` is no reference to `$row` (#783).
  * @param {string} value - Usage value
  * @param {{mark: string, precedes: boolean}} anchor - What `anchoring` read
  * @return {Set.<string>} - The names it references

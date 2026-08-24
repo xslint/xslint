@@ -41,43 +41,11 @@ const spaced = function(token) {
 }
 
 /**
- * Whether fontoxpath refuses the expression over its own strictness rather than
- * over anything malformed in it. Three things make it up, and every one of them
- * is XPath the specification spells and the engine will not read:
- *
- * - the `namespace::` axis, which XPath 3.0 dropped and 1.0 and 2.0 define, so
- *   an engine that is only 3.1 has no parse for it at all (#615);
- * - ExprWhitespace around an axis separator, which XPath 1.0 §3.7 lets stand on
- *   either side of `::` (#615);
- * - ExprWhitespace inside a node test, between its name and the bracket it
- *   opens with or anywhere the brackets hold (#639).
- *
- * It is asked of the token stream rather than of the characters, which is what
- * lets it tell the axis of `1-namespace::x` from the one name of
- * `a-namespace::x`: a `-` continues a name a letter started and subtracts
- * everywhere else, and the lexer has already decided which, where a lookbehind
- * would be reading characters about a question that is about tokens.
- *
- * What it does not answer is whether the expression is valid, and it must not
- * be read that way: `child ::` names an axis no node test follows and holds a
- * spaced separator all the same. It says which side of a disagreement the
- * engine stands on and why, so a gate over a corpus can subtract the engine's
- * own strictness from a diff and annotate whatever is left.
- *
- * Naming a spelling too many is therefore cheap and missing one is not, but
- * only in one direction, and the gate that reads this holds that direction:
- * what may be excused is the grammar accepting where the engine refuses, never
- * the engine accepting where the grammar refuses. The second is an
- * under-acceptance — a defect invented against working code — and no account of
- * the engine's strictness can explain one away.
- *
- * Nothing in `src/` calls this and nothing should: a run asks `parsed` and
- * `matched`, which judge against the specification. It exists because the
- * acceptance diff does, and it goes when that does — `compiles` and this retire
- * together, on the day the grammar is trusted well enough that a second opinion
- * from an XPath 3.1 engine is not worth the asking. That day is not today: the
- * diff is what turned up #711, #724, #740 and #742, and the classes it cannot
- * see are what turned up #736, #746, #752 and #753.
+ * Whether fontoxpath refuses the expression over its own strictness rather
+ * than over anything malformed in it: a `namespace::` axis, ExprWhitespace
+ * around an axis separator, and ExprWhitespace inside a node test (#615,
+ * #639). It is no oracle of validity, and what may be excused is only the
+ * grammar accepting where the engine refuses.
  * @param {string} xpath - Xpath expression
  * @return {boolean} - True when the engine's own strictness is what refuses it
  */

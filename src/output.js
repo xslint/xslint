@@ -22,16 +22,13 @@ const colorful = function(stream) {
 /**
  * Leveled, prefixed writer over a sink. The diagnostics (defects) and the
  * operational logs share this formatting but not their stream: defects go to
- * stdout, logs to stderr. Coloring is applied only when asked for, so a
- * non-terminal sink receives plain text.
+ * stdout, logs to stderr. Coloring is applied only when asked for, so a non-
+ * terminal sink receives plain text.
  * @param {function(string, ...*): void} sink - Where a formatted line goes
  * @param {boolean} colored - Whether to wrap the prefix in ANSI color
- * @return {{
- *  debug: function(string, ...*): void,
- *  info: function(string, ...*): void,
- *  warning: function(string, ...*): void,
- *  error: function(string, ...*): void
- * }} - Writer bound to the sink
+ * @return {{debug: function(string, ...*): void, info: function(string, ...*):
+ *  void, warning: function(string, ...*): void, error: function(string, ...*):
+ *  void}} - Writer bound to the sink
  */
 const writer = function(sink, colored = true) {
   const paint = (color, text) => {

@@ -107,21 +107,10 @@ const GATED = [
 
 /**
  * Steps a pattern may not spell, each naming the versions that do admit it. A
- * pattern is matched by walking *up* from a node rather than evaluated
- * forwards, so an axis such a walk cannot answer is a static error and not an
- * empty match. The four reverse axes, `following`, `following-sibling` and
- * `preceding-sibling` are refused everywhere, and `..` with them; `self`,
- * `descendant`, `descendant-or-self` and `namespace` are 3.0's `ForwardAxisP`
- * widening the `ChildOrAttributeAxisSpecifier` of 1.0 and 2.0, and `.` spells a
- * step from 3.0 alone.
- *
- * Two arbiters were needed and neither would have done on its own. SaxonJ-HE
- * settles what 3.0 refuses — 12.5 and 13.0 agree, XTSE0340 — but it applies its
- * own 3.0 pattern syntax whatever the stylesheet declares, admitting `self::a`
- * and `.` at `version="1.0"` where the older grammar has neither, so it cannot
- * say what an earlier version refuses. xsltproc answers that half by being 1.0
- * only. A processor shows that a construct is admitted somewhere; only a
- * version-aware one shows that a version refuses it.
+ * pattern is matched by walking up from a node rather than evaluated forwards,
+ * so an axis such a walk cannot answer is a static error and not an empty
+ * match — 3.0's `ForwardAxisP` widening the `ChildOrAttributeAxisSpecifier` of
+ * 1.0 and 2.0, arbitrated by SaxonJ-HE and xsltproc together.
  * @type {Array.<{xpath: string, name: string, admits: Array.<string>}>}
  */
 const TRODDEN = [
@@ -154,16 +143,11 @@ const TRODDEN = [
 ]
 
 /**
- * Text that is a fine XPath expression and no pattern, because of *where* it
- * stands rather than what it is. A bracket holds a `Pattern`, not whatever an
- * expression may hold, and `.` is the whole of `PredicatePattern` rather than a
- * branch of a union or the step a path opens with — though it is a step once a
- * separator stands in front of it, so `b/.` and `//.` are patterns while
- * `(.)` and `a | .` are not.
- *
- * Every row was arbitrated against SaxonJ-HE 13.0 at 3.0 and xsltproc at 1.0,
- * and the neighbours in {@link ACCEPTS} with it: taking a bracket to hold a
- * pattern is worth nothing if it stops holding `(a | b)/c`.
+ * Text that is a fine XPath expression and no pattern, because of where it
+ * stands rather than what it is: a bracket holds a `Pattern` and `.` is the
+ * whole of `PredicatePattern`, so `b/.` and `//.` are patterns where `(.)` and
+ * `a | .` are not. Every row was arbitrated against SaxonJ-HE 13.0 at 3.0 and
+ * xsltproc at 1.0, and {@link ACCEPTS} with it.
  * @type {Array.<{name: string, xpath: string}>}
  */
 const MISPLACED = [

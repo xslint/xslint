@@ -38,11 +38,9 @@ const DECIMAL = /^[+-]?([0-9]+([.][0-9]*)?|[.][0-9]+)$/
 
 /**
  * The one element XSLT 3.0 §3.9 excludes when it names the effective version:
- * `xsl:output`, whose `version` is a serialization parameter naming the version
- * of the output method, so `4.0` there asks for HTML 4.0. The specification
- * excludes nothing else, and nothing else needs it —`xsl:result-document`
- * spells its serialization parameter `output-version`, renamed for exactly this
- * collision, so its `version` governs the language of all it contains.
+ * `xsl:output`, whose `version` is a serialization parameter naming the
+ * version of the output method, so `4.0` there asks for HTML 4.0. Nothing else
+ * needs it, `xsl:result-document` spelling its own parameter `output-version`.
  * @type {string}
  */
 const SERIALIZING = 'output'
@@ -50,11 +48,9 @@ const SERIALIZING = 'output'
 /**
  * The version a declared value names. `version` is an `xs:decimal`, so `2`,
  * `2.0` and `2.00` are one number written three ways, and a processor drops
- * the surrounding whitespace before reading it; all of them are answered with
- * the canonical spelling. A value naming no version this tool knows — a typo
- * like `2,0`, a spelling the type does not have like `2e0`, or a version
- * released after it — is handed back untouched, so a gate refuses it and a
- * check can report it rather than guess.
+ * the surrounding whitespace; all are answered with the canonical spelling. A
+ * value naming no version this tool knows is handed back untouched, so a gate
+ * refuses it and a check can report it.
  * @param {string} value - The attribute's value
  * @return {string} - The canonical spelling, or the value as it stands
  */
@@ -83,10 +79,8 @@ const since = function(version, floor) {
  * The XSLT version the given element declares, or empty when it declares none.
  * An XSLT element spells it `version` and anything else — a literal result
  * element standing in as the stylesheet, or one raising a subtree — spells it
- * `xsl:version`, so the two are told apart by namespace rather than by which
- * attribute is present, and a result vocabulary carrying its own `version`
- * never misleads it. The `version` of a serializing element is passed over for
- * the same reason: it belongs to the output, not to the language.
+ * `xsl:version`, so the two are told apart by namespace. A serializing
+ * element's belongs to the output.
  * @param {Node} element - The element to read
  * @return {string} - The declared version, or empty
  */
@@ -104,11 +98,9 @@ const declaring = function(element) {
 /**
  * The version in force at the given node, which XSLT 3.0 §3.9 names the
  * effective version: the decimal value of the `version` attribute on the
- * element itself or on the innermost ancestor carrying one, excluding the
- * `version` of an `xsl:output`. `version` sits on an XSLT element and
- * `xsl:version` on a literal result element, and either governs everything
- * below it, so the root answers only when nothing nearer does. Handed a whole
- * document, it answers for the root.
+ * element itself or on the innermost ancestor carrying one, excluding an
+ * `xsl:output`'s. Either spelling governs everything below it, so the root
+ * answers only when nothing nearer does.
  * @param {Node} node - Any node of a stylesheet, or the document itself
  * @return {string} - The version in force, or empty when none is declared
  */

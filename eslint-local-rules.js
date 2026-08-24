@@ -131,17 +131,64 @@ const demanded = function (variable, from, key) {
   return arity;
 };
 
+// Whether a comment is a JSDoc block — `/** ... */` — rather than a plain
+// block comment or a line comment, a null standing for nothing there at all.
+const documents = function (comment) {
+  return (
+    comment !== null &&
+    comment.type === "Block" &&
+    comment.value.startsWith("*")
+  );
+};
+
+// The lines a docblock says, its delimiters and leading stars off and its blank
+// separators dropped, each paired with the source line it stands on: what a
+// reader is charged for, and where to point when there is too much of it.
+const worded = function (comment) {
+  return comment.value
+    .split("\n")
+    .map(function (line, index) {
+      let text = line.trim();
+      if (text.startsWith("*")) {
+        text = text.slice(1).trim();
+      }
+      return { text, at: comment.loc.start.line + index };
+    })
+    .filter((one) => one.text !== "");
+};
+
+// What a block says, parted into its description and one entry per tag, an
+// entry being the tag line and every line it wraps onto: a wrapped @param is
+// one thing a reader reads and not three of them.
+const parted = function (comment) {
+  const entries = [];
+  worded(comment).forEach(function (one) {
+    if (entries.length === 0 || one.text.startsWith("@")) {
+      let tag = null;
+      if (one.text.startsWith("@")) {
+        tag = one.text.split(" ")[0];
+      }
+      entries.push({ tag, lines: [] });
+    }
+    entries[entries.length - 1].lines.push(one);
+  });
+  return entries;
+};
+
 // A project-local ESLint plugin, kept out of eslint.config.mjs so it can be
 // unit-tested with ESLint's RuleTester (test/eslint-local-rules.test.js). One
 // rule flags a variable whose only purpose is to be returned by the very next
 // statement — that binding is redundant and should be inlined. Another flags
 // a call that leaves out an argument the callee declares. The third flags a
 // function that can be left through more than one return, where the branching,
-// not the exit, is what should carry the choice. No plugin dependency is
-// needed; a single no-restricted-syntax selector can neither compare a
-// declaration's name with the identifier the following return uses, nor weigh
-// a call's argument count against the parameter list of the callee, nor tell
-// which function a return belongs to.
+// not the exit, is what should carry the choice. The fourth flags a docblock
+// standing in front of another, which documents nothing, and the last weighs
+// what one docblock says, a file being capped at 1000 lines while the comments
+// inside it answered to nothing. No plugin dependency is needed; a single
+// no-restricted-syntax selector can neither compare a declaration's name with
+// the identifier the following return uses, nor weigh a call's argument count
+// against the parameter list of the callee, nor tell which function a return
+// belongs to, nor count the lines of a comment, which is no node at all.
 module.exports = {
   rules: {
     "no-redundant-return-variable": {
@@ -252,13 +299,6 @@ module.exports = {
       },
       create(context) {
         const source = context.sourceCode;
-        const documents = function (comment) {
-          return (
-            comment !== null &&
-            comment.type === "Block" &&
-            comment.value.startsWith("*")
-          );
-        };
         return {
           Program() {
             source
@@ -273,6 +313,58 @@ module.exports = {
               .forEach((comment) =>
                 context.report({ node: comment, messageId: "orphan" })
               );
+          }
+        };
+      }
+    },
+    "no-sprawling-docblock": {
+      meta: {
+        type: "suggestion",
+        docs: {
+          description: "cap how many lines one JSDoc block may spend"
+        },
+        messages: {
+          sprawling:
+            "Cut this description to {{max}} lines or fewer: it spends " +
+            "{{spent}}, and the derivation behind a module belongs in the " +
+            "CLAUDE.md of the directory it sits in",
+          wordy:
+            "Cut '{{tag}}' to {{max}} lines or fewer: it spends {{spent}}"
+        },
+        schema: [
+          {
+            type: "object",
+            properties: {
+              description: { type: "integer", minimum: 1 },
+              tag: { type: "integer", minimum: 1 }
+            },
+            additionalProperties: false
+          }
+        ]
+      },
+      create(context) {
+        const caps = { description: 5, tag: 3, ...context.options[0] };
+        return {
+          Program() {
+            context.sourceCode
+              .getAllComments()
+              .filter(documents)
+              .flatMap(parted)
+              .forEach(function (entry) {
+                let max = caps.description;
+                let messageId = "sprawling";
+                if (entry.tag !== null) {
+                  max = caps.tag;
+                  messageId = "wordy";
+                }
+                if (entry.lines.length > max) {
+                  context.report({
+                    loc: { line: entry.lines[max].at, column: 0 },
+                    messageId,
+                    data: { max, spent: entry.lines.length, tag: entry.tag }
+                  });
+                }
+              });
           }
         };
       }

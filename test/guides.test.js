@@ -32,9 +32,9 @@ describe('guides', function() {
       `cannot load a chain of guides past the ${LOADED} characters the ` +
         'harness warns at, a turn touching a file loading the root guide and ' +
         'the guide of every directory over it — what answers this is the ' +
-        'derivation moving one directory further down, into the docblocks of ' +
-        'the module it is about, and never a bar widened to fit what has ' +
-        'grown past it',
+        'derivation moving one directory further down, into the file-header ' +
+        'note of the module it is about, and never a bar widened to fit what ' +
+        'has grown past it',
     )
   })
   it('names in its index only files the tree holds', function() {

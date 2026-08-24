@@ -56,24 +56,10 @@ const ITEM = '.'
 
 /**
  * Classify a `string-length(...)`-versus-`0`/`1` comparison for
- * `comparedToZero`. An emptiness test is reported; it rewrites to
- * `argument = ''`/`argument != ''` when the argument can stand as an operand of
- * that comparison, and carries no replacement (report-only) otherwise. A
- * genuine length check is left alone, and so is a call spelling two arguments,
- * no such function taking any.
- *
- * Whether the argument can stand there is a question about how tightly it
- * binds, which the tree answers: `@a or @b` and `a = b` regroup or fail to
- * parse when the brackets around them go, while everything binding tighter
- * than a comparison carries over whole. Reading it off the text could only
- * approximate that — a top-level space stood in for a binary operator, so the
- * padding of `string-length( @x )` withheld the rewrite (#578) and the tight
- * `@a!=@b` was handed one that parses for nobody.
- *
- * The rewrite carries an operator, so unlike the count it does care which class
- * it was handed: an author comparing values gets `@x eq ''` back and one
- * comparing generally gets `@x = ''`, rather than either being quietly moved
- * into the other family by a fix that was only asked to drop a call (#763).
+ * `comparedToZero`. An emptiness test is reported, rewritten to `argument =
+ * ''` where the argument can stand as an operand there and report-only
+ * otherwise — a question about binding the tree answers and the text could not
+ * (#578). The rewrite keeps the class it was handed, `eq` for `eq` (#763).
  * @param {{node: Node, expression: string, pattern: boolean}} found - Record
  * @param {{operator: string, zero: string, worded: boolean}} comparison - The
  *  operator, in the forward direction and spelled with symbols, the digit
@@ -122,11 +108,8 @@ const comparisons = function(found) {
  * Lint the valid expressions for `string-length(...)` compared with zero to
  * test emptiness, reporting one defect per comparison with a *suggestion* fix
  * that rewrites it to `X != ''` or `X = ''` when the argument is a simple
- * operand. It is a suggestion, not a safe fix, because `X op ''` is not a
- * general equivalent: they differ when `X` is an absent attribute or empty
- * node-set (`string-length(@x) = 0` is true, `@x = ''` is false) and when `X`
- * is a multi-node set (`string-length` reads the first node, `X != ''` any
- * node).
+ * operand. A suggestion because they differ on an absent attribute and on a
+ * multi-node set.
  * @param {Array.<{source: object, found: object}>} expressions - The valid
  *  expressions the validator kept, each paired with the file it came from
  * @param {Array.<string>} suppressions - Array of suppressed checks

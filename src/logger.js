@@ -31,13 +31,9 @@ let currentLevel = LEVELS[LOG_LEVELS.INFO]
 
 /**
  * Logger.
- * @type {{
- *  debug: function(string, ...*): void,
- *  info: function(string, ...*): void,
- *  warn: function(string, ...*): void,
- *  error: function(string, ...*): void,
- *  setLevel: function(string): void
- * }}
+ * @type {{debug: function(string, ...*): void, info: function(string, ...*):
+ *  void, warn: function(string, ...*): void, error: function(string, ...*):
+ *  void, setLevel: function(string): void}}
  */
 const logger = {
   debug: (msg, ...args) => {

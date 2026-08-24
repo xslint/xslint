@@ -33,34 +33,11 @@ const PACKS = fs.readdirSync(RESOURCES)
 const available = cmdAvailable('xcop', ['--version'], false)
 
 /**
- * Packs whose fixture must carry a construct xcop rejects, so it cannot also be
- * canonical XML — an unused namespace declaration is the very thing
- * `redundant-namespace-declarations` exists to flag, and the gap a
- * `no-break-space-before-the-bracket` pack puts before a bracket is the very
- * character #643 is about: xcop insists on seeing it written `&#xA0;`, which is
- * how the pack does write it, but the check re-serializes through xmldom first
- * and xmldom emits the raw character. Six packs spell that one, one per linter,
- * and each is named here: an entry keyed on the basename alone covered all six
- * at once, and covered anything else taking the name too (#693). Excluded from
- * the formatting check, as the fix fixtures are in the xcop workflow.
- *
- * The two prefix-list packs are here for the same reason, one step further in:
- * xcop counts a namespace used only by a QName, so a declaration whose sole
- * mention is an `exclude-result-prefixes` is canonicalized away exactly as a
- * dead one is — which is the reading #553 is about, in another tool.
- *
- * Each entry is the path a pack stands at, under `test/resources`, because a
- * basename names two packs as readily as one: `namespace-packs/x.yaml` and
- * `result-namespace-packs/x.yaml` are two files and were one name, so listing
- * either unchecked both (#693). And every one of them is *asserted* rather than
- * merely skipped — the fixture is written and asked about like any other, and
- * an entry whose pack xcop accepts turns red. Four did. Two of the prefix-list
- * packs, a spaced declaration and `a-wrap-written-as-a-reference` had all
- * stopped needing the exemption and the list went on carrying them, which is
- * the ratchet shape this repository holds every other exemption list to. The
- * last of those four was excluded on a reason #694 has since removed: its
- * refusal would have cost every other fixture its verdict. It costs nobody
- * anything now, and it is not refused either.
+ * Packs whose fixture must carry a construct xcop rejects, so it cannot also
+ * be canonical XML — an unused namespace declaration being what `redundant-
+ * namespace-declarations` exists to flag, and a prefix list the same reading
+ * one step in (#553, #643). Each entry is the path a pack stands at, a
+ * basename naming two as readily as one, and each is asserted (#693).
  * @type {Array.<string>}
  */
 const UNFORMATTED = [
@@ -100,15 +77,11 @@ const stands = function(pack) {
 const SCRATCH = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-xcop-'))
 
 /**
- * Every fixture, written out before the first assertion: the pack it came from,
- * its index inside that pack, and the file now holding it. They are all on disk
- * up front so that xcop can be asked about the whole set at once, and each
- * under a directory named for the one its pack sits in, since two packs may
- * share a basename and six do — one fixture overwriting another leaves two
- * assertions reading one file, and the fixture that lost written nowhere
- * (#693). xcop walks a directory to its leaves, so the nesting costs nothing.
- * The ones `UNFORMATTED` names are written with the rest rather than left out,
- * since an exemption nobody asks about is one nobody can see go stale.
+ * Every fixture, written out before the first assertion: the pack it came
+ * from, its index inside that pack, and the file now holding it. All on disk
+ * up front so xcop is asked about the whole set at once, each under a
+ * directory named for its own pack's, since two packs may share a basename and
+ * six do (#693). The ones `UNFORMATTED` names are written with the rest.
  * @type {Array.<{pack: string, index: number, file: string}>}
  */
 const FIXTURES = PACKS.flatMap((pack) => {

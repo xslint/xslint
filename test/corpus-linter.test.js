@@ -10,11 +10,9 @@ const assert = require('assert')
 /**
  * Reference templates no check may carry, the name having to stand against
  * fixed text at exactly one end. Against text at neither end the mark is the
- * empty string, which `indexOf` finds at every offset and, past the end, goes
- * on answering the length rather than -1 — so the scan never advances and the
- * whole run hangs before a defect is reported. Against text at both ends only
- * the near side is read, so the far one is never matched and a declaration
- * that is used is reported as dead (#783).
+ * empty string, which `indexOf` answers past the end with the length rather
+ * than -1, so the scan never advances and the run hangs; against text at both
+ * ends the far side is never matched (#783).
  * @type {Array.<string>}
  */
 const UNANCHORED = ['{name}', 'x{name}y', '${name}(']

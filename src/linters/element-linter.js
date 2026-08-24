@@ -84,19 +84,10 @@ const bound = function(attribute) {
 
 /**
  * Lint the corpus for an `xsl:element` whose name is static, which a literal
- * result element says in one line and without the instruction around it.
- *
- * What makes a name dynamic is an attribute value template and nothing else,
- * which is `expressionsOf`'s answer rather than a substring's: the selector
- * this replaces read a `$`, a bracket pair and a brace pair out of the text, so
- * a `name="$wanted"` was treated as dynamic though XSLT evaluates no expression
- * there — the whole of that value is the element's name, dollar and all — while
- * every AVT it did catch it caught by the two characters rather than by holding
- * an expression (#558). A name the stylesheet writes with a prefix bound to
- * the XSLT namespace is left alone: the literal form of
- * `<xsl:element name="xsl:template"/>` is an XSLT instruction rather than
- * output, so the advice would turn a stylesheet that emits an element into one
- * that declares a template.
+ * result element says in one line and without the instruction around it. What
+ * makes a name dynamic is an attribute value template and nothing else, which
+ * is `expressionsOf`'s answer rather than a substring's (#558); a name bound to
+ * the XSLT namespace is left alone, its literal form being an instruction.
  * @param {Array.<{file: string, xsl: Document}>} corpus - Parsed stylesheets
  * @param {Array.<string>} suppressions - Array of suppressed checks
  * @return {{name: string, severity: string, message: string, file: string,

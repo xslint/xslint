@@ -91,30 +91,10 @@ const COUNTED = 'Defects found:'
 
 /**
  * What xslint writes into a pipe nobody reads until it has finished writing,
- * beside the log it kept while doing it.
- *
- * Node's stdout is asynchronous to a pipe on POSIX, so a run that leaves
- * through `process.exit` abandons every write the kernel has not taken — which
- * is the whole of the report where the reader is slow enough, the report being
- * the last thing written (#767). A reader that stays paused until the run says
- * how many defects it found forces that: the writes queue behind a pipe nobody
- * is emptying, and only then does the reader drain.
- *
- * The pipe is read in paused mode, with a `'readable'` listener standing on it
- * from the start and `read` taking the data once the stall is over. A listener
- * is what makes that mode node's own, and not merely this reader's: one
- * `process.nextTick` after a child exits, `flushStdio` resumes every readable
- * stdio stream of it, deliberately, so the stream can reach eof — and a resume
- * flows only where nothing is listening for `'readable'`, `resume` setting
- * `state.flowing` to `!state.readableListening`. Attaching the reader at the
- * end of the stall instead left that resume flowing, so the whole report was
- * read and thrown away wherever the run finished first, which is any host
- * whose pipe takes the report whole: the row asking for one narrower than the
- * pipe lost every line of it, and the wider row lost every line on the hosts
- * with the wider buffer, rultor's among them (#822).
- *
- * The trigger has a fallback behind it, since a run that never reaches the
- * summary would otherwise leave the pipe unread and the promise unsettled.
+ * beside the log it kept. A run leaving through `process.exit` abandons every
+ * write the kernel has not taken (#767), and the reader stays paused in
+ * `'readable'` mode from the start, node's own `flushStdio` resuming and
+ * discarding an unlistened stream a tick after the child exits (#822).
  * @param {Array.<string>} args - Array of args
  * @param {number} settling - Milliseconds to leave the pipe unread once the
  *  summary says the report is coming
@@ -216,10 +196,8 @@ const SHELVED = '.refused'
  * What xcop prints about the stylesheets a directory holds, in one run. A file
  * it refuses makes the process exit non-zero and `execSync` announces that by
  * throwing, so the report is read off the failure rather than lost with it; a
- * tool that is not there throws too, with nothing to read, and `cmdAvailable`
- * is what tells those two apart. Colour is turned off because what this output
- * becomes is a test failure message, read as often in a CI log as in a
- * terminal.
+ * missing tool throws too with nothing to read, which `cmdAvailable` tells
+ * apart. Colour is off, this output becoming a failure message.
  * @param {string} dir - Directory holding the stylesheets
  * @return {string} - Stdout, whether xcop finished or stopped
  */
@@ -269,25 +247,10 @@ const parted = function(printed) {
 
 /**
  * What xcop makes of every stylesheet a directory holds, one verdict per file.
- *
- * It is asked over the directory rather than once per file, which is the
- * difference between 0.1 seconds and 25 of them (#687), and a directory is
- * what it is asked over rather than a list of paths because `cmd.exe` takes a
- * command line of 8191 characters and 356 of these are four times that.
- *
- * What one run cannot give is a verdict on every file, xcop stopping at the
- * first stylesheet it refuses: everything behind that one goes unmentioned, so
- * every assertion over it failed, all with the same message, and none naming
- * the file that actually broke — 204 of them at once, the one real complaint
- * printed by nobody (#694). So a refusal is recorded against the file it names
- * and that file is renamed out of the extensions xcop globs, and the run is
- * asked again from there. Each pass either finds a fresh refusal or is the
- * last, so a sound directory costs one process and a directory holding two bad
- * files costs three, and nothing but a bad file ever fails.
- *
- * A file the run never mentioned at all is not left to assert against nothing
- * either: it takes the whole of what xcop printed as its verdict, since a tool
- * that answers about nobody has still said the only thing there is to know.
+ * It is asked over the directory rather than once per file, 0.1 seconds
+ * against 25 (#687). xcop stops at the first file it refuses, so a refusal is
+ * recorded against the file it names, that file renamed out of the globbed
+ * extensions, and the run asked again from there (#694).
  * @param {string} dir - Directory holding the stylesheets
  * @param {Array.<string>} files - The stylesheets a caller expects a verdict on
  * @return {Map.<string, {good: boolean, refused: boolean, said: string}>} -
@@ -317,16 +280,10 @@ const xcopped = function(dir, files) {
 
 /**
  * What the child is asked to do: report how large a spread this stack allows,
- * then walk the directory it was given and report what it found — or, when the
- * walk dies of the very limit just measured, the complaint it died with.
- *
- * The measurement is the part that keeps the answer honest. A walk that
- * survives proves nothing unless the trap was armed, and how many arguments a
- * spread may carry is V8's business rather than something a test can assert
- * from outside: it is roughly 125 per kilobyte of stack here, and a Node that
- * moved that number would leave a test silently proving nothing. So the child
- * spends the banned shape on purpose, binary-searching the ceiling, and hands
- * it back beside the walk's own answer for the caller to weigh (#758).
+ * then walk the directory it was given and report what it found, or the
+ * complaint it died with. A walk that survives proves nothing unless the trap
+ * was armed, and how many arguments a spread carries is V8's business — so the
+ * child spends the banned shape on purpose (#758).
  * @type {string}
  */
 const PROBE = `
@@ -362,14 +319,9 @@ console.log(JSON.stringify({ceiling: low, found: found}))
 /**
  * What `allFilesFrom` answers about a directory in a process whose JavaScript
  * stack is as small as it can be, beside the largest spread that stack allows.
- * Scaling the stack down is how a test reaches the crash of #758 without
- * building the 125,000-file directory it takes to reach it at full size — the
- * ceiling falls with the stack, so a caller sizes its tree off the answer and
- * writes a fifth more files than the spread carries rather than a hundred
- * thousand. How small the stack can be is not ours to decide, though: node
- * needs some seventy kilobytes to start here and more where a platform's
- * frames are wider, so the ask doubles until one answers, and the stack that
- * did comes back for the caller to ask the same of the walk itself.
+ * Scaling the stack down is how a test reaches #758's crash without the
+ * 125,000 files it takes at full size. How small the stack can be is node's to
+ * say, so the ask doubles until one answers.
  * @param {string} dir - Directory to walk
  * @param {number} kilobytes - The smallest stack worth asking for
  * @return {{ceiling: number, found: number|string, stack: number}} - The
@@ -410,13 +362,11 @@ const walkedWith = function(dir, kilobytes) {
 }
 
 /**
- * Whether the tool runs here, asked by running it with the argument that proves
- * it does. Looking the name up in `PATH` was a proxy for that question, and the
- * two disagree: `which` walks `PATH` literally while the shell that starts the
- * tool expands a `~` in it, so an installed xcop read as absent and its 249
- * assertions went with it (#645). Running the tool also retires the
- * `where`/`which` fork, whose platform test compared a function with a string
- * and so never once took the Windows arm it was written for.
+ * Whether the tool runs here, asked by running it with the argument that
+ * proves it does. Looking the name up in `PATH` was a proxy, and the two
+ * disagree: `which` walks `PATH` literally where the shell expands a `~` in
+ * it, so an installed xcop read as absent and its 249 assertions went with it
+ * (#645).
  * @param {string} cmd - Command
  * @param {Array.<string>} args - Arguments proving it runs
  * @param {boolean} print - Capture logs

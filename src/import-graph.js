@@ -23,19 +23,11 @@ const target = function(file, href) {
 }
 
 /**
- * Every `xsl:import`/`xsl:include` in the corpus, each with its declaring file,
- * declaring element, and the path its `@href` resolves to (relative to the
- * declaring file's own directory). The target may or may not be a file in the
- * corpus; membership is left to the caller. No file is read — the corpus
- * already holds every parsed stylesheet with its path.
- *
- * A reference carrying no `@href` names no module, so it yields no import. It
- * is well-formed XML and invalid XSLT — a fault for a check of its own to
- * report (#668), not one to resolve here, since joining its absent href onto
- * the directory threw and took the whole run's report down with it (#597).
- * Each import carries the raw text of the file it stands in, because a fix that
- * cuts one reads its span from the source rather than rebuilding the element
- * (#793) and reaches this record rather than the corpus entry behind it.
+ * Every `xsl:import`/`xsl:include` in the corpus, each with its declaring
+ * file, declaring element, and the path its `@href` resolves to. No file is
+ * read. A reference carrying no `@href` yields no import, joining an absent
+ * href onto a directory having taken the run's report down (#668, #597); each
+ * carries the raw text a fix reads its span from (#793).
  * @param {Array.<{file: string, content: string, xsl: Document}>} corpus -
  *  Parsed stylesheets
  * @return {Array.<{file: string, content: string, node: Element,
