@@ -471,12 +471,27 @@ Since #817 the two exemption tables answer one gate rather than two, `EXEMPTED` 
 the question deciding whether its entries are still needed — the same ratchet twice over, not a
 shape worth spelling out twice.
 
+The line cap is held from a third side since #825. A file the cap is lifted off must have its
+length stated in a guide, and the number must be the one ESLint reads: `SPRAWLING`'s membership was
+gated where the length beside it was not, so the one file carrying an exemption went on being
+described at #748's reading of 1828 while it stood at 2386, a drift of 30% under a paragraph
+promising that neither half could rot in silence. The length is asked as the cap twice, quiet at the
+stated length and reporting the file one line under it, so the reading is ESLint's own in the unit
+the cap is written in rather than a second count taken beside it — which would have to argue about
+whether the newline a file ends with is a line of its own. Every guide is read rather than the root
+alone, so a number that moves into a directory guide is judged where it went; and an exempt file
+with no stated length at all fails as loudly as one whose stated length has drifted, an exemption
+from a bound being bounded by nothing but the number a reader is given. A claim is a count of lines
+standing within `NEARBY` characters of the file's own name, so the drift above is recorded as a
+reading and not as so many lines: the gate cannot tell what a ticket once measured from what the
+file stands at today, and a history spelled the other way is a stale claim it rightly fails.
+
 ## `test/guides.test.js`
 
 The size and the shape of the guides themselves, and so the one gate whose subject is this
 repository's own documentation (#821). The root guide held 198,202 characters before it, most of
 them a per-module archive loaded on every turn, including every turn that never opens the module;
-and the gate that already read that file — holding its counts of `ATTRIBUTES` and `PATTERNS` to the
+and the gate that read that file then — holding its counts of `ATTRIBUTES` and `PATTERNS` to the
 lists in the code — said nothing at all about its size, in the file that says every convention must
 be machine-enforced. What answers it is a relocation and never a summary, those derivations being
 what stops a later session loosening a bar that was placed on evidence: each note moved into the
@@ -490,12 +505,12 @@ under them was opened. The first spelling of the bar weighed the root against th
 guide instead, which is a whole directory short: it read 130,933 and called that 0.87 of the bar
 while a turn touching `src/linters/` was loading 157,504 and over it. So the two dearest notes moved
 one step further down, out of `src/CLAUDE.md` and into the top of `src/grammar.js` and
-`src/syntax.js` — 24,681 characters — and the dearest chain is that same one at 133,092, which is
-0.89. What answers a chain reaching the bar is that move again, a module's derivation into the
+`src/syntax.js` — 24,681 characters — and the dearest chain is that same one at 134,884, which is
+0.90. What answers a chain reaching the bar is that move again, a module's derivation into the
 docblocks of the module itself, and never a bar widened to fit what has grown past it. A `CEILING`
 of half the bar stood beside it until it was seen to be a gate no tree could fail: the root stands
 in every chain, so the chain holding it above weighs each other guide against the bar less what
-stands over it — 43,479 for `src/linters/CLAUDE.md`, where half of the bar is 75,000 — and holds the
+stands over it — 41,687 for `src/linters/CLAUDE.md`, where half of the bar is 75,000 — and holds the
 root itself to 81,712, a number derived from the dearest chain rather than chosen. A gate no tree
 can fail is removed and not kept (#750, #660). The index answers
 to the tree from both sides, every path it names existing and every module under `src/` being named
@@ -503,8 +518,14 @@ by a row — the twenty-one linters by one of them, the `*` standing for a name 
 directory — and a note answers to the index and to its own directory both, so a derivation the root
 has stopped pointing at turns red, and so does one standing where the reader who needs it will never
 load it. `test/guides.js` is the walk itself rather than a list of the five, since a guide left off
-a hand-written list would take its claims out of every gate at once, and `test/conformance.test.js`
-reads that walk: `DOCUMENTS` is it, so a count relocated into a guide is judged where it went.
+a hand-written list would take its claims out of every gate at once, and the reading of a claim
+stands beside the walk: `worded` flattening a wrapped paragraph into one line, `DOCUMENTS` naming
+the guides and the README together, `NEARBY` bounding how far past a name a number may stand and
+still be a claim about it. Both gates ask it, so a count relocated into a guide is judged where it
+went, and so is the length a guide states of the file the line cap is lifted off, which is
+`test/conformance.test.js`'s to ask beside the cap it is an exemption from. The counts came the
+other way at that same sitting: `ATTRIBUTES` and `PATTERNS` are held to the lists in the code from
+here now, the file that held them having reached the 1000 lines it caps every other file at (#825).
 
 ## `test/grammar-corpus.test.js`
 

@@ -15,8 +15,9 @@ what a bar on their size answers to, and the two notes that outgrew even that
 stand at the top of `src/grammar.js` and `src/syntax.js` themselves. So a claim
 goes where the code it is about goes, and the `Key files` index below names
 every file in one line. Both halves are machine-enforced — `test/guides.test.js`
-for the size and the index, `test/conformance.test.js` for the claims themselves
-(#821).
+for the size, the index, and the counts a guide states of a list in the code,
+`test/conformance.test.js` for the length one states of a file the line cap is
+lifted off (#821, #825).
 
 ## Git workflow
 
@@ -50,8 +51,8 @@ three platforms and two node versions, and `corpora`, which times a real run
 The suite comes in two halves, and the line between them is a child process. A
 **deep** test starts one — it runs `xslint` or `xcop` the way a user does — and
 is named `*.deep.test.js`; every other test stays in this process. Four files
-are deep, and they still cost most of what the suite costs: 619 of the 2539
-tests, 9 of the 14 seconds. The other 1920 finish inside one, which is why
+are deep, and they still cost most of what the suite costs: 622 of the 2546
+tests, 9 of the 14 seconds. The other 1924 finish inside one, which is why
 `npm run fast` is the loop to work in and `npm test` the one to finish on. The
 deep target runs under `mocha --parallel`, so those four files run at once and
 the slowest of them sets the clock — `xslint.deep.test.js` alone, whose 52 tests
@@ -173,7 +174,7 @@ matters reaches the plugin too. Shortening that off-list is its own job; only
 
 A file stops at 1000 lines, counting the blank ones and the comments, since a
 reader scrolls past those as well. One file stands above it and is named in
-`SPRAWLING` in the config — `src/grammar.js`, 1828 lines of one function per
+`SPRAWLING` in the config — `src/grammar.js`, 2386 lines of one function per
 production of XPath 3.1 — rather than carrying a disable comment of its own, so
 what is exempted is one list a reviewer reads in the place the cap is set, not a
 mark to be found by opening every file. Neither half can rot in silence.
@@ -182,7 +183,16 @@ still reported, so a file that shrinks back under the cap, or is renamed, or is
 deleted, turns its own exemption red instead of quietly un-capping whatever
 takes the name next; and it fails when *nothing* in the config caps a file at
 all, because a rule deleted takes its enforcement with it and leaves the
-exemption list reading like a limit that is still in force.
+exemption list reading like a limit that is still in force. The length beside
+the name answers to it too since #825, that being the half which did rot: 1828
+was the reading #748 took when it cut the cap, and the file stood at 2386 by
+the time anything asked — a drift of 30% behind a sentence promising that
+neither half could. It is asked as the cap twice, quiet at the length the prose
+states and reporting the file one line under it, so a stated length is read in
+the unit the cap is written in rather than counted a second time beside it; and
+a file the cap is lifted off that states no length at all fails as loudly, an
+exemption from a bound being bounded by nothing but the number a reader is
+given.
 
 A parameter a caller may leave out therefore says so in the signature, with a
 default — `fix = undefined` on `defect` in `src/checks.js`. A JSDoc `[fix]`
@@ -951,9 +961,9 @@ one of them.
 | `scripts/generate-docs.js` | Builds the `docs/` site from checks + motives |
 | `scripts/generate-checks.js` | Builds `src/resources/checks.json` from the check YAML (`npx grunt checks`) |
 | `scripts/budget.js` | Judges what a corpus cost the nightly tier against its budget, from both sides |
-| `test/conformance.test.js` | Enforces naming, motives, selector hygiene, the `mature` freeze, the suite's own shape, and this file's |
-| `test/guides.js` | The chain of guides a turn loads on its way to one file, and what that chain may cost |
-| `test/guides.test.js` | The guides themselves: a bar on what a chain of them costs a turn, and the index held to the tree from both sides |
+| `test/conformance.test.js` | Enforces naming, motives, selector hygiene, the `mature` freeze, the suite's own shape, and the length a guide states of the file the line cap is lifted off |
+| `test/guides.js` | The guides as data: the chain a turn loads on its way to one file, what that chain may cost, and how a claim standing in one is read |
+| `test/guides.test.js` | The guides themselves: a bar on what a chain of them costs a turn, the index held to the tree from both sides, and the counts a guide states of a list in the code |
 | `test/grammar-corpus.test.js` | Round trip and acceptance diff over every expression the repository carries |
 | `test/grammar-shapes.test.js` | The same acceptance diff over 14112 expressions nobody wrote |
 | `test/strictness.js` | `insists` — whether fontoxpath refuses an expression over its own strictness rather than over anything malformed in it |

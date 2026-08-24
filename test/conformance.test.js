@@ -4,7 +4,6 @@
  */
 
 const {allFilesFrom, xml, yaml} = require('../src/helpers')
-const {ATTRIBUTES, PATTERNS} = require('../src/attributes')
 const {GAP} = require('../src/tokens')
 const {splitOf} = require('../src/selectors')
 const {kinds} = require('../src/resources/checks.json')
@@ -12,7 +11,7 @@ const {FIXERS} = require('../src/fixers')
 const {DECIMAL, XSLT} = require('../src/xsl-version')
 const {walked} = require('../src/tree')
 const {authored, rendered, PLACE} = require('../scripts/generate-checks')
-const {GUIDES} = require('./guides')
+const {DOCUMENTS, NEARBY, worded} = require('./guides')
 const {Linter} = require('eslint')
 const path = require('path')
 const fs = require('fs')
@@ -126,72 +125,6 @@ const PACKED = {xpath: 'xpath-packs', corpus: 'corpus-packs'}
  * @type {{[kind: string]: Array.<string>}}
  */
 const SELECTORS = {xpath: ['xpath'], corpus: ['declaration', 'usage']}
-
-/**
- * The prose read whole, every count in it being a count of one of the two
- * lists: the module holding them. A number written beside a list is a fact that
- * rots — three places said `ATTRIBUTES` held nineteen names where it has held
- * twenty since #633, one of them wrong on the day the list grew (#654).
- * @type {Array.<string>}
- */
-const PROSE = ['src/attributes.js']
-
-/**
- * The prose read where it *names* a list, since a document counts many things
- * and only some of them are these. Reading one whole is what the first spelling
- * of this gate did, and it judged four true claims, ignored eleven, and turned
- * red on #794's perfectly correct "a `//(xsl:variable | xsl:template)` pays for
- * the two names" — a branch that had touched no list. Anchoring on the
- * identifier is what tells the two apart, and it reaches what dropping these
- * files would have left standing: `PATTERNS` is counted twice, in prose older
- * than #654, so a sixth pattern attribute would rot both.
- *
- * Both of those counts stand in a guide rather than in the root, #821 having
- * relocated the derivation behind each module into the `CLAUDE.md` of its own
- * directory — one in `src/CLAUDE.md` and one in `src/linters/CLAUDE.md`. So the
- * guides are walked rather than written down: a claim that moves out of the
- * root is judged where it went, and one written into a guide nobody listed
- * would be judged nowhere.
- * @type {Array.<string>}
- */
-const DOCUMENTS = GUIDES.concat(['README.md'])
-
-/**
- * Each list as a document may name it, paired with what it holds. `NAMED` is
- * `ATTRIBUTES` as a set, so it counts to the same and answers to a claim about
- * either name.
- * @type {Map.<string, number>}
- */
-const LENGTHS = new Map([
-  ['ATTRIBUTES', ATTRIBUTES.length],
-  ['PATTERNS', PATTERNS.length],
-  ['NAMED', ATTRIBUTES.length],
-])
-
-/**
- * How far past a list's name a count may stand and still be a count of it. One
- * clause is the reach — the two claims in the tree stand 3 and 12 characters
- * off, `PATTERNS`' five names` and ``PATTERNS` names the five attributes` — and
- * a number further away than this belongs to a sentence about something else,
- * which is the whole of what anchoring buys.
- * @type {number}
- */
-const NEARBY = 80
-
-/**
- * The words a count is spelled with, paired with what each counts to. A `Map`
- * and not an object, because membership is the whole of what is asked of it and
- * `'constructor' in {}` answers true: an object judges a claim about "the
- * constructor names" against `Object` itself rather than reading past a word
- * that is no number, so the prototype chain decides what the prose is about.
- * @type {Map.<string, number>}
- */
-const NUMBERS = new Map([
-  'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine',
-  'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen',
-  'seventeen', 'eighteen', 'nineteen', 'twenty', 'twenty-one', 'twenty-two',
-  'twenty-three',
-].map((word, index) => [word, index + 1]))
 
 /**
  * Kebab-case with no leading or trailing hyphen.
@@ -372,17 +305,42 @@ const sprawls = function(named, rule) {
 }
 
 /**
- * The prose of a file as one line, so a claim that wraps mid-sentence reads as
- * the one claim it is: two of the three counts #654 corrected were wrapped
- * between the number and its noun, and a gate reading line by line missed them.
- * A continuation asterisk goes with the indent in front of it, a JSDoc carrying
- * one per line.
- * @param {string} named - Path of the file from the repository root
- * @return {string} - Its prose, joined
+ * A length as a document spells it, the gap being XML's four characters and
+ * never JavaScript's \s.
+ * @type {RegExp}
  */
-const worded = function(named) {
-  return fs.readFileSync(path.resolve(__dirname, '..', named), 'utf-8')
-    .split('\n').map((line) => line.replace(/^ *\* ?/, '')).join(' ')
+const LINED = new RegExp(`([0-9][0-9,]*)${GAP}+lines`)
+
+/**
+ * Every length a document states of a file: the file's own name in backticks,
+ * and a count of lines standing within `NEARBY` characters of it. The name is
+ * split on rather than matched, a path carrying a `.` and a `/` that a
+ * pattern would have to escape.
+ * @param {string} named - Path of the file from the repository root
+ * @return {Array.<number>} - Every length a document states of it
+ */
+const stated = function(named) {
+  return DOCUMENTS
+    .flatMap((file) => worded(file).split(`\`${named}\``).slice(1))
+    .map((after) => after.slice(0, NEARBY).match(LINED))
+    .filter((claim) => claim)
+    .map((claim) => Number(claim[1].replaceAll(',', '')))
+}
+
+/**
+ * Whether a file stands at exactly this many lines, asked as the cap twice:
+ * the rule stays quiet at that length and reports the file one line under it.
+ * So the count is ESLint's own, in the unit the cap is written in — the blank
+ * lines and the comments among them — rather than a second reading taken here,
+ * which would argue with the rule about the newline a file ends with.
+ * @param {string} named - Path of the file from the repository root
+ * @param {Array} cap - The max-lines rule as eslint.config.mjs sets it
+ * @param {number} length - The length a document states of it
+ * @return {boolean} - TRUE when the file stands at that length
+ */
+const measures = function(named, cap, length) {
+  return !sprawls(named, [cap[0], {...cap[1], max: length}]) &&
+    sprawls(named, [cap[0], {...cap[1], max: length - 1}])
 }
 
 /**
@@ -651,6 +609,27 @@ describe('conformance', function() {
         'length the tree no longer holds',
     )
   })
+  it('states the length of every file the cap is lifted off', async function() {
+    const config = (await import('../eslint.config.mjs')).default
+    const cap = config
+      .map((entry) => entry.rules?.['max-lines'])
+      .filter((rule) => Array.isArray(rule))
+      .pop()
+    assert.deepEqual(
+      config
+        .filter((entry) => entry.rules?.['max-lines'] === 'off')
+        .flatMap((entry) => entry.files)
+        .filter((named) => {
+          const lengths = stated(named)
+          return lengths.length === 0 ||
+            lengths.some((length) => !measures(named, cap, length))
+        }),
+      [],
+      'a file the line cap is lifted off is stated at a length it does not ' +
+        'stand at, or at no length at all, so the one number bounding a ' +
+        'file nothing else bounds answers to nothing (#825)',
+    )
+  })
   it('tests every validation check by name in a test file', function() {
     const suite = allFilesFrom(path.resolve(__dirname))
       .filter((file) => file.endsWith('.test.js'))
@@ -902,46 +881,6 @@ describe('conformance', function() {
                 'so it misreads a simplified stylesheet',
             )
           }
-        }
-      }
-    }
-  })
-  it('counts the attribute lists as long as they are, where it counts them', function() {
-    const claimed = new RegExp(
-      `(?:the|those|these|its|of)${GAP}+([a-z-]+)${GAP}+` +
-      `(?:names|attributes|descendant scans)`, 'g',
-    )
-    const lengths = new Set(LENGTHS.values())
-    for (const file of PROSE) {
-      for (const [claim, word] of worded(file).matchAll(claimed)) {
-        if (NUMBERS.has(word)) {
-          assert.ok(
-            lengths.has(NUMBERS.get(word)),
-            `${file} says "${claim}", and neither ATTRIBUTES nor PATTERNS ` +
-              `holds ${NUMBERS.get(word)} — say what the list holds, or make ` +
-              'the claim about something a reader can count',
-          )
-        }
-      }
-    }
-  })
-  it('counts a list a document names against that very list', function() {
-    const near = new RegExp(
-      `(${[...LENGTHS.keys()].join('|')})(?=(.{0,${NEARBY}}))`, 'g',
-    )
-    const counted = new RegExp(
-      `([a-z-]+)${GAP}+(?:names|attributes|descendant scans)`,
-    )
-    for (const file of DOCUMENTS) {
-      for (const [, list, after] of worded(file).matchAll(near)) {
-        const claim = after.match(counted)
-        if (claim && NUMBERS.has(claim[1])) {
-          assert.equal(
-            NUMBERS.get(claim[1]), LENGTHS.get(list),
-            `${file} names ${list} and calls it "${claim[0]}", where it holds ` +
-              `${LENGTHS.get(list)} — the count beside a list is the one thing ` +
-              'a reader takes on trust, so it answers to the list',
-          )
         }
       }
     }
