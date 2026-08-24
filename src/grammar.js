@@ -3,6 +3,249 @@
  * SPDX-License-Identifier: MIT
  */
 
+/*
+ * `parsed(xpath, version)` — the XPath 3.1 expression grammar as recursive
+ * descent over `tokenized`, one function per production. A node's span is a
+ * range of *token indexes*, never a pair of character offsets, so a position
+ * is carried from the lexer rather than computed from text, and the text of a
+ * node is the tokens of its span joined back together. The whole stream comes
+ * back with the tree, trivia and all, so joining it reproduces the expression
+ * as written — which is what keeps a fix a span replacement over raw source.
+ * The version in force is a parameter rather than a lookup, because the same
+ * text is a different language under a different one: `a to b` is a range in
+ * 2.0 and two steps around a name in 1.0, so modern syntax in a 1.0 stylesheet
+ * is a parse failure rather than an entry on a list somebody has to keep
+ * current (#652). The node comparisons are gated that way too: `is`, `<<` and
+ * `>>` stand beside the value and general comparisons and are refused below
+ * 2.0, the version that added them, so one selector of this project's own —
+ * the `$var << .` of `confusing-variable-and-node` — stopped being valid XPath
+ * our own parser refuses (#724). Beside them, and not below them: the three
+ * classes are one level of the ladder rather than three, because
+ * `ComparisonExpr` takes an operand from either side of one operator and
+ * admits no run of them (#726). Two levels of the ladder are spelled out
+ * rather than folded for that reason — the range between the sums and the
+ * comparisons, and the comparison between the concatenations and the `and` —
+ * since a `folded` run is left-associative and takes as many operands as it is
+ * offered. That associativity is why one production is one rung of `LADDER`
+ * and every spelling it takes stands on that rung: three of them were two
+ * rungs apiece until #764, split so a spelling could carry a kind or a floor
+ * the other had not got — the word `union` above `|`, `idiv` above the other
+ * multiplicatives, `except` above `intersect` — and a rung is what decides how
+ * tightly an operator binds, so the split made the second of each pair the
+ * looser and nested a mixed run to the right. `9 idiv 2 * 3` came back `9 idiv
+ * (2 * 3)`, which is 1 where XPath computes 12, and `a except b intersect c`
+ * selected what `a except (b intersect c)` selects; a `RUNS` row in
+ * `test/grammar.test.js` now asks of every mixed pair that its left operand
+ * covers the first operator. The kind names the production, as `sum` has
+ * always covered a `-`, and a spelling younger than its rung carries its floor
+ * in `SPELLS` — asked of the operator ahead rather than of the node about to
+ * be built, since both spellings of a union build a `union` and `SINCE`, keyed
+ * on the kind, can only speak for the rung as a whole. Three rungs let a
+ * comparison chain onto another, so `a = b eq c` and `a < b < c` parsed; over
+ * the 225 pairs fifteen comparison operators spell, the engine accepts none
+ * and the grammar accepted 144. The node comparisons would have taken that to
+ * 225, which is how the defect surfaced: the 81 pairs holding one were refused
+ * because the lexer did not know the operator, not because the grammar was
+ * right, and fixing the lexer took the accidental cover off. No committed
+ * expression chains comparisons, so the corpus gate cannot see any of it and
+ * four `REFUSES` rows pin it instead, one per class and one crossing two. A
+ * name with a bracket behind it is read off one table, `RESERVED`, which maps
+ * each name XPath has taken to the version that took it, what it was taken
+ * for, and the production that reads its brackets — a `test` (a kind test,
+ * standing where a node test stands), an `item` (an item type, standing in a
+ * sequence type and nowhere a node test does) or a `keyword` (`if`, and the
+ * `switch` and `typeswitch` this grammar has no production of). 1.0 takes the
+ * four node types alone, 2.0 adds its kind tests with `empty-sequence`, `if`,
+ * `item` and `typeswitch`, and 3.0 adds `array`, `function`, `map`,
+ * `namespace-node` and `switch`. `reserves` asks whether the version has taken
+ * the name at all, which is the whole of what a *call* needs to know, and
+ * `taken` asks whether it was taken for one of the kinds a particular
+ * production will accept. The brackets themselves were *counted* rather than
+ * read until #753 — `kinded` walked to the matching `)` and let anything at
+ * all stand inside — so `text(a)`, `node($v)`, `element(1)`, `element(a b)`
+ * and `element(a, xs:string*)` all parsed, in a pattern as much as in an
+ * expression, where every processor answers XPST0003 and since #739 that is a
+ * missing `invalid-xpath-expression` on a `match="text(a)"` no processor
+ * loads. Each name reads its own now, one production per shape XPath spells:
+ * `closes` for the six that take an empty bracket, `instructed` for a
+ * processing-instruction test, `elemented` and `attributed` for the two that
+ * name a node and optionally its type, `declared` for the two `schema-*` that
+ * require a declaration, `documented` for a document test's
+ * element-or-schema-element, and `paired`, `listed` and `returned` for the
+ * map, array and function tests. The count hid an *under*-acceptance too,
+ * which is the direction that invents a defect against working code: a
+ * function test's return type stands behind its closing bracket,
+ * `TypedFunctionTest` requiring an `as` where `AnyFunctionTest` refuses one,
+ * so the walk swallowed the arguments and `$v instance of function() as
+ * xs:integer` was refused for text left over at the end. Which production
+ * reads which name is the table's third field rather than a `switch` beside
+ * it, which is why the table sits below those productions instead of among the
+ * version tables it began in: a name taken for a test or an item type cannot
+ * lack the production that reads it, and a keyword has no such field. The
+ * arbitration is worth recording because a single engine could not have
+ * settled it — fontoxpath refuses `element(a, xs:string?)`, which Saxon-HE
+ * 12.5 accepts and the specification spells, and it accepts a nillable
+ * `attribute(a, xs:string?)`, which Saxon refuses with XPST0003 and the
+ * specification has no production for. Reading the arbiter's *code* rather
+ * than its exit status is what tells the two apart from the eight rows where
+ * Saxon answers XPST0008 or XPST0051 — a missing schema or an unknown type,
+ * static errors against text it parsed — and xsltproc settles the one place
+ * the versions differ, XPath 1.0's `NodeTest` taking `'processing-instruction'
+ * '(' Literal ')'` where 2.0's `PITest` adds the NCName, so
+ * `processing-instruction(a)` is a syntax error in a 1.0 stylesheet and a name
+ * in a 2.0 one. The floor is half of what a name means, because below it the
+ * same characters are an ordinary call to a function so called — unregistered,
+ * which is #576's question and not the parser's, and exactly what xsltproc
+ * answers at 1.0 about every name in the table: it parses the expression and
+ * then goes looking for the function. Two version-blind lists sat beside the
+ * floors until #728, the same fact written twice with the version in one copy
+ * only, so `element(a)` came back a `step` in a 1.0 stylesheet where a 1.0
+ * processor reads a call. The verdict agreed and the tree did not, which is
+ * the half an acceptance diff cannot see — #708 measured against fontoxpath,
+ * an XPath 3.1 engine, and every one of these agrees with it at 3.1 — and the
+ * half Phase 4 of #644 walks. So a `SHAPED` row in `test/grammar.test.js`
+ * asserts the *kind* on both sides of a floor where neither side is a refusal,
+ * beside a `RESERVES` row, which is the mirror of a `GATED` one: a construct
+ * that stops parsing from a version up rather than starting. Applying an
+ * expression is gated the same way and was not gated at all: `$f(1)` is a
+ * dynamic call from 3.0, when function items arrived, and before that the
+ * characters are no call by another reading either, a `FilterExpr` taking
+ * predicates and no argument list — which is how `child::element(b)` came back
+ * an `apply` at 1.0 the moment `element` stopped being a kind test there. A
+ * name is taken only where a call could stand, in front of a bracket, so
+ * `//item` is the path it always was. A refusal is an answer rather than an
+ * exception — a corpus asks about thousands of expressions and most callers
+ * want a verdict — and it names the offset it stood at, so a report can point
+ * at the fault instead of at the attribute holding it. An inline namespace is
+ * gated at 3.0 along with everything else that version added, and it reaches
+ * four productions rather than one, a name being spelled in more places than a
+ * step: `named` composes the braced URI literal with the name behind it, so a
+ * variable and a call get it for free; `tested` reads one standing in front of
+ * a `*` as the fourth spelling of a wildcard, `Q{uri}*` naming every element
+ * of a namespace with no prefix bound to it; `called` asks `pastName` where
+ * `reaches` cannot, since a name is one token spelled as a QName and two with
+ * its namespace inline, so the bracket that tells a call from a step stands
+ * one token away or two; and `steps` counts it among the kinds a step may open
+ * with, since a step opening `Q{uri}a` opens with a name like any other. It
+ * asks that of `NAMES` rather than of one kind at a time, the lexer kinding a
+ * name three ways — a bare `NAME`, a `USER_FUNCTION` where a prefixed one has
+ * a bracket behind it, a `URI` where it spells its namespace inline. Asking
+ * about one kind is a defect that repeated itself before the shape was seen:
+ * the first draft of #708 accepted `a/Q{urn:my}b` and refused `//Q{urn:my}a`,
+ * the shape the inline form exists for, and with that fixed `a/my:fn(1)` was
+ * still accepted while `//my:fn(1)` was refused (#731). Every production that
+ * *reads* a name knew all three kinds; the one deciding where a name may stand
+ * knew them one at a time, and a path is the only place that distinction
+ * shows. Under-acceptance is the direction that invents a defect against
+ * working code. A reserved name is never either of those spellings, XPath
+ * reserving an unprefixed one alone (#708). Beside it stands `matched(pattern,
+ * version)`, because a pattern is a different language and not a second
+ * reading of this one: it is a union of paths and nothing else, so `1 + 1`,
+ * `@a = "b"` and `a, b` are fine expressions and no pattern at all, and
+ * reading a `match` with the expression grammar admits every one of them
+ * (#589, #649). The version decides which language it is, by more than a
+ * detail: 3.0 rebuilt the pattern grammar on top of the expression one, so `a
+ * intersect b`, `$v/x`, `doc("u")/a`, `root()/a`, `element-with-id("x")`,
+ * `(self::node())`, `.` and the word `union` are all patterns there and none
+ * of them is one in 1.0 or 2.0, whose whole grammar is `IdKeyPattern` and a
+ * union of relative paths — each is gated on `REWRITE` rather than admitted
+ * everywhere, since a pattern accepted under a version with no production for
+ * it is a stylesheet called valid that no processor loads. A `/` may stand
+ * alone and a `//` may not, the step being what the descent descends to. A
+ * bracketed branch is where a pattern parts from an expression rather than
+ * borrowing it: 3.0's `StepExprP` admits one at *any* position in a path, so
+ * `a/(b | c)` is a pattern as much as `(b | c)/a` is, while the expression
+ * grammar's own parenthesized step may only open a path (#711) — reading the
+ * two alike refused a pattern XSLT admits. Its steps are narrower than an
+ * expression's at every version, because a pattern is matched by walking *up*
+ * from a node rather than evaluated forwards, so an axis such a walk cannot
+ * answer is a static error and not an empty match: `treads` names the two of
+ * 1.0 and 2.0's `ChildOrAttributeAxisSpecifier` and the six of 3.0's
+ * `ForwardAxisP`, which adds `self`, `descendant`, `descendant-or-self` and
+ * `namespace`, and no version admits the four reverse axes, `following`,
+ * `following-sibling` or `preceding-sibling`. A `..` never spells a step and a
+ * `.` spells one from 3.0. Settling that took two processors and neither would
+ * have done alone: SaxonJ-HE says what 3.0 refuses, with XTSE0340, but applies
+ * its own 3.0 pattern syntax whatever the stylesheet declares — it admits
+ * `self::a` and `.` at `version="1.0"` — so only xsltproc, being 1.0 only, can
+ * say what an older version refuses. A processor shows that a construct is
+ * admitted somewhere; only a version-aware one shows that a version refuses
+ * it, which is the trap #717's arbitration fell into as well. Two more
+ * borrowings from the expression grammar are paid back. A bracket is
+ * `bracketed` rather than the expression grammar's parenthesized primary, so
+ * it holds a `Pattern` — optionally, since `()` matches nothing and is a
+ * pattern all the same — `(a | b)/c`, `(a)`, `(a[1])/b` and `(a | b)[1]` are
+ * patterns and `(1 + 1)/a`, `(a = b)/c`, `("s")/a` and `(a, b)/c` are not,
+ * though each of those is a fine expression. And `.` is the whole of
+ * `PredicatePattern`, read by `whole` before any union, so it stands alone or
+ * not at all: `a | .`, `. | a` and `.[@x] | a` are refused. It is still a
+ * *step* once a separator stands in front of it, which is the distinction
+ * `entered` draws — `b/.`, `/.` and `//.` are patterns while `(.)`, `(.)/a`
+ * and `a/(.)` open a path with one and are not. The last borrowing goes with
+ * them: `FunctionCallP` took its arguments from the expression grammar, where
+ * XSLT admits a literal or a variable reference and nothing else, so `key("k",
+ * a/b)`, `id("x" | "y")` and `doc(concat("a", "b"))/x` parsed as patterns;
+ * `anchored` narrows them, and `root` takes no argument at all. A numeric
+ * literal is a literal, so `key("k", 1)` is a pattern and `id(1)` is one too —
+ * a processor refuses that second one for `XPTY0004`, which is `id`'s
+ * signature rather than the pattern grammar, and reading the arbiter's *code*
+ * rather than its exit status is what tells the two apart. Eight of a first
+ * sweep's apparent over-acceptances were static-type, undeclared-prefix, arity
+ * and classpath errors. A type is read by three productions rather than one,
+ * because XPath spells three and they have three shapes: `kinded` for the kind
+ * test of a `NodeTest`, `sequenced` for the `SequenceType` an `instance of`, a
+ * `treat as` and a function's `as` take, and `singled` for the `SingleType` a
+ * cast takes. One function served all three and took an occurrence indicator
+ * wherever it was called, so a step lost the `+` of `text() + 1` to a type
+ * that has none, `$v instance of (xs:integer)` was refused where a
+ * `ParenthesizedItemType` stands, and `1 cast as node()` was accepted where a
+ * cast makes an atomic value (#740). Two more borrowings went with it.
+ * `postfixed` hung its `(`, `?` and `[` off whatever `primary` answered, and
+ * `primary` answered a *step* when nothing else matched, so `a?b` came back a
+ * lookup into a step and `@a(1)` a call applied to one — `StepExpr ::=
+ * PostfixExpr | AxisStep` is a fork, and `opens` is now the whole of it, one
+ * predicate naming the same shapes `primary` reads. A named function reference
+ * is a `PrimaryExpr` of its own on that reading, not a postfix, which is what
+ * `referred` says. And the simple map came off the ladder: `ValueExpr` *is* a
+ * `SimpleMapExpr`, so `!` binds tighter than the unary signs and far tighter
+ * than the four expressions taking a type, where a rung of the ladder put it
+ * looser than all of them and `a instance of xs:integer ! b` parsed as a map
+ * over a sequence type. Two questions the lexer cannot answer are answered
+ * here instead, both of them about a word (#742). `counted` takes the
+ * occurrence indicator a type ends with and reads the word behind it as the
+ * operator it spells, since the `?` of `xs:integer?` and the `?` of `$m?div`
+ * are one character with one token of lookahead behind each: the first ends a
+ * value and the second opens a lookup key, so a wider `ENDS` answers for the
+ * type and breaks the lookup, and only the production being read can tell them
+ * apart. The `*` never needed it, `MULTI` already ending a value by spelling
+ * the wildcard of `a/*` — an accident that made `item()* div 2` right for a
+ * reason no rule stated. And `glued` refuses a keyword run against the
+ * terminal in front of it, the same gap rule `operates` applies to the words
+ * the lexer kinds, for the ones it hands over as names: `1to 3`, `1cast as
+ * xs:integer` and the `1else` of `if (1) then 1else 2` are all XPST0003 and
+ * every one of them parsed. `glued` is `abuts` narrowed to the kinds `GLUES`
+ * names, so every question this file asks about a gap is one adjacency test
+ * underneath, and `abuts` is the absence of a trivia token rather than
+ * arithmetic over offsets — the stream being lossless, a gap or a comment
+ * between two terminals is a token of its own. `welded` is the same question
+ * one token further out, `reaches` with adjacency required, and the pair is
+ * what a *terminal spelled out of several tokens* needs: a wildcard is the
+ * only one XPath has, `Wildcard` being marked `ws: explicit`, so `my: *`, `*
+ * :a`, `*: a`, `* : a`, `Q{urn:my} *` and `a/my: *` are not loose spellings of
+ * one but XPST0003 in Saxon-HE 12.5, and `tested` read all six as wildcards
+ * because `take` and `expect` skip trivia everywhere else, rightly (#736).
+ * Each of the three composite spellings asks for adjacency in its own
+ * condition and none refuses on its own account, a `*` being a whole wildcard
+ * already: what a gap parts from it is the next production's business, which
+ * is what leaves the `:` of `map {* : 1}` to the map constructor it separates.
+ * Both are read by `isValid` since #732, which is Phase 3 of #644 opening — in
+ * `src/xpath.js` then and in `src/syntax.js` now, where the parse is kept
+ * rather than thrown away once its verdict is read (#577): a run's verdict on
+ * whether an expression is valid is this file's, taken behind the two gates of
+ * #680 that `test/grammar-corpus.test.js` holds `parsed` to, and the shape
+ * sweep of `test/grammar-shapes.test.js` beside them.
+ */
+
 const {
   tokenized, qualified, worded, GLUES, TOKENS, TRIVIA,
 } = require('./tokens')

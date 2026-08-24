@@ -3,6 +3,110 @@
  * SPDX-License-Identifier: MIT
  */
 
+/*
+ * The one door between a record and what the grammar makes of it, and where
+ * every check that reads a tree begins (#577). `parseOf(found)` forks on the
+ * record — `matched` for a pattern, `parsed` for an expression — at the
+ * version `versionOf` reads at the node, or at `ASSUMED` where it can place
+ * none: the most permissive version `KNOWN` holds, derived rather than
+ * spelled, because a missing `version` is already
+ * `missing-version-in-stylesheet`'s defect and letting it decide a syntax
+ * question would answer one defect with an `invalid-xpath-expression` for
+ * every modern expression the file carries. One parse per distinct expression,
+ * keyed by version and language as well as by text, since a corpus asks about
+ * `.` and `@name` and `text()` over and over (#689); and the *tree* is kept
+ * now, where the verdict alone was the cheaper bargain while nothing above
+ * asked for more, because a check that walks it would otherwise parse a second
+ * time. `isValid` is that verdict with the complaint dropped, for the two
+ * gates wanting a boolean, and `refusalOf` is gone — the offset the fault
+ * stands at comes off the parse itself, which is what lets the validator point
+ * at the fault rather than at the attribute holding it (#589). Beside them,
+ * what a check needs of a node: `tokensOf`, the tokens a span covers, with
+ * `textOf` and `offsetOf` derived from it, so a position is the lexer's rather
+ * than anything computed from text — and the tokens themselves because the
+ * tree gives one kind to what the lexer told apart, a `literal` being a number
+ * or a string with only its token saying which, which is the whole difference
+ * between `[position() = 1]` and `[position() = '1']` (#575); `gathered(found,
+ * kinds)`, every node of one of the kinds, outermost first, a list rather than
+ * one kind because a construct is often two of them — which two is `VALUED`,
+ * the general and the value comparison, one list here rather than one per
+ * check for the reason `TRIVIA` and `OPAQUE` are one each, with a
+ * `no-restricted-syntax` selector refusing a second copy anywhere in `src/`
+ * but this file and `src/grammar.js`, where the kinds are minted and all three
+ * are named in the table deciding which operator builds which; `operatorOf`,
+ * the operator standing between two operands, read off the `parting` tokens
+ * the grammar consumed without building a node of its own and canonicalised
+ * through `WORDED` — the one table pairing each general comparison with the
+ * word XPath 2.0 spells the same question in, so `eq` reaches a classifier as
+ * `=` and one keyed on six symbols answers for twelve spellings (#763).
+ * `test/syntax.test.js` holds that table to the grammar as it holds `LOOSE`,
+ * asking of each pair whether the two spellings really do come back a
+ * `comparison` and a `value-comparison`, and sweeping every word operator the
+ * lexer knows for one the pairing misses — the direction that has actually
+ * moved, 2.0 having added all six words at once. A check needing to know which
+ * class it was handed reads the node's kind, that *being* the answer: the
+ * count collapses to a call and carries no operator either way, while the
+ * string-length rewrite carries one and writes back the family it was given
+ * rather than moving a value comparison into the general one; `calls(found,
+ * node, name, namespaces)`, whether a node is a call to that function,
+ * resolving the prefix against `holding(found.node)` and admitting the bare,
+ * the prefixed and the inline `Q{...}` spellings of each namespace it is given
+ * — the standard ones by default, since a function is its name and its
+ * namespace together and most of the names a check asks about are XPath's own.
+ * A list rather than one URI because some functions are declared in more than
+ * one: `node-set` is EXSLT's and Microsoft's for the same purpose, so
+ * `use-node-set-extension` asks about both and a `node-set` of the author's
+ * own answers no (#557); `stringOf(found, node)`, the string a literal holds —
+ * unquoted, and with a doubled delimiter inside it read as the one character
+ * it spells — which is the question `textOf` cannot answer, XPath spelling one
+ * string two ways and a check comparing the text seeing two literals (#598,
+ * #562, #549); `variableOf(found, node)`, the name a variable reference holds,
+ * which is the same shape of question one construct over — XPath lets a gap or
+ * a comment stand between the `$` and the name, so `$ para` references `para`
+ * and the text of the span does not say so, while a namespace stays part of
+ * the name, `$Q{urn:my}para` and `$my:para` each naming a variable `$para` is
+ * not (#776); and `tight(node)`, whether a node's text can stand as an operand
+ * of a general comparison with no brackets round it. Beside those,
+ * `filters(tokens, node)` — whether a node can stand as a predicate asked of
+ * one candidate at a time, which is what a check served from `named`'s walk
+ * needs of each predicate it wrote (#784): XPath reads a predicate whose value
+ * is a *number* as a test on the context position, and a candidate handed over
+ * alone is a sequence of one where every position test answers true. `FILTERS`
+ * names the kinds that cannot be a number, `BOOLEAN` the standard functions
+ * answering `xs:boolean`, and `positional` walks for a `position()` or
+ * `last()` under the node, either of which hides inside a `comparison` the
+ * kinds would pass. Two kinds are not on the list because their kind does not
+ * settle what they answer: a `call`, `not(@a)` and `count(@a)` coming back
+ * alike, which its name decides; and a `path`, which its **last step**
+ * decides, since from XPath 2.0 a path may end in a call answering an atomic
+ * value and `a/count(.)` is a number spelled as a path. Reading a path by its
+ * kind served `[a/count(.)]`, `[a/(count(.))]`, `[a/count(.)[1]]` and five
+ * more, each of which the engine answers with one node where serving answered
+ * every match. `test/syntax.test.js` holds both lists to the grammar as it
+ * holds `LOOSE` and `STEPPED`. `ASSUMED` is exported with it, a check's
+ * selector carrying no `version` of its own and being read at the most
+ * permissive one for the same reason a stylesheet declaring none is. That last
+ * one reads `LOOSE`, XPath's own ladder from the comparison up — the comma,
+ * the five `ExprSingle` expressions, `and`, `or`, and the three comparison
+ * classes that cannot chain — and `test/syntax.test.js` holds the list to the
+ * grammar rather than to its comment, taking one expression of every kind the
+ * grammar builds and asking whether `<specimen> = ''` really does come back a
+ * comparison over the whole of it. Beside it `stepped(node)` reads `STEPPED`,
+ * the same ladder from the other end: the kinds a `StepExpr` can be, which is
+ * everywhere XPath binds most tightly and so everywhere a *call* stands. That
+ * is the question a rewrite unwrapping a call has to ask, and
+ * `use-node-set-extension` was the one unwrapper with no answer behind it,
+ * substituting the bare text of its argument and dropping the brackets the
+ * call had supplied — `exsl:node-set($one | $two)/alpha` became `$one |
+ * $two/alpha`, which selects `$one` beside the `alpha` children rather than
+ * them (#774). A `path` is deliberately outside the list although it stands as
+ * a step: a predicate binds to the last step of one, so
+ * `exsl:node-set(alpha/beta)[1]` is `(alpha/beta)[1]`, and a predicate is the
+ * one postfix a node set can carry. The same sweep holds it to the grammar,
+ * asking of each specimen whether `b/<specimen>` comes back a path whose far
+ * step is the specimen whole.
+ */
+
 const {parsed, matched} = require('./grammar')
 const {holding} = require('./tree')
 const {TOKENS, TRIVIA} = require('./tokens')

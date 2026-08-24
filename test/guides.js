@@ -1,0 +1,173 @@
+/*
+ * SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+ * SPDX-License-Identifier: MIT
+ */
+
+const {allFilesFrom} = require('../src/helpers')
+const path = require('path')
+const fs = require('fs')
+
+/**
+ * Directory the repository stands at.
+ * @type {string}
+ */
+const ROOT = path.resolve(__dirname, '..')
+
+/**
+ * A path as a guide spells one: from the repository root, and with the
+ * separator a guide writes rather than the one the platform walks in, since the
+ * suite runs on Windows as well.
+ * @param {string} whole - Absolute path of the file
+ * @return {string} - The path from the root, slashed
+ */
+const slashed = function(whole) {
+  return path.relative(ROOT, whole).split(path.sep).join('/')
+}
+
+/**
+ * Directories the walk below leaves alone: the dependencies and the two
+ * generated trees, plus every dotted name — `.claude/worktrees` among them,
+ * which holds whole copies of this tree and would count every guide in it a
+ * second time.
+ * @type {Array.<string>}
+ */
+const OUTSIDE = ['node_modules', 'coverage', 'docs']
+
+/**
+ * Every guide the tree holds, walked rather than written down: the root one,
+ * and the `CLAUDE.md` of each directory carrying the derivation behind its own
+ * modules (#821). Walked, because the gates reading this judge what it holds
+ * and nothing else, so a guide relocated into a directory and left off a
+ * hand-written list would take its claims out of every one of them — a suite
+ * asserting nothing reading exactly like one that passed (#645).
+ * @type {Array.<string>}
+ */
+const GUIDES = ['CLAUDE.md'].concat(
+  fs.readdirSync(ROOT, {withFileTypes: true})
+    .filter((one) => one.isDirectory())
+    .filter((one) => !one.name.startsWith('.') && !OUTSIDE.includes(one.name))
+    .flatMap((one) => allFilesFrom(path.join(ROOT, one.name)))
+    .filter((one) => path.basename(one) === 'CLAUDE.md')
+    .map(slashed),
+)
+
+/**
+ * How much a document holds, in the characters a reader of it is charged —
+ * characters and not bytes, an em dash costing three of the second and one of
+ * the first.
+ * @param {string} named - Path of the document from the repository root
+ * @return {number} - Its length
+ */
+const sized = function(named) {
+  return fs.readFileSync(path.join(ROOT, named), 'utf-8').length
+}
+
+/**
+ * What a turn may load in guides, which is the harness's own number rather than
+ * one of ours: Claude Code warns past 150,000 characters of them. What arrives
+ * against it is a **chain** and not a pair — the root guide, and the guide of
+ * every directory on the way down to a file the turn touches, each injected
+ * once — and that was measured rather than assumed, two throwaway guides
+ * planted at `src/resources/` and `src/resources/motives/` and neither ever
+ * read as a file both arriving the moment a motive under them was opened. The
+ * first spelling of this bar weighed the root against the dearest single guide,
+ * which is a whole directory short: it read 130,933 and called that 0.87 of the
+ * bar while a turn touching `src/linters/` was loading 157,504 and over it. So
+ * the two dearest notes moved one step further down, out of `src/CLAUDE.md` and
+ * into the top of `src/grammar.js` and `src/syntax.js` — 24,681 characters —
+ * and the dearest chain is that same one at 133,092, which is 0.89. How fast
+ * that moves is worth knowing beside the bar: two changes landed while this one
+ * was being written, #818 spending 5,238 characters of the root and #822
+ * another 2,529, and of that second one the root now keeps 1,183 where
+ * `test/CLAUDE.md` takes 1,362 — the split's own point, that the derivation
+ * grows in the guide beside the code rather than in the one every turn reads.
+ *
+ * A guide answers to nothing on its own account beside this, and a ceiling of
+ * half the bar stood here until it was seen to be one no tree could fail: the
+ * root stands in every chain, so the chain holding it above weighs each other
+ * guide against the bar less what stands over it — 43,479 for
+ * `src/linters/CLAUDE.md`, where half of the bar is 75,000 — and holds the root
+ * itself to 81,712, a number derived from the dearest chain rather than chosen.
+ * A gate no tree can fail is removed and not kept (#750, #660).
+ * @type {number}
+ */
+const LOADED = 150000
+
+/**
+ * The guides a turn loads on its way to one file: the root, and one for each
+ * directory standing over it that carries a guide of its own. The guide named
+ * is the last of them, so a chain is what its own directory costs a turn.
+ * @param {string} named - Path of a guide from the repository root
+ * @return {Array.<string>} - The guides loaded with it, the root first
+ */
+const chained = function(named) {
+  const directories = path.dirname(named).split('/')
+  return ['CLAUDE.md'].concat(
+    directories.filter((one) => one !== '.')
+      .map(
+        (one, index) => `${directories.slice(0, index + 1).join('/')}/CLAUDE.md`,
+      )
+      .filter((one) => GUIDES.includes(one)),
+  )
+}
+
+/**
+ * What a turn touching one directory is charged in guides, the whole chain
+ * summed.
+ * @param {string} named - Path of a guide from the repository root
+ * @return {number} - Characters of guide that arrive with it
+ */
+const loaded = function(named) {
+  return chained(named).reduce((total, one) => total + sized(one), 0)
+}
+
+/**
+ * The paths the root guide's index names, read out of its `Key files` section
+ * alone: the four kinds of check are tabulated in the same shape a few sections
+ * up, so a sweep over every row of every table would read `xpath` and `corpus`
+ * as files of ours.
+ * @return {Array.<string>} - The paths, as the index spells them
+ */
+const indexed = function() {
+  const rows = []
+  let inside = false
+  for (const line of fs.readFileSync(
+    path.join(ROOT, 'CLAUDE.md'), 'utf-8').split('\n')) {
+    if (line.startsWith('## ')) {
+      inside = line === '## Key files'
+    }
+    const named = line.match(/^\| `([^`]+)` \|/)
+    if (inside && named !== null) {
+      rows.push(named[1])
+    }
+  }
+  return rows
+}
+
+/**
+ * The files a guide holds a note about, one heading naming one path.
+ * @param {string} named - Path of the guide from the repository root
+ * @return {Array.<string>} - The paths it notes
+ */
+const noted = function(named) {
+  return fs.readFileSync(path.join(ROOT, named), 'utf-8').split('\n')
+    .map((line) => line.match(/^## `([^`]+)`$/))
+    .filter((found) => found !== null)
+    .map((found) => found[1])
+}
+
+/**
+ * An index row as the pattern it is, a row being allowed one `*` where a family
+ * of modules shares a shape: the twenty-one linters are one row rather than
+ * twenty-one, and the star stands for a name and never for a directory.
+ * @param {string} row - The path an index row names
+ * @return {RegExp} - What that row matches
+ */
+const globbed = function(row) {
+  return new RegExp(`^${row.replace(/\./g, '\\.').split('*').join('[^/]*')}$`)
+}
+
+module.exports = {
+  ROOT, GUIDES, LOADED, slashed, sized, chained, loaded, indexed, noted,
+  globbed,
+}
