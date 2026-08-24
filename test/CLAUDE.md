@@ -400,8 +400,8 @@ span at most, which leaves that observed spread filling half of it and the ratch
 under the cheapest night rather than two. DITA-OT is the same thing at the clock's own edge: 2 to 3
 seconds where `date +%s` counts in whole ones is a third to a half of the reading in quantisation
 alone, so a bar cut from it is cut partly from noise. Both windows hold — [4, 16] and [2, 6] — so
-this cut stands on the clock the tier has, and whether a whole-second clock can still measure a
-two-second corpus is the open half of #827.
+this cut stands on the clock the tier has, and whether a whole-second clock can measure a
+two-second corpus at all is what #827 stands rescoped to, the cut itself having closed #826 alone.
 
 ## `test/conformance.test.js`
 
