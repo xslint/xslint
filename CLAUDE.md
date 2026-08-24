@@ -206,7 +206,7 @@ wrapping onto one of those closed the description and bought three fresh lines
 and charged as prose. That list spells the five without their at-sign, a
 literal puzzle marker in a file being a puzzle `pdd` then refuses for holding
 neither the words nor the estimate one carries. Nothing weighed a comment
-before: 266 descriptions in 64 files stood past that bar, the dearest of them
+before: 267 descriptions in 64 files stood past that bar, the dearest of them
 142 lines, so a derivation grew wherever one was written the way the cross-file
 linter's cost grew before #755 (#832). The bar is not a licence to respell what
 a block cannot hold as a `/* */` beside it either — such prose is cut and not
