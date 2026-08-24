@@ -436,6 +436,22 @@ attribute value template holding literal text beside the expression so that
 ratchets from both sides as the rest do: an entry whose selector has started weighing text, or
 stopped counting elements, turns red.
 
+A fifth arrived at #817, one attribute over: a selector reading `text()` to decide whether a node
+holds content must read `xml:space` beside it, since that attribute decides whether a
+whitespace-only node is there at all. All four that read it were wrong under `preserve` —
+`blank-nested-if` and `setting-value-of-variable-incorrectly` advising a collapse that drops the
+whitespace, `empty-content-in-instructions` calling an instruction empty that emits three spaces,
+and `variable-or-param-with-select-and-content` silent on a blank body beside a `select`, which is
+XTSE0620 and a module SaxonJ-HE 12.5 refuses to compile where xsltproc is lax. The clause names the
+**nearest** declaration, `ancestor::*[@xml:space][1]`, because a nearer `default` cancels a
+`preserve` above it — dropping that `[1]` passes every other test and fails only the four
+`cancelled-preserve` packs written for it. `text-outside-xsl-text` is exempt on `EMITTED`: it asks
+what a processor *emits* rather than what an element holds, and under a `preserve` every indentation
+run is emitted text, so its answer changes too but `xsl:text` around each run is no advice at all.
+Since #817 the two exemption tables answer one gate rather than two, `EXEMPTED` pairing each with
+the question deciding whether its entries are still needed — the same ratchet twice over, not a
+shape worth spelling out twice.
+
 The line cap is held from a third side since #825. A file the cap is lifted off must have its
 length stated in a guide, and the number must be the one ESLint reads: `SPRAWLING`'s membership was
 gated where the length beside it was not, so the one file carrying an exemption went on being

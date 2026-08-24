@@ -19,3 +19,16 @@ Correct:
   <xsl:value-of select="."/>
 </xsl:for-each>
 ```
+
+An instruction holding nothing but whitespace counts as empty, since XSLT
+strips a whitespace-only text node from the stylesheet before a processor looks
+at it. `xml:space` is the exception: where the nearest ancestor declaring it
+says `preserve`, that whitespace survives and the instruction writes it out, so
+removing the element changes the output and it is left alone.
+
+```xsl
+<xsl:if test="$a" xml:space="preserve">   </xsl:if>
+```
+
+That emits three spaces for every `$a`. A nearer `xml:space="default"` cancels
+a `preserve` higher up, and the element is empty again.

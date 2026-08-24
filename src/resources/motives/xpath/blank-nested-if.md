@@ -37,6 +37,18 @@ joining the conditions makes that content wait on the inner test as well:
 
 There the `Ready:` text is written for every `$a`, so the two instructions are not one.
 Emit it before the outer `xsl:if`, or leave the nesting alone. Indentation
-between the two is not content — XSLT strips whitespace-only text from a
-stylesheet — and neither a comment nor a processing instruction reaches the
-result tree, so none of the three stands in the way.
+between the two is usually not content, XSLT stripping whitespace-only text
+from a stylesheet, and neither a comment nor a processing instruction reaches
+the result tree — so none of the three stands in the way.
+
+Usually, because `xml:space` decides it. Where the nearest ancestor declaring
+that attribute sets it to `preserve`, the whitespace survives and is written
+out with everything else:
+
+```xsl
+<xsl:if test="$a" xml:space="preserve">  <xsl:if test="$b">deep</xsl:if></xsl:if>
+```
+
+Those two spaces are emitted for every `$a`, so the pair is no more collapsible
+than the `Ready:` above. A nearer `xml:space="default"` cancels a `preserve`
+higher up, and then the indentation goes back to being nothing.

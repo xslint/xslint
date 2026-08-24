@@ -74,6 +74,8 @@ const UNFORMATTED = [
   'redundant-double-negation-packs/no-break-space-before-the-bracket.yaml',
   'string-length-packs/no-break-space-before-the-bracket.yaml',
   'translate-packs/no-break-space-before-the-bracket.yaml',
+  'xpath-packs/blank-nested-if-cancelled-preserve.yaml',
+  'xpath-packs/setting-value-of-variable-cancelled-preserve.yaml',
 ]
 
 /**

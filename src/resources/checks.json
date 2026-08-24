@@ -138,7 +138,7 @@
     },
     "xpath": {
       "blank-nested-if": {
-        "xpath": "//xsl:if[(count(*) = 1) and (count(xsl:if) = 1) and not(text()[normalize-space()])]",
+        "xpath": "//xsl:if[(count(*) = 1) and (count(xsl:if) = 1) and not(text()[normalize-space() or ancestor::*[@xml:space][1]/@xml:space = 'preserve'])]",
         "severity": "warning",
         "message": "A nested xsl:if inside another xsl:if is prohibited. Combine conditions with 'and' into a single xsl:if."
       },
@@ -158,7 +158,7 @@
         "message": "'xsl:choose' has no 'xsl:when' branch. Add one, or drop the 'xsl:choose' and keep its content directly."
       },
       "empty-content-in-instructions": {
-        "xpath": "//(xsl:for-each | xsl:if)[count(node()) = count(text()) and normalize-space() = \"\"]",
+        "xpath": "//(xsl:for-each | xsl:if)[count(node()) = count(text()) and normalize-space() = \"\" and not(text()[ancestor::*[@xml:space][1]/@xml:space = 'preserve'])]",
         "severity": "warning",
         "message": "An instruction element such as xsl:for-each or xsl:if has no content. Add content or remove the empty element."
       },
@@ -248,7 +248,7 @@
         "message": "'xsl:param' must be declared before any other content in its 'xsl:template' or 'xsl:function'. Move it above the content."
       },
       "setting-value-of-variable-incorrectly": {
-        "xpath": "//xsl:variable[(count(*) = 1) and (count(xsl:value-of) = 1) and not(text()[normalize-space()])]",
+        "xpath": "//xsl:variable[(count(*) = 1) and (count(xsl:value-of) = 1) and not(text()[normalize-space() or ancestor::*[@xml:space][1]/@xml:space = 'preserve'])]",
         "severity": "warning",
         "message": "A variable is assigned via a nested xsl:value-of instead of the select attribute. Use select syntax instead."
       },
@@ -303,7 +303,7 @@
         "message": "xsl:stylesheet is nested inside another element. It must be the outermost element of the document."
       },
       "variable-or-param-with-select-and-content": {
-        "xpath": "//(xsl:variable | xsl:param | xsl:with-param)[@select and (* or text()[normalize-space()])]",
+        "xpath": "//(xsl:variable | xsl:param | xsl:with-param)[@select and (* or text()[normalize-space() or ancestor::*[@xml:space][1]/@xml:space = 'preserve'])]",
         "severity": "error",
         "message": "An xsl:variable, xsl:param or xsl:with-param has both a select attribute and a non-empty body. Use only one way to set the value."
       },
