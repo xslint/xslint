@@ -33,11 +33,11 @@ const PACKS = fs.readdirSync(RESOURCES)
 const available = cmdAvailable('xcop', ['--version'], false)
 
 /**
- * Packs whose fixture must carry a construct xcop rejects, so it cannot also
- * be canonical XML — an unused namespace declaration being what `redundant-
- * namespace-declarations` exists to flag, and a prefix list the same reading
- * one step in (#553, #643). Each entry is the path a pack stands at, a
- * basename naming two as readily as one, and each is asserted (#693).
+ * Packs whose fixture must carry what xcop rejects, so it cannot also be
+ * canonical XML: an unused namespace declaration, a prefix list naming one,
+ * the no-break space of #643, and the indentation a nearer `xml:space` frees
+ * (#553, #693, #817). Each entry is the path a pack stands at, a basename
+ * naming two as readily as one, and each is asserted rather than skipped.
  * @type {Array.<string>}
  */
 const UNFORMATTED = [
@@ -53,6 +53,7 @@ const UNFORMATTED = [
   'translate-packs/no-break-space-before-the-bracket.yaml',
   'xpath-packs/blank-nested-if-cancelled-preserve.yaml',
   'xpath-packs/setting-value-of-variable-cancelled-preserve.yaml',
+  'xpath-packs/variable-or-param-preserved-inert-content.yaml',
 ]
 
 /**
