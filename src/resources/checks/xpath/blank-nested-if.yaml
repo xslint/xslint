@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
 # SPDX-License-Identifier: MIT
 ---
-xpath: //xsl:if[(count(*) = 1) and (count(xsl:if) = 1) and not(text()[normalize-space()])]
+xpath: //xsl:if[(count(*) = 1) and (count(xsl:if) = 1) and not(text()[normalize-space() or ancestor::*[@xml:space][1]/@xml:space = 'preserve'])]
 severity: warning
 message: "A nested xsl:if inside another xsl:if is prohibited. Combine conditions with 'and' into a single xsl:if."

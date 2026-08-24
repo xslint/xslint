@@ -50,8 +50,8 @@ three platforms and two node versions, and `corpora`, which times a real run
 The suite comes in two halves, and the line between them is a child process. A
 **deep** test starts one — it runs `xslint` or `xcop` the way a user does — and
 is named `*.deep.test.js`; every other test stays in this process. Four files
-are deep, and they still cost most of what the suite costs: 611 of the 2522
-tests, 9 of the 14 seconds. The other 1911 finish inside one, which is why
+are deep, and they still cost most of what the suite costs: 619 of the 2539
+tests, 9 of the 14 seconds. The other 1920 finish inside one, which is why
 `npm run fast` is the loop to work in and `npm test` the one to finish on. The
 deep target runs under `mocha --parallel`, so those four files run at once and
 the slowest of them sets the clock — `xslint.deep.test.js` alone, whose 52 tests
@@ -610,8 +610,15 @@ Then run `npx grunt checks`, `npm test`, `npm run coverage`, and
   count — whitespace being what a processor strips from an indented stylesheet
   rather than content. What the advice writes decides it, though, so a check
   whose target form carries the text along is exempt on `COUNTING`, an
-  attribute value template being the one such form in the tree today.
-  `local-name()` is not banned with it — it asks nothing about a prefix,
+  attribute value template being the one such form in the tree today. Reading
+  `text()` at all obliges it to read `xml:space` beside it, that attribute
+  deciding whether a whitespace-only node is there at all: XSLT strips one
+  before a processor looks at it, so indentation is not content — unless the
+  nearest ancestor declaring `xml:space` says `preserve`, a nearer `default`
+  cancelling a `preserve` above it, which is why the clause reads
+  `ancestor::*[@xml:space][1]` rather than any ancestor at all. A check asking
+  what a processor *emits* rather than what a node holds is exempt on
+  `EMITTED`. `local-name()` is not banned with it — it asks nothing about a prefix,
   and `text-outside-xsl-text` needs a negated set no union of node tests can
   spell — but a union is the shorter reading wherever the list is closed (#784).
   And a selector that opens `//name` or `//(name | name)` is served from the
@@ -806,7 +813,12 @@ the 22 and could only ever ask whether the string appeared.
   away, and its two prefix-list packs for the same reason one step in: xcop
   counts a namespace used only by a QName, so a declaration named only by an
   `exclude-result-prefixes` is canonicalized away exactly as a dead one is
-  (#553). Every entry is **asserted** rather than merely skipped — the fixture
+  (#553), and two of #817's `cancelled-preserve` packs one attribute over
+  again: the whitespace a nearer `xml:space="default"` throws away is the whole
+  of what they assert, and xcop compacts everything under a `preserve` ancestor
+  without honouring that nearer declaration — so only the two spellings it
+  refuses are listed and the other two are written canonically. Every entry is
+  **asserted** rather than merely skipped — the fixture
   is written and asked about like any other, and an entry whose pack xcop
   accepts turns red, which is the ratchet every other exemption list here
   answers to. Four did: two prefix-list packs, a spaced declaration, and
