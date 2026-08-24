@@ -27,23 +27,23 @@ const CORPORA = yaml.parsedFromFile(WORKFLOW).jobs.lint.strategy.matrix.include
 
 /**
  * The dearest each corpus has read on the runner the nightly tier runs on,
- * over six runs of it on the tree #784 left. A budget answers to this and not
- * to a developer machine, a share cancelling a machine's speed where a wall
- * clock carries it: those readings have a runner disagreeing with itself about
- * one tree by half as much again, which is why the window below is two-sided.
+ * over nine runs — two nightly, seven dispatched — of the tree #818 left. A
+ * budget answers to this and not to a developer machine, a share cancelling a
+ * machine's speed where a wall clock carries it, and the dearest of nine is
+ * what a ceiling answers to, one runner reading one tree twofold apart (#827).
  * @type {{[name: string]: number}}
  */
-const RUNS = {docbook: 20, tei: 11, ditaot: 5}
+const RUNS = {docbook: 8, tei: 8, ditaot: 3}
 
 /**
  * The cheapest of those same readings, which is the side a ratchet can turn
  * red from. A budget of `SLACK` times a reading fires on everything below a
- * quarter of it, so a budget must stand above the dearest night and stay quiet
- * on the cheapest, or a fast night reddens a build on a tree nobody has
- * touched.
+ * quarter of it, so one must stand above the dearest night and stay quiet on
+ * the cheapest, or a fast night reddens a tree nobody has touched: these leave
+ * it firing at 3, 3 and 1 and under, a margin of one tick but TEI's two (#827).
  * @type {{[name: string]: number}}
  */
-const CHEAPEST = {docbook: 13, tei: 8, ditaot: 3}
+const CHEAPEST = {docbook: 4, tei: 5, ditaot: 2}
 
 /**
  * What a verdict has to say about a reading, one row per side of the window and

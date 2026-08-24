@@ -51,8 +51,8 @@ three platforms and two node versions, and `corpora`, which times a real run
 The suite comes in two halves, and the line between them is a child process. A
 **deep** test starts one — it runs `xslint` or `xcop` the way a user does — and
 is named `*.deep.test.js`; every other test stays in this process. Four files
-are deep, and they still cost most of what the suite costs: 622 of the 2564
-tests, 9 of the 14 seconds. The other 1942 finish inside one, which is why
+are deep, and they still cost most of what the suite costs: 622 of the 2566
+tests, 9 of the 14 seconds. The other 1944 finish inside one, which is why
 `npm run fast` is the loop to work in and `npm test` the one to finish on. The
 deep target runs under `mocha --parallel`, so those four files run at once and
 the slowest of them sets the clock — `xslint.deep.test.js` alone, whose 52 tests
@@ -119,7 +119,7 @@ than the rest — `xpath-linter` at 46%, `xpath-validator` at 24%,
 7%; growth is asked only of the stages with no entry, against `GROWTH` at 3.0,
 since an entry pins what a stage costs outright and that is the stronger
 statement. `corpora.yml` is the nightly tier, timing DocBook-XSL, TEI and
-DITA-OT at pinned commits against a budget of 40, 22 and 10 seconds, and
+DITA-OT at pinned commits against a budget of 16, 16 and 6 seconds, and
 asserting what it read rather than only how long it took. What a gate measured
 at one size cannot see is a quadratic whose constant is still small there, so
 `test/import-linter.test.js` is a third instrument, timing one check over a
@@ -206,7 +206,7 @@ wrapping onto one of those closed the description and bought three fresh lines
 and charged as prose. That list spells the five without their at-sign, a
 literal puzzle marker in a file being a puzzle `pdd` then refuses for holding
 neither the words nor the estimate one carries. Nothing weighed a comment
-before: 267 descriptions in 64 files stood past that bar, the dearest of them
+before: 268 descriptions in 65 files stood past that bar, the dearest of them
 142 lines, so a derivation grew wherever one was written the way the cross-file
 linter's cost grew before #755 (#832). The bar is not a licence to respell what
 a block cannot hold as a `/* */` beside it either — such prose is cut and not
@@ -991,3 +991,4 @@ one of them.
 | `test/packs.js` | The one harness every pack directory is read through |
 | `test/scaling.test.js` | The speed gate: every stage's own processor time as a share of the run, at two corpus sizes |
 | `test/xcop.deep.test.js` | Writes every pack's inline XSL to one directory and runs xcop over it |
+| `test/workflows.test.js` | Every job granted the scope its own steps write with, red from both sides |
