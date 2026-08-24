@@ -347,7 +347,8 @@ The second tier is for what a corpus of our own making cannot show at all. `corp
 nightly, cloning DocBook-XSL, TEI and DITA-OT **at pinned commits** — a branch tip would drift under
 the numbers — restoring them through `actions/cache`, writing what it found to the job summary, and
 failing past a per-corpus budget so `jayqi/failed-build-issue-action` opens an issue the way
-`daily.yml` does. Vendoring those corpora instead is a trap: each carries its own licence, and
+`daily.yml` does — which neither of them could do until #826, and `test/workflows.test.js` is what
+holds it now. Vendoring those corpora instead is a trap: each carries its own licence, and
 `reuse`, `copyrights` and `xcop` would all have to be told to look away.
 
 That tier asserts **what it read** and not only how long it took, because a budget alone is blind to
@@ -373,16 +374,34 @@ and the notice each run now prints is where the reading is read off. Six runs of
 left — one nightly, five dispatched — give 13, 14, 20, 13, 13 and 14 seconds over DocBook-XSL, 9,
 10, 11, 10, 10 and 8 over TEI, and 5, 4, 5, 4, 3 and 5 over DITA-OT, so the runner disagrees with
 itself about one tree by half as much again and the window has to hold a slow night as well as a
-fast one. The budgets are twice the dearest of those — **40, 22 and 10** — which puts each budget's
-own quarter at 10, 5.5 and 2.5 seconds and so leaves the ratchet firing **at 9, 5 and 2 and under**,
-the clock counting in whole seconds. Those three stand below the 13, 8 and 3 their corpora have
-given, which is the property a budget has to hold and not merely a fact about these numbers:
-`CHEAPEST` in `test/budget.test.js` asserts it, since a budget wide enough to fire on a night that
-has already happened reddens a build on a tree nobody has touched — one tick past it, TEI at 33,
-turns that test red. Two of the three margins are thin and one is a tick. DITA-OT stands near the
-clock's own edge, three to five seconds where a tick is a fifth of the reading, so it is the corpus
-whose ratchet speaks first; TEI's cheapest fell from 9 to 8 in the sixth of those runs, which is the
-same thinness one corpus up. Answering either costs one number.
+fast one. The budgets were twice the dearest of those — 40, 22 and 10 — which put each budget's own
+quarter at 10, 5.5 and 2.5 seconds and left the ratchet firing at 9, 5 and 2 and under, the clock
+counting in whole seconds. Those three stood below the 13, 8 and 3 their corpora had given, which is
+the property a budget has to hold and not merely a fact about those numbers: `CHEAPEST` in
+`test/budget.test.js` asserts it, since a budget wide enough to fire on a night that has already
+happened reddens a build on a tree nobody has touched.
+
+That ratchet is what spoke next, and it is the first of either tier's to have spoken at all.
+Three changes — #812, #815 and #818 — took a quarter, a fifth and a tenth off the staged run over
+the three corpora, and two nightlies went red on budgets that had stopped being bars: DocBook-XSL
+at 6 seconds against 40, DITA-OT at 2 against 10 (#827). Nine runs on the tree #818 left, two
+nightly and seven dispatched, give 7, 6, 8, 8, 5, 8, 7, 8 and 4 seconds over DocBook-XSL, 5, 8, 8,
+6, 7, 7, 7, 7 and 7 over TEI, and 3, 2, 3, 3, 3, 3, 3, 2 and 3 over DITA-OT. Twice the dearest of
+those is **16, 16 and 6**, whose quarters are 4, 4 and 1.5, so the ratchet fires **at 3, 3 and 1 and
+under** against cheapest nights of 4, 5 and 2. Reverting the matrix to 40, 22 and 10 fails four rows
+of `test/budget.test.js`, three of them `CHEAPEST`'s; a budget under the dearest night fails that
+corpus's ceiling row alone; one tick past the new cut, DocBook-XSL at 21, fails `CHEAPEST` on its
+own, and DITA-OT does at 9.
+
+What is thin is the **clock** rather than the cut, and the ninth of those runs is where that shows.
+It read DocBook-XSL at 4 seconds where the eight before it read 5 to 8, so one corpus spans a factor
+of two on a tree nothing has touched — and since `SLACK` is four, a window can hold a fourfold
+span at most, which leaves that observed spread filling half of it and the ratchet standing one tick
+under the cheapest night rather than two. DITA-OT is the same thing at the clock's own edge: 2 to 3
+seconds where `date +%s` counts in whole ones is a third to a half of the reading in quantisation
+alone, so a bar cut from it is cut partly from noise. Both windows hold — [4, 16] and [2, 6] — so
+this cut stands on the clock the tier has, and whether a whole-second clock can measure a
+two-second corpus at all is what #827 stands rescoped to, the cut itself having closed #826 alone.
 
 ## `test/conformance.test.js`
 
@@ -693,3 +712,33 @@ must refuse, by the path each stands at, and every entry is asserted rather than
 pack xcop accepts turns red, which is how four stale exemptions were found. Two gates need no xcop
 at all and so run wherever the suite does — every entry names a pack that is there, and no two
 fixtures share a path.
+
+## `test/workflows.test.js`
+
+Every job granted the scope its own steps write with. Both nightly tiers end in a `report-fail` job
+whose only purpose is to say that they failed, and for as long as either has existed neither could:
+a workflow token here is granted `read` unless the workflow says otherwise, and neither
+`corpora.yml` nor `daily.yml` declared a `permissions:` block, so
+`jayqi/failed-build-issue-action` authenticated as a token that cannot POST and died on
+`Resource not accessible by integration` — inside a job that runs only when something has already
+failed, which is the one place a failure is heard by nobody. Two nightlies went red that way in one
+week and neither filed anything, the last `build failed` issue in the repository being five months
+old, so a red schedule read exactly like a green one unless somebody opened the Actions tab by hand
+(#826). It is the same shape as #645 and #701 one tier out: not a suite that asserts nothing,
+nor a checker that rewrites what it should fail on, but a gate whose **reporter** is broken.
+
+`permissions: issues: write` on each of those two jobs is the whole of the fix — on the job rather
+than the workflow, so the `lint` and `build` jobs they depend on stay read-only — and the two
+workflows that already needed write scope declare it the same way (`release.yml:9`,
+`docs.yml:12`), which is why these two read as missed rather than decided. What stops it going
+again is the gate: `WRITES` names each action that writes to this repository rather than reading
+it, against the scope its token needs, and every job of every workflow is read for the actions its
+steps run and the permissions in force over it — its own where it declares any, the workflow's
+otherwise, and `write-all` granting whatever is asked. It is red from both sides, as every
+exemption table here is: a job running such an action without the scope fails, and so does an entry
+naming an action no job runs, so neither half can rot in silence. Removing either `permissions:`
+block fails it naming that job by file and name.
+
+What no gate covers is the write itself. Nothing in CI POSTs an issue, so the token's scope is
+asserted where it is declared and not where it is used, and an action that starts needing a second
+scope would break exactly as quietly as this one did.
