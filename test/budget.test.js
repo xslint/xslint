@@ -27,17 +27,17 @@ const CORPORA = yaml.parsedFromFile(WORKFLOW).jobs.lint.strategy.matrix.include
 
 /**
  * The dearest each corpus has read on the runner the nightly tier runs on,
- * over six runs of it — one nightly and five dispatched — on the tree #784
+ * over eight runs of it — two nightly and six dispatched — on the tree #818
  * left. A budget answers to this and not to a developer machine: a share
  * cancels a machine's speed where a wall clock carries it, so the only honest
  * measurement of a wall-clock bar is one taken where the bar is enforced. The
- * readings were 13, 14, 20, 13, 13 and 14 seconds over DocBook-XSL, 9, 10, 11,
- * 10, 10 and 8 over TEI, and 5, 4, 5, 4, 3 and 5 over DITA-OT, so a runner
- * disagrees with itself about the same tree by half as much again — which is
- * the reason the window below is two-sided rather than tight.
+ * readings were 7, 6, 8, 8, 5, 8, 7 and 8 seconds over DocBook-XSL, 5, 8, 8,
+ * 6, 7, 7, 7 and 7 over TEI, and 3, 2, 3, 3, 3, 3, 3 and 2 over DITA-OT, so a
+ * runner disagrees with itself about the same tree by half as much again —
+ * which is the reason the window below is two-sided rather than tight.
  * @type {{[name: string]: number}}
  */
-const RUNS = {docbook: 20, tei: 11, ditaot: 5}
+const RUNS = {docbook: 8, tei: 8, ditaot: 3}
 
 /**
  * The cheapest of those same readings, which is the side a ratchet can turn red
@@ -45,11 +45,12 @@ const RUNS = {docbook: 20, tei: 11, ditaot: 5}
  * of it, so what has to be true of a budget is not only that it stands above
  * the dearest night but that it stays quiet on the cheapest — otherwise a fast
  * night reddens a build on a tree nobody has touched. Read as whole seconds,
- * these leave the ratchet firing at 9, 5 and 2 and under, against the 13, 8
- * and 3 below.
+ * these leave the ratchet firing at 3, 3 and 1 and under, against the 5, 5 and
+ * 2 below — so the two margins that were a tick when #785 cut them are two
+ * ticks now, and DITA-OT's is the tick it always was.
  * @type {{[name: string]: number}}
  */
-const CHEAPEST = {docbook: 13, tei: 8, ditaot: 3}
+const CHEAPEST = {docbook: 5, tei: 5, ditaot: 2}
 
 /**
  * What a verdict has to say about a reading, one row per side of the window and

@@ -20,15 +20,15 @@ jobs:
           - name: docbook
             repository: docbook/xslt10-stylesheets
             commit: efd62655c11cc8773708df7a843613fa1e932bf8
-            budget: 40
+            budget: 16
           - name: tei
             repository: TEIC/Stylesheets
             commit: d603656e4addf8cdbd2156c60b2695487d92cf6b
-            budget: 22
+            budget: 16
           - name: ditaot
             repository: dita-ot/dita-ot
             commit: 2dfffb02aaf09fe1747712161c4d38d03a144fc9
-            budget: 10
+            budget: 6
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4

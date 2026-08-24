@@ -374,16 +374,28 @@ and the notice each run now prints is where the reading is read off. Six runs of
 left — one nightly, five dispatched — give 13, 14, 20, 13, 13 and 14 seconds over DocBook-XSL, 9,
 10, 11, 10, 10 and 8 over TEI, and 5, 4, 5, 4, 3 and 5 over DITA-OT, so the runner disagrees with
 itself about one tree by half as much again and the window has to hold a slow night as well as a
-fast one. The budgets are twice the dearest of those — **40, 22 and 10** — which puts each budget's
-own quarter at 10, 5.5 and 2.5 seconds and so leaves the ratchet firing **at 9, 5 and 2 and under**,
-the clock counting in whole seconds. Those three stand below the 13, 8 and 3 their corpora have
-given, which is the property a budget has to hold and not merely a fact about these numbers:
-`CHEAPEST` in `test/budget.test.js` asserts it, since a budget wide enough to fire on a night that
-has already happened reddens a build on a tree nobody has touched — one tick past it, TEI at 33,
-turns that test red. Two of the three margins are thin and one is a tick. DITA-OT stands near the
-clock's own edge, three to five seconds where a tick is a fifth of the reading, so it is the corpus
-whose ratchet speaks first; TEI's cheapest fell from 9 to 8 in the sixth of those runs, which is the
-same thinness one corpus up. Answering either costs one number.
+fast one. The budgets were twice the dearest of those — 40, 22 and 10 — which put each budget's own
+quarter at 10, 5.5 and 2.5 seconds and left the ratchet firing at 9, 5 and 2 and under, the clock
+counting in whole seconds. Those three stood below the 13, 8 and 3 their corpora had given, which is
+the property a budget has to hold and not merely a fact about those numbers: `CHEAPEST` in
+`test/budget.test.js` asserts it, since a budget wide enough to fire on a night that has already
+happened reddens a build on a tree nobody has touched.
+
+That ratchet is what spoke next, and it is the first of either tier's to have spoken at all.
+Three changes — #812, #815 and #818 — took a quarter, a fifth and a tenth off the staged run over
+the three corpora, and two nightlies went red on budgets that had stopped being bars: DocBook-XSL
+at 6 seconds against 40, DITA-OT at 2 against 10 (#827). Eight runs on the tree #818 left, two
+nightly and six dispatched, give 7, 6, 8, 8, 5, 8, 7 and 8 seconds over DocBook-XSL, 5, 8, 8, 6, 7,
+7, 7 and 7 over TEI, and 3, 2, 3, 3, 3, 3, 3 and 2 over DITA-OT. Twice the dearest of those is
+**16, 16 and 6**, whose quarters are 4, 4 and 1.5, so the ratchet fires **at 3, 3 and 1 and under**
+against cheapest nights of 5, 5 and 2 — two ticks of margin where #785 left one, and DITA-OT's one
+tick where it left one. Reverting the matrix to 40, 22 and 10 fails four rows of
+`test/budget.test.js`, three of them `CHEAPEST`'s; one tick past the new cut, DocBook-XSL at 21,
+fails `CHEAPEST` alone, and DITA-OT does at 9. What is thin is the **clock** rather than the cut.
+DITA-OT reads 2 to 3 seconds where `date +%s` counts in whole ones, so a third to a half of that
+reading is quantisation and a bar derived from it is derived partly from noise; its window is [2, 6]
+and holds, so this cut stands on the clock the tier has, and whether a whole-second clock can still
+measure a two-second corpus is the open half of #827.
 
 ## `test/conformance.test.js`
 

@@ -118,7 +118,7 @@ than the rest — `xpath-linter` at 46%, `xpath-validator` at 24%,
 7%; growth is asked only of the stages with no entry, against `GROWTH` at 3.0,
 since an entry pins what a stage costs outright and that is the stronger
 statement. `corpora.yml` is the nightly tier, timing DocBook-XSL, TEI and
-DITA-OT at pinned commits against a budget of 40, 22 and 10 seconds, and
+DITA-OT at pinned commits against a budget of 16, 16 and 6 seconds, and
 asserting what it read rather than only how long it took. What a gate measured
 at one size cannot see is a quadratic whose constant is still small there, so
 `test/import-linter.test.js` is a third instrument, timing one check over a
