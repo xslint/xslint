@@ -4,12 +4,50 @@
  */
 
 const {allFilesFrom} = require('../src/helpers')
+const {ATTRIBUTES, PATTERNS} = require('../src/attributes')
+const {GAP} = require('../src/tokens')
 const {
-  ROOT, GUIDES, LOADED, slashed, sized, chained, loaded, indexed, noted,
-  globbed,
+  ROOT, GUIDES, DOCUMENTS, LOADED, NEARBY, slashed, sized, worded, chained,
+  loaded, indexed, noted, globbed,
 } = require('./guides')
 const path = require('path')
 const assert = require('assert')
+
+/**
+ * The prose read whole, every count in it being a count of one of the two
+ * lists: the module holding them. A number written beside a list is a fact that
+ * rots — three places said `ATTRIBUTES` held nineteen names where it has held
+ * twenty since #633, one of them wrong on the day the list grew (#654).
+ * @type {Array.<string>}
+ */
+const PROSE = ['src/attributes.js']
+
+/**
+ * Each list as a document may name it, paired with what it holds. `NAMED` is
+ * `ATTRIBUTES` as a set, so it counts to the same and answers to a claim about
+ * either name.
+ * @type {Map.<string, number>}
+ */
+const LENGTHS = new Map([
+  ['ATTRIBUTES', ATTRIBUTES.length],
+  ['PATTERNS', PATTERNS.length],
+  ['NAMED', ATTRIBUTES.length],
+])
+
+/**
+ * The words a count is spelled with, paired with what each counts to. A `Map`
+ * and not an object, because membership is the whole of what is asked of it and
+ * `'constructor' in {}` answers true: an object judges a claim about "the
+ * constructor names" against `Object` itself rather than reading past a word
+ * that is no number, so the prototype chain decides what the prose is about.
+ * @type {Map.<string, number>}
+ */
+const NUMBERS = new Map([
+  'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine',
+  'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen',
+  'seventeen', 'eighteen', 'nineteen', 'twenty', 'twenty-one', 'twenty-two',
+  'twenty-three',
+].map((word, index) => [word, index + 1]))
 
 describe('guides', function() {
   it('walks the tree for the guides standing beside the code', function() {
@@ -83,6 +121,46 @@ describe('guides', function() {
           'opening that file loads some other guide — a note arrives with ' +
           'the directory it sits in, so it goes where its own code goes',
       )
+    }
+  })
+  it('counts the attribute lists as long as they are, where it counts them', function() {
+    const claimed = new RegExp(
+      `(?:the|those|these|its|of)${GAP}+([a-z-]+)${GAP}+` +
+      `(?:names|attributes|descendant scans)`, 'g',
+    )
+    const lengths = new Set(LENGTHS.values())
+    for (const file of PROSE) {
+      for (const [claim, word] of worded(file).matchAll(claimed)) {
+        if (NUMBERS.has(word)) {
+          assert.ok(
+            lengths.has(NUMBERS.get(word)),
+            `${file} says "${claim}", and neither ATTRIBUTES nor PATTERNS ` +
+              `holds ${NUMBERS.get(word)} — say what the list holds, or make ` +
+              'the claim about something a reader can count',
+          )
+        }
+      }
+    }
+  })
+  it('counts a list a document names against that very list', function() {
+    const near = new RegExp(
+      `(${[...LENGTHS.keys()].join('|')})(?=(.{0,${NEARBY}}))`, 'g',
+    )
+    const counted = new RegExp(
+      `([a-z-]+)${GAP}+(?:names|attributes|descendant scans)`,
+    )
+    for (const file of DOCUMENTS) {
+      for (const [, list, after] of worded(file).matchAll(near)) {
+        const claim = after.match(counted)
+        if (claim && NUMBERS.has(claim[1])) {
+          assert.equal(
+            NUMBERS.get(claim[1]), LENGTHS.get(list),
+            `${file} names ${list} and calls it "${claim[0]}", where it holds ` +
+              `${LENGTHS.get(list)} — the count beside a list is the one thing ` +
+              'a reader takes on trust, so it answers to the list',
+          )
+        }
+      }
     }
   })
 })
