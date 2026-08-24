@@ -1,0 +1,17 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: setting-value-of-variable-incorrectly
+found:
+  amount: 1
+  positions: [ [ 5, 5 ] ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" id="style1">
+    <xsl:output encoding="UTF-8" method="xml"/>
+    <xsl:template match="/alpha" xml:space="preserve">
+      <xsl:variable name="plain" xml:space="default">
+        <xsl:value-of select="one"/>
+      </xsl:variable>
+    </xsl:template>
+  </xsl:stylesheet>

@@ -39,5 +39,16 @@ it belongs to the fragment too, and `select` has nowhere to put it:
 
 There the value is the `Chapter:` text and the heading, which one attribute cannot
 express — use `select="concat('Chapter: ', heading)"` instead. Indentation is
-not content, XSLT stripping whitespace-only text from a stylesheet, and neither
-a comment nor a processing instruction reaches the fragment.
+usually not content, XSLT stripping whitespace-only text from a stylesheet, and
+neither a comment nor a processing instruction reaches the fragment.
+
+Usually, because `xml:space` decides it. Where the nearest ancestor declaring
+that attribute sets it to `preserve`, the whitespace is part of the fragment:
+
+```xsl
+<xsl:variable name="title" xml:space="preserve">  <xsl:value-of select="heading"/></xsl:variable>
+```
+
+That binds two spaces and the heading, which `select="heading"` does not —
+`select="concat('  ', heading)"` is the shorthand there. A nearer
+`xml:space="default"` cancels a `preserve` higher up.

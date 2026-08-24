@@ -47,3 +47,16 @@ or:
 ```xsl
 <xsl:variable name="physicist" select="'Ernest Rutherford'"/>
 ```
+
+A body of nothing but whitespace is no content at all, XSLT stripping such a
+text node from the stylesheet before a processor reads it, so a `select` beside
+it is fine. `xml:space` is the exception, and there the error is real:
+
+```xsl
+<xsl:variable name="mayor" select="'Ivanov'" xml:space="preserve">   </xsl:variable>
+```
+
+The three spaces survive, so the element has both a `select` and content.
+SaxonJ-HE 12.5 refuses to compile that, reporting `XTSE0620`. Drop whichever
+of the two says what was meant. A nearer `xml:space="default"` cancels a
+`preserve` higher up, and the body is empty again.

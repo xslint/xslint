@@ -283,6 +283,45 @@ const COUNTING = {
 }
 
 /**
+ * An `xml:space` attribute, the only thing deciding whether a whitespace-only
+ * text node is there at all: XSLT strips one before a processor looks at it —
+ * so indentation is not content — unless the nearest ancestor declaring
+ * `xml:space` says `preserve`, a nearer `default` cancelling a `preserve`
+ * above it, so the nearest declaration answers and never the presence of one.
+ * Four selectors read `text()` for whether a node holds anything and all four
+ * were wrong under it — two advising a collapse that drops the whitespace, one
+ * calling an instruction empty that emits three spaces, one silent on a blank
+ * body beside a `select`, which is XTSE0620 and a stylesheet SaxonJ-HE 12.5
+ * refuses (#817, #593). Its other half needs no clause: such a node survives
+ * inside `xsl:text` too, which under these elements is an element child.
+ * @type {RegExp}
+ */
+const PRESERVED = new RegExp(`@xml:space`)
+
+/**
+ * The checks reading `text()` for something other than whether a node holds
+ * content, beside the reason `PRESERVED` does not reach each. The one entry
+ * asks what a processor **emits**: under `preserve` every indentation run is
+ * emitted text, so its answer changes too — but so does the advice, `xsl:text`
+ * around each run counselling nothing where the sheet never meant to preserve.
+ * @type {{[key: string]: string}}
+ */
+const EMITTED = {
+  'text-outside-xsl-text':
+    'it asks what a processor emits, not whether a node holds content',
+}
+
+/**
+ * Each exemption table beside the question deciding whether its entries are
+ * still needed, so one gate holds every table from the far side.
+ * @type {Array.<{table: object, still: function(string): boolean}>}
+ */
+const EXEMPTED = [
+  {table: COUNTING, still: (sel) => CHILDREN.test(sel) && !TEXTED.test(sel)},
+  {table: EMITTED, still: (sel) => TEXTED.test(sel) && !PRESERVED.test(sel)},
+]
+
+/**
  * A string literal a selector compares an expression's *text* against, which is
  * a literal whose own content is quoted: `"'true'"` asks whether a `@test`
  * reads `'true'` character for character. XPath spells one string with either
@@ -659,21 +698,42 @@ describe('conformance', function() {
         }
       }
     })
-  it('exempts a selector from weighing text only while it counts elements',
+  it('reads xml:space wherever a selector asks whether a node holds text',
     function() {
-      for (const name of Object.keys(COUNTING)) {
+      for (const [kind, keys] of Object.entries(SELECTORS)) {
+        for (const name of names(kind)) {
+          const check = yaml.parsedFromFile(
+            path.join(CHECKS, kind, `${name}.yaml`),
+          )
+          for (const key of keys) {
+            assert.ok(
+              !check[key] || !TEXTED.test(check[key]) ||
+                PRESERVED.test(check[key]) || EMITTED[name] !== undefined,
+              `${kind}/${name} reads text() in its ${key} to decide whether ` +
+                'a node holds content and never asks about xml:space, so it ' +
+                'reads past a whitespace-only node the nearest preserve in ' +
+                'scope keeps. Weigh that node too, the way ' +
+                'ancestor::*[@xml:space][1] answers it',
+            )
+          }
+        }
+      }
+    })
+  it('exempts a selector only while it still needs the exemption', function() {
+    for (const {table, still} of EXEMPTED) {
+      for (const name of Object.keys(table)) {
         const check = yaml.parsedFromFile(
           path.join(CHECKS, 'xpath', `${name}.yaml`),
         )
         assert.ok(
-          CHILDREN.test(check.xpath) && !TEXTED.test(check.xpath),
-          `xpath/${name} is exempt from weighing the text a node holds, ` +
-            `on the grounds that ${COUNTING[name]}, and its selector has ` +
-            'stopped needing the exemption: it either no longer counts the ' +
-            'elements or weighs the text already. Drop the entry',
+          still(check.xpath),
+          `xpath/${name} is exempt on the grounds that ${table[name]}, and ` +
+            'no longer needs it: the selector either stopped spelling the ' +
+            'shape the bar is about, or answers the bar already. Drop it',
         )
       }
-    })
+    }
+  })
   it('names a node by its namespace, never by its prefix, in a selector',
     function() {
       for (const [kind, keys] of Object.entries(SELECTORS)) {
