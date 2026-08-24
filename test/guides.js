@@ -62,11 +62,44 @@ const sized = function(named) {
 }
 
 /**
+ * The prose of a file as one line, so a claim that wraps mid-sentence reads
+ * as the one claim it is: two of the three counts #654 corrected wrapped
+ * between the number and its noun, where a gate reading line by line saw
+ * neither. A continuation asterisk goes with the indent in front of it.
+ * @param {string} named - Path of the file from the repository root
+ * @return {string} - Its prose, joined
+ */
+const worded = function(named) {
+  return fs.readFileSync(path.resolve(__dirname, '..', named), 'utf-8')
+    .split('\n').map((line) => line.replace(/^ *\* ?/, '')).join(' ')
+}
+
+/**
+ * The documents a claim of ours may stand in: every guide the tree holds and
+ * the README the user reads, walked rather than written down, so a claim that
+ * moves out of the root is judged where it went and one written into a guide
+ * nobody listed is judged nowhere. Each is read where its prose *names* what
+ * it counts, reading one whole having judged four claims of fifteen (#821).
+ * @type {Array.<string>}
+ */
+const DOCUMENTS = GUIDES.concat(['README.md'])
+
+/**
+ * How far past the name of a thing a number may stand and still be a claim
+ * about it, a list and a file alike: one clause, the three claims in the tree
+ * standing 3, 12 and 2 characters off their name, where a number further away
+ * than this belongs to a sentence about something else — which is the whole
+ * of what anchoring buys.
+ * @type {number}
+ */
+const NEARBY = 80
+
+/**
  * What a turn may load in guides, which is the harness's own number rather
- * than one of ours: Claude Code warns past 150,000 characters. What arrives
- * against it is a chain — the root guide, and the guide of every directory on
- * the way down to a file the turn touches — and the dearest of those reads
- * 134,872, which is 0.90 of the bar (#750, #660).
+ * than one of ours: Claude Code warns past 150,000 characters of them. What
+ * arrives against it is a chain and not a pair — the root guide, and the
+ * guide of every directory down to the file a turn touches, each injected
+ * once — and the dearest reads 135,761, which is 0.91 (#750, #660, #825).
  * @type {number}
  */
 const LOADED = 150000
@@ -146,6 +179,6 @@ const globbed = function(row) {
 }
 
 module.exports = {
-  ROOT, GUIDES, LOADED, slashed, sized, chained, loaded, indexed, noted,
-  globbed,
+  ROOT, GUIDES, DOCUMENTS, LOADED, NEARBY, slashed, sized, worded, chained,
+  loaded, indexed, noted, globbed,
 }
