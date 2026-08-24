@@ -49,6 +49,18 @@ const available = cmdAvailable('xcop', ['--version'], false)
  * mention is an `exclude-result-prefixes` is canonicalized away exactly as a
  * dead one is — which is the reading #553 is about, in another tool.
  *
+ * The three `xml:space` packs are the same collision one convention over.
+ * xcop reads everything under a `preserve` ancestor as significant and asks
+ * for it compacted, and it does not honour the nearer `xml:space="default"`
+ * that cancels one — which is the very reading two of these packs exist to
+ * pin, so their indentation has to survive being looked at. The third goes
+ * further: xcop would spread a comment onto a line of its own inside the
+ * preserve scope, and the whitespace that rewrite introduces is text a
+ * processor keeps, so the file it asks for is a stylesheet binding
+ * something else and one the check is right to report. A formatter with no
+ * opinion about `xml:space` cannot be given the last word on a fixture that
+ * is about it.
+ *
  * Each entry is the path a pack stands at, under `test/resources`, because a
  * basename names two packs as readily as one: `namespace-packs/x.yaml` and
  * `result-namespace-packs/x.yaml` are two files and were one name, so listing
@@ -76,6 +88,7 @@ const UNFORMATTED = [
   'translate-packs/no-break-space-before-the-bracket.yaml',
   'xpath-packs/blank-nested-if-cancelled-preserve.yaml',
   'xpath-packs/setting-value-of-variable-cancelled-preserve.yaml',
+  'xpath-packs/variable-or-param-preserved-inert-content.yaml',
 ]
 
 /**

@@ -1,0 +1,25 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: variable-or-param-with-select-and-content
+found:
+  amount: 0
+  positions: [ ]
+  fixes: [ ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" id="style1">
+    <xsl:output encoding="UTF-8" method="xml"/>
+    <xsl:template match="/objects/o">
+      <xsl:variable name="commented" select="'Kovalevskaya'">
+        <!-- a comment is no content -->
+      </xsl:variable>
+      <xsl:variable name="instructed" select="'Lyapunov'">
+        <?note a processing instruction is no content?>
+      </xsl:variable>
+      <xsl:variable name="spaced" select="'Chebyshev'">   </xsl:variable>
+      <xsl:copy-of select="$commented"/>
+      <xsl:copy-of select="$instructed"/>
+      <xsl:copy-of select="$spaced"/>
+    </xsl:template>
+  </xsl:stylesheet>
