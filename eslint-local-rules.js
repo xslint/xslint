@@ -157,15 +157,30 @@ const worded = function (comment) {
     .filter((one) => one.text !== "");
 };
 
+// The tags a docblock of ours gives a line of its own to, and the whole of
+// what opens an entry. An at-sign is not the test: this repository's prose
+// names @select, @name, @version and @xml:space on nearly every page, so a
+// sentence wrapping onto one of those closed the description and opened a
+// three-line "tag" — eight lines of prose under a cap of five, and a
+// twenty-three-line one with such a name every third line, both silent.
+const TAGGED = ["@param", "@return", "@type", "@todo", "@throws"];
+
+// Whether a line opens a tag entry rather than carrying the prose of one.
+const tagging = function (text) {
+  return TAGGED.includes(text.split(" ")[0]);
+};
+
 // What a block says, parted into its description and one entry per tag, an
 // entry being the tag line and every line it wraps onto: a wrapped @param is
-// one thing a reader reads and not three of them.
+// one thing a reader reads and not three of them. A line naming a tag nobody
+// writes is prose and charged as prose, so an unknown one costs the reader
+// what it costs rather than buying a fresh allowance.
 const parted = function (comment) {
   const entries = [];
   worded(comment).forEach(function (one) {
-    if (entries.length === 0 || one.text.startsWith("@")) {
+    if (entries.length === 0 || tagging(one.text)) {
       let tag = null;
-      if (one.text.startsWith("@")) {
+      if (tagging(one.text)) {
         tag = one.text.split(" ")[0];
       }
       entries.push({ tag, lines: [] });

@@ -238,6 +238,22 @@ tester.run(
           {messageId: 'wordy', line: 11},
         ],
       },
+      {
+        code: '/**\n * One.\n * Two.\n * Three.\n * Four.\n * Five.\n * @select is prose naming an attribute rather\n *  than a tag opening an entry, and it wraps\n *  onto a third line\n */\nconst one = 1',
+        errors: [{messageId: 'sprawling', line: 7}],
+      },
+      {
+        code: '/**\n * One.\n * Two.\n * @name0 is prose.\n * Four.\n * Five.\n * @name1 is prose.\n * Seven.\n * Eight.\n * @name2 is prose.\n * Ten.\n */\nconst one = 1',
+        errors: [{messageId: 'sprawling', line: 7}],
+      },
+      {
+        code: '/**\n * One.\n * @type {{one: number, two: string, three: boolean}} - A shape\n *  that wraps onto a second line and then\n *  onto a third and then\n *  onto a fourth\n * @todo #832 A note that\n *  wraps onto a second line and then\n *  onto a third and then\n *  onto a fourth\n * @throws {Error} - A failure that\n *  wraps onto a second line and then\n *  onto a third and then\n *  onto a fourth\n */\nconst one = 1',
+        errors: [
+          {messageId: 'wordy', line: 6},
+          {messageId: 'wordy', line: 10},
+          {messageId: 'wordy', line: 14},
+        ],
+      },
     ],
   },
 )
