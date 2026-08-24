@@ -75,7 +75,7 @@ const sized = function(named) {
  * bar while a turn touching `src/linters/` was loading 157,504 and over it. So
  * the two dearest notes moved one step further down, out of `src/CLAUDE.md` and
  * into the top of `src/grammar.js` and `src/syntax.js` — 24,681 characters —
- * and the dearest chain is that same one at 133,092, which is 0.89. How fast
+ * and the dearest chain is that same one at 133,739, which is 0.89. How fast
  * that moves is worth knowing beside the bar: two changes landed while this one
  * was being written, #818 spending 5,238 characters of the root and #822
  * another 2,529, and of that second one the root now keeps 1,183 where
@@ -85,7 +85,7 @@ const sized = function(named) {
  * A guide answers to nothing on its own account beside this, and a ceiling of
  * half the bar stood here until it was seen to be one no tree could fail: the
  * root stands in every chain, so the chain holding it above weighs each other
- * guide against the bar less what stands over it — 43,479 for
+ * guide against the bar less what stands over it — 42,832 for
  * `src/linters/CLAUDE.md`, where half of the bar is 75,000 — and holds the root
  * itself to 81,712, a number derived from the dearest chain rather than chosen.
  * A gate no tree can fail is removed and not kept (#750, #660).

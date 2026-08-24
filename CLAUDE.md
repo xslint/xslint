@@ -173,7 +173,7 @@ matters reaches the plugin too. Shortening that off-list is its own job; only
 
 A file stops at 1000 lines, counting the blank ones and the comments, since a
 reader scrolls past those as well. One file stands above it and is named in
-`SPRAWLING` in the config — `src/grammar.js`, 1828 lines of one function per
+`SPRAWLING` in the config — `src/grammar.js`, 2386 lines of one function per
 production of XPath 3.1 — rather than carrying a disable comment of its own, so
 what is exempted is one list a reviewer reads in the place the cap is set, not a
 mark to be found by opening every file. Neither half can rot in silence.
@@ -182,7 +182,16 @@ still reported, so a file that shrinks back under the cap, or is renamed, or is
 deleted, turns its own exemption red instead of quietly un-capping whatever
 takes the name next; and it fails when *nothing* in the config caps a file at
 all, because a rule deleted takes its enforcement with it and leaves the
-exemption list reading like a limit that is still in force.
+exemption list reading like a limit that is still in force. The length beside
+the name answers to it too since #825, that being the half which did rot: 1828
+was the reading #748 took when it cut the cap, and the file stood at 2386 by
+the time anything asked — a drift of 30% behind a sentence promising that
+neither half could. It is asked as the cap twice, quiet at the length the prose
+states and reporting the file one line under it, so a stated length is read in
+the unit the cap is written in rather than counted a second time beside it; and
+a file the cap is lifted off that states no length at all fails as loudly, an
+exemption from a bound being bounded by nothing but the number a reader is
+given.
 
 A parameter a caller may leave out therefore says so in the signature, with a
 default — `fix = undefined` on `defect` in `src/checks.js`. A JSDoc `[fix]`

@@ -436,6 +436,21 @@ attribute value template holding literal text beside the expression so that
 ratchets from both sides as the rest do: an entry whose selector has started weighing text, or
 stopped counting elements, turns red.
 
+The line cap is held from a third side since #825. A file the cap is lifted off must have its
+length stated in a guide, and the number must be the one ESLint reads: `SPRAWLING`'s membership was
+gated where the length beside it was not, so the one file carrying an exemption went on being
+described at #748's reading of 1828 while it stood at 2386, a drift of 30% under a paragraph
+promising that neither half could rot in silence. The length is asked as the cap twice, quiet at the
+stated length and reporting the file one line under it, so the reading is ESLint's own in the unit
+the cap is written in rather than a second count taken beside it — which would have to argue about
+whether the newline a file ends with is a line of its own. Every guide is read rather than the root
+alone, so a number that moves into a directory guide is judged where it went; and an exempt file
+with no stated length at all fails as loudly as one whose stated length has drifted, an exemption
+from a bound being bounded by nothing but the number a reader is given. A claim is a count of lines
+standing within `NEARBY` characters of the file's own name, so the drift above is recorded as a
+reading and not as so many lines: the gate cannot tell what a ticket once measured from what the
+file stands at today, and a history spelled the other way is a stale claim it rightly fails.
+
 ## `test/guides.test.js`
 
 The size and the shape of the guides themselves, and so the one gate whose subject is this
@@ -455,12 +470,12 @@ under them was opened. The first spelling of the bar weighed the root against th
 guide instead, which is a whole directory short: it read 130,933 and called that 0.87 of the bar
 while a turn touching `src/linters/` was loading 157,504 and over it. So the two dearest notes moved
 one step further down, out of `src/CLAUDE.md` and into the top of `src/grammar.js` and
-`src/syntax.js` — 24,681 characters — and the dearest chain is that same one at 133,092, which is
+`src/syntax.js` — 24,681 characters — and the dearest chain is that same one at 133,739, which is
 0.89. What answers a chain reaching the bar is that move again, a module's derivation into the
 docblocks of the module itself, and never a bar widened to fit what has grown past it. A `CEILING`
 of half the bar stood beside it until it was seen to be a gate no tree could fail: the root stands
 in every chain, so the chain holding it above weighs each other guide against the bar less what
-stands over it — 43,479 for `src/linters/CLAUDE.md`, where half of the bar is 75,000 — and holds the
+stands over it — 42,832 for `src/linters/CLAUDE.md`, where half of the bar is 75,000 — and holds the
 root itself to 81,712, a number derived from the dearest chain rather than chosen. A gate no tree
 can fail is removed and not kept (#750, #660). The index answers
 to the tree from both sides, every path it names existing and every module under `src/` being named

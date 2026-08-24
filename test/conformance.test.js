@@ -347,6 +347,45 @@ const worded = function(named) {
 }
 
 /**
+ * A length as a document spells it, the gap being XML's four characters and
+ * never JavaScript's \s.
+ * @type {RegExp}
+ */
+const LINED = new RegExp(`([0-9][0-9,]*)${GAP}+lines`)
+
+/**
+ * Every length a document states of a file: the file's own name in backticks,
+ * and a count of lines standing within `NEARBY` characters of it. The name is
+ * split on rather than matched, a path carrying a `.` and a `/` that a
+ * pattern would have to escape.
+ * @param {string} named - Path of the file from the repository root
+ * @return {Array.<number>} - Every length a document states of it
+ */
+const stated = function(named) {
+  return DOCUMENTS
+    .flatMap((file) => worded(file).split(`\`${named}\``).slice(1))
+    .map((after) => after.slice(0, NEARBY).match(LINED))
+    .filter((claim) => claim)
+    .map((claim) => Number(claim[1].replaceAll(',', '')))
+}
+
+/**
+ * Whether a file stands at exactly this many lines, asked as the cap twice:
+ * the rule stays quiet at that length and reports the file one line under it.
+ * So the count is ESLint's own, in the unit the cap is written in — the blank
+ * lines and the comments among them — rather than a second reading taken here,
+ * which would argue with the rule about the newline a file ends with.
+ * @param {string} named - Path of the file from the repository root
+ * @param {Array} cap - The max-lines rule as eslint.config.mjs sets it
+ * @param {number} length - The length a document states of it
+ * @return {boolean} - TRUE when the file stands at that length
+ */
+const measures = function(named, cap, length) {
+  return !sprawls(named, [cap[0], {...cap[1], max: length}]) &&
+    sprawls(named, [cap[0], {...cap[1], max: length - 1}])
+}
+
+/**
  * Names of the checks of a kind.
  * @param {string} kind - Kind of check
  * @return {Array.<string>} - Check names
@@ -610,6 +649,27 @@ describe('conformance', function() {
       'a file the line cap is switched off for stands under it now, or names ' +
         'nothing at all, so the exemption in eslint.config.mjs claims a ' +
         'length the tree no longer holds',
+    )
+  })
+  it('states the length of every file the cap is lifted off', async function() {
+    const config = (await import('../eslint.config.mjs')).default
+    const cap = config
+      .map((entry) => entry.rules?.['max-lines'])
+      .filter((rule) => Array.isArray(rule))
+      .pop()
+    assert.deepEqual(
+      config
+        .filter((entry) => entry.rules?.['max-lines'] === 'off')
+        .flatMap((entry) => entry.files)
+        .filter((named) => {
+          const lengths = stated(named)
+          return lengths.length === 0 ||
+            lengths.some((length) => !measures(named, cap, length))
+        }),
+      [],
+      'a file the line cap is lifted off is stated at a length it does not ' +
+        'stand at, or at no length at all, so the one number bounding a ' +
+        'file nothing else bounds answers to nothing (#825)',
     )
   })
   it('tests every validation check by name in a test file', function() {
