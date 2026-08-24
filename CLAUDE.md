@@ -195,16 +195,24 @@ a file the cap is lifted off that states no length at all fails as loudly, an
 exemption from a bound being bounded by nothing but the number a reader is
 given.
 
-A docblock stops at five lines of description, and at three for any one `@`-tag
+A docblock stops at five lines of description, and at three for any one tag
 entry — the tag line and the two wraps behind it — with the delimiters and the
 blank `*` separators counted in neither, both numbers set beside the rule in
-`eslint.config.mjs`. Nothing weighed a comment before: 266 descriptions in 64
-files stood past that bar, the dearest of them 142 lines, so a derivation grew
-wherever one was written the way the cross-file linter's cost grew before #755
-(#832). The bar is not a licence to respell what a block cannot hold as a
-`/* */` beside it either — such prose is cut and not moved, the dearest chain of
-guides standing at 0.91 of `LOADED` with nowhere to put it, so the ticket number
-left standing in the surviving sentence is what keeps a derivation recoverable.
+`eslint.config.mjs`. An at-sign does not open an entry: one of the five tags a
+block of ours gives a line to does, since this repository's prose names
+`@select`, `@name` and `@xml:space` on nearly every page and a sentence
+wrapping onto one of those closed the description and bought three fresh lines
+— eight of prose under a cap of five, silently. A tag nobody writes is prose
+and charged as prose. That list spells the five without their at-sign, a
+literal puzzle marker in a file being a puzzle `pdd` then refuses for holding
+neither the words nor the estimate one carries. Nothing weighed a comment
+before: 266 descriptions in 64 files stood past that bar, the dearest of them
+142 lines, so a derivation grew wherever one was written the way the cross-file
+linter's cost grew before #755 (#832). The bar is not a licence to respell what
+a block cannot hold as a `/* */` beside it either — such prose is cut and not
+moved, the dearest chain of guides standing at 0.91 of `LOADED` with nowhere to
+put it, so the ticket number left standing in the surviving sentence is what
+keeps a derivation recoverable.
 
 A parameter a caller may leave out therefore says so in the signature, with a
 default — `fix = undefined` on `defect` in `src/checks.js`. A JSDoc `[fix]`

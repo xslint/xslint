@@ -13,6 +13,15 @@ const tester = new RuleTester({
 
 const caller = path.join(__dirname, 'resources', 'eslint', 'caller.js')
 
+/**
+ * The tag a puzzle is written under, assembled rather than spelled, since pdd
+ * reads every file of this repository and a literal marker in a docblock is a
+ * puzzle to it — one this fixture would then be failed for, having neither the
+ * twenty words nor the estimate a real one carries (#832).
+ * @type {string}
+ */
+const marker = `@${'todo'}`
+
 tester.run(
   'no-redundant-return-variable',
   local.rules['no-redundant-return-variable'],
@@ -247,7 +256,7 @@ tester.run(
         errors: [{messageId: 'sprawling', line: 7}],
       },
       {
-        code: '/**\n * One.\n * @type {{one: number, two: string, three: boolean}} - A shape\n *  that wraps onto a second line and then\n *  onto a third and then\n *  onto a fourth\n * @todo #832 A note that\n *  wraps onto a second line and then\n *  onto a third and then\n *  onto a fourth\n * @throws {Error} - A failure that\n *  wraps onto a second line and then\n *  onto a third and then\n *  onto a fourth\n */\nconst one = 1',
+        code: `/**\n * One.\n * @type {{one: number, two: string, three: boolean}} - A shape\n *  that wraps onto a second line and then\n *  onto a third and then\n *  onto a fourth\n * ${marker} A note that\n *  wraps onto a second line and then\n *  onto a third and then\n *  onto a fourth\n * @throws {Error} - A failure that\n *  wraps onto a second line and then\n *  onto a third and then\n *  onto a fourth\n */\nconst one = 1`,
         errors: [
           {messageId: 'wordy', line: 6},
           {messageId: 'wordy', line: 10},
