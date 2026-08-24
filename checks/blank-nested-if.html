@@ -72,7 +72,7 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-warning">warning</span>
-    <code class="xpath">//xsl:if[(count(*) = 1) and (count(xsl:if) = 1) and not(text()[normalize-space()])]</code>
+    <code class="xpath">//xsl:if[(count(*) = 1) and (count(xsl:if) = 1) and not(text()[normalize-space() or ancestor::*[@xml:space][1]/@xml:space = 'preserve'])]</code>
   </div>
   <div class="check-content">
 <h1>Blank nested if</h1>
@@ -103,9 +103,17 @@ joining the conditions makes that content wait on the inner test as well:</p>
 </code></pre>
 <p>There the <code>Ready:</code> text is written for every <code>$a</code>, so the two instructions are not one.
 Emit it before the outer <code>xsl:if</code>, or leave the nesting alone. Indentation
-between the two is not content — XSLT strips whitespace-only text from a
-stylesheet — and neither a comment nor a processing instruction reaches the
-result tree, so none of the three stands in the way.</p>
+between the two is usually not content, XSLT stripping whitespace-only text
+from a stylesheet, and neither a comment nor a processing instruction reaches
+the result tree — so none of the three stands in the way.</p>
+<p>Usually, because <code>xml:space</code> decides it. Where the nearest ancestor declaring
+that attribute sets it to <code>preserve</code>, the whitespace survives and is written
+out with everything else:</p>
+<pre><code class="language-xsl">&lt;xsl:if test=&quot;$a&quot; xml:space=&quot;preserve&quot;&gt;  &lt;xsl:if test=&quot;$b&quot;&gt;deep&lt;/xsl:if&gt;&lt;/xsl:if&gt;
+</code></pre>
+<p>Those two spaces are emitted for every <code>$a</code>, so the pair is no more collapsible
+than the <code>Ready:</code> above. A nearer <code>xml:space=&quot;default&quot;</code> cancels a <code>preserve</code>
+higher up, and then the indentation goes back to being nothing.</p>
 
   </div>
 </body>

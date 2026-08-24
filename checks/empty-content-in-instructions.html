@@ -72,7 +72,7 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-warning">warning</span>
-    <code class="xpath">//(xsl:for-each | xsl:if)[count(node()) = count(text()) and normalize-space() = ""]</code>
+    <code class="xpath">//(xsl:for-each | xsl:if)[count(node()) = count(text()) and normalize-space() = "" and not(text()[ancestor::*[@xml:space][1]/@xml:space = 'preserve'])]</code>
   </div>
   <div class="check-content">
 <h1>Empty content in instructions</h1>
@@ -89,6 +89,15 @@ alone — the latter is exactly what <code>use-choose-without-otherwise</code> a
   &lt;xsl:value-of select=&quot;.&quot;/&gt;
 &lt;/xsl:for-each&gt;
 </code></pre>
+<p>An instruction holding nothing but whitespace counts as empty, since XSLT
+strips a whitespace-only text node from the stylesheet before a processor looks
+at it. <code>xml:space</code> is the exception: where the nearest ancestor declaring it
+says <code>preserve</code>, that whitespace survives and the instruction writes it out, so
+removing the element changes the output and it is left alone.</p>
+<pre><code class="language-xsl">&lt;xsl:if test=&quot;$a&quot; xml:space=&quot;preserve&quot;&gt;   &lt;/xsl:if&gt;
+</code></pre>
+<p>That emits three spaces for every <code>$a</code>. A nearer <code>xml:space=&quot;default&quot;</code> cancels
+a <code>preserve</code> higher up, and the element is empty again.</p>
 
   </div>
 </body>
