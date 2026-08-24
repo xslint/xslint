@@ -486,12 +486,12 @@ under them was opened. The first spelling of the bar weighed the root against th
 guide instead, which is a whole directory short: it read 130,933 and called that 0.87 of the bar
 while a turn touching `src/linters/` was loading 157,504 and over it. So the two dearest notes moved
 one step further down, out of `src/CLAUDE.md` and into the top of `src/grammar.js` and
-`src/syntax.js` — 24,681 characters — and the dearest chain is that same one at 134,642, which is
+`src/syntax.js` — 24,681 characters — and the dearest chain is that same one at 134,884, which is
 0.90. What answers a chain reaching the bar is that move again, a module's derivation into the
 docblocks of the module itself, and never a bar widened to fit what has grown past it. A `CEILING`
 of half the bar stood beside it until it was seen to be a gate no tree could fail: the root stands
 in every chain, so the chain holding it above weighs each other guide against the bar less what
-stands over it — 41,929 for `src/linters/CLAUDE.md`, where half of the bar is 75,000 — and holds the
+stands over it — 41,687 for `src/linters/CLAUDE.md`, where half of the bar is 75,000 — and holds the
 root itself to 81,712, a number derived from the dearest chain rather than chosen. A gate no tree
 can fail is removed and not kept (#750, #660). The index answers
 to the tree from both sides, every path it names existing and every module under `src/` being named
