@@ -27,6 +27,8 @@ jobs:
     needs: build
     if: failure() && github.event.pull_request == null
     runs-on: ubuntu-24.04
+    permissions:
+      issues: write
     steps:
       - uses: jayqi/failed-build-issue-action@v1
         with:
