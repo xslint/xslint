@@ -29,18 +29,17 @@ const UNINDEXED = {
   'malformed-version-in-stylesheet': 'a bracketed union of attribute paths',
   'missing-id-in-stylesheet': 'the root itself, not a descendant sweep',
   'missing-version-in-stylesheet': 'the root itself, not a descendant sweep',
-  'modern-construct-in-xslt-1': 'a union arm carrying a predicate of its own',
   'stylesheet-has-no-templates': 'the root itself, not a descendant sweep',
   'text-outside-xsl-text': 'a wildcard names no one bucket',
   'too-many-templates': 'the root itself, not a descendant sweep',
 }
 
 /**
- * Whether a shared walk can serve every branch of a selector, each branch's
- * axis being elements out of a bucket or attributes off the same walk — either
- * an axis the run has already paid for, where any other shape costs fontoxpath
- * a descendant traversal of its own. A union is served whole or not at all, so
- * one branch it cannot reach answers for the selector (#635, #784, #811).
+ * Whether a shared walk can serve a selector, a branch's axis being elements
+ * out of a bucket or attributes off the same walk — either an axis the run has
+ * already paid for, where any other shape costs fontoxpath a descendant
+ * traversal of its own. A union of whole paths is served whole or not at all;
+ * one inside a sweep is parted arm by arm (#635, #784, #811).
  * @param {string} xpath - The selector a declarative check is written in
  * @return {boolean} - Whether the axis comes off the walk
  */
