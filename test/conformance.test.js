@@ -30,7 +30,6 @@ const UNINDEXED = {
   'missing-id-in-stylesheet': 'the root itself, not a descendant sweep',
   'missing-version-in-stylesheet': 'the root itself, not a descendant sweep',
   'modern-construct-in-xslt-1': 'a union arm carrying a predicate of its own',
-  'not-using-output': 'the root itself, not a descendant sweep',
   'stylesheet-has-no-templates': 'the root itself, not a descendant sweep',
   'text-outside-xsl-text': 'a wildcard names no one bucket',
   'too-many-templates': 'the root itself, not a descendant sweep',

@@ -1,0 +1,18 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: stylesheet-has-no-templates
+found:
+  amount: 0
+  positions: [ ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="3.0" id="style1">
+    <xsl:use-package name="urn:base">
+      <xsl:override>
+        <xsl:template match="chemist">
+          <lomonosov/>
+        </xsl:template>
+      </xsl:override>
+    </xsl:use-package>
+  </xsl:stylesheet>

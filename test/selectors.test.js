@@ -103,7 +103,7 @@ const ANCHORED = [
     xpath: kinds.xpath['function-template-is-not-child-of-stylesheet'].xpath,
     anchor: '(/xsl:stylesheet | /xsl:transform)/*',
     locals: ['function', 'template'],
-    tail: '',
+    tail: '[not(ancestor::xsl:override)]',
   },
   {
     xpath: kinds.xpath['function-use-in-xslt-1'].xpath,

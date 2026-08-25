@@ -10,6 +10,15 @@ stylesheet that serializes declares its output" or "none does", so xslint asks
 for the first. A module with no templates — one imported into a pipeline that
 sets the output itself — is exempt, since it never serializes on its own.
 
+Which stylesheet declares it is a question about the whole import tree and not
+about one file. An `xsl:output` merges into every stylesheet that imports the
+module holding it, so pushing the serialization into a shared module and
+importing it declares the output for the tree as surely as writing it inline.
+A stylesheet whose imports reach one is therefore left alone, however deep the
+chain runs. So is one importing a module it was not linted alongside, since an
+href leading out of the linted set settles nothing either way and a file must
+not be judged on what nobody handed us.
+
 Incorrect:
 
 ```xsl

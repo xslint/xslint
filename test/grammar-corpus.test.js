@@ -102,13 +102,13 @@ const CORPUS = Array.from(new Set(
  * its own imagining rather than about the repository. A gate over a sweep can
  * pass by finding nothing, so the sweep is gated too. A floor comes down only
  * where a check has stopped being declarative and its selector is gone rather
- * than broken, two at #586 and five at #788.
+ * than broken, two at #586, five at #788 and one at #548.
  * @type {Array.<{source: string, least: number}>}
  */
 const REACHES = [
   {source: 'stylesheet', least: 177},
   {source: 'pack', least: 431},
-  {source: 'selector', least: 43},
+  {source: 'selector', least: 42},
 ]
 
 /**

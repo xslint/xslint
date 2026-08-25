@@ -51,8 +51,8 @@ three platforms and two node versions, and `corpora`, which times a real run
 The suite comes in two halves, and the line between them is a child process. A
 **deep** test starts one — it runs `xslint` or `xcop` the way a user does — and
 is named `*.deep.test.js`; every other test stays in this process. Four files
-are deep, and they still cost most of what the suite costs: 627 of the 2576
-tests, 9 of the 14 seconds. The other 1949 finish inside one, which is why
+are deep, and they still cost most of what the suite costs: 640 of the 2599
+tests, 9 of the 14 seconds. The other 1959 finish inside one, which is why
 `npm run fast` is the loop to work in and `npm test` the one to finish on. The
 deep target runs under `mocha --parallel`, so those four files run at once and
 the slowest of them sets the clock — `xslint.deep.test.js` alone, whose 52 tests
@@ -305,8 +305,8 @@ src/index.mjs             CLI entry (commander.js, ESM)
     src/linters/, document — (corpus, suppressions) => defects:
       xpath-linter.js            declarative checks/xpath/*.yaml (per file)
       corpus-linter.js           declarative checks/corpus/*.yaml (cross file)
-      namespace, result-namespace, imports, parameter, element,
-      root-template              — the DOM, not one expression
+      namespace, result-namespace, imports, output, parameter,
+      element, root-template     — the DOM, not one expression
     src/linters/, expression — (expressions, suppressions) => defects:
       *-linter.js                code-based checks/format/*.yaml (one construct each)
 ```
@@ -953,6 +953,7 @@ one of them.
 | `src/linters/parameter-linter.js` | `unused-function-template-parameter`, over the walk rather than a substring |
 | `src/linters/element-linter.js` | `not-creating-element-correctly` |
 | `src/linters/root-template-linter.js` | `null-output-from-stylesheet` and `output-method-xml`, the two checks asking which template is the root one |
+| `src/linters/output-linter.js` | `not-using-output`, asked of the import tree rather than the file, an `xsl:output` merging into whatever imports it |
 | `src/linters/corpus-linter.js` | Loads `checks/corpus/*.yaml`, the cross-file declarative kind |
 | `src/linters/bare-name-linter.js` | `confusing-variable-and-node` |
 | `src/linters/*-linter.js` | Code-based `checks/format/*.yaml`, one construct each (axis, namespace, count, name, ...); see the flow diagram |

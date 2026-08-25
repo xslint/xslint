@@ -162,6 +162,24 @@ an `html` a document puts in the XHTML namespace is XHTML, which serializes as `
 given advice its version cannot take — the false negative #495 names beside the false positive,
 which wants a check of its own rather than the wrong half of this one.
 
+## `src/linters/output-linter.js`
+
+`not-using-output` was a per-file selector — `[xsl:template and not(xsl:output)]` — and an
+`xsl:output` is not a per-file fact. It merges into the sheet that imports it and governs the whole
+import tree, so a main module that pushes its serialization into a shared `_output.xsl` was reported
+for missing what it had, and the module holding it was reported by
+`stylesheet-has-no-templates` for holding nothing else. One decomposition, punished at both ends,
+and the one `too-many-templates` recommends (#548, #494).
+
+The question needs the graph, so the check moved to the code stage and the YAML kept only its
+severity and message. `graphOf` yields an edge only where the target is in the corpus, which is half
+of what #468's guardrail asks; the other half is that an href leaving the linted set means *external,
+assume fine*. Both are the same rule read from either side — never invent a defect out of what we
+were not handed — so linting one file of a project cannot report what linting all of them does not.
+Reachability is transitive, since an `xsl:output` three imports down governs just as surely as one
+directly imported, and a pack pins each of the three: the direct import, the chain, and the href
+nobody resolved.
+
 ## `src/linters/corpus-linter.js`
 
 Loads `checks/corpus/*.yaml`; cross-file rules. A cross-file check asks one question of every
