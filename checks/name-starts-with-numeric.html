@@ -72,12 +72,20 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-warning">warning</span>
-    <code class="xpath">//(xsl:variable | xsl:template)[@name][contains('0123456789', substring(@name, 1, 1))] | //xsl:function[@name][contains('0123456789', substring(substring-after(@name, ":"), 1, 1))]</code>
+    <code class="xpath">//(xsl:variable | xsl:template)[matches(@name, '^[0-9]')] | //xsl:function[matches(@name, '^([^:]*:)?[0-9]')]</code>
   </div>
   <div class="check-content">
 <h1>Name starts with a numeric character</h1>
-<p>Variable, template, and function names must not start with a digit. Such
-names are invalid identifiers in XPath and XSLT.</p>
+<p>Variable, template, and function names must not start with a digit. Such a
+name is not an identifier XPath can spell, so every reference to it is a
+syntax error and a processor refuses the stylesheet rather than running it.</p>
+<p>A function name is judged on its local part, the prefix being the namespace
+and not the name: <code>my:9lives</code> is reported where <code>my:lives</code> is not.</p>
+<p>An empty name starts with nothing rather than with a digit, so it is outside
+this check and left alone. It is wrong for its own reason — an empty string is
+not a QName, and a processor refuses the stylesheet over it rather than running
+it — and reporting that as a name beginning with a digit tells the reader
+something untrue about their own code.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:variable name=&quot;1st&quot; select=&quot;&#39;first&#39;&quot;/&gt;
 </code></pre>

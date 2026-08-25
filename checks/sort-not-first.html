@@ -72,17 +72,19 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-error">error</span>
-    <code class="xpath">//xsl:sort[preceding-sibling::*[not(self::xsl:sort)]]</code>
+    <code class="xpath">//xsl:sort[preceding-sibling::*[not(self::xsl:sort) and not(self::xsl:with-param)]]</code>
   </div>
   <div class="check-content">
 <h1>Sort not first</h1>
 <p><code>xsl:sort</code> declares the order of the sequence its <code>xsl:for-each</code> or
-<code>xsl:apply-templates</code> iterates, so it must come first, before any other
-content. One that follows other instructions is invalid: a processor rejects
-it, and some silently ignore it, so the output looks unsorted for no visible
-reason.</p>
-<p>The check is report-only: moving the <code>xsl:sort</code> to the front is a structural
-reorder that waits on the full-fidelity parser (#228).</p>
+<code>xsl:apply-templates</code> iterates, so it must stand ahead of the content that
+iterates over it. One that follows an instruction is invalid: a processor
+rejects it, and some silently ignore it, so the output looks unsorted for no
+visible reason.</p>
+<p>An <code>xsl:with-param</code> is not that content. Inside <code>xsl:apply-templates</code> the
+content model is <code>(xsl:sort | xsl:with-param)*</code>, so the two stand in any order
+and a parameter ahead of a sort is correct XSLT, whatever it looks like.
+<code>xsl:for-each</code> takes no parameters at all, which is where the rule bites.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:for-each select=&quot;item&quot;&gt;
   &lt;xsl:value-of select=&quot;.&quot;/&gt;
@@ -94,6 +96,12 @@ reorder that waits on the full-fidelity parser (#228).</p>
   &lt;xsl:sort select=&quot;@name&quot;/&gt;
   &lt;xsl:value-of select=&quot;.&quot;/&gt;
 &lt;/xsl:for-each&gt;
+</code></pre>
+<p>Correct as well, and left alone:</p>
+<pre><code class="language-xsl">&lt;xsl:apply-templates select=&quot;item&quot;&gt;
+  &lt;xsl:with-param name=&quot;depth&quot; select=&quot;1&quot;/&gt;
+  &lt;xsl:sort select=&quot;@name&quot;/&gt;
+&lt;/xsl:apply-templates&gt;
 </code></pre>
 
   </div>
