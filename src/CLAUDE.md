@@ -85,9 +85,10 @@ names of one axis, nor inside a literal, where `contains(@match, '|')` holds one
 and `merged` puts the survivors of every branch back into document order by the rank `named`
 remembers, deduplicated, both of those being what XPath's own `|` answers rather than a convenience.
 Appending branch to branch would report every `xsl:otherwise` after every `xsl:when`, which is the
-defect two buckets of *one* axis had before #784 merged them this way. A union is served whole or
-not at all, a branch left to the engine needing the two answers merged across a sequence one side
-never enumerated; and a union of **attribute** axes is refused for a reason of another kind — the
+defect two buckets of *one* axis had before #784 merged them this way. A union of whole paths is
+served whole or not at all, a branch left to the engine needing the two answers merged across a
+sequence one side never enumerated; and a union of **attribute** axes is refused for a reason of
+another kind — the
 merge orders by a rank the walk keeps for elements, an attribute having none, so
 `(//@version | //@xsl:version)`, the one selector spelling it, stays with the engine while one
 branch carrying an attribute is served as it always was. A branch also carries an **anchor** since
@@ -101,6 +102,44 @@ from wherever it starts, which is what makes it cheap, so it goes to the engine 
 spelled it rather than being matched against a list of the shapes a root anchor may take. An
 attribute axis is refused where an anchor stands in front of it, and that one is about the walk
 rather than the shape — the climb reads a node's parent, and an attribute has none.
+
+A union spelled **inside** one sweep is the fourth phase, and the one place a split is not
+all-or-nothing. `P//(a | b | c)[Q]` is `P//a[Q] | P//b[Q] | P//c[Q]` — a union is a set, so
+distributing the anchor and the tail over the arms changes neither what is selected nor the order
+it comes in, and the tail distributes because `filtered` admits no predicate reading the position
+of the sequence it came from, a filtering one answering the same of a node whichever sequence
+carried it there. So `spread` writes the arms out and `apart` judges each on its own. What makes
+that safe is the arms themselves: `spread` parts a sweep only where every arm
+is one element step, so an arm the walk refuses comes back from the engine as elements `named`
+has already ranked and `merged` orders both kinds together. Refusing outright is still the answer
+where *no* arm can be served, there being nothing to gain from asking the engine one selector in
+pieces, and where a served arm carries an **attribute**, an attribute holding no rank either. Both
+of those guards are `UNPARTED` in `test/selectors.test.js`, asserted from two sides apiece: that
+the shape is refused, and that the answer is the engine's regardless — the second because a guard
+removed must be caught whether or not the shape it admits happens to answer wrongly on one
+document. Neither had a row when the phase was first written, and dropping either failed nothing
+in 2577 tests: without `stepped`, `//(xsl:variable | @name)` and `//(xsl:variable | text())` are
+distributed and hand `merged` a node whose rank is `undefined`, so `undefined - n` is `NaN`, the
+sort stands pat, and every walk-served node prints ahead of every engine-served one; without the
+attribute check, `//(xsl:variable[@as] | xsl:template)/@name` answers its two attributes in the
+wrong order. Every arm carrying the same anchor is what `ROOTS` is for: asking the engine once an arm
+would pay over and over for the very traversal the split exists to avoid, and DITA-OT showed no
+win at all until the anchor was remembered against its document — 4.4 ms over the whole of
+DocBook-XSL is cheap once and is not cheap ten times. The cost of the old rule was one arm
+answering for the rest:
+`modern-construct-in-xslt-1` unions nine named instructions with an `xsl:*[@as]` no bucket names,
+so all ten went to the engine and the check read 646 ms over DocBook-XSL, where the nine cost 9,
+the wildcard arm 128 and the anchor 11. Over that corpus `xpath-linter` falls 3.62 s to 2.73 and
+the staged run 7.02 s to 6.18; TEI and DITA-OT are neutral, that check already
+costing about 10 ms on each. The identity is stated as the method
+rather than as a count, a count being the one half of it that rots: swapping this module alone for
+the one on master, over the same tree, leaves all three reports byte-identical — 3814, 5713 and
+1266 defects as this lands, where the same sentence read 3843 until #836 withdrew 29 of them. A
+figure quoted from an earlier tree is a dated record and reads as one in `test/CLAUDE.md`, two
+entries there disagreeing over TEI by three; the evidence for the change under review is not, a
+reader checking it against the tree it arrived in. The per-pull-request gate does not see it
+either — its corpus is not 1.0-anchored and the check barely fires there — so no bar in
+`test/scaling.test.js` moves, which is what the nightly corpora tier exists to catch instead.
 
 ## `src/attributes.js`
 
