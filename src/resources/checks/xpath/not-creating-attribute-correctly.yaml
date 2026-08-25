@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
 # SPDX-License-Identifier: MIT
 ---
-xpath: //xsl:attribute[not(contains(@name, '{'))][parent::*[not(self::xsl:*)]][not(*) or (count(*) = 1 and xsl:value-of)]
+xpath: //xsl:attribute[not(contains(@name, '{'))][not(@namespace)][parent::*[not(self::xsl:*)]][not(*) or (count(*) = 1 and xsl:value-of[not(@separator)])]
 severity: warning
 message: xsl:attribute with a static name on a literal element can be a literal attribute (an AVT for a computed value). Write it inline.
