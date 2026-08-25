@@ -522,12 +522,22 @@ documents still said 136,418, the allowances 3,868 out, and the ratio 0.94 where
 0.91. The bar itself was quiet throughout, as it is until 150,000, which is why this is the third
 time the same class of figure has drifted. `DERIVED` in `test/guides.js` holds each of them now,
 red from both sides in the way `SPRAWLING` and `UNINDEXED` are: a figure the tree disagrees with
-fails, and so does a figure whose sentence has been reworded past the phrase that watches it, since
-a claim nobody is reading is not a claim being kept. Growing a guide by 4,000 characters fails all
-four rows at once. What that leaves is 9,714 characters of headroom against the bar, down from
-13,582, or about three more changes the size of this one — so the derivation that arrives after
-those goes into the file-header note of its own module, which is what this paragraph has said
-since #825 and now has a number behind it. The index
+fails, and so does a figure standing in a document the row does not name, since a claim nobody is
+reading is not a claim being kept. That second half is a **set** and not an `any`, which is the
+whole of it — the chain and its ratio are carried twice, `test/CLAUDE.md` saying "the dearest
+chain is that same one at" where `test/guides.js` says "the dearest reads", so a gate asking
+whether
+*some* file still matches is satisfied by the untouched one. Rewording only the first, to say
+136,418 and 0.91 again, left the figure wrong by 3,868 and the ratio by 0.03 with the suite reading
+16 passing: the drift gate had stopped reading that sentence and the anchor gate was happy off the
+other file. Each row therefore names every file expected to carry it and the matched set is
+compared whole, so rewording either carrier fails, and so does the claim appearing in a document no
+row names. Growing a guide by 4,000 characters fails all four rows at once. The asking is
+`matchAll` and never `test`, a global pattern leaving `lastIndex` where it stopped and answering
+`false` to the very next question about the same prose. What that leaves is 9,714 characters of
+headroom against the bar, down from 13,582, or about three more changes the size of this one — so
+the derivation that arrives after those goes into the file-header note of its own module, which is
+what this paragraph has said since #825 and now has a number behind it. The index
 answers to the tree from both sides, every path it names existing and every module under `src/`
 being named by a row — the twenty-one linters by one of them, the `*` standing for a name and never
 for a directory — and a note answers to the index and to its own directory both, so a derivation the

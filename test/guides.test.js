@@ -7,8 +7,8 @@ const {allFilesFrom} = require('../src/helpers')
 const {ATTRIBUTES, PATTERNS} = require('../src/attributes')
 const {GAP} = require('../src/tokens')
 const {
-  ROOT, GUIDES, DOCUMENTS, DERIVED, LOADED, NEARBY, slashed, sized, worded,
-  chained, loaded, indexed, noted, globbed,
+  ROOT, GUIDES, DOCUMENTS, DERIVED, LOADED, NEARBY, carries, slashed, sized,
+  worded, chained, loaded, indexed, noted, globbed,
 } = require('./guides')
 const path = require('path')
 const assert = require('assert')
@@ -168,15 +168,18 @@ describe('guides', function() {
       })
   })
   DERIVED.forEach((one) => {
-    it(`finds the sentence carrying ${one.truth().join(' and ')}`, function() {
-      assert.ok(
-        MEASURED.some((file) => one.claim.test(worded(file))),
-        `no document carries the phrase this figure is watched through, so ` +
-          'a sentence reworded has taken its own gate with it — re-anchor ' +
-          'the claim in test/guides.js or drop the entry, never leave it ' +
-          'watching prose nobody writes',
-      )
-    })
+    it(`reads ${one.truth().join(' and ')} in every file that states it`,
+      function() {
+        assert.deepEqual(
+          MEASURED.filter((file) => carries(one.claim, worded(file))).sort(),
+          one.carriers.slice().sort(),
+          'the files carrying this figure are not the files it is watched ' +
+            'in: a sentence reworded past the phrase drops out of the gate ' +
+            'above while its figure stays wrong, and one written into a new ' +
+            'document is watched nowhere — asking whether *some* file still ' +
+            'matches would answer yes to both',
+        )
+      })
   })
   it('counts a list a document names against that very list', function() {
     const near = new RegExp(

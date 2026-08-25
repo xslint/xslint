@@ -164,11 +164,24 @@ const thousands = function(count) {
 }
 
 /**
- * Every figure a guide states about the chain, as the phrase carrying it and
- * what the tree makes of that phrase's captures. All four follow from three
- * file sizes, so one guide growing moves every one of them, and the bar itself
- * stays quiet until 150,000 — which is why they drift (#750, #825).
- * @type {Array.<{claim: RegExp, truth: function(): Array.<string>}>}
+ * Whether a text carries a claim at all, asked through `matchAll` because
+ * `test` on a global pattern leaves `lastIndex` where it stopped and answers
+ * `false` to the very next asking.
+ * @param {RegExp} claim - The phrase a figure stands in
+ * @param {string} text - Prose to read
+ * @return {boolean} - Whether it stands there
+ */
+const carries = function(claim, text) {
+  return Array.from(text.matchAll(claim)).length > 0
+}
+
+/**
+ * Every figure a guide states about the chain: the phrase carrying it, every
+ * file expected to carry that phrase, and what the tree makes of its captures.
+ * All four follow from three file sizes, so one guide growing moves the lot,
+ * and the bar stays quiet until 150,000 — which is why they drift (#750, #825).
+ * @type {Array.<{claim: RegExp, carriers: Array.<string>,
+ *  truth: function(): Array.<string>}>}
  */
 const DERIVED = [
   {
@@ -177,20 +190,24 @@ const DERIVED = [
         '+which is (0[.]\\d\\d)',
       'g',
     ),
+    carriers: ['test/CLAUDE.md', 'test/guides.js'],
     truth: () => [thousands(dearest()), (dearest() / LOADED).toFixed(2)],
   },
   {
     claim: new RegExp(
       `the dearest chain of guides standing at (0[.]\\d\\d)${GAP}+of`, 'g',
     ),
+    carriers: ['CLAUDE.md'],
     truth: () => [(dearest() / LOADED).toFixed(2)],
   },
   {
     claim: new RegExp('([\\d,]*\\d) for `src/linters/CLAUDE[.]md`', 'g'),
+    carriers: ['test/CLAUDE.md'],
     truth: () => [thousands(allowed('src/linters/CLAUDE.md'))],
   },
   {
     claim: new RegExp(`holds the root itself to ([\\d,]*\\d)`, 'g'),
+    carriers: ['test/CLAUDE.md'],
     truth: () => [thousands(LOADED - (dearest() - sized('CLAUDE.md')))],
   },
 ]
@@ -242,6 +259,6 @@ const globbed = function(row) {
 }
 
 module.exports = {
-  ROOT, GUIDES, DOCUMENTS, DERIVED, LOADED, NEARBY, slashed, sized, worded,
-  chained, loaded, indexed, noted, globbed,
+  ROOT, GUIDES, DOCUMENTS, DERIVED, LOADED, NEARBY, carries, slashed, sized,
+  worded, chained, loaded, indexed, noted, globbed,
 }
