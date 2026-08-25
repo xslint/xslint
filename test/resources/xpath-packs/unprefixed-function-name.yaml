@@ -1,0 +1,24 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: name-starts-with-numeric
+found:
+  amount: 1
+  positions: [ [ 10, 3 ] ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:my="urn:my" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="2.0" id="style1">
+    <xsl:output encoding="UTF-8" method="xml"/>
+    <xsl:function name="lomonosov" as="xs:integer">
+      <xsl:sequence select="1"/>
+    </xsl:function>
+    <xsl:function name="my:chebyshev" as="xs:integer">
+      <xsl:sequence select="2"/>
+    </xsl:function>
+    <xsl:function name="my:9lives" as="xs:integer">
+      <xsl:sequence select="3"/>
+    </xsl:function>
+    <xsl:template match="/objects/o">
+      <xsl:value-of select="my:chebyshev()"/>
+    </xsl:template>
+  </xsl:stylesheet>

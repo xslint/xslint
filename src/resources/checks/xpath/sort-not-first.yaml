@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
 # SPDX-License-Identifier: MIT
 ---
-xpath: "//xsl:sort[preceding-sibling::*[not(self::xsl:sort)]]"
+xpath: "//xsl:sort[preceding-sibling::*[not(self::xsl:sort) and not(self::xsl:with-param)]]"
 severity: error
 message: "'xsl:sort' must come before any other content in its 'xsl:for-each' or 'xsl:apply-templates'. Move it to the front."

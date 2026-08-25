@@ -1,0 +1,36 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: not-creating-attribute-correctly
+found:
+  amount: 1
+  positions: [ [ 23, 7 ] ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="style1">
+    <xsl:output encoding="UTF-8" method="xml"/>
+    <xsl:template match="/objects/o">
+      <div>
+        <xsl:attribute name="roles">
+          <xsl:value-of select="role" separator=", "/>
+        </xsl:attribute>
+      </div>
+      <span>
+        <xsl:attribute name="ranks">
+          <xsl:value-of select="rank" separator="{$glue}"/>
+        </xsl:attribute>
+      </span>
+      <ul>
+        <li>
+          <xsl:attribute name="depths">
+            <xsl:value-of select="depth" separator=""/>
+          </xsl:attribute>
+        </li>
+      </ul>
+      <p>
+        <xsl:attribute name="plain">
+          <xsl:value-of select="plain"/>
+        </xsl:attribute>
+      </p>
+    </xsl:template>
+  </xsl:stylesheet>

@@ -1,0 +1,32 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: sort-not-first
+found:
+  amount: 1
+  positions: [ [ 21, 7 ] ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="style1">
+    <xsl:output encoding="UTF-8" method="xml"/>
+    <xsl:template match="/objects">
+      <xsl:apply-templates select="alpha">
+        <xsl:with-param name="depth" select="1"/>
+        <xsl:sort select="@rank"/>
+      </xsl:apply-templates>
+      <xsl:apply-templates select="beta">
+        <xsl:with-param name="depth" select="2"/>
+        <xsl:sort select="@rank"/>
+        <xsl:with-param name="width" select="3"/>
+        <xsl:sort select="@name"/>
+      </xsl:apply-templates>
+      <xsl:apply-templates select="gamma">
+        <xsl:sort select="@rank"/>
+        <xsl:with-param name="depth" select="4"/>
+      </xsl:apply-templates>
+      <xsl:for-each select="delta">
+        <xsl:value-of select="."/>
+        <xsl:sort select="@rank"/>
+      </xsl:for-each>
+    </xsl:template>
+  </xsl:stylesheet>

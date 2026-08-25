@@ -213,12 +213,12 @@
         "message": "This XSLT 2.0 construct is used in a stylesheet declared version 1.0, which a conformant 1.0 processor rejects. Use a 1.0 equivalent, or set the version to 2.0."
       },
       "name-starts-with-numeric": {
-        "xpath": "//(xsl:variable | xsl:template)[@name][contains('0123456789', substring(@name, 1, 1))] | //xsl:function[@name][contains('0123456789', substring(substring-after(@name, \":\"), 1, 1))]",
+        "xpath": "//(xsl:variable | xsl:template)[matches(@name, '^[0-9]')] | //xsl:function[matches(@name, '^([^:]*:)?[0-9]')]",
         "severity": "warning",
         "message": "A variable, function, or template name starts with a digit, which is invalid in XPath. Rename it to start with a letter."
       },
       "not-creating-attribute-correctly": {
-        "xpath": "//xsl:attribute[not(contains(@name, '{'))][parent::*[not(self::xsl:*)]][not(*) or (count(*) = 1 and xsl:value-of)]",
+        "xpath": "//xsl:attribute[not(contains(@name, '{'))][not(@namespace)][parent::*[not(self::xsl:*)]][not(*) or (count(*) = 1 and xsl:value-of[not(@separator)])]",
         "severity": "warning",
         "message": "xsl:attribute with a static name on a literal element can be a literal attribute (an AVT for a computed value). Write it inline."
       },
@@ -258,7 +258,7 @@
         "message": "A variable, function, or template has a single-character name. Use a descriptive name that reveals intent."
       },
       "sort-not-first": {
-        "xpath": "//xsl:sort[preceding-sibling::*[not(self::xsl:sort)]]",
+        "xpath": "//xsl:sort[preceding-sibling::*[not(self::xsl:sort) and not(self::xsl:with-param)]]",
         "severity": "error",
         "message": "'xsl:sort' must come before any other content in its 'xsl:for-each' or 'xsl:apply-templates'. Move it to the front."
       },
