@@ -446,6 +446,36 @@ const APART = [
 ]
 
 /**
+ * Unions the sweep must not part, each beside the arm that stops it. Both
+ * halves are asserted of every row: that no branch is served, and that the
+ * answer is the engine's all the same, so a guard removed is caught whether or
+ * not the shape it admits happens to answer wrongly on this document.
+ * @type {Array.<{xpath: string, why: string}>}
+ */
+const UNPARTED = [
+  {
+    xpath: '//(xsl:variable | @name)',
+    why: 'an arm selecting an attribute, which carries no rank to merge on',
+  },
+  {
+    xpath: '//(xsl:variable | text())',
+    why: 'an arm selecting a text node',
+  },
+  {
+    xpath: '//(xsl:variable | a/b)',
+    why: 'an arm of two steps, the tail distributing over the second',
+  },
+  {
+    xpath: '//(xsl:template[@match]/xsl:param | xsl:variable)',
+    why: 'an arm with a step behind its predicate',
+  },
+  {
+    xpath: '//(xsl:variable[@as] | xsl:template)/@name',
+    why: 'an arm served with an attribute, the merge ranking elements alone',
+  },
+]
+
+/**
  * Where each node of a selection stands, which is how two answers are compared
  * without asking either of them what kind of node it holds: an attribute
  * answers no `getAttribute` and an element no `value`, where both carry the
@@ -638,6 +668,28 @@ describe('selectors', function() {
         `serving ${one.xpath} apart answers other nodes than the engine ` +
           'answers of it, or answers them in another order, where a union is ' +
           'a set in document order and a node standing in two arms is one node',
+      )
+    })
+  })
+  UNPARTED.forEach((one) => {
+    it(`refuses to part ${one.xpath}, it holding ${one.why}`, function() {
+      assert.deepStrictEqual(
+        splitOf(one.xpath),
+        [],
+        `parting ${one.xpath} distributes the anchor and the tail over ` +
+          `${one.why}, so an arm comes back as something the walk keeps no ` +
+          'rank for and the merge orders it by nothing at all',
+      )
+    })
+  })
+  UNPARTED.forEach((one) => {
+    it(`answers ${one.xpath} whole, as the engine answers it`, function() {
+      assert.deepStrictEqual(
+        placed(chosen(APARTING, one.xpath)),
+        placed(nodes(APARTING, one.xpath)),
+        `${one.xpath} answers other nodes than the engine answers of it, or ` +
+          'answers them in another order, so parting a union the sweep ' +
+          'cannot promise costs the report the order it is printed in',
       )
     })
   })
