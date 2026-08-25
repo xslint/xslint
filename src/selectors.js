@@ -313,6 +313,107 @@ const filtered = function(text) {
 }
 
 /**
+ * A name test one step of a path may spell, and the whole of what may stand as
+ * an arm of a union the sweep parts: a qualified name, a prefixed wildcard, or
+ * a bare one. Narrower than XPath's own on purpose, as `QUALIFIED` is — an arm
+ * this does not recognise leaves the union whole, where admitting one that
+ * selects anything but an element would hand `merged` a node the walk keeps no
+ * rank for.
+ * @type {RegExp}
+ */
+const STEP = new RegExp(
+  '^(?:([\\p{L}_][\\p{L}\\p{N}\\p{M}_.-]*):)?' +
+    '(?:[\\p{L}_][\\p{L}\\p{N}\\p{M}_.-]*|\\*)$',
+  'u',
+)
+
+/**
+ * Whether one arm of a union is a single element step, which is a name test
+ * and then nothing but predicates. A path is refused though its last step
+ * would yield elements too, since what stands in front of that step decides
+ * what the arm reaches and the arms are distributed over a `//` that is not
+ * theirs.
+ * @param {string} arm - One arm of a union, its gaps already trimmed
+ * @return {boolean} - Whether the arm is one element step
+ */
+const stepped = function(arm) {
+  const opens = arm.indexOf('[')
+  let head = arm
+  let rest = ''
+  if (opens >= 0) {
+    head = arm.slice(0, opens)
+    rest = arm.slice(opens)
+  }
+  return STEP.test(head.trim()) && (rest === '' || predicated(rest).length > 0)
+}
+
+/**
+ * Where the bracket a text opens with is shut, or below zero where it is not.
+ * A quote carries its own brackets, so the scan reads over a literal rather
+ * than counting what it holds, for the reason `predicated` and `branched` do.
+ * @param {string} text - A text opening with a bracket
+ * @return {number} - Where the matching bracket stands
+ */
+const closed = function(text) {
+  let depth = 0
+  let quote = ''
+  let shut = -1
+  for (let at = 0; at < text.length && shut < 0; at++) {
+    const character = text.charAt(at)
+    if (quote !== '') {
+      if (character === quote) {
+        quote = ''
+      }
+    } else if (character === '\'' || character === '"') {
+      quote = character
+    } else if (character === '(' || character === '[') {
+      depth++
+    } else if (character === ')' || character === ']') {
+      depth--
+      if (depth === 0) {
+        shut = at
+      }
+    }
+  }
+  return shut
+}
+
+/**
+ * A bracketed union in the sweep position, spelled out as one whole selector
+ * per arm. `P//(a | b)[Q]` selects every `a` and every `b` standing below what
+ * `P` chose and answering `Q`, which is what `P//a[Q] | P//b[Q]` selects: a
+ * union is a set, so distributing the anchor and the tail over the arms changes
+ * neither what is selected nor the order it comes in. That the tail may be
+ * distributed at all is the same property the tail is already asked one
+ * candidate at a time under — `filtered` admits no predicate that reads the
+ * position of the sequence it came from, and a filtering predicate answers the
+ * same of a node whichever sequence carried it there.
+ *
+ * The spelling is what this is for. Before it, one arm the walk could not
+ * bucket refused the whole selector, so nine arms it holds were swept for the
+ * sake of a tenth — 646 ms of a DocBook-XSL run against the 137 the arms cost
+ * apart (#811). Every arm must be one element step, since a refused arm goes
+ * to the engine and comes back to be merged by a rank the walk keeps for
+ * elements alone.
+ * @param {string} xpath - The selector a declarative check is written in
+ * @return {Array.<string>} - One whole selector an arm, or nothing to spread
+ */
+const spread = function(xpath) {
+  const {anchor, sweep} = anchored(xpath)
+  let arms = NOTHING
+  if (sweep.startsWith('//(')) {
+    const shut = closed(sweep.slice(2))
+    const inside = sweep.slice(3, 2 + shut)
+    const tail = sweep.slice(3 + shut)
+    const parts = branched(inside).map((one) => one.trim())
+    if (shut > 0 && parts.length > 1 && parts.every((one) => stepped(one))) {
+      arms = parts.map((one) => `${anchor}//${one}${tail}`)
+    }
+  }
+  return arms
+}
+
+/**
  * A selector split into the axis an index can answer and the tail a predicate
  * still has to. `//(xsl:variable | xsl:template)[P]` is every element of two
  * buckets filtered by `P`; the buckets come from one walk of the document that
@@ -365,6 +466,7 @@ const swept = function(xpath) {
           attributes: axis.attributes,
           anchor: anchor,
           tail: tail,
+          refused: '',
         },
       ]
     }
@@ -373,11 +475,45 @@ const swept = function(xpath) {
 }
 
 /**
- * Every branch of a selector split, or nothing to serve where any one of them
- * is a shape the walk cannot answer. A union is served whole or not at all: a
- * branch left to the engine would need the two answers merged in document order
- * across a sequence one side of the merge never enumerated, where refusing
- * leaves the selector exactly as it was.
+ * The arms of one bracketed union, each served where the walk can serve it and
+ * left to the engine where it cannot. This is the one place a split is not
+ * all-or-nothing, and what makes it safe is `spread`: every arm is an element
+ * step, so an arm the engine answers comes back as elements the walk already
+ * ranks, and `merged` puts both kinds into document order by that rank.
+ *
+ * Refusing outright is still the answer where **no** arm can be served, there
+ * being nothing to gain from asking the engine the same selector in pieces, and
+ * where a served arm carries an **attribute**, an attribute holding no rank to
+ * merge on.
+ * @param {string} xpath - The selector a declarative check is written in
+ * @return {Array.<object>} - A branch an arm, or nothing to serve
+ */
+const apart = function(xpath) {
+  const arms = spread(xpath)
+  const served = arms.map((one) => swept(one))
+  let split = NOTHING
+  if (served.some((one) => one.length > 0) &&
+    served.every((one) => one.length === 0 || one[0].attributes.length === 0)) {
+    split = arms.map((one, at) => served[at][0] ?? {
+      names: [],
+      attributes: [],
+      anchor: '',
+      tail: '',
+      refused: one,
+    })
+  }
+  return split
+}
+
+/**
+ * Every branch of a selector split, or nothing to serve where the walk cannot
+ * answer it. A union spelled at the **top level** is served whole or not at
+ * all: its branches are whole paths, so a branch left to the engine would need
+ * the two answers merged in document order across a sequence one side of the
+ * merge never enumerated, where refusing leaves the selector exactly as it was.
+ * A union spelled **inside** one sweep is the shape `apart` parts arm by arm,
+ * every arm of one being an element step below the same axis and so a node the
+ * walk already ranks either way.
  *
  * A union of **attribute** axes is refused for a reason of that kind rather
  * than of shape. Two branches are merged by the document-order rank `named`
@@ -398,6 +534,8 @@ const parted = function(xpath) {
     (branches.length === 1 ||
       branches.every((one) => one.attributes.length === 0))) {
     split = branches
+  } else if (spelled.length === 1) {
+    split = apart(xpath.trim())
   }
   return split
 }
@@ -449,6 +587,37 @@ const axised = function(xsl, split) {
 }
 
 /**
+ * What each anchor has chosen in each document, so that an anchor is one
+ * question however many branches carry it. Spreading a bracketed union hands
+ * every arm the same anchor, and asking the engine once an arm would pay ten
+ * times over for the very traversal the split exists to avoid — 4.4 ms over
+ * the whole of DocBook-XSL is cheap once and is not cheap ten times, and on a
+ * corpus where the union itself is cheap it was the whole of what spreading
+ * cost (#811).
+ * @type {WeakMap.<Document, Map.<string, Set.<Node>>>}
+ */
+const ROOTS = new WeakMap()
+
+/**
+ * The nodes an anchor chooses in a document, taken once and remembered against
+ * the two. A set rather than a list, since `descended` asks it whether a node
+ * stands in it and never what stands where.
+ * @param {Document} xsl - Parsed stylesheet
+ * @param {string} anchor - What the branch spelled in front of its sweep
+ * @return {Set.<Node>} - What the anchor chose
+ */
+const rooted = function(xsl, anchor) {
+  if (!ROOTS.has(xsl)) {
+    ROOTS.set(xsl, new Map())
+  }
+  const held = ROOTS.get(xsl)
+  if (!held.has(anchor)) {
+    held.set(anchor, new Set(nodes(xsl, anchor)))
+  }
+  return held.get(anchor)
+}
+
+/**
  * The candidates standing below one of the anchor's answers, which is what a
  * `//` between them means: every node the sweep found that has one of those
  * nodes above it, and never one of them itself. The walk climbs to a parent
@@ -477,19 +646,29 @@ const descended = function(found, roots) {
  * at a time as `self::node()` plus what the branch spelled. The anchor is asked
  * first because the walk answers it and the engine answers the tail, which is
  * the same order the cross-file linter learned to put its two tests in.
+ *
+ * A branch `apart` refused carries the whole selector its arm spells and
+ * nothing else, and goes to the engine as it stands. It is elements either way,
+ * so `merged` orders it against the arms the walk served without knowing which
+ * answered which.
  * @param {Document} xsl - Parsed stylesheet
  * @param {object} branch - One branch of what `splitOf` made of the selector
  * @return {Array.<Node>} - The nodes it selects, in document order
  */
 const narrowed = function(xsl, branch) {
-  let found = axised(xsl, branch)
-  if (branch.anchor !== '') {
-    found = descended(found, new Set(nodes(xsl, branch.anchor)))
-  }
-  if (branch.tail !== '') {
-    found = found.filter(
-      (node) => satisfies(node, `self::node()${branch.tail}`),
-    )
+  let found = []
+  if (branch.refused === '') {
+    found = axised(xsl, branch)
+    if (branch.anchor !== '') {
+      found = descended(found, rooted(xsl, branch.anchor))
+    }
+    if (branch.tail !== '') {
+      found = found.filter(
+        (node) => satisfies(node, `self::node()${branch.tail}`),
+      )
+    }
+  } else {
+    found = nodes(xsl, branch.refused)
   }
   return found
 }

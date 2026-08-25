@@ -29,26 +29,28 @@ const assert = require('assert')
  * that cannot be served has to be written here with its reason, and one that
  * has since become servable turns its own entry red rather than sitting on a
  * list that has stopped describing it. What a reason here is not is a statement
- * about cost. Nine of the fourteen are anchored at the root, which keeps them
- * out because a root step is not a descendant sweep of named elements — and it
- * leaves only three of them without a descendant step, the six others
- * descending below the anchor, so the nine still spend 1.23 of the 2.78 seconds
- * the fifteen spent when that reading was taken, and the dearest single
- * selector left is one of them: `modern-construct-in-xslt-1` at 0.60 s, whose
- * union ends in the `xsl:*[@as]` a namespace bucket would answer. Phase 2 of
- * #784 is therefore drawn by what a selector costs rather than by the shape
- * that excluded it — that union, the three spelling a union of two whole paths
+ * about cost. Nine of the fourteen were anchored at the root, which keeps a
+ * selector out because a root step is not a descendant sweep of named elements,
+ * and the dearest single one was not among them: `modern-construct-in-xslt-1`
+ * at 0.60 s, nine named instructions and an `xsl:*[@as]` no bucket names,
+ * unioned inside one sweep. That one is served since #811's fourth phase, which
+ * parts such a union arm by arm rather than letting the arm the walk cannot
+ * reach answer for the nine it can — over DocBook-XSL the nine cost 9 ms, the
+ * wildcard arm 128 and the anchor 11, against 646 for the selector unparted.
+ * Phase 2 of #784 is therefore drawn by what a selector costs rather than by
+ * the shape that excluded it — the three spelling a union of two whole paths
  * (0.41, 0.32 and 0.17 s), the wildcard of `text-outside-xsl-text` (0.29), and
  * the union of two attribute paths `malformed-version-in-stylesheet` opens with
  * (0.26). An attribute axis is no longer a reason of its own, #811 having given
  * the walk every attribute of a document and one named attribute of named
- * elements, so what keeps that last one out is the union and nothing else —
- * which is the second way an entry rots, a reason that has stopped being the
- * reason while the refusal stands. The other spelling of it left the table
- * outright at #556, which gave `using-disable-output-escaping` the element test
- * it never had: a union of the two instructions carrying the attribute is a
- * shape the walk serves, so it went by becoming servable rather than by anybody
- * editing the list. Which of the pair's readings went with it is the 0.09,
+ * elements, so what keeps that last one out is the bracket its union stands in
+ * and nothing else — which is the second way an entry rots, a reason that has
+ * stopped being the reason while the refusal stands. The other spelling of it
+ * left the table outright at #556, which gave `using-disable-output-escaping`
+ * the element test it never had: a union of the two instructions carrying the
+ * attribute is a shape the walk serves, so it went by becoming servable rather
+ * than by anybody editing the list. Which of the pair's readings went with it
+ * is the 0.09,
  * settled by timing both selectors in one process over DocBook-XSL, where the
  * one left reads 170 ms against the departing 81 — the same order, on a
  * measurement of selection alone rather than of the whole stage.
@@ -64,7 +66,6 @@ const UNINDEXED = {
   'malformed-version-in-stylesheet': 'a bracketed union of attribute paths',
   'missing-id-in-stylesheet': 'the root itself, not a descendant sweep',
   'missing-version-in-stylesheet': 'the root itself, not a descendant sweep',
-  'modern-construct-in-xslt-1': 'a union arm carrying a predicate of its own',
   'not-using-output': 'the root itself, not a descendant sweep',
   'stylesheet-has-no-templates': 'the root itself, not a descendant sweep',
   'text-outside-xsl-text': 'a wildcard names no one bucket',
@@ -75,9 +76,11 @@ const UNINDEXED = {
  * Whether a shared walk can serve every branch of a selector, each branch's
  * axis being elements out of a bucket or attributes off the same walk — either
  * being an axis the run has already paid for, where any other shape costs
- * fontoxpath a descendant traversal of its own. A union is served whole or not
- * at all, so one branch it cannot reach answers for the selector (#635, #784,
- * #811).
+ * fontoxpath a descendant traversal of its own. A union of whole paths is
+ * served whole or not at all, so one branch it cannot reach answers for the
+ * selector; a union spelled inside one sweep is parted arm by arm, so a
+ * selector counts as served where any arm of it comes off the walk (#635,
+ * #784, #811).
  * @param {string} xpath - The selector a declarative check is written in
  * @return {boolean} - Whether the axis comes off the walk
  */

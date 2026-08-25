@@ -51,8 +51,8 @@ three platforms and two node versions, and `corpora`, which times a real run
 The suite comes in two halves, and the line between them is a child process. A
 **deep** test starts one — it runs `xslint` or `xcop` the way a user does — and
 is named `*.deep.test.js`; every other test stays in this process. Four files
-are deep, and they still cost most of what the suite costs: 622 of the 2546
-tests, 9 of the 14 seconds. The other 1924 finish inside one, which is why
+are deep, and they still cost most of what the suite costs: 622 of the 2557
+tests, 9 of the 14 seconds. The other 1935 finish inside one, which is why
 `npm run fast` is the loop to work in and `npm test` the one to finish on. The
 deep target runs under `mocha --parallel`, so those four files run at once and
 the slowest of them sets the clock — `xslint.deep.test.js` alone, whose 52 tests
@@ -639,6 +639,11 @@ Then run `npx grunt checks`, `npm test`, `npm run coverage`, and
   the survivors merged by rank, since XPath answers a union in document order
   over both sides at once — so `//xsl:when[…] | //xsl:otherwise[…]` is two
   buckets the walk holds rather than two descendant sweeps the engine pays for.
+  A union spelled **inside** one sweep is parted arm by arm since that ticket's
+  fourth phase, `P//(a | b)[Q]` being `P//a[Q] | P//b[Q]`, so an arm the walk
+  cannot reach is asked of the engine alone instead of answering for every arm
+  it can — which is one arm in `modern-construct-in-xslt-1`, whose other nine
+  cost 9 ms over DocBook-XSL against 646 for the ten together.
   What a selector spells in **front** of its `//` is served too since #811's
   third phase: `P//X` is every `X` standing below a node `P` chose, so the
   anchor is one question the engine answers for the document and the walk keeps
@@ -651,13 +656,15 @@ Then run `npx grunt checks`, `npm test`, `npm run coverage`, and
   neither a selector that could be served and is listed nor one that is served
   and unlisted survives (#784). An attribute axis is served since #811, both
   `//@*` and one named attribute of named elements, so it is no longer a reason
-  to be on that list, and neither is an anchor; a cross-file check answers to a
+  to be on that list, and neither is an anchor, nor a union of any spelling; a
+  cross-file check answers to a
   gate with no list at all, every one of its selectors being served and a fifth
-  belonging in that shape too. What keeps the eight that are left out is a
+  belonging in that shape too. What keeps the seven that are left out is a
   descending **predicate** for five of them — the axis is the root itself, one
   node, and everything the selector costs is inside the brackets — a wildcard
-  for one, a bracketed union of attribute paths for one, and for the dearest of
-  the eight a union arm carrying a predicate of its own.
+  for one, and for one a union of attribute paths spelled inside brackets a
+  predicate stands outside of, which is neither a sweep to part nor an axis the
+  merge can order.
 - **Fix in the same change.** If a check is fixable, land the fix with the
   detection — never defer it. A declarative rule gets a `node => fix` builder in
   `src/fixers.js`; a code-based linter attaches the `fix` to its defect. Mark it

@@ -85,9 +85,10 @@ names of one axis, nor inside a literal, where `contains(@match, '|')` holds one
 and `merged` puts the survivors of every branch back into document order by the rank `named`
 remembers, deduplicated, both of those being what XPath's own `|` answers rather than a convenience.
 Appending branch to branch would report every `xsl:otherwise` after every `xsl:when`, which is the
-defect two buckets of *one* axis had before #784 merged them this way. A union is served whole or
-not at all, a branch left to the engine needing the two answers merged across a sequence one side
-never enumerated; and a union of **attribute** axes is refused for a reason of another kind — the
+defect two buckets of *one* axis had before #784 merged them this way. A union of whole paths is
+served whole or not at all, a branch left to the engine needing the two answers merged across a
+sequence one side never enumerated; and a union of **attribute** axes is refused for a reason of
+another kind — the
 merge orders by a rank the walk keeps for elements, an attribute having none, so
 `(//@version | //@xsl:version)`, the one selector spelling it, stays with the engine while one
 branch carrying an attribute is served as it always was. A branch also carries an **anchor** since
@@ -101,6 +102,22 @@ from wherever it starts, which is what makes it cheap, so it goes to the engine 
 spelled it rather than being matched against a list of the shapes a root anchor may take. An
 attribute axis is refused where an anchor stands in front of it, and that one is about the walk
 rather than the shape — the climb reads a node's parent, and an attribute has none.
+
+A union spelled **inside** one sweep is the fourth phase, and the one place a split is not
+all-or-nothing. `P//(a | b | c)[Q]` is `P//a[Q] | P//b[Q] | P//c[Q]`, a predicate reaching no
+further than one candidate either way, so `spread` writes the arms out and `apart` judges each on
+its own. What makes that safe is the arms themselves: `spread` parts a sweep only where every arm
+is one element step, so an arm the walk refuses comes back from the engine as elements `named`
+has already ranked and `merged` orders both kinds together. Refusing outright is still the answer
+where *no* arm can be served, there being nothing to gain from asking the engine one selector in
+pieces. The cost of the old rule was one arm answering for the rest:
+`modern-construct-in-xslt-1` unions nine named instructions with an `xsl:*[@as]` no bucket names,
+so all ten went to the engine and the check read 646 ms over DocBook-XSL, where the nine cost 9,
+the wildcard arm 128 and the anchor 11. Over that corpus `xpath-linter` falls 3.62 s to 2.73 and
+the staged run 7.02 s to 6.18, the report byte-identical at 3843 defects; TEI and DITA-OT are
+neutral, that check already costing about 10 ms on each. The per-pull-request gate does not see it
+either — its corpus is not 1.0-anchored and the check barely fires there — so no bar in
+`test/scaling.test.js` moves, which is what the nightly corpora tier exists to catch instead.
 
 ## `src/attributes.js`
 

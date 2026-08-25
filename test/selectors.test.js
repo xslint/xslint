@@ -191,7 +191,6 @@ const WHOLE = [
     why: 'every attribute below an anchor',
   },
   {xpath: '//*', why: 'every element is not a name'},
-  {xpath: '//(xsl:variable | xsl:*)', why: 'a wildcard inside a union'},
   {xpath: '/*[not(@version)]', why: 'the root itself, not a descendant sweep'},
   {xpath: '//xsl:template[@match]/xsl:param', why: 'a step behind the tail'},
   {xpath: '//mine:thing[@a]', why: 'a prefix nothing binds'},
@@ -430,6 +429,54 @@ const DOORS = [
 ]
 
 /**
+ * A stylesheet whose XSLT elements interleave with elements of another
+ * namespace and with each other, so that a union of a named arm and a wider
+ * one has something to get wrong: three `xsl:variable` stand in the answer of
+ * both arms and must be selected once apiece, and the nodes only one arm
+ * reaches stand between them rather than after them.
+ * @type {Document}
+ */
+const APARTING = xml.parsedFromString(
+  fs.readFileSync(
+    path.resolve(__dirname, 'resources', 'selectors', 'apart.xsl'), 'utf-8',
+  ),
+)
+
+/**
+ * Unions no single axis can carry, because one arm names a bucket and another
+ * does not. Each is served by the arms that can be and swept by the arms that
+ * cannot, which is what makes them different from `WHOLE`: refusing the whole
+ * selector for one arm is what this table exists to stop.
+ * @type {Array.<{xpath: string, why: string}>}
+ */
+const APART = [
+  {
+    xpath: '//(xsl:variable | xsl:*)',
+    why: 'a wildcard arm beside a named one',
+  },
+  {
+    xpath: '//(xsl:variable | xsl:sequence | xsl:*[@as])',
+    why: 'a wildcard arm carrying a predicate of its own',
+  },
+  {
+    xpath: '//(xsl:variable | xsl:*)[@select]',
+    why: 'a tail the arms have to carry apiece',
+  },
+  {
+    xpath: kinds.xpath['modern-construct-in-xslt-1'].xpath,
+    why: 'nine named arms, a wildcard, and an anchor over all ten',
+  },
+  {
+    xpath: '//(xsl:template[not(contains(@match, ")"))] | xsl:variable)',
+    why: 'a bracket inside a literal an arm quotes with a double quote',
+  },
+  {
+    xpath: '//(xsl:variable[not(contains(@name, \'(\'))] | xsl:template)',
+    why: 'a bracket inside a literal an arm quotes with a single quote',
+  },
+]
+
+/**
  * Where each node of a selection stands, which is how two answers are compared
  * without asking either of them what kind of node it holds: an attribute
  * answers no `getAttribute` and an element no `value`, where both carry the
@@ -474,6 +521,7 @@ describe('selectors', function() {
             attributes: [],
             anchor: one.anchor ?? '',
             tail: one.tail,
+            refused: '',
           },
         ],
         `the selector ${one.xpath} is not split the way an index needs it`,
@@ -490,6 +538,7 @@ describe('selectors', function() {
             attributes: [one.attribute],
             anchor: '',
             tail: one.tail,
+            refused: '',
           },
         ],
         `the selector ${one.xpath} is not split the way an index needs it`,
@@ -503,7 +552,7 @@ describe('selectors', function() {
         [
           {
             names: [], attributes: [{uri: '', local: EVERY}],
-            anchor: '', tail: '',
+            anchor: '', tail: '', refused: '',
           },
         ],
         'the usage selector of three of the four cross-file checks chooses ' +
@@ -521,6 +570,7 @@ describe('selectors', function() {
           attributes: [{uri: '', local: 'name'}],
           anchor: '',
           tail: '',
+          refused: '',
         },
       ],
       'the usage selector naming one attribute of one element is not being ' +
@@ -536,6 +586,7 @@ describe('selectors', function() {
           attributes: [],
           anchor: '',
           tail: branch.tail,
+          refused: '',
         })),
         `the union ${one.xpath} is not parted into the branches an index ` +
           'serves one at a time, so both halves go to the engine as one ' +
@@ -599,6 +650,27 @@ describe('selectors', function() {
             'the sequence it stands in and cannot be asked of one candidate',
         )
       })
+  })
+  APART.forEach((one) => {
+    it(`serves ${one.xpath} by the arms that name a bucket`, function() {
+      assert.ok(
+        splitOf(one.xpath).length > 1,
+        `serving ${one.xpath} is refused though ${one.why}, so the arms a ` +
+          'walk already holds are swept for the sake of the one arm it does ' +
+          'not, which is the whole selector paying for its widest branch',
+      )
+    })
+  })
+  APART.forEach((one) => {
+    it(`answers ${one.xpath} as the engine answers it`, function() {
+      assert.deepStrictEqual(
+        placed(chosen(APARTING, one.xpath)),
+        placed(nodes(APARTING, one.xpath)),
+        `serving ${one.xpath} apart answers other nodes than the engine ` +
+          'answers of it, or answers them in another order, where a union is ' +
+          'a set in document order and a node standing in two arms is one node',
+      )
+    })
   })
   DOORS.forEach((one) => {
     it(`chooses ${one} where the engine chooses the same nodes`, function() {

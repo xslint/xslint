@@ -415,10 +415,11 @@ pack gives one position per defect it expects, too: the harness walks the `posit
 `amount` standing above their number is a count asserted and a place asserted nowhere — three packs
 of #565's own were written that way and passed, pinning four runs' replacements while saying nothing
 about where any of them stood. It also asks `splitOf` of every `xpath` selector and holds the answer
-to `UNINDEXED`, the eight that a shared walk cannot serve as an axis, each listed beside the shape
-that keeps it out (#784) — fourteen until #811's union phase served three of them and eleven until
-its anchor phase served three more, so neither a union nor an anchor is a reason to be on the table
-any longer, so `malformed-version-in-stylesheet` stays out as a **bracketed** union of attribute
+to `UNINDEXED`, the seven that a shared walk cannot serve as an axis, each listed beside the shape
+that keeps it out (#784) — fourteen until #811's union phase served three of them, eleven until its
+anchor phase served three more, and eight until its fourth parted the one selector spelling a union
+*inside* a sweep, so neither a union nor an anchor is a reason to be on the table any longer:
+`malformed-version-in-stylesheet` stays out as a **bracketed** union of attribute
 paths, which is one predicate standing outside the brackets and an axis the merge cannot order —
 fifteen until #556 gave `using-disable-output-escaping` an element test, which took it off the table
 by making it servable rather than by anybody editing the list. A structural gate rather than a share
