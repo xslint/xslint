@@ -415,10 +415,11 @@ pack gives one position per defect it expects, too: the harness walks the `posit
 `amount` standing above their number is a count asserted and a place asserted nowhere — three packs
 of #565's own were written that way and passed, pinning four runs' replacements while saying nothing
 about where any of them stood. It also asks `splitOf` of every `xpath` selector and holds the answer
-to `UNINDEXED`, the eight that a shared walk cannot serve as an axis, each listed beside the shape
-that keeps it out (#784) — fourteen until #811's union phase served three of them and eleven until
-its anchor phase served three more, so neither a union nor an anchor is a reason to be on the table
-any longer, so `malformed-version-in-stylesheet` stays out as a **bracketed** union of attribute
+to `UNINDEXED`, the seven that a shared walk cannot serve as an axis, each listed beside the shape
+that keeps it out (#784) — fourteen until #811's union phase served three of them, eleven until its
+anchor phase served three more, and eight until its fourth parted the one selector spelling a union
+*inside* a sweep, so neither a union nor an anchor is a reason to be on the table any longer:
+`malformed-version-in-stylesheet` stays out as a **bracketed** union of attribute
 paths, which is one predicate standing outside the brackets and an axis the merge cannot order —
 fifteen until #556 gave `using-disable-output-escaping` an element test, which took it off the table
 by making it servable rather than by anybody editing the list. A structural gate rather than a share
@@ -505,15 +506,38 @@ under them was opened. The first spelling of the bar weighed the root against th
 guide instead, which is a whole directory short: it read 130,933 and called that 0.87 of the bar
 while a turn touching `src/linters/` was loading 157,504 and over it. So the two dearest notes moved
 one step further down, out of `src/CLAUDE.md` and into the top of `src/grammar.js` and
-`src/syntax.js` — 24,681 characters — and the dearest chain is that same one at 136,418, which is
-0.91. What answers a chain reaching the bar is that move again, a module's derivation into the
+`src/syntax.js` — 24,681 characters — and the dearest chain is that same one at 140,286, which is
+0.94. What answers a chain reaching the bar is that move again, a module's derivation into the
 file-header note of the module itself, and never a bar widened to fit what has grown past it: a
 docblock holds five lines of description since #832, so prose that has outgrown a guide does not
 simply move into one instead. A `CEILING` of half the bar stood beside it until it was seen to be a
 gate no tree could fail: the root stands in every chain, so the chain holding it above weighs each
-other guide against the bar less what stands over it — 40,153 for `src/linters/CLAUDE.md`, where
-half of the bar is 75,000 — and holds the root itself to 81,712, a number derived from the dearest
-chain rather than chosen. A gate no tree can fail is removed and not kept (#750, #660). The index
+other guide against the bar less what stands over it — 36,285 for `src/linters/CLAUDE.md`, where
+half of the bar is 75,000 — and holds the root itself to 78,291, a number derived from the dearest
+chain rather than chosen. A gate no tree can fail is removed and not kept (#750, #660). All four of
+those figures — the chain, its ratio, and the two allowances — follow from three file sizes, so one
+guide growing moves every one of them, and none of them turned red when one did: #811's fourth
+phase added 3,421 characters to `src/CLAUDE.md` and left the chain reading 140,286 where two
+documents still said 136,418, the allowances 3,868 out, and the ratio 0.94 where three places said
+0.91. The bar itself was quiet throughout, as it is until 150,000, which is why this is the third
+time the same class of figure has drifted. `DERIVED` in `test/guides.js` holds each of them now,
+red from both sides in the way `SPRAWLING` and `UNINDEXED` are: a figure the tree disagrees with
+fails, and so does a figure standing in a document the row does not name, since a claim nobody is
+reading is not a claim being kept. That second half is a **set** and not an `any`, which is the
+whole of it — the chain and its ratio are carried twice, `test/CLAUDE.md` saying "the dearest
+chain is that same one at" where `test/guides.js` says "the dearest reads", so a gate asking
+whether
+*some* file still matches is satisfied by the untouched one. Rewording only the first, to say
+136,418 and 0.91 again, left the figure wrong by 3,868 and the ratio by 0.03 with the suite reading
+16 passing: the drift gate had stopped reading that sentence and the anchor gate was happy off the
+other file. Each row therefore names every file expected to carry it and the matched set is
+compared whole, so rewording either carrier fails, and so does the claim appearing in a document no
+row names. Growing a guide by 4,000 characters fails all four rows at once. The asking is
+`matchAll` and never `test`, a global pattern leaving `lastIndex` where it stopped and answering
+`false` to the very next question about the same prose. What that leaves is 9,714 characters of
+headroom against the bar, down from 13,582, or about three more changes the size of this one — so
+the derivation that arrives after those goes into the file-header note of its own module, which is
+what this paragraph has said since #825 and now has a number behind it. The index
 answers to the tree from both sides, every path it names existing and every module under `src/`
 being named by a row — the twenty-one linters by one of them, the `*` standing for a name and never
 for a directory — and a note answers to the index and to its own directory both, so a derivation the

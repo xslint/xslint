@@ -4,6 +4,7 @@
  */
 
 const {allFilesFrom} = require('../src/helpers')
+const {GAP} = require('../src/tokens')
 const path = require('path')
 const fs = require('fs')
 
@@ -99,7 +100,7 @@ const NEARBY = 80
  * than one of ours: Claude Code warns past 150,000 characters of them. What
  * arrives against it is a chain and not a pair — the root guide, and the
  * guide of every directory down to the file a turn touches, each injected
- * once — and the dearest reads 136,418, which is 0.91 (#750, #660, #825).
+ * once — and the dearest reads 140,286, which is 0.94 (#750, #660, #825).
  * @type {number}
  */
 const LOADED = 150000
@@ -131,6 +132,85 @@ const chained = function(named) {
 const loaded = function(named) {
   return chained(named).reduce((total, one) => total + sized(one), 0)
 }
+
+/**
+ * The dearest chain any file's turn loads, which is the reading every figure
+ * below is derived from.
+ * @return {number} - Characters of guide the dearest chain costs
+ */
+const dearest = function() {
+  return GUIDES.map((one) => loaded(one)).reduce(
+    (one, two) => Math.max(one, two), 0,
+  )
+}
+
+/**
+ * What is left of the bar once everything standing over one guide is loaded,
+ * which is what the retired `CEILING` weighed a guide against.
+ * @param {string} named - Path of a guide from the repository root
+ * @return {number} - The bar less the chain above it
+ */
+const allowed = function(named) {
+  return LOADED - (loaded(named) - sized(named))
+}
+
+/**
+ * A number as this repository's prose writes one.
+ * @param {number} count - What to spell
+ * @return {string} - It, with thousands parted
+ */
+const thousands = function(count) {
+  return count.toLocaleString('en-US')
+}
+
+/**
+ * Whether a text carries a claim at all, asked through `matchAll` because
+ * `test` on a global pattern leaves `lastIndex` where it stopped and answers
+ * `false` to the very next asking.
+ * @param {RegExp} claim - The phrase a figure stands in
+ * @param {string} text - Prose to read
+ * @return {boolean} - Whether it stands there
+ */
+const carries = function(claim, text) {
+  return Array.from(text.matchAll(claim)).length > 0
+}
+
+/**
+ * Every figure a guide states about the chain: the phrase carrying it, every
+ * file expected to carry that phrase, and what the tree makes of its captures.
+ * All four follow from three file sizes, so one guide growing moves the lot,
+ * and the bar stays quiet until 150,000 — which is why they drift (#750, #825).
+ * @type {Array.<{claim: RegExp, carriers: Array.<string>,
+ *  truth: function(): Array.<string>}>}
+ */
+const DERIVED = [
+  {
+    claim: new RegExp(
+      `the dearest (?:chain is that same one at|reads) ([\\d,]*\\d),${GAP}` +
+        '+which is (0[.]\\d\\d)',
+      'g',
+    ),
+    carriers: ['test/CLAUDE.md', 'test/guides.js'],
+    truth: () => [thousands(dearest()), (dearest() / LOADED).toFixed(2)],
+  },
+  {
+    claim: new RegExp(
+      `the dearest chain of guides standing at (0[.]\\d\\d)${GAP}+of`, 'g',
+    ),
+    carriers: ['CLAUDE.md'],
+    truth: () => [(dearest() / LOADED).toFixed(2)],
+  },
+  {
+    claim: new RegExp('([\\d,]*\\d) for `src/linters/CLAUDE[.]md`', 'g'),
+    carriers: ['test/CLAUDE.md'],
+    truth: () => [thousands(allowed('src/linters/CLAUDE.md'))],
+  },
+  {
+    claim: new RegExp(`holds the root itself to ([\\d,]*\\d)`, 'g'),
+    carriers: ['test/CLAUDE.md'],
+    truth: () => [thousands(LOADED - (dearest() - sized('CLAUDE.md')))],
+  },
+]
 
 /**
  * The paths the root guide's index names, read out of its `Key files` section
@@ -179,6 +259,6 @@ const globbed = function(row) {
 }
 
 module.exports = {
-  ROOT, GUIDES, DOCUMENTS, LOADED, NEARBY, slashed, sized, worded, chained,
-  loaded, indexed, noted, globbed,
+  ROOT, GUIDES, DOCUMENTS, DERIVED, LOADED, NEARBY, carries, slashed, sized,
+  worded, chained, loaded, indexed, noted, globbed,
 }
