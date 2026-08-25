@@ -36,15 +36,9 @@ const LEAD = {2: 1, 4: '<![CDATA['.length}
 /**
  * Where an offset inside an expression truly stands in the raw source. The
  * parsed value cannot answer it: a parser decodes the entities and normalises
- * the line endings of an attribute value, so the two texts drift apart by
- * however much of that the value holds. The walk starts where the node opens,
- * steps over whatever markup stands in front of its value, and skips as many
- * decoded characters as the offset counts.
- *
- * A linter needs this as much as a defect does — a check reasoning over a
- * parsed expression cannot see the line ending it was given a space for, so
- * anything it decides about whitespace has to be settled against the source
- * here rather than against the value in its hand (#628).
+ * the line endings of an attribute value, so the two texts drift apart. The
+ * walk starts where the node opens, steps over the markup in front of its
+ * value, and skips as many decoded characters as the offset counts (#628).
  * @param {{file: string, content: string}} source - The file the node sits in
  * @param {{node: Node, start: number}} found - The expression, as
  *  `src/attributes.js` yields it
@@ -63,42 +57,18 @@ const rawly = function(source, found, offset) {
 
 /**
  * A defect at an offset inside an attribute, text, or CDATA node. Its line and
- * column are where it truly stands in the source, which is not something the
- * parsed value can answer on its own: an attribute value arrives with its line
- * breaks normalised to spaces and its entities decoded, so the offset is walked
- * against the raw text from where the node opens. The fix, when given as
- * `{value, replacement, suggestion?}`, is anchored at that same place, which is
- * all the fixer needs to find it. It also carries `from`, the line the element
- * holding the value opens on, because nothing inside a start tag can be
- * silenced from within it — no comment fits there — so a directive has to reach
- * the whole way down from above the element. Omit `fix` for report-only.
- *
- * A fix is offered on whatever it is given, with nothing here asking whether
- * the expression parses. That question was answered here from #636 until #750,
- * because a code-based linter took the whole corpus and read expressions the
- * XPath validator had already refused — so `select="child::"` was reported and
- * a safe fix wrote it to `select=""`. Every one of those linters is staged over
- * the expressions the validator *kept* now, so a refused one reaches no check
- * at all and the gate had become a condition no call could fail. A rule a
- * caller has to remember is worse than a stage that cannot break it.
- *
- * The expression arrives whole — the node carrying it, where it starts inside
- * that node's value, and its text — as `src/attributes.js` yields it, rather
- * than as a node and a string a caller pairs up itself. Two things came of the
- * old shape (#648): the word `expression` named the node in one module and the
- * text in another, so one call had to spell both from one identifier, and every
- * caller added `start` to its own offset, nine chances to forget an addition
- * that belongs here. A mismatched pair reported at the wrong place and lost its
- * fix in silence, because a node read as text is valid XPath to nobody.
+ * column are walked against the raw text from where the node opens, the parsed
+ * value answering neither. The fix is anchored there too, and `from` is the
+ * line the holding element opens on, nothing inside a start tag being
+ * silenceable from within it. Omit `fix` for report-only (#648, #750).
  * @param {string} check - Check name
  * @param {{severity: string, message: string}} meta - The check metadata
  * @param {{file: string, content: string}} source - The file the node sits
- *  in, with its raw text, which is the only place the line breaks a parser
- *  normalised away are still visible
+ *  in, with its raw text, where the line breaks a parser normalised away are
+ *  still visible
  * @param {{node: Node, start: number, expression: string, pattern: boolean}}
- *  found - The expression the defect stands in: its attribute, text or CDATA
- *  node, where it starts in that node's value, its own text, and whether it is
- *  a pattern
+ *  found - The expression the defect stands in: its node, where it starts in
+ *  that node's value, its own text, and whether it is a pattern
  * @param {number} offset - Offset of the defect within the expression
  * @param {?{value: string, replacement: string, suggestion?: boolean}} [fix] -
  *  The fix, or undefined for a report-only defect

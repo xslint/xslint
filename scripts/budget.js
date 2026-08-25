@@ -7,15 +7,10 @@
 
 /**
  * How many times a run's own seconds its budget may stand above them before it
- * has stopped being a bar. The nightly tier exists because
- * `test/scaling.test.js` measures a share of a run and so cannot see a
- * constant that slows every stage at once, and a budget cut once and left
- * behind gives that back: #755's quadratic cost DocBook-XSL 44 s against a
+ * has stopped being a bar. #755's quadratic cost DocBook-XSL 44 s against a
  * budget of 180 and would have passed it twice over. Four, as `SLACK` in
- * `test/scaling.test.js` is, and for the same reason — a shared runner
- * disagrees with a developer machine about a wall clock by more than it
- * disagrees about a share, so the two-sided window has to hold a slow night as
- * well as a fast one.
+ * `test/scaling.test.js` is, a shared runner disagreeing about a wall clock by
+ * more than it does about a share.
  * @type {number}
  */
 const SLACK = 4
@@ -23,10 +18,9 @@ const SLACK = 4
 /**
  * The fewest seconds a reading has to hold for the ratchet to judge it. The
  * runner times the run with `date +%s`, so anything faster than a second reads
- * `0` or `1` — and `0` stands more than any multiple of itself below every
- * budget there could be, which would fire the ratchet on a corpus that never
- * arrived. That is the count check's defect to report rather than this one's,
- * so a reading of nothing is no reading here.
+ * `0` or `1` — and `0` stands below every budget there could be by any
+ * multiple, which would fire the ratchet on a corpus that never arrived: the
+ * count check's defect to report and not this one's.
  * @type {number}
  */
 const FLOOR = 1

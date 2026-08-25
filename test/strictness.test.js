@@ -9,13 +9,11 @@ const {parsed} = require('../src/grammar')
 const assert = require('assert')
 
 /**
- * Expressions XPath 1.0 §3.7 spells with whitespace an axis name or a node test
- * may be followed by, each paired with the place that whitespace sits in. Every
- * one is XPath the specification spells, and the engine reads all but one of
- * them glued: it takes `processing-instruction( 'x' )` as it stands. Which is
- * why the rows below claim that the class *names* each of these rather than
- * that the engine refuses each of them — a class is the shape a gap stands in,
- * not a list of what one engine happens to object to.
+ * Expressions XPath 1.0 §3.7 spells with whitespace an axis name or a node
+ * test may be followed by, each paired with the place that whitespace sits in.
+ * The engine reads all but one of them glued, taking `processing-instruction(
+ * 'x' )` as it stands, so the rows claim the class names each rather than that
+ * the engine refuses each.
  * @type {Array.<Array.<string>>}
  */
 const SPACED = [
@@ -78,9 +76,8 @@ const DROPPED = [
  * Expressions whose gap is one of the characters JavaScript counts as
  * whitespace and XML's `S` production does not, each paired with the gap and
  * the place it sits in. ExprWhitespace is those four characters, so a gap
- * spelled with any other is not the engine being strict about anything: no
- * processor reads these, and neither does the lexer, which kinds the character
- * as the nothing it is.
+ * spelled with any other is nobody being strict: no processor reads these, and
+ * neither does the lexer.
  * @type {Array.<Array.<string>>}
  */
 const ALIEN = [
@@ -93,11 +90,10 @@ const ALIEN = [
 
 /**
  * Expressions whose `-` continues a name rather than subtracting, each paired
- * with the name it continues. No axis opens inside a name, so nothing here is a
- * `namespace::` the engine cannot parse, and telling these from {@link DROPPED}
- * is why the question is asked of the tokens: the lexer has already decided
- * which of the two a `-` is, where a lookbehind would be reading characters
- * about a question that is about tokens.
+ * with the name it continues. No axis opens inside a name, so nothing here is
+ * a `namespace::` the engine cannot parse, and telling these from {@link
+ * DROPPED} is why the question is asked of the tokens rather than of the
+ * characters.
  * @type {Array.<Array.<string>>}
  */
 const NAMED = [
@@ -108,10 +104,9 @@ const NAMED = [
 /**
  * Expressions the engine reads as they stand, gap and all, each paired with
  * what the gap stands between. XPath 2.0 lets ExprWhitespace stand between any
- * two tokens and fontoxpath mostly agrees; it is only a node test and an axis
- * separator it insists on reading glued, so a name that merely looks like one
- * must not be counted — `my:element (a)` is a call, XPath reserving an
- * unprefixed name alone.
+ * two tokens and fontoxpath mostly agrees; only a node test and an axis
+ * separator does it insist on reading glued, so `my:element (a)` is a call
+ * rather than one of those.
  * @type {Array.<Array.<string>>}
  */
 const TIGHT = [

@@ -13,16 +13,11 @@ const fs = require('fs')
 const os = require('os')
 
 /**
- * The two sizes of report a piped run is asked for, and what each is about.
- * Each copy of the scaling sheet draws some thirty-six defects and eight
- * kilobytes of report, so twenty of them stand past what a pipe takes before
- * it stops taking more and the run is left writing into a full one — a write
- * the kernel has not taken, which is #767's shape. Two fit wherever they are
- * read, so the run is over before the reader looks, which is node's own
- * flush's: an untouched stdio stream is resumed one tick after the child goes,
- * and whatever the reader has not taken by then is read and thrown away
- * (#822). How wide a pipe the host gives decides which of the two shapes a run
- * of this suite meets, so both are asked and neither may lose a line.
+ * The two sizes of report a piped run is asked for. Twenty copies of the
+ * scaling sheet stand past what a pipe takes, so the run is left writing into
+ * a full one, which is #767's shape; two fit wherever they are read, so the
+ * run is over before the reader looks and node's own flush throws the report
+ * away (#822). How wide a pipe the host gives decides which a run meets.
  * @type {Array.<{name: string, piped: number}>}
  */
 const PIPES = [

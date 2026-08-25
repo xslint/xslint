@@ -86,11 +86,9 @@ const ATTRIBUTED = [
 /**
  * Selectors standing below an anchor: whatever a selector spells in front of
  * its descendant step, which the engine answers once for the document where
- * the sweep behind it costs a traversal per check. Each carries the anchor, the
- * local names the sweep yields and the tail left for the predicate. Three of
- * the four are checks as they are written, and the fourth interposes a step of
- * its own, so what the candidates must stand below is a child of the root
- * rather than the root (#811).
+ * the sweep behind it costs a traversal per check. Each carries the anchor,
+ * the local names the sweep yields and the tail. The fourth interposes a step,
+ * so candidates stand below a child of the root (#811).
  * @type {Array.<{xpath: string, anchor: string, locals: Array.<string>,
  *  tail: string}>}
  */
@@ -123,12 +121,11 @@ const ANCHORED = [
 ]
 
 /**
- * Selectors that are a union of branches, each branch an axis of its own and a
- * tail of its own, with the local names and the tail each carries. A union is
- * what three of the checks are written in and no shape of theirs is served
- * without it: XPath answers a union in document order over both sides at once,
- * so the branches are merged by rank rather than one appended to the other
- * (#811).
+ * Selectors that are a union of branches, each branch an axis and a tail of
+ * its own, with the local names and the tail each carries. Three checks are
+ * written that way and no shape of theirs is served without it: XPath answers
+ * a union in document order over both sides at once, so branches are merged by
+ * rank rather than appended (#811).
  * @type {Array.<{xpath: string,
  *  branches: Array.<{locals: Array.<string>, tail: string}>}>}
  */
@@ -173,11 +170,10 @@ const UNIONS = [
 
 /**
  * Selectors no index may serve, each with why. A wildcard names no bucket; a
- * root-anchored path is not a descendant sweep; an attribute is not an element;
- * a step behind the predicate reaches past what the axis answered; a prefix
- * this project does not bind cannot be resolved to a namespace; and a
- * positional predicate reads the position of the whole descendant sequence,
- * which one candidate at a time cannot supply.
+ * root-anchored path is not a descendant sweep; an attribute is not an
+ * element; a step behind the predicate reaches past what the axis answered; an
+ * unbound prefix resolves to no namespace; and a positional predicate reads
+ * the whole sequence's position.
  * @type {Array.<{xpath: string, why: string}>}
  */
 const WHOLE = [
@@ -301,26 +297,11 @@ const SHEET = xml.parsedFromString(
 const AXIS = '//xsl:variable'
 
 /**
- * A stylesheet where every union's branches interleave, which is the whole of
- * what a union has to be judged on. Each branch finding something is not
- * enough: what a merge gets wrong is **order**, so for each union under test
- * one of the second branch's hits stands *ahead* of one of the first branch's,
- * and appending bucket to bucket therefore answers the right nodes in the wrong
- * order. A digit-named variable and a single-character one stand on both sides
- * of the two functions, and the `otherwise` outside any `xsl:choose` stands
- * ahead of the `when` outside one, for that reason and no other.
- *
- * The first spelling of this fixture armed every branch and interleaved none of
- * the three real checks: their second-branch hits all stood behind their
- * first-branch hits, so appended order happened to equal document order and
- * removing the rank sort from `merged` left six of the seven rows green. That
- * is #645's shape — a zero coming from where the fixture put its elements
- * rather than from the code under test — and the corpora cannot cover for it:
- * over the 868 stylesheets of DocBook-XSL, TEI and DITA-OT, **no file holds
- * both branches** of any of the three, 89 holding `short-names`' first branch
- * and none its second. The ordering guarantee for the checks this change is for
- * rests here alone, and it is pinned by the probe rather than by an arrangement
- * that reads plausibly: with the sort gone, five of these seven rows turn red.
+ * A stylesheet where every union's branches interleave, which is what a merge
+ * is judged on: a second-branch hit stands ahead of a first-branch one, so
+ * appending bucket to bucket answers the right nodes in the wrong order. The
+ * first spelling interleaved none and read green without the rank sort, and no
+ * corpus file holds both branches of a check (#645, #811).
  * @type {Document}
  */
 const MERGING = xml.parsedFromString(
@@ -331,15 +312,11 @@ const MERGING = xml.parsedFromString(
 )
 
 /**
- * Unions the door is judged on against the engine, the three checks written as
- * one plus four spellings of what a merge can get wrong: two buckets that
- * interleave, one bucket entered twice under different tails, the same branch
- * written twice, and a branch that finds nothing. A fourth check rides along
- * for the other half of an anchor: this stylesheet declares `version="3.0"`, so
- * the guard `function-use-in-xslt-1` opens with answers nothing and the two
- * functions below it must go unreported — an anchor that selects no node
- * selects no candidate either, where a served axis that ignored one would
- * report every function there is (#811).
+ * Unions the door is judged on against the engine: the three checks written as
+ * one, plus two buckets that interleave, one entered twice under different
+ * tails, a branch written twice, and one that finds nothing. A fourth rides
+ * along for the other half of an anchor — this sheet is 3.0, so its guard
+ * answers nothing and the two functions go unreported (#811).
  * @type {Array.<string>}
  */
 const MERGED = [
@@ -354,13 +331,11 @@ const MERGED = [
 ]
 
 /**
- * A stylesheet whose elements stand at depths an anchor tells apart: a template
- * and a function directly below the root, an `xsl:stylesheet` nested inside a
- * template, a template and a function inside *that*, and an `xsl:transform`
- * below the root again. So each anchor under test excludes something the sweep
- * behind it would otherwise reach — the root itself for one, everything at the
- * root's own depth for the next — and a served axis that answered the sweep
- * alone reports nodes the selector never selected (#811).
+ * A stylesheet whose elements stand at depths an anchor tells apart: a
+ * template and a function below the root, an `xsl:stylesheet` nested in a
+ * template, a template and a function inside that, and an `xsl:transform`
+ * below the root again. So each anchor excludes what the sweep behind it would
+ * reach, where a served axis over-reports (#811).
  * @type {Document}
  */
 const ANCHORING = xml.parsedFromString(
@@ -371,12 +346,11 @@ const ANCHORING = xml.parsedFromString(
 )
 
 /**
- * Anchored selectors the door is judged on against the engine: the three checks
- * as they are written, one whose branches carry an anchor apiece, and one whose
- * anchor names an element the stylesheet does not hold. That last one is the
- * assertion the others cannot make — an anchor answering nothing must answer no
- * candidates, where a filter written the other way round would report every
- * template in the document.
+ * Anchored selectors the door is judged on against the engine: the three
+ * checks as written, one whose branches carry an anchor apiece, and one whose
+ * anchor names an element the stylesheet does not hold. That last is the
+ * assertion the others cannot make — an anchor answering nothing must answer
+ * no candidates.
  * @type {Array.<string>}
  */
 const DESCENDED = [
@@ -388,14 +362,11 @@ const DESCENDED = [
 ]
 
 /**
- * Predicate spellings the split is judged on, with no verdict written down
- * beside any of them. The engine answers what each one selects and the test
- * asks whether serving it from an axis answers the same, so a row is a
- * question rather than a claim — a table of expectations would have to be
- * right about XPath twice, once in `filters` and once beside it, where a
- * spelling nobody predicted is exactly what this is for (#784). That is what
- * the digit scan of the first spelling could not give: `[count(a)]` and
- * `[a/count(.)]` hold no digit at all and pick a position all the same.
+ * Predicate spellings the split is judged on, with no verdict written beside
+ * any of them: the engine answers what each selects and the test asks whether
+ * an axis answers the same, so a row is a question rather than a claim a table
+ * would have to be right about twice (#784). The digit scan could not give
+ * that: `[count(a)]` holds none and picks a position.
  * @type {Array.<string>}
  */
 const CANDIDATES = [
@@ -410,13 +381,11 @@ const CANDIDATES = [
 ]
 
 /**
- * Whole selectors the two doors are judged on, served and unserved alike, since
- * what they promise is one answer whichever way it was reached. Four of these
- * six are served — elements of one bucket, of two merged by rank, one attribute
- * off each element, and every attribute of the document, which is the usage
- * three of the four cross-file checks are written in and is read off the check
- * rather than spelled again. The other two are refused, at the root and on a
- * positional predicate, and go whole to the engine.
+ * Whole selectors the two doors are judged on, served and unserved alike,
+ * since what they promise is one answer whichever way it was reached. Four of
+ * the six are served — one bucket, two merged by rank, one attribute off each
+ * element, and every attribute of the document, read off the check. The other
+ * two are refused, at the root and on a positional predicate.
  * @type {Array.<string>}
  */
 const DOORS = [

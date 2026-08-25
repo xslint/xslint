@@ -27,31 +27,20 @@ const CORPORA = yaml.parsedFromFile(WORKFLOW).jobs.lint.strategy.matrix.include
 
 /**
  * The dearest each corpus has read on the runner the nightly tier runs on,
- * over nine runs of it — two nightly and seven dispatched — on the tree #818
- * left. A budget answers to this and not to a developer machine: a share
- * cancels a machine's speed where a wall clock carries it, so the only honest
- * measurement of a wall-clock bar is one taken where the bar is enforced. The
- * readings were 7, 6, 8, 8, 5, 8, 7, 8 and 4 seconds over DocBook-XSL, 5, 8,
- * 8, 6, 7, 7, 7, 7 and 7 over TEI, and 3, 2, 3, 3, 3, 3, 3, 2 and 3 over
- * DITA-OT, so a runner disagrees with itself about the same tree by a factor
- * of two — which is the reason the window below is two-sided rather than
- * tight, and why the dearest of nine is what the ceiling answers to.
+ * over nine runs — two nightly, seven dispatched — of the tree #818 left. A
+ * budget answers to this and not to a developer machine, a share cancelling a
+ * machine's speed where a wall clock carries it, and the dearest of nine is
+ * what a ceiling answers to, one runner reading one tree twofold apart (#827).
  * @type {{[name: string]: number}}
  */
 const RUNS = {docbook: 8, tei: 8, ditaot: 3}
 
 /**
- * The cheapest of those same readings, which is the side a ratchet can turn red
- * from. A budget of `SLACK` times a reading fires on everything below a quarter
- * of it, so what has to be true of a budget is not only that it stands above
- * the dearest night but that it stays quiet on the cheapest — otherwise a fast
- * night reddens a build on a tree nobody has touched. Read as whole seconds,
- * these leave the ratchet firing at 3, 3 and 1 and under, against the 4, 5 and
- * 2 below. TEI's margin is two ticks and the other two are one, DocBook-XSL's
- * having been two until the ninth run read 4 where the eight before it read 5
- * to 8: a corpus whose readings span a factor of two on one tree fills half
- * the window `SLACK` allows, and what is thin there is the clock rather than
- * the cut.
+ * The cheapest of those same readings, which is the side a ratchet can turn
+ * red from. A budget of `SLACK` times a reading fires on everything below a
+ * quarter of it, so one must stand above the dearest night and stay quiet on
+ * the cheapest, or a fast night reddens a tree nobody has touched: these leave
+ * it firing at 3, 3 and 1 and under, a margin of one tick but TEI's two (#827).
  * @type {{[name: string]: number}}
  */
 const CHEAPEST = {docbook: 4, tei: 5, ditaot: 2}

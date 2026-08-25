@@ -7,21 +7,11 @@ const {whole} = require('./attributes')
 const {calls, parseOf, textOf, tight} = require('./syntax')
 
 /**
- * The attributes whose whole expression XSLT itself takes the truth of, rather
- * than XPath: a `test` decides which branch of a stylesheet runs, and a
- * `use-when` (XSLT 2.0) whether the element carrying it is there to run at all.
- * SaxonJ-HE 12.5 includes a template whose `use-when` reads
- * `system-property('xsl:version') = '3.0'` and one wrapping that same test in
- * `boolean(...)`, and excludes both `""` and `boolean("")`, so the wrapper
- * decides nothing in the second place either (#561). No version gate stands in
- * front of it: below 2.0 a `use-when` is not XSLT's attribute at all, so such a
- * stylesheet is broken for a reason of its own rather than answered differently
- * here, which the 1.0 pack of each check pins. A literal result element spells
- * the attribute `xsl:use-when`, which is the only spelling a simplified
- * stylesheet has, and the two are one entry rather than two: `expressionsOf`
- * yields a record for either since #654, and `whole` reads the local name of an
- * attribute in the XSLT namespace, so the unprefixed name on this list answers
- * for both and the prefix a document happens to bind never comes into it.
+ * The attributes whose whole expression XSLT itself takes the truth of: a
+ * `test` decides which branch of a stylesheet runs, a `use-when` (XSLT 2.0)
+ * whether the element carrying it is there to run at all. No version gate
+ * stands in front of it, and the `xsl:use-when` a literal result element
+ * spells is the same entry rather than a second one (#561, #654).
  * @type {Array.<string>}
  */
 const TESTED = ['test', 'use-when']
@@ -37,11 +27,8 @@ const OPERANDS = ['and', 'or']
 /**
  * The kinds whose last child is taken as a truth: `some` and `every` read the
  * effective boolean value of the expression behind their `satisfies`. What
- * stands in front of it is one `binding` node per variable, and the value a
- * variable binds is that node's child rather than the quantifier's, so the
- * index says which child is the body rather than fending off a candidate — no
- * check asks about a binding, which is why no fixture can turn that half of the
- * question red.
+ * stands in front of it is one `binding` node per variable, so the index says
+ * which child is the body rather than fending off a candidate.
  * @type {Array.<string>}
  */
 const QUANTIFIED = ['some', 'every']
@@ -58,11 +45,9 @@ const ASKING = ['boolean', 'not']
 /**
  * Whether an expression binding loosely may stand in a child's place with no
  * brackets put round it. Every place a truth is taken has brackets round it
- * already, or nothing after it — the argument of a call, the condition of an
- * `if`, the body of a `satisfies`, a whole `@test` or `@use-when` — except the
- * operands of `and` and `or`, where what follows binds tighter than what a
- * replacement may carry: `a or b` substituted into `boolean(a or b) and @c`
- * would be read as `a or (b and @c)`.
+ * already, or nothing after it, except the operands of `and` and `or`, where
+ * what follows binds tighter than what a replacement may carry: `a or b` in
+ * `boolean(a or b) and @c` would read as `a or (b and @c)`.
  * @param {object} parent - The node the place belongs to
  * @return {boolean} - True when a loose expression stands there unbracketed
  */
@@ -71,21 +56,11 @@ const loosely = function(parent) {
 }
 
 /**
- * Whether the parent takes nothing but the effective boolean value of the child
- * standing at that index.
- *
- * A predicate is deliberately not one of those places, though it does coerce:
- * XPath reads a *numeric* predicate as a test on the context position, so
- * `a[boolean(count(b))]` selects every `a` with a `b` under it while
- * `a[count(b)]` selects the one whose position that count happens to be. What
- * the wrapper hides there is the difference between a truth and a number, which
- * is work rather than noise. Neither is an operand of a comparison: `@a =
- * boolean(@b)` compares a value with a truth, and dropping the wrapper compares
- * two values instead.
- *
- * A bracket is transparent, and only where it stands in such a place itself, so
- * the `(boolean(@x))` of a whole `@test` is one and the `(boolean(@x))` of a
- * `select` is not.
+ * Whether the parent takes nothing but the effective boolean value of the
+ * child standing at that index. A predicate is deliberately not one, though it
+ * coerces: XPath reads a numeric predicate as a test on the context position.
+ * Nor is an operand of a comparison, which compares two values. A bracket is
+ * transparent only where it stands in such a place itself.
  * @param {{node: Node, expression: string, pattern: boolean}} found - Record
  * @param {object} parent - The node above
  * @param {number} index - Which of its children is being asked about
@@ -103,17 +78,11 @@ const asks = function(found, parent, index, places) {
 }
 
 /**
- * Every node of the record's tree standing where nothing but its effective
- * boolean value is taken, each paired with whether an expression that binds
- * loosely may stand there as it is.
- *
- * The whole expression is one such node when it is the whole `@test` or
- * `@use-when` of an XSLT element, XSLT taking the truth of either and nothing
- * else; inside the expression it is XPath that says so, and it says so about
- * the operands of `and` and `or`, the argument of `fn:not` and `fn:boolean`,
- * the condition of an `if` and the body of a `satisfies`. Walked from the root
- * down rather than asked of one node upwards, because the tree carries no
- * parent to climb to and a bracket inherits what its own place is (#561, #596).
+ * Every node of the tree standing where nothing but its effective boolean
+ * value is taken, paired with whether an expression binding loosely may stand
+ * there unbracketed. XSLT names a whole `@test` or `@use-when`, XPath the
+ * operands of `and`/`or`, the argument of `fn:not`/`fn:boolean`, an `if`
+ * condition and a `satisfies` body (#561, #596).
  * @param {{node: Node, expression: string, pattern: boolean}} found - The
  *  expression, whole, as `expressionsOf` yields it
  * @return {Map.<object, boolean>} - The places a truth alone is taken
@@ -141,18 +110,11 @@ const coerced = function(found) {
 }
 
 /**
- * The text that may stand where a node does once nothing but `inner`'s value is
- * carried over, or null where the place takes more than a truth and the
- * wrapper is therefore doing work. A loose expression is bracketed where the
- * place is an operand rather than a bracket of its own, so the operator around
- * it cannot regroup what arrives.
- *
- * `tight` answers that in terms of the general comparison, which is one rung
- * tighter than the `and` it is asked about here, so a comparison carried into
- * an operand is bracketed where it need not be — `(@a = 1) and @b`. That is one
- * ladder borrowed rather than a second one written down beside the grammar, and
- * brackets nobody needs are noise where a missing pair is a rewrite that means
- * something else.
+ * The text that may stand where a node does once nothing but `inner`'s value
+ * is carried over, or null where the place takes more than a truth. A loose
+ * expression is bracketed where the place is an operand rather than a bracket
+ * of its own. `tight` answers that one rung tighter than the `and` asked about
+ * here, so a comparison carried into an operand is bracketed needlessly.
  * @param {{node: Node, expression: string, pattern: boolean}} found - Record
  * @param {Map.<object, boolean>} places - What `coerced` answered for it
  * @param {object} node - The node a fix would replace

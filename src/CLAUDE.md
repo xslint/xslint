@@ -104,13 +104,20 @@ attribute axis is refused where an anchor stands in front of it, and that one is
 rather than the shape — the climb reads a node's parent, and an attribute has none.
 
 A union spelled **inside** one sweep is the fourth phase, and the one place a split is not
-all-or-nothing. `P//(a | b | c)[Q]` is `P//a[Q] | P//b[Q] | P//c[Q]`, a predicate reaching no
-further than one candidate either way, so `spread` writes the arms out and `apart` judges each on
-its own. What makes that safe is the arms themselves: `spread` parts a sweep only where every arm
+all-or-nothing. `P//(a | b | c)[Q]` is `P//a[Q] | P//b[Q] | P//c[Q]` — a union is a set, so
+distributing the anchor and the tail over the arms changes neither what is selected nor the order
+it comes in, and the tail distributes because `filtered` admits no predicate reading the position
+of the sequence it came from, a filtering one answering the same of a node whichever sequence
+carried it there. So `spread` writes the arms out and `apart` judges each on its own. What makes
+that safe is the arms themselves: `spread` parts a sweep only where every arm
 is one element step, so an arm the walk refuses comes back from the engine as elements `named`
 has already ranked and `merged` orders both kinds together. Refusing outright is still the answer
 where *no* arm can be served, there being nothing to gain from asking the engine one selector in
-pieces. The cost of the old rule was one arm answering for the rest:
+pieces. Every arm carrying the same anchor is what `ROOTS` is for: asking the engine once an arm
+would pay over and over for the very traversal the split exists to avoid, and DITA-OT showed no
+win at all until the anchor was remembered against its document — 4.4 ms over the whole of
+DocBook-XSL is cheap once and is not cheap ten times. The cost of the old rule was one arm
+answering for the rest:
 `modern-construct-in-xslt-1` unions nine named instructions with an `xsl:*[@as]` no bucket names,
 so all ten went to the engine and the check read 646 ms over DocBook-XSL, where the nine cost 9,
 the wildcard arm 128 and the anchor 11. Over that corpus `xpath-linter` falls 3.62 s to 2.73 and

@@ -400,12 +400,10 @@ const SCANS = [
 
 /**
  * Expressions whose axis separator stands against a name, each paired with the
- * same expression spelling a gap beside the separator — in front of it, and
- * behind it where the name that follows is itself an axis name. XPath lets the
- * gap stand either side, so the two spell one thing and must arrive as one
- * stream of kinds. It is the kinds that are compared and not the values, since
- * an axis token folds the gap in front of its own `::` and so carries it in its
- * text either way.
+ * same expression spelling a gap beside the separator. XPath lets the gap
+ * stand either side, so the two spell one thing and must arrive as one stream
+ * of kinds — the kinds and not the values, an axis token folding the gap in
+ * front of its own `::` and so carrying it either way.
  * @type {Array.<Array.<string>>}
  */
 const SPACED = [
@@ -421,15 +419,10 @@ const SPACED = [
 
 /**
  * Expressions running a word operator against the terminal in front of it,
- * where XPath requires a gap and this lexer let one be spelled without. Two
- * terminals that cannot delimit each other need whitespace or a comment
- * between them, and a numeric literal beside a word is that pair — so `1div 2`
- * is a syntax error and `1 div 2` is not, the one place a gap decides what an
- * expression is made of rather than merely where it is written (#742).
- *
- * It is the mirror of {@link SPACED}, which pins the far commoner case: a gap
- * beside an axis separator changes nothing at all, and the two spellings must
- * arrive as one stream of kinds.
+ * where XPath requires a gap and this lexer let one be spelled without: a
+ * numeric literal beside a word is a pair that cannot delimit itself, so `1div
+ * 2` is a syntax error where `1 div 2` is not (#742). It is the mirror of
+ * {@link SPACED}, where a gap changes nothing at all.
  * @type {Array.<string>}
  */
 const GLUED = [
@@ -438,12 +431,11 @@ const GLUED = [
 ]
 
 /**
- * Names, and whether XML can spell each one. A name reaches the lexer whole and
- * greedily, so what it holds is not what XML admits: the classes that spell one
- * take a colon and a digit and a hyphen anywhere, and a QName takes them only
- * where XML says. The leading colon and the empty name are here rather than in
- * `test/grammar.test.js` because no expression reaches this question carrying
- * either — a `:` opens a token of its own — so the predicate is asked directly.
+ * Names, and whether XML can spell each one. A name reaches the lexer whole
+ * and greedily, so what it holds is not what XML admits: the classes take a
+ * colon, a digit and a hyphen anywhere where a QName takes them only where XML
+ * says. The leading colon and the empty name are asked directly, no expression
+ * reaching this question carrying either.
  * @type {Array.<{name: string, spells: boolean}>}
  */
 const QUALIFIED = [

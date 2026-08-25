@@ -37,9 +37,8 @@ const OUTSIDE = ['node_modules', 'coverage', 'docs']
  * Every guide the tree holds, walked rather than written down: the root one,
  * and the `CLAUDE.md` of each directory carrying the derivation behind its own
  * modules (#821). Walked, because the gates reading this judge what it holds
- * and nothing else, so a guide relocated into a directory and left off a
- * hand-written list would take its claims out of every one of them — a suite
- * asserting nothing reading exactly like one that passed (#645).
+ * and nothing else, so a guide left off a hand-written list would take its
+ * claims out of every one of them (#645).
  * @type {Array.<string>}
  */
 const GUIDES = ['CLAUDE.md'].concat(
@@ -63,11 +62,10 @@ const sized = function(named) {
 }
 
 /**
- * The prose of a file as one line, so a claim that wraps mid-sentence reads as
- * the one claim it is: two of the three counts #654 corrected were wrapped
- * between the number and its noun, and a gate reading line by line missed them.
- * A continuation asterisk goes with the indent in front of it, a JSDoc carrying
- * one per line.
+ * The prose of a file as one line, so a claim that wraps mid-sentence reads
+ * as the one claim it is: two of the three counts #654 corrected wrapped
+ * between the number and its noun, where a gate reading line by line saw
+ * neither. A continuation asterisk goes with the indent in front of it.
  * @param {string} named - Path of the file from the repository root
  * @return {string} - Its prose, joined
  */
@@ -77,66 +75,31 @@ const worded = function(named) {
 }
 
 /**
- * The documents a claim of ours may stand in: every guide the tree holds, and
- * the README the user reads. The prose is read where it *names* what it counts,
- * since a document counts many things and only some of them are ours. Reading
- * one whole is what the first spelling of the count gate did, and it judged
- * four true claims, ignored eleven, and turned red on #794's perfectly correct
- * "a `//(xsl:variable | xsl:template)` pays for the two names" — a branch that
- * had touched no list. Anchoring on the identifier is what tells the two apart,
- * and it reaches what dropping these files would have left standing:
- * `PATTERNS` is counted twice, in prose older than #654, so a sixth pattern
- * attribute would rot both.
- *
- * Both of those counts stand in a guide rather than in the root, #821 having
- * relocated the derivation behind each module into the `CLAUDE.md` of its own
- * directory — one in `src/CLAUDE.md` and one in `src/linters/CLAUDE.md`. So the
- * guides are walked rather than written down: a claim that moves out of the
- * root is judged where it went, and one written into a guide nobody listed
- * would be judged nowhere.
+ * The documents a claim of ours may stand in: every guide the tree holds and
+ * the README the user reads, walked rather than written down, so a claim that
+ * moves out of the root is judged where it went and one written into a guide
+ * nobody listed is judged nowhere. Each is read where its prose *names* what
+ * it counts, reading one whole having judged four claims of fifteen (#821).
  * @type {Array.<string>}
  */
 const DOCUMENTS = GUIDES.concat(['README.md'])
 
 /**
  * How far past the name of a thing a number may stand and still be a claim
- * about it, whether what is counted is a list or a file. One clause is the
- * reach — the two list claims in the tree stand 3 and 12 characters off,
- * `PATTERNS`' five names` and ``PATTERNS` names the five attributes`, and the
- * length stated of `src/grammar.js` stands 2 — and a number further away than
- * this belongs to a sentence about something else, which is the whole of what
- * anchoring buys.
+ * about it, a list and a file alike: one clause, the three claims in the tree
+ * standing 3, 12 and 2 characters off their name, where a number further away
+ * than this belongs to a sentence about something else — which is the whole
+ * of what anchoring buys.
  * @type {number}
  */
 const NEARBY = 80
 
 /**
- * What a turn may load in guides, which is the harness's own number rather than
- * one of ours: Claude Code warns past 150,000 characters of them. What arrives
- * against it is a **chain** and not a pair — the root guide, and the guide of
- * every directory on the way down to a file the turn touches, each injected
- * once — and that was measured rather than assumed, two throwaway guides
- * planted at `src/resources/` and `src/resources/motives/` and neither ever
- * read as a file both arriving the moment a motive under them was opened. The
- * first spelling of this bar weighed the root against the dearest single guide,
- * which is a whole directory short: it read 130,933 and called that 0.87 of the
- * bar while a turn touching `src/linters/` was loading 157,504 and over it. So
- * the two dearest notes moved one step further down, out of `src/CLAUDE.md` and
- * into the top of `src/grammar.js` and `src/syntax.js` — 24,681 characters —
- * and the dearest chain is that same one at 134,884, which is 0.90. How fast
- * that moves is worth knowing beside the bar: two changes landed while this one
- * was being written, #818 spending 5,238 characters of the root and #822
- * another 2,529, and of that second one the root now keeps 1,183 where
- * `test/CLAUDE.md` takes 1,362 — the split's own point, that the derivation
- * grows in the guide beside the code rather than in the one every turn reads.
- *
- * A guide answers to nothing on its own account beside this, and a ceiling of
- * half the bar stood here until it was seen to be one no tree could fail: the
- * root stands in every chain, so the chain holding it above weighs each other
- * guide against the bar less what stands over it — 41,687 for
- * `src/linters/CLAUDE.md`, where half of the bar is 75,000 — and holds the root
- * itself to 81,712, a number derived from the dearest chain rather than chosen.
- * A gate no tree can fail is removed and not kept (#750, #660).
+ * What a turn may load in guides, which is the harness's own number rather
+ * than one of ours: Claude Code warns past 150,000 characters of them. What
+ * arrives against it is a chain and not a pair — the root guide, and the
+ * guide of every directory down to the file a turn touches, each injected
+ * once — and the dearest reads 136,418, which is 0.91 (#750, #660, #825).
  * @type {number}
  */
 const LOADED = 150000

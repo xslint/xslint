@@ -61,13 +61,10 @@ const SPAN = 4
 
 /**
  * Offset just past the axis at the given token index, counting in any
- * whitespace behind its colons. XPath allows a gap there, and it belongs to the
- * axis rather than to the node test, so shortening `attribute::  name` has to
- * take the gap with it — leaving `@  name` would be a fix that reads worse than
- * what it replaced. A gap the source wrote as a line break cannot be told apart
- * here — the parser turned it into a space before the lexer saw it — so such a
- * fix reaches the source as a run of spaces, fails to match, and is declined
- * rather than misapplied. That is #629's to settle, not this function's.
+ * whitespace behind its colons. XPath allows a gap there and it belongs to the
+ * axis rather than the node test, so shortening `attribute::  name` takes the
+ * gap with it. A gap the source wrote as a line break cannot be told apart
+ * here, so such a fix is declined rather than misapplied (#629).
  * @param {Array.<{type: string, value: string, start: number}>} tokens - Tokens
  * @param {number} index - Index of the axis token
  * @return {number} - Offset just past the axis and the gap behind it
@@ -110,24 +107,11 @@ const afterNode = function(tokens, index) {
 }
 
 /**
- * Abbreviable axis specifiers in an expression. Each carries the offset where
- * it starts and the fix that shortens it, or no fix where the shorter form
- * cannot stand in that place: `child::` drops away, `attribute::` becomes `@`,
- * `parent::node()` becomes `..`, and `self::node()` becomes `.`. Those four are
- * the whole of it — a `parent::` or `self::` before any other node test has no
- * shorter form, and neither has any remaining axis, `descendant-or-self`
- * aside, whose `//` trades a named step for a whole-tree walk. Before XPath 2.0
- * gave the context item a predicate list, `.` and `..` were an AbbreviatedStep,
- * which takes no predicate, so `self::node()[1]` is only reported on a 1.0
- * sheet: `.[1]` is a syntax error there. A longhand step in a pattern goes
- * unreported because no pattern offers a shorter one. `parent::node()` is not a
- * legal pattern in any version, the parent axis not being among the downward
- * ones a pattern step takes, so `..` never enters the question. The self
- * axis is illegal before 3.0 for the same kind of reason and legal after it,
- * where `match="."` is still no synonym — a pattern in its own right, not a
- * step inside one, illegal in a union, and outranked by the longhand where it
- * stands alone. Axes inside string literals or comments are never seen because
- * the lexer keeps those whole.
+ * Abbreviable axis specifiers. Each carries its offset and the fix that
+ * shortens it, or none where the shorter form cannot stand there: `child::`
+ * drops away, `attribute::` becomes `@`, `parent::node()` becomes `..`,
+ * `self::node()` becomes `.`. `self::node()[1]` is reported only on a 1.0
+ * sheet, `.[1]` being a syntax error, and a longhand step in a pattern never.
  * @param {string} expression - Xpath expression or pattern
  * @param {boolean} modern - Whether the stylesheet declares XSLT 2.0 or later
  * @param {boolean} pattern - Whether the expression is a pattern, which has no

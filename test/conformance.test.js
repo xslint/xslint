@@ -18,48 +18,11 @@ const fs = require('fs')
 const assert = require('assert')
 
 /**
- * The xpath selectors no shared walk can serve, each with the shape that puts
- * it outside. `src/linters/xpath-linter.js` reads an axis of named elements
- * out of one walk of the document and asks the engine for the predicate alone,
- * which is what took the stage from 5.64 s to 3.64 s over DocBook-XSL (#784);
- * a selector of any other shape still costs a descendant traversal of its own,
- * and fontoxpath performs one over an xmldom tree quadratically (#635).
- *
- * So this is a ratchet and not a licence, red from both sides: a new selector
- * that cannot be served has to be written here with its reason, and one that
- * has since become servable turns its own entry red rather than sitting on a
- * list that has stopped describing it. What a reason here is not is a statement
- * about cost. Nine of the fourteen were anchored at the root, which keeps a
- * selector out because a root step is not a descendant sweep of named elements,
- * and the dearest single one was not among them: `modern-construct-in-xslt-1`
- * at 0.60 s, nine named instructions and an `xsl:*[@as]` no bucket names,
- * unioned inside one sweep. That one is served since #811's fourth phase, which
- * parts such a union arm by arm rather than letting the arm the walk cannot
- * reach answer for the nine it can — over DocBook-XSL the nine cost 9 ms, the
- * wildcard arm 128 and the anchor 11, against 646 for the selector unparted.
- * Phase 2 of #784 is therefore drawn by what a selector costs rather than by
- * the shape that excluded it — the three spelling a union of two whole paths
- * (0.41, 0.32 and 0.17 s), the wildcard of `text-outside-xsl-text` (0.29), and
- * the union of two attribute paths `malformed-version-in-stylesheet` opens with
- * (0.26). An attribute axis is no longer a reason of its own, #811 having given
- * the walk every attribute of a document and one named attribute of named
- * elements, so what keeps that last one out is the bracket its union stands in
- * and nothing else — which is the second way an entry rots, a reason that has
- * stopped being the reason while the refusal stands. The other spelling of it
- * left the table outright at #556, which gave `using-disable-output-escaping`
- * the element test it never had: a union of the two instructions carrying the
- * attribute is a shape the walk serves, so it went by becoming servable rather
- * than by anybody editing the list. Which of the pair's readings went with it
- * is the 0.09,
- * settled by timing both selectors in one process over DocBook-XSL, where the
- * one left reads 170 ms against the departing 81 — the same order, on a
- * measurement of selection alone rather than of the whole stage.
- *
- * A name that has stopped being an `xpath` check at all is the third way this
- * can rot, and the one the sweep below cannot see, since it walks the checks
- * and not the table: #788 took five selectors into code and three of them were
- * listed here, so the entries outlived the checks they were written for. A test
- * of its own holds the table to `checks/xpath/`.
+ * The xpath selectors no shared walk can serve, each beside the shape that
+ * keeps it out. An axis of named elements comes off one walk and only the
+ * predicate reaches the engine, where any other shape costs the traversal
+ * fontoxpath performs quadratically (#635, #784, #811). A ratchet both ways: a
+ * refusal names its reason, one that became servable turns red.
  * @type {{[name: string]: string}}
  */
 const UNINDEXED = {
@@ -73,14 +36,11 @@ const UNINDEXED = {
 }
 
 /**
- * Whether a shared walk can serve every branch of a selector, each branch's
- * axis being elements out of a bucket or attributes off the same walk — either
- * being an axis the run has already paid for, where any other shape costs
- * fontoxpath a descendant traversal of its own. A union of whole paths is
- * served whole or not at all, so one branch it cannot reach answers for the
- * selector; a union spelled inside one sweep is parted arm by arm, so a
- * selector counts as served where any arm of it comes off the walk (#635,
- * #784, #811).
+ * Whether a shared walk can serve a selector, a branch's axis being elements
+ * out of a bucket or attributes off the same walk — either an axis the run has
+ * already paid for, where any other shape costs fontoxpath a descendant
+ * traversal of its own. A union of whole paths is served whole or not at all;
+ * one inside a sweep is parted arm by arm (#635, #784, #811).
  * @param {string} xpath - The selector a declarative check is written in
  * @return {boolean} - Whether the axis comes off the walk
  */
@@ -138,13 +98,9 @@ const KEBAB = /^[a-z0-9]+(-[a-z0-9]+)*$/
 /**
  * A `count(...)` call compared with zero — the existence test spelled the slow
  * way, which `count-compared-to-zero` flags in a user's stylesheet and a
- * check's own selector must therefore not commit. One level of nested
- * parentheses is enough for the argument of a count. The gap before the `(` is
- * part of the call: XPath reads an NCName as a FunctionName when a `(` follows
- * it, "possibly after intervening ExprWhitespace", so `count (x) > 0` is the
- * same slow test spelled differently, and the user-facing check does flag it
- * (#621). A gate blind to the space permitted in our own selectors what the
- * check reports in someone else's.
+ * check's own selector must therefore not commit. The gap before the `(` is
+ * part of the call, XPath reading an NCName as a FunctionName after
+ * intervening whitespace, so `count (x) > 0` is the same test (#621).
  * @type {RegExp}
  */
 const COUNTED = new RegExp(
@@ -152,44 +108,21 @@ const COUNTED = new RegExp(
 )
 
 /**
- * A `name()` call, which answers the *lexical* QName a document happens to
- * spell a node with and so reads the prefix rather than the namespace. A
- * selector asking `name() = 'xsl:variable'` is blind to every stylesheet
- * binding the XSLT namespace to any other prefix, which XSLT permits and real
- * code uses, so it is a false negative written into the check — three of them
- * were, and none of the packs bound another prefix, which is why they survived
- * (#784). A namespace-bound node test answers the question the check means:
- * `//(xsl:variable | xsl:template)`, not `//*[name() = ...]`. It is also the
- * cheaper spelling, since a node test narrows the axis where a predicate has
- * to visit every element to reject it.
- *
- * `local-name()` is not banned beside it. That one reads no prefix, so it
- * answers the same for every spelling of a namespace, and a *negated* set has
- * no node-test form at all — `text-outside-xsl-text` asks for the XSLT
- * elements that are not one of eight names, which no union can spell. The gap
- * before the `(` is part of the call, for the reason `COUNTED` carries.
+ * A `name()` call, which answers the *lexical* QName a document spells a node
+ * with and so reads the prefix rather than the namespace. Three selectors
+ * asked `name() = 'xsl:variable'`, blind to every stylesheet binding XSLT
+ * elsewhere and cheaper nowhere (#784). `local-name()` is not banned beside
+ * it: it reads no prefix, and a negated set has no node-test form at all.
  * @type {RegExp}
  */
 const NAMED = new RegExp(`(^|[^-\\w])name${GAP}*\\(${GAP}*\\)`)
 
 /**
  * A `count(*)` call, which counts the *element* children of a node and sees no
- * text among them at all. A selector spelling `count(*) = 1` means "this holds
- * nothing but that one instruction", and text standing beside the instruction
- * answers that question as much as a second element does — so the count alone
- * reports a construct the check's own advice cannot be given about. Three
- * checks spell it and two were false positives on real stylesheets:
- * `blank-nested-if` on an `xsl:if` whose text the collapse would drop, and
- * `setting-value-of-variable-incorrectly` on a variable whose body
- * concatenates a prefix onto a value, which one `select` cannot express
- * (#491, #492).
- *
- * What a node holds is settled by its text as well as its elements, so a
- * selector asking one asks the other: `not(text()[normalize-space()])` beside
- * the count, which reads the whitespace of an indented stylesheet as the
- * nothing a processor strips it to. What the check writes *instead* is what
- * decides it, though, which is why the third of the three is exempt rather
- * than wrong — see `COUNTING`.
+ * text among them. A selector spelling `count(*) = 1` means nothing but that
+ * one instruction, and text beside it answers that as much as a second element
+ * does — two of the three were false positives on real stylesheets (#491,
+ * #492). So `not(text()[normalize-space()])` stands beside the count.
  * @type {RegExp}
  */
 const CHILDREN = new RegExp(`count${GAP}*\\(${GAP}*\\*${GAP}*\\)`)
@@ -203,14 +136,9 @@ const TEXTED = new RegExp(`text${GAP}*\\(${GAP}*\\)`)
 /**
  * The checks that count the elements a node holds for a reason its text does
  * not disturb, each beside the shape that exempts it. `CHILDREN` asks the rest
- * to weigh both.
- *
- * The one entry is there because of what its advice writes rather than what
- * its selector reads: an attribute value template holds literal text beside
- * the expression, so an `xsl:attribute` holding the text `Prefix:` and an
- * `xsl:value-of` of `heading` becomes `class="Prefix: {heading}"` and loses
- * nothing. Where the two above collapse a construct into one that has nowhere
- * to put the text, this one moves the text along with the value.
+ * to weigh both. The one entry is there for what its advice writes rather than
+ * what its selector reads: an attribute value template carries the literal
+ * text along beside the expression and so loses nothing.
  * @type {{[key: string]: string}}
  */
 const COUNTING = {
@@ -220,16 +148,10 @@ const COUNTING = {
 
 /**
  * An `xml:space` attribute, the only thing deciding whether a whitespace-only
- * text node is there at all: XSLT strips one before a processor looks at it —
- * so indentation is not content — unless the nearest ancestor declaring
- * `xml:space` says `preserve`, a nearer `default` cancelling a `preserve`
- * above it, so the nearest declaration answers and never the presence of one.
- * Four selectors read `text()` for whether a node holds anything and all four
- * were wrong under it — two advising a collapse that drops the whitespace, one
- * calling an instruction empty that emits three spaces, one silent on a blank
- * body beside a `select`, which is XTSE0620 and a stylesheet SaxonJ-HE 12.5
- * refuses (#817, #593). Its other half needs no clause: such a node survives
- * inside `xsl:text` too, which under these elements is an element child.
+ * text node is there at all: XSLT strips one before a processor looks, so
+ * indentation is not content — unless the nearest ancestor declaring it says
+ * `preserve`, a nearer `default` cancelling one above. Four selectors read
+ * `text()` without it and all four were wrong (#817, #593).
  * @type {RegExp}
  */
 const PRESERVED = new RegExp(`@xml:space`)
@@ -258,14 +180,11 @@ const EXEMPTED = [
 ]
 
 /**
- * A string literal a selector compares an expression's *text* against, which is
- * a literal whose own content is quoted: `"'true'"` asks whether a `@test`
+ * A string literal a selector compares an expression's *text* against, which
+ * is a literal whose own content is quoted: "'true'" asks whether a `@test`
  * reads `'true'` character for character. XPath spells one string with either
- * delimiter and means the same string by both, so a selector naming one
- * spelling reads half the stylesheets it is about — `test="'true'"` was flagged
- * and `test="&quot;true&quot;"` walked past, the identical always-true constant
- * (#549). Whichever way round a selector writes the pair, the twin must stand
- * beside it.
+ * delimiter, so a selector naming one spelling reads half the stylesheets it
+ * is about (#549). The twin must stand beside it.
  * @type {RegExp}
  */
 const SPELLED = /"'([^']*)'"|'"([^"]*)"'/g
@@ -359,14 +278,10 @@ const names = function(kind) {
 
 /**
  * Whether the document is XSLT at all: an element in the XSLT namespace, or an
- * attribute in it, which is the whole of what a simplified stylesheet has — its
- * root is a literal result element and `xsl:version` the one thing marking it.
- *
- * A pack whose fixture holds neither is a fixture no check can see a node of,
- * so every amount it claims passes and a selector rewritten to fire on
- * everything passes with it. Three packs spelled the namespace `https://` and
- * asserted nothing for it (#698), which neither #645 nor #607 catches: both ask
- * whether an assertion was written, and here one was — it just cannot fail.
+ * attribute in it, which is the whole of what a simplified stylesheet has. A
+ * pack whose fixture holds neither is a fixture no check can see a node of, so
+ * every amount it claims passes and a selector rewritten to fire on everything
+ * passes with it — three spelled it `https://` (#698).
  * @param {Document} xsl - The parsed fixture
  * @return {boolean} - True when something in it is XSLT's
  */
@@ -387,11 +302,9 @@ const EXPECTS = /found\.(amount|positions|fixes|values)/
 /**
  * The pack directory a harness call names. One call per directory and one
  * directory per call, which is what stands between a pack directory and going
- * unread: the harness is one function now, so deleting the call that hands it a
- * directory deletes every assertion over that directory's packs at once, and
- * nothing in the tree objected. Eleven of the twenty-two could be dropped that
- * way with the coverage gate still reading 100%, `xpath-packs` and its
- * thirty-eight declarative checks among them (#660).
+ * unread: the harness is one function, so deleting the call that hands it a
+ * directory deletes every assertion over those packs at once. Eleven of the
+ * twenty-two could be dropped with coverage still at 100% (#660).
  * @type {RegExp}
  */
 const READS = /dir: '([\w-]+-packs)'/g

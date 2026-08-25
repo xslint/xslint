@@ -28,24 +28,10 @@ const names = [CHECK]
 
 /**
  * The redundant `boolean(...)` calls in an expression: each one standing where
- * nothing but a truth is taken, so the wrapper computes what its own place
- * computes next anyway. Each carries the offset it stands at, its own text, and
- * the argument that stands in its place.
- *
- * A whole `@test` was the only such place until #561. XSLT takes the truth of a
- * whole `use-when` as well, and inside the expression it is XPath that coerces:
- * an operand of `and` or `or`, the argument of `not()` or of another
- * `boolean()`, the condition of an `if` and the body of a `satisfies` all take
- * the effective boolean value of what stands there, so `not(boolean(@x))` says
- * what `not(@x)` says. Which places those are is one question in
- * `src/booleans.js`, asked there rather than listed here, and shared with
- * `redundant-double-negation`. What decides is where the call stands rather
- * than how much of the attribute it covers, which is a question about the tree,
- * and reading the tree is what lets the prefixed and inline spellings of
- * `fn:boolean` be the same call as the bare one (#561, #577).
- *
- * `fn:boolean` takes exactly one argument in every version, so a call spelling
- * none or several wraps nothing and stripping it wrote an empty `@test` (#576).
+ * nothing but a truth is taken, so the wrapper computes what its place computes
+ * anyway. Each carries the offset it stands at, its own text, and the argument
+ * standing in its place. Where those places are is `src/booleans.js`'s question
+ * (#561), and what decides is where the call stands, not its text (#576, #577).
  * @param {{node: Node, expression: string, pattern: boolean}} found - The
  *  expression, whole, as `expressionsOf` yields it
  * @return {Array.<{offset: number, value: string, replacement: string}>} -
@@ -74,10 +60,8 @@ const stripped = function(found) {
  * Lint the valid expressions for a `boolean(...)` call standing where nothing
  * but a truth is taken, reporting one defect per occurrence with the safe fix
  * that strips the wrapper. Nowhere else is the value coerced, so neither an
- * operand of a comparison nor a predicate — where a number is a position rather
- * than a truth — nor the expression of an attribute value template, where the
- * wrapper decides whether `true`/`false` or the node's own text is printed, is
- * reported.
+ * operand of a comparison, nor a predicate, where a number is a position, nor
+ * the expression of an attribute value template, which prints it, is reported.
  * @param {Array.<{source: object, found: object}>} expressions - The valid
  *  expressions the validator kept, each paired with the file it came from
  * @param {Array.<string>} suppressions - Array of suppressed checks

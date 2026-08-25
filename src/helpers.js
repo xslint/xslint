@@ -19,11 +19,9 @@ const REFERENCE = /&([A-Za-z_][\w.-]*);/g
 /**
  * The general entities the given source declares inline in its internal DTD
  * subset, mapped to their replacement text. `@xmldom/xmldom` never expands
- * them, so a reference to one surfaces as an "entity not found" error even
- * though the entity is perfectly well declared — DocBook and TEI stylesheets
- * rely on exactly this — and the reference is left literal in the parsed
- * value. Knowing name and value lets the parser forgive the error and lets the
- * tree be repaired afterwards.
+ * them, so a reference surfaces as an "entity not found" error though the
+ * entity is well declared — DocBook and TEI rely on this — and stays literal
+ * in the parsed value.
  * @param {string} str - XML source
  * @return {Map.<string, string>} - Declared entity names to their values
  */
@@ -81,21 +79,11 @@ const expand = function(node, entities) {
 }
 
 /**
- * XML parser for the given source. Its error handler raises on any
- * well-formedness problem the parser reports — not only the fatal ones it
- * throws on, but also the recoverable ones such as an undefined entity — so a
- * not-well-formed document never parses, and keeps the parser's diagnostics
- * off the console. The level a diagnostic arrives at is not consulted, because
- * `@xmldom/xmldom` grades an attribute written without quotes a mere `warning`
- * and then repairs it, so `select=$broken` parsed and every check downstream
- * read a value the parser had invented (#574). Every warning it can raise at
- * `text/xml` is either that family of attribute syntax or a replacement
- * character the bytes did not decode into, and a stylesheet whose bytes did
- * not decode is no more readable than one whose syntax does not parse. The
- * one exception is an unresolved entity the document is
- * entitled to: one it declares inline, or any at all when it pulls in an
- * external DTD we did not read. `@xmldom/xmldom` leaves such entities
- * unexpanded, and a declared-but-unexpanded entity is not malformed.
+ * XML parser for the given source. Its error handler raises on any well-
+ * formedness problem the parser reports, the recoverable ones included, so a
+ * not-well-formed document never parses: the level is not consulted,
+ * `@xmldom/xmldom` grading an unquoted attribute a `warning` and then
+ * repairing it (#574). An entity the document is entitled to is the exception.
  * @param {string} str - XML source the parser will read
  * @param {Map.<string, string>} declared - Entities declared inline
  * @return {DOMParser} - Configured parser
@@ -115,16 +103,10 @@ const parserFor = function(str, declared) {
 
 /**
  * Every file under a directory, recursively, in the order the entries are read
- * and with each directory's own files standing where the directory does.
- *
- * The subtree is joined on with `flatMap` rather than spread into a `push`,
- * because a spread hands each path over as a separate argument and V8 caps
- * those at roughly 125 per kilobyte of stack: this repository's own checkout
- * grew to 768,731 files and every run over it died with a `RangeError` before a
- * byte of XSL was read (#758). The walk is the wrong place to learn that a tree
- * is large — it is asked before anything is filtered for `.xsl`, so a
- * dependency directory nobody wants linted counts toward the cap as much as a
- * stylesheet does.
+ * and with each directory's own files standing where the directory does. The
+ * subtree is joined on with `flatMap` rather than spread into a `push`, a
+ * spread handing each path over as an argument and V8 capping those, which
+ * killed a run over 768,731 files (#758).
  * @param {string} dir - Directory path
  * @return {Array.<string>} - Every file it holds, at any depth
  */
@@ -160,9 +142,8 @@ const fromFile = function(type, fromString) {
  * A reference as it must be spelled where one opens: a named entity, a decimal
  * character reference, or a hexadecimal one. Character data admits an `&` only
  * here, so an `&` this does not match at is a well-formedness error. Whether
- * the name is *declared* is a separate question the parser already answers, and
- * this deliberately does not ask it — a `&primary;` from an external subset is
- * spelled like a reference and is one.
+ * the name is *declared* is the parser's question, and a `&primary;` from an
+ * external subset is a reference.
  * @type {RegExp}
  */
 const OPENS = /^&(?:#[0-9]+|#x[0-9A-Fa-f]+|[A-Za-z_][\w.-]*);/
@@ -190,23 +171,10 @@ const complaint = function(str, at, what, why) {
 
 /**
  * The complaint the first sequence character data must not hold earns, or an
- * empty string when it holds neither. There are two of them, and
- * `@xmldom/xmldom` accepts both without a word at any level: a bare `&`, which
- * it rewrites to `&amp;` (#574), and a `]]>` that closes no section, which it
- * keeps as it stands (#691). Either way a document no processor would load is
- * handed on as a tree, and every check downstream reasons about content that
- * does not exist.
- *
- * The character data is reached through the tree rather than by scanning the
- * source, because both sequences are *legal* in a comment and in a processing
- * instruction, and an `&` is legal inside a CDATA section as well, where a
- * `]]>` is the close rather than an error. A scan reading the source as text
- * would have to find all three regions to stay quiet in them. A text node
- * cannot be any of the three, so taking only those excludes them by
- * construction, and each one's own run of source ends at the next `<` — a raw
- * `<` in character data being an error the parser does report. Attribute values
- * are outside the walk for the same reason: `]]>` is forbidden in content, and
- * an attribute is not content.
+ * empty string when it holds neither. There are two, and `@xmldom/xmldom`
+ * accepts both silently: a bare `&`, rewritten to `&amp;` (#574), and a `]]>`
+ * closing no section (#691). The data is reached through the tree, both being
+ * legal in a comment.
  * @param {string} str - XML source
  * @param {Document} doc - The document the parser built from it
  * @return {string} - The complaint, or an empty string when there is none

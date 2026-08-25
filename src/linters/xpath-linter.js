@@ -37,29 +37,10 @@ const REFUSED = new WeakMap()
 
 /**
  * The nodes no fix may be attached to: every node holding an expression the
- * grammar refuses — an attribute, or a text node whose braces carry a
- * template — and the element around it. The element is there because a
- * declarative rule selects it while the fix lands somewhere inside, and a fixer
- * names that target within itself, where no gate can read it. It reaches in
- * both directions: `select-starts-with-double-slash` matches whatever element
- * carries the `@select` and reaches sideways for that attribute, while
- * `text-outside-xsl-text` matches the instruction and reaches down into the
- * loose text, which it rewrites whole — so on `delta {1 +} epsilon` it would
- * wrap the unparsable brace in an `xsl:text` were the parent not listed here.
- *
- * Listing the element withholds every fix on it, including one aimed at a
- * sound attribute beside the broken one. That is deliberate: an element whose
- * expression no processor parses is not worth tidying, and the cost of being
- * wrong here is a correction that waits for the syntax to be fixed, against a
- * rewrite of text the same run reported malformed (#651).
- *
- * Its own attributes are listed with it, because a rule may select the
- * attribute rather than the element carrying it, and an attribute is not
- * reachable from the element through this set. `starts-with-double-slash` was
- * the rule that did — one selector over every attribute holding a pattern
- * (#583) — and it is code rather than a selector since #586, so nothing
- * declarative selects an attribute today and that half of the set stands for
- * the shape rather than for a rule the tree still holds.
+ * grammar refuses — an attribute, or a text node whose braces carry a template
+ * — and the element around it, since a declarative rule selects the element
+ * while the fix lands somewhere inside, named where no gate can read it.
+ * Withholding every fix on such an element is deliberate (#651).
  * @param {Document} xsl - XSL document parsed as {@link Document}
  * @return {Set.<Node>} - The nodes a fix must not be offered on
  */

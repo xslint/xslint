@@ -83,17 +83,9 @@ const scopeOf = function(node) {
 /**
  * What each scope of a stylesheet references, keyed by the element declaring
  * it: the names its expressions really hold, and the text of every expression
- * there the grammar refuses.
- *
- * A reference is a `variable` node of the expression's own tree rather than the
- * characters `$name` standing anywhere in the subtree, which is what a
- * `contains` over each descendant's string value asked and answers three ways
- * wrongly (#776). `$name` is not a use of `$n`, though it holds those two
- * characters. A `'$quoted'` is a string literal, which XPath evaluates to text
- * and never to a variable. And the output text of a literal result element,
- * `<para>$shown</para>`, is no expression at all — it is characters bound for
- * the result tree, and reading them as a reference silenced every parameter
- * whose name a template happened to print.
+ * there the grammar refuses. A reference is a `variable` node of the parse and
+ * not the characters `$name` standing anywhere in the subtree, which read `$n`
+ * in `$name`, a `'$quoted'` literal and a `<para>$shown</para>` alike (#776).
  * @param {Document} xsl - XSL document parsed as {@link Document}
  * @return {Map.<Element, {names: Set.<string>, refused: Array.<string>}>} -
  *  What each scope references
@@ -121,13 +113,10 @@ const referenced = function(xsl) {
 
 /**
  * The `@name` of every parameter a stylesheet declares directly inside an
- * `xsl:function` or an `xsl:template`, in document order.
- *
- * Read off the one document-order walk `src/tree.js` already remembers against
- * the document, rather than by asking XPath for a descendant step — which is
- * the whole of what this check used to cost, fontoxpath evaluating one of those
- * over an xmldom tree quadratically and this check asking for one per parameter
- * (#635, #776).
+ * `xsl:function` or an `xsl:template`, in document order. Read off the one
+ * document-order walk `src/tree.js` remembers against the document rather than
+ * by a descendant step per parameter, which fontoxpath answers quadratically
+ * over an xmldom tree and was the whole of what this check cost (#635, #776).
  * @param {Document} xsl - XSL document parsed as {@link Document}
  * @return {Array.<Node>} - The name attribute of each parameter
  */
@@ -141,13 +130,11 @@ const declared = function(xsl) {
 }
 
 /**
- * Whether a parameter of that name is referenced inside its scope.
- *
- * An expression the grammar refuses is read as text here and nowhere else in
- * this check. What such an expression references cannot be read at all, so one
- * of the two answers has to be guessed, and staying quiet about a name whose
- * characters stand in it is the cheap direction: the other invents an unused
- * parameter on a file the same run already reports for its syntax.
+ * Whether a parameter of that name is referenced inside its scope. An
+ * expression the grammar refuses is read as text here and nowhere else in this
+ * check: what it references cannot be read at all, so one of the two answers
+ * has to be guessed, and staying quiet is the cheap direction — the other
+ * invents an unused parameter on a file the run already reports for its syntax.
  * @param {{names: Set.<string>, refused: Array.<string>}} held - What the
  *  scope references
  * @param {string} name - The parameter's name

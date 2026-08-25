@@ -28,12 +28,10 @@ const names = [CHECK]
 
 /**
  * Whether the node negates one thing: a call to the standard `not` with exactly
- * one argument. The prefix is no part of the question — bare, behind a prefix
- * bound to the XPath functions namespace, or with that namespace written
- * inline, all three name the one function, and a `my:not()` of your own names
- * another (#596, #577). `fn:not` takes exactly one argument in every version,
- * so a call spelling none or several negates nothing and rewriting it to its
- * argument wrote an empty `@test` (#576).
+ * one argument. The prefix is no part of it, so a prefixed or inline spelling
+ * names the one function and a `my:not()` names another (#596, #577). `fn:not`
+ * takes one argument in every version, so a call spelling none or several
+ * negates nothing and rewriting it to its argument emptied a `@test` (#576).
  * @param {{node: Node, expression: string, pattern: boolean}} found - Record
  * @param {object} node - A node of its tree
  * @return {boolean} - True when the node is that call
@@ -45,19 +43,9 @@ const negates = function(found, node) {
 /**
  * The double negations in an expression: a `not(...)` whose one argument is
  * itself a `not(...)` of one thing. Each carries the offset it stands at, its
- * own text, and the text that replaces it — `not(not(x))` is `boolean(x)`
- * everywhere, and where nothing but a truth is taken it is `x`, which is the
- * same reduction `redundant-boolean-call` would ask for next if the wrapper
- * were left standing (#596).
- *
- * It reads the calls the grammar built rather than matching `not` against the
- * text, which is what makes the prefixed spellings one construct with the bare
- * one instead of three shapes to match, and what leaves a `not(not(...))`
- * inside a string literal or a comment invisible without anything being blanked
- * first. The argument is the node the parse separated, too, so a binding clause
- * is one argument however many commas it holds — `not(not(for $va in a, $vb in
- * b return $va))` is reported and fixed, where counting commas at depth zero
- * read the clause as several arguments and fell silent (#576).
+ * own text, and the text that replaces it — `not(not(x))` is `boolean(x)`, and
+ * `x` where only a truth is taken (#596). The calls come from the grammar, so a
+ * binding clause is one argument however many commas it holds (#576).
  * @param {{node: Node, expression: string, pattern: boolean}} found - The
  *  expression, whole, as `expressionsOf` yields it
  * @return {Array.<{offset: number, value: string, replacement: string}>} -
