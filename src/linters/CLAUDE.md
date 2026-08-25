@@ -176,9 +176,16 @@ severity and message. `graphOf` yields an edge only where the target is in the c
 of what #468's guardrail asks; the other half is that an href leaving the linted set means *external,
 assume fine*. Both are the same rule read from either side — never invent a defect out of what we
 were not handed — so linting one file of a project cannot report what linting all of them does not.
-Reachability is transitive, since an `xsl:output` three imports down governs just as surely as one
-directly imported, and a pack pins each of the three: the direct import, the chain, and the href
-nobody resolved.
+Reachability is transitive, an `xsl:output` three imports down governing as surely as one directly
+imported, and it is not directional either: a tree serializes together, so the module holding the
+only templates is answered by the sheet importing it as much as by the ones it imports. Saxon over a
+`main.xsl` declaring `method="text"` and a `_lib.xsl` declaring nothing emits text, where `_lib.xsl`
+alone emits XML. So the question is the tree's rather than the file's, and a module is quiet when any
+tree holding it declares an output or reaches outside. Downward alone answers the smaller half:
+DocBook-XSL's 178 reports fall to 143 that way and to 19 with both directions, TEI's 159 to 112 and
+then to 14, DITA-OT's 118 to 95. What survives is what should — `anttools/xspec/coverage-report.xsl`
+is a `match="/"` with no `xsl:output` that nobody imports. Six guards decide it, a pack pins each,
+and a mutation of one reddens that pack alone.
 
 ## `src/linters/corpus-linter.js`
 

@@ -75,9 +75,41 @@ const reaching = function(file, edges) {
 }
 
 /**
- * Lint the corpus for a module carrying templates and declaring no
- * serialization, quiet where the import tree supplies one for it and where an
- * href leaves the linted set (#548, #468).
+ * Every file an `xsl:output` governs: each import tree that declares one, or
+ * that reaches past the linted set, taken whole. A tree serializes together,
+ * so a module is answered by the sheets importing it as much as by the ones it
+ * imports (#548, #468).
+ * @param {Array.<{file: string, xsl: Document}>} corpus - Parsed stylesheets
+ * @param {Array.<{from: string, to: string}>} edges - The import graph
+ * @return {Set.<string>} - The files a serialization already covers
+ */
+const covered = function(corpus, edges) {
+  const held = new Set(corpus.map(({file}) => path.normalize(file)))
+  const supplying = new Set(
+    corpus
+      .filter(({xsl}) => rooted(xsl) && holds(xsl, 'output'))
+      .map(({file}) => path.normalize(file)),
+  )
+  const outward = new Set(
+    importsOf(corpus)
+      .filter((edge) => !held.has(edge.to))
+      .map((edge) => path.normalize(edge.file)),
+  )
+  const settled = new Set()
+  for (const {file} of corpus) {
+    const reach = reaching(file, edges)
+    if (Array.from(reach).some(
+      (one) => supplying.has(one) || outward.has(one),
+    )) {
+      reach.forEach((one) => settled.add(one))
+    }
+  }
+  return settled
+}
+
+/**
+ * Lint the corpus for a module carrying templates that no serialization
+ * covers, the import tree being what settles it rather than the file (#548).
  * @param {Array.<{file: string, content: string, xsl: Document}>} corpus -
  *  Parsed stylesheets
  * @param {Array.<string>} suppressions - Array of suppressed checks
@@ -88,24 +120,10 @@ const lintByOutput = function(corpus, suppressions = []) {
   logger.debug(`Output linting started`)
   const defects = []
   if (!suppressed(CHECK, suppressions)) {
-    const edges = graphOf(corpus)
-    const held = new Set(corpus.map(({file}) => path.normalize(file)))
-    const outward = new Set(
-      importsOf(corpus)
-        .filter((edge) => !held.has(edge.to))
-        .map((edge) => path.normalize(edge.file)),
-    )
-    const supplying = new Set(
-      corpus
-        .filter(({xsl}) => rooted(xsl) && holds(xsl, 'output'))
-        .map(({file}) => path.normalize(file)),
-    )
+    const settled = covered(corpus, graphOf(corpus))
     for (const {file, xsl} of corpus) {
-      const bare = rooted(xsl) && holds(xsl, 'template') && !holds(xsl, 'output')
-      const reach = Array.from(reaching(file, edges))
-      if (bare && !reach.some(
-        (one) => supplying.has(one) || outward.has(one),
-      )) {
+      if (rooted(xsl) && holds(xsl, 'template') && !holds(xsl, 'output') &&
+        !settled.has(path.normalize(file))) {
         defects.push({
           name: CHECK,
           severity: META.severity,

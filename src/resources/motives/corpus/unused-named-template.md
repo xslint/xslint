@@ -14,7 +14,10 @@ XSLT 3.0 defines, invoked by the processor rather than by any
 same holds of any template a run enters directly, such as one Saxon is given
 with `-it:`, but a name chosen on a command line is not something a stylesheet
 records, so those are reported and there is nothing here that could know
-otherwise.
+otherwise. It is the local part of the name that settles the exemption, so a
+template called `initial-template` under any prefix is left alone — one of
+your own, in a namespace of your own and never called, goes unreported. Name
+your own templates something else and the check answers for them.
 
 Incorrect:
 
