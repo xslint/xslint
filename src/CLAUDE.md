@@ -130,8 +130,14 @@ answering for the rest:
 `modern-construct-in-xslt-1` unions nine named instructions with an `xsl:*[@as]` no bucket names,
 so all ten went to the engine and the check read 646 ms over DocBook-XSL, where the nine cost 9,
 the wildcard arm 128 and the anchor 11. Over that corpus `xpath-linter` falls 3.62 s to 2.73 and
-the staged run 7.02 s to 6.18, the report byte-identical at 3843 defects; TEI and DITA-OT are
-neutral, that check already costing about 10 ms on each. The per-pull-request gate does not see it
+the staged run 7.02 s to 6.18; TEI and DITA-OT are neutral, that check already
+costing about 10 ms on each. The identity is stated as the method
+rather than as a count, a count being the one half of it that rots: swapping this module alone for
+the one on master, over the same tree, leaves all three reports byte-identical — 3814, 5713 and
+1266 defects as this lands, where the same sentence read 3843 until #836 withdrew 29 of them. A
+figure quoted from an earlier tree is a dated record and reads as one in `test/CLAUDE.md`, two
+entries there disagreeing over TEI by three; the evidence for the change under review is not, a
+reader checking it against the tree it arrived in. The per-pull-request gate does not see it
 either — its corpus is not 1.0-anchored and the check barely fires there — so no bar in
 `test/scaling.test.js` moves, which is what the nightly corpora tier exists to catch instead.
 
