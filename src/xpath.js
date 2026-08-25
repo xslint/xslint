@@ -86,19 +86,11 @@ const strings = function(xsl, xpath) {
 const CODED = /^[A-Z]{4}\d{4}/
 
 /**
- * Whether the engine compiles the expression, counting a static-type
- * complaint as success. The engine is XPath 3.1, so it rejects the implicit
- * numeric coercion an XPath 1.0 stylesheet leans on (substring-before(...) -
- * 1); that is a dialect mismatch, not a syntax error. It tells the two apart
- * by the shape of the failure: a parse error is "<position>: <source>", a
- * static or type error a W3C code such as XPTY0004.
- *
- * No verdict of a run passes through here any more (#732): this is the second
- * opinion `test/grammar-corpus.test.js` and `test/grammar-shapes.test.js` diff
- * the grammar against, and it is exported for them. Which is why it may stay
- * strict where the specification is not — an engine that refuses a spelling
- * XPath spells is evidence about the engine, and the suite accounts for the
- * three such spellings by name rather than by respelling them (#738).
+ * Whether the engine compiles the expression, counting a static-type complaint
+ * as success: the engine is XPath 3.1, so it rejects the numeric coercion a
+ * 1.0 stylesheet leans on, which is a dialect mismatch and not a syntax error.
+ * No verdict of a run passes through here (#732) — it is the suite's second
+ * opinion, and may stay strict (#738).
  * @param {string} xpath - Xpath expression
  * @return {boolean} - True when it compiles or fails only on a type
  */

@@ -42,12 +42,9 @@ const QUOTED = {'"': 0, '\'': 2}
 /**
  * What a value holding a character XML forbids inside an attribute must be
  * written as, one row per character and per delimiter. A `>` is left bare on
- * purpose: an attribute value may hold one, and re-encoding cannot recover
- * which characters the author chose to spell as references (#718).
- *
- * The last row is why the `&` goes first. Escaping the delimiter introduces an
- * `&` of its own, so a pass that took the ampersands afterwards would spell the
- * reference it had just written `&amp;quot;` and write a value nobody meant.
+ * purpose, an attribute value being allowed one (#718). The last row is why
+ * the `&` goes first: escaping the delimiter introduces an `&` of its own,
+ * which a later pass would spell `&amp;quot;`.
  * @type {Array.<{name: string, quote: string, value: string, spelt: string}>}
  */
 const CASES = [

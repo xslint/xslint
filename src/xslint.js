@@ -55,14 +55,11 @@ const {directivesFrom, suppresses, unused} = require('./directives')
 const {minimatch} = require('minimatch')
 
 /**
- * Linters paired with the checks they own, each given the corpus of well-formed
- * stylesheets. `checks` feeds `CHECKS`, so a linter and its names stay in step.
- * What is left here reads the document rather than the expressions it carries:
- * the two declarative loaders, which run their selectors over it, and the four
- * that ask about namespaces, imports and parameters. The last of those reads
- * expressions as well, since a reference to a parameter is one — but it reports
- * a *declaration*, which is an element no expression names, so it is handed the
- * corpus and reaches `expressionsOf` itself.
+ * Linters paired with the checks they own, each given the corpus of well-
+ * formed stylesheets. `checks` feeds `CHECKS`, so a linter and its names stay
+ * in step. What is left here reads the document rather than the expressions it
+ * carries: the two declarative loaders and the four asking about namespaces,
+ * imports and parameters.
  * @type {Array.<{name: string,
  *  run: function(Array.<{file: string, xsl: Document}>,
  *  Array.<string>): Array.<object>, checks: Array.<string>}>}
@@ -87,13 +84,11 @@ const LINTERS = [
 ]
 
 /**
- * Expression linters paired with their checks, each given the valid expressions
- * the validator kept, so a fault the validator has already reported draws one
- * defect rather than a second one from every check that reads the same text
- * (#750). Ten of them scanned the whole corpus and asked `expressionsOf`
- * themselves, with `defect` withholding the fix on what the grammar refuses;
- * the exclusion is structural now, and there is no gate for a new check to
- * remember.
+ * Expression linters paired with their checks, each given the valid
+ * expressions the validator kept, so a fault the validator has already
+ * reported draws one defect rather than a second from every check that reads
+ * the same text (#750). Ten of them scanned the whole corpus; the exclusion is
+ * structural now, with no gate to remember.
  * @type {Array.<{name: string,
  *  run: function(Array.<{source: object, found: object}>,
  *  Array.<string>): Array.<object>, checks: Array.<string>}>}
@@ -241,10 +236,9 @@ const leveled = function(quiet, level) {
 /**
  * Lint stylesheet sources and return the defects, without touching the
  * filesystem, printing output, or exiting — the reusable core the command line
- * wraps and an editor or LSP can call in-process. Each defect carries
- * `{name, severity, message, file, line, pos}` and, when fixable, a `fix`;
- * apply fixes with `fixed` (re-exported alongside this). Inline
- * `xslint-disable` directives in each source's content are honored.
+ * wraps and an editor or LSP can call in-process. Each defect carries `{name,
+ * severity, message, file, line, pos}` and, when fixable, a `fix`. Inline
+ * `xslint-disable` directives are honored.
  * @param {Array.<{file: string, content: string}>} sources - Raw stylesheets
  * @param {{suppress: Array.<string>, overrides: {[check: string]: string}}}
  *  options - Check-name substrings to skip, and per-check severity re-grades
@@ -291,17 +285,8 @@ const lint = function(sources, {suppress = [], overrides = {}} = {}) {
 /**
  * Entry point for the command line.
  * @param {Array.<string>} pths - Files or directories with .xsl to lint
- * @param {{
- *  logLevel: string,
- *  quiet: boolean,
- *  suppress: Array.<string>,
- *  maxWarnings: number|undefined,
- *  config: string|undefined,
- *  format: string,
- *  fix: boolean|undefined,
- *  fixDryRun: boolean|undefined,
- *  fixSuggestions: boolean|undefined
- * }} options - CLI options
+ * @param {object} options - CLI options: `logLevel`, `quiet`, `suppress`,
+ *  `maxWarnings`, `config`, `format`, `fix`, `fixDryRun`, `fixSuggestions`
  */
 const xslint = function(pths, options) {
   logger.setLevel(leveled(options.quiet, options.logLevel))
@@ -349,14 +334,9 @@ const xslint = function(pths, options) {
   })
   if (options.fix || options.fixDryRun || options.fixSuggestions) {
     /**
-     * @todo #571:60min Fix over several passes, until a pass changes nothing.
-     *  A fix that `fixer.js` skips for overlapping another is never applied
-     *  here, so `--fix` under-delivers and then reports a defect the winning
-     *  fix has already removed from the file. Re-lint the rewritten contents
-     *  and fix again, capped at ten passes, stopping early when a pass
-     *  reproduces the content of the pass before last, the way ESLint and
-     *  RuboCop both reach a fixpoint without looping forever over two checks
-     *  that undo each other.
+     * @todo #571:60min Fix over several passes until nothing changes: a fix
+     *  `fixer.js` skips for overlapping another is never applied, so `--fix`
+     *  under-delivers and reports a defect the winner already removed.
      */
     const {contents, applied} = fixed(sources, reported, options.fixSuggestions)
     for (const [file, content] of contents) {

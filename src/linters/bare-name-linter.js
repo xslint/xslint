@@ -106,11 +106,8 @@ const declared = function(template, element) {
 /**
  * The steps that open a path, which are the only ones a variable name can be
  * confused at: a name deeper in a path is a child of whatever stands in front
- * of it and reads as nothing else, where a name at the head of one is a child
- * of the context node — or the variable somebody meant to write.
- *
- * A union has as many heads as it has branches, so `x | title/y` holds one
- * where the text this replaces read the front of the value and saw none.
+ * of it. A union has as many heads as it has branches, so `x | title/y` holds
+ * one where the text this replaces read the front of the value and saw none.
  * @param {{node: Node, expression: string, pattern: boolean}} found - The
  *  expression, whole, as `expressionsOf` yields it
  * @return {Array.<object>} - The head steps found
@@ -124,14 +121,10 @@ const heads = function(found) {
 
 /**
  * The bare names the expression opens a path with that a variable in scope has
- * already taken, each paired with the fix that spells the variable.
- *
- * A step is read for the name it *tests* rather than for the text it begins
- * with: `@title` opens with an attribute axis, `child::title` names its own,
- * and `*` names nothing, so none of the three is the bare name this check is
- * about, though two of them hold its characters. What the substring could not
- * reach is the other direction — a `title[1]`, a ` title/x` written behind a
- * gap, and every branch of a union but the first.
+ * already taken, each paired with the fix that spells the variable. A step is
+ * read for the name it *tests* rather than for the text it begins with, so
+ * `@title`, `child::title` and `*` are none of them this construct, where a
+ * `title[1]`, a gapped ` title/x` and every union branch but the first are.
  * @param {{node: Node, expression: string, pattern: boolean}} found - The
  *  expression, whole, as `expressionsOf` yields it
  * @param {Set.<string>} taken - The names variables in scope have taken
@@ -179,13 +172,8 @@ const applied = function(found) {
  * Lint the valid expressions a stylesheet carries for an `xsl:apply-templates`
  * selecting a node by a name a variable in scope has already taken, where the
  * bare name picks the child element and the author usually meant the variable.
- *
- * The name is the tree's answer rather than the front of the attribute's text.
- * `starts-with(@select, concat($var/@name, '/'))` read the first characters of
- * the value, so it saw a `title/x` and missed the same name behind a gap, under
- * a predicate, or in any branch of a union but the first — and it asked the
- * question of an attribute rather than of an expression, where a step says what
- * it tests.
+ * The name is the tree's answer rather than the front of the attribute's text,
+ * a step saying what it tests where a `starts-with` read characters.
  * @param {Array.<{source: object, found: object}>} expressions - The valid
  *  expressions the validator kept, each paired with the file it came from
  * @param {Array.<string>} suppressions - Array of suppressed checks

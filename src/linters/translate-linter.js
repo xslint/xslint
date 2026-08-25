@@ -67,17 +67,11 @@ const folds = function(from, to) {
 }
 
 /**
- * The alphabet-`translate` case folds in an expression: each carries the offset
- * it starts at, its verbatim text, and the `lower-case`/`upper-case` call that
- * replaces it.
- *
+ * The alphabet-`translate` case folds: each carries the offset it starts at,
+ * its verbatim text, and the `lower-case`/`upper-case` call that replaces it.
  * The call is the standard `translate` whichever of its three spellings names
  * it, and its arguments are the nodes the parse separated, so a binding clause
- * is one argument however many commas it holds — a walk counting the commas at
- * bracket depth zero read `translate(for $va in a, $vb in b return $va, ...)`
- * as four arguments and skipped it (#562, #576). What decides the fold is the
- * strings the second and third arguments hold rather than the way they are
- * quoted (#562).
+ * is one argument however many commas it holds (#562, #576).
  * @param {{node: Node, expression: string, pattern: boolean}} found - The
  *  expression, whole, as `expressionsOf` yields it
  * @return {Array.<{offset: number, value: string, replacement: string}>} -

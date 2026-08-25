@@ -5,21 +5,10 @@
 
 /**
  * Token types a lexed expression is made of. Every piece of XPath punctuation
- * carries a kind of its own — the `/` and `//` between steps, the `@` and `$`
- * opening an abbreviated attribute axis and a variable, the `,` of an argument
- * list, the `.` and `..` naming the context item and its parent, the `::` no
- * axis name claimed, and the operators XPath 3.1 added — `=>`, `:=`, `!`, `#`,
- * `?`, and the braces and `:` a map constructor is spelled with — so `OTHER`
- * holds the characters XPath has no token for at all rather than an undivided
- * run of punctuation no grammar can be written against: a `/../` arriving as
- * one string is not two steps of a path (#676), and a `}?` is not one operator
- * (#685).
- *
- * The arrow was the sharper half of the two. Absent from `DOUBLE` where `>=`
- * already sat, it lexed as `=` then `>` — not a stream a parser cannot read but
- * one it reads wrongly, `a => f()` arriving spelled exactly like
- * `a = (> f())`. A missing kind announces itself as `OTHER`; a kind read
- * wrongly has nothing to announce.
+ * carries a kind of its own, so `OTHER` holds only what XPath has no token for
+ * rather than an undivided run no grammar can be written against (#676). A
+ * missing kind announces itself as `OTHER`; a kind read wrongly has nothing
+ * to: `=>` lexed `a => f()` as `a = (> f())` (#685).
  * @type {{[type: string]: string}}
  */
 const TOKENS = {
@@ -187,12 +176,11 @@ const SINGLE = {
 }
 
 /**
- * Map double characters to a token. Two characters are tried before one, so the
- * longer of an overlapping pair wins: `//` is one separator and not two `/`,
- * `..` is the parent and not two context items, `::` stands whole wherever an
- * axis name did not already take it, and `=>` is the arrow rather than the `=`
- * and `>` it is spelled from. Nothing orders `=>` against `>=` either: they
- * are two keys, and the lookup asks for the two characters standing there.
+ * Map double characters to a token. Two characters are tried before one, so
+ * the longer of an overlapping pair wins: `//` is one separator and not two
+ * `/`, `..` is the parent, and `=>` is the arrow rather than the `=` and `>`
+ * it is spelled from. Nothing orders `=>` against `>=`: the lookup asks for
+ * the two characters standing there.
  * @type {{[key: string]: string}}
  */
 const DOUBLE = {
@@ -244,11 +232,10 @@ const MORE = {
 
 /**
  * The word operators, one word each, taken from the maps that already spell
- * them rather than listed a fourth time. One word each is what they are now:
- * `instance of` was two with a gap between them, which a name scan cannot
- * reach past, so the lexer carried a branch of its own to match it and every
- * name it read had to ask whether a longer spelling stood there. The grammar
- * reads that one by value instead (#742).
+ * them rather than listed a fourth time. `instance of` was two with a gap
+ * between them, which a name scan cannot reach past, so the lexer carried a
+ * branch of its own and every name it read had to ask whether a longer
+ * spelling stood there. The grammar reads that one by value instead (#742).
  * @type {Array.<string>}
  */
 const WORDS = Object.keys({...DOUBLE, ...TRIPLE, ...MORE})
@@ -267,16 +254,11 @@ const SYMBOLS = Object.fromEntries(
 )
 
 /**
- * Token types a value ends with, so that a word standing after one of them is
- * an operator rather than a name. XPath decides this by position, not by
+ * Token types a value ends with, so a word standing after one of them is an
+ * operator rather than a name. XPath decides this by position, not by
  * spelling: an NCName is an OperatorName only where an operator may stand,
- * which is why `border` is one name and not `b`, `or`, `der` (#617), and why
- * the `or` of `or/border` is a node test. The context item and its parent end a
- * value the way a name does, so the `or` of `. or x` is an operator, while the
- * `/`, `@`, `$` and `,` end nothing and the word behind one of them is a name.
- * A map or array constructor ends one as well, so the `instance of` behind the
- * `}` of `map{"aa":1}` is the operator it spells, the way it is behind the `]`
- * of a predicate.
+ * which is why `border` is one name and the `or` of `or/border` a node test
+ * (#617). A constructor's `}` ends a value; `/`, `@`, `$` and `,` end nothing.
  * @type {Array.<string>}
  */
 const ENDS = [
@@ -286,61 +268,40 @@ const ENDS = [
 
 /**
  * The kinds that cannot delimit what stands behind them, so XPath makes a gap
- * stand between one of them and a word: whitespace or a comment is required
- * between two terminals neither of which ends at a character the other cannot
- * hold, and a numeric literal beside an operator name is that pair. `1div 2`
- * and `1eq 2` are syntax errors and `1 div 2` and `1(: c :)div 2` are not
- * (#742).
- *
- * A name is here for the same reason and is never reached: a word run against
- * one is absorbed into it, `adiv` arriving as the single name it spells. Which
- * is the whole of the list — every other kind `ENDS` names closes at a
- * character no name can hold, so `count(a)div 2`, `"s"and b` and `a[1]union b`
- * need no gap and are valid XPath as they stand.
+ * stand between one of them and a word: `1div 2` and `1eq 2` are syntax errors
+ * where `1 div 2` and `1(: c :)div 2` are not (#742). A name is here for
+ * completeness and never reached, a word run against one being absorbed into
+ * it.
  * @type {Array.<string>}
  */
 const GLUES = [TOKENS.NAME, TOKENS.NUMBER]
 
 /**
  * The kinds whose text is not expression text, so a scan looking for a
- * construct must not look inside one: it would read a call, an axis or a
- * comparison that no processor ever evaluates. `UNCLOSED` belongs here for the
- * same reason `STRING` does — the author opened a literal, and what follows the
- * quote is its content whether or not the quote ever came back. Leaving it out
- * made `redundant-double-negation` and `count-compared-to-zero` report inside
- * `select="'not(not(x))"`, defects in text nobody reads (#708).
- *
- * It is one list rather than one per reader, because two readers of the same
- * question drift: `masked` in `src/expressions.js` and `inside` in
- * `src/linters/xpath-format-linter.js` each spelled it out, so a kind added to
- * either was a kind missing from the other.
+ * construct must not look inside one. `UNCLOSED` belongs here for the reason
+ * `STRING` does: the author opened a literal, and what follows is its content
+ * whether or not the quote came back. Leaving it out made two checks report
+ * inside `select="'not(not(x))"` (#708).
  * @type {Array.<string>}
  */
 const OPAQUE = [TOKENS.STRING, TOKENS.UNCLOSED, TOKENS.COMMENT]
 
 /**
- * The kinds that carry no meaning to a grammar and every meaning to the source:
- * a gap and a comment. They stay in the stream rather than being filtered out
- * of it, because a span is a range of token indexes and the text of a span is
- * the tokens in it joined back together — drop the trivia and a tree stops
- * reproducing what it was built from. One list, for the same reason `OPAQUE` is
- * one: four readers spelled it themselves — `TRIVIA` in `src/grammar.js`, the
- * solid-token test in `tokenized` below, the predicate-position scan, and the
- * emptiness test in the `lone` that counted a call's arguments before the parse
- * did. Three of the four are gone, the two scans onto the tree and `lone` with
- * them (#575, #596, #561), and the list stays one because a reader added back
- * is a copy nobody would notice.
+ * The kinds that carry no meaning to a grammar and every meaning to the
+ * source: a gap and a comment. They stay in the stream rather than being
+ * filtered out of it, because a span is a range of token indexes and the text
+ * of a span is its tokens joined back together. One list, for the reason
+ * `OPAQUE` is one: four readers spelled it themselves (#575, #596, #561).
  * @type {Array.<string>}
  */
 const TRIVIA = [TOKENS.WHITESPACE, TOKENS.COMMENT]
 
 /**
  * The kind each axis is lexed as, which is what makes one recognisable behind
- * another. Derived from {@link AXES} rather than written out again, and derived
- * once: the question is asked of every token, so building the list per token
- * put an array per token behind a scan that allocates none. Exported for
- * `test/strictness.js`, which reads a spaced separator off the same list rather
- * than keeping a second one of the thirteen axes.
+ * another. Derived from {@link AXES} rather than written out again, and
+ * derived once: the question is asked of every token, so building the list per
+ * token put an array per token behind a scan that allocates none. Exported for
+ * `test/strictness.js`, which reads a spaced separator off it.
  * @type {Array.<string>}
  */
 const AXIS_KINDS = Object.values(AXES)
@@ -357,12 +318,10 @@ const opensComment = function(xpath, at) {
 
 /**
  * Characters a name is spelled with. XML names reach well past ASCII, so a
- * letter is any letter, not `\w`'s twenty-six. Its `NameChar` also admits the
- * three extenders no category here covers — the middle dot and the two ties,
- * `\p{M}` already holding the combining marks of `[#x300-#x36F]` — and leaving
- * them out refused eight spellings the engine accepts, `a·b` among them (#731).
- * They are name characters and no more than that: none may open a name, which
- * is `STARTS`'s answer and stays as it was.
+ * letter is any letter and not the twenty-six of `\w`. Its `NameChar` admits
+ * the three extenders no category here covers — the middle dot and the two
+ * ties — and leaving them out refused eight spellings the engine accepts,
+ * `a·b` among them (#731).
  * @type {RegExp}
  */
 const NAMED = /[\p{L}\p{N}\p{M}_.:·‿⁀-]/u
@@ -389,18 +348,9 @@ const single = function(part) {
 /**
  * Whether a name is one XML can spell: an NCName, or two of them joined by a
  * single colon. Both parts have to hold something, a prefix naming nothing on
- * its own: `$my:` and `my:(1)` are refused by every engine, and it was this
- * answer that let them through, permitting a trailing colon because the `my:`
- * of `my:*` arrives spelled that way — the `*` being the wildcard's own token.
- * A wildcard is `tested`'s business and it consumes both tokens itself now, so
- * a name reaching here always spells its local part (#731).
- *
- * The lexer takes a name whole and greedily and never asks how it is spelled,
- * so `my:25l`, `my:-x` and `my:a:b` each arrive as one `NAME` and read as an
- * ordinary step, which is the one place the grammar was the lenient side of the
- * engine (#708). What a part may hold is `NAMED` less the colon that split it,
- * and what it may open with is `STARTS` — the classes the lexer spells a name
- * with already, rather than a second opinion about what a letter is.
+ * its own (#731). The lexer takes a name whole and greedily and never asks how
+ * it is spelled, so `my:25l` and `my:a:b` arrive as one `NAME`, the one place
+ * the grammar was the lenient side of the engine (#708).
  * @param {string} name - The name to weigh
  * @return {boolean} - True when XML can spell it
  */
@@ -411,13 +361,10 @@ const qualified = function(name) {
 
 /**
  * Whether a name is still being spelled just before the given offset. The run
- * of name characters behind the offset is walked back to its beginning, and it
- * is a name only if it begins the way a name may: `grandchild::` carries the
- * `child::` of a name, and so does `a-child::`, because a `-` continues a name
- * that a letter started. A run that opens with anything else is not a name and
- * the characters behind belong to something else — the `-` of
- * `count(a)-child::b` subtracts, and the one in `1-child::b` subtracts from a
- * number, neither of which a name may begin with.
+ * of name characters behind it is walked back to its beginning, and it is a
+ * name only if it begins the way a name may: `grandchild::` carries the
+ * `child::` of a name, and so does `a-child::`. A run opening with anything
+ * else is not one — the `-` of `count(a)-child::b` subtracts.
  * @param {string} xpath - Xpath expression
  * @param {number} at - Offset to test
  * @return {boolean} - True when a name runs up to the offset
@@ -433,14 +380,9 @@ const spelling = function(xpath, at) {
 /**
  * Whether the colon at an offset joins the name behind it to a part in front.
  * A QName is two NCNames and one colon, so a colon runs a name on only where
- * the name so far holds none and an NCName can start behind it — which is
- * `STARTS`, the class the lexer already spells a name's first character with.
- *
- * That is the whole rule, and the axis separator is it answered twice: a colon
- * opens no NCName either, so a `::` ends a name without a clause of its own
- * (#703). The `:` of a map entry ends one for the same reason, a space and a
- * digit opening no name — where taking every colon swallowed the separator into
- * the key and refused `map{a: 1}`, which every engine reads (#746).
+ * the name so far holds none and an NCName can start behind it, which is
+ * `STARTS`. That is the whole rule: a `::` ends a name (#703), and so does the
+ * `:` of a map entry, where taking every colon refused `map{a: 1}` (#746).
  * @param {string} xpath - Xpath expression
  * @param {number} at - Offset of the colon
  * @param {number} from - Offset the name started at
@@ -475,18 +417,9 @@ const afterName = function(xpath, start) {
 /**
  * Whether an operator may stand at the end of what has been lexed, which is
  * what makes a word an operator rather than a name. The kind of the last solid
- * token settles it. Until #676 the punctuation arrived as one undivided `OTHER`
- * and this had to read the last character of it to guess what had ended — a
- * guess only `.` and `..` ever needed, and neither needs it now that each has a
- * kind `ENDS` can name.
- *
- * Whether a gap stood in front of the word is the one thing about it a kind
- * cannot say, and XPath asks: a word run against a terminal that cannot
- * delimit it is no operator, since the two need whitespace or a comment
- * between them and the author wrote neither. It is the single place a gap
- * decides what an expression is made of rather than merely how it is written,
- * which is why the other reader of this plumbing, {@link separates}, is handed
- * the token alone (#742).
+ * token settles it (#676). Whether a gap stood in front a kind cannot say and
+ * XPath asks: a word run against a terminal that cannot delimit it is no
+ * operator, which is why {@link separates} is handed the token alone (#742).
  * @param {?{type: string, value: string}} last - The last solid token
  * @param {boolean} spaced - Whether trivia stood between it and the word
  * @return {boolean} - True when an operator may stand here
@@ -498,16 +431,10 @@ const operates = function(last, spaced) {
 
 /**
  * The operator a word spells, or `undefined` where it spells none, read off
- * the same maps the lexer kinds one from rather than a list of its own. The
- * multi-word operators answer nothing here: `instance of` is one token holding
- * a gap, so no name a scan takes ever carries its value.
- *
- * It is exported for `src/grammar.js`, which settles the one question this
- * file cannot: whether the `?` of `xs:integer?` ends a type or opens a lookup
- * key, and so whether the word behind it is `div` the operator or `div` the
- * key. XPath gives its own lexer a stack of states for that (A.2.4); ours is a
- * pass that finishes before the grammar starts, so the grammar corrects the
- * guess where it alone knows better (#742).
+ * the same maps the lexer kinds one from. Exported for `src/grammar.js`, which
+ * settles the one question this file cannot: whether the `?` of `xs:integer?`
+ * ends a type or opens a lookup key, and so whether the word behind it is
+ * `div` the operator or `div` the key (#742).
  * @param {string} word - The text of a name
  * @return {?string} - The operator kind it spells, or undefined
  */
@@ -517,21 +444,10 @@ const worded = function(word) {
 
 /**
  * Whether an axis separator is the last thing lexed, so what stands next is a
- * node test and cannot open an axis of its own. After a separator the grammar
- * admits a NodeTest and nothing else, so a name there is the element it names
- * however it is spelled — `child` behind one is the element `child`.
- *
- * The character walk in {@link opensAxis} cannot answer this, and answered it
- * by accident: it asked `spelling` whether a name was already in progress,
- * which counts a `:` as a name character, so `child::child::b` walked back over
- * the separator and got the right stream for the wrong reason while
- * `child:: child::b` stopped at the gap and opened a second axis. One
- * expression arrived as two streams, told apart by a space (#709). The question
- * is about what precedes rather than about characters, which is `operates`'s
- * question, so it is answered the same way, in the same place, and from the
- * same value — the token itself rather than the list it came from, since the
- * question is asked of every token and deriving the last one from the whole
- * list each time is an array per token (#709).
+ * node test and cannot open an axis of its own: a name behind one is the
+ * element it names however it is spelled. The character walk in {@link
+ * opensAxis} answered it by accident, asking `spelling` whether a name was in
+ * progress, which counts a `:` as a name character (#709).
  * @param {?{type: string, value: string}} last - The last solid token
  * @return {boolean} - True when it is an axis
  */
@@ -543,10 +459,8 @@ const separates = function(last) {
  * The axis opening at the given offset, or null when none does. XPath allows
  * whitespace between the axis name and its `::`, so `child ::` names the same
  * axis as `child::`; the name and the colons are matched across that gap and
- * the length spans it, while the two colons themselves stay adjacent. An axis
- * name only ever opens a step, so one reached with a name already in progress
- * is the tail of that name rather than an axis of its own, however the
- * characters in front of it happened to be tokenized.
+ * the length spans it, while the two colons stay adjacent. An axis name only
+ * ever opens a step.
  * @param {string} xpath - Xpath expression
  * @param {number} at - Offset to test
  * @return {?{name: string, length: number}} - The axis name and matched length
@@ -614,14 +528,9 @@ const opensUserFunction = function(xpath, at) {
 /**
  * Offset just past the string literal opening at given quote, and whether the
  * quote that opened it ever came back. A doubled quote inside the literal
- * escapes the quote and does not end it.
- *
- * The second half is what tells a `STRING` from an `UNCLOSED`. The walk ran off
- * the end and said nothing about it until #708, so `'unclosed` arrived as a
- * finished literal and the grammar accepted an expression that has no closing
- * quote — the lexer inventing the character the author did not write, which is
- * the same fault as reading `=>` as two operators (#685): a stream read wrongly
- * rather than not at all, with nothing to announce.
+ * escapes it and does not end it. The second half tells a `STRING` from an
+ * `UNCLOSED`: the walk said nothing, so `'unclosed` arrived finished and the
+ * lexer supplied a quote the author never wrote (#708).
  * @param {string} xpath - Xpath expression
  * @param {number} start - Offset of the opening quote
  * @return {{at: number, closed: boolean}} - Offset just past the literal, and
@@ -646,16 +555,10 @@ const afterString = function(xpath, start) {
 
 /**
  * Offset just past the braced URI literal opening at given offset, or that
- * offset itself where none is spelled there. XPath 3.0 writes a name's
- * namespace inline as `Q{uri}local`, and `BracedURILiteral` is a terminal of
- * the grammar rather than a `Q` standing beside a brace, which is why the whole
- * of it is lexed here and not assembled above.
- *
- * The content is every character up to the closing brace with a brace itself
- * excluded, so `Q{a{b}c` spells no literal at all and neither does one that
- * never closes. Both answer the offset they were handed and lex on as the `Q`
- * and the brace they were before: a malformed literal is not a kind of
- * literal, and the grammar already refuses what those tokens make.
+ * offset itself where none is spelled there. XPath 3.0 writes a namespace
+ * inline as `Q{uri}local`, and `BracedURILiteral` is a terminal of the grammar
+ * rather than a `Q` beside a brace. The content excludes a brace, so `Q{a{b}c`
+ * spells no literal and neither does one that never closes.
  * @param {string} xpath - Xpath expression
  * @param {number} start - Offset of the "Q"
  * @return {number} - Offset just past the closing brace, or `start` for none
@@ -673,20 +576,11 @@ const afterUri = function(xpath, start) {
 }
 
 /**
- * Offset just past the comment opening at given offset, and whether the ":)"
- * that ends one ever stood there. Comments nest, so an inner "(:" must be
- * balanced by its own ":)".
- *
- * The second half is what tells a `COMMENT` from an `UNCLOSED`, and it is the
- * defect #708 closed for the literal directly above, left standing here for one
- * ticket longer (#752). The walk ran off the end and said nothing about it, so
- * `a (: b` came back as a step and a finished comment: a comment is trivia, so
- * the grammar read over the whole tail and had nothing left to object to, and
- * the six linters scanning tokens saw nothing after the `(:` either. One
- * mistyped `:)` and a file linted clean. `Comment ::= "(:" (CommentContents |
- * Comment)* ":)"` spells no such production and every processor answers
- * XPST0003, which since #739 is a missing `invalid-xpath-expression` on text a
- * user asked about.
+ * Offset just past the comment opening at given offset, and whether the `:)`
+ * that ends one ever stood there. Comments nest, so an inner `(:` must be
+ * balanced by its own. The second half tells a `COMMENT` from an `UNCLOSED`,
+ * one ticket later than the literal above: `a (: b` came back as a step and a
+ * finished comment, and a comment is trivia (#752).
  * @param {string} xpath - Xpath expression
  * @param {number} start - Offset of the opening "(:"
  * @return {{at: number, closed: boolean}} - Offset just past the comment, and
@@ -790,13 +684,9 @@ const afterWhitespace = function(xpath, start) {
 /**
  * Split an XPath expression into positioned tokens, preserving whitespace and
  * comments so formatting checks can reason over the original text. Each token
- * carries its type, raw value, and the offset where it starts.
- *
- * Two of the decisions read what came before rather than what stands here —
- * whether a word is an operator, and whether a name may open an axis — and both
- * want the last token that is not trivia. It is carried forward as the tokens
- * are pushed, because whitespace and comments are what they must not see and
- * the scan already knows which it just emitted.
+ * carries its type, raw value, and the offset where it starts. Two of the
+ * decisions read what came before — whether a word is an operator, and whether
+ * a name may open an axis — and both want the last solid token.
  * @param {string} xpath - Xpath expression
  * @return {Array.<{type: string, value: string, start: number}>} - Tokens
  */

@@ -66,46 +66,11 @@ const SERIALIZED = {attribute: 'method', value: 'xml'}
 const HTML = ['html', 'HTML']
 
 /**
- * The XSLT instructions whose content does not flow into the result tree the
- * enclosing element builds, so an element inside one is not standing where the
- * enclosing element stands. Three of them bind a value (`variable`, `param`,
- * `with-param`); `element` builds the wrapper its content becomes children of;
- * three reduce their content to a string (`attribute`, `comment`,
- * `processing-instruction`); `message` writes to the message stream; and
- * `result-document` opens a secondary document with a serialization of its own,
- * which is why it is here rather than merely unhelpful — a stylesheet already
- * declaring `method="html"` there drew the warning against its *primary*
- * output, and the fix would have rewritten that.
- *
- * xsltproc settles the eight of these XSLT 1.0 has, by showing what each
- * actually builds: an `html` under `xsl:element` comes out
- * `<wrapper><html/></wrapper>`, one under `xsl:attribute` comes out `att=""`,
- * and one under `xsl:message` or `xsl:with-param` never reaches the output at
- * all. `result-document` is 2.0 and reasoned from the specification instead,
- * no 2.0 processor being installed to ask.
- *
- * `map-entry` and `array-member` are here for the same reason and from a
- * version further on: the content of either builds a map's value or an array's
- * member, which is a value and not a node the enclosing element holds. Their
- * containers are not, and the asymmetry is deliberate — the content of an
- * `xsl:map` is a sequence of maps and of an `xsl:array` a sequence of arrays,
- * so an `html` standing directly inside one is invalid XSLT rather than output
- * standing anywhere, and there is nothing there worth a name.
- *
- * `xsl:copy` is deliberately absent, and it is the one that looks like it
- * belongs. Copying the *document node* is transparent — its content becomes
- * the children of the copy, which is the result document — so under a root
- * template an `html` inside one really is the document element, and xsltproc
- * agrees, answering `<html><body/></html>` where `xsl:element` answers a
- * wrapper.
- *
- * A list is only as good as the reason each name is on it, and only as good as
- * the test that would notice one leaving. Every name here is dropped in turn
- * against `test/resources/root-template-packs/`, and each drop turns a pack
- * red: two did not when this list was first written, `param` inherited from a
- * two-name spelling and never asserted, and four masked by a literal result
- * element standing between the instruction and the `html` — a zero produced by
- * another mechanism than the one under test, which is #645's shape.
+ * The XSLT instructions whose content does not flow into the result tree
+ * around them: a value binding, a wrapper, a string, the message stream, a
+ * secondary document, a map entry, an array member. `xsl:copy` is absent,
+ * copying a document node being transparent; dropping any name here reddens a
+ * pack (#645).
  * @type {Array.<string>}
  */
 const DIVERTED = [
@@ -115,18 +80,11 @@ const DIVERTED = [
 ]
 
 /**
- * Whether the pattern matches the root of the document. A pattern is a union of
- * branches and the root is the branch holding no step at all — the whole of
- * `match="/"`, and one arm of `match="/ | alpha"`, which matches the root as
- * surely though its text does not begin and end with the slash.
- *
- * `starts-with(@match, '/')` was the question before, and it is a different
- * one: every absolute pattern begins that way, so a `match="/alpha"` — a
- * template for the `alpha` element, selected wherever a document holds one at
- * its root — was read as the root template and told that it "contains only
- * variable declarations", which is advice about a template the stylesheet does
- * not have. The repository's own motive rule names that error: no
- * slash-prefixed pattern is the root template but the slash itself.
+ * Whether the pattern matches the root of the document. A pattern is a union
+ * of branches and the root is the branch holding no step at all — the whole of
+ * `match="/"`, and one arm of `match="/ | alpha"`. A `starts-with(@match,
+ * '/')` was the question before, and every absolute pattern begins that way,
+ * so `match="/alpha"` was read as the root template.
  * @param {{node: Node, expression: string, pattern: boolean}} found - The
  *  pattern, whole, as `expressionsOf` yields it
  * @return {boolean} - True when the root is one of the nodes it matches
@@ -188,13 +146,10 @@ const silent = function(template) {
 
 /**
  * Whether the element stands where the template's own result stands: every
- * element between it and the template is an XSLT instruction that passes its
- * content through, which is every one of them but `DIVERTED`. An `html` under
- * a literal result element is a fragment of a larger document rather than the
- * document — what an Atom `content` or an XHTML island holds — and one under
- * an `xsl:message` or an `xsl:result-document` is not this document at all.
- * `xsl:if`, `xsl:choose` and `xsl:for-each` are transparent and so keep it
- * outermost, which is what makes this a walk rather than a test on the parent.
+ * element between it and the template is an XSLT instruction passing its
+ * content through, which is all of them but `DIVERTED`. An `html` under a
+ * literal result element is a fragment, not the document; `xsl:if` and
+ * `xsl:for-each` are transparent, so this is a walk.
  * @param {Element} element - The element being judged
  * @param {Element} template - The root template holding it
  * @return {boolean} - True when the template builds it outermost
@@ -211,13 +166,10 @@ const outermost = function(element, template) {
 
 /**
  * Whether the template builds an HTML document. Holding an `html` element
- * somewhere inside it was the question until #495, and it is a different one:
- * an XML document may embed an HTML fragment — an Atom entry's `content`, an
- * XHTML island — and stay XML, so a check reading any descendant told a valid
- * feed to serialize itself as HTML, and `--fix-suggestions` rewrote it. The
- * namespace answers the other half: an `html` a document puts in the XHTML
- * namespace is XHTML, whose serialization is `xml` in 1.0 and `xhtml` from
- * 2.0, never the `html` this check recommends.
+ * somewhere inside it was the question until #495, and an XML document may
+ * embed an HTML fragment and stay XML, so a check reading any descendant told
+ * a valid feed to serialize itself as HTML. An `html` in the XHTML namespace
+ * is XHTML, serialized as neither.
  * @param {Element} template - The root template
  * @return {boolean} - True when it builds one
  */
@@ -263,12 +215,9 @@ const reported = function(check, file, element) {
 /**
  * Lint the corpus for the two faults a root template gives away: one that
  * declares variables and writes nothing, and one that builds HTML under an
- * `xsl:output` declaring the XML method.
- *
- * Which template is the root one is the pattern grammar's answer since #723 and
- * was a substring's until now, both checks reading a `@match` that begins with
- * a slash as the root template — where every absolute pattern begins that way
- * and only the bare `/` is the root (#788's family, one check over).
+ * `xsl:output` declaring the XML method. Which template is the root one is the
+ * pattern grammar's answer since #723 and was a substring's until now, only
+ * the bare `/` being the root (#788's family, one check over).
  * @param {Array.<{file: string, content: string, xsl: Document}>} corpus -
  *  Parsed stylesheets
  * @param {Array.<string>} suppressions - Array of suppressed checks

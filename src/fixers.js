@@ -22,18 +22,10 @@ const disableOutputEscaping = function(node, content) {
 
 /**
  * Fix for `missing-version-in-stylesheet`: declare the version right after the
- * element name. Which attribute that is follows the root's *namespace*, not its
- * name: any element XSLT itself defines takes a plain `version`, while a
- * simplified stylesheet — a root of the result vocabulary — takes the version
- * in the XSLT namespace, an unprefixed one there belonging to that vocabulary
- * and meaning whatever it says (#608). Forking on `xsl:stylesheet` and
- * `xsl:transform` by name instead would leave out the third XSLT root, 3.0's
- * `xsl:package`, and so write `xsl:version` beside the `version` it already
- * carries — two spellings of one attribute, which no parser will load. The
- * prefix is the one the document itself binds, read rather than assumed, since
- * a stylesheet may spell the namespace `tt:` as readily as `xsl:`; where a root
- * binds none, there is no attribute to write and no fix is offered. The
- * version is a guess either way, so it is a suggestion.
+ * element name. Which attribute follows the root's *namespace* and not its
+ * name — an XSLT element takes a plain `version`, a simplified stylesheet the
+ * namespaced one — so forking by name would write a second version onto
+ * `xsl:package` (#608). The prefix is read, never assumed.
  * @param {Element} node - The root element of the stylesheet
  * @return {?object} - The suggestion fix, or nothing when none can be spelled
  */
@@ -146,11 +138,10 @@ const selectAndContent = function(node, content) {
 
 /**
  * Fix builders for declarative Xpath checks, keyed by check name. The per-file
- * linter attaches the fix a builder returns to the defect it found for that
- * check, so a rule stays declarative while still carrying a fix; a builder
- * returns null when it cannot resolve the defect with a single edit. Each is
- * handed the raw source alongside the node, since a builder that cuts an
- * attribute reads the span from the text rather than rebuilding it (#594).
+ * linter attaches the fix a builder returns to the defect it found, so a rule
+ * stays declarative while carrying a fix; a builder returns null when one edit
+ * cannot resolve the defect. Each is handed the raw source, a builder that
+ * cuts an attribute reading the span from the text (#594).
  * @type {{[check: string]: function(Node, string): ?object}}
  */
 const FIXERS = {

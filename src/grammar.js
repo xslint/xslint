@@ -263,10 +263,9 @@ const END = Object.freeze({type: 'end', value: ''})
 /**
  * The floor each construct's version gate compares against, keyed by the
  * construct rather than by the node it builds, since several build none of
- * their own. XSLT's version is what a stylesheet declares and what
- * `versionOf` hands back, so these are XSLT versions rather than XPath's: 1.0
- * carries XPath 1.0, 2.0 carries XPath 2.0, and 3.0 carries XPath 3.1. A
- * construct absent from this table is in every version, `1.0` included.
+ * their own. These are XSLT versions rather than XPath's, being what
+ * `versionOf` hands back: 1.0 carries XPath 1.0, 2.0 XPath 2.0, 3.0 XPath 3.1.
+ * A construct absent from this table is in every version.
  * @type {{[kind: string]: string}}
  */
 const SINCE = {
@@ -297,13 +296,11 @@ const SINCE = {
 }
 
 /**
- * The floor an *operator* stands from, for the two whose own vintage is younger
- * than the rung they stand on. A rung of the ladder is one production of XPath
- * and builds one kind of node, so a floor carried on that kind speaks for every
- * spelling the rung takes: `union` and `|` are one `UnionExpr`, and an `idiv`
- * as much a `MultiplicativeExpr` as a `div`. Both of those words arrived in 2.0
- * where their rung is as old as XPath, which is what this table says and the
- * kind cannot (#764).
+ * The floor an *operator* stands from, for the two whose own vintage is
+ * younger than the rung they stand on. A rung is one production and builds one
+ * kind of node, so a floor carried on that kind speaks for every spelling the
+ * rung takes: `union` and `|` are one `UnionExpr`. Both words arrived in 2.0
+ * where their rung is as old as XPath, which the kind cannot say (#764).
  * @type {{[type: string]: string}}
  */
 const SPELLS = {
@@ -504,11 +501,10 @@ const sees = function(cursor, type) {
 
 /**
  * Whether the token ahead stands directly against the one in front of it, with
- * neither a gap nor a comment between them. The stream is lossless, so trivia
- * is a token of its own and adjacency is the absence of one rather than
- * arithmetic over offsets: it reads the token before by index rather than by
- * significance, because `significant` is written to step over exactly what this
- * has to see (#742).
+ * no gap or comment between them. The stream is lossless, so trivia is a token
+ * of its own and adjacency is the absence of one rather than offset
+ * arithmetic: it reads the token before by index rather than by significance,
+ * which steps over exactly what this has to see (#742).
  * @param {object} cursor - The cursor
  * @return {boolean} - True when nothing stands between the two
  */
@@ -534,15 +530,9 @@ const glued = function(cursor) {
 /**
  * Whether the next token is a name spelled the given way, which is how the
  * parser reads the words the lexer leaves as names because only the grammar
- * knows they are operators there.
- *
- * A word run against a terminal that cannot delimit it is no keyword, since
- * XPath makes whitespace or a comment stand between the two and the author
- * wrote neither: `1to 3`, `1cast as xs:integer` and the `1else` of
- * `if (1) then 1else 2` are all XPST0003, and every one of them was read here
- * as the keyword it spells. The lexer answers the same question for the words
- * it kinds itself, and cannot answer it for these — it hands them over as
- * names precisely because it does not know they are operators (#742).
+ * knows they are operators there. A word run against a terminal that cannot
+ * delimit it is no keyword: `1to 3` and the `1else` of `if (1) then 1else 2`
+ * are XPST0003, and both were read here as the keyword they spell (#742).
  * @param {object} cursor - The cursor
  * @param {string} value - The spelling to look for
  * @return {boolean} - True when it is
@@ -634,16 +624,11 @@ const shaped = function(kind, from, cursor, children) {
 }
 
 /**
- * Parse a run of one production separated by tokens of the given kinds, folding
- * each operator into a node of the given kind. Every binary level of XPath's
- * precedence ladder is this shape, so the ladder is a list of levels rather
- * than a dozen functions that differ only in which tokens they look for.
- *
- * Two gates stand over the operator, because a level's vintage and a spelling's
- * are different questions: what the level builds has to be a kind the version
- * has, and the word in front of the cursor a spelling it knows. Splitting a
- * level in two to ask the second question with the first is what nested a mixed
- * run the wrong way round (#764).
+ * Parse a run of one production separated by tokens of the given kinds,
+ * folding each operator into a node of the given kind. Every binary level of
+ * XPath's ladder is this shape. Two gates stand over the operator, a level's
+ * vintage and a spelling's being different questions: splitting a level in two
+ * to ask the second nested a mixed run the wrong way round (#764).
  * @param {object} cursor - The cursor
  * @param {function(object): object} below - The tighter-binding production
  * @param {Array.<string>} types - The operator kinds this level takes
@@ -663,15 +648,11 @@ const folded = function(cursor, below, types, kind) {
 }
 
 /**
- * A name, which the grammar wants wherever a QName may stand: a node test, a
- * variable, a type, a function. The lexer hands a QName over whole, colon and
- * all, so nothing here has to join one back together.
- *
- * What `qualified` is still asked about is the *user function* kind, whose scan
- * takes an ASCII run and a bracket and weighs neither part as an NCName, so
- * `my:25l(3)` arrives as one token. A bare name cannot fail the question any
- * more: since #746 a colon runs a name on only where an NCName can start behind
- * it, so what the lexer calls a `NAME` is a QName by construction.
+ * A name, wherever a QName may stand: a node test, a variable, a type, a call.
+ * The lexer hands one over whole, colon and all. What `qualified` is still
+ * asked about is the `USER_FUNCTION` kind, whose scan takes an ASCII run and a
+ * bracket and weighs neither as an NCName, so `my:25l(3)` arrives whole; a
+ * bare `NAME` is a QName since #746.
  * @param {object} cursor - The cursor
  * @return {object} - The `name` node
  */
@@ -697,28 +678,11 @@ const named = function(cursor) {
 
 
 /**
- * The occurrence indicator a type ends with, taken where one stands, and the
- * word behind it read as the operator it spells.
- *
- * The lexer settles operator-hood from the last solid token, which cannot tell
- * the `?` of `xs:integer?` from the `?` of `$m?div`: the first ends a value and
- * the second opens a lookup key, and one token of lookahead sees the same
- * character for both. XPath gives its lexer a stack of states for exactly that
- * (A.2.4); ours is a pass of its own that finishes before this file starts, so
- * the correction belongs where the answer is known — here, having just read a
- * type — rather than in a wider `ENDS`, which would answer for the type and
- * break the lookup. So `xs:integer? div 2` and `item()+ union b` are the
- * expressions every processor reads them as, where they were refused before
- * (#742).
- *
- * The `*` never needed correcting and gets one anyway, since `MULTI` already
- * ends a value by spelling the wildcard of `a/*` — an accident that made
- * `item()* div 2` right for a reason no rule stated, and a rule states it now.
- * A word that spells no single-token operator is left as the name it arrived
- * as, which is the whole of what the multi-word ones need: no version of XPath
- * lets an `instance of` follow a type, so `xs:integer? instance of x` stays
- * refused, and `to`, `cast`, `castable` and `treat` never reached this at all,
- * being words the grammar reads by value rather than kinds the lexer hands it.
+ * The occurrence indicator a type ends with, and the word behind it read as
+ * the operator it spells. The lexer settles operator-hood from the last solid
+ * token, which cannot tell the `?` of `xs:integer?` from the `?` of `$m?div`,
+ * so the correction belongs here, having just read a type, rather than in a
+ * wider `ENDS` that would answer for the type and break the lookup (#742).
  * @param {object} cursor - The cursor
  * @param {Array.<string>} kinds - The indicators this type admits
  */
@@ -795,22 +759,11 @@ const singled = function(cursor) {
 }
 
 /**
- * The name of an atomic or union type, which a cast takes and a map keys on: an
- * `AtomicOrUnionType` is an `EQName` and a kind test is not one, there being no
- * atomic type named `node()`, so `1 cast as node()` and
- * `map(node(), xs:integer)` are both XPST0003 in Saxon-HE 12.5.
- *
- * A reserved name is reserved *in front of a bracket* and nowhere else, the
- * rule `tested` has always applied and the reason `//item` is the path it looks
- * like. Refusing the name on sight instead reached the bare spelling of
- * it, so `1 cast as node` and `map(text, xs:integer)` were refused where Saxon
- * answers XPST0051 — an unknown type, static against an expression it parsed —
- * and where fontoxpath accepts. 45 such spellings arrived with the brackets
- * being read for the first time, since a map's key and an array's members are
- * types this production had never been handed before, and 75 more were already
- * refused: an invented defect either way, which is the direction that costs a
- * user an `invalid-xpath-expression` on working XPath and drops the expression
- * from every check behind the validator (#753).
+ * The name of an atomic or union type, which a cast takes and a map keys on:
+ * an `AtomicOrUnionType` is an `EQName` and a kind test is not one. A reserved
+ * name is reserved *in front of a bracket* and nowhere else, so refusing it on
+ * sight invented a defect on `1 cast as node` and `map(text, xs:integer)`,
+ * which Saxon parses and fontoxpath accepts (#753).
  * @param {object} cursor - The cursor
  */
 const atomic = function(cursor) {
@@ -851,14 +804,10 @@ const wildcarded = function(cursor) {
 
 /**
  * What a processing-instruction test takes: nothing, an NCName, or a string
- * literal. The name is where the versions part, and by more than a spelling —
- * XPath 1.0's `NodeTest` admits `'processing-instruction' '(' Literal ')'` and
- * nothing else, so `processing-instruction(a)` is a syntax error there and
- * xsltproc says so, while 2.0's `PITest` adds the NCName. A prefix is refused
- * at every version, an NCName carrying no colon, which is what Saxon answers of
- * `processing-instruction(my:a)`. Whether a literal's content spells an NCName
- * is a different question and not this one: `processing-instruction('a b')` is
- * XPTY0004, a type error against text the grammar accepts.
+ * literal. The name is where the versions part — XPath 1.0 admits a Literal
+ * and nothing else, so `processing-instruction(a)` is a syntax error there,
+ * while 2.0's `PITest` adds the NCName. A prefix is refused at every version,
+ * an NCName carrying no colon.
  * @param {object} cursor - The cursor
  */
 const instructed = function(cursor) {
@@ -876,11 +825,10 @@ const instructed = function(cursor) {
 
 /**
  * What an element test takes: nothing, a name or wildcard, and behind a comma
- * the name of a type with an optional `?` for whether the element may be
- * nillable. One type and no more, and no occurrence indicator on it — both
- * `element(a, xs:string, xs:integer)` and `element(a, xs:string*)` are
- * XPST0003 — and the type is a name rather than a wildcard, which is what
- * parts `element(*, xs:string)` from `element(a, *)`.
+ * a type with an optional `?` for whether the element may be nillable. One
+ * type and no more, and no occurrence indicator on it — both `element(a,
+ * xs:string, xs:integer)` and `element(a, xs:string*)` are XPST0003 — and that
+ * type is a name rather than a wildcard.
  * @param {object} cursor - The cursor
  */
 const elemented = function(cursor) {
@@ -917,8 +865,7 @@ const attributed = function(cursor) {
  * always: `ElementDeclaration` is an EQName, so a wildcard is not one and
  * neither is nothing at all. Saxon answers XPST0008 to a well-spelled one,
  * having no schema to look the declaration up in, which is a static error
- * against an expression it parsed — the difference a reader of error *codes*
- * sees and a reader of exit statuses does not.
+ * against an expression it parsed.
  * @param {object} cursor - The cursor
  */
 const declared = function(cursor) {
@@ -979,16 +926,11 @@ const listed = function(cursor) {
 }
 
 /**
- * What a function test takes, which is the one kind test whose shape reaches
- * past its own closing bracket: `AnyFunctionTest` is `function(*)` and stops
- * there, while `TypedFunctionTest` takes a sequence type per argument and
- * then requires an `as` and the type it returns. Both halves were missing — the
- * bracket count swallowed the arguments and left the `as` standing, so
- * `$v instance of function() as xs:integer` was refused for text left over at
- * the end, an invented defect against an expression Saxon accepts, while
- * `function()` and `function(xs:integer)` were parsed and are XPST0003 for
- * returning nothing. The star takes no `as`, `function(*) as xs:integer` being
- * a syntax error too.
+ * What a function test takes, the one kind test whose shape reaches past its
+ * own closing bracket: `AnyFunctionTest` is `function(*)` and stops there,
+ * while `TypedFunctionTest` takes a sequence type per argument and then an
+ * `as` and the type it returns. Both halves were missing, so the `as` of one
+ * Saxon accepts was text left over at the end.
  * @param {object} cursor - The cursor
  */
 const returned = function(cursor) {
@@ -1011,35 +953,11 @@ const returned = function(cursor) {
 }
 
 /**
- * The names XPath has taken for itself, each with the version that took it and
- * what it took it for. A `test` is a kind test, standing where a node test
- * stands; an `item` is an item type, standing in a sequence type and nowhere a
- * node test does; a `keyword` is neither, standing for a construct of its own —
- * `if` opens a conditional, and `switch` and `typeswitch` open what those two
- * versions took the words for and this grammar has no production of.
- *
- * The floor is not a detail beside the name, it is half of what the name means:
- * below it the same characters are an ordinary call to a function so called.
- * `element(a)` is a kind test from 2.0 and a call at 1.0, `namespace-node()` a
- * kind test from 3.0 and a call before it, and xsltproc reads every name here
- * that way at 1.0 — parsing the expression and then going looking for the
- * function, which is #576's question and not this parser's. Two lists of names
- * beside a map of the floors was that fact written twice with the version in
- * one copy only, so the lists answered the same at every version and
- * `element(a)` came back a `step` in a 1.0 stylesheet: the verdict agreed with
- * the engine and the tree did not, which is the half no acceptance diff can see
- * and the half Phase 4 of #644 walks (#728). One entry per name cannot drift
- * that way, a kind test with no floor being inexpressible.
- *
- * A name is taken only where a *call* could stand, which is to say in front of
- * a bracket: `item` names an element as well as anything else does, so `//item`
- * is a path and no concern of this table.
- * The production that reads each name's brackets is the third field, so a name
- * this grammar takes for a test or an item type cannot lack the production that
- * reads it — which is why the table stands here, below those productions,
- * rather than beside the version tables it began among (#753). A keyword has no
- * `reads`, `if` and `switch` and `typeswitch` opening no bracket this parser
- * reads a type out of.
+ * The names XPath has taken for itself, each with the version that took it,
+ * what it took it for, and the production that reads its brackets. A `test` is
+ * a kind test, an `item` an item type, a `keyword` neither. The floor is half
+ * of what a name means: below it the same characters are a call, `element(a)`
+ * being a kind test from 2.0 and a call at 1.0 (#728, #753).
  * @type {{[name: string]: {from: string, kind: string,
  *   reads?: function(object): void}}}
  */
@@ -1073,29 +991,10 @@ const DOCUMENTED = ['element', 'schema-element']
 
 /**
  * A kind test, and the whole of one: a name XPath reserves for a test or an
- * item type, and the brackets behind it read as that name's own production.
- *
- * They were *counted* rather than read until #753 — anything at all could stand
- * inside them — so `text(a)`, `node($v)`, `element(1)` and `element(a b)` all
- * parsed, in a pattern as much as in an expression, and every one of them is
- * XPST0003 in fontoxpath and in Saxon-HE 12.5. Since #739 that is a missing
- * `invalid-xpath-expression`: a `match="text(a)"` no processor loads was
- * reported by nothing. The counting hid an under-acceptance too, which is the
- * direction that invents a defect against working code — a function test's
- * return type stands *behind* the closing bracket, so the count swallowed the
- * arguments and the `as` was text left over at the end.
- *
- * Which production reads which name is the `reads` field of `RESERVED`, beside
- * the version that reserved the name and what it was reserved for, so a name
- * this grammar takes cannot lack the production that reads it.
- *
- * It takes no occurrence indicator, which is the point of it standing alone.
- * The same characters are read by three productions of different shapes — a
- * `NodeTest`'s kind test, an `ItemType` inside a `SequenceType`, and the
- * `SingleType` a cast takes — and one function serving all three took `?`, `*`
- * and `+` wherever it was called. A step has no occurrence indicator to take,
- * so `text() + 1` lost its `+` to the type and was refused where every
- * processor accepts it (#740).
+ * item type, and the brackets behind it read as that name's own production,
+ * which is the `reads` field of `RESERVED`. They were counted rather than read
+ * until #753, so `text(a)` and `element(a b)` parsed. It takes no occurrence
+ * indicator, `text() + 1` having lost its `+` to the type (#740).
  * @param {object} cursor - The cursor
  * @return {object} - The `type` node
  */
@@ -1183,23 +1082,10 @@ const conditional = function(cursor) {
 
 /**
  * A node test: a name, a wildcard in any of its four spellings, or a kind test
- * such as `text()`. A wildcard's parts arrive as separate tokens, since `*` is
- * an operator elsewhere and a prefix is a name, so the four are read here
- * rather than asked of the lexer. The fourth is a braced URI literal in front
- * of the `*`, which names every element of one namespace with no prefix bound
- * to it, and is a wildcard rather than a name as much as `*:name` is.
- *
- * The prefixed spelling is taken here whole, both tokens of it, rather than
- * asked of `named` and then held to a `*`. That is the only place a name ending
- * in a colon belongs, so `qualified` can refuse one everywhere else: while that
- * permission sat in the lexer's answer it reached a variable and a call too,
- * and `$my:` and `my:(1)` parsed where no engine accepts either (#731).
- *
- * Each of the three is spelled with no gap inside it, `Wildcard` being marked
- * `ws: explicit`, so every one of them asks for adjacency and none refuses on
- * its own account: a `*` is a whole wildcard already, and what a gap parts from
- * it is the next production's business rather than a fault here (#736). That is
- * what leaves the `:` of `map {* : 1}` to the map constructor it separates.
+ * such as `text()`. A wildcard's parts arrive as separate tokens, so the four
+ * are read here rather than asked of the lexer, and the prefixed spelling
+ * whole — the only place a name ending in a colon belongs, which lets
+ * `qualified` refuse the `$my:` and `my:(1)` no engine accepts (#731).
  * @param {object} cursor - The cursor
  * @return {object} - The `test` node
  */
@@ -1250,11 +1136,10 @@ const reaches = function(cursor, type) {
 
 /**
  * Whether the token after the next one is of the given kind *and* stands
- * against it. `reaches` is what almost every production wants, since a gap
- * between two terminals is nothing to a grammar; a terminal spelled out of
- * several tokens is where that stops being true, and a wildcard is the only one
- * XPath has — `Wildcard` is marked `ws: explicit`, so `Q{urn:my} *` and `my: *`
- * are not loose spellings of one but expressions no processor loads (#736).
+ * against it. `reaches` is what almost every production wants, a gap between
+ * two terminals being nothing to a grammar; a terminal spelled out of several
+ * tokens is where that stops, and a wildcard is the only one XPath has —
+ * `Wildcard` is `ws: explicit`, so `my: *` loads for nobody (#736).
  * @param {object} cursor - The cursor
  * @param {string} type - The kind to look for
  * @return {boolean} - True when it stands there with no gap in front of it
@@ -1325,18 +1210,10 @@ const stepped = function(cursor) {
 
 /**
  * Whether a step can begin at the cursor. A path stops where one cannot, which
- * is how `a[1]` ends after the predicate rather than reading the `]` as a test.
- * A name is one of the things it begins with, and the lexer kinds a name three
- * ways — a bare `NAME`, a `USER_FUNCTION` where a prefixed one has a bracket
- * behind it, a `URI` where it spells its namespace inline — so the question is
- * asked of `NAMES` rather than of one kind at a time. Asking about one kind is
- * how `a/Q{urn:my}b` came to be accepted while `//Q{urn:my}a` was refused
- * (#708), and how `a/my:fn(1)` was accepted while `//my:fn(1)` was refused
- * (#731): every production that *reads* a name knew all three, and the one that
- * decides where a name may stand knew one. No version test here, for the reason
- * `OPENERS` carries none — a call is no step below 2.0 and an inline namespace
- * no name below 3.0, and each is refused where that is decided, which names the
- * construct rather than the end of the expression.
+ * is how `a[1]` ends after the predicate. The lexer kinds a name three ways,
+ * so the question is asked of `NAMES` rather than one kind at a time: asking
+ * about one is how `a/Q{urn:my}b` was accepted while `//Q{urn:my}a` was
+ * refused (#708), and `a/my:fn(1)` while `//my:fn(1)` was (#731).
  * @param {object} cursor - The cursor
  * @return {boolean} - True when a step stands there
  */
@@ -1351,12 +1228,10 @@ const steps = function(cursor) {
 
 /**
  * The token kinds a primary expression may open with that no axis step does.
- * From 2.0 a step is `PostfixExpr | AxisStep`, so each of these opens a step as
- * readily as a name does. They are listed without a version test, deliberately:
- * gating them here changes no verdict, because `parted` refuses them at 1.0
- * anyway, and only moves the complaint from naming what a step wanted to naming
- * the end of the expression — the less useful of the two for whoever reads a
- * report. The version is tested at the one place it decides an answer.
+ * From 2.0 a step is `PostfixExpr | AxisStep`, so each of these opens a step
+ * as readily as a name does. They carry no version test deliberately: gating
+ * them changes no verdict, `parted` refusing them at 1.0 anyway, and only
+ * moves the complaint to naming the end of the expression.
  * @type {Array.<string>}
  */
 const OPENERS = [
@@ -1367,11 +1242,9 @@ const OPENERS = [
 /**
  * One part of a path after the slash that opened it. XPath 1.0 admits an axis
  * step and nothing else there — its `PathExpr` lets a `FilterExpr` open a path
- * and stand nowhere after it — while 2.0 generalised the step itself to
- * `StepExpr ::= PostfixExpr | AxisStep`, which puts a parenthesized expression,
- * a variable and a call at every position a step may take (#711). The version
- * is already in hand, so the older shape is kept where it belongs rather than
- * imposed on the versions that outgrew it.
+ * and stand nowhere after it — while 2.0 generalised the step to `PostfixExpr
+ * | AxisStep`, which puts a bracket, a variable and a call at every position a
+ * step may take (#711).
  * @param {object} cursor - The cursor
  * @return {object} - The node
  */
@@ -1387,15 +1260,10 @@ const parted = function(cursor) {
 
 /**
  * A path expression: an optional root, then steps separated by one slash or
- * two. A lone `/` is the document node and takes no step after it, which is why
- * the first step is asked for rather than assumed. A lone `//` is not the same
- * thing spelled shorter: `PathExpr` gives the two separate productions,
- * `"/" RelativePathExpr?` against `"//" RelativePathExpr`, because `//`
- * abbreviates `/descendant-or-self::node()/` and that trailing slash needs
- * something behind it. Reading them alike accepted `//` as a whole expression,
- * and the wrong verdict then bred a wrong tree: the `-` of `//-x` stood where a
- * binary operator may, so it came back a subtraction of two paths, and `//|a`
- * a union with one (#731).
+ * two. A lone `/` is the document node and takes no step after it. A lone `//`
+ * is not that spelled shorter, `//` abbreviating `/descendant-or-
+ * self::node()/` and that trailing slash needing something behind it: reading
+ * them alike accepted `//` whole, and `//-x` came back a subtraction (#731).
  * @param {object} cursor - The cursor
  * @return {object} - The `path` node
  */
@@ -1623,13 +1491,8 @@ const called = function(cursor) {
  * Whether a primary expression stands at the cursor, which is the whole of the
  * fork `StepExpr ::= PostfixExpr | AxisStep` asks. It names the same shapes
  * `primary` reads, in the same order and by the same tests, so the two cannot
- * come apart: everything else is an axis step, which carries a predicate list
- * and nothing more.
- *
- * A step reaching `primary` and coming back out of its last branch is what let
- * the postfixes hang off one — `a?b` came back a lookup into a step and `@a(1)`
- * a call applied to one, neither of which any processor parses, since `(` and
- * `?` follow a `PrimaryExpr` and a name in a path is not one (#740).
+ * come apart. A step reaching `primary` is what let the postfixes hang off
+ * one, `a?b` coming back a lookup into a step (#740).
  * @param {object} cursor - The cursor
  * @return {boolean} - True when a primary expression opens here
  */
@@ -1663,16 +1526,11 @@ const keyed = function(cursor) {
 }
 
 /**
- * A primary expression with whatever hangs off it: predicates, an argument list
- * that applies what the expression answered, and a lookup into a map or array.
- * Only the predicates are older than 3.0. Applying an expression is what a
- * function item is for and both arrived together, so `$f(1)` is a dynamic call
- * from 3.0 and nothing at all before it — where the same characters are not a
- * call by another reading either, a `FilterExpr` taking predicates and no
- * argument list, which is why xsltproc calls `count(a)(1)` a syntax error
- * rather than looking for a function. It stood ungated, so `child::element(b)`
- * came back an `apply` at 1.0 once `element` stopped being a kind test there
- * (#728).
+ * A primary expression with whatever hangs off it: predicates, an argument
+ * list that applies it, and a lookup into a map or array. Only the predicates
+ * are older than 3.0 — applying an expression is what a function item is for
+ * and both arrived together, so `child::element(b)` came back an `apply` at
+ * 1.0 while this stood ungated (#728).
  * @param {object} cursor - The cursor
  * @return {object} - The node
  */
@@ -1701,16 +1559,11 @@ const postfixed = function(cursor) {
 }
 
 /**
- * A simple map: paths chained with `!`, each evaluated with what the one before
- * it answered as its context.
- *
- * It stands here rather than on the ladder because `ValueExpr` *is* a
- * `SimpleMapExpr`, so a map binds tighter than the unary signs above it and far
- * tighter than the four expressions that take a type on their right. Reading it
- * as a rung of the ladder put it the other side of all of them, and
- * `a instance of xs:integer ! b` came back a map over what the `instance of`
- * answered — an expression no processor parses, a sequence type being the end
- * of what may stand there (#740).
+ * A simple map: paths chained with `!`, each evaluated with what the one
+ * before it answered as its context. It stands here rather than on the ladder
+ * because `ValueExpr` *is* a `SimpleMapExpr`, so a map binds tighter than the
+ * four expressions taking a type on their right: as a rung, `a instance of
+ * xs:integer ! b` came back a map over the `instance of` (#740).
  * @param {object} cursor - The cursor
  * @return {object} - The node
  */
@@ -1803,21 +1656,11 @@ const typedExpr = function(cursor) {
 }
 
 /**
- * The binary levels of XPath's precedence ladder, tightest first. Each is one
- * `folded` run, so the ladder reads as the grammar states it rather than as a
- * dozen near-identical functions.
- *
- * One production is one level, and every spelling it takes stands on it: the
- * word `union` beside `|`, `idiv` beside the other multiplicatives, `except`
- * beside `intersect`. All three pairs were two levels apiece until #764, each
- * split so the newer or the differently-named spelling could carry a kind or a
- * floor of its own — and a level is what decides how tightly an operator binds,
- * so the split made the second of the two the looser and nested a mixed run to
- * the right: `9 idiv 2 * 3` came back `9 idiv (2 * 3)`, which is 1 where XPath
- * computes 12, and `a except b intersect c` selected what
- * `a except (b intersect c)` selects. The kind names the production now — `sum`
- * covers a `-` the same way — and a spelling younger than its level carries its
- * floor in `SPELLS`.
+ * The binary levels of XPath's precedence ladder, tightest first, each one
+ * `folded` run. One production is one level and every spelling stands on it:
+ * `union` beside `|`, `idiv` beside `div`, `except` beside `intersect`. All
+ * three were two levels apiece until #764, which made the second the looser
+ * and read `9 idiv 2 * 3` as 1 where XPath computes 12.
  * @type {Array.<{types: Array.<string>, kind: string}>}
  */
 const LADDER = [
@@ -1971,26 +1814,11 @@ const sequence = function(cursor) {
 }
 
 /**
- * Parse an XPath expression into a position-preserving tree.
- *
- * Every node carries the range of tokens it spans rather than a pair of
- * character offsets, so a position is never computed from text — it is carried
- * from the lexer, which had it. The tokens themselves come back with the tree,
- * trivia and all, so the text of any node is the tokens of its span joined
- * together and the whole stream joined together is the expression as it was
- * written. That is what keeps a fix a span replacement over raw source rather
- * than a re-serialisation of a tree that lost the author's spacing.
- *
- * The version in force is a parameter rather than a lookup, because the same
- * text is a different language under a different one: `a to b` is a range in
- * 2.0 and two steps around a name in 1.0, and modern syntax in a 1.0
- * stylesheet is a parse failure rather than an entry on a list of spellings
- * somebody has to keep current (#652).
- *
- * A refusal is an answer, not an exception, since a corpus asks about thousands
- * of expressions and most callers want a verdict. It names what the grammar
- * expected and the offset it stood at, so a report can point at the fault
- * rather than at the attribute holding it.
+ * Parse an XPath expression into a position-preserving tree. Every node
+ * carries the range of tokens it spans and the tokens come back with it,
+ * trivia and all, so a node's text is its span joined and a fix stays a span
+ * replacement over raw source. The version in force is a parameter, the same
+ * text being a different language under another one (#652).
  * @param {string} xpath - The expression
  * @param {string} version - The XSLT version in force where it sits
  * @return {{tokens: Array, tree: ?object, fault: string, at: number}} -
@@ -2029,11 +1857,10 @@ const REWRITE = '3.0'
 
 /**
  * Refuse a pattern production an older XSLT does not have. 3.0 rebuilt the
- * grammar on top of the expression one and brought `intersect` and `except`
- * between two branches, `union` spelled as a word, a variable or three more
- * functions rooting a path, a branch in brackets, and `.` for the context node.
- * 1.0 and 2.0 have a union of paths and nothing else, so admitting any of it
- * there calls a stylesheet valid that no processor of that version loads.
+ * grammar on top of the expression one and brought `intersect` and `except`,
+ * `union` spelled as a word, a variable or three more functions rooting a
+ * path, a branch in brackets, and `.` for the context node. 1.0 and 2.0 have a
+ * union of paths and nothing else.
  * @param {object} cursor - The cursor, standing at the production
  */
 const rewritten = function(cursor) {
@@ -2061,12 +1888,10 @@ const anchors = function(cursor) {
 
 /**
  * The axes a step of a pattern may name. A pattern is matched by walking up
- * from a node rather than evaluated forwards, so the axes it admits are the
- * ones such a walk can answer. 1.0 and 2.0 spell that
- * `ChildOrAttributeAxisSpecifier` and admit exactly the two it is named after;
- * 3.0 rebuilt the grammar and its `ForwardAxisP` admits six, adding `self`,
- * `descendant`, `descendant-or-self` and `namespace`. Neither admits the four
- * reverse axes, `following`, `following-sibling` or `preceding-sibling`.
+ * from a node, so the axes it admits are the ones such a walk can answer. 1.0
+ * and 2.0 spell that `ChildOrAttributeAxisSpecifier` and admit the two it is
+ * named after; 3.0's `ForwardAxisP` admits six, adding `self`, `descendant`,
+ * `descendant-or-self` and `namespace`.
  * @param {object} cursor - The cursor
  * @return {Array.<string>} - The axis kinds a step may open with
  */
@@ -2082,13 +1907,11 @@ const treads = function(cursor) {
 }
 
 /**
- * One step of a pattern's path, which is narrower than a step of an
- * expression's at every version. A pattern is matched by walking *up* from a
- * node, so a step it cannot walk back along is refused rather than evaluated:
- * that is what the two lists have in common, and the seven axes no version
- * admits — the four reverse ones, `following`, `following-sibling` and
- * `preceding-sibling` — are the ones an ancestor walk cannot answer. `..` is
- * refused everywhere for the same reason, while `.` is a step from 3.0.
+ * One step of a pattern's path, narrower than a step of an expression's at
+ * every version. A pattern is matched by walking *up* from a node, so a step
+ * it cannot walk back along is refused: the seven axes no version admits are
+ * the four reverse ones with `following`, `following-sibling` and `preceding-
+ * sibling`. `..` goes with them, `.` is a step from 3.0.
  * @param {object} cursor - The cursor
  * @return {object} - The `step` node
  */
@@ -2125,16 +1948,10 @@ const paced = function(cursor) {
 
 /**
  * One argument of the call a pattern anchors on. XSLT narrows `FunctionCallP`
- * to a literal or a variable reference, which the expression grammar's argument
- * list does not: a path, a call, a comparison or a bracket there is XTSE0340,
- * and `key("k", a/b)`, `id("x" | "y")` and `doc(concat("a", "b"))/x` parsed as
- * patterns until this stood in the way. A variable is 3.0's, as it is wherever
- * else a pattern names one.
- *
- * A numeric literal is a literal, so `key("k", 1)` is a pattern. `id(1)` is not
- * accepted by a processor either, but for `XPTY0004` rather than `XTSE0340` —
- * that is `id`'s signature and not the pattern grammar, so it is none of this
- * function's business.
+ * to a literal or a variable reference, which the expression grammar's
+ * argument list does not: a path, a call, a comparison or a bracket there is
+ * XTSE0340, and `key("k", a/b)` parsed as a pattern until this stood in the
+ * way. A variable is 3.0's, as it is wherever a pattern names one.
  * @param {object} cursor - The cursor
  * @return {object} - The literal or variable reference
  */
@@ -2179,15 +1996,9 @@ const anchored = function(cursor) {
 /**
  * A branch in brackets, which is `ParenthesizedExprP` and holds a *pattern*
  * rather than whatever an expression may hold: `(a | b)/c` is a pattern and
- * `(1 + 1)/a`, `(a = b)/c`, `("s")/a` and `(a, b)/c` are not, though every one
- * of them is a fine expression. Reading it through the expression grammar's own
- * parenthesized primary admitted all four.
- *
- * What it holds is optional, as it is in the expression grammar's own
- * parenthesized primary: `()` matches nothing and is a pattern all the same, so
- * `()/a` and `() | a` parse. Requiring a pattern inside refused all eight
- * spellings of it, and an under-acceptance is the direction that invents a
- * defect against working code.
+ * `(1 + 1)/a`, `(a = b)/c` and `(a, b)/c` are not, though each is a fine
+ * expression. What it holds is optional, as in the expression grammar's own:
+ * `()` matches nothing and `()/a` parses all the same.
  * @param {object} cursor - The cursor, standing at the `(`
  * @return {object} - The `parenthesized` node, with any predicates behind it
  */
@@ -2221,15 +2032,11 @@ const entered = function(cursor) {
 }
 
 /**
- * One branch of a pattern: an optional root, then steps. It is the expression
- * grammar's own path production with the operators taken away — a pattern has
- * no arithmetic, no comparison and no call but the anchors, so what is left is
- * the steps and what hangs off them.
- *
- * A `/` may stand alone, and a `//` may not: the step after it is what a
- * descent descends to, and every version spells that `'//' RelativePathExprP`
- * with nothing optional about it. Accepting a bare `//` reported as valid a
- * `match` that Saxon rejects with XTSE0340 and xsltproc refuses outright.
+ * One branch of a pattern: an optional root, then steps — the expression
+ * grammar's own path production with the operators taken away, a pattern
+ * having no arithmetic, no comparison and no call but the anchors. A `/` may
+ * stand alone and a `//` may not, every version spelling that `'//'
+ * RelativePathExprP`: a bare `//` is XTSE0340 in Saxon.
  * @param {object} cursor - The cursor
  * @return {object} - The `branch` node
  */
@@ -2324,34 +2131,11 @@ const whole = function(cursor) {
 }
 
 /**
- * Parse an XSLT pattern, which is a different language from an XPath
- * expression and needs a grammar of its own.
- *
- * A pattern says which nodes a rule matches, not what to select, so its shape
- * is a union of paths and nothing else: no arithmetic, no comparison, no call
- * but the anchors. Reading one with the expression grammar accepts what XSLT
- * refuses — `1 + 1` and `@a = "b"` and `a, b` are fine expressions and no
- * pattern at all — and refuses what it admits. Nothing parsed a pattern before
- * this, so a malformed `match="foo["` was silent, which is #589 (#678).
- *
- * The version in force decides which language this is, and by more than a
- * detail: 3.0 rebuilt the pattern grammar on the expression one, so
- * `a intersect b`, `$v/x`, `doc("u")/a`, `root()/a`, `element-with-id("x")`,
- * `(self::node())`, `.` and the word `union` are all patterns there and none of
- * them is one in 1.0 or 2.0, whose whole grammar is `IdKeyPattern` and a union
- * of relative paths. Every one of those is gated on {@link REWRITE} rather than
- * admitted everywhere, because a pattern accepted under a version that has no
- * production for it is a stylesheet called valid that no processor loads.
- *
- * What it does *not* yet do is refuse the productions a pattern has no room
- * for. The steps come from the expression grammar whole, so an axis a pattern
- * may not name is accepted here, as is a `.` standing as one branch of a union
- * where 3.0 admits it only as the whole pattern, and a bracket holds whatever
- * an expression may hold rather than the `Pattern` its own production names —
- * `a/(1 + 1)` parses. Narrowing that to the restricted set each version admits
- * is #679. That direction is the cheap one to defer — an over-acceptance leaves
- * a defect unreported, while refusing a pattern XSLT admits invents one against
- * working code.
+ * Parse an XSLT pattern, a different language from an XPath expression and so
+ * a grammar of its own: a union of paths and nothing else, where reading one
+ * with the expression grammar accepts `1 + 1` and `@a = "b"` and refuses what
+ * XSLT admits. Nothing parsed a pattern before this, so a malformed
+ * `match="foo["` was silent (#589, #678).
  * @param {string} pattern - The pattern
  * @param {string} version - The XSLT version in force where it sits
  * @return {{tokens: Array, tree: ?object, fault: string, at: number}} -

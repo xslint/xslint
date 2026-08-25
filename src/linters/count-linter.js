@@ -47,15 +47,10 @@ const collapses = function(operator, zero) {
 
 /**
  * Classify a `count(...)`-versus-`0`/`1` comparison for `comparedToZero`: an
- * existence test carries its kind (`exists`/`empty`) and the argument, for the
- * linter to turn into a version-appropriate rewrite; anything else is left
- * alone. `fn:count` takes exactly one argument, so a call spelling none or
- * several counts nothing and is not this construct at all — which the parse
- * says outright, a comma binding a `for` clause being no separator (#576).
- *
- * Which class the comparison was written in it never asks: the rewrite is a
- * call, and `exists(x)` carries no operator to spell either way, so
- * `count(x) eq 0` and `count(x) = 0` collapse to the one form (#763).
+ * existence test carries its kind (`exists`/`empty`) and the argument, and
+ * anything else is left alone. `fn:count` takes exactly one argument, which
+ * the parse says outright (#576), and the class the comparison was written in
+ * it never asks, `exists(x)` carrying no operator to spell either way (#763).
  * @param {{node: Node, expression: string, pattern: boolean}} found - Record
  * @param {{operator: string, zero: string}} comparison - The operator, in the
  *  forward direction and spelled with symbols, and the digit compared against

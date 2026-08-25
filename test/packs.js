@@ -137,10 +137,9 @@ const checked = function(packs) {
 /**
  * Every check a directory's packs expect a defect from, read straight off the
  * packs. It answers the same question as {@link checked} by another route, so
- * that the two can be held against each other: the first spelling of that
- * function marked a name seen whether or not the pack was loud, so a directory
- * whose quiet pack came first — `element-packs`, `double-slash-packs` —
- * registered no suppression test at all and said nothing about it.
+ * the two can be held against each other: the first spelling of that function
+ * marked a name seen whether or not the pack was loud, so a directory whose
+ * quiet pack came first registered no suppression test at all.
  * @param {Array.<{at: string, yml: object}>} packs - The directory's packs
  * @return {Array.<string>} - The names, sorted, without repeats
  */
@@ -151,28 +150,13 @@ const expecting = function(packs) {
 
 /**
  * The one harness every pack directory is read through. It was twenty-two
- * files, the same loop with four things swapped — the module required, the
- * directory read, the noun in the title, and the shape of the lint call — and
- * duplication of a test is not free the way duplication of a fixture is: every
- * assertion the packs are supposed to carry had to be written twenty-two times,
- * and one written twenty-one times failed nowhere. That is how `import-packs`
- * came to assert no fix at all while `redundant-import` attached a real
- * deletion, unseen from #519 to #607; four of the copies never asserted the
- * defect's own name and twenty never read `found.values` (#660).
- *
- * So each assertion lives here once and every directory gets all of them. What
- * a pack does not spell it is not asked — `fixes` and `values` are asserted
- * where the pack declares them — but a `fixes` key is required of a format pack
- * by `test/conformance.test.js`, which reads the packs rather than the harness
- * and so cannot be satisfied by a harness that quietly asserts nothing.
- * The suppression each directory now gets is the plainest case of that: six of
- * the twenty-two asserted that a check goes quiet when the run turns it off,
- * and sixteen did not. It is asked of the first pack expecting a defect, under
- * that pack's own check name, so no directory has to name anything.
+ * files of the same loop with four things swapped, and duplication of a test
+ * is not free the way duplication of a fixture is: `import-packs` asserted no
+ * fix while `redundant-import` attached a real deletion, unseen from #519 to
+ * #607. Each assertion lives here once now (#660).
  * @param {{dir: string, noun: string,
- *  run: function(Array, Array): Array}} what - The directory to
- *  read, the noun its titles count, and how to get defects from a corpus,
- *  given the checks the run suppresses
+ *  run: function(Array, Array): Array}} what - The directory, the noun its
+ *  titles count, and how to get defects from a corpus and suppressions
  */
 const harness = function(what) {
   const packs = allFilesFrom(path.resolve(__dirname, 'resources', what.dir))
