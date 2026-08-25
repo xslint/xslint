@@ -7,9 +7,11 @@ syntax error and a processor refuses the stylesheet rather than running it.
 A function name is judged on its local part, the prefix being the namespace
 and not the name: `my:9lives` is reported where `my:lives` is not.
 
-An empty name starts with nothing rather than with a digit, and it is
-`variable-or-param-without-name` that is about it. This check leaves it alone,
-so that a name nobody wrote is reported once, and for what is wrong with it.
+An empty name starts with nothing rather than with a digit, so it is outside
+this check and left alone. It is wrong for its own reason — an empty string is
+not a QName, and a processor refuses the stylesheet over it rather than running
+it — and reporting that as a name beginning with a digit tells the reader
+something untrue about their own code.
 
 Incorrect:
 
