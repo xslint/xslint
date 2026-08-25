@@ -98,6 +98,24 @@ count with it — a race parallel mode turns from theory into one failure in fou
 `conformance.test.js` fails any test file that writes without asking for a
 temporary directory.
 
+Both halves run on one mocha, and did not until #841: `grunt-mocha-cli` pins
+`mocha ^8.2.0`, so `npm install` nested a second mocha under it — 8.4.0,
+from 2021 — and `grunt mochacli` ran the suite there while `npm run coverage`
+ran it on 11. That nested tree is where two of the nine advisories `npm audit`
+read on master stood and nowhere else, `nanoid` and `minimatch`. An
+`overrides` entry in `package.json` holds it to the `mocha` the root declares,
+and `conformance.test.js` asks that the two resolve to one file. The rest of
+that entry lifts `diff` and `serialize-javascript` to the majors mocha 12 ships
+with — every version mocha 11's own ranges admit is an advisory, and its one
+call into each is unchanged in 12 — grunt's `js-yaml` to 4, whose `safeLoad`
+grunt calls only in a `readYAML` nothing here calls, 3.x never having been
+patched, and `typed-rest-client`'s exact `qs` up one patch. The two majors
+are spelled at the top level rather than under `mocha`, because npm 11.12
+honours a range scoped under `grunt` or `grunt-mocha-cli` and drops the
+same range scoped under `mocha`. `daily.yml` runs `npm audit` after its
+install, so the next advisory files an issue by morning rather than waiting
+for a developer's `npm install` to print it.
+
 ## Speed
 
 Speed is machine-enforced like every other convention here, and it was the one

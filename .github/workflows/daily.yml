@@ -20,6 +20,7 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
       - run: npm install
+      - run: npm audit
       - run: npm install --force -g grunt-cli
       - run: npm test
   report-fail:
