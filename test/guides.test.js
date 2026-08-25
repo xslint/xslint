@@ -7,8 +7,8 @@ const {allFilesFrom} = require('../src/helpers')
 const {ATTRIBUTES, PATTERNS} = require('../src/attributes')
 const {GAP} = require('../src/tokens')
 const {
-  ROOT, GUIDES, DOCUMENTS, LOADED, NEARBY, slashed, sized, worded, chained,
-  loaded, indexed, noted, globbed,
+  ROOT, GUIDES, DOCUMENTS, DERIVED, LOADED, NEARBY, slashed, sized, worded,
+  chained, loaded, indexed, noted, globbed,
 } = require('./guides')
 const path = require('path')
 const assert = require('assert')
@@ -21,6 +21,13 @@ const assert = require('assert')
  * @type {Array.<string>}
  */
 const PROSE = ['src/attributes.js']
+
+/**
+ * Where a figure derived from what the guides weigh may stand: the documents,
+ * and the module doing the weighing.
+ * @type {Array.<string>}
+ */
+const MEASURED = DOCUMENTS.concat(['test/guides.js'])
 
 /**
  * Each list as a document may name it, paired with what it holds. `NAMED` is
@@ -141,6 +148,35 @@ describe('guides', function() {
         }
       }
     }
+  })
+  DERIVED.forEach((one) => {
+    it(`states ${one.truth().join(' and ')} where the chain says so`,
+      function() {
+        assert.deepEqual(
+          MEASURED.flatMap((file) => Array.from(
+            worded(file).matchAll(one.claim),
+            (hit) => `${file}: ${hit.slice(1).join(' and ')}`,
+          )).filter(
+            (said) => said.split(': ')[1] !== one.truth().join(' and '),
+          ),
+          [],
+          `a figure derived from what the guides weigh says something the ` +
+            `tree does not: ${one.truth().join(' and ')} is what the chain ` +
+            'reads here, and the bar stays quiet until ' + LOADED +
+            ', so nothing else catches this',
+        )
+      })
+  })
+  DERIVED.forEach((one) => {
+    it(`finds the sentence carrying ${one.truth().join(' and ')}`, function() {
+      assert.ok(
+        MEASURED.some((file) => one.claim.test(worded(file))),
+        `no document carries the phrase this figure is watched through, so ` +
+          'a sentence reworded has taken its own gate with it — re-anchor ' +
+          'the claim in test/guides.js or drop the entry, never leave it ' +
+          'watching prose nobody writes',
+      )
+    })
   })
   it('counts a list a document names against that very list', function() {
     const near = new RegExp(

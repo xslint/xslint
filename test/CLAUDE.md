@@ -506,15 +506,28 @@ under them was opened. The first spelling of the bar weighed the root against th
 guide instead, which is a whole directory short: it read 130,933 and called that 0.87 of the bar
 while a turn touching `src/linters/` was loading 157,504 and over it. So the two dearest notes moved
 one step further down, out of `src/CLAUDE.md` and into the top of `src/grammar.js` and
-`src/syntax.js` — 24,681 characters — and the dearest chain is that same one at 136,418, which is
-0.91. What answers a chain reaching the bar is that move again, a module's derivation into the
+`src/syntax.js` — 24,681 characters — and the dearest chain is that same one at 140,286, which is
+0.94. What answers a chain reaching the bar is that move again, a module's derivation into the
 file-header note of the module itself, and never a bar widened to fit what has grown past it: a
 docblock holds five lines of description since #832, so prose that has outgrown a guide does not
 simply move into one instead. A `CEILING` of half the bar stood beside it until it was seen to be a
 gate no tree could fail: the root stands in every chain, so the chain holding it above weighs each
-other guide against the bar less what stands over it — 40,153 for `src/linters/CLAUDE.md`, where
-half of the bar is 75,000 — and holds the root itself to 81,712, a number derived from the dearest
-chain rather than chosen. A gate no tree can fail is removed and not kept (#750, #660). The index
+other guide against the bar less what stands over it — 36,285 for `src/linters/CLAUDE.md`, where
+half of the bar is 75,000 — and holds the root itself to 78,291, a number derived from the dearest
+chain rather than chosen. A gate no tree can fail is removed and not kept (#750, #660). All four of
+those figures — the chain, its ratio, and the two allowances — follow from three file sizes, so one
+guide growing moves every one of them, and none of them turned red when one did: #811's fourth
+phase added 3,421 characters to `src/CLAUDE.md` and left the chain reading 140,286 where two
+documents still said 136,418, the allowances 3,868 out, and the ratio 0.94 where three places said
+0.91. The bar itself was quiet throughout, as it is until 150,000, which is why this is the third
+time the same class of figure has drifted. `DERIVED` in `test/guides.js` holds each of them now,
+red from both sides in the way `SPRAWLING` and `UNINDEXED` are: a figure the tree disagrees with
+fails, and so does a figure whose sentence has been reworded past the phrase that watches it, since
+a claim nobody is reading is not a claim being kept. Growing a guide by 4,000 characters fails all
+four rows at once. What that leaves is 9,714 characters of headroom against the bar, down from
+13,582, or about three more changes the size of this one — so the derivation that arrives after
+those goes into the file-header note of its own module, which is what this paragraph has said
+since #825 and now has a number behind it. The index
 answers to the tree from both sides, every path it names existing and every module under `src/`
 being named by a row — the twenty-one linters by one of them, the `*` standing for a name and never
 for a directory — and a note answers to the index and to its own directory both, so a derivation the
