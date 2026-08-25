@@ -27,25 +27,10 @@ const STEP = 4
 
 /**
  * How many times over the check runs inside one timed window, over the short
- * chain — a quarter as often over the long one, so both windows come out the
- * same size while the check is linear in the edges, and the long one comes out
- * `STEP` times the short while it is quadratic, which is the reading this test
- * is about.
- *
- * A window has to clear the clock's own granularity, and one platform's is
- * coarse: Windows charges processor time in scheduler ticks of some sixteen
- * milliseconds, where one pass over the short chain costs a millisecond and one
- * over the long chain four. Timing a single pass therefore read `0` on both
- * chains there and the growth arrived `NaN` — and worse than answering nothing,
- * two readings of one tick apiece would have answered 1.0 and passed with the
- * defect in place. Sixty-four passes make each window some sixty milliseconds,
- * four ticks even there, and each reading is divided by the passes it holds.
- *
- * The fine-clocked platforms gain by them too. A window holding one pass needed
- * a whole measurement taken and thrown away in front of it, the way the speed
- * gate does, and read the growth 3.10 to 4.56 over ten runs even so, against
- * 3.09 to 8.20 without it — where a window holding sixty-four is warm by its
- * own fourth pass and reads 4.34 to 4.66 with no warm-up at all.
+ * chain — a quarter as often over the long one, so both come out the same size
+ * while the check is linear in the edges. A window has to clear the clock's
+ * granularity: Windows charges in ticks of some sixteen milliseconds, where a
+ * single pass read `0` on both chains and the growth arrived `NaN`.
  * @type {number}
  */
 const PASSES = 64
@@ -59,22 +44,10 @@ const ATTEMPTS = 3
 
 /**
  * How many times more a pass over the long chain may cost than one over the
- * short. The bar stands between two measured distributions, the way the one
- * ceiling of `test/scaling.test.js` that has a defect to catch does. A cycle
- * check answering one edge at a time by walking the whole graph costs the
- * square of a chain and so reads `STEP` squared: 14.58 to 16.22 over eight runs
- * of this test, against the 16.0 the arithmetic predicts. One answering every
- * edge in a single pass costs the edges themselves and so reads `STEP`: 4.34 to
- * 4.66 over eight more, against 4.0.
- *
- * Eight is the geometric middle of those two distributions — 1.72 times the
- * dearest reading the one pass gives and 1.82 times below the cheapest the
- * walk-per-edge gives — and of the two arithmetics as well, four and sixteen.
- * Geometric rather than arithmetic because the risk is multiplicative on either
- * side: a growth ratio is taken inside one process and so cancels a machine's
- * speed, but not its character, and a runner charging half again for the
- * allocation a walk does would read 7.0 for the pass and 9.7 for the square,
- * both of them still on their own side of the bar.
+ * short. The bar stands at the geometric middle of two measured distributions:
+ * a cycle check walking the whole graph per edge costs the square of a chain
+ * and reads 14.58 to 16.22 over eight runs, where one answering every edge in
+ * a single pass reads 4.34 to 4.66 over eight more.
  * @type {number}
  */
 const GROWTH = 8

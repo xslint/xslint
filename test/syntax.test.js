@@ -18,9 +18,8 @@ const path = require('path')
  * One expression of every kind the expression grammar builds, at the version
  * that has them all. A rewrite substituting a node's text into a comparison,
  * or into the place a call stood in, needs to know how tightly that node
- * binds, and `LOOSE` and `STEPPED` answer from the two ends of one ladder;
- * these are what hold both lists to the grammar rather than to the comments
- * beside them, since the ladder is what decides and the ladder can move.
+ * binds, and `LOOSE` and `STEPPED` answer from two ends of one ladder: these
+ * hold both lists to the grammar rather than to a comment.
  * @type {Array.<{kind: string, xpath: string}>}
  */
 const SHAPES = [
@@ -77,12 +76,11 @@ const LITERALS = xml.parsedFromString(
 )
 
 /**
- * Each literal spelling paired with the string XPath reads it as, or null where
- * the expression holds no string at all. Either delimiter spells one string, a
- * doubled delimiter inside spells one character of it, and the other quote
- * needs no escaping at all — so the text between the quotes is not the answer
- * and `textOf` is not this question. A number is a `literal` node of the same
- * kind with only its token telling the two apart, and a step is not a literal.
+ * Each literal spelling paired with the string XPath reads it as, or null
+ * where the expression holds no string at all. Either delimiter spells one
+ * string, a doubled delimiter inside spells one character of it, and the other
+ * quote needs no escaping — so the text between the quotes is not the answer
+ * and `textOf` is not this question.
  * @type {Array.<{xpath: string, holds: ?string}>}
  */
 const STRINGS = [

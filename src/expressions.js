@@ -6,15 +6,11 @@
 const {tokenized, OPAQUE} = require('./tokens')
 
 /**
- * An expression with its string and comment spans blanked to spaces, so a brace
- * can be balanced without tripping over one standing inside a literal. Blanking
- * keeps every offset intact.
- *
- * Five checks scanned above this and each is on the tree now, where a literal
- * is one node and nothing needs blanking to be read over. What is left is the
- * brace scan below, which is text work by nature: an attribute value is not
- * XPath, and where its expressions begin and end is what `enclosed` is for
- * (#557).
+ * An expression with its string and comment spans blanked to spaces, so a
+ * brace can be balanced without tripping over one standing inside a literal.
+ * Blanking keeps every offset intact. What is left above is the brace scan,
+ * which is text work by nature: an attribute value is not XPath, and where its
+ * expressions begin and end is what `enclosed` is for (#557).
  * @param {string} expression - The attribute value
  * @return {string} - The value with literals blanked
  */

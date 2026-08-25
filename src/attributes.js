@@ -11,9 +11,8 @@ const {walked} = require('./tree')
  * Attributes that hold an XPath expression or a pattern — every place a
  * construct like an axis, a predicate, or a `count(...)` call can appear.
  * Patterns (`match` and the grouping attributes) are included, so a construct
- * in a template match is caught too, not only in the expression stream. So are
- * the two an `xsl:merge-source` holds beside its `select`, which carry an
- * expression the same way it does (#627).
+ * in a template match is caught too, and so are the two an `xsl:merge-source`
+ * holds beside its `select` (#627).
  * @type {Array.<string>}
  */
 const ATTRIBUTES = [
@@ -36,25 +35,11 @@ const PATTERNS = [
 ]
 
 /**
- * Whether the expression is the whole value of an attribute of that name — the
- * one narrowing a linter reading a single attribute needs, now that it is
- * handed the records the validator kept rather than the corpus to scan itself
- * (#750). It replaces an XPath of this module's own over the named attribute of
- * every XSLT element, and asks one question where that selector asked two: the
- * namespace test is gone rather than moved, since the derivation yields an XSLT
- * element's attribute whole and every other one only through its braces. Both
- * halves are one call rather than two conditions, because a linter taking the
- * name alone would start reading the `test="{boolean(x)}"` of a literal result
- * element, where stripping the wrapper prints the node instead of `true`. A
- * brace stands at least one character inside a value, so an expression starting
- * at `0` is the value itself. A shadow attribute keeps its underscore, so
- * `_select` is not `select`, which is what the narrowing has always said.
- * The name asked for is the unprefixed one, and an attribute in the XSLT
- * namespace answers to it: `use-when` names the `xsl:use-when` a literal result
- * element carries as much as the bare attribute of an XSLT element, the two
- * being one attribute XSLT spells twice (#654). A prefix is the document's to
- * choose, so the namespace is what the question is about, and a shadow
- * attribute keeps its underscore either way.
+ * Whether the expression is the whole value of an attribute of that name, the
+ * narrowing a linter needs now that it is handed the records the validator
+ * kept (#750). One question rather than two on purpose: taking the name alone
+ * would read the `test="{boolean(x)}"` of a literal result element, where
+ * stripping the wrapper prints the node (#654).
  * @param {{node: Node, start: number}} found - A record `expressionsOf` yielded
  * @param {string} name - The name of the attribute a linter narrows to
  * @return {boolean} - True when the expression is that attribute's whole value
@@ -79,13 +64,10 @@ const NAMED = new Set(ATTRIBUTES)
 
 /**
  * The expression list already derived for a document. Eight code-based linters
- * ask for the same one in a single run, and deriving it walks every attribute
- * and text node of the stylesheet, so it is derived once and remembered against
- * the document itself — which a `WeakMap` releases when the corpus does, rather
- * than holding every stylesheet ever linted (#633). Eight callers share one
- * array, so the array is frozen against having its entries swapped and each
- * entry is frozen where `carried` builds it — freezing the array alone leaves
- * `held.expression = ...` free to poison the other seven.
+ * ask for the same one in a run and deriving it walks every attribute and text
+ * node, so it is derived once and remembered against the document itself —
+ * which a `WeakMap` releases when the corpus does (#633). The array and each
+ * entry are frozen, eight callers sharing one array.
  * @type {WeakMap}
  */
 const DERIVED = new WeakMap()
@@ -138,18 +120,10 @@ const shadow = function(attribute) {
 
 /**
  * Whether the attribute's whole value is an XPath expression rather than a
- * template. XSLT spells such an attribute two ways: unprefixed on an XSLT
- * element, and in the XSLT namespace on an element of the result vocabulary,
- * which is the only spelling a literal result element has. Until #654 this
- * asked for the first alone, so the expressions a simplified stylesheet carries
- * reached nothing at all — no code-based check and not the validator either,
- * both of them staged over the records this derivation yields. `xsl:use-when`
- * is the one attribute XSLT allows there and the whole of what the second half
- * admits in a stylesheet a processor loads: the rest of its reach — an
- * `xsl:select`, an `xsl:match` — is an attribute no version permits on such an
- * element, so reading one costs a report on a file already refused rather than
- * a defect invented against working code. A prefix is the document's own, so
- * the namespace decides and never the spelling.
+ * template. XSLT spells one two ways: unprefixed on an XSLT element, and in
+ * the XSLT namespace on a result-vocabulary element, the only spelling a
+ * simplified stylesheet has. The rest of that reach costs a report on a file
+ * already refused, never a defect against working code (#654).
  * @param {Node} attribute - The attribute node
  * @return {boolean} - True when its whole value is an expression
  */
@@ -162,10 +136,9 @@ const wholly = function(attribute) {
 /**
  * The whole value of an attribute as one expression, standing where the value
  * itself starts. Every expression this module yields is such a record — the
- * node carrying it, the offset it begins at inside that node's value, its own
- * text, and whether it is a pattern — and a linter that narrows to one
- * attribute of its own builds the record here rather than handing a node and
- * its text on separately, which is how one word came to name both (#648).
+ * node, the offset inside its value, the text, and whether it is a pattern —
+ * and a linter narrowing to one attribute builds the record here rather than
+ * handing a node and its text on separately (#648).
  * @param {Node} attribute - The attribute node
  * @return {{node: Node, start: number, expression: string,
  *  pattern: boolean}} - The expression it holds whole
@@ -178,13 +151,11 @@ const wholeOf = function(attribute) {
 }
 
 /**
- * The expressions a node contributes: a whole value when it is a bare-XPath (or
- * shadow) attribute, otherwise each expression its braces enclose — an
+ * The expressions a node contributes: a whole value when it is a bare-XPath or
+ * shadow attribute, otherwise each expression its braces enclose — an
  * attribute value template, or a text value template in a text node (a CDATA
  * section is one too) of a 3.0 stylesheet whose `expand-text` is on. Only an
- * attribute takes the attribute branch, so any other node the selector yields
- * is read as text rather than dereferenced as one. Each names its node, the
- * offset it starts at inside that node's value, and its own text.
+ * attribute takes the attribute branch.
  * @param {Node} node - An attribute, text, or CDATA node
  * @param {Set.<Node>} bare - Attributes holding a bare XPath
  * @param {boolean} three - Whether the stylesheet declares version 3.0
@@ -209,9 +180,8 @@ const carried = function(node, bare, three) {
  * Every expression a stylesheet carries, in document order. An attribute
  * holding a bare XPath contributes its whole value; another attribute, and a
  * text node under an on `expand-text` in a 3.0 stylesheet, contribute each
- * expression their braces enclose. Each one names the node, the offset it
- * starts at inside that node's value, and its own text, so a defect in it is
- * reported — and fixed — where it truly stands.
+ * expression their braces enclose. Each names the node, the offset it starts
+ * at inside that node's value, and its own text.
  * @param {Document} xsl - XSL document parsed as {@link Document}
  * @return {Array.<{node: Node, start: number, expression: string}>} - The
  *  expressions found, each saying whether it is a pattern

@@ -32,9 +32,8 @@ const names = [CHECK]
  * Whether the node is the call `position()` with nothing in its brackets.
  * `fn:position` takes no argument, so a call spelling one asks something else
  * and is not this construct, the way `fn:count` spelling two is not a count
- * (#576). The prefix is no part of the question: bare, behind a prefix bound to
- * the XPath functions namespace, or with that namespace inline, all three name
- * the one function, and a `my:position()` of your own names another (#577).
+ * (#576). The prefix is no part of the question, so a prefixed or inline
+ * spelling names the one function and a `my:position()` names another (#577).
  * @param {{node: Node, expression: string, pattern: boolean}} found - Record
  * @param {object} node - A node of its tree
  * @return {boolean} - True when the node is that call
@@ -48,8 +47,7 @@ const positional = function(found, node) {
  * number, which XPath reads as a test on the context position, or the call
  * `last()`, which the short form keeps as it stands. A literal is one kind to
  * the grammar and the token says which spelling it is, so a string literal —
- * `[position() = '1']`, where `['1']` would be true at every position rather
- * than the first — is left alone.
+ * `[position() = '1']`, true at every position — is left alone.
  * @param {{node: Node, expression: string, pattern: boolean}} found - Record
  * @param {object} node - A node of its tree
  * @return {boolean} - True when the predicate can be written as this alone
@@ -61,27 +59,11 @@ const shortens = function(found, node) {
 }
 
 /**
- * The positional predicates in an expression written the long way. Each carries
- * the offset of its comparison, that comparison's own text, and the operand
- * that replaces the whole of it — so `foo[position() = 1]` becomes `foo[1]` and
- * `foo[position() = last()]` becomes `foo[last()]`.
- *
- * It reads the predicates the grammar built rather than matching brackets and
- * reducing what stands between them to a signature of one character per token
- * (#575). Which comparison the predicate holds is `VALUED`'s answer, so
- * `[position() eq 1]` reads as the same smell `[position() = 1]` is — it
- * selects the node `[1]` selects, both operands being `xs:integer` — and
- * neither class is a spelling this file has an opinion of its own about. Three
- * things follow from reading the tree. A predicate is judged by what its one
- * child *is*, so `[position() = 1 and @on]` holds a comparison and is not one:
- * an `and` is what the predicate holds, and rewriting the comparison inside it
- * would turn a positional test into the boolean `[1 and @on]`. The operand that
- * survives keeps the spelling its author gave it — a `fn:last()` stays
- * prefixed, where a signature reading `TOKENS.NAME` alone never saw a prefixed
- * call at all and left the predicate unreported. And the defect stands where
- * its comparison does rather than just inside the `[`, so a padded
- * `[ position() = 1 ]` is reported at the `p` and the fix replaces the
- * comparison alone, leaving the gaps the author wrote.
+ * The positional predicates written the long way, each with the offset of its
+ * comparison, its text, and the operand that replaces the whole of it — so
+ * `foo[position() = 1]` becomes `foo[1]`. It reads the predicates the grammar
+ * built rather than a signature of one character per token, so `eq` reads as
+ * `=` and an `and` holding one is not a positional predicate (#575).
  * @param {{node: Node, expression: string, pattern: boolean}} found - The
  *  expression, whole, as `expressionsOf` yields it
  * @return {Array.<{offset: number, value: string, replacement: string}>} -

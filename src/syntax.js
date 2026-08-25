@@ -122,74 +122,42 @@ const {versionOf, KNOWN} = require('./xsl-version')
 const FUNCTIONS = 'http://www.w3.org/2005/xpath-functions'
 
 /**
- * The version an expression is read under when its stylesheet declares none, or
- * declares one `versionOf` cannot place. The most permissive version known,
- * deliberately: a missing `version` is already a defect of its own, and letting
- * it decide a syntax question would answer one defect with an
- * `invalid-xpath-expression` for every modern expression the file holds — a
- * refusal invented against XPath that is valid under the version its author
- * meant. Derived rather than spelled, so a version added to `KNOWN` becomes the
- * fallback without anybody remembering to move it.
+ * The version an expression is read under when its stylesheet declares none,
+ * or declares one `versionOf` cannot place. The most permissive known,
+ * deliberately: letting a missing `version` decide a syntax question answers
+ * one defect with an `invalid-xpath-expression` for every modern expression in
+ * the file. Derived, so a version added to `KNOWN` becomes the fallback.
  * @type {string}
  */
 const ASSUMED = KNOWN[KNOWN.length - 1]
 
 /**
- * What each expression already parsed to. The grammar remembers nothing between
- * calls, while a corpus repeats its expressions constantly — `.` and `@name`
- * and `text()` above all — so the same parse was being paid for over and over
- * (#689). One entry per distinct expression is bounded by the corpus that
- * asked, and the answer cannot go stale: the same text under the same version
- * parses the same way for the life of a process.
- *
- * The tree is kept beside the refusal, which it was not until Phase 4 of #644
- * began. One sentence per expression was the cheaper bargain while nothing
- * above this asked for more than a verdict; now that a check reads the tree
- * rather than matching the text, throwing it away would mean parsing every
- * expression twice — once to keep it and once for each check that walks it.
+ * What each expression already parsed to. The grammar remembers nothing
+ * between calls where a corpus repeats itself constantly, so the same parse
+ * was paid for over and over (#689): one entry per distinct expression, and
+ * the same text under the same version always parses the same way. The tree is
+ * kept beside the refusal, or a check reading it would parse twice (#644).
  * @type {Map.<string, {tokens: Array, tree: ?object, fault: string,
  *  at: number}>}
  */
 const PARSES = new Map()
 
 /**
- * The two kinds a comparison of two values comes back as. XPath spells one
- * question two ways from 2.0 on — `count(x) = 0` and `count(x) eq 0` — and the
- * grammar builds a node of a different kind for each, so a check about the
- * question gathers both or is blind to every stylesheet written in the other
- * (#763, #575).
- *
- * One list here rather than one per check, for the reason `TRIVIA` and `OPAQUE`
- * are one each in `src/tokens.js`: a list spelled twice is a kind missing from
- * one of the copies, which is how a scan came to read inside a string literal
- * (#708). A `no-restricted-syntax` selector refuses a second copy anywhere in
- * `src/` but this file, which owns this one and `LOOSE` beside it, and
- * `src/grammar.js`, which mints the kinds and names all three of them in the
- * table that decides which operator builds which.
- *
- * `VALUED` for what the two of them have in common: a general and a value
- * comparison compare values, where the third class compares nodes.
- *
- * The node comparisons are no part of it. `is`, `<<` and `>>` ask about
- * identity and document order rather than about a value, so `count(x) is 0` is
- * a type error rather than a count of nothing, and `[position() is 1]` names no
- * position.
+ * The two kinds a comparison of values comes back as. XPath spells one
+ * question two ways from 2.0 on, `count(x) = 0` and `count(x) eq 0`, so a
+ * check gathers both or is blind to the other (#763, #575). One list rather
+ * than one per check, a copy being a kind missing from it (#708). A node
+ * comparison asks about identity, not a value.
  * @type {Array.<string>}
  */
 const VALUED = ['comparison', 'value-comparison']
 
 /**
  * Each operator a general comparison is spelled with, paired with the word
- * XPath 2.0 spells the same question in. The two classes ask one thing of their
- * operands and differ in what they do with a sequence of them, so a check about
- * the *question* — is this a count of nothing, is this string empty, is this
- * the first position — meets the same construct twice and must know both:
- * reading only the symbols is how `count(x) eq 0`, `string-length(@x) eq 0` and
- * `[position() eq 1]` drew nothing at all on any 2.0 stylesheet (#763, #575).
- *
- * The node comparisons stand outside it as they stand outside `VALUED`,
- * and one step further out: neither of a node comparison's spellings has a twin
- * in the other class to pair it with.
+ * XPath 2.0 spells the same question in. A check about the *question* meets
+ * the construct twice and must know both: reading the symbols alone is how
+ * `count(x) eq 0` and `[position() eq 1]` drew nothing on any 2.0 stylesheet
+ * (#763, #575). A node comparison has no twin to pair.
  * @type {{[symbol: string]: string}}
  */
 const WORDED = {
@@ -206,19 +174,11 @@ const SYMBOLED = Object.fromEntries(
 )
 
 /**
- * The kinds that bind at least as loosely as a general comparison, so a node of
- * one cannot stand as an operand of `=` with no brackets around it. A rewrite
- * substituting such a node's text regroups the expression or fails to parse at
- * all — `a or b` becomes `a or (b = '')`, and `a = b` becomes a chain of
- * comparisons no version admits — while every other kind binds tighter and
- * carries over whole.
- *
- * It is XPath's own ladder read from the comparison up: the comma, the five
- * expressions `ExprSingle` names, the two boolean levels, and the three classes
- * of comparison that cannot chain onto one another. `test/syntax.test.js` holds
- * the list to the grammar rather than to this comment, asking of a specimen of
- * every kind whether `<specimen> = ''` really does come back a comparison over
- * it.
+ * The kinds that bind at least as loosely as a general comparison, so a node
+ * of one cannot be an operand of `=` unbracketed: substituting its text
+ * regroups the expression or fails to parse — `a or b` becomes `a or (b = '')`
+ * — every other kind carrying over whole. XPath's own ladder from the
+ * comparison up; `test/syntax.test.js` holds it to the grammar.
  * @type {Array.<string>}
  */
 const LOOSE = [
@@ -227,24 +187,11 @@ const LOOSE = [
 ]
 
 /**
- * The kinds a `StepExpr` can be, which is the same ladder read from the other
- * end: everything XPath admits as a step of a path, a `PrimaryExpr` or a
- * `PostfixExpr` over one or an `AxisStep`, and so everything that carries over
- * whole into the place a call stands in. A call is a primary itself, so an
- * expression standing where one stood needs brackets round it unless it is one
- * of these — `exsl:node-set($one | $two)/alpha` selects the `alpha` children of
- * a union where `$one | $two/alpha` selects `$one` beside them (#774).
- *
- * A `path` is deliberately not one of them, though it stands as a *step* well
- * enough: a predicate binds to the last step of a path rather than to the whole
- * of it, so `exsl:node-set(alpha/beta)[1]` is `(alpha/beta)[1]` and never
- * `alpha/beta[1]`, and a predicate is the one postfix a node set can carry —
- * neither an argument list nor a lookup means anything applied to one. Brackets
- * nobody needs are noise where a missing pair is a rewrite that means something
- * else, which is why the answer errs this way round. `test/syntax.test.js`
- * holds the list to the grammar rather than to this comment, asking of a
- * specimen of every kind whether `b/<specimen>` really does come back a path
- * whose far step is the specimen whole.
+ * The kinds a `StepExpr` can be, the ladder from the other end: everything
+ * carrying whole into the place a call stands in, a call being a primary —
+ * `exsl:node-set($one | $two)/alpha` takes a union's `alpha` children where
+ * `$one | $two/alpha` takes `$one` beside them (#774). A `path` is not one, a
+ * predicate binding to its last step and not the whole.
  * @type {Array.<string>}
  */
 const STEPPED = [
@@ -255,10 +202,9 @@ const STEPPED = [
 /**
  * What the grammar makes of the expression a record carries, asked at the
  * version in force where it stands and in the language the record says it is:
- * `matched` for a pattern, since a `match` is a different language and not a
- * second reading of an expression, and `parsed` for everything else. So
- * `1 cast as xs:integer` is valid in a 2.0 sheet and a syntax error in a 1.0
- * one, which is the whole of #652.
+ * `matched` for a pattern, a different language rather than a second reading
+ * of an expression, and `parsed` for the rest. So `1 cast as xs:integer` is
+ * valid in a 2.0 sheet and a syntax error in a 1.0 one (#652).
  * @param {{node: Node, expression: string, pattern: boolean}} found - The
  *  expression, whole, as `expressionsOf` yields it
  * @return {{tokens: Array, tree: ?object, fault: string, at: number}} - The
@@ -285,8 +231,7 @@ const parseOf = function(found) {
  * complain about. One caller wants the verdict alone: a declarative fix is
  * withheld on an attribute whose expression no processor parses (#651), and
  * that gate has nowhere to say why. The other gate of that pair was in
- * `defect`, and #750 deleted it — a code-based check is handed the expressions
- * the validator kept, so it never reads a refused one to begin with.
+ * `defect`, and #750 deleted it.
  * @param {{node: Node, expression: string, pattern: boolean}} found - The
  *  expression, whole, as `expressionsOf` yields it
  * @return {boolean} - True when the expression parses
@@ -336,12 +281,10 @@ const offsetOf = function(found, node) {
 
 /**
  * Every node of one of the kinds the record's tree holds, outermost first. A
- * check reads this instead of scanning the text for the shape it is about,
- * which is what makes it blind to the same characters standing inside a
- * string, a comment or a name — no masking, nothing to keep in step with it.
- * It takes a list rather than one kind because a construct is often more than
- * one: the general and the value comparison are two kinds and one question, and
- * gathering them in one walk keeps them in the order they stand in (#763).
+ * check reads this instead of scanning the text, which is what makes it blind
+ * to the same characters standing inside a string, a comment or a name. A list
+ * rather than one kind because a construct is often more than one: the general
+ * and the value comparison are two kinds and one question (#763).
  * @param {{node: Node, expression: string, pattern: boolean}} found - Record
  * @param {Array.<string>} kinds - The kinds to collect
  * @return {Array.<object>} - The nodes of those kinds
@@ -363,25 +306,11 @@ const gathered = function(found, kinds) {
 }
 
 /**
- * Whether the node is a call to the function of that local name in one of those
- * namespaces, the standard ones by default. XPath spells a namespace three ways
- * and all three name one function: bare, which is the default function
- * namespace; behind a prefix the stylesheet binds to it, which is the idiomatic
- * `fn:count` of any 2.0 sheet; and with the namespace written inline as
- * `Q{...}`, which XPath 3.0 added. What tells the call apart from a function of
- * the same local name somebody else declared is the URI, never the prefix — a
- * scan excluding every prefixed spelling missed `fn:count`, and one excluding
- * none read `Q{urn:mine}count` as the standard call (#577), while one taking
- * any prefix at all on sight read `my:node-set($v)` as the EXSLT extension and
- * advised dropping a call to somebody's own function (#557). The prefix is
- * resolved against the element the record hangs off, which is the same node the
- * version is read at, so a prefix bound to nothing resolves to nothing and
- * names no function here either.
- *
- * A list, because a function is its name and its namespace together and some
- * are declared in more than one: `node-set` is EXSLT's and Microsoft's for the
- * same purpose, where every function XPath itself defines is in the one
- * namespace this defaults to.
+ * Whether the node calls that local name in one of those namespaces, the
+ * standard ones by default. The URI tells it from somebody else's, never the
+ * prefix: excluding every prefixed spelling missed `fn:count`, excluding none
+ * read `Q{urn:mine}count` as standard (#577), taking any read `my:node-
+ * set($v)` as EXSLT's (#557). A list, `node-set` being declared twice.
  * @param {{node: Node, expression: string, pattern: boolean}} found - Record
  * @param {object} node - A node of its tree
  * @param {string} name - The function's local name, such as `count`
@@ -409,21 +338,11 @@ const calls = function(found, node, name, namespaces = [FUNCTIONS]) {
 }
 
 /**
- * The string a literal node holds, unquoted and unescaped, or null where the
- * node holds no string at all — a number is a `literal` too and only its token
- * says which (#575), and every other kind is something else again.
- *
- * `textOf` answers what the author wrote and this answers what XPath reads,
- * which are two questions wherever the answer is a string: XPath spells one
- * string with either delimiter and escapes that delimiter by doubling it, so
- * `"it's"` and `'it''s'` are the same four characters. A check comparing the
- * text saw two different literals there and read only the spelling it was
- * written against — `'A..Z'` and not `"A..Z"` (#562), `= 'x'` and not `= "x"`
- * (#598), and an attribute value already standing in double quotes is written
- * the other way round.
- *
- * Null rather than an empty string, since the empty literal is a string a
- * stylesheet really does hold and no sentinel of that type can mean absence.
+ * The string a literal node holds, unquoted and unescaped, or null where it
+ * holds none — a number is a `literal` too (#575). `textOf` answers what the
+ * author wrote, this what XPath reads: either delimiter spells one string and
+ * doubling escapes it, so `"it's"` and `'it''s'` are four characters, where a
+ * check comparing text read one spelling alone (#562, #598).
  * @param {{node: Node, expression: string, pattern: boolean}} found - Record
  * @param {object} node - A node of its tree
  * @return {?string} - The string it holds, or null
@@ -440,16 +359,10 @@ const stringOf = function(found, node) {
 
 /**
  * The name a variable reference holds, or null where the node is not one.
- *
  * `textOf` cannot answer it: XPath lets a gap or a comment stand between the
- * `$` and the name, so `$ para` and `$(: which :)para` both reference `para`,
- * and the text a span covers carries whatever the author wrote between them.
- * The tokens do not, trivia being a kind of its own.
- *
- * A namespace stays part of the name, written inline or behind a prefix:
- * `$Q{urn:my}para` and `$my:para` each reference a variable that `$para` does
- * not, so both come back spelled as they stand rather than reduced to a local
- * name a check would then match against the wrong declaration.
+ * `$` and the name, so `$ para` and `$(: which :)para` both reference `para`.
+ * A namespace stays part of the name, `$Q{urn:my}para` and `$my:para` each
+ * referencing a variable `$para` does not.
  * @param {{node: Node, expression: string, pattern: boolean}} found - Record
  * @param {object} node - A node of its tree
  * @return {?string} - The name it references, or null
@@ -477,35 +390,11 @@ const tight = function(node) {
 }
 
 /**
- * The kinds a predicate may come back as without picking one node out of the
- * sequence it filters, which is the question a check served from a shared walk
- * has to put of each of its predicates (#784). XPath reads a predicate whose
- * value is a **number** as a test on the context position, so `[1]` selects
- * the first node and not every node — and a candidate handed over on its own
- * is a sequence of one, where any position test at all answers true. So a
- * predicate is served only where the parse proves it cannot be a number: the
- * boolean operators and the three comparison classes, the quantified
- * expressions, and the kinds that answer nodes and nothing else, whose
- * effective boolean value is what the predicate then takes. Everything else is
- * refused — a `literal` and a `sum` because they are numbers, a
- * `conditional`, a `variable` or a `cast` because nothing here can say what
- * they answer — and a refusal costs only the traversal the run already pays.
- *
- * A `path` is deliberately **not** on the list, though it was: from XPath 2.0
- * a path's last step may be a call answering an atomic value, so `a/count(.)`
- * is a number spelled as a path and `[a/count(.)]` picks the first candidate
- * exactly as `[1]` does. It is decided by its last step instead, which is
- * where its value comes from — a `step` answers nodes, a `count` answers a
- * number, and a bracket or a predicate of the author's own is refused for
- * being a kind this list does not name. A kind that can answer either thing
- * cannot be judged by its kind, which is the same reason a `call` is not on
- * the list either. `test/syntax.test.js` holds the list to the grammar rather
- * than to this comment, asking of a specimen of every kind whether
- * `<specimen>` really does come back the kind named here — and
- * `test/selectors.test.js` holds the whole answer to the engine, asking of
- * every predicate spelling it carries whether serving it answers what the
- * engine answers of the selector whole, which is the gate that would have
- * caught the path.
+ * The kinds a predicate may be without picking a node out of the sequence it
+ * filters, the question a shared walk puts of each (#784). XPath reads a
+ * numeric predicate as a position test, and a candidate alone is a sequence of
+ * one: only a kind the parse proves is no number is served. A `path` is
+ * decided by its last step, `[a/count(.)]` picking the first.
  * @type {Array.<string>}
  */
 const FILTERS = [
@@ -527,22 +416,11 @@ const BOOLEAN = [
 ]
 
 /**
- * Whether the node, or anything under it, asks about the sequence it stands
- * in. `position()` and `last()` answer about the sequence a predicate filters,
- * so a predicate reading either is a question one candidate cannot be asked —
- * and being boolean, either hides inside a comparison the kind alone would
- * pass, `[@name = position()]` coming back a `comparison` like any other. A
- * call naming its namespace inline is refused with them, `Q{...}position()`
- * needing no prefix bound to reach the standard function; a prefixed spelling
- * is not, since `PREFIXES` in `src/xpath.js` binds `xsl` and `xslint` alone
- * and an `fn:position()` in a selector of ours resolves to no namespace at
- * all. It is read here rather than through `calls`, which resolves a prefix
- * against the document a record hangs off and there is no record here — a
- * check's selector is ours and stands in no stylesheet. A nested `position()`
- * is about the inner sequence and would be safe, and is refused all the same.
- * Every node the grammar builds carries a `children` array, empty where it has
- * none, so the walk asks for one outright rather than guarding against a case
- * the grammar has not got.
+ * Whether the node or anything under it asks about the sequence it stands in.
+ * `position()` and `last()` are about the sequence a predicate filters, and
+ * being boolean either hides inside a comparison the kind would pass. Read
+ * here rather than through `calls`: a selector of ours stands in no
+ * stylesheet, so `PREFIXES` binds `xsl` and `xslint` alone.
  * @param {Array} tokens - The tokens the tree was parsed from
  * @param {object} node - The node to walk
  * @return {boolean} - Whether the sequence is read anywhere within it
@@ -558,13 +436,11 @@ const positional = function(tokens, node) {
 }
 
 /**
- * Whether the node can stand as a predicate filtering a sequence, rather than
- * picking a position in it, which is what a check served from one shared walk
- * needs of each predicate it wrote: the axis comes off the walk and the
- * predicate is asked of one candidate at a time, where a positional test
- * answers true for every one of them (#784). Three questions rather than one,
- * because two kinds do not settle what they answer: a `path` is its last
- * step, which is asked the same question again, and a `call` is its name.
+ * Whether the node can stand as a predicate filtering a sequence rather than
+ * picking a position in it, what a shared walk needs of each predicate a check
+ * wrote: the axis comes off the walk and each candidate is asked on its own,
+ * where a positional test answers true for every one (#784). Two kinds do not
+ * settle what they answer: a `path` is its last step, a `call` its name.
  * @param {Array} tokens - The tokens the tree was parsed from
  * @param {object} node - The node a predicate holds, whole
  * @return {boolean} - True when it filters rather than picks

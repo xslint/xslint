@@ -46,16 +46,10 @@ const OPERATORS = ['=', '!=']
 
 /**
  * The standard function a node calls about the *current* node — `name` or
- * `local-name` — or null where it calls neither, or calls one of them about
- * some other node. `self::` speaks of the current node alone, so `name()` and
- * `name(.)` are the question this check is about while `name(@a)` and
- * `name($v)` are questions about a node a rewrite could not reach. The prefix
- * is no part of it: bare, behind a prefix bound to the XPath functions
- * namespace, or with that namespace written inline, all three name the standard
- * function, and a `my:name()` of your own names another — where a scan reading
- * `[^\w:.-]` in front of the name refused `fn:name()` outright and read
- * `Q{urn:mine}name()` as the bare spelling, the `}` being no letter (#598,
- * #577).
+ * `local-name` — or null where it calls neither, or calls one about some other
+ * node: `name()` and `name(.)` are this check's question where `name(@a)` is
+ * about a node a rewrite could not reach. The prefix is no part of it: a
+ * `fn:name()` and a `Q{urn:mine}name()` are the same function (#598, #577).
  * @param {{node: Node, expression: string, pattern: boolean}} found - Record
  * @param {object} node - A node of its tree
  * @return {?string} - The local name of the call, or null
@@ -95,9 +89,7 @@ const paired = function(found, node) {
  * with one edit — a string XML cannot spell a name with, or a `local-name()`
  * comparison in a 1.0 stylesheet where the `*:name` wildcard does not exist.
  * Whether the string is a name is XML's question and the lexer's answer, asked
- * as `qualified` rather than kept as a second opinion of this file's: an ASCII
- * class of its own refused `name() = 'é'`, which `self::é` says perfectly well
- * (#731).
+ * as `qualified` rather than as an ASCII class refusing `name() = 'é'` (#731).
  * @param {string} local - The called function, `name` or `local-name`
  * @param {string} operator - The comparison operator, `=` or `!=`
  * @param {string} literal - The compared string
@@ -121,14 +113,9 @@ const test = function(local, operator, literal, modern) {
 /**
  * The `name()`/`local-name()`-versus-string comparisons in an expression: each
  * carries the offset it starts at, its verbatim text, and the node test that
- * replaces it (or null when it cannot be rewritten).
- *
- * Both classes of comparison are gathered, because the question is one and
- * XPath spells it two ways from 2.0 on: `name() eq 'p'` is `name() = 'p'` over
- * two single values, and a scan matching `(=|!=)` and no word at all was blind
- * to it (#763). The string is what the literal *holds* rather than how it is
- * written, so either delimiter spells it and a doubled one inside is one
- * character (#598).
+ * replaces it (or null when it cannot be rewritten). Both classes are gathered,
+ * XPath spelling one question two ways from 2.0 on (#763), and the string is
+ * what the literal holds rather than how it is written (#598).
  * @param {{node: Node, expression: string, pattern: boolean}} found - The
  *  expression, whole, as `expressionsOf` yields it
  * @param {boolean} modern - Whether the stylesheet is 2.0 or 3.0

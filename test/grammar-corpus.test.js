@@ -100,17 +100,9 @@ const CORPUS = Array.from(new Set(
 /**
  * How thin a source may run before this file is answering about a corpus of
  * its own imagining rather than about the repository. A gate over a sweep can
- * pass by finding nothing, so the sweep is gated too.
- *
- * A floor comes down only where a check has genuinely stopped being declarative
- * and its selector is gone rather than broken: `starts-with-double-slash` and
- * `use-double-slash` left `checks/xpath/` for one code-based linter at #586,
- * and the selectors are two of the fifty this gate was written over. Five more
- * left at #788 — `select-starts-with-double-slash`,
- * `not-creating-element-correctly`, `confusing-variable-and-node`,
- * `null-output-from-stylesheet` and `output-method-xml` — every one of them a
- * selector that judged the *text* of an expression with `contains` or
- * `starts-with`, which is a question the tree answers and a string cannot.
+ * pass by finding nothing, so the sweep is gated too. A floor comes down only
+ * where a check has stopped being declarative and its selector is gone rather
+ * than broken, two at #586 and five at #788.
  * @type {Array.<{source: string, least: number}>}
  */
 const REACHES = [
@@ -122,40 +114,9 @@ const REACHES = [
 /**
  * What the grammar and the engine judge differently once the engine is asked
  * on its own, one line each, naming the side that accepts and the gap it
- * stands for — everything the diff turns up except what the engine's own
- * strictness explains, which `EXPLAINED` subtracts as a class rather than as a
- * list.
- *
- * The comparison is against `compiles` alone, which is the whole of what #680
- * asked for. Until #738 the engine was asked through the respelling retry that
- * stood beside it in `src/xpath.js`, and a retry sits on the engine's side of
- * the question: asked as `compiles(xpath) || compiles(squeezed(xpath))` an
- * expression fontoxpath refuses and the squeeze rescues cannot surface as a
- * disagreement at all. Forty do, and they are the #639 family exactly — a
- * spaced axis, a `namespace::`. Cancelling every one of them reported that the
- * evidence for retiring the retry was not in the tree, when what was not in the
- * tree was a comparison that could see it. The retry is gone and the class is
- * read off the token stream now, by `insists`, so nothing rewrites an
- * expression to account for the engine and nothing on the engine's side of this
- * comparison answers for the grammar.
- *
- * Eleven stood when #680 wrote this list and **none** is left, which is the
- * measure doing its job rather than the measure going quiet: nine were a
- * parenthesized step (#711), one a node comparison (#724) and the last a name
- * no NCName can spell (#708), each of them a selector, though a selector is one
- * expression in twelve — the checks are written in an idiom the stylesheets
- * never use.
- *
- * An empty list is an assertion and not the absence of one. Every expression
- * the repository carries now takes the same verdict from the grammar as from
- * the engine, or parts from it inside the one class named above, so a
- * disagreement of any other kind turns this red: one the grammar invents
- * against working code, and one it lets through. Nor can the class swallow the
- * first of those, which is the direction that matters — it may only ever excuse
- * the grammar accepting where the engine refuses, and the gate below holds it
- * to that. What the emptiness does not say is that the two agree everywhere —
- * the corpus reaches only what the corpus holds, and the classes #708 closed
- * which no fixture spells are pinned by rows in `test/grammar.test.js` instead.
+ * stands for; `EXPLAINED` subtracts the engine's own strictness as a class
+ * rather than as a list (#680, #738). An empty list is an assertion: eleven
+ * stood when #680 wrote it and none is left (#711, #724, #708).
  * @type {Array.<{xpath: string, accepts: string, gap: string}>}
  */
 const GAPS = []
@@ -211,10 +172,9 @@ const strayed = function() {
 /**
  * Every child in the corpus standing outside its parent, or behind the sibling
  * before it. Slicing alone cannot see this: shift a node and its children by
- * one token together and the text still slices, because both sides of that
- * comparison read the same tokens. Nesting is the property that pins a span to
- * the construct it belongs to, and it is what lets a fix built from a child's
- * span be trusted to land inside its parent.
+ * one token together and the text still slices, both sides reading the same
+ * tokens. Nesting is what pins a span to its construct, and what lets a fix
+ * from a child's span land inside its parent.
  * @return {Array.<string>} - The escapes, each naming its kind and expression
  */
 const escaped = function() {

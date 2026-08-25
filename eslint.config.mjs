@@ -156,6 +156,8 @@ export default defineConfig([
       "local/no-missing-arguments": "error",
       "local/no-multiple-returns": "error",
       "local/no-orphan-docblock": "error",
+      "local/no-sprawling-docblock":
+        ["error", { description: 5, tag: 3 }],
       "valid-jsdoc": "off",
       "require-jsdoc": "off",
       semi: ["error", "never"],

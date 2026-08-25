@@ -794,11 +794,9 @@ const about = function(report, file) {
 /**
  * The cross-file checks — the only ones a shared yard could confuse. A yard is
  * one corpus, so a neighbour's text can stand in as the usage that saves a
- * declaration; what that does is *hide* a defect, never invent one. A row
- * pinning file content would turn red if a fix went missing that way, which
- * leaves the rows asserting an absence: those pass on a neighbour's silence as
- * readily as on the fix, so none of them may name a check that reads across
- * files.
+ * declaration, which hides a defect and never invents one. A row pinning file
+ * content turns red if a fix goes missing, so a row asserting an absence may
+ * name no check that reads across files.
  * @type {Array.<string>}
  */
 const CROSS = fs

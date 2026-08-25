@@ -10,11 +10,10 @@ const assert = require('assert')
 
 /**
  * Expressions XPath 3.1 has, each with the kind its tree comes out rooted at.
- * Every one of them is handed to the engine as well, so a row cannot claim a
- * spelling the processor would refuse. Where the engine refuses one all the
- * same, `insists` says whether its own strictness is the reason — a spaced axis
- * separator here, `child::   alpha` — which is the accounting that replaced the
- * respelling retry #738 retired.
+ * Every one is handed to the engine as well, so a row cannot claim a spelling
+ * the processor would refuse; where the engine refuses one anyway, `insists`
+ * says whether its own strictness is the reason, which is the accounting that
+ * replaced #738's respelling retry.
  * @type {Array.<{xpath: string, kind: string}>}
  */
 const ACCEPTS = [
@@ -228,15 +227,10 @@ const ACCEPTS = [
 
 /**
  * Runs of two operators XPath spells one production with, each with the text
- * the left of the two has to have folded into. One production is one rung, and
- * a rung is left-associative, so `a except b intersect c` is
- * `(a except b) intersect c` and nothing else — where a rung split in two, to
- * give one spelling a kind or a floor the other has not got, reads the second
- * operator as the looser of the two and nests the run the other way round. All
- * three of XPath's mixed rungs were split that way: the word `union` sat above
- * `|`, `idiv` above the rest of the multiplicatives, and `except` above
- * `intersect`, so `9 idiv 2 * 3` came back `9 idiv (2 * 3)` and computed 1
- * where XPath computes 12 (#764).
+ * the left of the two folded into. One production is one rung and a rung is
+ * left-associative, where a rung split in two reads the second operator as the
+ * looser and nests the run the other way, so `9 idiv 2 * 3` computed 1 where
+ * XPath computes 12 (#764).
  * @type {Array.<{xpath: string, folds: string}>}
  */
 const RUNS = [
@@ -421,13 +415,10 @@ const REFUSES = [
 
 /**
  * Names a version reserved, each with the version that reserved it and one
- * below. This is the mirror of a `GATED` row: a reserved name with a bracket
- * behind it can be no call, so the expression stops parsing from that version
- * up, where a gated construct starts. Below the floor the same characters are
- * an ordinary call to a function of that name — unregistered, which is a
- * semantic question (#576) and not this parser's, and exactly what xsltproc
- * answers about every one of these at 1.0: it parses them, then looks for the
- * function.
+ * below. The mirror of a `GATED` row: a reserved name with a bracket behind it
+ * can be no call, so the expression stops parsing from that version up where a
+ * gated construct starts. Below the floor it is an ordinary call to an
+ * unregistered function, a semantic question (#576).
  * @type {Array.<{xpath: string, from: string, below: string}>}
  */
 const RESERVES = [
@@ -442,12 +433,11 @@ const RESERVES = [
 ]
 
 /**
- * Names whose *tree* the version in force decides, each read from both sides of
- * its floor. A kind test and a call to a function of the same name are both
- * accepted expressions, so no acceptance diff can part them and only the tree
- * can: `element(a)` is a step from 2.0 and a call at 1.0, which is what
- * xsltproc reads it as — it parses the expression and then goes looking for the
- * function. A `RESERVES` row cannot say this, since neither side is a refusal.
+ * Names whose *tree* the version in force decides, each read from both sides
+ * of its floor. A kind test and a call of the same name are both accepted, so
+ * no acceptance diff can part them and only the tree can: `element(a)` is a
+ * step from 2.0 and a call at 1.0, which is what xsltproc reads it as. A
+ * `RESERVES` row cannot say this, neither side being a refusal.
  * @type {Array.<{xpath: string, from: string, reads: string, below: string,
  *   instead: string}>}
  */
@@ -522,17 +512,10 @@ const GATED = [
 
 /**
  * Operators XPath 1.0 already had, each of which has to parse at the oldest
- * version there is. This is a `GATED` row from the other side: a floor claimed
- * for a construct that never had one is invisible to a table of refusals, and
- * the ladder is where that mistake lands, since `|` and `div` share a rung with
- * the `union` and `idiv` 2.0 added, so the two floors `SPELLS` carries stand a
- * table away from six that must stay absent. Eight of the nine have no other
- * cover at all: no committed stylesheet declaring 1.0 spells one, so nothing
- * else in the suite would notice a floor invented for `|` or `div`. The ninth
- * is `=`, which `test/resources/fix/count-in-xslt-1-0.xsl` spells at 1.0 and
- * `fixer.deep.test.js` lints there, and it is a row all the same: a table of
- * what the oldest version has should not read as though it were missing an
- * entry (#764).
+ * version there is — a `GATED` row from the other side, a floor claimed for a
+ * construct that never had one being invisible to a table of refusals. Eight
+ * of the nine have no other cover: no committed 1.0 stylesheet spells one, so
+ * nothing would notice a floor invented for `|` (#764).
  * @type {Array.<string>}
  */
 const ALWAYS = [

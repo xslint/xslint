@@ -10,9 +10,8 @@ const assert = require('assert')
  * What the nightly step reads off the script it hands a reading to: a status,
  * which is the whole of what arms the gate, and a line for whoever opens the
  * run. Both halves are spelled here rather than in the fast test beside this
- * one, since neither exists until a shell runs the file — a verdict returning
- * the right sentence to nobody would leave the tier as unable to fail as #785
- * found it.
+ * one, neither existing until a shell runs the file — a verdict returning the
+ * right sentence to nobody leaves the tier unable to fail (#785).
  * @type {Array.<{name: string, args: Array.<string>, code: number,
  *  said: string}>}
  */

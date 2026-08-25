@@ -17,11 +17,9 @@ const WORKFLOWS = path.resolve(__dirname, '..', '.github', 'workflows')
 /**
  * Each action that writes to this repository rather than reading it, against
  * the scope GitHub's own token needs before it can. A token is granted `read`
- * here unless a workflow says otherwise, so an action of this kind either
- * carries a `permissions` block or dies on `Resource not accessible by
- * integration` — which is a step failing inside a job that only runs when
- * something has already failed, so nothing louder than the Actions tab ever
- * says so (#826).
+ * unless a workflow says otherwise, so such an action either carries a
+ * `permissions` block or dies on `Resource not accessible by integration` —
+ * a step failing inside a job only a failure runs, quiet outside it (#826).
  * @type {{[action: string]: string}}
  */
 const WRITES = {'jayqi/failed-build-issue-action': 'issues'}

@@ -172,15 +172,11 @@ const exclusion = function(root, prefix, content) {
 }
 
 /**
- * Lint the corpus for namespace prefixes declared on the stylesheet, used only
- * in its logic, and copied into the output by a literal result element. A
- * prefix is a defect when the stylesheet emits a literal result element, the
- * prefix is not the XSLT one, not already excluded (nor `#all`), not an
- * extension prefix, absent from the serialized result, yet used somewhere — so
- * it leaks. Text-only stylesheets are skipped, since they serialize no
- * namespaces. Where the declaration stands is asked of the source through
- * `standsAt`, not worked out from the attribute's name, so a gap around its
- * `=` no longer carries the report along with the delimiter (#681).
+ * Lint the corpus for prefixes declared on the stylesheet, used only in its
+ * logic, and copied into the output by a literal result element. A prefix
+ * leaks when it is not the XSLT one, not excluded (nor `#all`), not an
+ * extension prefix, absent from the serialized result, yet used somewhere.
+ * Where it stands is asked of the source, by `standsAt` (#681).
  * @param {Array.<{file: string, content: string, xsl: Document}>} corpus -
  *  Parsed stylesheets
  * @param {Array.<string>} suppressions - Array of suppressed checks

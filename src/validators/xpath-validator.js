@@ -39,28 +39,9 @@ const UNRESOLVED = /&[A-Za-z_][\w.-]*;/
 /**
  * Validate every Xpath expression in the corpus, splitting the valid ones out
  * for the expression linters to consume from the malformed ones, which become
- * defects. An expression our own grammar cannot parse at the version in force
- * where it stands is reported here and never handed on.
- *
- * Every expression means every one `expressionsOf` yields — the one derivation
- * the code-based linters have always read, rather than a walk of this
- * validator's own over a list of attribute *names* it derived by subtracting
- * the pattern-holding ones. That subtraction was the whole gap #589 is about:
- * over this repository's own fixtures the derivation yields 451 expressions and
- * the walk reached 286, so a `match` no grammar accepts, an attribute value
- * template holding `{1 +}`, and a 3.0 text value template were each validated
- * by nothing at all — while a code-based linter, staged over the whole corpus,
- * read those same expressions and reported what it found in them, with only
- * `defect`'s parse gate keeping a fix off it (#636). What this hands on is what
- * every one of those linters is staged over since #750, so the gate is gone and
- * a fault the report already names draws no second defect. A pattern illegal
- * before XSLT 3.0 is reported with them, which is #631: `matched` has refused
- * one since #723 and had nobody to say so.
- *
- * The defect stands where the fault does, not where the attribute opens, which
- * is what the offset the parse carries is for — and what the widening makes
- * necessary rather than merely nicer, two braces of one attribute value being
- * two expressions that would otherwise report the same column.
+ * defects. Every expression means every one `expressionsOf` yields (#589), and
+ * what this hands on is the whole of what those linters are staged over
+ * (#750). A pattern illegal before XSLT 3.0 is reported with them (#631).
  * @param {Array.<{file: string, content: string, xsl: Document}>} corpus -
  *  Parsed stylesheets
  * @param {Array.<string>} suppressions - Array of suppressed checks

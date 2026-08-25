@@ -50,18 +50,9 @@ const ARGUMENTS = 1
 /**
  * The text that stands where the call did once its argument carries over: the
  * argument as the author wrote it, bracketed where an expression stands around
- * the call and the argument binds looser than a step.
- *
- * A call is a primary expression, so it stands wherever XPath binds most
- * tightly — a step of a path, and the predicate a step takes — and an argument
- * looser than that regroups whatever stands around it:
- * `exsl:node-set($one | $two)/alpha` selects the `alpha` children of the union
- * where the bare `$one | $two/alpha` selects `$one` beside them, and this fix
- * is **safe**-tier, so plain `--fix` wrote exactly that (#774). Nothing stands
- * around a call that is the whole expression, whether the whole of an attribute
- * or the whole of what one brace of an attribute value template holds, so there
- * the argument replaces it as it is and `select="exsl:node-set(/*)"` still
- * becomes `select="/*"` rather than growing a pair of brackets for nobody.
+ * the call and the argument binds looser than a step, since
+ * `exsl:node-set($one | $two)/alpha` is not the bare union's `alpha` and this
+ * fix is safe-tier (#774). Nothing stands around a whole expression.
  * @param {{node: Node, expression: string, pattern: boolean}} found - Record
  * @param {object} node - The call a fix would replace
  * @return {string} - The text to write there
@@ -76,13 +67,10 @@ const carried = function(found, node) {
 
 /**
  * The `node-set()` wrappers an expression holds: each carries the offset it
- * starts at, its verbatim text, and the argument that replaces it.
- *
- * The call is the extension whichever of its three spellings names it — behind
- * any prefix a stylesheet binds to either namespace, or with the namespace
- * written inline — and a `node-set` of somebody else's is none of them,
- * where a scan matching `[\w.-]+:node-set` took the local name as the whole of
- * the question and read every prefix as the extension's (#557).
+ * starts at, its verbatim text, and the argument that replaces it. The call is
+ * the extension whichever of its three spellings names it — behind any prefix a
+ * stylesheet binds to either namespace, or with the namespace inline — and a
+ * `node-set` of somebody else's is none of them (#557).
  * @param {{node: Node, expression: string, pattern: boolean}} found - The
  *  expression, whole, as `expressionsOf` yields it
  * @return {Array.<{offset: number, value: string, replacement: string}>} -
@@ -106,14 +94,9 @@ const wrappers = function(found) {
 /**
  * Lint the valid expressions for the `node-set()` extension used in XSLT 2.0 or
  * 3.0, where a variable is already a node sequence, reporting one defect per
- * call with the fix that unwraps it.
- *
- * Every expression a stylesheet carries is read, not the `@select` of an XSLT
- * element alone: the extension is as redundant in a `@test` as anywhere else,
- * and inside the braces of an attribute value template a processor evaluates
- * the expression whatever element carries the attribute — while the `select` a
- * literal result element spells is output text and yields no expression to read
- * at all (#557).
+ * call with the fix that unwraps it. Every expression a stylesheet carries is
+ * read rather than an XSLT element's `@select` alone, the extension being as
+ * redundant in a `@test` and inside a brace as anywhere else (#557).
  * @param {Array.<{source: object, found: object}>} expressions - The valid
  *  expressions the validator kept, each paired with the file it came from
  * @param {Array.<string>} suppressions - Array of suppressed checks

@@ -35,14 +35,10 @@ const INTERNAL = new RegExp(`${GAP}{2,}`)
 
 /**
  * The redundant run a token holds inside itself, or null. Only an axis holds
- * one: the lexer folds the gap in front of its `::` into the axis token, so
- * `ancestor  ::` is a single token and a scan reading only `whitespace` tokens
- * saw the run behind the colons and not the one in front of them — one of the
- * two runs in `ancestor  ::  b`, with `--fix` leaving the other in the file and
- * the next run calling it clean (#642). A string or a comment is kept
- * whole on purpose, so neither is ever looked into. Whether the run wraps a
- * line is `wrapping`'s question, since the value the run is read from answers
- * only half of it.
+ * one: the lexer folds the gap in front of its `::` into the axis token, so a
+ * scan reading only `whitespace` tokens saw the run behind the colons and not
+ * the one in front (#642). A string or a comment is kept whole, so neither is
+ * looked into. Whether the run wraps a line is `wrapping`'s question.
  * @param {{type: string, value: string, start: number}} token - The token
  * @return {?{offset: number, value: string, replacement: string}} - The run
  */
@@ -59,19 +55,11 @@ const inside = function(token) {
 }
 
 /**
- * Whether a run of whitespace wraps a line. Neither text alone can say: XML 1.0
- * §3.3.3 turns a line ending inside an attribute value into a space, so a wrap
- * and a typed-out double space are the same characters in the value the run was
- * found in — which is why reading the value alone answered no to every wrapped
- * attribute and a wrapped expression drew a warning per line it wrapped onto
- * (#628). A character reference is exempt from that normalisation, so `&#10;`
- * runs the other way: the value holds a real line ending the source never
- * shows. Each text sees a wrap the other cannot, and either sighting counts.
- *
- * Wrapping a long expression is formatting, not a defect — xcop, which this
- * project runs over its own fixtures, asks for it — so a run holding a line
- * ending is not redundant whitespace at all, neither reported nor fixed. The
- * doubled spaces standing within one line still are.
+ * Whether a run of whitespace wraps a line. Neither text alone can say: XML
+ * turns a line ending inside an attribute value into a space, so a wrap and a
+ * typed double space are the same characters in the value (#628), while a
+ * `&#10;` is exempt and holds a real ending the source never shows. Either
+ * sighting counts, and a run holding one is not redundant at all.
  * @param {{file: string, content: string}} source - The file the run sits in
  * @param {{node: Node, start: number}} found - The expression holding it
  * @param {{offset: number, value: string}} run - The run
@@ -87,12 +75,9 @@ const wrapping = function(source, found, run) {
 /**
  * Redundant whitespace runs in an expression. A run is redundant when it is
  * longer than one space, or leads or trails the expression; runs inside string
- * literals or comments are never seen because the lexer keeps those whole. Each
- * run carries the offset where it starts, its raw value, and the text that
- * should replace it — empty when it leads or trails, a single space when it is
- * a doubled run in the middle. Whether a run wraps a line is settled by
- * `wrapping`, which reads the source as well, since the expression handed here
- * has had every literal wrap in it normalised to a space already.
+ * literals or comments are never seen, the lexer keeping those whole. Each
+ * carries its offset, its raw value, and the text replacing it — empty at
+ * either end, one space in the middle.
  * @param {string} expression - Xpath expression
  * @return {Array.<{offset: number, value: string, replacement: string}>} - Runs
  */
@@ -127,16 +112,11 @@ const redundancies = function(expression) {
 }
 
 /**
- * Lint the valid Xpath expressions for redundant whitespace. The expressions
- * are already known to parse — the validator dropped the malformed ones — so
- * this linter never re-checks validity, it only reasons over their tokens.
- *
- * Each arrives as the record `expressionsOf` built, which the validator now
- * hands on rather than re-deriving from the attribute (#589), so a pattern and
- * an expression an attribute value template encloses are read here as well: a
- * leading space is as redundant in a `match=" //spaced"` as in a `select`, and
- * a brace's expression carries the offset it starts at, so the run inside it is
- * reported and fixed where it truly stands.
+ * Lint the valid Xpath expressions for redundant whitespace. They are already
+ * known to parse, so validity is never re-checked here. Each arrives as the
+ * record `expressionsOf` built, which the validator hands on rather than re-
+ * deriving from the attribute (#589), so a pattern and a brace's expression
+ * are read here too.
  * @param {Array.<{source: object, found: object}>} expressions - Valid
  *  expressions, each paired with the file it came from
  * @param {Array.<string>} suppressions - Array of suppressed checks

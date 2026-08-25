@@ -28,32 +28,10 @@ const FLIP = {
 
 /**
  * The `name(...)`-versus-`0`/`1` comparisons an expression holds, in either
- * operand order (`f(x) > 0` and `0 < f(x)` alike) and either class (`= 0` and
- * `eq 0` alike). Each is handed to a `decide(found, comparison, args)`
- * classifier, which answers an object of fields — merged into the found
- * comparison — for a comparison worth reporting, or null when it is a genuine
- * count or length rather than an existence or emptiness test. The comparison
- * reaches it as `{operator, zero, worded}`: the operator in the forward
- * direction and the symbol spelling whichever side the call stands on and
- * whichever class it was written in, so a classifier has one order and one
- * spelling to reason about, and `worded` for the one thing the class itself
- * decides — a rewrite that carries an operator writes back the family it was
- * given rather than the one this table is keyed on.
- *
- * This reads the tree the grammar built rather than the text (#577, #578).
- * Three questions the regular expressions underneath it could only approximate
- * are answered by construction now. **What the comparison's operands are**: a
- * digit is one when it is the whole operand, which the tree says outright,
- * where the scan had to bound it by hand and let `$max + 1 > count(x)` through
- * until #573 spelled the arithmetic out. **What the call is**: the standard
- * function of that name, told from a user function of the same local name by
- * the URI its prefix resolves to, where a character class refused every prefix
- * and so missed the `fn:count` of any 2.0 stylesheet while accepting an inline
- * `Q{urn:mine}count`. And **what its arguments are**: the nodes the parse has
- * already separated, so a comma binding a `for` clause is no separator and a
- * gap around an argument is no operator — `string-length( @x )` carries the
- * same one operand the tight spelling does, where a scan reading a space as a
- * binary operator withheld the rewrite from it.
+ * operand order and either class. Each is handed to a `decide` classifier,
+ * which answers fields to merge or null for a genuine count. The comparison
+ * reaches it as `{operator, zero, worded}`, forward and symbol-spelled, read
+ * off the tree and not the text (#577, #578, #573).
  * @param {{node: Node, expression: string, pattern: boolean}} found - The
  *  expression, whole, as `expressionsOf` yields it
  * @param {string} name - The function's local name, e.g. `count`
