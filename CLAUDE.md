@@ -51,8 +51,8 @@ three platforms and two node versions, and `corpora`, which times a real run
 The suite comes in two halves, and the line between them is a child process. A
 **deep** test starts one — it runs `xslint` or `xcop` the way a user does — and
 is named `*.deep.test.js`; every other test stays in this process. Four files
-are deep, and they still cost most of what the suite costs: 627 of the 2605
-tests, 9 of the 14 seconds. The other 1978 finish inside one, which is why
+are deep, and they still cost most of what the suite costs: 627 of the 2606
+tests, 9 of the 14 seconds. The other 1979 finish inside one, which is why
 `npm run fast` is the loop to work in and `npm test` the one to finish on. The
 deep target runs under `mocha --parallel`, so those four files run at once and
 the slowest of them sets the clock — `xslint.deep.test.js` alone, whose 52 tests
@@ -112,9 +112,12 @@ grunt calls only in a `readYAML` nothing here calls, 3.x never having been
 patched, and `typed-rest-client`'s exact `qs` up one patch. The two majors
 are spelled at the top level rather than under `mocha`, because npm 11.12
 honours a range scoped under `grunt` or `grunt-mocha-cli` and drops the
-same range scoped under `mocha`. `daily.yml` runs `npm audit` after its
-install, so the next advisory files an issue by morning rather than waiting
-for a developer's `npm install` to print it.
+same range scoped under `mocha`. `daily.yml` runs `npm audit` in a job of its
+own beside the six cells that run the suite, so the next advisory files an
+issue by morning without taking a platform's test result down with it — an
+advisory this project waits on upstream to patch would otherwise leave
+Windows unmeasured for as long as the wait lasts, and six identical audits
+say one thing.
 
 ## Speed
 
