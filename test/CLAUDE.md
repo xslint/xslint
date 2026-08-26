@@ -506,13 +506,13 @@ under them was opened. The first spelling of the bar weighed the root against th
 guide instead, which is a whole directory short: it read 130,933 and called that 0.87 of the bar
 while a turn touching `src/linters/` was loading 157,504 and over it. So the two dearest notes moved
 one step further down, out of `src/CLAUDE.md` and into the top of `src/grammar.js` and
-`src/syntax.js` — 24,681 characters — and the dearest chain is that same one at 140,286, which is
+`src/syntax.js` — 24,681 characters — and the dearest chain is that same one at 141,737, which is
 0.94. What answers a chain reaching the bar is that move again, a module's derivation into the
 file-header note of the module itself, and never a bar widened to fit what has grown past it: a
 docblock holds five lines of description since #832, so prose that has outgrown a guide does not
 simply move into one instead. A `CEILING` of half the bar stood beside it until it was seen to be a
 gate no tree could fail: the root stands in every chain, so the chain holding it above weighs each
-other guide against the bar less what stands over it — 36,285 for `src/linters/CLAUDE.md`, where
+other guide against the bar less what stands over it — 34,834 for `src/linters/CLAUDE.md`, where
 half of the bar is 75,000 — and holds the root itself to 78,291, a number derived from the dearest
 chain rather than chosen. A gate no tree can fail is removed and not kept (#750, #660). All four of
 those figures — the chain, its ratio, and the two allowances — follow from three file sizes, so one
