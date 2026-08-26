@@ -487,6 +487,27 @@ standing within `NEARBY` characters of the file's own name, so the drift above i
 reading and not as so many lines: the gate cannot tell what a ticket once measured from what the
 file stands at today, and a history spelled the other way is a stale claim it rightly fails.
 
+## `test/predicates.test.js`
+
+Two tables, and the second is the load-bearing one. `COMPILED` names every spelling the vocabulary
+answers off the walk, so a construct that stops being served turns red rather than quietly costing
+a fontoxpath call per candidate again. `REFUSED` names every spelling it does not, each beside what
+puts it out of reach, and is a ratchet from the other side: an entry that *becomes* reachable fails,
+so the list cannot sit there reading like a limit still in force after the limit has gone. It caught
+its author — widening the vocabulary to sibling and ancestor axes, a path in a value position and
+two string functions turned five `REFUSED` rows red in one run, which is the whole reason they are
+rows and not a sentence.
+
+Neither table asks whether an answer is *correct*: that is `CANDIDATES` in `test/selectors.test.js`,
+which asks fontoxpath what each spelling selects over `candidates.xsl` and fails where serving
+answers anything else — the oracle, extended here from 32 spellings to 71 and armed against the
+engine before a line of the compiler existed. A row there is a question rather than a claim, so
+enriching the fixture can only strengthen it; the fixture grew five variables and a non-XSLT child
+so that presence, a literal sequence, a string length, a parent and `count(*)` each split the nine
+candidates unevenly. One thing it cannot hold is a prefix `src/xpath.js` does not bind:
+`my:thing` stands in the document for `count(*)` to see and is named in no selector, the engine
+raising `XPST0081` on an unbound prefix rather than answering.
+
 ## `test/guides.test.js`
 
 The size and the shape of the guides themselves, and so the one gate whose subject is this
@@ -506,14 +527,14 @@ under them was opened. The first spelling of the bar weighed the root against th
 guide instead, which is a whole directory short: it read 130,933 and called that 0.87 of the bar
 while a turn touching `src/linters/` was loading 157,504 and over it. So the two dearest notes moved
 one step further down, out of `src/CLAUDE.md` and into the top of `src/grammar.js` and
-`src/syntax.js` — 24,681 characters — and the dearest chain is that same one at 145,484, which is
-0.97. What answers a chain reaching the bar is that move again, a module's derivation into the
+`src/syntax.js` — 24,681 characters — and the dearest chain is that same one at 148,601, which is
+0.99. What answers a chain reaching the bar is that move again, a module's derivation into the
 file-header note of the module itself, and never a bar widened to fit what has grown past it: a
 docblock holds five lines of description since #832, so prose that has outgrown a guide does not
 simply move into one instead. A `CEILING` of half the bar stood beside it until it was seen to be a
 gate no tree could fail: the root stands in every chain, so the chain holding it above weighs each
-other guide against the bar less what stands over it — 34,682 for `src/linters/CLAUDE.md`, where
-half of the bar is 75,000 — and holds the root itself to 74,696, a number derived from the dearest
+other guide against the bar less what stands over it — 31,565 for `src/linters/CLAUDE.md`, where
+half of the bar is 75,000 — and holds the root itself to 72,189, a number derived from the dearest
 chain rather than chosen. A gate no tree can fail is removed and not kept (#750, #660). All four of
 those figures — the chain, its ratio, and the two allowances — follow from three file sizes, so one
 guide growing moves every one of them, and none of them turned red when one did: #811's fourth

@@ -8,6 +8,7 @@ const {PREFIXES, nodes, satisfies, strings} = require('./xpath')
 const {attributed, named} = require('./tree')
 const {parsed} = require('./grammar')
 const {ASSUMED, filters} = require('./syntax')
+const {predicateOf} = require('./predicates')
 
 /**
  * The answer for a selector no index can serve: no branch at all. An empty list
@@ -555,11 +556,41 @@ const descended = function(found, roots) {
 }
 
 /**
+ * What each tail was parted into, kept against its text.
+ * @type {Map}
+ */
+const ANSWERS = new Map()
+
+/**
+ * A tail parted into the predicates the walk answers and the text of those it
+ * does not, taken once and remembered against the tail. The compiled ones run
+ * first, so what the engine is still asked it is asked of a pruned sequence —
+ * and it is asked once for the rest rather than once per predicate, which is
+ * what keeps a tail no part of compiles exactly as dear as it was (#811).
+ * @param {string} tail - The predicates a branch carries, brackets and all
+ * @return {{served: Array.<function(Node): boolean>, asked: string}} - What
+ *  the walk answers, and what is left for the engine
+ */
+const answered = function(tail) {
+  if (!ANSWERS.has(tail)) {
+    const parts = predicated(tail)
+    const compiled = parts.map((one) => predicateOf(one))
+    ANSWERS.set(tail, {
+      served: compiled.filter((one) => one !== undefined),
+      asked: parts.filter(
+        (one, at) => compiled[at] === undefined,
+      ).map((one) => `[${one}]`).join(''),
+    })
+  }
+  return ANSWERS.get(tail)
+}
+
+/**
  * What one branch answers: the nodes its axis yields, kept to those below the
- * anchor it carries, narrowed by the tail asked of one candidate at a time as
- * `self::node()` plus what the branch spelled. A branch `apart` refused
- * carries the whole selector its arm spells and goes to the engine as it
- * stands, elements either way, so `merged` orders both kinds together.
+ * anchor it carries, narrowed by each predicate of its tail — off the walk
+ * where the vocabulary reaches one, and off the engine for the rest, asked of
+ * a sequence the served ones have already pruned. A branch `apart` refused
+ * carries the whole selector its arm spells and goes to the engine as it is.
  * @param {Document} xsl - Parsed stylesheet
  * @param {object} branch - One branch of what `splitOf` made of the selector
  * @return {Array.<Node>} - The nodes it selects, in document order
@@ -572,9 +603,15 @@ const narrowed = function(xsl, branch) {
       found = descended(found, rooted(xsl, branch.anchor))
     }
     if (branch.tail !== '') {
-      found = found.filter(
-        (node) => satisfies(node, `self::node()${branch.tail}`),
-      )
+      const {served, asked} = answered(branch.tail)
+      for (const one of served) {
+        found = found.filter(one)
+      }
+      if (asked !== '') {
+        found = found.filter(
+          (node) => satisfies(node, `self::node()${asked}`),
+        )
+      }
     }
   } else {
     found = nodes(xsl, branch.refused)
