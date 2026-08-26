@@ -87,7 +87,7 @@ const covered = function(corpus, edges) {
   const held = new Set(corpus.map(({file}) => path.normalize(file)))
   const supplying = new Set(
     corpus
-      .filter(({xsl}) => rooted(xsl) && holds(xsl, 'output'))
+      .filter(({xsl}) => holds(xsl, 'output'))
       .map(({file}) => path.normalize(file)),
   )
   const outward = new Set(
@@ -122,7 +122,7 @@ const lintByOutput = function(corpus, suppressions = []) {
   if (!suppressed(CHECK, suppressions)) {
     const settled = covered(corpus, graphOf(corpus))
     for (const {file, xsl} of corpus) {
-      if (rooted(xsl) && holds(xsl, 'template') && !holds(xsl, 'output') &&
+      if (rooted(xsl) && holds(xsl, 'template') &&
         !settled.has(path.normalize(file))) {
         defects.push({
           name: CHECK,

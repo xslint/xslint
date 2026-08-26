@@ -184,8 +184,18 @@ alone emits XML. So the question is the tree's rather than the file's, and a mod
 tree holding it declares an output or reaches outside. Downward alone answers the smaller half:
 DocBook-XSL's 178 reports fall to 143 that way and to 19 with both directions, TEI's 159 to 112 and
 then to 14, DITA-OT's 118 to 95. What survives is what should — `anttools/xspec/coverage-report.xsl`
-is a `match="/"` with no `xsl:output` that nobody imports. Six guards decide it, a pack pins each,
-and a mutation of one reddens that pack alone.
+is a `match="/"` with no `xsl:output` that nobody imports.
+
+Seven guards decide it and a mutation of each reddens a pack, five of them one pack alone;
+`supplying` reddens four, being what the rest stands on. Two guards the first spelling carried
+decided nothing and are deleted rather than pinned, since a pack over a guard that cannot fire reads
+like an assertion where there is none. A file holding an `xsl:output` is in `supplying`, so it is
+settled through its own reach and the `!holds(xsl, 'output')` beside the report never fired; and
+`rooted` inside `supplying` excluded only a root that is neither stylesheet nor transform yet holds
+a top-level `xsl:output` — an `xsl:package`, or a shape XSLT refuses, and the three corpora hold
+neither in 842 stylesheets. What `rooted` does decide is the file judged, where the package is the
+live case: it is reached by `xsl:use-package`, an edge this linter does not follow, so judging one
+invents a defect out of a tree nobody handed us — #468 once more.
 
 ## `src/linters/corpus-linter.js`
 

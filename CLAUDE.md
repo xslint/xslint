@@ -51,8 +51,8 @@ three platforms and two node versions, and `corpora`, which times a real run
 The suite comes in two halves, and the line between them is a child process. A
 **deep** test starts one — it runs `xslint` or `xcop` the way a user does — and
 is named `*.deep.test.js`; every other test stays in this process. Four files
-are deep, and they still cost most of what the suite costs: 645 of the 2636
-tests, 9 of the 14 seconds. The other 1991 finish inside one, which is why
+are deep, and they still cost most of what the suite costs: 646 of the 2638
+tests, 9 of the 14 seconds. The other 1992 finish inside one, which is why
 `npm run fast` is the loop to work in and `npm test` the one to finish on. The
 deep target runs under `mocha --parallel`, so those four files run at once and
 the slowest of them sets the clock — `xslint.deep.test.js` alone, whose 52 tests
@@ -210,7 +210,7 @@ before: 268 descriptions in 65 files stood past that bar, the dearest of them
 142 lines, so a derivation grew wherever one was written the way the cross-file
 linter's cost grew before #755 (#832). The bar is not a licence to respell what
 a block cannot hold as a `/* */` beside it either — such prose is cut and not
-moved, the dearest chain of guides standing at 0.95 of `LOADED` with nowhere to
+moved, the dearest chain of guides standing at 0.96 of `LOADED` with nowhere to
 put it, so the ticket number left standing in the surviving sentence is what
 keeps a derivation recoverable.
 

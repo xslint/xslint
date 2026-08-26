@@ -14,10 +14,15 @@ Which stylesheet declares it is a question about the whole import tree and not
 about one file. An `xsl:output` merges into every stylesheet that imports the
 module holding it, so pushing the serialization into a shared module and
 importing it declares the output for the tree as surely as writing it inline.
-A stylesheet whose imports reach one is therefore left alone, however deep the
-chain runs. So is one importing a module it was not linted alongside, since an
-href leading out of the linted set settles nothing either way and a file must
-not be judged on what nobody handed us.
+A tree serializes together, so a stylesheet is left alone when any tree
+holding it declares one — the modules it imports, however deep the chain runs,
+and the sheets importing it just as much, a library module being governed by
+the main module that pulls it in. So is one importing a module it was not
+linted alongside, since an href leading out of the linted set settles nothing
+either way and a file must not be judged on what nobody handed us. An
+`xsl:package` is left alone for that same reason: a package is *used* rather
+than imported, and the stylesheet using it is where its serialization is
+declared.
 
 Incorrect:
 
