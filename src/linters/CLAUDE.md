@@ -186,15 +186,24 @@ DocBook-XSL's 178 reports fall to 143 that way and to 19 with both directions, T
 then to 14, DITA-OT's 118 to 95. What survives is what should — `anttools/xspec/coverage-report.xsl`
 is a `match="/"` with no `xsl:output` that nobody imports.
 
-Seven guards decide it and a mutation of each reddens a pack, five of them one pack alone;
-`supplying` reddens four, being what the rest stands on. Two guards the first spelling carried
-decided nothing and are deleted rather than pinned, since a pack over a guard that cannot fire reads
-like an assertion where there is none. A file holding an `xsl:output` is in `supplying`, so it is
-settled through its own reach and the `!holds(xsl, 'output')` beside the report never fired; and
-`rooted` inside `supplying` excluded only a root that is neither stylesheet nor transform yet holds
-a top-level `xsl:output` — an `xsl:package`, or a shape XSLT refuses, and the three corpora hold
-neither in 842 stylesheets. What `rooted` does decide is the file judged, where the package is the
-live case: it is reached by `xsl:use-package`, an edge this linter does not follow, so judging one
+Ten *decisions* carry it, `rooted` being two and `outward` two, and mutating each says what pins it:
+seven redden a single pack, `supplying` four, and the file's own place in its own reach five. Read
+coarsely — `rooted` one decision and `outward` one — it is four that redden a single pack. Neither
+reading is the other's, so a count here is stated with the decomposition it was taken under, a
+sentence claiming five having been true under neither.
+
+One decision no pack defeats. The namespace half of `rooted` fires only on a root *named* stylesheet
+or transform outside the XSLT namespace while holding XSLT children, which is no stylesheet at all,
+and it stays: a local-name test standing without its namespace is the shape this repository refuses
+everywhere else. Two the first spelling carried are gone, for two different reasons.
+`!holds(xsl, 'output')` beside the report was redundant against every input there is, a file holding
+one being in `supplying` and so settled through its own reach before the conjunct is read. `rooted`
+inside `supplying` fired only on a root that is neither stylesheet nor transform yet holds a
+top-level `xsl:output` — an `xsl:package`, where it was wrong, a package's output governing the
+modules it imports as any other does, or a shape XSLT refuses; 842 corpus stylesheets hold neither.
+So one went for deciding nothing, one for deciding wrongly, and the third stays for deciding rightly
+where nothing valid reaches it. What `rooted` decides whole is the file judged, and the package is
+that live case: reached by `xsl:use-package`, an edge this linter does not follow, so judging one
 invents a defect out of a tree nobody handed us — #468 once more.
 
 ## `src/linters/corpus-linter.js`

@@ -231,7 +231,7 @@ before: 268 descriptions in 65 files stood past that bar, the dearest of them
 142 lines, so a derivation grew wherever one was written the way the cross-file
 linter's cost grew before #755 (#832). The bar is not a licence to respell what
 a block cannot hold as a `/* */` beside it either — such prose is cut and not
-moved, the dearest chain of guides standing at 0.96 of `LOADED` with nowhere to
+moved, the dearest chain of guides standing at 0.97 of `LOADED` with nowhere to
 put it, so the ticket number left standing in the surviving sentence is what
 keeps a derivation recoverable.
 
