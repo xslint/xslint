@@ -21,6 +21,8 @@ const {lintByNamespace, names: namespaceChecks} =
 const {lintByResultNamespace, names: resultNamespaceChecks} =
   require('./linters/result-namespace-linter')
 const {lintByImports, names: importChecks} = require('./linters/import-linter')
+const {lintByOutput, names: outputChecks} =
+  require('./linters/output-linter')
 const {lintByParameter, names: parameterChecks} =
   require('./linters/parameter-linter')
 const {lintByElement, names: elementChecks} =
@@ -74,6 +76,7 @@ const LINTERS = [
     checks: resultNamespaceChecks,
   },
   {name: 'import-linter', run: lintByImports, checks: importChecks},
+  {name: 'output-linter', run: lintByOutput, checks: outputChecks},
   {name: 'parameter-linter', run: lintByParameter, checks: parameterChecks},
   {name: 'element-linter', run: lintByElement, checks: elementChecks},
   {

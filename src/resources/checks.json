@@ -18,7 +18,7 @@
         "message": "A stylesheet function is never called in any expression across the corpus. Remove it or call it."
       },
       "unused-named-template": {
-        "declaration": "//xsl:template[not(@match)][@name]",
+        "declaration": "//xsl:template[not(@match)][@name][not(ends-with(@name, ':initial-template'))]",
         "usage": "//xsl:call-template/@name",
         "severity": "warning",
         "message": "A named template is never invoked via xsl:call-template. Remove it or call it."
@@ -56,6 +56,10 @@
       "not-creating-element-correctly": {
         "severity": "warning",
         "message": "xsl:element is used with a static name. Use a literal result element instead."
+      },
+      "not-using-output": {
+        "severity": "error",
+        "message": "The xsl:output instruction is missing. Declare it to specify the serialization format explicitly."
       },
       "null-output-from-stylesheet": {
         "severity": "warning",
@@ -173,7 +177,7 @@
         "message": "The function contains more than 50 XSLT elements. Split it into smaller functions."
       },
       "function-template-is-not-child-of-stylesheet": {
-        "xpath": "(/xsl:stylesheet | /xsl:transform)/*//(xsl:function|xsl:template)",
+        "xpath": "(/xsl:stylesheet | /xsl:transform)/*//(xsl:function | xsl:template)[not(ancestor::xsl:override)]",
         "severity": "error",
         "message": "'xsl:function' or 'xsl:template' are used in the wrong places. Use 'xsl:function' and 'xsl:template' as child nodes of 'xsl:stylesheet'."
       },
@@ -227,11 +231,6 @@
         "severity": "error",
         "message": "'xsl:if' or 'xsl:when' don't have attribute @test. Add this attribute or delete node."
       },
-      "not-using-output": {
-        "xpath": "(/xsl:stylesheet | /xsl:transform)[xsl:template and not(xsl:output)]",
-        "severity": "error",
-        "message": "The xsl:output instruction is missing. Declare it to specify the serialization format explicitly."
-      },
       "otherwise-not-last": {
         "xpath": "//xsl:otherwise[following-sibling::*]",
         "severity": "error",
@@ -263,9 +262,9 @@
         "message": "'xsl:sort' must come before any other content in its 'xsl:for-each' or 'xsl:apply-templates'. Move it to the front."
       },
       "stylesheet-has-no-templates": {
-        "xpath": "(/xsl:stylesheet | /xsl:transform)[not(xsl:template | xsl:function | xsl:variable)]",
+        "xpath": "(/xsl:stylesheet | /xsl:transform)[not(xsl:*)]",
         "severity": "error",
-        "message": "The stylesheet has no templates, functions, or variables and offers nothing. Add at least one template."
+        "message": "The stylesheet declares nothing at all, so it contributes nothing to a transformation. Add a declaration, or delete the file."
       },
       "template-has-no-name-or-match": {
         "xpath": "//xsl:template[not(@name) and not(@match)]",

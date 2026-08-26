@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
 # SPDX-License-Identifier: MIT
 ---
-xpath: (/xsl:stylesheet | /xsl:transform)/*//(xsl:function|xsl:template)
+xpath: (/xsl:stylesheet | /xsl:transform)/*//(xsl:function | xsl:template)[not(ancestor::xsl:override)]
 severity: error
 message: "'xsl:function' or 'xsl:template' are used in the wrong places. Use 'xsl:function' and 'xsl:template' as child nodes of 'xsl:stylesheet'."

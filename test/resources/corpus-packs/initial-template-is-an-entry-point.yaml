@@ -1,0 +1,27 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: unused-named-template
+found:
+  amount: 1
+  positions: [ [ 0, 7, 3 ] ]
+inputs:
+  - |-
+    <?xml version="1.0"?>
+    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="3.0" id="style1">
+      <xsl:output encoding="UTF-8" method="xml"/>
+      <xsl:template name="xsl:initial-template">
+        <lomonosov/>
+      </xsl:template>
+      <xsl:template name="markovnikov">
+        <chemist/>
+      </xsl:template>
+    </xsl:stylesheet>
+  - |-
+    <?xml version="1.0"?>
+    <t:transform xmlns:t="http://www.w3.org/1999/XSL/Transform" version="3.0" id="style2">
+      <t:output encoding="UTF-8" method="xml"/>
+      <t:template name="t:initial-template">
+        <chebyshev/>
+      </t:template>
+    </t:transform>

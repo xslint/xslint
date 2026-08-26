@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
 # SPDX-License-Identifier: MIT
 ---
-xpath: (/xsl:stylesheet | /xsl:transform)[not(xsl:template | xsl:function | xsl:variable)]
+xpath: (/xsl:stylesheet | /xsl:transform)[not(xsl:*)]
 severity: error
-message: The stylesheet has no templates, functions, or variables and offers nothing. Add at least one template.
+message: The stylesheet declares nothing at all, so it contributes nothing to a transformation. Add a declaration, or delete the file.

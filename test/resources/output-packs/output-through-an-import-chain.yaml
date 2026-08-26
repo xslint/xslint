@@ -1,0 +1,30 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: not-using-output
+found:
+  amount: 0
+  positions: [ ]
+  fixes: [ ]
+inputs:
+  - |-
+    <?xml version="1.0"?>
+    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" id="style1">
+      <xsl:import href="file1.xsl"/>
+      <xsl:template match="/objects/o">
+        <chebyshev/>
+      </xsl:template>
+    </xsl:stylesheet>
+  - |-
+    <?xml version="1.0"?>
+    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" id="style2">
+      <xsl:include href="file2.xsl"/>
+      <xsl:template match="chemist">
+        <markovnikov/>
+      </xsl:template>
+    </xsl:stylesheet>
+  - |-
+    <?xml version="1.0"?>
+    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" id="style3">
+      <xsl:output encoding="UTF-8" method="html"/>
+    </xsl:stylesheet>

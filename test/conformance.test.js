@@ -29,7 +29,6 @@ const UNINDEXED = {
   'malformed-version-in-stylesheet': 'a bracketed union of attribute paths',
   'missing-id-in-stylesheet': 'the root itself, not a descendant sweep',
   'missing-version-in-stylesheet': 'the root itself, not a descendant sweep',
-  'not-using-output': 'the root itself, not a descendant sweep',
   'stylesheet-has-no-templates': 'the root itself, not a descendant sweep',
   'text-outside-xsl-text': 'a wildcard names no one bucket',
   'too-many-templates': 'the root itself, not a descendant sweep',
