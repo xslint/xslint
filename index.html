@@ -218,12 +218,6 @@
     <td>'xsl:if' or 'xsl:when' don't have attribute @test. Add this attribute or delete node.</td>
   </tr>
   <tr>
-    <td><a href="checks/not-using-output.html">not-using-output</a></td>
-    <td>xpath</td>
-    <td><span class="severity-error">error</span></td>
-    <td>The xsl:output instruction is missing. Declare it to specify the serialization format explicitly.</td>
-  </tr>
-  <tr>
     <td><a href="checks/otherwise-not-last.html">otherwise-not-last</a></td>
     <td>xpath</td>
     <td><span class="severity-error">error</span></td>
@@ -263,7 +257,7 @@
     <td><a href="checks/stylesheet-has-no-templates.html">stylesheet-has-no-templates</a></td>
     <td>xpath</td>
     <td><span class="severity-error">error</span></td>
-    <td>The stylesheet has no templates, functions, or variables and offers nothing. Add at least one template.</td>
+    <td>The stylesheet declares nothing at all, so it contributes nothing to a transformation. Add a declaration, or delete the file.</td>
   </tr>
   <tr>
     <td><a href="checks/template-has-no-name-or-match.html">template-has-no-name-or-match</a></td>
@@ -408,6 +402,12 @@
     <td>format</td>
     <td><span class="severity-warning">warning</span></td>
     <td>xsl:element is used with a static name. Use a literal result element instead.</td>
+  </tr>
+  <tr>
+    <td><a href="checks/not-using-output.html">not-using-output</a></td>
+    <td>format</td>
+    <td><span class="severity-error">error</span></td>
+    <td>The xsl:output instruction is missing. Declare it to specify the serialization format explicitly.</td>
   </tr>
   <tr>
     <td><a href="checks/null-output-from-stylesheet.html">null-output-from-stylesheet</a></td>

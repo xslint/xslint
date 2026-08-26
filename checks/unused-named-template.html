@@ -72,7 +72,7 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-warning">warning</span>
-    <code class="xpath">declaration: //xsl:template[not(@match)][@name]</code>
+    <code class="xpath">declaration: //xsl:template[not(@match)][@name][not(ends-with(@name, ':initial-template'))]</code>
     <code class="xpath">usage: //xsl:call-template/@name</code>
   </div>
   <div class="check-content">
@@ -83,6 +83,16 @@ and should be removed.</p>
 a template invoked from another file (via <code>xsl:import</code> or <code>xsl:include</code>) is
 not reported. The template is flagged only when no file calls it. Lint the
 whole project at once so the check can see every caller.</p>
+<p>A template named <code>initial-template</code> in the XSLT namespace is the entry point
+XSLT 3.0 defines, invoked by the processor rather than by any
+<code>xsl:call-template</code>, so no stylesheet ever names it and it is left alone. The
+same holds of any template a run enters directly, such as one Saxon is given
+with <code>-it:</code>, but a name chosen on a command line is not something a stylesheet
+records, so those are reported and there is nothing here that could know
+otherwise. It is the local part of the name that settles the exemption, so a
+template called <code>initial-template</code> under any prefix is left alone — one of
+your own, in a namespace of your own and never called, goes unreported. Name
+your own templates something else and the check answers for them.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:template name=&quot;footer&quot;&gt;
   &lt;footer&gt;Copyright 2026&lt;/footer&gt;

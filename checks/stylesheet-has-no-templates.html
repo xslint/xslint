@@ -72,19 +72,22 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-error">error</span>
-    <code class="xpath">(/xsl:stylesheet | /xsl:transform)[not(xsl:template | xsl:function | xsl:variable)]</code>
+    <code class="xpath">(/xsl:stylesheet | /xsl:transform)[not(xsl:*)]</code>
   </div>
   <div class="check-content">
 <h1>Stylesheet has no templates</h1>
-<p>A stylesheet with no templates, functions, or variables offers nothing: it can
-produce no output and exports nothing to import. Add at least one template. A
-function or variable library — one whose definitions are pulled in by the
-stylesheets that <code>xsl:import</code> it — is exempt, since its templates live in the
-importer.</p>
+<p>A stylesheet that declares nothing at all contributes nothing to a
+transformation: it produces no output, exports nothing to an importer, and
+settles no serialization. It is a file somebody started and never wrote.</p>
+<p>What counts as declaring something is anything XSLT lets stand at the top
+level, and not templates alone. A module holding only an <code>xsl:output</code> sets
+the serialization for every stylesheet that imports it; one holding only
+<code>xsl:import</code> aggregates a pipeline; one holding only keys, attribute sets or
+parameters is a library its importers draw on; and under <code>xsl:use-package</code> the
+components sit inside <code>xsl:override</code> rather than beside it. Each of those is a
+module doing exactly what a module is for, and each is left alone.</p>
 <p>Incorrect:</p>
-<pre><code class="language-xsl">&lt;xsl:stylesheet version=&quot;1.0&quot; xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot;&gt;
-  &lt;xsl:output method=&quot;html&quot;/&gt;
-&lt;/xsl:stylesheet&gt;
+<pre><code class="language-xsl">&lt;xsl:stylesheet version=&quot;1.0&quot; xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot;/&gt;
 </code></pre>
 <p>Correct:</p>
 <pre><code class="language-xsl">&lt;xsl:stylesheet version=&quot;1.0&quot; xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot;&gt;

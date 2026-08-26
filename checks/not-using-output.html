@@ -72,7 +72,7 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-error">error</span>
-    <code class="xpath">(/xsl:stylesheet | /xsl:transform)[xsl:template and not(xsl:output)]</code>
+    <code class="xpath">checked over the tokens, not an XPath rule</code>
   </div>
   <div class="check-content">
 <h1>Not using output</h1>
@@ -85,6 +85,19 @@ should be visible in one place. The only coherent policies are &quot;every
 stylesheet that serializes declares its output&quot; or &quot;none does&quot;, so xslint asks
 for the first. A module with no templates — one imported into a pipeline that
 sets the output itself — is exempt, since it never serializes on its own.</p>
+<p>Which stylesheet declares it is a question about the whole import tree and not
+about one file. An <code>xsl:output</code> merges into every stylesheet that imports the
+module holding it, so pushing the serialization into a shared module and
+importing it declares the output for the tree as surely as writing it inline.
+A tree serializes together, so a stylesheet is left alone when any tree
+holding it declares one — the modules it imports, however deep the chain runs,
+and the sheets importing it just as much, a library module being governed by
+the main module that pulls it in. So is one importing a module it was not
+linted alongside, since an href leading out of the linted set settles nothing
+either way and a file must not be judged on what nobody handed us. An
+<code>xsl:package</code> is left alone for that same reason: a package is <em>used</em> rather
+than imported, and the stylesheet using it is where its serialization is
+declared.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:stylesheet version=&quot;1.0&quot; xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot;&gt;
   &lt;xsl:template match=&quot;/&quot;&gt;
