@@ -7,7 +7,7 @@ found:
   positions: [ ]
 input: |-
   <?xml version="1.0"?>
-  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="3.0" id="style1">
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:my="urn:my" version="3.0" id="style1">
     <xsl:output encoding="UTF-8" method="xml"/>
     <xsl:variable name="gauss" select="'sum'"/>
     <xsl:param name="euler" select="'constant'"/>
@@ -16,7 +16,11 @@ input: |-
         <xsl:with-param name="noether" select="$gauss"/>
       </xsl:call-template>
     </xsl:template>
-    <xsl:function name="fn:poincare">
+    <xsl:template name="hilbert">
+      <xsl:param name="noether" select="'zero'"/>
+      <xsl:value-of select="$noether"/>
+    </xsl:template>
+    <xsl:function name="my:poincare">
       <xsl:sequence select="$euler"/>
     </xsl:function>
     <xsl:key name="cantor" match="o" use="@id"/>
@@ -24,5 +28,7 @@ input: |-
     <xsl:decimal-format name="peano"/>
     <xsl:character-map name="cauchy"/>
     <xsl:mode name="fourier"/>
-    <xsl:accumulator name="laplace" initial-value="0"/>
+    <xsl:accumulator name="laplace" initial-value="0">
+      <xsl:accumulator-rule match="o" select="$value + 1"/>
+    </xsl:accumulator>
   </xsl:stylesheet>

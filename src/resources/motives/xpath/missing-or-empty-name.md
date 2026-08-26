@@ -1,13 +1,16 @@
 # A name that is missing or empty
 
-Eleven XSLT elements are named by a `@name` that must be a QName —
-`xsl:variable`, `xsl:param`, `xsl:with-param`, `xsl:template`, `xsl:function`,
-`xsl:key`, `xsl:attribute-set`, `xsl:decimal-format`, `xsl:character-map`,
-`xsl:mode` and `xsl:accumulator`. An empty string is not one. Neither is an
-attribute that is not there at all, on the two elements that require it. In
-both cases the stylesheet is a static error: a processor refuses to compile it
-rather than running it and producing something odd, so the whole
-transformation stops on a typo.
+Twelve XSLT elements are named by a `@name` that must be a QName —
+`xsl:variable`, `xsl:param`, `xsl:with-param`, `xsl:call-template`,
+`xsl:template`, `xsl:function`, `xsl:key`, `xsl:attribute-set`,
+`xsl:decimal-format`, `xsl:character-map`, `xsl:mode` and `xsl:accumulator`. An
+empty string is not one, on any of them: the stylesheet is a static error, so a
+processor refuses to compile it rather than running it and producing something
+odd, and the whole transformation stops on a typo. Leaving the attribute out
+altogether is a different fault — nine of the twelve must carry one, while
+`xsl:template`, `xsl:mode` and `xsl:decimal-format` are named by choice, and an
+absent `@name` on those three asks for the unnamed default rather than for
+nothing.
 
 The empty spelling is the one that hides. `name=""` reads as a name at a
 glance, survives a search for the attribute, and looks deliberate beside a
@@ -22,6 +25,7 @@ Incorrect:
 ```xsl
 <xsl:variable name="" select="count(item)"/>
 <xsl:key name="" match="section" use="@id"/>
+<xsl:call-template name=""/>
 <xsl:variable select="count(item)"/>
 ```
 
@@ -30,6 +34,7 @@ Correct:
 ```xsl
 <xsl:variable name="items" select="count(item)"/>
 <xsl:key name="sections" match="section" use="@id"/>
+<xsl:call-template name="summary"/>
 <xsl:variable name="total" select="count(item)"/>
 ```
 

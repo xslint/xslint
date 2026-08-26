@@ -202,7 +202,7 @@
         "message": "The '@id' attribute is missing in the 'xsl:stylesheet' element. Declare it to specify the unique identifier explicitly."
       },
       "missing-or-empty-name": {
-        "xpath": "//(xsl:variable | xsl:param)[not(@name)] | //(xsl:variable | xsl:param | xsl:with-param | xsl:template | xsl:function | xsl:key | xsl:attribute-set | xsl:decimal-format | xsl:character-map | xsl:mode | xsl:accumulator)[@name = '']",
+        "xpath": "//(xsl:variable | xsl:param)[not(@name)] | //(xsl:variable | xsl:param | xsl:with-param | xsl:call-template | xsl:template | xsl:function | xsl:key | xsl:attribute-set | xsl:decimal-format | xsl:character-map | xsl:mode | xsl:accumulator)[@name = '']",
         "severity": "error",
         "message": "The '@name' is missing or empty here, and neither is a QName, so no processor will load this stylesheet"
       },
