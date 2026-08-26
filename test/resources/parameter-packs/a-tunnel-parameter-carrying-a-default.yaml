@@ -1,0 +1,21 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: unused-function-template-parameter
+found:
+  amount: 2
+  positions: [ [ 5, 5 ], [ 9, 5 ] ]
+  fixes: [ null, null ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="style1">
+    <xsl:output encoding="UTF-8" method="xml"/>
+    <xsl:template match="strow">
+      <xsl:param name="rows" tunnel="yes" select="'gauss'"/>
+      <xsl:text>reached</xsl:text>
+    </xsl:template>
+    <xsl:template match="stentry">
+      <xsl:param name="span" required="no"/>
+      <xsl:text>reached</xsl:text>
+    </xsl:template>
+  </xsl:stylesheet>

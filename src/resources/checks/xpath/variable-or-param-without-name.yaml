@@ -1,6 +1,0 @@
-# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
-# SPDX-License-Identifier: MIT
----
-xpath: //(xsl:variable | xsl:param)[not(@name)]
-severity: error
-message: xsl:variable and xsl:param require a @name attribute. Add one or remove the element.
