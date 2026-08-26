@@ -54,5 +54,18 @@
     "grunt-mocha-cli": "^7.0.0",
     "marked": "^18.0.7",
     "mocha": "^11.0.1"
+  },
+  "overrides": {
+    "diff": "^9.0.0",
+    "grunt": {
+      "js-yaml": "^4.3.1"
+    },
+    "grunt-mocha-cli": {
+      "mocha": "$mocha"
+    },
+    "serialize-javascript": "^7.1.0",
+    "typed-rest-client": {
+      "qs": "^6.15.3"
+    }
   }
 }

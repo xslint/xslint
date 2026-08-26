@@ -103,6 +103,11 @@ npm install
 npm install -g .
 ```
 
+Use Node 22, the release CI runs on. Babel 8, which the mutation tester pulls
+in, declares itself for 22.18 and 24.11 upward only, so on any other release
+`npm install` prints an `EBADENGINE` warning per Babel package and then
+installs regardless.
+
 Verify that `xslint` is installed correctly:
 
 ```bash

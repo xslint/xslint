@@ -22,9 +22,19 @@ jobs:
       - run: npm install
       - run: npm install --force -g grunt-cli
       - run: npm test
+  audit:
+    timeout-minutes: 15
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - run: npm audit
   report-fail:
     name: Create issue on failure
-    needs: build
+    needs: [ build, audit ]
     if: failure() && github.event.pull_request == null
     runs-on: ubuntu-24.04
     permissions:
