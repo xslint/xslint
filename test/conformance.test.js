@@ -169,6 +169,49 @@ const EMITTED = {
 }
 
 /**
+ * An attribute a selector tests the presence of. XSLT 3.0 writes any attribute
+ * of an XSLT element `_x` as readily as `x`, evaluated before a module is
+ * compiled, so a check asking whether the author supplied one reads both or
+ * reports a stylesheet SaxonJ-HE 12.5 loads without a word — ten did (#849).
+ * @type {RegExp}
+ */
+const SUPPLIED = new RegExp(`not${GAP}*\\(${GAP}*@([\\w:.-]+)${GAP}*\\)`, 'g')
+
+/**
+ * The shadow spelling of an attribute, the underscore standing in front of the
+ * local name and never in front of the prefix: `_xsl:version` names a prefix
+ * no document binds, where `xsl:_version` is the one XSLT means.
+ * @param {string} named - The attribute as a selector spells it
+ * @return {string} - The same attribute written in shadow form
+ */
+const shadowed = function(named) {
+  return named.replace(/[^:]+$/, (local) => `_${local}`)
+}
+
+/**
+ * The attributes with no shadow spelling to ask after, beside the reason.
+ * `xsl:version` is what makes a literal result element a stylesheet at all, so
+ * the mechanism reading a shadow one is not running yet: Saxon refuses both
+ * `xsl:_version` (XTSE0150) and `_xsl:version` (SXXP0003) on such a root.
+ * @type {{[key: string]: string}}
+ */
+const SHADOWLESS = {
+  'xsl:version': 'it is what makes a literal result element a stylesheet',
+}
+
+/**
+ * Every attribute a selector tests the presence of in one spelling alone.
+ * @param {string} selector - The XPath a declarative check is written in
+ * @return {Array.<string>} - The attributes it asks about one way only
+ */
+const unshadowed = function(selector) {
+  return Array.from(selector.matchAll(SUPPLIED))
+    .map((found) => found[1])
+    .filter((named) => !named.split(':').pop().startsWith('_'))
+    .filter((named) => !selector.includes(`@${shadowed(named)}`))
+}
+
+/**
  * Each exemption table beside the question deciding whether its entries are
  * still needed, so one gate holds every table from the far side.
  * @type {Array.<{table: object, still: function(string): boolean}>}
@@ -622,6 +665,48 @@ describe('conformance', function() {
           }
         }
       }
+    })
+  it('asks both spellings of an attribute a selector tests the presence of',
+    function() {
+      for (const [kind, keys] of Object.entries(SELECTORS)) {
+        for (const name of names(kind)) {
+          const check = yaml.parsedFromFile(
+            path.join(CHECKS, kind, `${name}.yaml`),
+          )
+          for (const key of keys) {
+            assert.deepStrictEqual(
+              unshadowed(check[key] ?? '').filter(
+                (named) => SHADOWLESS[named] === undefined,
+              ),
+              [],
+              `${kind}/${name} asks its ${key} whether an attribute is ` +
+                'there and reads one of the two spellings XSLT gives it, so ' +
+                'a stylesheet writing the shadow form draws a defect no ' +
+                'processor agrees with. Ask not(@_x) beside not(@x)',
+            )
+          }
+        }
+      }
+    })
+  it('exempts an attribute from its shadow spelling only while it has none',
+    function() {
+      const asked = Object.entries(SELECTORS).flatMap(
+        ([kind, keys]) => names(kind).flatMap(
+          (name) => keys.map(
+            (key) => yaml.parsedFromFile(
+              path.join(CHECKS, kind, `${name}.yaml`),
+            )[key] ?? '',
+          ),
+        ),
+      ).flatMap(unshadowed)
+      assert.deepStrictEqual(
+        Object.keys(SHADOWLESS).filter((named) => !asked.includes(named)),
+        [],
+        'an attribute in the SHADOWLESS table of test/conformance.test.js is ' +
+          'asked about in both spellings now, or asked about by nobody, so ' +
+          'its entry is asserting nothing: a selector that gains the guard ' +
+          'takes its own exemption with it',
+      )
     })
   it('exempts a selector only while it still needs the exemption', function() {
     for (const {table, still} of EXEMPTED) {

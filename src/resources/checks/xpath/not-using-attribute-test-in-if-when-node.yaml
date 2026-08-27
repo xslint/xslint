@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
 # SPDX-License-Identifier: MIT
 ---
-xpath: //( xsl:if | xsl:when)[not(@test)]
+xpath: //( xsl:if | xsl:when)[not(@test) and not(@_test)]
 severity: error
 message: "'xsl:if' or 'xsl:when' don't have attribute @test. Add this attribute or delete node."

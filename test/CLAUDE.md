@@ -472,6 +472,31 @@ Since #817 the two exemption tables answer one gate rather than two, `EXEMPTED` 
 the question deciding whether its entries are still needed — the same ratchet twice over, not a
 shape worth spelling out twice.
 
+A sixth arrived at #849, and it is the one that had been wrong the longest. XSLT 3.0 writes any
+attribute of an XSLT element twice over — `x`, and `_x` whose value is an attribute value template
+evaluated before the module compiles — and `src/attributes.js` has read that spelling since #606
+where no selector ever did. Every one of the ten testing an attribute's presence with `not(@x)`
+reported a stylesheet SaxonJ-HE 12.5 loads without a word: a `_select` on an `xsl:variable` drew
+`empty-variable`, a `_match` on an `xsl:template` drew `template-has-no-name-or-match` and
+`mode-or-priority-without-match` together, and the check #668 adds beside them would have joined
+the list had it been written the same way. Two carried a fix and so damaged the file rather than
+only misreading it. `mode-or-priority-without-match` deleted a `@mode` its template was really
+using, leaving that rule and the root one matching `/` at equal priority — `XTDE0540`, out of a run
+whose whole promise is that a fix preserves meaning. `missing-version-in-stylesheet` wrote
+`version="1.0"` beside a `_version="{'3.0'}"`; Saxon still loads that, but `versionOf` reads the
+one that was written, so a sheet holding an `xsl:for-each-group` drew no
+`modern-construct-in-xslt-1` before the fixer ran and one after — a check writing a wrong version
+and a second check believing it.
+
+`SUPPLIED` reads every `not(@x)` a selector spells and asks for the `not(@_x)` beside it, with
+`SHADOWLESS` naming what is exempt: `xsl:version` alone, for a reason no other attribute has. It
+is what makes a literal result element a stylesheet at all, so the mechanism that would read a
+shadow one is not running yet, and Saxon refuses both spellings there — `xsl:_version` as
+`XTSE0150` and `_xsl:version` as `SXXP0003`. That table ratchets like the rest: an entry whose
+selector has gained the guard, or stopped asking, turns red. No corpus said any of this. DocBook-XSL,
+TEI and DITA-OT hold no shadow attribute between them, so the nightly tier reads the same numbers
+either way and the ten packs are the whole of the pin.
+
 The line cap is held from a third side since #825. A file the cap is lifted off must have its
 length stated in a guide, and the number must be the one ESLint reads: `SPRAWLING`'s membership was
 gated where the length beside it was not, so the one file carrying an exemption went on being
@@ -506,13 +531,13 @@ under them was opened. The first spelling of the bar weighed the root against th
 guide instead, which is a whole directory short: it read 130,933 and called that 0.87 of the bar
 while a turn touching `src/linters/` was loading 157,504 and over it. So the two dearest notes moved
 one step further down, out of `src/CLAUDE.md` and into the top of `src/grammar.js` and
-`src/syntax.js` — 24,681 characters — and the dearest chain is that same one at 147,320, which is
+`src/syntax.js` — 24,681 characters — and the dearest chain is that same one at 147,738, which is
 0.98. What answers a chain reaching the bar is that move again, a module's derivation into the
 file-header note of the module itself, and never a bar widened to fit what has grown past it: a
 docblock holds five lines of description since #832, so prose that has outgrown a guide does not
 simply move into one instead. A `CEILING` of half the bar stood beside it until it was seen to be a
 gate no tree could fail: the root stands in every chain, so the chain holding it above weighs each
-other guide against the bar less what stands over it — 34,678 for `src/linters/CLAUDE.md`, where
+other guide against the bar less what stands over it — 34,260 for `src/linters/CLAUDE.md`, where
 half of the bar is 75,000 — and holds the root itself to 72,864, a number derived from the dearest
 chain rather than chosen. A gate no tree can fail is removed and not kept (#750, #660). All four of
 those figures — the chain, its ratio, and the two allowances — follow from three file sizes, so one

@@ -1,0 +1,16 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: missing-or-empty-name
+found:
+  amount: 0
+  positions: [ ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="3.0" id="style1">
+    <xsl:output encoding="UTF-8" method="xml"/>
+    <xsl:variable _name="{'gauss'}" select="42"/>
+    <xsl:template match="/">
+      <out/>
+    </xsl:template>
+  </xsl:stylesheet>
