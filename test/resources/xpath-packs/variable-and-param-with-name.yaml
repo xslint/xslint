@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
 # SPDX-License-Identifier: MIT
 ---
-pack: variable-or-param-without-name
+pack: missing-or-empty-name
 found:
   amount: 0
   positions: [ ]

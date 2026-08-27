@@ -18,6 +18,16 @@ reference somebody switched off, which is the strongest evidence there is that
 the parameter is dead: a template whose body is commented out keeps only the
 signature, and the signature is what every caller still pays for.
 
+One declaration is left alone, and it is the one whose effect stands outside
+the body: `required="yes"`. There the declaration is a demand on every caller,
+and an unsupplied parameter is a runtime error rather than an empty sequence,
+so deleting it on the grounds that the body never reads the name throws that
+guard away and the stylesheet runs on, silently, where it used to stop. A
+`tunnel="yes"` carrying a default is not the same shape and is reported like
+any other: an `xsl:param` binds a name inside the template declaring it and
+adds nothing to what tunnels onward, so a tunnelled default no body reads is
+dead exactly as it looks.
+
 Incorrect:
 
 ```xsl

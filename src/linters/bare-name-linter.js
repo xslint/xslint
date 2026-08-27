@@ -36,14 +36,19 @@ const META = metaOf(CHECK)
 const SELECT = 'select'
 
 /**
- * The XSLT elements it reads them from and around: the instruction whose
- * `@select` is judged, the declaration a name may collide with, and the scope
- * that declaration reaches no further than.
+ * The XSLT elements it reads around: the declaration a name may collide with,
+ * and the scope a declaration inside one reaches no further than.
  * @type {{[role: string]: string}}
  */
-const ELEMENTS = {
-  applies: 'apply-templates', declares: 'variable', scope: 'template',
-}
+const ELEMENTS = {declares: 'variable', scope: 'template'}
+
+/**
+ * The XSLT instructions whose `@select` chooses nodes, every one of which a
+ * bare name can be confused in. `xsl:apply-templates` was the whole list until
+ * #560, and a `select="items"` reads the child element in all four alike.
+ * @type {Array.<string>}
+ */
+const SELECTING = ['apply-templates', 'copy-of', 'for-each', 'value-of']
 
 /**
  * The attribute a variable declares its name in.
@@ -104,6 +109,33 @@ const declared = function(template, element) {
 }
 
 /**
+ * The global names of each stylesheet, remembered against it: they depend on
+ * the document alone, where the scan asking for them runs once per expression.
+ * @type {WeakMap}
+ */
+const GLOBALS = new WeakMap()
+
+/**
+ * The names the stylesheet's own top-level `xsl:variable` declarations take,
+ * in scope in every template it holds however the two are ordered (#560).
+ * @param {Document} xsl - The stylesheet the element stands in
+ * @return {Set.<string>} - The names its globals have taken
+ */
+const globals = function(xsl) {
+  if (!GLOBALS.has(xsl)) {
+    GLOBALS.set(xsl, new Set(
+      Array.from(xsl.documentElement.childNodes)
+        .filter(
+          (node) => node.nodeType === 1 && node.namespaceURI === XSLT &&
+            node.localName === ELEMENTS.declares && node.hasAttribute(NAME),
+        )
+        .map((node) => node.getAttribute(NAME)),
+    ))
+  }
+  return GLOBALS.get(xsl)
+}
+
+/**
  * The steps that open a path, which are the only ones a variable name can be
  * confused at: a name deeper in a path is a child of whatever stands in front
  * of it. A union has as many heads as it has branches, so `x | title/y` holds
@@ -149,23 +181,26 @@ const confused = function(found, taken) {
 }
 
 /**
- * The template whose variables the record's own element competes with, where
- * the record is one this check reads at all: the whole `@select` of an
- * `xsl:apply-templates` standing inside a template. A `@select` an attribute
- * value template encloses is none of it, and neither is one a literal result
- * element carries, which is output data (#788, one check over).
+ * The names in scope where the record stands, or nothing where it is not one
+ * this check reads: it wants the whole `@select` of a selecting instruction.
+ * Those names are the stylesheet's globals, and the declarations standing in
+ * front of it in the template holding it (#560, #788).
  * @param {{node: Node, start: number, pattern: boolean}} found - The record
- * @return {?Element} - The template it stands in, or nothing where it is not
+ * @return {?Set.<string>} - The names taken there, or nothing where it is not
  *  the attribute this check reads
  */
-const applied = function(found) {
-  let template = null
+const selecting = function(found) {
+  let taken = null
   const element = holding(found.node)
   if (whole(found, SELECT) && element.namespaceURI === XSLT &&
-    element.localName === ELEMENTS.applies) {
-    template = scoped(element)
+    SELECTING.includes(element.localName)) {
+    const template = scoped(element)
+    taken = new Set(globals(element.ownerDocument))
+    if (template) {
+      declared(template, element).forEach((one) => taken.add(one))
+    }
   }
-  return template
+  return taken
 }
 
 /**
@@ -185,11 +220,9 @@ const lintByBareName = function(expressions, suppressions = []) {
   const defects = []
   if (!suppressed(CHECK, suppressions)) {
     for (const {source, found} of expressions) {
-      const template = applied(found)
-      if (template) {
-        for (const {at, fix} of confused(
-          found, declared(template, holding(found.node)),
-        )) {
+      const taken = selecting(found)
+      if (taken) {
+        for (const {at, fix} of confused(found, taken)) {
           defects.push(defect(CHECK, META, source, found, at, fix))
         }
       }

@@ -1,0 +1,24 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: confusing-variable-and-node
+found:
+  amount: 3
+  positions: [ [ 6, 34 ], [ 11, 36 ], [ 12, 41 ] ]
+  fixes: [ "$items", "$items", "$items" ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="style1">
+    <xsl:output encoding="UTF-8" method="xml"/>
+    <xsl:variable name="items" select="/objects/o"/>
+    <xsl:template match="/objects">
+      <xsl:apply-templates select="items"/>
+      <xsl:apply-templates select="others"/>
+    </xsl:template>
+    <xsl:template match="/objects/o">
+      <p>
+        <xsl:apply-templates select="items/o"/>
+        <xsl:apply-templates select="oo | items[1]"/>
+      </p>
+    </xsl:template>
+  </xsl:stylesheet>

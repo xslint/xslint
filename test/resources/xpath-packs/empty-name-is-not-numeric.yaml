@@ -3,8 +3,8 @@
 ---
 pack: name-starts-with-numeric
 found:
-  amount: 1
-  positions: [ [ 9, 5 ] ]
+  amount: 4
+  positions: [ [ 4, 3, missing-or-empty-name ], [ 5, 5, missing-or-empty-name ], [ 10, 5, missing-or-empty-name ], [ 9, 5 ] ]
 input: |-
   <?xml version="1.0"?>
   <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="style1">

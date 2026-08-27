@@ -8,7 +8,7 @@ const {gathered, isValid} = require('../syntax')
 const {metaOf, suppressed} = require('../checks')
 const {substitution} = require('../fixes')
 const {WHITESPACE} = require('../tokens')
-const {holding} = require('../tree')
+const {holding, named} = require('../tree')
 const {XSLT} = require('../xsl-version')
 const {logger} = require('../logger')
 
@@ -16,7 +16,7 @@ const {logger} = require('../logger')
  * Name of the check for a root template that writes nothing.
  * @type {string}
  */
-const SILENT = 'null-output-from-stylesheet'
+const SILENT = 'template-writes-nothing'
 
 /**
  * Name of the check for a serialization method that disagrees with what the
@@ -111,6 +111,17 @@ const roots = function(xsl) {
         isValid(found) && rooted(found),
     )
     .map((found) => holding(found.node))
+}
+
+/**
+ * Every `xsl:template` of the stylesheet, off the shared walk, since the
+ * question this check asks of one is about its own body rather than about the
+ * nodes its pattern selects (#559).
+ * @param {Document} xsl - XSL document parsed as {@link Document}
+ * @return {Array.<Element>} - The templates found, in document order
+ */
+const templates = function(xsl) {
+  return named(xsl).buckets.get(`${XSLT} ${ELEMENTS.template}`) ?? []
 }
 
 /**
@@ -228,13 +239,12 @@ const lintByRootTemplate = function(corpus, suppressions = []) {
   logger.debug(`Root template linting started`)
   const defects = []
   for (const {file, content, xsl} of corpus) {
-    const templates = roots(xsl)
     if (!suppressed(SILENT, suppressions)) {
-      for (const template of templates.filter(silent)) {
+      for (const template of templates(xsl).filter(silent)) {
         defects.push(reported(SILENT, file, template))
       }
     }
-    if (!suppressed(MISLABELLED, suppressions) && templates.some(html)) {
+    if (!suppressed(MISLABELLED, suppressions) && roots(xsl).some(html)) {
       for (const output of outputs(xsl)) {
         const method = output.getAttributeNode(SERIALIZED.attribute)
         if (method && method.value === SERIALIZED.value) {

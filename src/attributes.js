@@ -201,6 +201,7 @@ const expressionsOf = function(xsl) {
 
 module.exports = {
   ATTRIBUTES,
+  ON,
   PATTERNS,
   whole,
   expressionsOf,

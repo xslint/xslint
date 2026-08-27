@@ -1,0 +1,22 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: missing-or-empty-name
+found:
+  amount: 8
+  positions: [ [ 4, 3 ], [ 5, 3 ], [ 6, 3 ], [ 7, 5 ], [ 8, 7 ], [ 11, 3 ], [ 12, 3 ], [ 13, 3 ] ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" id="style1">
+    <xsl:output encoding="UTF-8" method="xml"/>
+    <xsl:variable name="" select="'gauss'"/>
+    <xsl:param name="" select="'euler'"/>
+    <xsl:template name="">
+      <xsl:call-template name="">
+        <xsl:with-param name="" select="'hilbert'"/>
+      </xsl:call-template>
+    </xsl:template>
+    <xsl:key name="" match="o" use="@id"/>
+    <xsl:attribute-set name=""/>
+    <xsl:decimal-format name=""/>
+  </xsl:stylesheet>

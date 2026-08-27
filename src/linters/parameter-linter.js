@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {expressionsOf} = require('../attributes')
+const {expressionsOf, ON} = require('../attributes')
 const {gathered, isValid, variableOf} = require('../syntax')
 const {holding, walked} = require('../tree')
 const {metaOf, suppressed} = require('../checks')
@@ -48,6 +48,13 @@ const TAKERS = ['function', 'template']
  * @type {number}
  */
 const ATTRIBUTE = 2
+
+/**
+ * The attribute that makes a parameter one a caller must supply, whose
+ * declaration therefore does something no reference in the body shows (#781).
+ * @type {string}
+ */
+const REQUIRED = 'required'
 
 /**
  * What a scope holds when it holds no expression at all, so a lookup that
@@ -125,6 +132,7 @@ const declared = function(xsl) {
     (node) => node.nodeType === ATTRIBUTE && node.nodeName === 'name' &&
       node.ownerElement.namespaceURI === XSLT &&
       node.ownerElement.localName === 'param' &&
+      !ON.includes((node.ownerElement.getAttribute(REQUIRED) ?? '').trim()) &&
       takes(node.ownerElement.parentNode),
   )
 }
