@@ -182,6 +182,12 @@
     <td>The '@id' attribute is missing in the 'xsl:stylesheet' element. Declare it to specify the unique identifier explicitly.</td>
   </tr>
   <tr>
+    <td><a href="checks/missing-or-empty-name.html">missing-or-empty-name</a></td>
+    <td>xpath</td>
+    <td><span class="severity-error">error</span></td>
+    <td>The '@name' is missing or empty here, and neither is a QName, so no processor will load this stylesheet</td>
+  </tr>
+  <tr>
     <td><a href="checks/missing-version-in-stylesheet.html">missing-version-in-stylesheet</a></td>
     <td>xpath</td>
     <td><span class="severity-warning">warning</span></td>
@@ -308,12 +314,6 @@
     <td>An xsl:variable, xsl:param or xsl:with-param has both a select attribute and a non-empty body. Use only one way to set the value.</td>
   </tr>
   <tr>
-    <td><a href="checks/variable-or-param-without-name.html">variable-or-param-without-name</a></td>
-    <td>xpath</td>
-    <td><span class="severity-error">error</span></td>
-    <td>xsl:variable and xsl:param require a @name attribute. Add one or remove the element.</td>
-  </tr>
-  <tr>
     <td><a href="checks/when-or-otherwise-outside-choose.html">when-or-otherwise-outside-choose</a></td>
     <td>xpath</td>
     <td><span class="severity-error">error</span></td>
@@ -410,12 +410,6 @@
     <td>The xsl:output instruction is missing. Declare it to specify the serialization format explicitly.</td>
   </tr>
   <tr>
-    <td><a href="checks/null-output-from-stylesheet.html">null-output-from-stylesheet</a></td>
-    <td>format</td>
-    <td><span class="severity-warning">warning</span></td>
-    <td>The root template contains only variable declarations and produces no output. Add instructions that write to the result tree.</td>
-  </tr>
-  <tr>
     <td><a href="checks/output-method-xml.html">output-method-xml</a></td>
     <td>format</td>
     <td><span class="severity-warning">warning</span></td>
@@ -474,6 +468,12 @@
     <td>format</td>
     <td><span class="severity-warning">warning</span></td>
     <td>string-length(...) is compared with 0 to test emptiness, which measures the whole string. Compare the value with '' instead.</td>
+  </tr>
+  <tr>
+    <td><a href="checks/template-writes-nothing.html">template-writes-nothing</a></td>
+    <td>format</td>
+    <td><span class="severity-warning">warning</span></td>
+    <td>This template declares variables and writes nothing to the result tree, so applying it produces nothing</td>
   </tr>
   <tr>
     <td><a href="checks/translate-for-case.html">translate-for-case</a></td>

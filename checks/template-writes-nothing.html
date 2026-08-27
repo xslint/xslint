@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>null-output-from-stylesheet</title>
+  <title>template-writes-nothing</title>
   <style>
   * { box-sizing: border-box; }
   body {
@@ -75,20 +75,30 @@
     <code class="xpath">checked over the tokens, not an XPath rule</code>
   </div>
   <div class="check-content">
-<h1>Null output from stylesheet</h1>
-<p>A root-matching template whose only children are <code>xsl:variable</code> declarations
-produces no output. The variables are computed but nothing is ever written
-to the result tree, which is almost certainly a logic error. An empty template
-that matches specific nodes to strip them — the &quot;override to delete&quot; idiom — is
-not flagged; the template must actually declare a variable to qualify.</p>
+<h1>A template that writes nothing</h1>
+<p>A template whose only children are <code>xsl:variable</code> declarations computes values
+and throws them away. A variable is bound inside the template that declares it
+and nothing carries it out, so applying the template contributes nothing to the
+result tree: the work runs and the output is empty. On the template matching
+the root that means the stylesheet produces nothing at all; on any other it
+means a branch of the transformation is dead, and dead in a way no processor
+reports, since an empty result is a legal result.</p>
+<p>It is almost always a half-finished edit. The variables are the setup for
+output that was removed, or that was never written, and the name of the missing
+instruction is usually the name of the variable standing there.</p>
+<p>A template that deliberately produces nothing is written empty — the &quot;override
+to delete&quot; idiom, <code>&lt;xsl:template match=&quot;index&quot;/&gt;</code>, which suppresses the
+built-in rule for those nodes and is left alone here. So is a body holding only
+<code>xsl:param</code>: a parameter is a signature, and a template may keep the one it
+overrides while producing nothing on purpose.</p>
 <p>Incorrect:</p>
-<pre><code class="language-xsl">&lt;xsl:template match=&quot;/&quot;&gt;
+<pre><code class="language-xsl">&lt;xsl:template match=&quot;section&quot;&gt;
   &lt;xsl:variable name=&quot;heading&quot; select=&quot;title&quot;/&gt;
   &lt;xsl:variable name=&quot;count&quot; select=&quot;count(item)&quot;/&gt;
 &lt;/xsl:template&gt;
 </code></pre>
 <p>Correct:</p>
-<pre><code class="language-xsl">&lt;xsl:template match=&quot;/&quot;&gt;
+<pre><code class="language-xsl">&lt;xsl:template match=&quot;section&quot;&gt;
   &lt;xsl:variable name=&quot;heading&quot; select=&quot;title&quot;/&gt;
   &lt;xsl:variable name=&quot;count&quot; select=&quot;count(item)&quot;/&gt;
   &lt;h1&gt;&lt;xsl:value-of select=&quot;$heading&quot;/&gt;&lt;/h1&gt;
