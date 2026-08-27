@@ -11,13 +11,13 @@ sits in, and arrives with that directory rather than with every turn:
 `src/CLAUDE.md`, `src/linters/CLAUDE.md`, `src/validators/CLAUDE.md`,
 `test/CLAUDE.md`, `scripts/CLAUDE.md`. A turn loads this file and the guide of
 every directory on the way down to whatever it touches, so a chain of them is
-what a bar on their size answers to, and the two notes that outgrew even that
-stand at the top of `src/grammar.js` and `src/syntax.js` themselves. So a claim
-goes where the code it is about goes, and the `Key files` index below names
-every file in one line. Both halves are machine-enforced — `test/guides.test.js`
-for the size, the index, and the counts a guide states of a list in the code,
-`test/conformance.test.js` for the length one states of a file the line cap is
-lifted off (#821, #825).
+what a bar on their size answers to, and the three notes that outgrew even that
+stand at the top of `src/grammar.js`, `src/syntax.js` and `src/predicates.js`
+themselves. So a claim goes where the code it is about goes, and the `Key files`
+index below names every file in one line. Both halves are machine-enforced —
+`test/guides.test.js` for the size, the index, and the counts a guide states of
+a list in the code, `test/conformance.test.js` for the length one states of a
+file the line cap is lifted off (#821, #825).
 
 ## Git workflow
 
@@ -51,8 +51,8 @@ three platforms and two node versions, and `corpora`, which times a real run
 The suite comes in two halves, and the line between them is a child process. A
 **deep** test starts one — it runs `xslint` or `xcop` the way a user does — and
 is named `*.deep.test.js`; every other test stays in this process. Four files
-are deep, and they still cost most of what the suite costs: 671 of the 2693
-tests, 9 of the 14 seconds. The other 2022 finish inside one, which is why
+are deep, and they still cost most of what the suite costs: 671 of the 2825
+tests, 9 of the 14 seconds. The other 2154 finish inside one, which is why
 `npm run fast` is the loop to work in and `npm test` the one to finish on. The
 deep target runs under `mocha --parallel`, so those four files run at once and
 the slowest of them sets the clock — `xslint.deep.test.js` alone, whose 52 tests
@@ -231,7 +231,7 @@ before: 268 descriptions in 65 files stood past that bar, the dearest of them
 142 lines, so a derivation grew wherever one was written the way the cross-file
 linter's cost grew before #755 (#832). The bar is not a licence to respell what
 a block cannot hold as a `/* */` beside it either — such prose is cut and not
-moved, the dearest chain of guides standing at 0.98 of `LOADED` with nowhere to
+moved, the dearest chain of guides standing at 0.99 of `LOADED` with nowhere to
 put it, so the ticket number left standing in the surviving sentence is what
 keeps a derivation recoverable.
 
@@ -681,7 +681,11 @@ Then run `npx grunt checks`, `npm test`, `npm run coverage`, and
   And a selector that opens `//name` or `//(name | name)` is served from the
   shared walk rather than by a descendant step of its own, so how a selector
   opens decides what it costs: the axis comes off `named` in `src/tree.js` and
-  only the predicates reach fontoxpath. A **union** of such paths is served the
+  only the predicates reach fontoxpath — and since #811 not all of those, a
+  predicate `src/predicates.js` recognises being answered off the walk while
+  one it does not is refused rather than guessed at, over-acceptance there
+  being a wrong report where under-acceptance is only the engine call it was.
+  A **union** of such paths is served the
   same way since #811, each branch carrying an axis and a tail of its own and
   the survivors merged by rank, since XPath answers a union in document order
   over both sides at once — so `//xsl:when[…] | //xsl:otherwise[…]` is two
@@ -994,6 +998,7 @@ one of them.
 | `src/checks.js` | Shared for code-based linters: `metaOf`, `suppressed`, `defect`, `rawly` |
 | `src/source.js` | Raw-text walking shared by `checks` and `fixer`: `offsetAt`, `placeAt`, `character`, `skip` |
 | `src/selectors.js` | `splitOf` — a declarative selector parted into the names a shared walk can serve as its axis and the tail the engine must answer; `chosen`, `valued` |
+| `src/predicates.js` | `predicateOf` — what one predicate of a served selector answers of a candidate, off the walk rather than the engine, or nothing where the engine must answer it |
 | `src/attributes.js` | `expressionsOf` — every expression a stylesheet carries; `PATTERNS`, and `whole` for a linter that narrows to one attribute |
 | `src/xsl-version.js` | `versionOf` and `since` — the version in force at a node, and a lower-bound gate over it |
 | `src/tree.js` | One pass over a document, remembered against it: `walked`, `named`, `attributed`, `holding` |
@@ -1023,6 +1028,7 @@ one of them.
 | `test/grammar-shapes.test.js` | The same acceptance diff over 14112 expressions nobody wrote |
 | `test/strictness.js` | `insists` — whether fontoxpath refuses an expression over its own strictness rather than over anything malformed in it |
 | `test/helpers.js` | The only door to a child process in the suite: `runXslint`, `xslintStatus`, `xslintStreams`, `xslintUnread`, `xcopped`, `walkedWith` |
+| `test/predicates.test.js` | The vocabulary held from both sides: every spelling it answers, and every one it refuses beside what puts that out of reach |
 | `test/packs.js` | The one harness every pack directory is read through |
 | `test/scaling.test.js` | The speed gate: every stage's own processor time as a share of the run, at two corpus sizes |
 | `test/xcop.deep.test.js` | Writes every pack's inline XSL to one directory and runs xcop over it |

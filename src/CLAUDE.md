@@ -141,6 +141,11 @@ reader checking it against the tree it arrived in. The per-pull-request gate doe
 either — its corpus is not 1.0-anchored and the check barely fires there — so no bar in
 `test/scaling.test.js` moves, which is what the nightly corpora tier exists to catch instead.
 
+## `src/predicates.js`
+
+Its derivation stands at the top of `src/predicates.js` itself, for the reason the note above
+gives, this chain having reached the bar once #846 grew the guide below it (#821, #811).
+
 ## `src/attributes.js`
 
 `expressionsOf(xsl)` — every expression a stylesheet carries: a bare/AVT attribute, a 3.0 text value
