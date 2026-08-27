@@ -984,7 +984,7 @@ one of them.
 | `src/linters/xpath-linter.js` | Loads `checks/xpath/*.yaml`, the per-file declarative kind; the dearest stage there is |
 | `src/linters/parameter-linter.js` | `unused-function-template-parameter`, over the walk rather than a substring |
 | `src/linters/element-linter.js` | `not-creating-element-correctly` |
-| `src/linters/root-template-linter.js` | `null-output-from-stylesheet` and `output-method-xml`, the two checks asking which template is the root one |
+| `src/linters/root-template-linter.js` | `template-writes-nothing`, over every template, and `output-method-xml`, which still asks which one is the root |
 | `src/linters/output-linter.js` | `not-using-output`, asked of the import tree rather than the file, an `xsl:output` merging into whatever imports it |
 | `src/linters/corpus-linter.js` | Loads `checks/corpus/*.yaml`, the cross-file declarative kind |
 | `src/linters/bare-name-linter.js` | `confusing-variable-and-node` |

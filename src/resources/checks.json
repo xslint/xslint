@@ -61,10 +61,6 @@
         "severity": "error",
         "message": "The xsl:output instruction is missing. Declare it to specify the serialization format explicitly."
       },
-      "null-output-from-stylesheet": {
-        "severity": "warning",
-        "message": "The root template contains only variable declarations and produces no output. Add instructions that write to the result tree."
-      },
       "output-method-xml": {
         "severity": "warning",
         "message": "xsl:output declares method='xml' while the root template builds an HTML document. Change the method to 'html'."
@@ -104,6 +100,10 @@
       "string-length-compared-to-zero": {
         "severity": "warning",
         "message": "string-length(...) is compared with 0 to test emptiness, which measures the whole string. Compare the value with '' instead."
+      },
+      "template-writes-nothing": {
+        "severity": "warning",
+        "message": "This template declares variables and writes nothing to the result tree, so applying it produces nothing"
       },
       "translate-for-case": {
         "severity": "warning",
@@ -200,6 +200,11 @@
         "xpath": "(/xsl:stylesheet | /xsl:transform)[not(@id)]",
         "severity": "warning",
         "message": "The '@id' attribute is missing in the 'xsl:stylesheet' element. Declare it to specify the unique identifier explicitly."
+      },
+      "missing-or-empty-name": {
+        "xpath": "//(xsl:variable | xsl:param)[not(@name)] | //(xsl:variable | xsl:param | xsl:with-param | xsl:call-template | xsl:template | xsl:function | xsl:key | xsl:attribute-set | xsl:decimal-format | xsl:character-map | xsl:mode | xsl:accumulator)[@name = '']",
+        "severity": "error",
+        "message": "The '@name' is missing or empty here, and neither is a QName, so no processor will load this stylesheet"
       },
       "missing-version-in-stylesheet": {
         "xpath": "/*[if (self::xsl:*) then not(@version) else (not(@xsl:version) and .//xsl:* and not(.//(xsl:stylesheet | xsl:transform | xsl:package)))]",
@@ -305,11 +310,6 @@
         "xpath": "//(xsl:variable | xsl:param | xsl:with-param)[@select and (* or text()[normalize-space() or ancestor::*[@xml:space][1]/@xml:space = 'preserve'])]",
         "severity": "error",
         "message": "An xsl:variable, xsl:param or xsl:with-param has both a select attribute and a non-empty body. Use only one way to set the value."
-      },
-      "variable-or-param-without-name": {
-        "xpath": "//(xsl:variable | xsl:param)[not(@name)]",
-        "severity": "error",
-        "message": "xsl:variable and xsl:param require a @name attribute. Add one or remove the element."
       },
       "when-or-otherwise-outside-choose": {
         "xpath": "//xsl:when[not(parent::xsl:choose)] | //xsl:otherwise[not(parent::xsl:choose)]",

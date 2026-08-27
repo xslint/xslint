@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
 # SPDX-License-Identifier: MIT
 ---
-pack: null-output-from-stylesheet
+pack: template-writes-nothing
 found:
   amount: 0
   positions: [ ]
@@ -17,6 +17,7 @@ input: |-
     <xsl:template match="/ "><xsl:variable name="pp" select="'p'"/><![CDATA[ pp ]]></xsl:template>
     <xsl:template match="/objects/o/o[2]">
       <xsl:variable name="qq" select="'q'"/>
+      <xsl:value-of select="$qq"/>
     </xsl:template>
     <xsl:template match="/object/noise"/>
   </xsl:stylesheet>

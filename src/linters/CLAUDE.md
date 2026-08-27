@@ -115,14 +115,25 @@ element takes its own from the prefixes in scope.
 
 ## `src/linters/root-template-linter.js`
 
-`null-output-from-stylesheet` and `output-method-xml`, the two checks that ask which template is the
-*root* one — `starts-with(@match, '/')` until #788, where every absolute pattern begins that way. So
+`template-writes-nothing` and `output-method-xml`, of which only the second still asks which
+template is the *root* one — `starts-with(@match, '/')` until #788, where every absolute pattern
+begins that way. So
 a `match="/alpha"`, a template for an `alpha` element standing at a document's root, was read as the
 root template and told that it "contains only variable declarations", which is advice about a
 template the stylesheet does not have; this repository's own motive rule names that error. The
 pattern grammar answers it now: a pattern is a union of branches and the root is the branch holding
 no step at all, so `match="/"` is one and `match="alpha | /"` is one, where `match="/alpha"` and
-`match="document-node()"` are not. A template writes nothing when every element it holds is an
+`match="document-node()"` are not. The first check asked it too until #559 and had no
+business to: what a template writes its own body decides, and a `match="item"` holding nothing but
+variables is as dead as the root one, in a way no processor reports since an empty result is legal.
+It reads every `xsl:template` off the shared walk now, named ones included, and is named for what it
+is about rather than for what the stylesheet produces. Both its packs had asserted the narrowing,
+each carrying a variable-only `match="/objects/o/o[…]"` the fixture expected to stay quiet, which is
+what #494's packs turned out to be doing. A body of nothing but `xsl:param` is left alone
+deliberately: DocBook-XSL's `xsl/fo/math.xsl` has both four lines apart, variable-only at 65 and
+parameter-only at 60, and a parameter is a signature a template may keep while producing nothing on
+purpose. That one at 65 is the whole of what the widening reports over the three corpora. A
+template writes nothing when every element it holds is an
 `xsl:variable` and every text node of it is blank — a CDATA section being one kind of text and not a
 construct of its own, which is what a `text()` step says too. The `xsl:output` the second check
 reports is taken from the stylesheet's own children, XSLT reading a declaration nowhere else, and
@@ -263,7 +274,18 @@ branch of a union but the first went unreported, and what it did read it read as
 `@title` and a `child::title` hold them and test nothing of the kind. Only a head is confusable, a
 step deeper in a path being a child of whatever stands in front of it and reading as nothing else.
 Scope is the nearest ancestor template and the variables declared in front of the element, which is
-what the selector's `$var << .` said (#788).
+what the selector's `$var << .` said (#788) — and, since #560, the stylesheet's own
+top-level declarations, a global being in scope in every template however the two are ordered where
+a climb to `ancestor::xsl:template[1]` sees only the local ones. The instruction is four and not
+one for the same reason: `xsl:value-of`, `xsl:copy-of` and `xsl:for-each` read a `select="items"`
+as the child element exactly as `xsl:apply-templates` does. Three reports over the corpora, of
+which TEI's `profiles/jtei/odt/odt.common.xsl:749` is the new one — an
+`<xsl:for-each select="graphic">` forty lines under its own template's
+`<xsl:variable name="graphic" select="graphic"/>`. The globals are remembered
+against the document, since they depend on it alone and the scan asking for
+them runs once per expression: spelled the other way the stage read 7.08% of
+its run against a bar of 7, and `test/scaling.test.js` is what said so rather
+than a reviewer.
 
 ## `src/linters/*-linter.js`
 

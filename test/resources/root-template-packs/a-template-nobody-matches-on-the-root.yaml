@@ -1,0 +1,27 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: template-writes-nothing
+found:
+  amount: 3
+  positions: [ [ 4, 3 ], [ 7, 3 ], [ 10, 3 ] ]
+  fixes: [ null, null, null ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="style1">
+    <xsl:output encoding="UTF-8" method="xml"/>
+    <xsl:template match="item">
+      <xsl:variable name="minkowski" select="'space'"/>
+    </xsl:template>
+    <xsl:template name="chebyshev">
+      <xsl:variable name="markov" select="'chain'"/>
+    </xsl:template>
+    <xsl:template match="alpha" mode="beta">
+      <xsl:variable name="lyapunov" select="'exponent'"/>
+      <xsl:variable name="kolmogorov" select="'entropy'"/>
+    </xsl:template>
+    <xsl:template match="gamma">
+      <xsl:variable name="euler" select="'constant'"/>
+      <xsl:value-of select="$euler"/>
+    </xsl:template>
+  </xsl:stylesheet>
