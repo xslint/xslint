@@ -402,6 +402,8 @@ const CANDIDATES = [
   'string-length(substring-after(@name, ":")) = 1',
   'xsl:text', 'xsl:text = "alpha"',
   'normalize-space(xsl:text) = "alpha"',
+  'xsl:variable/xsl:text = "alpha"',
+  'not(xsl:variable/xsl:text = "alpha")',
   '@name = preceding-sibling::xsl:variable/@name',
 ]
 

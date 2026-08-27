@@ -498,6 +498,18 @@ its author — widening the vocabulary to sibling and ancestor axes, a path in a
 two string functions turned five `REFUSED` rows red in one run, which is the whole reason they are
 rows and not a sentence.
 
+A third gate stands beside them and its subject is the module's own header note. Relocating a
+derivation into one — which is what the bar below forced here — takes it out of the reach of the
+gate holding a guide's counts to the code, `DOCUMENTS` naming guides and the README and no source
+file but `src/attributes.js`. So the two counts that note states of the vocabulary's reach, 27 of
+37, are computed here from `checks.json` and held to it: every branch a selector splits into that
+the walk serves, parted by the `predicated` a run parts with, each predicate asked once. Both
+kinds are read, a corpus check's declaration and usage reaching `predicateOf` as a per-file
+selector does — the `xpath` kind alone answers 25 of 34, which is no number a run ever sees, and
+counting it that way is how the note came to say 33 and 24. Two sentences carry the pair in
+opposite orders, so both are read and rewording either fails, the lesson `DERIVED` records one
+section down.
+
 Neither table asks whether an answer is *correct*: that is `CANDIDATES` in `test/selectors.test.js`,
 which asks fontoxpath what each spelling selects over `candidates.xsl` and fails where serving
 answers anything else — the oracle, 102 rows here against 32 before, and armed against the engine
@@ -539,13 +551,13 @@ under them was opened. The first spelling of the bar weighed the root against th
 guide instead, which is a whole directory short: it read 130,933 and called that 0.87 of the bar
 while a turn touching `src/linters/` was loading 157,504 and over it. So the two dearest notes moved
 one step further down, out of `src/CLAUDE.md` and into the top of `src/grammar.js` and
-`src/syntax.js` — 24,681 characters — and the dearest chain is that same one at 148,138, which is
+`src/syntax.js` — 24,681 characters — and the dearest chain is that same one at 148,161, which is
 0.99. What answers a chain reaching the bar is that move again, a module's derivation into the
 file-header note of the module itself, and never a bar widened to fit what has grown past it: a
 docblock holds five lines of description since #832, so prose that has outgrown a guide does not
 simply move into one instead. A `CEILING` of half the bar stood beside it until it was seen to be a
 gate no tree could fail: the root stands in every chain, so the chain holding it above weighs each
-other guide against the bar less what stands over it — 33,860 for `src/linters/CLAUDE.md`, where
+other guide against the bar less what stands over it — 33,837 for `src/linters/CLAUDE.md`, where
 half of the bar is 75,000 — and holds the root itself to 72,656, a number derived from the dearest
 chain rather than chosen. A gate no tree can fail is removed and not kept (#750, #660). All four of
 those figures — the chain, its ratio, and the two allowances — follow from three file sizes, so one
@@ -567,7 +579,7 @@ other file. Each row therefore names every file expected to carry it and the mat
 compared whole, so rewording either carrier fails, and so does the claim appearing in a document no
 row names. Growing a guide by 4,000 characters fails all four rows at once. The asking is
 `matchAll` and never `test`, a global pattern leaving `lastIndex` where it stopped and answering
-`false` to the very next question about the same prose. What that leaves is 1,862 characters of
+`false` to the very next question about the same prose. What that leaves is 1,839 characters of
 headroom, and the paragraph above stopped being advice while this change was being written: #846
 grew `src/linters/CLAUDE.md` by 3,113 and the merged chain read 150,437, so the bar failed on a
 tree whose two authors had each stayed under it. The prescribed relief is the one taken —

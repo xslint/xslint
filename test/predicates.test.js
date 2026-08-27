@@ -6,6 +6,96 @@
 const assert = require('assert')
 const {describe, it} = require('mocha')
 const {predicateOf} = require('../src/predicates')
+const {predicated, splitOf} = require('../src/selectors')
+const {worded} = require('./guides')
+const {kinds} = require('../src/resources/checks.json')
+const {GAP} = require('../src/tokens')
+
+/**
+ * The file whose header note states what the vocabulary reaches, and the
+ * reason this gate stands here rather than beside the guides': a derivation
+ * relocated into a file-header note leaves the reach of the gate holding a
+ * guide's counts to the code, so a count that moved out of `src/CLAUDE.md`
+ * would answer to nothing at all (#821, #811).
+ * @type {string}
+ */
+const NOTE = 'src/predicates.js'
+
+/**
+ * What the vocabulary reaches over the checks it is handed, counted the way a
+ * run counts it: every branch a selector splits into that the walk serves,
+ * parted by the parting `narrowed` uses, each predicate asked once. A corpus
+ * check's declaration and usage reach `predicateOf` as a per-file selector
+ * does, and reading the `xpath` kind alone is how the note said 24 of 33.
+ * @param {Array.<object>} checks - The checks to read, each a selector holder
+ * @return {{every: number, compiled: number}} - How many distinct predicates
+ *  they hold between them, and how many of those compile
+ */
+const reach = function(checks) {
+  const seen = new Map()
+  const read = function(xpath) {
+    for (const branch of splitOf(xpath)) {
+      if (branch.refused === '' && branch.tail !== '') {
+        for (const one of predicated(branch.tail)) {
+          seen.set(one, predicateOf(one) !== undefined)
+        }
+      }
+    }
+  }
+  checks.forEach((check) => {
+    [check.xpath, check.declaration, check.usage]
+      .filter((one) => one !== undefined).forEach(read)
+  })
+  return {
+    every: seen.size,
+    compiled: [...seen.values()].filter((one) => one).length,
+  }
+}
+
+/**
+ * The checks a run loads, both declarative kinds together and the per-file
+ * kind on its own — the pair the note contrasts.
+ * @type {{whole: Array.<object>, narrow: Array.<object>}}
+ */
+const READS = {
+  whole: Object.values(kinds.xpath).concat(Object.values(kinds.corpus)),
+  narrow: Object.values(kinds.xpath),
+}
+
+/**
+ * Each way this reach is stated, wherever it is stated, paired with what the
+ * tree answers. A claim carried twice and asked as an `any` is satisfied by
+ * whichever copy nobody touched — the lesson `DERIVED` records one directory
+ * over — so every carrier is named and every occurrence in it is read.
+ * @type {Array.<{where: string, claim: RegExp,
+ *  truth: function(object): Array.<string>}>}
+ */
+const STATED = [
+  {
+    where: NOTE,
+    claim: /the (\d+) distinct predicates in the tree is compiled once a run; (\d+)/g,
+    truth: (found) => [String(found.whole.every), String(found.whole.compiled)],
+  },
+  {
+    where: NOTE,
+    claim: /(\d+) of the (\d+) compile either way/g,
+    truth: (found) => [String(found.whole.compiled), String(found.whole.every)],
+  },
+  {
+    where: 'test/CLAUDE.md',
+    claim: new RegExp(
+      `states of the vocabulary's reach, (\\d+) of${GAP}+(\\d+),`, 'g',
+    ),
+    truth: (found) => [String(found.whole.compiled), String(found.whole.every)],
+  },
+  {
+    where: 'test/CLAUDE.md',
+    claim: /`xpath` kind alone answers (\d+) of (\d+)/g,
+    truth: (found) => [
+      String(found.narrow.compiled), String(found.narrow.every),
+    ],
+  },
+]
 
 /**
  * Predicate spellings the vocabulary reaches, each of which a check in
@@ -126,12 +216,37 @@ const REFUSED = [
     why: 'that same element, one call further in',
   },
   {
-    text: '@name = xsl:text',
+    text: 'xsl:variable/xsl:text = "alpha"',
     why: 'a path ending at an element rather than at an attribute',
+  },
+  {
+    text: '@name = xsl:text',
+    why: 'that element on the far side of a comparison, a step and no path',
   },
 ]
 
 describe('predicates', function() {
+  it('states what the vocabulary reaches, where the note states it',
+    function() {
+      const found = {whole: reach(READS.whole), narrow: reach(READS.narrow)}
+      assert.deepStrictEqual(
+        STATED.flatMap((one) => {
+          const wanted = one.truth(found).join(' and ')
+          const said = [...worded(one.where).matchAll(one.claim)]
+            .map((each) => each.slice(1).join(' and '))
+          let wrong = said.filter((each) => each !== wanted)
+          if (said.length === 0) {
+            wrong = [`nothing in the note says ${wanted}`]
+          }
+          return wrong
+        }),
+        [],
+        'a document states a reach the checks do not: ' +
+          `${found.whole.compiled} of ${found.whole.every} distinct ` +
+          'predicates compile here, and no guide gate reads a file-header ' +
+          'note, so a count relocated into one answers to this alone',
+      )
+    })
   COMPILED.forEach((one) => {
     it(`answers [${one}] without the engine`, function() {
       assert.notStrictEqual(

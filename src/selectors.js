@@ -683,6 +683,7 @@ const valued = function(xsl, xpath) {
 module.exports = {
   EVERY,
   chosen,
+  predicated,
   valued,
   splitOf,
 }

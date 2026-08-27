@@ -31,6 +31,11 @@
   <xsl:variable name="ten">
     <xsl:text>alpha</xsl:text>
   </xsl:variable>
+  <xsl:variable name="eleven">
+    <xsl:variable name="twelve">
+      <xsl:text>alpha</xsl:text>
+    </xsl:variable>
+  </xsl:variable>
   <xsl:variable name="𐀀" select="'x'"/>
   <xsl:variable name="my:𐀀"/>
 </xsl:stylesheet>

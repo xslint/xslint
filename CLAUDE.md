@@ -11,13 +11,13 @@ sits in, and arrives with that directory rather than with every turn:
 `src/CLAUDE.md`, `src/linters/CLAUDE.md`, `src/validators/CLAUDE.md`,
 `test/CLAUDE.md`, `scripts/CLAUDE.md`. A turn loads this file and the guide of
 every directory on the way down to whatever it touches, so a chain of them is
-what a bar on their size answers to, and the two notes that outgrew even that
-stand at the top of `src/grammar.js` and `src/syntax.js` themselves. So a claim
-goes where the code it is about goes, and the `Key files` index below names
-every file in one line. Both halves are machine-enforced — `test/guides.test.js`
-for the size, the index, and the counts a guide states of a list in the code,
-`test/conformance.test.js` for the length one states of a file the line cap is
-lifted off (#821, #825).
+what a bar on their size answers to, and the three notes that outgrew even that
+stand at the top of `src/grammar.js`, `src/syntax.js` and `src/predicates.js`
+themselves. So a claim goes where the code it is about goes, and the `Key files`
+index below names every file in one line. Both halves are machine-enforced —
+`test/guides.test.js` for the size, the index, and the counts a guide states of
+a list in the code, `test/conformance.test.js` for the length one states of a
+file the line cap is lifted off (#821, #825).
 
 ## Git workflow
 
@@ -51,8 +51,8 @@ three platforms and two node versions, and `corpora`, which times a real run
 The suite comes in two halves, and the line between them is a child process. A
 **deep** test starts one — it runs `xslint` or `xcop` the way a user does — and
 is named `*.deep.test.js`; every other test stays in this process. Four files
-are deep, and they still cost most of what the suite costs: 655 of the 2785
-tests, 9 of the 14 seconds. The other 2130 finish inside one, which is why
+are deep, and they still cost most of what the suite costs: 655 of the 2789
+tests, 9 of the 14 seconds. The other 2134 finish inside one, which is why
 `npm run fast` is the loop to work in and `npm test` the one to finish on. The
 deep target runs under `mocha --parallel`, so those four files run at once and
 the slowest of them sets the clock — `xslint.deep.test.js` alone, whose 52 tests
