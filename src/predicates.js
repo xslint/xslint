@@ -3,6 +3,72 @@
  * SPDX-License-Identifier: MIT
  */
 
+/*
+ * `predicateOf(text)` — what one predicate of a served selector answers of
+ * one candidate, without the engine, or `undefined` where the engine must
+ * answer it after all. #811's axis phases left the tail as the whole of the
+ * cost: 31 of the 37 per-file selectors are served and spent 1,010-1,047 ms
+ * of a 4,919-5,094 ms DocBook-XSL run inside `satisfies`, one fontoxpath
+ * call per candidate over 144,427 of them, about 7.3 us each for questions a
+ * property read answers in tens of nanoseconds. Serving an axis *without*
+ * its predicate is a loss, which is what sizes the phase:
+ * `text-outside-xsl-text` reads 206-219 ms whole from the engine, 233-239
+ * with the walk's axis and the tail asked per candidate, and 27-28 with the
+ * predicate answered here.
+ *
+ * The compile is off the parse and never the text, kept against the text, so
+ * each of the 33 distinct predicates in the tree is compiled once a run; 24
+ * of them are. What refuses is as deliberate as what serves — a regex, whose
+ * XPath flavour is not JavaScript's; a descending axis, wanting subtree
+ * extents the walk does not keep; the `text()` composite whose meaning
+ * `xml:space` decides; a conditional; an unprefixed element name, the
+ * refusal `bucketed` already makes. **Over-acceptance is a wrong report**
+ * where under-acceptance is only the engine call it was, so every branch
+ * narrows rather than guesses and a comparison serves two numbers on any
+ * sign but strings on `=` alone, a negated existential being the shape
+ * easiest to answer wrongly.
+ *
+ * Three of those narrowings were bought by review, and each is a JavaScript
+ * built-in whose notion is not XPath's — the genre of #643's `\s`.
+ * `string-length` counts **characters** where `.length` counts UTF-16 code
+ * units, so a name outside the Basic Multilingual Plane, which XML admits
+ * and Saxon compiles as the one character it is, measured two and
+ * `short-names` fell silent on a shipped check: `Array.from` counts what
+ * XPath counts. An **attribute** has no parent in the DOM at all, only an
+ * `ownerElement`, so a climb reading `parentNode` answered
+ * `//@*[parent::xsl:stylesheet]` empty and its negation whole — the
+ * over-acceptance the paragraph above forbids — and the same climb handed a
+ * root element's **document** to a wildcard, where `*` selects elements
+ * alone. An **element** carries no `value`, its string value being the text
+ * of its whole subtree, so a comparison reading one off a step answered
+ * `undefined` against every element there is; `carrying` refuses a step in
+ * a value position unless it names the attribute axis, which costs nothing
+ * the tree spells — 24 of the 33 compile either way.
+ *
+ * None of the three was the oracle's fault and all three were its blind
+ * spot: `CANDIDATES` asks the engine what a spelling selects, so what it
+ * cannot ask about is what the fixture does not hold and what no head hands
+ * it. It holds a name outside the plane now, and asks a second head —
+ * `//@*`, whose candidates are attributes — and a third, the root element,
+ * whose parent is no element at all.
+ *
+ * `answered(tail)` in `src/selectors.js` parts per **predicate** and not
+ * per tail, #837's lesson one level down: `predicated` already parts the
+ * brackets and `filtered` guarantees none reads a position, so `[a][b]` is
+ * `[a and b]`, the compiled ones run first, and what the engine is still
+ * asked it is asked once, of a sequence they have pruned — a `@select`
+ * presence test drops 14,756 candidates before the `text()` half nobody
+ * compiles is reached, and a tail nothing compiles costs what it cost. Four
+ * interleaved rounds a side, one process per reading, report byte-identical
+ * at 3,626, 5,513 and 1,192 defects: the run falls 4,919-5,094 ms to
+ * 4,486-4,811 over DocBook-XSL, 5,078-5,286 to 4,575-4,940 over TEI and
+ * 2,521-2,681 to 2,389-2,521 over DITA-OT, `xpath-linter` down 20%, 23%
+ * and 11%. Every reading stands clear of every reading on the other side
+ * over DocBook-XSL and TEI; over DITA-OT the two ranges touch at one, which
+ * is what a corpus reading 2.5 seconds against a 6-second budget has to
+ * show.
+ */
+
 const {PREFIXES} = require('./xpath')
 const {TOKENS, TRIVIA, WHITESPACE} = require('./tokens')
 const {parsed} = require('./grammar')
@@ -134,18 +200,31 @@ const admits = function(node, test) {
  * one link at a time. Four axes are that walk with a different link, and a
  * non-element on the way is stepped over rather than stopping it — a comment
  * standing between two siblings ends neither the sibling axis.
- * @param {?Node} opening - Where the walk starts, or null
+ * @param {?Node} standing - Where the walk starts, or null
  * @param {string} link - The property each step of the walk follows
  * @return {Array.<Node>} - The elements it reaches
  */
-const elements = function(opening, link) {
+const elements = function(standing, link) {
   let found = []
-  for (let walk = opening; walk !== null; walk = walk[link]) {
+  for (let walk = standing; walk !== null; walk = walk[link]) {
     if (walk.nodeType === ELEMENT) {
       found = found.concat([walk])
     }
   }
   return found
+}
+
+/**
+ * The node an axis climbs to from a context node: the element an attribute
+ * hangs off, which the DOM answers as `ownerElement` and never as a parent,
+ * or the parent of anything else. An attribute has no parent at all, so a
+ * climb reading one climbed nowhere and answered every ancestor test asked of
+ * an attribute wrongly, which is the one direction a split may not fail in.
+ * @param {Node} node - The context node
+ * @return {?Node} - What stands above it, or null
+ */
+const above = function(node) {
+  return node.ownerElement ?? node.parentNode
 }
 
 /**
@@ -163,8 +242,8 @@ const reached = function(node, axis) {
     found = Array.from(node.attributes || [])
   } else if (axis === 'self') {
     found = [node]
-  } else if (axis === 'parent' && node.parentNode !== null) {
-    found = [node.parentNode]
+  } else if (axis === 'parent') {
+    found = elements(above(node), 'parentNode').slice(0, 1)
   } else if (axis === 'child') {
     found = elements(node.firstChild, 'nextSibling')
   } else if (axis === 'preceding-sibling') {
@@ -172,7 +251,7 @@ const reached = function(node, axis) {
   } else if (axis === 'following-sibling') {
     found = elements(node.nextSibling, 'nextSibling')
   } else if (axis === 'ancestor') {
-    found = elements(node.parentNode, 'parentNode')
+    found = elements(above(node), 'parentNode')
   }
   return found
 }
@@ -235,6 +314,37 @@ const testedTo = function(node) {
 }
 
 /**
+ * The axis a step opens on and the tokens its name test is spelled with,
+ * parted at the axis token where one stands. A step spelling none stands on
+ * the child axis, which is what XPath reads an abbreviated step as.
+ * @param {Array} tokens - The tokens the tree was parsed from
+ * @param {object} node - A step node of its tree
+ * @return {{axis: string, named: Array}} - The axis and its name test
+ */
+const opening = function(tokens, node) {
+  const carried = solid(tokens, node.from, testedTo(node))
+  let opened = {axis: 'child', named: carried}
+  if (carried.length > 0 && Object.hasOwn(AXES, carried[0].type)) {
+    opened = {axis: AXES[carried[0].type], named: carried.slice(1)}
+  }
+  return opened
+}
+
+/**
+ * Whether a step names the attribute axis, the one axis of this vocabulary
+ * whose nodes carry a value of their own. An element's value is the text of
+ * its whole subtree, so a comparison reading `value` off one read undefined
+ * and answered false against every element there is, where refusing it costs
+ * the engine call it already was (#811).
+ * @param {Array} tokens - The tokens the tree was parsed from
+ * @param {object} node - A step node of its tree
+ * @return {boolean} - True when it selects nodes carrying a value
+ */
+const carrying = function(tokens, node) {
+  return opening(tokens, node).axis === 'attribute'
+}
+
+/**
  * The nodes one step selects from a context node, or undefined where its axis
  * or its name test is outside the vocabulary. Each predicate the step carries
  * narrows what the axis answered, asked of one node at a time as the whole
@@ -250,13 +360,7 @@ const stepped = function(tokens, node) {
     node.children.every(
       (kid) => kid.kind === 'predicate' && kid.children.length === 1,
     )) {
-    const carried = solid(tokens, node.from, testedTo(node))
-    let axis = 'child'
-    let named = carried
-    if (carried.length > 0 && Object.hasOwn(AXES, carried[0].type)) {
-      axis = AXES[carried[0].type]
-      named = carried.slice(1)
-    }
+    const {axis, named} = opening(tokens, node)
     const test = admitted(named, axis === 'attribute')
     const inner = node.children.map((kid) => tested(tokens, kid.children[0]))
     if (test !== undefined && inner.every((one) => one !== undefined)) {
@@ -286,7 +390,7 @@ const worded = function(tokens, node) {
     if (literal !== undefined && !literal.numeric) {
       answer = () => [literal.value]
     }
-  } else if (node.kind === 'step') {
+  } else if (node.kind === 'step' && carrying(tokens, node)) {
     const selects = stepped(tokens, node)
     if (selects !== undefined) {
       answer = (context) => selects(context).map((one) => one.value)
@@ -296,7 +400,8 @@ const worded = function(tokens, node) {
     if (parts.length > 0 && parts.every((one) => one !== undefined)) {
       answer = (context) => parts.flatMap((one) => one(context))
     }
-  } else if (node.kind === 'path') {
+  } else if (node.kind === 'path' &&
+    carrying(tokens, node.children[node.children.length - 1])) {
     const walked = pathed(tokens, node)
     if (walked !== undefined) {
       answer = (context) => walked(context).map((one) => one.value)
@@ -313,7 +418,7 @@ const worded = function(tokens, node) {
       }
     }
   } else if (calling(tokens, node, 'normalize-space') &&
-    node.children.length === 1) {
+    node.children.length === 1 && carrying(tokens, node.children[0])) {
     const selects = stepped(tokens, node.children[0])
     if (selects !== undefined) {
       answer = (context) => [
@@ -386,7 +491,7 @@ const counted = function(tokens, node) {
     node.children.length === 1) {
     const carries = worded(tokens, node.children[0])
     if (carries !== undefined) {
-      answer = (context) => (carries(context)[0] ?? '').length
+      answer = (context) => Array.from(carries(context)[0] ?? '').length
     }
   }
   return answer

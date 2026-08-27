@@ -398,7 +398,40 @@ const CANDIDATES = [
   'preceding-sibling::*[not(self::xsl:variable)]',
   'parent::*[not(self::xsl:*)]', 'not(contains(@name, "n"))',
   'not(contains(@name, @nope))', 'contains(@name, @nope)',
+  'string-length(@name) = 1',
+  'string-length(substring-after(@name, ":")) = 1',
+  'xsl:text', 'xsl:text = "alpha"',
+  'normalize-space(xsl:text) = "alpha"',
   '@name = preceding-sibling::xsl:variable/@name',
+]
+
+/**
+ * Every attribute of a document, which is the second head below and is read
+ * off the check spelling it rather than written out — a bare `//@` in the
+ * source is banned outright, nothing in `src/` having a use for one.
+ * @type {string}
+ */
+const ATTRIBUTES = kinds.corpus['unused-variable'].usage
+
+/**
+ * Predicate spellings asked of a head other than `AXIS`, because the head
+ * decides what **kind** of node a predicate is handed and every row here is
+ * about that. An attribute is one such kind, having no parent in the DOM at
+ * all but an owner element, and the root element is the other, whose parent
+ * is a document that no wildcard may admit as one.
+ * @type {Array.<{head: string, predicate: string}>}
+ */
+const HEADED = [
+  {head: ATTRIBUTES, predicate: 'parent::xsl:variable'},
+  {head: ATTRIBUTES, predicate: 'not(parent::xsl:variable)'},
+  {head: ATTRIBUTES, predicate: 'parent::*'},
+  {head: ATTRIBUTES, predicate: 'parent::*[@name]'},
+  {head: ATTRIBUTES, predicate: 'ancestor::xsl:template'},
+  {head: ATTRIBUTES, predicate: 'not(ancestor::xsl:stylesheet)'},
+  {head: ATTRIBUTES, predicate: 'self::node()'},
+  {head: '//xsl:stylesheet', predicate: 'parent::*'},
+  {head: '//xsl:stylesheet', predicate: 'not(parent::*)'},
+  {head: '//xsl:stylesheet', predicate: 'ancestor::*'},
 ]
 
 /**
@@ -512,22 +545,22 @@ const placed = function(found) {
 }
 
 /**
- * The names a selection carries, or an error where the engine refuses to answer
- * at all — `[not(a/count(.))]` asks for the effective boolean value of two
- * numbers, which is FORG0006 whichever way the question is put. Both sides are
- * read the same way, so a raise on one side alone is a disagreement like any
- * other rather than a row nobody can judge.
+ * Where each node of a selection stands, or an error where the engine refuses
+ * to answer at all — `[not(a/count(.))]` asks the effective boolean value of
+ * two numbers, FORG0006 whichever way it is put. Both sides are read the same
+ * way, so a raise on one side alone is a disagreement like any other. A place
+ * and never a name, an attribute answering no `getAttribute` at all.
  * @param {function(): Array.<Node>} selection - What to ask for
- * @return {Array.<string>} - The names it answers, in order
+ * @return {Array.<string>} - Where each node it answers stands, in order
  */
 const answered = function(selection) {
-  let names = ['error']
+  let where = ['error']
   try {
-    names = selection().map((node) => node.getAttribute('name'))
+    where = placed(selection())
   } catch (refusal) {
-    names = ['error', refusal.message.slice(0, 8)]
+    where = ['error', refusal.message.slice(0, 8)]
   }
-  return names
+  return where
 }
 
 describe('selectors', function() {
@@ -658,9 +691,10 @@ describe('selectors', function() {
       )
     })
   })
-  CANDIDATES.forEach((one) => {
-    const xpath = `${AXIS}[${one}]`
-    it(`answers [${one}] as the engine reads it, or serves it not at all`,
+  CANDIDATES.map((one) => `${AXIS}[${one}]`).concat(
+    HEADED.map((one) => `${one.head}[${one.predicate}]`),
+  ).forEach((xpath) => {
+    it(`answers ${xpath} as the engine reads it, or serves it not at all`,
       function() {
         assert.deepStrictEqual(
           answered(() => chosen(SHEET, xpath)),
@@ -670,6 +704,17 @@ describe('selectors', function() {
             'the sequence it stands in and cannot be asked of one candidate',
         )
       })
+  })
+  it('holds a name no UTF-16 length counts as XPath counts it', function() {
+    assert.ok(
+      Array.from(SHEET.documentElement.getElementsByTagNameNS(XSLT, 'variable'))
+        .map((node) => node.getAttribute('name'))
+        .some((name) => Array.from(name).length !== name.length),
+      'no name in candidates.xsl stands outside the Basic Multilingual ' +
+        'Plane, so every string the vocabulary measures is one whose code ' +
+        'units are its characters and the rows asking a length of one prove ' +
+        'nothing about the length XPath means',
+    )
   })
   APART.forEach((one) => {
     it(`serves ${one.xpath} by the arms that name a bucket`, function() {

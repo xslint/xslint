@@ -56,6 +56,8 @@ const COMPILED = [
   'substring-after(@name, "o") = "ne"',
   'string-length(substring-after(@nope, @also)) = 0',
   'not(contains(@name, @nope))',
+  'xsl:text',
+  'parent::*',
 ]
 
 /**
@@ -114,6 +116,18 @@ const REFUSED = [
   {
     text: 'a',
     why: 'an unprefixed element name, which a default namespace may reach',
+  },
+  {
+    text: 'xsl:text = "alpha"',
+    why: 'an element in a value position, whose value is its whole subtree',
+  },
+  {
+    text: 'normalize-space(xsl:text) = "alpha"',
+    why: 'that same element, one call further in',
+  },
+  {
+    text: '@name = xsl:text',
+    why: 'a path ending at an element rather than at an attribute',
   },
 ]
 

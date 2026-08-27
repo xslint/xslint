@@ -143,35 +143,8 @@ either — its corpus is not 1.0-anchored and the check barely fires there — s
 
 ## `src/predicates.js`
 
-`predicateOf(text)` — what one predicate of a served selector answers of one candidate, without the
-engine, or `undefined` where the engine must answer it after all. #811's axis phases left the tail
-as the whole of the cost: 31 of the 37 per-file selectors are served and spent 1,010-1,047 ms of a
-4,919-5,094 ms DocBook-XSL run inside `satisfies`, one fontoxpath call per candidate over 144,427
-of them, about 7.3 us each for questions a property read answers in tens of nanoseconds. Serving an
-axis *without* its predicate is a loss, which is what sizes the phase: `text-outside-xsl-text`
-reads 206-219 ms whole from the engine, 233-239 with the walk's axis and the tail asked per
-candidate, and 27-28 with the predicate answered here.
-
-The compile is off the parse and never the text, kept against the text, so each of the 33 distinct
-predicates in the tree is compiled once a run; 24 of them are. What refuses is as deliberate as
-what serves — a regex, whose XPath flavour is not JavaScript's; a descending axis, wanting subtree
-extents the walk does not keep; the `text()` composite whose meaning `xml:space` decides; a
-conditional; an unprefixed element name, the refusal `bucketed` already makes. **Over-acceptance is
-a wrong report** where under-acceptance is only the engine call it was, so every branch narrows
-rather than guesses and a comparison serves two numbers on any sign but strings on `=` alone, a
-negated existential being the shape easiest to answer wrongly.
-
-`answered(tail)` in `src/selectors.js` parts per **predicate** and not per tail, #837's lesson one
-level down: `predicated` already parts the brackets and `filtered` guarantees none reads a
-position, so `[a][b]` is `[a and b]`, the compiled ones run first, and what the engine is still
-asked it is asked once, of a sequence they have pruned — a `@select` presence test drops 14,756
-candidates before the `text()` half nobody compiles is reached, and a tail nothing compiles costs
-what it cost. Four interleaved rounds a side, one process per reading, report byte-identical at
-3,626, 5,513 and 1,192 defects: the run falls 4,919-5,094 ms to 4,486-4,811 over DocBook-XSL,
-5,078-5,286 to 4,575-4,940 over TEI and 2,521-2,681 to 2,389-2,521 over DITA-OT, `xpath-linter`
-down 20%, 23% and 11%. Every reading stands clear of every reading on the other side over
-DocBook-XSL and TEI; over DITA-OT the two ranges touch at one, which is what a corpus reading 2.5
-seconds against a 6-second budget has to show.
+Its derivation stands at the top of `src/predicates.js` itself, for the reason the note above
+gives, this chain having reached the bar once #846 grew the guide below it (#821, #811).
 
 ## `src/attributes.js`
 
