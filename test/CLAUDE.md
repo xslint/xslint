@@ -497,6 +497,21 @@ selector has gained the guard, or stopped asking, turns red. No corpus said any 
 TEI and DITA-OT hold no shadow attribute between them, so the nightly tier reads the same numbers
 either way and the ten packs are the whole of the pin.
 
+What that gate reads is the negated spelling and nothing else, which is a bound worth stating
+rather than leaving to be found again. Asked the other way — a bare `@x` in a predicate, standing
+for *the author wrote one* — the same question is open in three selectors, each measured the same
+way. `variable-or-param-with-select-and-content` misses a `_select` beside content, `XTSE0620` on
+Saxon and the exact fault it exists for; `mode-or-priority-without-match` misses a `_mode` on a
+matchless template, `XTSE0500`, which is the positive half of the very selector fixed above; and
+`modern-construct-in-xslt-1` misses an `_as` in a 1.0 sheet where an `as` fires. A fourth of that
+family is closed here by accident rather than by design — `empty-variable` asks `(@as or @_as)`
+because that clause stands inside a `not(...)` `SUPPLIED` can see. Two must never join them:
+`unused-named-template` and `unused-variable` read the attribute's *value* and match usages
+against it, where a shadow one holds an expression producing the name rather than the name. A
+third group wants the value for that same reason and can only ever go quiet, never invent a
+defect — the version gates of three checks, `versionOf`, and `importsOf`, whose
+`hasAttribute('href')` builds no edge for a shadow href (#851).
+
 The line cap is held from a third side since #825. A file the cap is lifted off must have its
 length stated in a guide, and the number must be the one ESLint reads: `SPRAWLING`'s membership was
 gated where the length beside it was not, so the one file carrying an exemption went on being

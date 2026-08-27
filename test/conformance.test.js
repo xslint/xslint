@@ -688,6 +688,16 @@ describe('conformance', function() {
         }
       }
     })
+  it('marks the local name of an attribute and never its prefix', function() {
+    assert.strictEqual(
+      shadowed('xsl:version'), 'xsl:_version',
+      'the shadow spelling of a prefixed attribute keeps the prefix and ' +
+        'underscores the local name, where _xsl:version names a prefix no ' +
+        'document binds and so reaches no attribute at all. Nothing else ' +
+        'asks: the one prefixed presence test in the tree is exempt on ' +
+        'SHADOWLESS, so the gates around this one read the same either way',
+    )
+  })
   it('exempts an attribute from its shadow spelling only while it has none',
     function() {
       const asked = Object.entries(SELECTORS).flatMap(
