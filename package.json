@@ -50,7 +50,7 @@
     "globals": "^17.6.0",
     "grunt": "^1.6.1",
     "grunt-cli": "^1.5.0",
-    "grunt-eslint": "^26.0.0",
+    "grunt-eslint": "^27.0.0",
     "grunt-mocha-cli": "^7.0.0",
     "marked": "^18.0.7",
     "mocha": "^11.0.1"
