@@ -472,6 +472,46 @@ Since #817 the two exemption tables answer one gate rather than two, `EXEMPTED` 
 the question deciding whether its entries are still needed — the same ratchet twice over, not a
 shape worth spelling out twice.
 
+A sixth arrived at #849, and it is the one that had been wrong the longest. XSLT 3.0 writes any
+attribute of an XSLT element twice over — `x`, and `_x` whose value is an attribute value template
+evaluated before the module compiles — and `src/attributes.js` has read that spelling since #606
+where no selector ever did. Every one of the ten testing an attribute's presence with `not(@x)`
+reported a stylesheet SaxonJ-HE 12.5 loads without a word: a `_select` on an `xsl:variable` drew
+`empty-variable`, a `_match` on an `xsl:template` drew `template-has-no-name-or-match` and
+`mode-or-priority-without-match` together, and the check #668 adds beside them would have joined
+the list had it been written the same way. Two carried a fix and so damaged the file rather than
+only misreading it. `mode-or-priority-without-match` deleted a `@mode` its template was really
+using, leaving that rule and the root one matching `/` at equal priority — `XTDE0540`, out of a run
+whose whole promise is that a fix preserves meaning. `missing-version-in-stylesheet` wrote
+`version="1.0"` beside a `_version="{'3.0'}"`; Saxon still loads that, but `versionOf` reads the
+one that was written, so a sheet holding an `xsl:for-each-group` drew no
+`modern-construct-in-xslt-1` before the fixer ran and one after — a check writing a wrong version
+and a second check believing it.
+
+`SUPPLIED` reads every `not(@x)` a selector spells and asks for the `not(@_x)` beside it, with
+`SHADOWLESS` naming what is exempt: `xsl:version` alone, for a reason no other attribute has. It
+is what makes a literal result element a stylesheet at all, so the mechanism that would read a
+shadow one is not running yet, and Saxon refuses both spellings there — `xsl:_version` as
+`XTSE0150` and `_xsl:version` as `SXXP0003`. That table ratchets like the rest: an entry whose
+selector has gained the guard, or stopped asking, turns red. No corpus said any of this. DocBook-XSL,
+TEI and DITA-OT hold no shadow attribute between them, so the nightly tier reads the same numbers
+either way and the ten packs are the whole of the pin.
+
+What that gate reads is the negated spelling and nothing else, which is a bound worth stating
+rather than leaving to be found again. Asked the other way — a bare `@x` in a predicate, standing
+for *the author wrote one* — the same question is open in three selectors, each measured the same
+way. `variable-or-param-with-select-and-content` misses a `_select` beside content, `XTSE0620` on
+Saxon and the exact fault it exists for; `mode-or-priority-without-match` misses a `_mode` on a
+matchless template, `XTSE0500`, which is the positive half of the very selector fixed above; and
+`modern-construct-in-xslt-1` misses an `_as` in a 1.0 sheet where an `as` fires. A fourth of that
+family is closed here by accident rather than by design — `empty-variable` asks `(@as or @_as)`
+because that clause stands inside a `not(...)` `SUPPLIED` can see. Two must never join them:
+`unused-named-template` and `unused-variable` read the attribute's *value* and match usages
+against it, where a shadow one holds an expression producing the name rather than the name. A
+third group wants the value for that same reason and can only ever go quiet, never invent a
+defect — the version gates of three checks, `versionOf`, and `importsOf`, whose
+`hasAttribute('href')` builds no edge for a shadow href (#851).
+
 The line cap is held from a third side since #825. A file the cap is lifted off must have its
 length stated in a guide, and the number must be the one ESLint reads: `SPRAWLING`'s membership was
 gated where the length beside it was not, so the one file carrying an exemption went on being
@@ -501,11 +541,11 @@ rows and not a sentence.
 A third gate stands beside them and its subject is the module's own header note. Relocating a
 derivation into one — which is what the bar below forced here — takes it out of the reach of the
 gate holding a guide's counts to the code, `DOCUMENTS` naming guides and the README and no source
-file but `src/attributes.js`. So the two counts that note states of the vocabulary's reach, 27 of
-37, are computed here from `checks.json` and held to it: every branch a selector splits into that
+file but `src/attributes.js`. So the two counts that note states of the vocabulary's reach, 28 of
+38, are computed here from `checks.json` and held to it: every branch a selector splits into that
 the walk serves, parted by the `predicated` a run parts with, each predicate asked once. Both
 kinds are read, a corpus check's declaration and usage reaching `predicateOf` as a per-file
-selector does — the `xpath` kind alone answers 25 of 34, which is no number a run ever sees, and
+selector does — the `xpath` kind alone answers 26 of 35, which is no number a run ever sees, and
 counting it that way is how the note came to say 33 and 24. Two sentences carry the pair in
 opposite orders, so both are read and rewording either fails, the lesson `DERIVED` records one
 section down.
@@ -551,13 +591,13 @@ under them was opened. The first spelling of the bar weighed the root against th
 guide instead, which is a whole directory short: it read 130,933 and called that 0.87 of the bar
 while a turn touching `src/linters/` was loading 157,504 and over it. So the two dearest notes moved
 one step further down, out of `src/CLAUDE.md` and into the top of `src/grammar.js` and
-`src/syntax.js` — 24,681 characters — and the dearest chain is that same one at 148,161, which is
+`src/syntax.js` — 24,681 characters — and the dearest chain is that same one at 148,579, which is
 0.99. What answers a chain reaching the bar is that move again, a module's derivation into the
 file-header note of the module itself, and never a bar widened to fit what has grown past it: a
 docblock holds five lines of description since #832, so prose that has outgrown a guide does not
 simply move into one instead. A `CEILING` of half the bar stood beside it until it was seen to be a
 gate no tree could fail: the root stands in every chain, so the chain holding it above weighs each
-other guide against the bar less what stands over it — 33,837 for `src/linters/CLAUDE.md`, where
+other guide against the bar less what stands over it — 33,419 for `src/linters/CLAUDE.md`, where
 half of the bar is 75,000 — and holds the root itself to 72,656, a number derived from the dearest
 chain rather than chosen. A gate no tree can fail is removed and not kept (#750, #660). All four of
 those figures — the chain, its ratio, and the two allowances — follow from three file sizes, so one

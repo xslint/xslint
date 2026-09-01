@@ -18,7 +18,7 @@
         "message": "A stylesheet function is never called in any expression across the corpus. Remove it or call it."
       },
       "unused-named-template": {
-        "declaration": "//xsl:template[not(@match)][@name][not(ends-with(@name, ':initial-template'))]",
+        "declaration": "//xsl:template[not(@match) and not(@_match)][@name][not(ends-with(@name, ':initial-template'))]",
         "usage": "//xsl:call-template/@name",
         "severity": "warning",
         "message": "A named template is never invoked via xsl:call-template. Remove it or call it."
@@ -167,7 +167,7 @@
         "message": "An instruction element such as xsl:for-each or xsl:if has no content. Add content or remove the empty element."
       },
       "empty-variable": {
-        "xpath": "//xsl:variable[not(@select) and not(node()) and not(@as and (if (/xsl:stylesheet | /xsl:transform) then /*/@version else /*/@xsl:version) = ('2.0', '3.0'))]",
+        "xpath": "//xsl:variable[not(@select) and not(@_select) and not(node()) and not((@as or @_as) and (if (/xsl:stylesheet | /xsl:transform) then /*/@version else /*/@xsl:version) = ('2.0', '3.0'))]",
         "severity": "warning",
         "message": "An empty xsl:variable binds the empty string for no reason. Give it a @select or some content, or remove it."
       },
@@ -197,22 +197,27 @@
         "message": "A declared version is not a number, so it names no XSLT version and every version-dependent check falls back to XSLT 1.0 here, the fixes it writes included. Declare it as a decimal, such as 2.0"
       },
       "missing-id-in-stylesheet": {
-        "xpath": "(/xsl:stylesheet | /xsl:transform)[not(@id)]",
+        "xpath": "(/xsl:stylesheet | /xsl:transform)[not(@id) and not(@_id)]",
         "severity": "warning",
         "message": "The '@id' attribute is missing in the 'xsl:stylesheet' element. Declare it to specify the unique identifier explicitly."
       },
+      "missing-or-empty-href": {
+        "xpath": "//(xsl:import | xsl:include)[(not(@href) and not(@_href)) or @href = '']",
+        "severity": "error",
+        "message": "The '@href' is missing or empty here, so this pulls in no other module and no processor will load the stylesheet"
+      },
       "missing-or-empty-name": {
-        "xpath": "//(xsl:variable | xsl:param)[not(@name)] | //(xsl:variable | xsl:param | xsl:with-param | xsl:call-template | xsl:template | xsl:function | xsl:key | xsl:attribute-set | xsl:decimal-format | xsl:character-map | xsl:mode | xsl:accumulator)[@name = '']",
+        "xpath": "//(xsl:variable | xsl:param | xsl:call-template | xsl:function | xsl:key | xsl:attribute-set | xsl:character-map | xsl:accumulator)[not(@name) and not(@_name)] | //(xsl:variable | xsl:param | xsl:with-param | xsl:call-template | xsl:template | xsl:function | xsl:key | xsl:attribute-set | xsl:decimal-format | xsl:character-map | xsl:mode | xsl:accumulator)[@name = '']",
         "severity": "error",
         "message": "The '@name' is missing or empty here, and neither is a QName, so no processor will load this stylesheet"
       },
       "missing-version-in-stylesheet": {
-        "xpath": "/*[if (self::xsl:*) then not(@version) else (not(@xsl:version) and .//xsl:* and not(.//(xsl:stylesheet | xsl:transform | xsl:package)))]",
+        "xpath": "/*[if (self::xsl:*) then (not(@version) and not(@_version)) else (not(@xsl:version) and .//xsl:* and not(.//(xsl:stylesheet | xsl:transform | xsl:package)))]",
         "severity": "warning",
         "message": "The version attribute is missing on the stylesheet's root element. Declare it to specify the stylesheet version explicitly."
       },
       "mode-or-priority-without-match": {
-        "xpath": "//xsl:template[not(@match) and (@mode or @priority)]",
+        "xpath": "//xsl:template[not(@match) and not(@_match) and (@mode or @priority)]",
         "severity": "error",
         "message": "An xsl:template that has no match attribute must have no mode attribute and no priority attribute. Add match attribute or remove mode or priority."
       },
@@ -227,12 +232,12 @@
         "message": "A variable, function, or template name starts with a digit, which is invalid in XPath. Rename it to start with a letter."
       },
       "not-creating-attribute-correctly": {
-        "xpath": "//xsl:attribute[not(contains(@name, '{'))][not(@namespace)][parent::*[not(self::xsl:*)]][not(*) or (count(*) = 1 and xsl:value-of[not(@separator)])]",
+        "xpath": "//xsl:attribute[not(contains(@name, '{')) and not(@_name)][not(@namespace) and not(@_namespace)][parent::*[not(self::xsl:*)]][not(*) or (count(*) = 1 and xsl:value-of[not(@separator) and not(@_separator)])]",
         "severity": "warning",
         "message": "xsl:attribute with a static name on a literal element can be a literal attribute (an AVT for a computed value). Write it inline."
       },
       "not-using-attribute-test-in-if-when-node": {
-        "xpath": "//( xsl:if | xsl:when)[not(@test)]",
+        "xpath": "//( xsl:if | xsl:when)[not(@test) and not(@_test)]",
         "severity": "error",
         "message": "'xsl:if' or 'xsl:when' don't have attribute @test. Add this attribute or delete node."
       },
@@ -272,7 +277,7 @@
         "message": "The stylesheet declares nothing at all, so it contributes nothing to a transformation. Add a declaration, or delete the file."
       },
       "template-has-no-name-or-match": {
-        "xpath": "//xsl:template[not(@name) and not(@match)]",
+        "xpath": "//xsl:template[not(@name) and not(@_name) and not(@match) and not(@_match)]",
         "severity": "error",
         "message": "An 'xsl:template' must have a '@match' or '@name' attribute, or both. Add one of them."
       },
@@ -322,7 +327,7 @@
         "message": "xsl:with-param is allowed only within xsl:call-template, xsl:apply-templates, xsl:apply-imports, xsl:next-match and xsl:next-iteration."
       },
       "with-param-without-name": {
-        "xpath": "//xsl:with-param[not(@name)]",
+        "xpath": "//xsl:with-param[not(@name) and not(@_name)]",
         "severity": "error",
         "message": "xsl:with-param requires a @name attribute to bind the parameter it passes. Add one."
       }
