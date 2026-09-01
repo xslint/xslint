@@ -100,7 +100,7 @@ const NEARBY = 80
  * than one of ours: Claude Code warns past 150,000 characters of them. What
  * arrives against it is a chain and not a pair — the root guide, and the
  * guide of every directory down to the file a turn touches, each injected
- * once — and the dearest reads 148,579, which is 0.99 (#750, #660, #825).
+ * once — and the dearest reads 148,593, which is 0.99 (#750, #660, #825).
  * @type {number}
  */
 const LOADED = 150000
@@ -178,7 +178,7 @@ const carries = function(claim, text) {
 /**
  * Every figure a guide states about the chain: the phrase carrying it, every
  * file expected to carry that phrase, and what the tree makes of its captures.
- * All four follow from three file sizes, so one guide growing moves the lot,
+ * All five follow from three file sizes, so one guide growing moves the lot,
  * and the bar stays quiet until 150,000 — which is why they drift (#750, #825).
  * @type {Array.<{claim: RegExp, carriers: Array.<string>,
  *  truth: function(): Array.<string>}>}
@@ -209,6 +209,13 @@ const DERIVED = [
     claim: new RegExp(`holds the root itself to ([\\d,]*\\d)`, 'g'),
     carriers: ['test/CLAUDE.md'],
     truth: () => [thousands(LOADED - (dearest() - sized('CLAUDE.md')))],
+  },
+  {
+    claim: new RegExp(
+      `What that leaves is ([\\d,]*\\d) characters of${GAP}+headroom`, 'g',
+    ),
+    carriers: ['test/CLAUDE.md'],
+    truth: () => [thousands(LOADED - dearest())],
   },
 ]
 

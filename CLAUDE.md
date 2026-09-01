@@ -1032,4 +1032,4 @@ one of them.
 | `test/packs.js` | The one harness every pack directory is read through |
 | `test/scaling.test.js` | The speed gate: every stage's own processor time as a share of the run, at two corpus sizes |
 | `test/xcop.deep.test.js` | Writes every pack's inline XSL to one directory and runs xcop over it |
-| `test/workflows.test.js` | Every job granted the scope its own steps write with, red from both sides |
+| `test/workflows.test.js` | Every job granted the scope its own steps write with, and left the scope they read with |
