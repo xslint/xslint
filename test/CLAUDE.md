@@ -399,9 +399,37 @@ of two on a tree nothing has touched — and since `SLACK` is four, a window can
 span at most, which leaves that observed spread filling half of it and the ratchet standing one tick
 under the cheapest night rather than two. DITA-OT is the same thing at the clock's own edge: 2 to 3
 seconds where `date +%s` counts in whole ones is a third to a half of the reading in quantisation
-alone, so a bar cut from it is cut partly from noise. Both windows hold — [4, 16] and [2, 6] — so
-this cut stands on the clock the tier has, and whether a whole-second clock can measure a
-two-second corpus at all is what #827 stands rescoped to, the cut itself having closed #826 alone.
+alone, so a bar cut from it is cut partly from noise. Both windows held — [4, 16] and [2, 6] — so
+that cut stood on the clock the tier had, and #827 stands rescoped to the clock itself, the cut
+having closed #826 alone.
+
+`date +%s%3N` is that clock, and the first thing it settles is the spread. Six dispatched runs on
+the tree #849 left give 5899, 6923, 5746, 4666, 6888 and 6859 ms over DocBook-XSL, 6732, 6454,
+6463, 6287, 6381 and 5013 over TEI, and 2997, 3056, 2878, 3311, 3290 and 2830 over DITA-OT — spans
+of 1.48, 1.34 and 1.17 rather than the factor of two whole seconds reported, since a true 4666
+reads as 4 and a true 6923 as 6 and the grid widens the pair before anything measures it. The
+margin was a grid artefact the same way: under the old 16000 a millisecond DocBook-XSL stands 1.17
+above the ratchet, where 4 against a threshold of 4 says exactly none. Twice the dearest is
+**13000, 13000 and 6000**, whose quarters are 3250, 3250 and 1500 against cheapest nights of 4666,
+5013 and 2830 — margins of 1.44, 1.54 and 1.89, each budget standing between 1.81 and 1.93 times
+its own dearest reading.
+
+That margin is the bar the tick used to stand in for. `MARGIN` in `test/budget.test.js` asks each
+budget to stay quiet on a night 1.2 times faster than the cheapest on record — the geometric middle
+of the 1.00 the whole-second cut recorded and the 1.44 this one leaves — and `RESOLUTION` asks a
+tick to stand under 0.013 of what its corpus costs, the middle of DITA-OT's half and its 2830th.
+The row those two replace asked for one tick of margin, which a millisecond grid turns into a
+question no tree can fail; and since both are written in ticks, a third row reads the workflow for
+the `date +%s%3N` that makes a tick what `TICK` says it is. On master all three redden — every
+corpus fails `RESOLUTION`, DocBook-XSL fails `MARGIN`, and the step spells `date +%s`.
+
+Three questions #827 parked are answered by that table rather than by a change. A **median of
+several runs** narrows nothing a 1.48 span cannot already carry inside a fourfold window, and would
+cost the tier a clone a night to defend a margin that is 1.44 at its worst. **`SLACK` at four** is
+a span the widest observed spread fills a third of, leaving 1.44 under and 1.88 over, so it holds
+for a wall clock as it does for a share, and a bar raised on nobody's failure is a bar loosened.
+And **DITA-OT** is not too small to gate: at 2830 ms a tick is one part in 2830, and its margin is
+the best of the three. The corpus was never what was too small.
 
 ## `test/conformance.test.js`
 
