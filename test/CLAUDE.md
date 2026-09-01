@@ -619,7 +619,7 @@ other file. Each row therefore names every file expected to carry it and the mat
 compared whole, so rewording either carrier fails, and so does the claim appearing in a document no
 row names. Growing a guide by 4,000 characters fails all four rows at once. The asking is
 `matchAll` and never `test`, a global pattern leaving `lastIndex` where it stopped and answering
-`false` to the very next question about the same prose. What that leaves is 1,839 characters of
+`false` to the very next question about the same prose. What that leaves is 1,106 characters of
 headroom, and the paragraph above stopped being advice while this change was being written: #846
 grew `src/linters/CLAUDE.md` by 3,113 and the merged chain read 150,437, so the bar failed on a
 tree whose two authors had each stayed under it. The prescribed relief is the one taken —
