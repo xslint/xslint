@@ -104,7 +104,10 @@ from 2021 — and `grunt mochacli` ran the suite there while `npm run coverage`
 ran it on 11. That nested tree is where two of the nine advisories `npm audit`
 read on master stood and nowhere else, `nanoid` and `minimatch`. An
 `overrides` entry in `package.json` holds it to the `mocha` the root declares,
-and `conformance.test.js` asks that the two resolve to one file. The rest of
+and `manifest.test.js` asks it of every tool a grunt wrapper runs — of
+`grunt-eslint`'s `eslint` too since #855, which had nested a 9 under the
+declared 10 the same way, and had been supplying the config's own imports out
+of that nest. The rest of
 that entry lifts `diff` and `serialize-javascript` to the majors mocha 12 ships
 with — every version mocha 11's own ranges admit is an advisory, and its one
 call into each is unchanged in 12 — grunt's `js-yaml` to 4, whose `safeLoad`
@@ -1033,3 +1036,4 @@ one of them.
 | `test/scaling.test.js` | The speed gate: every stage's own processor time as a share of the run, at two corpus sizes |
 | `test/xcop.deep.test.js` | Writes every pack's inline XSL to one directory and runs xcop over it |
 | `test/workflows.test.js` | Every job granted the scope its own steps write with, red from both sides |
+| `test/manifest.test.js` | What `package.json` declares, held to what a grunt wrapper runs and what this repository's own JavaScript imports |
