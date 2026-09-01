@@ -245,8 +245,8 @@ const pointed = function(marked) {
  * The axis a selector opens with: the element buckets to read, and the
  * attribute to take off each. Two shapes carry one — every attribute of a
  * document, which no element name narrows, and one named attribute of named
- * elements — and a third is refused: an attribute `pointed` cannot read clears
- * the names with it, the elements alone being another selector.
+ * elements — and the second wants both halves or neither, either alone being
+ * another selector (#839).
  * @param {string} listed - The names as the selector spells them
  * @param {string} marked - The attribute behind them, or undefined
  * @return {{names: Array, attributes: Array}} - What the walk is asked for
@@ -258,8 +258,9 @@ const opened = function(listed, marked) {
     attributes = [{uri: '', local: EVERY}]
   } else if (marked !== undefined) {
     attributes = pointed(marked)
-    if (attributes.length === 0) {
+    if (attributes.length === 0 || names.length === 0) {
       names = []
+      attributes = []
     }
   }
   return {names: names, attributes: attributes}

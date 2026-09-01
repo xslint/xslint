@@ -70,7 +70,12 @@ more shapes are served since #811, both of them an **attribute** axis: `//@*`, w
 bucket yielded. A wildcard behind an element name is refused with the rest, no selector spelling one
 and the order an element's attributes come in being a question the walk answers for a document
 rather than for one element; an unprefixed attribute is not, standing in no namespace by XPath's own
-rule where an unprefixed *element* name is a refusal. Beside `splitOf` stand the two doors onto the
+rule where an unprefixed *element* name is a refusal. That second shape wants **both** halves, and
+only the attribute could refuse until #839: a list bucketing to nothing — a wildcard, or a prefix
+nothing binds — left the names empty beside a real attribute, which `axised` reads as the `//@*`
+case, so `//xsl:*/@name` answered every attribute of `candidates.xsl`, 29 where the engine answers
+14. Either half missing clears the other now. No shipped check spells the shape, so mutation found
+it and the row that pins it asserts the **answer** and not only the refusal. Beside `splitOf` stand the two doors onto the
 served answer, `chosen(xsl, xpath)` and `valued(xsl, xpath)` — the second for a usage read as
 strings, an attribute's string value being the value it holds. They live here rather than in a
 linter because both the per-file and the cross-file kind ask them and no linter may import another.
