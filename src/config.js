@@ -129,7 +129,7 @@ const normalized = function(raw) {
  *  logLevel: string|null, quiet: boolean|null, base: string}} - Configuration
  */
 const configFrom = function(explicit, from = process.cwd()) {
-  let file = null
+  let file
   if (explicit) {
     file = path.resolve(from, explicit)
   } else {

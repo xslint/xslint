@@ -37,7 +37,7 @@ const SELECTORS = ['xpath', 'declaration', 'usage']
  * @return {Array.<string>} - The expressions it holds
  */
 const carried = function(text) {
-  let held = []
+  let held
   try {
     held = expressionsOf(xml.parsedFromString(text))
       .map((one) => one.expression)
