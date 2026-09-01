@@ -72,7 +72,7 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-error">error</span>
-    <code class="xpath">//xsl:template[not(@match) and (@mode or @priority)]</code>
+    <code class="xpath">//xsl:template[not(@match) and not(@_match) and (@mode or @priority)]</code>
   </div>
   <div class="check-content">
 <h1>Use @mode or @priority in Template without @match</h1>

@@ -72,7 +72,7 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-warning">warning</span>
-    <code class="xpath">declaration: //xsl:template[not(@match)][@name][not(ends-with(@name, ':initial-template'))]</code>
+    <code class="xpath">declaration: //xsl:template[not(@match) and not(@_match)][@name][not(ends-with(@name, ':initial-template'))]</code>
     <code class="xpath">usage: //xsl:call-template/@name</code>
   </div>
   <div class="check-content">

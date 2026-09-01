@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>with-param-without-name</title>
+  <title>missing-or-empty-href</title>
   <style>
   * { box-sizing: border-box; }
   body {
@@ -72,24 +72,35 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-error">error</span>
-    <code class="xpath">//xsl:with-param[not(@name) and not(@_name)]</code>
+    <code class="xpath">//(xsl:import | xsl:include)[(not(@href) and not(@_href)) or @href = '']</code>
   </div>
   <div class="check-content">
-<h1>Using <code>xsl:with-param</code> without @name</h1>
-<p><code>xsl:with-param</code> passes a value to a named parameter of the template, function,
-or mode it invokes. The @name attribute is what binds the value to that
-parameter, so it is required: without it the processor has no parameter to bind
-to and rejects the stylesheet.</p>
+<h1>An href that names no module</h1>
+<p><code>xsl:import</code> and <code>xsl:include</code> exist to name another stylesheet module, and
+<code>@href</code> is the only thing on them that does it. With none there is nothing to
+pull in, and a processor refuses the whole stylesheet — <code>XTSE0010</code>, a required
+attribute missing — rather than loading it and leaving the templates that
+module was to supply quietly undefined. An empty one is not the milder case: a
+relative reference of no characters is the module itself, so the stylesheet
+imports or includes its own source, and that is refused too, under <code>XTSE0210</code>
+for an import and <code>XTSE0180</code> for an include.</p>
+<p>The empty spelling is the one that hides. <code>href=&quot;&quot;</code> survives a search for the
+attribute and reads as a placeholder somebody meant to fill, which is usually
+what it is — a module moved, a path deleted mid-edit, or an attribute value
+template that resolved to nothing. Nothing about the element says which module
+was meant, so the repair is always to write the path rather than to drop the
+attribute: an <code>xsl:include</code> that includes nothing has no reason to stand.</p>
 <p>Incorrect:</p>
-<pre><code class="language-xsl">&lt;xsl:call-template name=&quot;render&quot;&gt;
-  &lt;xsl:with-param select=&quot;&#39;red&#39;&quot;/&gt;
-&lt;/xsl:call-template&gt;
+<pre><code class="language-xsl">&lt;xsl:import/&gt;
+&lt;xsl:include href=&quot;&quot;/&gt;
 </code></pre>
 <p>Correct:</p>
-<pre><code class="language-xsl">&lt;xsl:call-template name=&quot;render&quot;&gt;
-  &lt;xsl:with-param name=&quot;colour&quot; select=&quot;&#39;red&#39;&quot;/&gt;
-&lt;/xsl:call-template&gt;
+<pre><code class="language-xsl">&lt;xsl:import href=&quot;common/attributes.xsl&quot;/&gt;
+&lt;xsl:include href=&quot;common/tables.xsl&quot;/&gt;
 </code></pre>
+<p><code>xsl:result-document</code> carries an <code>@href</code> as well, and leaving it out there says
+something else entirely — write to the principal result — so an absent one is
+no fault at all and this is not about it.</p>
 
   </div>
 </body>

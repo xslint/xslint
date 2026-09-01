@@ -98,7 +98,7 @@
   that has shipped for decades.</p>
 
   <h2>Checks</h2>
-  <p>67 checks, each with its rationale:</p>
+  <p>68 checks, each with its rationale:</p>
   <table>
     <thead>
       <tr>
@@ -180,6 +180,12 @@
     <td>xpath</td>
     <td><span class="severity-warning">warning</span></td>
     <td>The '@id' attribute is missing in the 'xsl:stylesheet' element. Declare it to specify the unique identifier explicitly.</td>
+  </tr>
+  <tr>
+    <td><a href="checks/missing-or-empty-href.html">missing-or-empty-href</a></td>
+    <td>xpath</td>
+    <td><span class="severity-error">error</span></td>
+    <td>The '@href' is missing or empty here, so this pulls in no other module and no processor will load the stylesheet</td>
   </tr>
   <tr>
     <td><a href="checks/missing-or-empty-name.html">missing-or-empty-name</a></td>
