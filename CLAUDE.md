@@ -135,7 +135,7 @@ builds at 40 stylesheets and again at 160, and asks two questions of each: what
 percentage of the whole run it cost, and how it grew beside the middle stage's
 growth. Both are quotients taken inside one process, which is what cancels the
 machine. `SHARES` names the three stages that legitimately cost more of a run
-than the rest — `xpath-linter` at 46%, `xpath-validator` at 24%,
+than the rest — `xpath-linter` at 42%, `xpath-validator` at 24%,
 `xsl-validator` at 16% — and every other stage answers to one bar, `SHARE` at
 7%; growth is asked only of the stages with no entry, against `GROWTH` at 3.0,
 since an entry pins what a stage costs outright and that is the stronger

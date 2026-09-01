@@ -68,6 +68,22 @@ for a gate of another kind, which is why that change carries a structural one be
 share ceiling can stop a selector asking the engine to descend a tree the run has already walked,
 and `UNINDEXED` in `test/conformance.test.js` can.
 
+The eighth move is #811's descendant phase, and it is the first where the walk **gathers** rather
+than follows: a subtree is no chain of links to climb, so `below` in `src/predicates.js` pushes its
+way down one, and `.//X` — the whole of what two checks are written in — stops costing a fontoxpath
+descendant traversal per candidate. `oversized-template` goes from 231 ms to 17 over DocBook-XSL,
+202 to 14 over TEI and 137 to 17 over DITA-OT, `function-complexity` from 11 to 3, 31 to 3 and 13 to
+4, lowest of three interleaved rounds a side of processor time, which is 11%, 11% and 13% off
+`xpath-linter` and 4.7%, 3.9% and 4.7% off the staged run, the report byte-identical at 3,624, 5,514
+and 1,192 defects. Over the gate's own corpus the stage reads 24.82% where it read 27.18%, dearest
+of ten gate runs a side, so its entry comes down by its own ratio, 46 to 42. The other two stay,
+`xpath-validator` reading 1.00 of what it read and `xsl-validator` 1.04, which leaves 24 and 16 at
+1.09 and 1.52 of their dearest readings; `SHARE` stays at 7 for the reason it has stayed there
+before, the dearest cheap stage having moved by 1.03. Ten rounds rather than five because one round
+a side came out disturbed — a single stage eating a fifth of its run, and on both sides — and each
+is kept rather than dropped, since dropping a reading a machine has actually given is how a bar
+comes to stand on the runs that flattered it.
+
 The seventh move is #811's anchor phase, and what it shows is that a shape's name is not its cost.
 Three checks spell a guard in front of their descendant step —
 `(/xsl:stylesheet | /xsl:transform)//(xsl:stylesheet | xsl:transform)` and two like it — and the
@@ -230,7 +246,7 @@ asserts exactly that over the `src/linters/` directory, and another that no name
 stopped being a stage.
 
 `SHARES` names the three stages that legitimately cost more of a run than the rest: `xpath-linter`
-at 46%, `xpath-validator` at 24%, `xsl-validator` at 16%. Every other stage answers to one bar,
+at 42%, `xpath-validator` at 24%, `xsl-validator` at 16%. Every other stage answers to one bar,
 `SHARE` at 7%, which the twenty of them sit far below at 0.37% to 4.27% — so a cheap stage that
 becomes an expensive one turns red, and earns either a fix or an entry. It named four until #811,
 and the fourth is the one worth reading the rule off. Two things set a ceiling. Where there is a
@@ -536,27 +552,34 @@ puts it out of reach, and is a ratchet from the other side: an entry that *becom
 so the list cannot sit there reading like a limit still in force after the limit has gone. It caught
 its author — widening the vocabulary to sibling and ancestor axes, a path in a value position and
 two string functions turned five `REFUSED` rows red in one run, which is the whole reason they are
-rows and not a sentence.
+rows and not a sentence. It caught him twice: the descendant axis took its own row off the table at
+#811's last phase, and two of the three replacing it are shapes `pathed` had been answering all
+along — an absolute path, and a descent standing mid-path — since it weighed no separator at all.
 
 A third gate stands beside them and its subject is the module's own header note. Relocating a
 derivation into one — which is what the bar below forced here — takes it out of the reach of the
 gate holding a guide's counts to the code, `DOCUMENTS` naming guides and the README and no source
-file but `src/attributes.js`. So the two counts that note states of the vocabulary's reach, 28 of
+file but `src/attributes.js`. So the two counts that note states of the vocabulary's reach, 30 of
 38, are computed here from `checks.json` and held to it: every branch a selector splits into that
 the walk serves, parted by the `predicated` a run parts with, each predicate asked once. Both
 kinds are read, a corpus check's declaration and usage reaching `predicateOf` as a per-file
-selector does — the `xpath` kind alone answers 26 of 35, which is no number a run ever sees, and
+selector does — the `xpath` kind alone answers 28 of 35, which is no number a run ever sees, and
 counting it that way is how the note came to say 33 and 24. Two sentences carry the pair in
 opposite orders, so both are read and rewording either fails, the lesson `DERIVED` records one
 section down.
 
 Neither table asks whether an answer is *correct*: that is `CANDIDATES` in `test/selectors.test.js`,
 which asks fontoxpath what each spelling selects over `candidates.xsl` and fails where serving
-answers anything else — the oracle, 102 rows here against 32 before, and armed against the engine
+answers anything else — the oracle, 115 rows here against 32 before, and armed against the engine
 before a line of the compiler existed. A row there is a question rather than a claim, so enriching
 the fixture can only strengthen it; the fixture grew five variables and a non-XSLT child so that
 presence, a literal sequence, a string length, a parent and `count(*)` each split the nine
-candidates unevenly. One thing it cannot hold is a prefix `src/xpath.js` does not bind:
+candidates unevenly, and a group three deep at #811's descendant phase, so that
+`xsl:variable//xsl:text` answers something `xsl:variable/xsl:text` does not — on the shallower
+fixture the two read alike, and the row asking about the descent would have passed while `pathed`
+weighed no separator at all. That width is held to the sweep from here on, having drifted twice
+inside a paragraph that reads like a question asked per spelling. One thing it cannot hold is a
+prefix `src/xpath.js` does not bind:
 `my:thing` stands in the document for `count(*)` to see and is named in no selector, the engine
 raising `XPST0081` on an unbound prefix rather than answering.
 
@@ -764,9 +787,9 @@ pack was loud and so registered nothing at all for the two directories whose qui
 
 The speed gate (see **Speed**): charges every stage its own processor time over a generated corpus
 at 40 stylesheets and again at 160, and fails one that spends more of its own run than `SHARES`
-allows it — `xpath-linter` at 46%, `xpath-validator` at 24%, `xsl-validator` at 16% since #811's
-anchor phase took the dearest stage from 34.03% of the run to 29.44% and lifted the twenty-two
-others by what it left the denominator, or — where it has no entry there — grew more than `GROWTH`
+allows it — `xpath-linter` at 42%, `xpath-validator` at 24%, `xsl-validator` at 16% since #811's
+descendant phase took the dearest stage from 27.18% of the run to 24.82% and left the other two
+inside the band they already stood in, or — where it has no entry there — grew more than `GROWTH`
 beside the middle stage's growth. Cost is the sharp question and growth the loose one, because #755
 changed a constant and not an exponent, which is a difference the two distributions show plainly:
 15.1% to 15.7% of the run against the quadratic's 26.5% to 31.9%, where in growth the fix reads 1.85

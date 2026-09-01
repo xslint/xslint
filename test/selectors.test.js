@@ -10,6 +10,7 @@ const {EVERY, chosen, splitOf, valued} = require('../src/selectors')
 const {nodes, strings} = require('../src/xpath')
 const {xml} = require('../src/helpers')
 const {kinds} = require('../src/resources/checks.json')
+const {worded} = require('./guides')
 
 /**
  * The XSLT namespace, which is the only one a declarative selector names on the
@@ -362,6 +363,15 @@ const DESCENDED = [
 ]
 
 /**
+ * The guide whose paragraph states how wide that oracle is, and the shape of
+ * the statement. It has drifted twice, a row count being a figure nothing
+ * reads once the sweep it describes is a `concat` of two tables, so it is held
+ * here rather than beside the guides' own gate, which weighs sizes (#811).
+ * @type {{guide: string, claim: RegExp}}
+ */
+const WIDE = {guide: 'test/CLAUDE.md', claim: /the oracle, (\d+) rows here/g}
+
+/**
  * Predicate spellings the split is judged on, with no verdict written beside
  * any of them: the engine answers what each selects and the test asks whether
  * an axis answers the same, so a row is a question rather than a claim a table
@@ -405,6 +415,10 @@ const CANDIDATES = [
   'xsl:variable/xsl:text = "alpha"',
   'not(xsl:variable/xsl:text = "alpha")',
   '@name = preceding-sibling::xsl:variable/@name',
+  'count(.//xsl:*) = 1', 'count(.//xsl:*) >= 2', 'count(.//xsl:*) = 0',
+  './/xsl:text', 'not(.//xsl:text)', './/a', 'count(descendant::xsl:*) = 1',
+  '//xsl:text', 'xsl:variable//xsl:text', './xsl:text',
+  'count(descendant-or-self::xsl:*) >= 2',
 ]
 
 /**
@@ -782,5 +796,14 @@ describe('selectors', function() {
           'usage text nobody wrote',
       )
     })
+  })
+  it('states the width of the oracle, where the guide states it', function() {
+    assert.deepStrictEqual(
+      [...worded(WIDE.guide).matchAll(WIDE.claim)].map((each) => each[1]),
+      [String(CANDIDATES.length + HEADED.length)],
+      'the guide states an oracle other than the one this file sweeps, so a ' +
+        'paragraph promising a question per spelling is read as a limit ' +
+        'that has stopped being one',
+    )
   })
 })

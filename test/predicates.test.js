@@ -148,6 +148,9 @@ const COMPILED = [
   'not(contains(@name, @nope))',
   'xsl:text',
   'parent::*',
+  'count(.//xsl:*) > 100',
+  'count(descendant::xsl:*) >= 2',
+  './/xsl:text',
 ]
 
 /**
@@ -162,10 +165,6 @@ const REFUSED = [
   {
     text: 'matches(@name, \'^[0-9]\')',
     why: 'a regex, whose XPath flavour is not JavaScript\'s',
-  },
-  {
-    text: 'count(.//xsl:*) > 100',
-    why: 'a descending axis, which wants each element\'s subtree extent',
   },
   {
     text: 'following::*',
@@ -218,6 +217,18 @@ const REFUSED = [
   {
     text: 'xsl:variable/xsl:text = "alpha"',
     why: 'a path ending at an element rather than at an attribute',
+  },
+  {
+    text: '//xsl:text',
+    why: 'an absolute path, which asks the document and not the candidate',
+  },
+  {
+    text: 'xsl:variable//xsl:text',
+    why: 'a descent standing mid-path, where each step answers the one before',
+  },
+  {
+    text: 'count(descendant-or-self::xsl:*) >= 2',
+    why: 'an axis holding the candidate itself, which no check writes',
   },
   {
     text: '@name = xsl:text',

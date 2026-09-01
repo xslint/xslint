@@ -33,7 +33,7 @@ const STEP = 4
  * @type {{[stage: string]: number}}
  */
 const SHARES = {
-  'xpath-linter': 46,
+  'xpath-linter': 42,
   'xpath-validator': 24,
   'xsl-validator': 16,
 }
