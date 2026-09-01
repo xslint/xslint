@@ -75,13 +75,13 @@ only the attribute could refuse until #839: a list bucketing to nothing — a wi
 nothing binds — left the names empty beside a real attribute, which `axised` reads as the `//@*`
 case, so `//xsl:*/@name` answered every attribute of `candidates.xsl`, 29 where the engine answers
 14. Either half missing clears the other now. No shipped check spells the shape, so mutation found
-it and the row that pins it asserts the **answer** and not only the refusal. Beside `splitOf` stand the two doors onto the
-served answer, `chosen(xsl, xpath)` and `valued(xsl, xpath)` — the second for a usage read as
-strings, an attribute's string value being the value it holds. They live here rather than in a
-linter because both the per-file and the cross-file kind ask them and no linter may import another.
-The engine is asked inside the branch that needs it rather than as the binding's initial value,
-though a value that branches is initialised to its fallback everywhere else in this project: the
-fallback here is the very traversal being avoided, so spelling it that way asked fontoxpath for
+it and the row that pins it asserts the **answer** and not only the refusal. Beside `splitOf` stand
+the two doors onto the served answer, `chosen(xsl, xpath)` and `valued(xsl, xpath)` — the second for
+a usage read as strings, an attribute's string value being the value it holds. They live here rather
+than in a linter because both the per-file and the cross-file kind ask them and no linter may import
+another. The engine is asked inside the branch that needs it rather than as the binding's initial
+value, though a value that branches is initialised to its fallback everywhere else in this project:
+the fallback here is the very traversal being avoided, so spelling it that way asked fontoxpath for
 every served selector as well and then dropped the answer — `xpath-linter` read 50.78% of its run
 against master's 31.64% before that was seen, the whole saving spent twice over. A selector is a
 **union of branches** since #811's second phase, each branch an axis and a tail of its own:
