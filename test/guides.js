@@ -100,7 +100,7 @@ const NEARBY = 80
  * than one of ours: Claude Code warns past 150,000 characters of them. What
  * arrives against it is a chain and not a pair — the root guide, and the
  * guide of every directory down to the file a turn touches, each injected
- * once — and the dearest reads 148,161, which is 0.99 (#750, #660, #825).
+ * once — and the dearest reads 148,579, which is 0.99 (#750, #660, #825).
  * @type {number}
  */
 const LOADED = 150000

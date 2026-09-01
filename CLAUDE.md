@@ -51,8 +51,8 @@ three platforms and two node versions, and `corpora`, which times a real run
 The suite comes in two halves, and the line between them is a child process. A
 **deep** test starts one — it runs `xslint` or `xcop` the way a user does — and
 is named `*.deep.test.js`; every other test stays in this process. Four files
-are deep, and they still cost most of what the suite costs: 655 of the 2789
-tests, 9 of the 14 seconds. The other 2134 finish inside one, which is why
+are deep, and they still cost most of what the suite costs: 671 of the 2825
+tests, 9 of the 14 seconds. The other 2154 finish inside one, which is why
 `npm run fast` is the loop to work in and `npm test` the one to finish on. The
 deep target runs under `mocha --parallel`, so those four files run at once and
 the slowest of them sets the clock — `xslint.deep.test.js` alone, whose 52 tests
@@ -411,7 +411,7 @@ shelling out; the bin stays `src/index.mjs`.
 
 `src/index.mjs` reaches `xslint.js` through a dynamic `import` inside the
 command action, not a top-level one, and so runs `program.parseAsync`. Importing
-it eagerly loaded fontoxpath, xmldom, `yaml`, and all 67 check YAMLs — 137 ms
+it eagerly loaded fontoxpath, xmldom, `yaml`, and all 68 check YAMLs — 137 ms
 before a byte of XSL was read, charged to `--version` and `--help` and every
 rejected argument as much as to a real run. Behind the action that work happens
 only where it is used, and the invocations that never lint answer in 72 ms
@@ -539,7 +539,7 @@ motive, or ships untested fails the build.
 
 The YAML is where a check is authored and reviewed, but not what a run reads:
 `npx grunt checks` renders all four kinds into `src/resources/checks.json`, and
-that is what the loaders `require`. Parsing 67 YAML files, and loading the parser
+that is what the loaders `require`. Parsing 68 YAML files, and loading the parser
 to do it, cost 31 of the 71 ms every process spent before it looked at a byte of
 XSL (#689). So **touching a check means running `npx grunt checks` and committing
 the result** — `conformance.test.js` re-renders the JSON from the YAML and fails
@@ -672,6 +672,12 @@ Then run `npx grunt checks`, `npm test`, `npm run coverage`, and
   `EMITTED`. `local-name()` is not banned with it — it asks nothing about a prefix,
   and `text-outside-xsl-text` needs a negated set no union of node tests can
   spell — but a union is the shorter reading wherever the list is closed (#784).
+  Nor may it ask whether an attribute is *there* in one of the two spellings
+  XSLT gives it: any attribute of an XSLT element is written `_x` as readily
+  as `x`, so a presence clause reads `not(@_x)` beside `not(@x)`. Ten
+  selectors read one spelling, all ten reported a stylesheet Saxon loads, and
+  two of them rewrote it; `conformance.test.js` holds that from both sides,
+  exempting `xsl:version` alone (#849).
   And a selector that opens `//name` or `//(name | name)` is served from the
   shared walk rather than by a descendant step of its own, so how a selector
   opens decides what it costs: the axis comes off `named` in `src/tree.js` and
