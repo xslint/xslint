@@ -29,13 +29,13 @@ const STEP = 4
  * growth is the assertion, #755's regression having been a constant growth
  * ranks backwards. A share is of the whole run, so a stage made cheaper lifts
  * every other entry and the table is re-derived by the ratio of the dearest
- * readings (#777, #783, #800, #784, #811); `test/CLAUDE.md` holds them.
+ * readings (#777, #783, #800, #784, #811, #845); `test/CLAUDE.md` holds them.
  * @type {{[stage: string]: number}}
  */
 const SHARES = {
   'xpath-linter': 46,
-  'xpath-validator': 24,
-  'xsl-validator': 16,
+  'xpath-validator': 26,
+  'xsl-validator': 18,
 }
 
 /**

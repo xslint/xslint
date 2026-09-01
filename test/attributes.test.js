@@ -37,6 +37,21 @@ const TEMPLATED = xml.parsedFromString(
   ),
 )
 
+/**
+ * A stylesheet raising the version twice below a 1.0 root — on a literal result
+ * element and on an XSLT one — so the version in force differs from record to
+ * record and reading the root's would answer four of the six wrongly.
+ * @type {Document}
+ */
+const VERSIONS = xml.parsedFromString(
+  fs.readFileSync(
+    path.resolve(
+      __dirname, 'resources', 'attributes', 'versions-in-force.xsl',
+    ),
+    'utf-8',
+  ),
+)
+
 describe('attributes', function() {
   it('reads every bare and enclosed expression in document order', function() {
     assert.deepEqual(
@@ -82,6 +97,22 @@ describe('attributes', function() {
         ['select', 0, '@x'],
       ],
       'cannot read a text value template or a shadow attribute',
+    )
+  })
+  it('carries the version in force where each expression stands', function() {
+    assert.deepEqual(
+      expressionsOf(VERSIONS).map(
+        (found) => [found.expression, found.version],
+      ),
+      [
+        ['section', '1.0'],
+        ['@x', '1.0'],
+        ['count(item)', '2.0'],
+        ['@y', '2.0'],
+        ['@z', '3.0'],
+        ['@w', '3.0'],
+      ],
+      'cannot read the version in force where an expression stands',
     )
   })
 })

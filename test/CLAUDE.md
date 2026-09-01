@@ -86,6 +86,26 @@ and `xsl-validator` 9.16% to 10.21%, leaving entries of 22 and 14 at 1.48 and 1.
 readings where the band allows no closer than half again, so each is re-derived by its own ratio to
 24 and 16. `SHARE` stays at 7: the dearest cheap stage moved by 1.04 alone.
 
+The eighth move is #845, and it is the first to make nearly every stage cheaper at once rather than
+one of them. `versionOf` climbs to the root and remembers nothing, and `parseOf` asked it in front
+of the parse memo #689 put there, so the memo saved the parse and never the walk: every `gathered`,
+`textOf`, `calls` and `isValid` the expression tier issued paid a fresh climb, 950,645 of them over
+DocBook-XSL. The version is a property of where an expression stands, so `expressionsOf` — already
+climbing that far to answer the 3.0 `expand-text` gate — hangs it on the record, and the thirteen
+expression linters and the parse read it off there. The staged run goes from 4644 ms to 4291 over
+DocBook-XSL, 4719 to 4257 over TEI and 2397 to 2247 over DITA-OT, lowest of three interleaved rounds
+a side of processor time, which is 7.6%, 9.8% and 6.2%, with the report byte-identical on all three
+at 3624, 5514 and 1192 defects. Six stages halve — `name-linter` 0.53 of what it cost, `translate`
+0.27, `node-set` 0.40, `predicate-position` 0.32 — and none of the three that answer to `SHARES`
+does, so it is the **denominator** that moves and their shares rise on it: dearest of six gate runs
+a side, `xpath-linter` 23.55% to 28.89%, `xpath-validator` 14.67% to 16.07% and `xsl-validator`
+9.93% to 11.08%. That leaves entries of 24 and 16 at 1.49 and 1.44 times their own readings where
+the band allows no closer than half again, so each is re-derived by its own ratio, 24 to 26 and 16
+to 18, and `xpath-linter` keeps its 46 at 1.59, inside the band. `SHARE` stays at 7 for the reason
+it has stayed there before: the dearest cheap stage moved by 1.03 alone, 5.17% to 5.32%, so its own
+ratio re-derives 7 to 7.2 — and its standing at 1.32 rather than half again is not this change's
+doing, master reading 1.35 before it. A bar raised on nobody's failure is a bar loosened.
+
 Two things were measured beside it and refused, which is the more useful half of the phase. Serving
 `//xsl:*` off a namespace bucket — the shape the ticket named next, and one line of `src/tree.js` —
 makes the run **slower**: 88% of DocBook-XSL's 66,008 elements stand in the XSLT namespace, so the
@@ -230,8 +250,8 @@ asserts exactly that over the `src/linters/` directory, and another that no name
 stopped being a stage.
 
 `SHARES` names the three stages that legitimately cost more of a run than the rest: `xpath-linter`
-at 46%, `xpath-validator` at 24%, `xsl-validator` at 16%. Every other stage answers to one bar,
-`SHARE` at 7%, which the twenty of them sit far below at 0.37% to 4.27% — so a cheap stage that
+at 46%, `xpath-validator` at 26%, `xsl-validator` at 18%. Every other stage answers to one bar,
+`SHARE` at 7%, which the twenty of them sit below at 0.43% to 5.32% — so a cheap stage that
 becomes an expensive one turns red, and earns either a fix or an entry. It named four until #811,
 and the fourth is the one worth reading the rule off. Two things set a ceiling. Where there is a
 defect to catch it goes **between the two measured distributions**: `corpus-linter` stood at 32, the
@@ -591,14 +611,14 @@ under them was opened. The first spelling of the bar weighed the root against th
 guide instead, which is a whole directory short: it read 130,933 and called that 0.87 of the bar
 while a turn touching `src/linters/` was loading 157,504 and over it. So the two dearest notes moved
 one step further down, out of `src/CLAUDE.md` and into the top of `src/grammar.js` and
-`src/syntax.js` — 24,681 characters — and the dearest chain is that same one at 148,579, which is
+`src/syntax.js` — 24,681 characters — and the dearest chain is that same one at 149,062, which is
 0.99. What answers a chain reaching the bar is that move again, a module's derivation into the
 file-header note of the module itself, and never a bar widened to fit what has grown past it: a
 docblock holds five lines of description since #832, so prose that has outgrown a guide does not
 simply move into one instead. A `CEILING` of half the bar stood beside it until it was seen to be a
 gate no tree could fail: the root stands in every chain, so the chain holding it above weighs each
-other guide against the bar less what stands over it — 33,419 for `src/linters/CLAUDE.md`, where
-half of the bar is 75,000 — and holds the root itself to 72,656, a number derived from the dearest
+other guide against the bar less what stands over it — 32,936 for `src/linters/CLAUDE.md`, where
+half of the bar is 75,000 — and holds the root itself to 72,416, a number derived from the dearest
 chain rather than chosen. A gate no tree can fail is removed and not kept (#750, #660). All four of
 those figures — the chain, its ratio, and the two allowances — follow from three file sizes, so one
 guide growing moves every one of them, and none of them turned red when one did: #811's fourth
@@ -619,7 +639,7 @@ other file. Each row therefore names every file expected to carry it and the mat
 compared whole, so rewording either carrier fails, and so does the claim appearing in a document no
 row names. Growing a guide by 4,000 characters fails all four rows at once. The asking is
 `matchAll` and never `test`, a global pattern leaving `lastIndex` where it stopped and answering
-`false` to the very next question about the same prose. What that leaves is 1,839 characters of
+`false` to the very next question about the same prose. What that leaves is 938 characters of
 headroom, and the paragraph above stopped being advice while this change was being written: #846
 grew `src/linters/CLAUDE.md` by 3,113 and the merged chain read 150,437, so the bar failed on a
 tree whose two authors had each stayed under it. The prescribed relief is the one taken —
@@ -764,9 +784,9 @@ pack was loud and so registered nothing at all for the two directories whose qui
 
 The speed gate (see **Speed**): charges every stage its own processor time over a generated corpus
 at 40 stylesheets and again at 160, and fails one that spends more of its own run than `SHARES`
-allows it — `xpath-linter` at 46%, `xpath-validator` at 24%, `xsl-validator` at 16% since #811's
-anchor phase took the dearest stage from 34.03% of the run to 29.44% and lifted the twenty-two
-others by what it left the denominator, or — where it has no entry there — grew more than `GROWTH`
+allows it — `xpath-linter` at 46%, `xpath-validator` at 26%, `xsl-validator` at 18% since #845
+took the version off a climb and put it on the record, lifting every share taken against a run
+a twelfth cheaper, or — where it has no entry there — grew more than `GROWTH`
 beside the middle stage's growth. Cost is the sharp question and growth the loose one, because #755
 changed a constant and not an exponent, which is a difference the two distributions show plainly:
 15.1% to 15.7% of the run against the quadratic's 26.5% to 31.9%, where in growth the fix reads 1.85
