@@ -552,8 +552,8 @@ puts it out of reach, and is a ratchet from the other side: an entry that *becom
 so the list cannot sit there reading like a limit still in force after the limit has gone. It caught
 its author — widening the vocabulary to sibling and ancestor axes, a path in a value position and
 two string functions turned five `REFUSED` rows red in one run, which is the whole reason they are
-rows and not a sentence. It caught him twice: the descendant axis took its own row off the table at
-#811's last phase, and two of the three replacing it are shapes `pathed` had been answering all
+rows and not a sentence. It caught him twice: the descendant axis took its own row off the table
+at #811's last phase, and two of the three replacing it are shapes `pathed` had been answering all
 along — an absolute path, and a descent standing mid-path — since it weighed no separator at all.
 
 A third gate stands beside them and its subject is the module's own header note. Relocating a
