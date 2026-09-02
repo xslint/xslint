@@ -217,7 +217,9 @@ const xmlFromString = function(str) {
     }
     return doc
   } catch (err) {
-    throw new Error(`Couldn't parse XML:\n${str}\n\nCause: ${err.message}`)
+    throw new Error(
+      `Couldn't parse XML:\n${str}\n\nCause: ${err.message}`, {cause: err},
+    )
   }
 }
 
@@ -234,7 +236,9 @@ const yamlFromString = function(str) {
   try {
     parsed = require('yaml').parse(str)
   } catch (err) {
-    throw new Error(`Couldn't parse YAML:\n${str}\n\nCause: ${err.message}`)
+    throw new Error(
+      `Couldn't parse YAML:\n${str}\n\nCause: ${err.message}`, {cause: err},
+    )
   }
   return parsed
 }

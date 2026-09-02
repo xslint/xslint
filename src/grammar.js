@@ -1249,7 +1249,7 @@ const OPENERS = [
  * @return {object} - The node
  */
 const parted = function(cursor) {
-  let node = undefined
+  let node
   if (since(cursor.version, MODERN)) {
     node = postfixed(cursor)
   } else {
@@ -1415,7 +1415,7 @@ const inlined = function(cursor) {
 const primary = function(cursor) {
   const from = significant(cursor)
   const token = ahead(cursor)
-  let node = undefined
+  let node
   if (token.type === TOKENS.NUMBER || token.type === TOKENS.STRING) {
     take(cursor)
     node = shaped('literal', from, cursor, [])
@@ -1536,7 +1536,7 @@ const keyed = function(cursor) {
  */
 const postfixed = function(cursor) {
   const from = significant(cursor)
-  let node = undefined
+  let node
   if (opens(cursor)) {
     node = primary(cursor)
     while (sees(cursor, TOKENS.LBRACKET) || sees(cursor, TOKENS.LPAREN) ||
@@ -1585,7 +1585,7 @@ const chained = function(cursor) {
  */
 const signed = function(cursor) {
   const from = significant(cursor)
-  let node = undefined
+  let node
   if (sees(cursor, TOKENS.MINUS) || sees(cursor, TOKENS.PLUS)) {
     take(cursor)
     node = shaped('unary', from, cursor, [signed(cursor)])
@@ -1775,7 +1775,7 @@ const laddered = function(cursor) {
  * @return {object} - The node
  */
 const single = function(cursor) {
-  let node = undefined
+  let node
   if (spells(cursor, 'for')) {
     node = iterated(cursor, 'for')
   } else if (spells(cursor, 'let') && reaches(cursor, TOKENS.DOLLAR)) {
@@ -1826,7 +1826,7 @@ const sequence = function(cursor) {
  */
 const parsed = function(xpath, version) {
   let tokens = []
-  let tree = null
+  let tree
   let fault = ''
   let at = 0
   try {
@@ -1936,7 +1936,7 @@ const treaded = function(cursor) {
  * @return {object} - The `step`, or what the brackets hold
  */
 const paced = function(cursor) {
-  let node = null
+  let node
   if (sees(cursor, TOKENS.LPAREN)) {
     rewritten(cursor)
     node = bracketed(cursor)
@@ -2120,7 +2120,7 @@ const unioned = function(cursor) {
  */
 const whole = function(cursor) {
   const from = significant(cursor)
-  let node = null
+  let node
   if (sees(cursor, TOKENS.DOT)) {
     rewritten(cursor)
     node = shaped('branch', from, cursor, [stepped(cursor)])
@@ -2143,7 +2143,7 @@ const whole = function(cursor) {
  */
 const matched = function(pattern, version) {
   let tokens = []
-  let tree = null
+  let tree
   let fault = ''
   let at = 0
   try {
