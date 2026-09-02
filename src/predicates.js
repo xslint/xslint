@@ -80,18 +80,18 @@
  * as a boolean: `[2 and @select]` is true of every candidate and `[2]` of
  * the second alone.
  *
- * What kept that class out was `filters` reading a bracket by its kind.
- * Three of the five checks written this way spell `(count(*) = 1) and …`,
- * and a `parenthesized` node settled nothing, so no clause of theirs could
- * be weighed and each conjunction stayed whole — a bracket moving where an
- * operator binds and never what it answers, which is one line of
- * `src/syntax.js` and the whole of the phase. Asked alone over DocBook-XSL,
- * three rounds a side, `blank-nested-if` reads 12-15 ms where it read
- * 89-97, `setting-value-of-variable-incorrectly` 19-23 where it read 85-94,
- * `variable-or-param-with-select-and-content` 33-36 where it read 74-75 and
- * `empty-variable` 31-32 where it read 68-70. The fifth of the class,
- * `empty-content-in-instructions`, reads 73-77 against 75-77: no clause of
- * it compiles, so nothing parts and nothing is spent trying.
+ * What kept that class out was `filters` reading a bracket by its kind. Two of
+ * the five checks written this way spell `(count(*) = 1) and …` and a third
+ * `@select and (* or text()[…])`, and a `parenthesized` node settled nothing,
+ * so no clause of those three could be weighed and each conjunction stayed
+ * whole — a bracket moving where an operator binds and never what it answers,
+ * which is one line of `src/syntax.js` and the whole of the phase. Asked alone
+ * over DocBook-XSL, three rounds a side, `blank-nested-if` reads 12-15 ms where
+ * it read 89-97, `setting-value-of-variable-incorrectly` 19-23 where it read
+ * 85-94, `variable-or-param-with-select-and-content` 33-36 where it read 74-75
+ * and `empty-variable` 31-32 where it read 68-70. The fifth of the class,
+ * `empty-content-in-instructions`, reads 73-77 against 75-77: no clause of it
+ * compiles, so nothing parts and nothing is spent trying.
  *
  * Those four do not add up to what the run saves, and the gap belongs to
  * the measurement rather than to the change. Eight interleaved rounds a

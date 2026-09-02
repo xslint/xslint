@@ -157,11 +157,11 @@ and **every** clause must pass `filtered` on its own — XPath reading a bare nu
 context position, so `[2 and @select]` is the effective boolean value of `2` and selects everything
 where the `[2]` a careless parting leaves behind selects the second candidate alone. What kept the
 class out was a gap one module over: `filters` read a `parenthesized` node by its kind, which is on
-no list, so `(count(*) = 1)` — how three checks spell a clause — was refused while the
-`count(*) = 1` inside it is served. The per-pull-request gate sees none of the saving, five
-`xsl:variable` and four `xsl:if` a stylesheet being too few candidates for it to clear the machine:
-over ten interleaved gate runs a side `xpath-linter` reads 22.97% to 26.82% against 18.76% to
-25.62%, so no bar in `test/scaling.test.js` moves and the evidence for the change stands over the
+no list, so `(count(*) = 1)` — how two of the three checks it blocked spell a clause — was refused
+while the `count(*) = 1` inside it is served. The per-pull-request gate sees none of the saving,
+five `xsl:variable` and four `xsl:if` a stylesheet being too few candidates for it to clear the
+machine: over ten interleaved gate runs a side `xpath-linter` reads 22.97% to 26.82% against 18.76%
+to 25.62%, so no bar in `test/scaling.test.js` moves and the evidence for the change stands over the
 three corpora instead, at the top of `src/predicates.js`.
 
 ## `src/predicates.js`

@@ -618,7 +618,7 @@ module itself, and never a bar widened to fit what has grown past it: a docblock
 of description since #832, so prose that has outgrown a
 guide does not simply move into one instead. A `CEILING` of half the bar stood beside it until it
 was seen to be a gate no tree could fail: the root stands in every chain, so the chain holding it
-above weighs each other guide against the bar less what stands over it — 30,114 for
+above weighs each other guide against the bar less what stands over it — 30,092 for
 `src/linters/CLAUDE.md`, where half of the bar is 75,000 — and holds the root itself to 83,951, a
 number derived from the dearest chain rather than chosen. A gate no tree can fail is removed and
 not kept (#750, #660). All four of those figures — the chain, its ratio, and the two allowances —
