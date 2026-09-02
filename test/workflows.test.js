@@ -4,42 +4,57 @@
  */
 
 /*
- * Every job granted the scope its own steps write with. Both nightly tiers
- * end in a `report-fail` job whose only purpose is to say that they failed,
- * and for as long as either has existed neither could: a workflow token
- * here is granted `read` unless the workflow says otherwise, and neither
- * `corpora.yml` nor `daily.yml` declared a `permissions:` block, so
- * `jayqi/failed-build-issue-action` authenticated as a token that cannot
- * POST and died on `Resource not accessible by integration` — inside a job
- * that runs only when something has already failed, which is the one place
- * a failure is heard by nobody. Two nightlies went red that way in one week
- * and neither filed anything, the last `build failed` issue in the
- * repository being five months old, so a red schedule read exactly like a
- * green one unless somebody opened the Actions tab by hand (#826). It is
- * the same shape as #645 and #701 one tier out: not a suite that asserts
- * nothing, nor a checker that rewrites what it should fail on, but a gate
- * whose **reporter** is broken.
+ * Every job granted the scope its own steps write with, and left the scope
+ * they read with. Both nightly tiers end in a `report-fail` job whose only
+ * purpose is to say that they failed, and for as long as either has
+ * existed neither could: a workflow token here is granted `read` unless
+ * the workflow says otherwise, and neither `corpora.yml` nor `daily.yml`
+ * declared a `permissions:` block, so `jayqi/failed-build-issue-action`
+ * authenticated as a token that cannot POST and died on `Resource not
+ * accessible by integration` — inside a job that runs only when something
+ * has already failed, which is the one place a failure is heard by nobody.
+ * Two nightlies went red that way in one week and neither filed anything,
+ * the last `build failed` issue in the repository being five months old,
+ * so a red schedule read exactly like a green one unless somebody opened
+ * the Actions tab by hand (#826). It is the same shape as #645 and #701
+ * one tier out: not a suite that asserts nothing, nor a checker that
+ * rewrites what it should fail on, but a gate whose **reporter** is
+ * broken.
  *
- * `permissions: issues: write` on each of those two jobs is the whole of
- * the fix — on the job rather than the workflow, so the `lint` and `build`
- * jobs they depend on stay read-only — and the two workflows that already
- * needed write scope declare it the same way (`release.yml:9`,
- * `docs.yml:12`), which is why these two read as missed rather than
- * decided. What stops it going again is the gate: `WRITES` names each
- * action that writes to this repository rather than reading it, against the
- * scope its token needs, and every job of every workflow is read for the
- * actions its steps run and the permissions in force over it — its own
- * where it declares any, the workflow's otherwise, and `write-all` granting
- * whatever is asked. It is red from both sides, as every exemption table
+ * `deps-sentinel.yml` is the third, and it went the same way hourly with
+ * that gate standing beside it (#856). It comments on a bot pull request
+ * whose CI has gone red, taking a PAT for everything it does but posting
+ * that one comment with `${{ github.token }}`, so the job — declaring
+ * nothing — died on `addComment` every run a red pull request stood: a
+ * watchdog for red pull requests, red itself, saying so nowhere.
+ * `permissions:` on the job and never the workflow is the whole of all
+ * three fixes, `issues: write` on the two `report-fail` jobs and
+ * `pull-requests: write` on this one, so the jobs they depend on stay
+ * read-only — and the two workflows that already needed write scope
+ * declare it the same way (`release.yml:9`, `docs.yml:12`), which is why
+ * all three read as missed rather than decided.
+ *
+ * What a block grants it also takes, and that is the half no row of
+ * `WRITES` could hold: a job declaring one is granted **nothing else**, so
+ * a scope written for one step is revoked from every other — here the
+ * `contents` that the `actions/checkout` above the sentinel reads with. So
+ * the gate asks twice. `WRITES` names each action that writes to this
+ * repository rather than reading it and `READS` each that reads through
+ * the same token, against the scope each needs, and every job of every
+ * workflow is read for the actions its steps run and the permissions in
+ * force over it — its own where it declares any, the workflow's otherwise,
+ * `write-all` granting whatever is asked, and a job declaring none at all
+ * granted `read` on everything, which is why `granting` answers a level
+ * rather than a yes and why only a job narrowing itself answers to
+ * `READS`. Both tables are red from both sides, as every exemption table
  * here is: a job running such an action without the scope fails, and so
- * does an entry naming an action no job runs, so neither half can rot in
- * silence. Removing either `permissions:` block fails it naming that job by
- * file and name.
+ * does an entry naming an action no job runs. Removing either line of the
+ * sentinel's block fails one test apiece and removing the block fails the
+ * write one alone, each naming that job by file and name.
  *
- * What no gate covers is the write itself. Nothing in CI POSTs an issue, so
- * the token's scope is asserted where it is declared and not where it is
- * used, and an action that starts needing a second scope would break
- * exactly as quietly as this one did.
+ * What no gate covers is the write itself. Nothing in CI POSTs anything,
+ * so a token's scope is asserted where it is declared and not where it is
+ * used.
  */
 
 const {allFilesFrom, yaml} = require('../src/helpers')
@@ -61,25 +76,41 @@ const WORKFLOWS = path.resolve(__dirname, '..', '.github', 'workflows')
  * a step failing inside a job only a failure runs, quiet outside it (#826).
  * @type {{[action: string]: string}}
  */
-const WRITES = {'jayqi/failed-build-issue-action': 'issues'}
+const WRITES = {
+  'jayqi/failed-build-issue-action': 'issues',
+  'maxonfjvipon/deps-sentinel-action': 'pull-requests',
+}
 
 /**
- * Which scopes a job is granted at write level. A job declaring none of its
- * own inherits the workflow's, and a `write-all` grants every scope there is,
- * which is why the answer is a question about one name rather than a list to
- * compare a name against.
+ * Each action that reads this repository through the same token, against the
+ * scope it needs. A job declaring nothing is granted every scope at `read` and
+ * needs no entry; one declaring a block is granted nothing but what it names,
+ * so a scope written for one step revokes what another was reading with (#856).
+ * @type {{[action: string]: string}}
+ */
+const READS = {'actions/checkout': 'contents'}
+
+/**
+ * What a job may do with one scope — `write`, `read` or `none`. A job
+ * declaring none of its own stands under the workflow's, one standing under
+ * neither is granted `read` on everything, and a `write-all` grants every
+ * scope there is, which is why the answer is a question about one name rather
+ * than a list to compare a name against.
  * @param {object} workflow - The whole workflow, parsed
  * @param {object} job - One job standing in it
- * @return {function(string): boolean} - Whether that scope is granted to write
+ * @return {function(string): string} - What that scope is granted at
  */
 const granting = function(workflow, job) {
   let permissions = workflow.permissions
   if ('permissions' in job) {
     permissions = job.permissions
   }
-  let granted = (scope) => permissions?.[scope] === 'write'
+  let granted = (scope) => permissions?.[scope] ?? 'none'
+  if (permissions === undefined) {
+    granted = () => 'read'
+  }
   if (permissions === 'write-all') {
-    granted = () => true
+    granted = () => 'write'
   }
   return granted
 }
@@ -89,7 +120,7 @@ const granting = function(workflow, job) {
  * steps run and what it may write. A permission is granted to a job and needed
  * by a step, so neither half answers on its own.
  * @type {Array.<{where: string, uses: Array.<string>,
- *   granted: function(string): boolean}>}
+ *   granted: function(string): string}>}
  */
 const JOBS = allFilesFrom(WORKFLOWS)
   .filter((file) => file.endsWith('.yml'))
@@ -109,7 +140,7 @@ describe('workflows', function() {
   it('grants every job the scope its own steps write with', function() {
     assert.deepEqual(
       JOBS.filter((job) => job.uses.some(
-        (action) => action in WRITES && !job.granted(WRITES[action]),
+        (action) => action in WRITES && job.granted(WRITES[action]) !== 'write',
       )).map((job) => job.where),
       [],
       'a job runs an action that writes to this repository and is granted ' +
@@ -117,9 +148,20 @@ describe('workflows', function() {
         'whatever it stood there to report goes unreported',
     )
   })
+  it('leaves every job the scope its own steps read with', function() {
+    assert.deepEqual(
+      JOBS.filter((job) => job.uses.some(
+        (action) => action in READS && job.granted(READS[action]) === 'none',
+      )).map((job) => job.where),
+      [],
+      'a job narrows itself to a block naming nothing about a scope one of ' +
+        'its own steps reads with, so a step that asked for nothing loses ' +
+        'what a job declaring no block at all would have been granted',
+    )
+  })
   it('holds no action the tree has stopped running', function() {
     assert.deepEqual(
-      Object.keys(WRITES).filter(
+      Object.keys(WRITES).concat(Object.keys(READS)).filter(
         (action) => !JOBS.some((job) => job.uses.includes(action)),
       ),
       [],
