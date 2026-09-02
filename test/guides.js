@@ -189,7 +189,7 @@ const carries = function(claim, text) {
  * Every figure a guide states about the chain: the phrase carrying it, every
  * file expected to carry that phrase, and what the tree makes of its captures.
  * All five follow from three file sizes, so one guide growing moves the lot,
- * and the bar stays quiet until 150,000 — which is why they drift (#750, #825).
+ * and the bar stays quiet until 140,000 — which is why they drift (#750, #825).
  * @type {Array.<{claim: RegExp, carriers: Array.<string>,
  *  truth: function(): Array.<string>}>}
  */
@@ -225,7 +225,7 @@ const DERIVED = [
       `What that leaves is ([\\d,]*\\d) characters of${GAP}+headroom`, 'g',
     ),
     carriers: ['test/CLAUDE.md'],
-    truth: () => [thousands(LOADED - dearest())],
+    truth: () => [thousands(LOADED - ROOM - dearest())],
   },
 ]
 

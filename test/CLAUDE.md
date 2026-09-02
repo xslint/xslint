@@ -603,11 +603,8 @@ names every file expected to carry it and the matched set is compared whole, so 
 carrier fails, and so does the claim appearing in a document no row names. Growing a guide by
 4,000 characters fails all five rows at once. The asking is `matchAll` and never `test`, a global
 pattern leaving `lastIndex` where it stopped and answering `false` to the very next question about
-the same prose. What that leaves is 16,905 characters of headroom — a fifth figure of the same
-class, and the one that proves the point twice over, since it stood outside the four and drifted 418
-behind them with every row of the table green, so it has a row of its own since #856 — and the
-paragraph above stopped being advice while this change was being written: #846 grew
-`src/linters/CLAUDE.md` by 3,113 and the merged chain read 150,437, so the bar failed on a tree
+the same prose. The paragraph above stopped being advice while this change was being written: #846
+grew `src/linters/CLAUDE.md` by 3,113 and the merged chain read 150,437, so the bar failed on a tree
 whose two authors had each stayed under it. The prescribed relief is the one taken —
 `src/predicates.js`'s derivation went into the file-header note of `src/predicates.js`, 2,507
 characters out of the chain and none out of the record — which is the third note to move that way
@@ -630,6 +627,9 @@ and `corpus-linter.js` out of `src/linters/CLAUDE.md`, and `scaling.test.js`, `p
 one. A tenth was refused by the valve rather than chosen against: `test/conformance.test.js` stands
 at 958 lines and its note is 150 more, and `max-lines` counts comments, so a section can outgrow the
 file it is about and relief has a floor — what answers that one is the note being cut, not moved.
+What that leaves is 6,905 characters of headroom, a fifth figure of the same class as the four and
+the one that proves the point twice over: it stood outside the table and drifted 418 behind the rows
+in it with every one of them green, so it has a row of its own since #856.
 The index answers to the tree from both sides, every path it names existing and every module under
 `src/` being named by a row — the twenty-one linters by one of them, the `*` standing for a name and
 never for a directory — and a note answers to the index and to its own directory both, so a
