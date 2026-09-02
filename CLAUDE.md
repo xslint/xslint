@@ -11,10 +11,12 @@ sits in, and arrives with that directory rather than with every turn:
 `src/CLAUDE.md`, `src/linters/CLAUDE.md`, `src/validators/CLAUDE.md`,
 `test/CLAUDE.md`, `scripts/CLAUDE.md`. A turn loads this file and the guide of
 every directory on the way down to whatever it touches, so a chain of them is
-what a bar on their size answers to, and the three notes that outgrew even that
-stand at the top of `src/grammar.js`, `src/syntax.js` and `src/predicates.js`
-themselves. So a claim goes where the code it is about goes, and the `Key files`
-index below names every file in one line. Both halves are machine-enforced —
+what a bar on their size answers to — standing under the breach since #844, so
+a chain reddens with room still left to answer it — and a note
+that outgrew even a chain stands at the top of the module it is about, the way
+`src/grammar.js` and every `-linter.js` note under `src/linters/` do. So a
+claim goes where the code it is about goes, and the `Key files` index below
+names every file in one line. Both halves are machine-enforced —
 `test/guides.test.js` for the size, the index, and the counts a guide states of
 a list in the code, `test/conformance.test.js` for the length one states of a
 file the line cap is lifted off (#821, #825).
@@ -231,9 +233,10 @@ before: 268 descriptions in 65 files stood past that bar, the dearest of them
 142 lines, so a derivation grew wherever one was written the way the cross-file
 linter's cost grew before #755 (#832). The bar is not a licence to respell what
 a block cannot hold as a `/* */` beside it either — such prose is cut and not
-moved, the dearest chain of guides standing at 0.99 of `LOADED` with nowhere to
-put it, so the ticket number left standing in the surviving sentence is what
-keeps a derivation recoverable.
+moved, the dearest chain of guides standing at 0.89 of `LOADED` and reddening
+well under it, so a guide is no place to put it either and the ticket number
+left standing in the surviving sentence is what keeps a derivation
+recoverable.
 
 A parameter a caller may leave out therefore says so in the signature, with a
 default — `fix = undefined` on `defect` in `src/checks.js`. A JSDoc `[fix]`
