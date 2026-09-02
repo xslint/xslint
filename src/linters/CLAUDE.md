@@ -2,72 +2,9 @@
 
 One linter per construct, and why each reads what it reads. The staging that hands them
 their input, the flow diagram, and the rules for adding a check are in the root
-`CLAUDE.md`; the shared modules they consume are in `src/CLAUDE.md`.
-
-## `src/linters/xpath-linter.js`
-
-Loads `checks/xpath/*.yaml`; attaches any `src/fixers.js` fix, unless the node — or the element
-carrying it — holds an expression the grammar refuses (#651). The element is listed because a rule
-selects it while its fixer reaches sideways for an attribute no gate can read; its own attributes
-are listed with it because a rule may select the attribute instead, which is what
-`starts-with-double-slash` did until #586 took it to code, so nothing declarative selects one today
-and that half of the set stands for the shape rather than for a rule the tree still holds. It is the
-dearest stage there is, 39% to 50% of a run over the three corpora — 42% to 56% before #811's anchor
-phase and 46% to 58% before its union phase, those two being the moves that made the stage itself
-cheaper rather than the denominator smaller, 39% to 44% after #784, and 49% to 55% before that, all
-of them read the same way, as processor time over the whole staged run with both validators in the
-divisor: read against the linters alone this stage is 61% to 72% of them, a number that belongs
-beside none of the others, and what makes it dear is the **breadth of a step** rather than the
-number of checks: fontoxpath evaluates a descendant step over an xmldom tree quadratically (#635),
-so a `//*` or a `//xsl:*` pays for every element in the document and then filters, where a
-`//(xsl:variable | xsl:template)` pays for the two names. Eight selectors were written the broad way
-and are narrowed at #784 — `xpath-linter` falls from 7.52 to 6.11 seconds over DocBook-XSL, 6.20 to
-4.90 over TEI and 2.33 to 1.82 over DITA-OT, taking the whole run down 13% to 15%. Three of the
-eight are a *correctness* fix in the same edit, which is why the narrowing is not merely a
-refactoring: `name()` answers the lexical QName, so `//*[name() = 'xsl:variable']` asks how one
-document happens to spell the XSLT namespace rather than anything about XSLT. TEI's
-`rdf/make-acdc.xsl` writes its XSLT as `XSL:` and binds lowercase `xsl:` to a `TransformAlias`, and
-`short-names` reports a template there that master reads past — the false negative, one defect over
-the three corpora with none withdrawn. The false positive is the same fault mirrored, an aliased
-`xsl:` on a literal result element drawing a check about XSLT, and it is pinned by a pack rather
-than by a corpus: no committed stylesheet spells it, which is what let the shape survive. The other
-five ask no question about a prefix and are narrowed alone — three of them by anchoring on the
-attribute the check is really about, `//@select[...]/..` in place of `//*[...@select...]`, and one
-by folding two descendant walks into one parent test. What the ticket proposed instead was a
-precondition per check — skip a (document, check) pair whose name the document does not hold — and
-that measures **4.5%**, not the 54.7% it is aimed at, because the pairs a precondition can skip are
-the cheapest pairs there are: proving `//xsl:sort` empty on a document holding no sort is nearly
-free, and the cost was never in the checks that find nothing. What was left of the ticket after that
-change was one selector evaluation per check per document — 38 of them, 35 holding a descendant step
-— and the answer is the walk `src/tree.js` already remembers, not a precondition in front of each.
-`splitOf` in `src/selectors.js` parts a selector into the names a bucketed walk can serve and the
-tail the engine must still answer, so 24 of the 38 take their axis off one native pass and pay
-fontoxpath for a predicate over the candidates alone — 27 since #811 served a union of them and 30
-since it served what stands below an anchor. `xpath-linter` falls from 5.64 to 3.64 seconds over
-DocBook-XSL, 4.63 to 2.82 over TEI and 1.97 to 1.32 over DITA-OT — 35%, 39% and 33%, the lowest of
-three interleaved rounds a side — taking the staged run down 20%, 21% and 16%, and the report is
-byte-identical on all three, at 3843, 5716 and 1266 defects. What the uniformity costs is one
-wrapper per candidate: a tail is asked as `self::node()` followed by the selector's own predicates,
-which is 0.05 s over DocBook-XSL against asking each predicate bare, the lowest of seven interleaved
-rounds a side, and it is kept because one shape for every tail is worth more than a special case per
-selector. The eight it cannot serve are listed in `UNINDEXED` in `test/conformance.test.js`, each
-beside the shape that keeps it out, and that gate turns red from both sides: a selector that becomes
-servable and stays listed fails as loudly as one that stops being served. What those fifteen still
-spent when that was measured is 2.78 of the stage's 3.64 seconds over DocBook-XSL, and a reason on
-that list is not a statement about cost: nine of them were root-anchored, which kept them out
-because a root step is no descendant sweep, yet six of those nine descended *below* their anchor —
-and #811's anchor phase serves three of the six, an anchor being one question for the document where
-the sweep behind it was a traversal apiece. The eight left are 1.27 of the stage's 2.83 seconds over
-DocBook-XSL, five of them the root itself with a predicate that descends, where the axis is one node
-and the whole cost is inside the brackets. The dearest is still `modern-construct-in-xslt-1`, at
-0.63 s, whose union ends in an `xsl:*[@as]`: nine narrow arms the walk already holds, a tenth naming
-a whole namespace, and a predicate on that tenth which `hasAttribute` answers in 10 ms where asking
-the engine once per candidate costs 150. So what a richer index takes next is still drawn by cost
-rather than by the shape that excluded it. Swapping the DOM underneath was measured instead and
-refused: slimdom, fontoxpath's own development dependency, answers `//*` over DocBook-XSL in 0.271 s
-where xmldom takes 0.869 and the native walk of those 69,842 elements takes 0.011 to 0.020, so it
-buys a quarter of a traversal and leaves the rest — and it parses 283 of the 315 stylesheets where
-xmldom parses 297, which is a different report rather than a faster one.
+`CLAUDE.md`; the shared modules they consume are in `src/CLAUDE.md`. A note that outgrew
+the chain stands at the top of its own module instead, so a linter the root index names
+with no section here carries its derivation in its own file header (#844).
 
 ## `src/linters/parameter-linter.js`
 
@@ -113,66 +50,6 @@ prefix resolves to that answers, never the prefix, a document binding `xsl:` whe
 other carries a `namespace` attribute, which names a namespace outright where a literal result
 element takes its own from the prefixes in scope.
 
-## `src/linters/root-template-linter.js`
-
-`template-writes-nothing` and `output-method-xml`, of which only the second still asks which
-template is the *root* one — `starts-with(@match, '/')` until #788, where every absolute pattern
-begins that way. So
-a `match="/alpha"`, a template for an `alpha` element standing at a document's root, was read as the
-root template and told that it "contains only variable declarations", which is advice about a
-template the stylesheet does not have; this repository's own motive rule names that error. The
-pattern grammar answers it now: a pattern is a union of branches and the root is the branch holding
-no step at all, so `match="/"` is one and `match="alpha | /"` is one, where `match="/alpha"` and
-`match="document-node()"` are not. The first check asked it too until #559 and had no
-business to: what a template writes its own body decides, and a `match="item"` holding nothing but
-variables is as dead as the root one, in a way no processor reports since an empty result is legal.
-It reads every `xsl:template` off the shared walk now, named ones included, and is named for what it
-is about rather than for what the stylesheet produces. Both its packs had asserted the narrowing,
-each carrying a variable-only `match="/objects/o/o[…]"` the fixture expected to stay quiet, which is
-what #494's packs turned out to be doing. A body of nothing but `xsl:param` is left alone
-deliberately: DocBook-XSL's `xsl/fo/math.xsl` has both four lines apart, variable-only at 65 and
-parameter-only at 60, and a parameter is a signature a template may keep while producing nothing on
-purpose. That one at 65 is the whole of what the widening reports over the three corpora. A
-template writes nothing when every element it holds is an
-`xsl:variable` and every text node of it is blank — a CDATA section being one kind of text and not a
-construct of its own, which is what a `text()` step says too. The `xsl:output` the second check
-reports is taken from the stylesheet's own children, XSLT reading a declaration nowhere else, and
-its fix rewrites the value alone through `substitution`. What makes the result HTML is the
-**outermost** element the template builds and not an `html` anywhere under it, which is #495: an XML
-document may embed an HTML fragment and stay XML — an Atom entry's `content`, an XHTML island — so a
-check reading any descendant told a valid feed to serialize itself as HTML and `--fix-suggestions`
-rewrote the `method` to match, which emits unclosed tags and no XML declaration. Outermost means
-every element up to the template is an XSLT instruction that passes its content through, which is
-every one of them but the eleven in `DIVERTED` — three binding a value (`xsl:variable`, `xsl:param`,
-`xsl:with-param`), `xsl:element` building the wrapper its content becomes children of, three
-reducing it to a string (`xsl:attribute`, `xsl:comment`, `xsl:processing-instruction`),
-`xsl:message` writing to the message stream, `xsl:result-document` opening a secondary document with
-a serialization of its own, and `xsl:map-entry` and `xsl:array-member` building a map's value or an
-array's member, which is a value and not a node the element above it holds. Their containers are
-outside the list and the asymmetry is deliberate: an `xsl:map` holds a sequence of maps and an
-`xsl:array` a sequence of arrays, so an `html` directly inside one is invalid XSLT rather than
-output standing anywhere — that last being the one with teeth, since a stylesheet already declaring
-`method="html"` there drew the warning against its *primary* output and the fix would have rewritten
-that. The list is named for the rule rather than enumerated to fit it, which is what the first
-spelling did: `BOUND`, two names and a docblock about binding, left four shapes reporting that its
-own sentence excluded. What keeps it honest is a gate rather than the reviewer who found that, since
-the second round of the same defect was the packs and not the list — four names sat behind a
-`<report>` literal result element, which makes an `html` non-outermost whatever the list holds, so
-dropping all four left every test green, and `param` was asserted by nothing at all, inherited from
-the two-name spelling. A pack's zero has to come from the name under test:
-`test/root-template-linter.test.js` walks each `html` in each pack up to its template and refuses a
-name that no pack leaves standing **alone** above one, so a name masked by a wrapper or added
-without a shape of its own turns red — which is #645's shape, a fixture whose zero another mechanism
-produces reading exactly like one that passed. xsltproc settles the eight of them XSLT 1.0 has by
-showing what each builds — an `html` under `xsl:element` comes out `<wrapper><html/></wrapper>` and
-one under `xsl:message` never comes out at all — and `xsl:copy` is deliberately absent, copying the
-*document node* being transparent, so under a root template an `html` inside one really is the
-document element and xsltproc answers `<html><body/></html>`. The namespace decides the other half:
-an `html` a document puts in the XHTML namespace is XHTML, which serializes as `xml` in 1.0 and
-`xhtml` from 2.0 and never as the `html` this check recommends, so it is left alone rather than
-given advice its version cannot take — the false negative #495 names beside the false positive,
-which wants a check of its own rather than the wrong half of this one.
-
 ## `src/linters/output-linter.js`
 
 `not-using-output` was a per-file selector — `[xsl:template and not(xsl:output)]` — and an
@@ -216,53 +93,6 @@ So one went for deciding nothing, one for deciding wrongly, and the third stays 
 where nothing valid reaches it. What `rooted` decides whole is the file judged, and the package is
 that live case: reached by `xsl:use-package`, an edge this linter does not follow, so judging one
 invents a defect out of a tree nobody handed us — #468 once more.
-
-## `src/linters/corpus-linter.js`
-
-Loads `checks/corpus/*.yaml`; cross-file rules. A cross-file check asks one question of every
-declaration against every usage, so both sides grow with the project and the work is their product;
-three things made that product far dearer than it is. A usage selector is now evaluated once for
-each corpus and xpath (`across`) rather than once for each check naming it — three of the four
-checks give `//@*`, and choosing every attribute of DocBook-XSL's 291 stylesheets costs 1.7 seconds,
-so the run spent five answering one question three times over. A reference string was built once for
-each declaration rather than once per pair, and the usages holding it scanned once for each
-*distinct* reference, DocBook-XSL declaring 3436 variables under 1207 names; and the cheap test led,
-`within` climbing to the document root for every pair it rejects where one `includes` rejects almost
-every pair. Together those took the four checks from 35.0 to 10.2 seconds over that corpus and the
-whole run from 40.2 to 29.8 (#755). What they left standing was the product itself, the scan still
-being every distinct name against every usage — 1207 against 72,077 attributes, 87 million substring
-tests, and 98% of what the stage spent, `unused-variable` alone accounting for 13.58 of its 13.81
-seconds of scanning. The index is what retires it (#783). `referencing` reads each usage value once
-for a template and yields the names it *references*; `indexed` maps each name to the usages holding
-it, once for a usage set and template; and a declaration is a `Map.get` rather than a scan.
-`corpus-linter` falls from 8.52 to 2.20 seconds over DocBook-XSL, 6.26 to 1.21 over TEI and 1.37 to
-0.56 over DITA-OT, taking the staged run from 17.54 to 11.13, 14.33 to 9.34 and 4.48 to 3.62, and
-the stage from half the run to a fifth of it. Speed is the smaller half. A substring is not a
-reference: `includes('$row')` is answered by `$rownum`, which is #776's defect on the other side of
-the same product, so the fix and the speed-up are one edit and the report is not byte-identical —
-four declarations that were silenced by a longer name holding their characters are reported, `$page`
-behind `$pageid` and `$target` behind `$targets` in DocBook-XSL, `$v` behind `$values` and
-`$Heading` behind `$Heading1` in TEI, with none removed. A name is the run of characters `NAMED` in
-`src/tokens.js` spells one with, borrowed rather than a second opinion about what a name character
-is. What that costs is a shape, which `anchoring` reads once for a template rather than once per
-usage value and refuses where it is wrong: the index finds the template's fixed text and takes the
-name from the side that text stands on, so **exactly one** end may carry it. `${name}` and `{name}(`
-are the two spellings, and both a bare `{name}` and an `a{name}b` are errors rather than checks that
-half work. Neither half is theoretical. Text at both ends leaves the far side unmatched, so a
-declaration something uses is reported dead; text at neither leaves the mark empty, and `indexOf`
-finds that at every offset and answers the *length* rather than -1 once asked past the end, so the
-scan never advances and the whole run hangs before it reports anything. `test/conformance.test.js`
-holds every check to the same shape, which is the line that would have caught it — the first
-spelling of that gate asked only that the template start or end with `{name}`, which a bare `{name}`
-satisfies twice over, so the one shape that hangs was the one shape the gate admitted. What #783
-left standing was the traversal itself, this being the one stage that reached the engine directly:
-three of its four checks give `//@*` and the fourth `//xsl:call-template/@name`, and neither is an
-axis a bucket of elements can hold. It goes through `chosen` and `valued` in `src/selectors.js`
-since #811, which serves both of those and its three element declarations besides, so the stage
-falls from 2.26 s to 0.11 s over DocBook-XSL, 1.23 to 0.09 over TEI and 0.60 to 0.06 over DITA-OT —
-a tenth to a twentieth of what it cost, taking the staged run down 25%, 17% and 11% with the report
-byte-identical on all three. Half a run was this stage over DocBook-XSL when #755 was filed and it
-is 1.5% to 2.3% of one now, which is why its entry in `SHARES` is gone rather than re-derived.
 
 ## `src/linters/bare-name-linter.js`
 

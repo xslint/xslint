@@ -6,24 +6,33 @@
 'use strict'
 
 /**
- * How many times a run's own seconds its budget may stand above them before it
- * has stopped being a bar. #755's quadratic cost DocBook-XSL 44 s against a
- * budget of 180 and would have passed it twice over. Four, as `SLACK` in
- * `test/scaling.test.js` is, a shared runner disagreeing about a wall clock by
- * more than it does about a share.
+ * How many times a run's own milliseconds its budget may stand above them
+ * before it has stopped being a bar. #755's quadratic cost DocBook-XSL 44
+ * seconds against a budget of 180 and would have passed it twice over. Four,
+ * as `SLACK` in `test/scaling.test.js` is, a shared runner disagreeing about a
+ * wall clock by more than it does about a share.
  * @type {number}
  */
 const SLACK = 4
 
 /**
- * The fewest seconds a reading has to hold for the ratchet to judge it. The
- * runner times the run with `date +%s`, so anything faster than a second reads
- * `0` or `1` — and `0` stands below every budget there could be by any
- * multiple, which would fire the ratchet on a corpus that never arrived: the
- * count check's defect to report and not this one's.
+ * The fewest milliseconds a reading has to hold for the ratchet to judge it. A
+ * reading of `0` stands below every budget there could be by any multiple,
+ * which would fire the ratchet on a corpus that never arrived: the count
+ * check's defect to report and not this one's.
  * @type {number}
  */
 const FLOOR = 1
+
+/**
+ * The smallest difference the tier's clock can report, in the unit every number
+ * here is written in. `date +%s` made it a whole second until #827, half of
+ * what DITA-OT spends: a reading is true to within a tick, so the ratchet fired
+ * one tick under the cheapest night and the margin under it was quantisation.
+ * `date +%s%3N` makes it a millisecond, and `test/budget.test.js` holds it so.
+ * @type {number}
+ */
+const TICK = 1
 
 /**
  * What is wrong with what a corpus cost, or an empty string when nothing is.
@@ -31,17 +40,17 @@ const FLOOR = 1
  * the run has slowed, and so far under it that `SLACK` says the budget has
  * stopped standing between a healthy run and a regression.
  * @param {string} name - Name of the corpus
- * @param {number} spent - Seconds the run spent
- * @param {number} budget - Seconds it is allowed
+ * @param {number} spent - Milliseconds the run spent
+ * @param {number} budget - Milliseconds it is allowed
  * @return {string} - The fault, or an empty string
  */
 const verdict = function(name, spent, budget) {
   let said = ''
   if (spent > budget) {
-    said = `linting ${name} took ${spent}s, past its ${budget}s budget`
+    said = `linting ${name} took ${spent}ms, past its ${budget}ms budget`
   } else if (spent >= FLOOR && budget > SLACK * spent) {
-    said = `linting ${name} took ${spent}s where its budget allows ` +
-      `${budget}s, which is over ${SLACK} times the run: the budget has ` +
+    said = `linting ${name} took ${spent}ms where its budget allows ` +
+      `${budget}ms, which is over ${SLACK} times the run: the budget has ` +
       `stopped being a bar and wants re-cutting from a measurement`
   }
   return said
@@ -57,4 +66,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = {verdict, SLACK}
+module.exports = {verdict, SLACK, TICK}

@@ -100,10 +100,20 @@ const NEARBY = 80
  * than one of ours: Claude Code warns past 150,000 characters of them. What
  * arrives against it is a chain and not a pair — the root guide, and the
  * guide of every directory down to the file a turn touches, each injected
- * once — and the dearest reads 149,094, which is 0.99 (#750, #660, #825).
+ * once — and the dearest reads 133,596, which is 0.89 (#750, #660, #825).
  * @type {number}
  */
 const LOADED = 150000
+
+/**
+ * The characters of headroom the bar keeps under `LOADED`, so a chain reddens
+ * while there is still room to answer it rather than at the breach, where a
+ * relocation no longer fits. It stands at 1.89 of the most a day of work has
+ * added to the dearest chain, `GROWN` in `test/guides.test.js` holding it to
+ * that band from both sides (#844).
+ * @type {number}
+ */
+const ROOM = 10000
 
 /**
  * The guides a turn loads on its way to one file: the root, and one for each
@@ -259,6 +269,6 @@ const globbed = function(row) {
 }
 
 module.exports = {
-  ROOT, GUIDES, DOCUMENTS, DERIVED, LOADED, NEARBY, carries, slashed, sized,
-  worded, chained, loaded, indexed, noted, globbed,
+  ROOT, GUIDES, DOCUMENTS, DERIVED, LOADED, ROOM, NEARBY, carries, slashed,
+  sized, worded, chained, loaded, indexed, noted, globbed,
 }
