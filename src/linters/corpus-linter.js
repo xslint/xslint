@@ -3,6 +3,70 @@
  * SPDX-License-Identifier: MIT
  */
 
+/*
+ * Loads `checks/corpus/*.yaml`; cross-file rules. A cross-file check asks
+ * one question of every declaration against every usage, so both sides grow
+ * with the project and the work is their product; three things made that
+ * product far dearer than it is. A usage selector is now evaluated once for
+ * each corpus and xpath (`across`) rather than once for each check naming
+ * it — three of the four checks give `//@*`, and choosing every attribute
+ * of DocBook-XSL's 291 stylesheets costs 1.7 seconds, so the run spent five
+ * answering one question three times over. A reference string was built
+ * once for each declaration rather than once per pair, and the usages
+ * holding it scanned once for each *distinct* reference, DocBook-XSL
+ * declaring 3436 variables under 1207 names; and the cheap test led,
+ * `within` climbing to the document root for every pair it rejects where
+ * one `includes` rejects almost every pair. Together those took the four
+ * checks from 35.0 to 10.2 seconds over that corpus and the whole run from
+ * 40.2 to 29.8 (#755). What they left standing was the product itself, the
+ * scan still being every distinct name against every usage — 1207 against
+ * 72,077 attributes, 87 million substring tests, and 98% of what the stage
+ * spent, `unused-variable` alone accounting for 13.58 of its 13.81 seconds
+ * of scanning. The index is what retires it (#783). `referencing` reads
+ * each usage value once for a template and yields the names it
+ * *references*; `indexed` maps each name to the usages holding it, once for
+ * a usage set and template; and a declaration is a `Map.get` rather than a
+ * scan. `corpus-linter` falls from 8.52 to 2.20 seconds over DocBook-XSL,
+ * 6.26 to 1.21 over TEI and 1.37 to 0.56 over DITA-OT, taking the staged
+ * run from 17.54 to 11.13, 14.33 to 9.34 and 4.48 to 3.62, and the stage
+ * from half the run to a fifth of it. Speed is the smaller half. A
+ * substring is not a reference: `includes('$row')` is answered by
+ * `$rownum`, which is #776's defect on the other side of the same product,
+ * so the fix and the speed-up are one edit and the report is not
+ * byte-identical — four declarations that were silenced by a longer name
+ * holding their characters are reported, `$page` behind `$pageid` and
+ * `$target` behind `$targets` in DocBook-XSL, `$v` behind `$values` and
+ * `$Heading` behind `$Heading1` in TEI, with none removed. A name is the
+ * run of characters `NAMED` in `src/tokens.js` spells one with, borrowed
+ * rather than a second opinion about what a name character is. What that
+ * costs is a shape, which `anchoring` reads once for a template rather than
+ * once per usage value and refuses where it is wrong: the index finds the
+ * template's fixed text and takes the name from the side that text stands
+ * on, so **exactly one** end may carry it. `${name}` and `{name}(` are the
+ * two spellings, and both a bare `{name}` and an `a{name}b` are errors
+ * rather than checks that half work. Neither half is theoretical. Text at
+ * both ends leaves the far side unmatched, so a declaration something uses
+ * is reported dead; text at neither leaves the mark empty, and `indexOf`
+ * finds that at every offset and answers the *length* rather than -1 once
+ * asked past the end, so the scan never advances and the whole run hangs
+ * before it reports anything. `test/conformance.test.js` holds every check
+ * to the same shape, which is the line that would have caught it — the
+ * first spelling of that gate asked only that the template start or end
+ * with `{name}`, which a bare `{name}` satisfies twice over, so the one
+ * shape that hangs was the one shape the gate admitted. What #783 left
+ * standing was the traversal itself, this being the one stage that reached
+ * the engine directly: three of its four checks give `//@*` and the fourth
+ * `//xsl:call-template/@name`, and neither is an axis a bucket of elements
+ * can hold. It goes through `chosen` and `valued` in `src/selectors.js`
+ * since #811, which serves both of those and its three element declarations
+ * besides, so the stage falls from 2.26 s to 0.11 s over DocBook-XSL, 1.23
+ * to 0.09 over TEI and 0.60 to 0.06 over DITA-OT — a tenth to a twentieth
+ * of what it cost, taking the staged run down 25%, 17% and 11% with the
+ * report byte-identical on all three. Half a run was this stage over
+ * DocBook-XSL when #755 was filed and it is 1.5% to 2.3% of one now, which
+ * is why its entry in `SHARES` is gone rather than re-derived.
+ */
+
 const {chosen, valued} = require('../selectors')
 const {NAMED} = require('../tokens')
 const {kinds} = require('../resources/checks.json')

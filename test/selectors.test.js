@@ -363,13 +363,15 @@ const DESCENDED = [
 ]
 
 /**
- * The guide whose paragraph states how wide that oracle is, and the shape of
+ * The note whose paragraph states how wide that oracle is, and the shape of
  * the statement. It has drifted twice, a row count being a figure nothing
  * reads once the sweep it describes is a `concat` of two tables, so it is held
  * here rather than beside the guides' own gate, which weighs sizes (#811).
- * @type {{guide: string, claim: RegExp}}
+ * @type {{note: string, claim: RegExp}}
  */
-const WIDE = {guide: 'test/CLAUDE.md', claim: /the oracle, (\d+) rows here/g}
+const WIDE = {
+  note: 'test/predicates.test.js', claim: /the oracle, (\d+) rows here/g,
+}
 
 /**
  * Predicate spellings the split is judged on, with no verdict written beside
@@ -797,11 +799,11 @@ describe('selectors', function() {
       )
     })
   })
-  it('states the width of the oracle, where the guide states it', function() {
+  it('states the width of the oracle, where the note states it', function() {
     assert.deepStrictEqual(
-      [...worded(WIDE.guide).matchAll(WIDE.claim)].map((each) => each[1]),
+      [...worded(WIDE.note).matchAll(WIDE.claim)].map((each) => each[1]),
       [String(CANDIDATES.length + HEADED.length)],
-      'the guide states an oracle other than the one this file sweeps, so a ' +
+      'the note states an oracle other than the one this file sweeps, so a ' +
         'paragraph promising a question per spelling is read as a limit ' +
         'that has stopped being one',
     )

@@ -18,19 +18,19 @@ const assert = require('assert')
 const RUNS = [
   {
     name: 'fails the run whose corpus passed its budget',
-    args: ['docbook', '41', '40'], code: 1,
-    said: '::error::linting docbook took 41s, past its 40s budget\n',
+    args: ['docbook', '41000', '40000'], code: 1,
+    said: '::error::linting docbook took 41000ms, past its 40000ms budget\n',
   },
   {
     name: 'fails the run whose budget has stopped being a bar',
-    args: ['tei', '4', '40'], code: 1,
-    said: '::error::linting tei took 4s where its budget allows 40s, which ' +
-      'is over 4 times the run: the budget has stopped being a bar and ' +
-      'wants re-cutting from a measurement\n',
+    args: ['tei', '4000', '40000'], code: 1,
+    said: '::error::linting tei took 4000ms where its budget allows 40000ms, ' +
+      'which is over 4 times the run: the budget has stopped being a bar ' +
+      'and wants re-cutting from a measurement\n',
   },
   {
     name: 'passes the run standing inside its budget in silence',
-    args: ['ditaot', '20', '40'], code: 0, said: '',
+    args: ['ditaot', '20000', '40000'], code: 0, said: '',
   },
 ]
 

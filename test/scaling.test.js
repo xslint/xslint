@@ -3,6 +3,84 @@
  * SPDX-License-Identifier: MIT
  */
 
+/*
+ * The speed gate (see **Speed**): charges every stage its own processor
+ * time over a generated corpus at 40 stylesheets and again at 160, and
+ * fails one that spends more of its own run than `SHARES` allows it —
+ * `xpath-linter` at 42%, `xpath-validator` at 24%, `xsl-validator` at 16%
+ * since #811's descendant phase took the dearest stage from 27.18% of the
+ * run to 24.82% and left the other two inside the band they already stood
+ * in, or — where it has no entry there — grew more than `GROWTH` beside the
+ * middle stage's growth. Cost is the sharp question and growth the loose
+ * one, because #755 changed a constant and not an exponent, which is a
+ * difference the two distributions show plainly: 15.1% to 15.7% of the run
+ * against the quadratic's 26.5% to 31.9%, where in growth the fix reads
+ * 1.85 to 2.04 and the quadratic 1.66 to 2.43 — the lowest reading being
+ * the one judged, growth ranks them backwards. What the cost is a share
+ * **of** is the whole run, the readings summed, and it was the middle
+ * reading until #777: fourteen of the eighteen stages lie within a factor
+ * of two and keep swapping places, so the pair landing 9th and 10th decided
+ * the denominator of every share, and #775 — which made one of those two
+ * cheaper and touched the cross-file linter not at all — lifted every share
+ * by about a quarter and failed the gate. Growth still divides by the
+ * median, and for the reason cost cannot: every ordinary stage grows about
+ * as the corpus does, so a median growth is any ordinary stage's growth,
+ * where an ordinary *cost* is a coin toss between two near-identical
+ * readings. The corpus is the assertion as much as the bar is. It is copied
+ * from one committed `test/resources/scaling/stylesheet.xsl`, the way every
+ * test stylesheet here lives in a file, with the number of each file
+ * substituted into every name it holds — so no two share an expression, a
+ * declaration or a namespace, and the memo in `src/syntax.js` cannot make
+ * the larger corpus look cheaper than it is. That stylesheet holds a
+ * namespace nothing uses, an import, a literal result element, one unused
+ * parameter, one pattern opening with a `//`, and a call of every shape a
+ * linter is about, because a stage handed nothing it reads cannot be
+ * measured at all: the three per-document linters were exactly that, 0.3 ms
+ * with a spread of 358%, until it grew namespaces and imports. How *much*
+ * of a construct it grows is its own question, and the parameter is where
+ * that showed. A pair in each of the four templates read fine for
+ * `parameter-linter` and took `corpus-linter` from 9.5 to 14.4 of the
+ * middle reading, past the 13 the bar stood at before #777 — every `@name`
+ * being a usage, and three of the four cross-file checks giving `//@*`. So
+ * it is armed with the fewest attributes that still leave the new stage a
+ * defect to build, which is one unused parameter, and against the whole run
+ * that costs nothing a reading can see: 16.4% to 17.7% for the cross-file
+ * linter where master reads 14.4% to 18.1% on the same machine, and 0.94%
+ * to 1.07% for the new stage. The `//` of #586 is armed the same way and
+ * for the same reason — five patterns a file reach `double-slash-linter`
+ * and none of them built a defect, so 0.08% to 0.11% of the run was the
+ * walk alone and every step past it went untimed, where one leading `//`
+ * reads 0.18% to 0.19% and takes the cross-file linter nowhere a reading
+ * can see, 6.46% to 7.10% against the 6.69% to 7.24% the unarmed corpus
+ * gives on the same machine. A corpus that arms one stage must not disarm
+ * the bar on another — which under the middle reading it could, one
+ * attribute per file having been enough to move a denominator two cheap
+ * stages were swapping places at. What one sheet copied cannot arm at all
+ * is the *skew* of a real corpus, which is where the cross-file stage
+ * really spends: `//@*` costs 1.3 to 3.2 us a node under some 350 nodes and
+ * 50.4 at 4853, so five of DocBook-XSL's 315 stylesheets are two thirds of
+ * that selector's whole cost. Every fortieth stylesheet is a **heavy** one
+ * since #800 — the repeatable part of the sheet written out forty-eight
+ * times over under names of its own, 5207 elements and attributes — which
+ * the sheet marks with a `<!-- repeated -->` comment of its own, since the
+ * `fixtures` job fails a `.test.js` holding a start tag and a marker a test
+ * matches on is the fixture's to spell either way, and the stage reads
+ * 15.95% to 18.94% where a uniform corpus of any density reads 7% to 10%
+ * against the 13.73% TEI charges it and the 21.95% DocBook-XSL does.
+ * `SHARES` and `SHARE` were re-derived a fourth time at #784, whose shared
+ * walk took `xpath-linter` under a third of the run and lifted every share
+ * taken against it (see **Speed**) — and the corpus this one built survives
+ * that, both sides having risen together: the stage reads 19.51% to 20.08%
+ * here against the 17.3% TEI charges it and the 25.7% DocBook-XSL does.
+ * That walk did not serve `//@*` itself, an attribute axis standing outside
+ * buckets that hold elements, so the one selector this stage is almost all
+ * of paid #635 in full until #811 gave the walk an attribute of its own —
+ * after which the stage reads 1.20% to 1.23% of the run here, its entry in
+ * `SHARES` is gone and `SHARE` is what it answers to, and the heavy
+ * stylesheet #800 armed it with arms the parse and the per-file checks
+ * alone.
+ */
+
 const assert = require('assert')
 const fs = require('fs')
 const path = require('path')
