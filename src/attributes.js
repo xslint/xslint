@@ -136,17 +136,19 @@ const wholly = function(attribute) {
 /**
  * The whole value of an attribute as one expression, standing where the value
  * itself starts. Every expression this module yields is such a record — the
- * node, the offset inside its value, the text, and whether it is a pattern —
- * and a linter narrowing to one attribute builds the record here rather than
- * handing a node and its text on separately (#648).
+ * node, the offset inside its value, the text, whether it is a pattern, and
+ * the version in force where it stands — and a linter narrowing to one
+ * attribute builds the record here rather than handing the pieces on (#648).
  * @param {Node} attribute - The attribute node
- * @return {{node: Node, start: number, expression: string,
- *  pattern: boolean}} - The expression it holds whole
+ * @param {string} version - The version in force at its element
+ * @return {{node: Node, start: number, expression: string, pattern: boolean,
+ *  version: string}} - The expression it holds whole
  */
-const wholeOf = function(attribute) {
+const wholeOf = function(attribute, version) {
   return Object.freeze({
     node: attribute, start: 0, expression: attribute.nodeValue,
     pattern: PATTERNS.includes(attribute.nodeName.replace(/^_/, '')),
+    version: version,
   })
 }
 
@@ -158,19 +160,21 @@ const wholeOf = function(attribute) {
  * attribute takes the attribute branch.
  * @param {Node} node - An attribute, text, or CDATA node
  * @param {Set.<Node>} bare - Attributes holding a bare XPath
- * @param {boolean} three - Whether the stylesheet declares version 3.0
+ * @param {string} version - The version in force at the node
  * @return {Array.<{node: Node, start: number, expression: string}>} - Found
  */
-const carried = function(node, bare, three) {
+const carried = function(node, bare, version) {
+  const three = since(version, '3.0')
   const entire = node.nodeType === 2 &&
     (bare.has(node) || (three && shadow(node)))
   const braced = node.nodeType === 2 || (three && expands(node))
   let taken = []
   if (entire) {
-    taken = [wholeOf(node)]
+    taken = [wholeOf(node, version)]
   } else if (braced) {
     taken = enclosed(node.nodeValue).map((brace) => Object.freeze({
       node: node, start: brace.offset, expression: brace.value, pattern: false,
+      version: version,
     }))
   }
   return taken
@@ -180,8 +184,8 @@ const carried = function(node, bare, three) {
  * Every expression a stylesheet carries, in document order. An attribute
  * holding a bare XPath contributes its whole value; another attribute, and a
  * text node under an on `expand-text` in a 3.0 stylesheet, contribute each
- * expression their braces enclose. Each names the node, the offset it starts
- * at inside that node's value, and its own text.
+ * expression their braces enclose. Each names the node, the offset inside its
+ * value, the text, and the version in force there, derived once here (#845).
  * @param {Document} xsl - XSL document parsed as {@link Document}
  * @return {Array.<{node: Node, start: number, expression: string}>} - The
  *  expressions found, each saying whether it is a pattern
@@ -193,7 +197,7 @@ const expressionsOf = function(xsl) {
       (one) => one.nodeType === 2 && wholly(one),
     ))
     DERIVED.set(xsl, Object.freeze(held.flatMap(
-      (node) => carried(node, bare, since(versionOf(node), '3.0')),
+      (node) => carried(node, bare, versionOf(node)),
     )))
   }
   return DERIVED.get(xsl)

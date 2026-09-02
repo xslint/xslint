@@ -178,7 +178,9 @@ kept in step with XSLT by hand.
 `versionOf(node)` — the version in force at a node, from the nearest ancestor's `@version` (XSLT
 element) or `@xsl:version` (literal result element), canonicalised as a decimal, walking up from the
 element `src/tree.js`'s `holding` answers; `since(version, floor)` for a lower-bound gate; shared
-`MODERN`/`KNOWN`/`DECIMAL`.
+`MODERN`/`KNOWN`/`DECIMAL`. It remembers nothing, so a run asks it once per node — from
+`expressionsOf`, on a walk already climbing to the root — and every stage after that reads the
+version off the record it was handed, which an ESLint selector holds them to (#845).
 
 ## `src/tree.js`
 

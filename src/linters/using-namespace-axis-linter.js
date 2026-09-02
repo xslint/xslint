@@ -5,7 +5,7 @@
 
 const {tokenized, TOKENS} = require('../tokens')
 const {metaOf, suppressed, defect} = require('../checks')
-const {MODERN, since, versionOf} = require('../xsl-version')
+const {MODERN, since} = require('../xsl-version')
 const {logger} = require('../logger')
 
 /**
@@ -55,8 +55,8 @@ const lintByNamespaceAxis = function(expressions, suppressions = []) {
   const defects = []
   if (!suppressed(CHECK, suppressions)) {
     for (const {source, found} of expressions) {
-      const {node, expression} = found
-      if (since(versionOf(node), MODERN)) {
+      const {expression} = found
+      if (since(found.version, MODERN)) {
         for (const offset of axes(expression)) {
           defects.push(
             defect(CHECK, META, source, found, offset),

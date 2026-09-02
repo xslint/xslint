@@ -7,7 +7,7 @@ const {
   calls, gathered, offsetOf, parseOf, stepped, textOf,
 } = require('../syntax')
 const {metaOf, suppressed, defect} = require('../checks')
-const {MODERN, since, versionOf} = require('../xsl-version')
+const {MODERN, since} = require('../xsl-version')
 const {logger} = require('../logger')
 
 /**
@@ -108,7 +108,7 @@ const lintByNodeSet = function(expressions, suppressions = []) {
   const defects = []
   if (!suppressed(CHECK, suppressions)) {
     for (const {source, found} of expressions) {
-      if (since(versionOf(found.node), MODERN)) {
+      if (since(found.version, MODERN)) {
         for (const {offset, value, replacement} of wrappers(found)) {
           defects.push(
             defect(

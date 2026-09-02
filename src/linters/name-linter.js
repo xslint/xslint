@@ -7,7 +7,7 @@ const {VALUED, calls, gathered, offsetOf, operatorOf, stringOf,
   textOf} = require('../syntax')
 const {qualified} = require('../tokens')
 const {metaOf, suppressed, defect} = require('../checks')
-const {MODERN, since, versionOf} = require('../xsl-version')
+const {MODERN, since} = require('../xsl-version')
 const {logger} = require('../logger')
 
 /**
@@ -153,7 +153,7 @@ const lintByName = function(expressions, suppressions = []) {
   const defects = []
   if (!suppressed(CHECK, suppressions)) {
     for (const {source, found} of expressions) {
-      const modern = since(versionOf(found.node), MODERN)
+      const modern = since(found.version, MODERN)
       for (const {offset, value, replacement} of comparisons(found, modern)) {
         let fix
         if (replacement !== null) {
