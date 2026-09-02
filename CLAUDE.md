@@ -236,7 +236,7 @@ before: 268 descriptions in 65 files stood past that bar, the dearest of them
 142 lines, so a derivation grew wherever one was written the way the cross-file
 linter's cost grew before #755 (#832). The bar is not a licence to respell what
 a block cannot hold as a `/* */` beside it either — such prose is cut and not
-moved, the dearest chain of guides standing at 0.91 of `LOADED` and reddening
+moved, the dearest chain of guides standing at 0.92 of `LOADED` and reddening
 well under it, so a guide is no place to put it either and the ticket number
 left standing in the surviving sentence is what keeps a derivation
 recoverable.
@@ -695,6 +695,9 @@ Then run `npx grunt checks`, `npm test`, `npm run coverage`, and
   predicate `src/predicates.js` recognises being answered off the walk while
   one it does not is refused rather than guessed at, over-acceptance there
   being a wrong report where under-acceptance is only the engine call it was.
+  A predicate refused whole is parted at its top-level `and` since that
+  ticket's fifth phase, each clause answered or asked on its own, so what
+  reaches the engine is the residual and never the conjunction.
   A **union** of such paths is served the
   same way since #811, each branch carrying an axis and a tail of its own and
   the survivors merged by rank, since XPath answers a union in document order

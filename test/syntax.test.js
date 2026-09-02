@@ -146,10 +146,10 @@ const follows = function(xpath) {
 
 /**
  * What each expression answers when asked whether it can stand as a predicate
- * one candidate at a time is handed, which is what a check served from a shared
- * walk needs (#784). The kinds are swept from `SHAPES` above; these are the
- * pairs a kind cannot settle on its own — a `call` judged by the name it holds,
- * and the spellings a number wears beyond the digit a scan would look for.
+ * one candidate at a time is handed (#784). The kinds are swept from `SHAPES`
+ * above; these are the pairs a kind cannot settle on its own — a `call` judged
+ * by the name it holds, a bracket by the one thing under it, and the spellings
+ * a number wears beyond the digit a scan would look for.
  * @type {Array.<{xpath: string, filters: boolean}>}
  */
 const FILTERED = [
@@ -166,7 +166,13 @@ const FILTERED = [
   {xpath: '1.0', filters: false},
   {xpath: '2 - 1', filters: false},
   {xpath: '- 1', filters: false},
-  {xpath: '(@a)', filters: false},
+  {xpath: '(@a)', filters: true},
+  {xpath: '(@a and @b)', filters: true},
+  {xpath: '((@a))', filters: true},
+  {xpath: '(1)', filters: false},
+  {xpath: '(@a, @b)', filters: false},
+  {xpath: '()', filters: false},
+  {xpath: '(@a = position())', filters: false},
   {xpath: '@a', filters: true},
   {xpath: 'a/b', filters: true},
   {xpath: 'a/count(.)', filters: false},

@@ -6,7 +6,7 @@
 const assert = require('assert')
 const fs = require('fs')
 const path = require('path')
-const {EVERY, chosen, splitOf, valued} = require('../src/selectors')
+const {EVERY, answered, chosen, splitOf, valued} = require('../src/selectors')
 const {nodes, strings} = require('../src/xpath')
 const {xml} = require('../src/helpers')
 const {kinds} = require('../src/resources/checks.json')
@@ -266,7 +266,11 @@ const WHOLE = [
     xpath: '//xsl:variable[Q{http://www.w3.org/2005/xpath-functions}not(@a)]',
     why: 'a call naming its namespace inline',
   },
-  {xpath: '//xsl:variable[(@name)]', why: 'a bracket of the author own'},
+  {xpath: '//xsl:variable[(1)]', why: 'a position under a bracket'},
+  {
+    xpath: '//xsl:variable[(@name, @as)]',
+    why: 'a sequence under a bracket, which no one kind settles',
+  },
   {xpath: '//xsl:variable[@name and]', why: 'a predicate that cannot parse'},
   {xpath: '//xsl:template[position() = 1]', why: 'position() in the tail'},
   {xpath: '//xsl:template[last()]', why: 'last() in the tail'},
@@ -433,6 +437,16 @@ const CANDIDATES = [
   './/xsl:text', 'not(.//xsl:text)', './/a', 'count(descendant::xsl:*) = 1',
   '//xsl:text', 'xsl:variable//xsl:text', './xsl:text',
   'count(descendant-or-self::xsl:*) >= 2',
+  'count(*) = 1 and not(text()[normalize-space()])',
+  '@select and //xsl:text', '//xsl:text and @select',
+  '@select and //xsl:nothing', 'not(node()) and @select',
+  'not(@select) and not(@_select) and not(node())',
+  '@name = "ten" and //xsl:text and count(*) = 1',
+  'not(text()[normalize-space()]) and (@select or @as)',
+  '2 and @select', '@select and 2', 'count(a) and @name = "two"',
+  '(@select)', '((@select))', '(@select and @as)', '(@select or @as)',
+  '(count(*) = 1) and (count(a) = 1)', '@select and (@as or @mode)',
+  '(@select) and //xsl:text', '(2) and @select', '(@name, @as)',
 ]
 
 /**
@@ -462,6 +476,8 @@ const HEADED = [
   {head: '//xsl:stylesheet', predicate: 'parent::*'},
   {head: '//xsl:stylesheet', predicate: 'not(parent::*)'},
   {head: '//xsl:stylesheet', predicate: 'ancestor::*'},
+  {head: ATTRIBUTES, predicate: 'parent::xsl:variable and //xsl:text'},
+  {head: ATTRIBUTES, predicate: '2 and parent::xsl:variable'},
 ]
 
 /**
@@ -561,6 +577,77 @@ const UNPARTED = [
 ]
 
 /**
+ * Tails whose bracket joins clauses with `and`, each with how many of them the
+ * walk answers and what is left for the engine. A clause outside the vocabulary
+ * refused the whole bracket until #811, so a conjunction cost a fontoxpath call
+ * on every candidate its cheapest clause would have refused. A bracket nothing
+ * answers is kept whole, and so is one whose clause alone picks a position.
+ * @type {Array.<{tail: string, served: number, asked: string}>}
+ */
+const CLAUSED = [
+  {
+    tail: '[count(*) = 1 and not(text()[normalize-space()])]',
+    served: 1,
+    asked: '[not(text()[normalize-space()])]',
+  },
+  {
+    tail: '[@select and not(node()) and not(text()[normalize-space()])]',
+    served: 1,
+    asked: '[not(node())][not(text()[normalize-space()])]',
+  },
+  {
+    tail: '[not(@select) and not(@_select) and not(node())]',
+    served: 2,
+    asked: '[not(node())]',
+  },
+  {
+    tail: '[not(node()) and @select][count(*) = 1 and not(node())]',
+    served: 2,
+    asked: '[not(node())][not(node())]',
+  },
+  {
+    tail: '[@select and @as]',
+    served: 1,
+    asked: '',
+  },
+  {
+    tail: '[not(node()) and not(text()[normalize-space()])]',
+    served: 0,
+    asked: '[not(node()) and not(text()[normalize-space()])]',
+  },
+  {
+    tail: '[2 and @select]',
+    served: 0,
+    asked: '[2 and @select]',
+  },
+  {
+    tail: '[count(a) and @select]',
+    served: 0,
+    asked: '[count(a) and @select]',
+  },
+  {
+    tail: '[@select or not(node())]',
+    served: 0,
+    asked: '[@select or not(node())]',
+  },
+  {
+    tail: '[(count(*) = 1) and (count(xsl:if) = 1) and not(text()[normalize-space()])]',
+    served: 2,
+    asked: '[not(text()[normalize-space()])]',
+  },
+  {
+    tail: '[@select and (* or text()[normalize-space()])]',
+    served: 1,
+    asked: '[(* or text()[normalize-space()])]',
+  },
+  {
+    tail: '[(2) and @select]',
+    served: 0,
+    asked: '[(2) and @select]',
+  },
+]
+
+/**
  * Where each node of a selection stands, which is how two answers are compared
  * without asking either of them what kind of node it holds: an attribute
  * answers no `getAttribute` and an element no `value`, where both carry the
@@ -584,7 +671,7 @@ const placed = function(found) {
  * @param {function(): Array.<Node>} selection - What to ask for
  * @return {Array.<string>} - Where each node it answers stands, in order
  */
-const answered = function(selection) {
+const standing = function(selection) {
   let where
   try {
     where = placed(selection())
@@ -728,8 +815,8 @@ describe('selectors', function() {
     it(`answers ${xpath} as the engine reads it, or serves it not at all`,
       function() {
         assert.deepStrictEqual(
-          answered(() => chosen(SHEET, xpath)),
-          answered(() => nodes(SHEET, xpath)),
+          standing(() => chosen(SHEET, xpath)),
+          standing(() => nodes(SHEET, xpath)),
           `serving ${xpath} from an axis answers something else than the ` +
             'engine answers of the whole selector, so the predicate reads ' +
             'the sequence it stands in and cannot be asked of one candidate',
@@ -809,6 +896,18 @@ describe('selectors', function() {
         `the strings served for ${one} are not the string values the engine ` +
           'reads, so a cross-file check would judge a declaration against ' +
           'usage text nobody wrote',
+      )
+    })
+  })
+  CLAUSED.forEach((one) => {
+    it(`parts ${one.tail} into the clauses the walk answers`, function() {
+      const parted = answered(one.tail)
+      assert.deepStrictEqual(
+        {served: parted.served.length, asked: parted.asked},
+        {served: one.served, asked: one.asked},
+        `the tail ${one.tail} is not parted clause by clause, so a bracket ` +
+          'holding one the vocabulary answers costs a fontoxpath call on ' +
+          'every candidate the rest of that bracket would have refused',
       )
     })
   })

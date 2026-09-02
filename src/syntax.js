@@ -75,15 +75,23 @@
  * names the kinds that cannot be a number, `BOOLEAN` the standard functions
  * answering `xs:boolean`, and `positional` walks for a `position()` or
  * `last()` under the node, either of which hides inside a `comparison` the
- * kinds would pass. Two kinds are not on the list because their kind does not
- * settle what they answer: a `call`, `not(@a)` and `count(@a)` coming back
- * alike, which its name decides; and a `path`, which its **last step**
+ * kinds would pass. Three kinds are not on the list because their kind does
+ * not settle what they answer: a `call`, `not(@a)` and `count(@a)` coming back
+ * alike, which its name decides; a `path`, which its **last step**
  * decides, since from XPath 2.0 a path may end in a call answering an atomic
- * value and `a/count(.)` is a number spelled as a path. Reading a path by its
+ * value and `a/count(.)` is a number spelled as a path; and a
+ * `parenthesized`, which the one expression inside it decides, a bracket
+ * moving where an operator binds and never what it answers — `(@a)` filters
+ * as `@a` does and `(2)` picks a position as `2` does. Reading a path by its
  * kind served `[a/count(.)]`, `[a/(count(.))]`, `[a/count(.)[1]]` and five
  * more, each of which the engine answers with one node where serving answered
- * every match. `test/syntax.test.js` holds both lists to the grammar as it
- * holds `LOOSE` and `STEPPED`. `ASSUMED` is exported with it, a check's
+ * every match. Reading a bracket by its kind cost the other way, and until
+ * #811 it cost three checks the very parting they are written for: a predicate
+ * spelling `(count(*) = 1) and (count(xsl:if) = 1) and not(…)` had every clause
+ * of it asked of the engine, because the one under brackets could not be
+ * weighed and a clause the split cannot weigh keeps the conjunction whole.
+ * `test/syntax.test.js` holds both lists to the grammar as it holds `LOOSE`
+ * and `STEPPED`. `ASSUMED` is exported with it, a check's
  * selector carrying no `version` of its own and being read at the most
  * permissive one for the same reason a stylesheet declaring none is. That last
  * one reads `LOOSE`, XPath's own ladder from the comparison up — the comma,
@@ -437,10 +445,10 @@ const positional = function(tokens, node) {
 
 /**
  * Whether the node can stand as a predicate filtering a sequence rather than
- * picking a position in it, what a shared walk needs of each predicate a check
- * wrote: the axis comes off the walk and each candidate is asked on its own,
- * where a positional test answers true for every one (#784). Two kinds do not
- * settle what they answer: a `path` is its last step, a `call` its name.
+ * picking a position in it, which is what a shared walk needs of one: the axis
+ * comes off the walk and each candidate is asked alone, where a positional test
+ * answers true for every one (#784). Three kinds do not settle it: a `path` is
+ * its last step, a `call` its name, a bracket the one thing it holds.
  * @param {Array} tokens - The tokens the tree was parsed from
  * @param {object} node - The node a predicate holds, whole
  * @return {boolean} - True when it filters rather than picks
@@ -449,6 +457,8 @@ const filters = function(tokens, node) {
   let sound = FILTERS.includes(node.kind)
   if (node.kind === 'path') {
     sound = filters(tokens, node.children[node.children.length - 1])
+  } else if (node.kind === 'parenthesized' && node.children.length === 1) {
+    sound = filters(tokens, node.children[0])
   } else if (!sound && node.kind === 'call') {
     sound = tokens[node.from].type !== TOKENS.URI &&
       BOOLEAN.includes(tokens[node.from].value)

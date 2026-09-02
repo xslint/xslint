@@ -24,12 +24,12 @@
  * below forced here — takes it out of the reach of the gate holding a
  * guide's counts to the code, `DOCUMENTS` naming guides and the README and
  * no source file but `src/attributes.js`. So the two counts that note
- * states of the vocabulary's reach, 30 of 38, are computed here from
+ * states of the vocabulary's reach, 36 of 44, are computed here from
  * `checks.json` and held to it: every branch a selector splits into that
- * the walk serves, parted by the `predicated` a run parts with, each
+ * the walk serves, parted by the `weighed` a run parts with, each
  * predicate asked once. Both kinds are read, a corpus check's declaration
  * and usage reaching `predicateOf` as a per-file selector does — the
- * `xpath` kind alone answers 28 of 35, which is no number a run ever sees,
+ * `xpath` kind alone answers 34 of 41, which is no number a run ever sees,
  * and counting it that way is how the note came to say 33 and 24. Two
  * sentences carry the pair in opposite orders, so both are read and
  * rewording either fails, the lesson `DERIVED` records one section down.
@@ -37,7 +37,7 @@
  * Neither table asks whether an answer is *correct*: that is `CANDIDATES`
  * in `test/selectors.test.js`, which asks fontoxpath what each spelling
  * selects over `candidates.xsl` and fails where serving answers anything
- * else — the oracle, 115 rows here against 32 before, and armed against the
+ * else — the oracle, 137 rows here against 32 before, and armed against the
  * engine before a line of the compiler existed. A row there is a question
  * rather than a claim, so enriching the fixture can only strengthen it; the
  * fixture grew five variables and a non-XSLT child so that presence, a
@@ -72,7 +72,7 @@
 const assert = require('assert')
 const {describe, it} = require('mocha')
 const {predicateOf} = require('../src/predicates')
-const {predicated, splitOf} = require('../src/selectors')
+const {splitOf, weighed} = require('../src/selectors')
 const {worded} = require('./guides')
 const {kinds} = require('../src/resources/checks.json')
 const {GAP} = require('../src/tokens')
@@ -102,7 +102,7 @@ const reach = function(checks) {
   const read = function(xpath) {
     for (const branch of splitOf(xpath)) {
       if (branch.refused === '' && branch.tail !== '') {
-        for (const one of predicated(branch.tail)) {
+        for (const one of weighed(branch.tail)) {
           seen.set(one, predicateOf(one) !== undefined)
         }
       }

@@ -618,13 +618,13 @@ the dearest single guide instead, which is a whole directory short: it read 130,
 that 0.87 of the bar while a turn touching `src/linters/` was loading 157,504 and over it. So the
 two dearest notes moved one step further down, out of `src/CLAUDE.md` and into the top of
 `src/grammar.js` and `src/syntax.js` — 24,681 characters. What a turn touching `test/` loads has
-overtaken it since, and the dearest chain is that same one at 137,200, which is 0.91. What answers
+overtaken it since, and the dearest chain is that same one at 137,410, which is 0.92. What answers
 a chain reaching the bar is that move again, a module's derivation into the file-header note of the
 module itself, and never a bar widened to fit what has grown past it: a docblock holds five lines
 of description since #832, so prose that has outgrown a
 guide does not simply move into one instead. A `CEILING` of half the bar stood beside it until it
 was seen to be a gate no tree could fail: the root stands in every chain, so the chain holding it
-above weighs each other guide against the bar less what stands over it — 33,248 for
+above weighs each other guide against the bar less what stands over it — 31,415 for
 `src/linters/CLAUDE.md`, where half of the bar is 75,000 — and holds the root itself to 83,451, a
 number derived from the dearest chain rather than chosen. A gate no tree can fail is removed and
 not kept (#750, #660). All four of those figures — the chain, its ratio, and the two allowances —
@@ -670,7 +670,7 @@ and `corpus-linter.js` out of `src/linters/CLAUDE.md`, and `scaling.test.js`, `p
 one. A tenth was refused by the valve rather than chosen against: `test/conformance.test.js` stands
 at 926 lines and its note is 150 more, and `max-lines` counts comments, so a section can outgrow the
 file it is about and relief has a floor — what answers that one is the note being cut, not moved.
-What that leaves is 2,800 characters of headroom, off a chain that is this file's own rather than
+What that leaves is 2,590 characters of headroom, off a chain that is this file's own rather than
 `src/linters/`: six of those nine came out of this one, and the note #855 added went back in. It is
 a fifth figure of the same class as the four, and the one that proves the point twice over — it
 stood outside the table and drifted 418 behind the rows in it with every one of them green, so it

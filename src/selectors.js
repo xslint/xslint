@@ -8,7 +8,7 @@ const {PREFIXES, nodes, satisfies, strings} = require('./xpath')
 const {attributed, named} = require('./tree')
 const {parsed} = require('./grammar')
 const {ASSUMED, filters} = require('./syntax')
-const {predicateOf} = require('./predicates')
+const {conjunctsOf, predicateOf} = require('./predicates')
 
 /**
  * The answer for a selector no index can serve: no branch at all. An empty list
@@ -557,6 +557,39 @@ const descended = function(found, roots) {
 }
 
 /**
+ * The clauses one predicate is weighed as, or the predicate whole where the
+ * walk answers it already, answers no clause of it, or would be left a clause
+ * that filters only under the `and` it stands in — `[2 and @select]` is a
+ * boolean where `[2]` alone picks a position. `[a and b]` is `[a][b]`
+ * wherever both filter, which is what lets the cheap half prune the dear one.
+ * @param {string} text - What one predicate holds, its brackets off
+ * @return {Array.<string>} - The clauses to weigh, or the predicate whole
+ */
+const clauses = function(text) {
+  const parts = conjunctsOf(text)
+  let answer = [text]
+  if (predicateOf(text) === undefined &&
+    parts.some((one) => predicateOf(one) !== undefined) &&
+    parts.every((one) => filtered(one))) {
+    answer = parts
+  }
+  return answer
+}
+
+/**
+ * Every clause of every predicate a tail carries, which is the unit the walk
+ * weighs one of — a bracket where nothing parts it, and each conjunct where
+ * something does. It is one function rather than two because what counts the
+ * vocabulary's reach has to part the way `narrowed` parts, a count taken over
+ * a parting nobody runs being a count of nothing (#811).
+ * @param {string} tail - The predicates a branch carries, brackets and all
+ * @return {Array.<string>} - The text of each, in the order it stands
+ */
+const weighed = function(tail) {
+  return predicated(tail).flatMap((one) => clauses(one))
+}
+
+/**
  * What each tail was parted into, kept against its text.
  * @type {Map}
  */
@@ -574,7 +607,7 @@ const ANSWERS = new Map()
  */
 const answered = function(tail) {
   if (!ANSWERS.has(tail)) {
-    const parts = predicated(tail)
+    const parts = weighed(tail)
     const compiled = parts.map((one) => predicateOf(one))
     ANSWERS.set(tail, {
       served: compiled.filter((one) => one !== undefined),
@@ -683,8 +716,9 @@ const valued = function(xsl, xpath) {
 
 module.exports = {
   EVERY,
+  answered,
   chosen,
-  predicated,
+  weighed,
   valued,
   splitOf,
 }
