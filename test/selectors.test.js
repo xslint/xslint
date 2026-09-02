@@ -172,12 +172,24 @@ const UNIONS = [
  * Selectors no index may serve, each with why. A wildcard names no bucket; a
  * root-anchored path is not a descendant sweep; an attribute is not an
  * element; a step behind the predicate reaches past what the axis answered; an
- * unbound prefix resolves to no namespace; and a positional predicate reads
- * the whole sequence's position.
+ * unbound prefix resolves to no namespace; a named attribute off a list that
+ * buckets to nothing narrows nothing; and a position reads the whole sequence.
  * @type {Array.<{xpath: string, why: string}>}
  */
 const WHOLE = [
   {xpath: '//xsl:*', why: 'a wildcard names no one bucket'},
+  {
+    xpath: '//xsl:*/@name',
+    why: 'an attribute named off a wildcard that names no bucket',
+  },
+  {
+    xpath: '//*/@name',
+    why: 'an attribute named off every element there is',
+  },
+  {
+    xpath: '//mine:thing/@name',
+    why: 'an attribute named off a prefix nothing binds',
+  },
   {
     xpath: '/*[not(@version)]//xsl:template/@match',
     why: 'an attribute axis below an anchor',
@@ -439,9 +451,9 @@ const HEADED = [
 /**
  * Whole selectors the two doors are judged on, served and unserved alike,
  * since what they promise is one answer whichever way it was reached. Four of
- * the six are served — one bucket, two merged by rank, one attribute off each
- * element, and every attribute of the document, read off the check. The other
- * two are refused, at the root and on a positional predicate.
+ * the seven are served — one bucket, two merged by rank, one attribute off
+ * each element, and every attribute of the document. The other three are
+ * refused: at the root, on a position, and on an attribute off no bucket.
  * @type {Array.<string>}
  */
 const DOORS = [
@@ -451,6 +463,7 @@ const DOORS = [
   kinds.corpus['unused-variable'].usage,
   '/xsl:stylesheet/xsl:variable',
   '//xsl:variable[1]',
+  '//xsl:*/@name',
 ]
 
 /**
