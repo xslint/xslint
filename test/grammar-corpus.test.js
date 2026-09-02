@@ -3,6 +3,49 @@
  * SPDX-License-Identifier: MIT
  */
 
+/*
+ * The two gates #680 stands in front of the parser, asked of every
+ * expression the repository carries — 644 of them, from the committed
+ * stylesheets, from the ones the packs hold inline, and from the selectors
+ * the declarative checks are themselves written in. **Round trip**: a
+ * parse's tokens join back into the expression byte for byte, every node's
+ * span slices to its own text, and every child nests inside its parent in
+ * order — the last of those is what slicing cannot see, since shifting a
+ * node and its children together still slices. **Acceptance diff**: the
+ * verdict is diffed against the engine's, asked as `compiles` and asked
+ * alone — a respelling retry sits on the engine's side of that comparison
+ * and hides every expression fontoxpath refuses and the squeeze rescues.
+ * Forty do, and they are #639's family exactly, a spaced axis or a
+ * `namespace::`; asking `compiles(xpath) || compiles(squeezed(xpath))`,
+ * which is what `isValid` was until #732, cancels every one and reports the
+ * evidence for retiring the retry as absent from the tree, when what is
+ * absent is a comparison that can see it. So the forty are *subtracted*
+ * rather than cancelled: `insists` in `test/strictness.js` reads the class
+ * off the token stream, `EXPLAINED` takes it out of the diff, and what is
+ * left over is annotated one line each in `GAPS`, naming the side that
+ * accepts and the gap it stands for, so a new one and a stale one both turn
+ * red. Subtracting a class can hide a defect the way the retry did, in one
+ * direction, and that direction is gated: the class may only ever excuse
+ * the grammar accepting where the engine refuses, never the engine
+ * accepting where the grammar refuses, which would be an invented defect
+ * excused (#738). Eleven stood when #680 wrote that list and **none** does
+ * now, which is the measure working rather than the measure going quiet:
+ * nine were a parenthesized step (#711), one a node comparison (#724) and
+ * the last a name no NCName can spell (#708). An empty list is an
+ * assertion, not the absence of one — every expression the repository
+ * carries takes the same verdict from both sides, so a disagreement of
+ * either kind turns it red — and it does not claim the two agree
+ * everywhere, the corpus reaching only what the corpus holds, which is why
+ * the classes #708 closed that no fixture spells are pinned in
+ * `test/grammar.test.js` instead. The corpus is gated as well, because a
+ * sweep can pass by finding nothing: each of the three sources must still
+ * yield what it did when the gates were written, and the class must still
+ * have forty expressions to subtract. The selectors are one expression in
+ * twelve and held ten of the original eleven gaps — the checks are written
+ * in an idiom the stylesheets never use, which is why a corpus of
+ * stylesheets alone (#708) agreed completely and proved little.
+ */
+
 const {parsed} = require('../src/grammar')
 const {compiles} = require('../src/xpath')
 const {insists} = require('./strictness')

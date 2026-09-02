@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {verdict} = require('../scripts/budget')
+const {verdict, TICK} = require('../scripts/budget')
 const {yaml} = require('../src/helpers')
 const path = require('path')
 const fs = require('fs')
@@ -26,24 +26,22 @@ const WORKFLOW = path.resolve(
 const CORPORA = yaml.parsedFromFile(WORKFLOW).jobs.lint.strategy.matrix.include
 
 /**
- * The dearest each corpus has read on the runner the nightly tier runs on,
- * over nine runs — two nightly, seven dispatched — of the tree #818 left. A
- * budget answers to this and not to a developer machine, a share cancelling a
- * machine's speed where a wall clock carries it, and the dearest of nine is
- * what a ceiling answers to, one runner reading one tree twofold apart (#827).
+ * The dearest milliseconds each corpus has read on the runner the nightly tier
+ * runs on, over six runs dispatched on the clock #827 gave it. A budget answers
+ * to this and not to a developer machine, a share cancelling a machine's speed
+ * where a wall clock carries it, and each budget stands under twice its own.
  * @type {{[name: string]: number}}
  */
-const RUNS = {docbook: 8, tei: 8, ditaot: 3}
+const RUNS = {docbook: 6923, tei: 6732, ditaot: 3311}
 
 /**
- * The cheapest of those same readings, which is the side a ratchet can turn
- * red from. A budget of `SLACK` times a reading fires on everything below a
- * quarter of it, so one must stand above the dearest night and stay quiet on
- * the cheapest, or a fast night reddens a tree nobody has touched: these leave
- * it firing at 3, 3 and 1 and under, a margin of one tick but TEI's two (#827).
+ * The cheapest of those same readings, which is the side a ratchet can turn red
+ * from. A budget of `SLACK` times a reading fires on everything below a quarter
+ * of it, so one must stand above the dearest night and leave `MARGIN` under the
+ * cheapest, or a fast night reddens a tree nobody has touched (#827).
  * @type {{[name: string]: number}}
  */
-const CHEAPEST = {docbook: 4, tei: 5, ditaot: 2}
+const CHEAPEST = {docbook: 4666, tei: 5013, ditaot: 2830}
 
 /**
  * What a verdict has to say about a reading, one row per side of the window and
@@ -55,33 +53,59 @@ const CHEAPEST = {docbook: 4, tei: 5, ditaot: 2}
 const CASES = [
   {
     name: 'reports a run that has passed its budget',
-    spent: 41, budget: 40,
-    said: 'linting docbook took 41s, past its 40s budget',
+    spent: 41000, budget: 40000,
+    said: 'linting docbook took 41000ms, past its 40000ms budget',
   },
   {
     name: 'says nothing about a run standing exactly at its budget',
-    spent: 40, budget: 40, said: '',
+    spent: 40000, budget: 40000, said: '',
   },
   {
-    name: 'says nothing about a run one second inside its budget',
-    spent: 39, budget: 40, said: '',
+    name: 'says nothing about a run one tick inside its budget',
+    spent: 39999, budget: 40000, said: '',
   },
   {
     name: 'reports a budget standing further than SLACK above its run',
-    spent: 9, budget: 40,
-    said: 'linting docbook took 9s where its budget allows 40s, which is ' +
-      'over 4 times the run: the budget has stopped being a bar and wants ' +
-      're-cutting from a measurement',
+    spent: 9000, budget: 40000,
+    said: 'linting docbook took 9000ms where its budget allows 40000ms, ' +
+      'which is over 4 times the run: the budget has stopped being a bar ' +
+      'and wants re-cutting from a measurement',
   },
   {
     name: 'says nothing about a budget standing exactly SLACK above it',
-    spent: 10, budget: 40, said: '',
+    spent: 10000, budget: 40000, said: '',
   },
   {
-    name: 'says nothing about a reading of no seconds at all',
-    spent: 0, budget: 40, said: '',
+    name: 'says nothing about a reading of no milliseconds at all',
+    spent: 0, budget: 40000, said: '',
   },
 ]
+
+/**
+ * The largest share of a corpus's own reading one tick of the tier's clock may
+ * stand at. A reading is true to within a tick, so a clock coarse beside what
+ * it times spends the window on quantisation before the runner's own variance
+ * is paid for: whole seconds put a tick at half of what DITA-OT costs where
+ * milliseconds put it at a 2830th, and this is the middle of the two (#827).
+ * @type {number}
+ */
+const RESOLUTION = 0.013
+
+/**
+ * How much faster than the cheapest night on record a run may be before the
+ * ratchet under it fires. Whole seconds left DocBook-XSL none at all — the
+ * budget fired at the cheapest reading itself, so what stood under it was the
+ * clock and not a margin — where milliseconds leave 1.44 (#827).
+ * @type {number}
+ */
+const MARGIN = 1.2
+
+/**
+ * The `date` format the tier's step has to time with, so that `TICK` states the
+ * clock the workflow keeps rather than one this suite believes it does.
+ * @type {string}
+ */
+const CLOCK = '%s%3N'
 
 describe('budget', function() {
   CORPORA.forEach((one) => {
@@ -116,16 +140,15 @@ describe('budget', function() {
     )
   })
   CORPORA.forEach((one) => {
-    it(`stays quiet on the cheapest ${one.name} the runner has given`,
-      function() {
-        assert.equal(
-          verdict(one.name, CHEAPEST[one.name], one.budget),
-          '',
-          'a nightly budget fires its own ratchet on a reading its corpus ' +
-            'has already given, so a fast night reddens a build on a tree ' +
-            'nobody has touched',
-        )
-      })
+    it(`keeps a margin under the cheapest ${one.name} on record`, function() {
+      assert.equal(
+        verdict(one.name, CHEAPEST[one.name] / MARGIN, one.budget),
+        '',
+        'a nightly budget fires its own ratchet a margin under a reading its ' +
+          'corpus has already given, so a fast night reddens a build on a ' +
+          'tree nobody has touched',
+      )
+    })
   })
   it('gives every budget a reading of the runner to answer to', function() {
     assert.deepEqual(
@@ -135,6 +158,23 @@ describe('budget', function() {
       [],
       'a budget stands over a corpus this suite holds no runner reading ' +
         'for, so nothing says the budget is still a bar',
+    )
+  })
+  CORPORA.forEach((one) => {
+    it(`resolves ${one.name} finely enough to measure it`, function() {
+      assert.ok(
+        TICK / CHEAPEST[one.name] <= RESOLUTION,
+        'the tier times a corpus with a clock too coarse to resolve it, so a ' +
+          'reading of it is quantisation before it is a measurement',
+      )
+    })
+  })
+  it('times each corpus with the clock a tick is written in', function() {
+    assert.ok(
+      fs.readFileSync(WORKFLOW, 'utf-8').includes(`date +${CLOCK}`),
+      'the nightly step times its run with a clock other than the one ' +
+        'scripts/budget.js states a tick of, so every bar written in ticks ' +
+        'stands on a unit nothing holds it to',
     )
   })
   it('judges each budget through the script the workflow calls', function() {

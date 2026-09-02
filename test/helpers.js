@@ -3,6 +3,52 @@
  * SPDX-License-Identifier: MIT
  */
 
+/*
+ * The only door to a child process in the suite:
+ * `runXslint`/`xslintStatus`/`xslintStreams` run the CLI, `xcopped` judges
+ * every stylesheet a directory holds, asking xcop over the directory rather
+ * than once per file — 0.1 seconds against 25 (#687) — and rather than over
+ * a list of paths, `cmd.exe` taking a command line of 8191 characters where
+ * 356 of these are four times that. What one run cannot give is a verdict
+ * apiece, xcop stopping at the first stylesheet it refuses, so it asks
+ * again from there: a refusal is recorded against the file it names and
+ * that file is renamed out of the five extensions xcop globs, which makes a
+ * sound directory one process, a directory holding two bad files three, and
+ * a bad file the only thing that ever fails (#694). A file no run mentioned
+ * takes the whole of what xcop printed as its verdict rather than asserting
+ * against nothing, `cmdAvailable` answers whether a tool is there by
+ * running it, and `walkedWith(dir, kilobytes)` runs `allFilesFrom` in a
+ * process whose JavaScript stack is that small. That last one hands back
+ * the largest spread the stack allows beside the walk's own answer, because
+ * a walk that survives proves nothing unless the trap was armed and how
+ * many arguments a spread carries is V8's business — a Node that moved the
+ * number would otherwise leave the test quietly proving nothing (#758). The
+ * kilobytes are the smallest stack worth asking for rather than the stack:
+ * node needs some seventy to start here and more where a platform's frames
+ * are wider, so the ask doubles until one answers and the stack that did
+ * comes back, for a caller that has a second question to put to the same
+ * size. `xslintUnread` is the one reader here that deliberately does not
+ * read: it leaves the pipe alone until stderr says how many defects were
+ * found, so the run is left writing into a pipe nobody is emptying, which
+ * is the write `process.exit` abandons (#767). What it must not do is leave
+ * that data there for somebody else to flush. It reads in **paused** mode
+ * with a `'readable'` listener standing on it from the start and takes the
+ * data with `read` once the stall is over, because one `process.nextTick`
+ * after a child exits `flushStdio` resumes every readable stdio stream of
+ * it — deliberately, so the stream can reach eof — and `resume` sets
+ * `state.flowing` to `!state.readableListening`, so a listener is what
+ * makes the paused mode node's own rather than merely this reader's.
+ * Attaching the reader at the end of the stall instead left that resume
+ * flowing, so wherever the run finished first the whole report was read and
+ * thrown away: the row asking for a report narrower than the pipe lost
+ * every line of it, and the wider row lost every line on a host whose
+ * buffer takes those 147,620 bytes whole, rultor's docker container among
+ * them — eleven merges in a row reading `-0` on a commit six GitHub runners
+ * passed (#822). Behind the trigger stands a fallback, since a run that
+ * never reaches the summary would otherwise leave the pipe unread and the
+ * promise unsettled.
+ */
+
 const fs = require('fs')
 const path = require('path')
 const {execSync, spawn, spawnSync} = require('child_process')
