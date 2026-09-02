@@ -478,7 +478,7 @@ answers a namespace (#784) — pack/test coverage, the retirement of `mature` ac
 fast/deep split of the suite itself, and that no test writes a scratch file outside a temporary
 directory. That `mature` gate is a refusal rather than a floor, and became one at #865: what stood
 there asked its four questions behind an `if (check.mature !== true) continue` and so skipped all
-sixty-seven checks, reporting as passing while asserting nothing — #645's and #607's own shape,
+sixty-eight checks, reporting as passing while asserting nothing — #645's and #607's own shape,
 inside the file written to catch it. A key nothing carries is a key nothing refuses either, so the
 questions could be re-armed by writing it back; what the gate asks now is that no check of any kind
 carries it. A
@@ -668,7 +668,7 @@ times in one. Nine notes moved to make the bar quiet — `xpath-linter.js`, `roo
 and `corpus-linter.js` out of `src/linters/CLAUDE.md`, and `scaling.test.js`, `predicates.test.js`,
 `helpers.js`, `grammar-corpus.test.js`, `grammar-shapes.test.js` and `workflows.test.js` out of this
 one. A tenth was refused by the valve rather than chosen against: `test/conformance.test.js` stands
-at 958 lines and its note is 150 more, and `max-lines` counts comments, so a section can outgrow the
+at 926 lines and its note is 150 more, and `max-lines` counts comments, so a section can outgrow the
 file it is about and relief has a floor — what answers that one is the note being cut, not moved.
 What that leaves is 2,800 characters of headroom, off a chain that is this file's own rather than
 `src/linters/`: six of those nine came out of this one, and the note #855 added went back in. It is
