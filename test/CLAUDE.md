@@ -3,7 +3,8 @@
 What each instrument of the suite measures, and the evidence every bar in it stands on.
 The bars themselves, and the rules for placing one, are in the root `CLAUDE.md`; this file
 is the derivation under each. A bar re-derived without its reading recorded here is a bar
-nobody can check.
+nobody can check. A note that outgrew the chain stands at the top of its own file instead,
+so an instrument the root index names with no section here carries its own (#844).
 
 ## Speed
 
@@ -419,9 +420,37 @@ of two on a tree nothing has touched — and since `SLACK` is four, a window can
 span at most, which leaves that observed spread filling half of it and the ratchet standing one tick
 under the cheapest night rather than two. DITA-OT is the same thing at the clock's own edge: 2 to 3
 seconds where `date +%s` counts in whole ones is a third to a half of the reading in quantisation
-alone, so a bar cut from it is cut partly from noise. Both windows hold — [4, 16] and [2, 6] — so
-this cut stands on the clock the tier has, and whether a whole-second clock can measure a
-two-second corpus at all is what #827 stands rescoped to, the cut itself having closed #826 alone.
+alone, so a bar cut from it is cut partly from noise. Both windows held — [4, 16] and [2, 6] — so
+that cut stood on the clock the tier had, and #827 stands rescoped to the clock itself, the cut
+having closed #826 alone.
+
+`date +%s%3N` is that clock, and the first thing it settles is the spread. Six dispatched runs on
+the tree #849 left give 5899, 6923, 5746, 4666, 6888 and 6859 ms over DocBook-XSL, 6732, 6454,
+6463, 6287, 6381 and 5013 over TEI, and 2997, 3056, 2878, 3311, 3290 and 2830 over DITA-OT — spans
+of 1.48, 1.34 and 1.17 rather than the factor of two whole seconds reported, since a true 4666
+reads as 4 and a true 6923 as 6 and the grid widens the pair before anything measures it. The
+margin was a grid artefact the same way: under the old 16000 a millisecond DocBook-XSL stands 1.17
+above the ratchet, where 4 against a threshold of 4 says exactly none. Twice the dearest is
+**13000, 13000 and 6000**, whose quarters are 3250, 3250 and 1500 against cheapest nights of 4666,
+5013 and 2830 — margins of 1.44, 1.54 and 1.89, each budget standing between 1.81 and 1.93 times
+its own dearest reading.
+
+That margin is the bar the tick used to stand in for. `MARGIN` in `test/budget.test.js` asks each
+budget to stay quiet on a night 1.2 times faster than the cheapest on record — the geometric middle
+of the 1.00 the whole-second cut recorded and the 1.44 this one leaves — and `RESOLUTION` asks a
+tick to stand under 0.013 of what its corpus costs, the middle of DITA-OT's half and its 2830th.
+The row those two replace asked for one tick of margin, which a millisecond grid turns into a
+question no tree can fail; and since both are written in ticks, a third row reads the workflow for
+the `date +%s%3N` that makes a tick what `TICK` says it is. On master all three redden — every
+corpus fails `RESOLUTION`, DocBook-XSL fails `MARGIN`, and the step spells `date +%s`.
+
+Three questions #827 parked are answered by that table rather than by a change. A **median of
+several runs** narrows nothing a 1.48 span cannot already carry inside a fourfold window, and would
+cost the tier a clone a night to defend a margin that is 1.44 at its worst. **`SLACK` at four** is
+a span the widest observed spread fills a third of, leaving 1.44 under and 1.88 over, so it holds
+for a wall clock as it does for a share, and a bar raised on nobody's failure is a bar loosened.
+And **DITA-OT** is not too small to gate: at 2830 ms a tick is one part in 2830, and its margin is
+the best of the three. The corpus was never what was too small.
 
 ## `test/conformance.test.js`
 
@@ -547,175 +576,92 @@ standing within `NEARBY` characters of the file's own name, so the drift above i
 reading and not as so many lines: the gate cannot tell what a ticket once measured from what the
 file stands at today, and a history spelled the other way is a stale claim it rightly fails.
 
-## `test/predicates.test.js`
-
-Two tables, and the second is the load-bearing one. `COMPILED` names every spelling the vocabulary
-answers off the walk, so a construct that stops being served turns red rather than quietly costing
-a fontoxpath call per candidate again. `REFUSED` names every spelling it does not, each beside what
-puts it out of reach, and is a ratchet from the other side: an entry that *becomes* reachable fails,
-so the list cannot sit there reading like a limit still in force after the limit has gone. It caught
-its author — widening the vocabulary to sibling and ancestor axes, a path in a value position and
-two string functions turned five `REFUSED` rows red in one run, which is the whole reason they are
-rows and not a sentence.
-
-A third gate stands beside them and its subject is the module's own header note. Relocating a
-derivation into one — which is what the bar below forced here — takes it out of the reach of the
-gate holding a guide's counts to the code, `DOCUMENTS` naming guides and the README and no source
-file but `src/attributes.js`. So the two counts that note states of the vocabulary's reach, 28 of
-38, are computed here from `checks.json` and held to it: every branch a selector splits into that
-the walk serves, parted by the `predicated` a run parts with, each predicate asked once. Both
-kinds are read, a corpus check's declaration and usage reaching `predicateOf` as a per-file
-selector does — the `xpath` kind alone answers 26 of 35, which is no number a run ever sees, and
-counting it that way is how the note came to say 33 and 24. Two sentences carry the pair in
-opposite orders, so both are read and rewording either fails, the lesson `DERIVED` records one
-section down.
-
-Neither table asks whether an answer is *correct*: that is `CANDIDATES` in `test/selectors.test.js`,
-which asks fontoxpath what each spelling selects over `candidates.xsl` and fails where serving
-answers anything else — the oracle, 102 rows here against 32 before, and armed against the engine
-before a line of the compiler existed. A row there is a question rather than a claim, so enriching
-the fixture can only strengthen it; the fixture grew five variables and a non-XSLT child so that
-presence, a literal sequence, a string length, a parent and `count(*)` each split the nine
-candidates unevenly. One thing it cannot hold is a prefix `src/xpath.js` does not bind:
-`my:thing` stands in the document for `count(*)` to see and is named in no selector, the engine
-raising `XPST0081` on an unbound prefix rather than answering.
-
-What a question cannot reach is what nobody hands it, and that is how three defects walked past 87
-rows of it. Two things a table of *predicates* cannot supply: the **characters** the fixture is
-written in, every name in it having stood inside the Basic Multilingual Plane where `.length` is
-XPath's `string-length` by coincidence, so a shipped check went silent on a name of one astral
-character and the row asking a length of one passed — a test asserts the fixture still holds such a
-name, an arming being no assertion until something fails without it; and the **kind** of node a
-predicate is handed, `AXIS` being one element step, so no row could reach an attribute's missing
-parent or a root element's document standing in for one. `HEADED` is the answer to that second
-one: ten rows carrying a head of their own, `//@*` read off the check that spells it, and
-`answered` compares a **place** and no longer a name, an attribute having no `getAttribute` to
-answer with at all.
-
 ## `test/guides.test.js`
 
 The size and the shape of the guides themselves, and so the one gate whose subject is this
 repository's own documentation (#821). The root guide held 198,202 characters before it, most of
 them a per-module archive loaded on every turn, including every turn that never opens the module;
 and the gate that read that file then — holding its counts of `ATTRIBUTES` and `PATTERNS` to the
-lists in the code — said nothing at all about its size, in the file that says every convention must
-be machine-enforced. What answers it is a relocation and never a summary, those derivations being
-what stops a later session loosening a bar that was placed on evidence: each note moved into the
-`CLAUDE.md` of the directory its module sits in, where it arrives when that directory is opened, and
-the root keeps the rules, the bars, and one line per file. `LOADED` is the 150,000 characters the
-harness warns past, and what arrives against it is a **chain** and not a pair: the root guide, and
-the guide of every directory on the way down to a file the turn touches, each injected once. That
-was measured rather than assumed — two throwaway guides planted at `src/resources/` and
-`src/resources/motives/`, neither of them ever read as a file, both arrived the moment a motive
-under them was opened. The first spelling of the bar weighed the root against the dearest single
-guide instead, which is a whole directory short: it read 130,933 and called that 0.87 of the bar
-while a turn touching `src/linters/` was loading 157,504 and over it. So the two dearest notes moved
-one step further down, out of `src/CLAUDE.md` and into the top of `src/grammar.js` and
-`src/syntax.js` — 24,681 characters — and the dearest chain is that same one at 149,062, which is
-0.99. What answers a chain reaching the bar is that move again, a module's derivation into the
-file-header note of the module itself, and never a bar widened to fit what has grown past it: a
-docblock holds five lines of description since #832, so prose that has outgrown a guide does not
-simply move into one instead. A `CEILING` of half the bar stood beside it until it was seen to be a
-gate no tree could fail: the root stands in every chain, so the chain holding it above weighs each
-other guide against the bar less what stands over it — 32,936 for `src/linters/CLAUDE.md`, where
-half of the bar is 75,000 — and holds the root itself to 72,416, a number derived from the dearest
-chain rather than chosen. A gate no tree can fail is removed and not kept (#750, #660). All four of
-those figures — the chain, its ratio, and the two allowances — follow from three file sizes, so one
-guide growing moves every one of them, and none of them turned red when one did: #811's fourth
-phase added 3,421 characters to `src/CLAUDE.md` and left the chain reading 140,286 where two
-documents still said 136,418, the allowances 3,868 out, and the ratio 0.94 where three places said
-0.91. The bar itself was quiet throughout, as it is until 150,000, which is why this is the third
-time the same class of figure has drifted. `DERIVED` in `test/guides.js` holds each of them now,
-red from both sides in the way `SPRAWLING` and `UNINDEXED` are: a figure the tree disagrees with
-fails, and so does a figure standing in a document the row does not name, since a claim nobody is
-reading is not a claim being kept. That second half is a **set** and not an `any`, which is the
-whole of it — the chain and its ratio are carried twice, `test/CLAUDE.md` saying "the dearest
-chain is that same one at" where `test/guides.js` says "the dearest reads", so a gate asking
-whether
-*some* file still matches is satisfied by the untouched one. Rewording only the first, to say
-136,418 and 0.91 again, left the figure wrong by 3,868 and the ratio by 0.03 with the suite reading
-16 passing: the drift gate had stopped reading that sentence and the anchor gate was happy off the
-other file. Each row therefore names every file expected to carry it and the matched set is
-compared whole, so rewording either carrier fails, and so does the claim appearing in a document no
-row names. Growing a guide by 4,000 characters fails all four rows at once. The asking is
-`matchAll` and never `test`, a global pattern leaving `lastIndex` where it stopped and answering
-`false` to the very next question about the same prose. What that leaves is 938 characters of
-headroom, and the paragraph above stopped being advice while this change was being written: #846
-grew `src/linters/CLAUDE.md` by 3,113 and the merged chain read 150,437, so the bar failed on a
-tree whose two authors had each stayed under it. The prescribed relief is the one taken —
-`src/predicates.js`'s derivation went into the file-header note of `src/predicates.js`, 2,507
-characters out of the chain and none out of the record — which is the third note to move that way
-after `src/grammar.js` and `src/syntax.js`, and the first to move because the bar said so rather
-than in the change that wrote it. The index
-answers to the tree from both sides, every path it names existing and every module under `src/`
-being named by a row — the twenty-one linters by one of them, the `*` standing for a name and never
-for a directory — and a note answers to the index and to its own directory both, so a derivation the
-root has stopped pointing at turns red, and so does one standing where the reader who needs it will
-never load it. `test/guides.js` is the walk itself rather than a list of the five, since a guide
-left off a hand-written list would take its claims out of every gate at once, and the reading of a
-claim stands beside the walk: `worded` flattening a wrapped paragraph into one line, `DOCUMENTS`
-naming the guides and the README together, `NEARBY` bounding how far past a name a number may stand
-and still be a claim about it. Both gates ask it, so a count relocated into a guide is judged where
-it went, and so is the length a guide states of the file the line cap is lifted off, which is
-`test/conformance.test.js`'s to ask beside the cap it is an exemption from. The counts came the
-other way at that same sitting: `ATTRIBUTES` and `PATTERNS` are held to the lists in the code from
-here now, the file that held them having reached the 1000 lines it caps every other file at (#825).
-
-## `test/grammar-corpus.test.js`
-
-The two gates #680 stands in front of the parser, asked of every expression the repository carries —
-644 of them, from the committed stylesheets, from the ones the packs hold inline, and from the
-selectors the declarative checks are themselves written in. **Round trip**: a parse's tokens join
-back into the expression byte for byte, every node's span slices to its own text, and every child
-nests inside its parent in order — the last of those is what slicing cannot see, since shifting a
-node and its children together still slices. **Acceptance diff**: the verdict is diffed against the
-engine's, asked as `compiles` and asked alone — a respelling retry sits on the engine's side of that
-comparison and hides every expression fontoxpath refuses and the squeeze rescues. Forty do, and they
-are #639's family exactly, a spaced axis or a `namespace::`; asking
-`compiles(xpath) || compiles(squeezed(xpath))`, which is what `isValid` was until #732, cancels
-every one and reports the evidence for retiring the retry as absent from the tree, when what is
-absent is a comparison that can see it. So the forty are *subtracted* rather than cancelled:
-`insists` in `test/strictness.js` reads the class off the token stream, `EXPLAINED` takes it out of
-the diff, and what is left over is annotated one line each in `GAPS`, naming the side that accepts
-and the gap it stands for, so a new one and a stale one both turn red. Subtracting a class can hide
-a defect the way the retry did, in one direction, and that direction is gated: the class may only
-ever excuse the grammar accepting where the engine refuses, never the engine accepting where the
-grammar refuses, which would be an invented defect excused (#738). Eleven stood when #680 wrote that
-list and **none** does now, which is the measure working rather than the measure going quiet: nine
-were a parenthesized step (#711), one a node comparison (#724) and the last a name no NCName can
-spell (#708). An empty list is an assertion, not the absence of one — every expression the
-repository carries takes the same verdict from both sides, so a disagreement of either kind turns it
-red — and it does not claim the two agree everywhere, the corpus reaching only what the corpus
-holds, which is why the classes #708 closed that no fixture spells are pinned in
-`test/grammar.test.js` instead. The corpus is gated as well, because a sweep can pass by finding
-nothing: each of the three sources must still yield what it did when the gates were written, and the
-class must still have forty expressions to subtract. The selectors are one expression in twelve and
-held ten of the original eleven gaps — the checks are written in an idiom the stylesheets never use,
-which is why a corpus of stylesheets alone (#708) agreed completely and proved little.
-
-## `test/grammar-shapes.test.js`
-
-The same acceptance diff as `grammar-corpus.test.js`, asked of 14112 expressions nobody wrote: every
-shape a head and one or two tails spell, spaced and glued. A corpus covers only what somebody has
-already written down, and every class #740 closed stood outside the repository's — so `GAPS` read
-empty while the grammar refused `text() + 1` and accepted `a?b`, and this sweep parted from the
-engine 1603 times on the same head. Both classes it was left with are closed by #742, and a
-generated sweep covers only what its own lists spell, which is the corpus limit one level up: the
-second was annotated `\? (WORDS)` over a `TAILS` naming no `+` at all, so `xs:integer+ and @b` stood
-outside its own net, and widening the annotation to `[?+]` uncovered
-`cast as xs:integer? instance of x` behind it. A predicate too broad to be a class is one failure
-mode, since an annotation that swallows the next defect turns nothing red; too narrow is the other,
-and this file was in it. What is annotated now is not a gap in the grammar at all — fontoxpath
-accepts a word run against the *arity* of a named function reference, where Saxon-HE 12.5 answers
-`abs#1div 2` with XPST0003 exactly as it answers `1div 2`. One engine's verdict is evidence and not
-an answer, which is why a second arbiter settles it; `net.sf.saxon.s9api`'s `XPathCompiler` judges
-them in well under a second, and reading its *code* rather than its exit status is what tells a
-syntax error from the undeclared prefix or unknown function behind one. That cost is why the fast
-half now answers in under two seconds rather than under one. The lists grew by four heads and three
-tails at #753, from 8064 shapes to 14112: a kind test carrying arguments is a head now, and the item
-types whose brackets hold a type are tails, so the productions that read them stand inside the net
-rather than beside it. The gate on the count moved with them, since a sweep that has been narrowed
-reads exactly like one that agrees.
+lists in the code — said nothing at all about its size, in the file that says every convention
+must be machine-enforced. What answers it is a relocation and never a summary, those derivations
+being what stops a later session loosening a bar that was placed on evidence: each note moved into
+the `CLAUDE.md` of the directory its module sits in, where it arrives when that directory is
+opened, and the root keeps the rules, the bars, and one line per file. `LOADED` is the 150,000
+characters the harness warns past, and what arrives against it is a **chain** and not a pair: the
+root guide, and the guide of every directory on the way down to a file the turn touches, each
+injected once. That was measured rather than assumed — two throwaway guides planted at
+`src/resources/` and `src/resources/motives/`, neither of them ever read as a file, both arrived
+the moment a motive under them was opened. The first spelling of the bar weighed the root against
+the dearest single guide instead, which is a whole directory short: it read 130,933 and called
+that 0.87 of the bar while a turn touching `src/linters/` was loading 157,504 and over it. So the
+two dearest notes moved one step further down, out of `src/CLAUDE.md` and into the top of
+`src/grammar.js` and `src/syntax.js` — 24,681 characters — and the dearest chain is that same one
+at 133,564, which is 0.89. What answers a chain reaching the bar is that move again, a module's
+derivation into the file-header note of the module itself, and never a bar widened to fit what has
+grown past it: a docblock holds five lines of description since #832, so prose that has outgrown a
+guide does not simply move into one instead. A `CEILING` of half the bar stood beside it until it
+was seen to be a gate no tree could fail: the root stands in every chain, so the chain holding it
+above weighs each other guide against the bar less what stands over it — 32,769 for
+`src/linters/CLAUDE.md`, where half of the bar is 75,000 — and holds the root itself to 88,081, a
+number derived from the dearest chain rather than chosen. A gate no tree can fail is removed and
+not kept (#750, #660). All four of those figures — the chain, its ratio, and the two allowances —
+follow from three file sizes, so one guide growing moves every one of them, and none of them
+turned red when one did: #811's fourth phase added 3,421 characters to `src/CLAUDE.md` and left
+the chain reading 140,286 where two documents still said 136,418, the allowances 3,868 out, and
+the ratio 0.94 where three places said 0.91. The bar itself was quiet throughout, as it is until
+150,000, which is why this is the third time the same class of figure has drifted. `DERIVED` in
+`test/guides.js` holds each of them now, red from both sides in the way `SPRAWLING` and
+`UNINDEXED` are: a figure the tree disagrees with fails, and so does a figure standing in a
+document the row does not name, since a claim nobody is reading is not a claim being kept. That
+second half is a **set** and not an `any`, which is the whole of it — the chain and its ratio are
+carried twice, `test/CLAUDE.md` saying "the dearest chain is that same one at" where
+`test/guides.js` says "the dearest reads", so a gate asking whether *some* file still matches is
+satisfied by the untouched one. Rewording only the first, to say 136,418 and 0.91 again, left the
+figure wrong by 3,868 and the ratio by 0.03 with the suite reading 16 passing: the drift gate had
+stopped reading that sentence and the anchor gate was happy off the other file. Each row therefore
+names every file expected to carry it and the matched set is compared whole, so rewording either
+carrier fails, and so does the claim appearing in a document no row names. Growing a guide by
+4,000 characters fails all four rows at once. The asking is `matchAll` and never `test`, a global
+pattern leaving `lastIndex` where it stopped and answering `false` to the very next question about
+the same prose. What that leaves is 16,436 characters of headroom, and the paragraph above stopped
+being advice while this change was being written: #846 grew `src/linters/CLAUDE.md` by 3,113 and
+the merged chain read 150,437, so the bar failed on a tree whose two authors had each stayed under
+it. The prescribed relief is the one taken — `src/predicates.js`'s derivation went into the
+file-header note of `src/predicates.js`, 2,507 characters out of the chain and none out of the
+record — which is the third note to move that way after `src/grammar.js` and `src/syntax.js`, and
+the first to move because the bar said so rather than in the change that wrote it. It said so a
+merge too late, though, which is the half #844 answers: a gate that fires on the breach fires
+where the relief no longer fits, the tree having to be red for as long as a relocation takes to
+land. `ROOM` moves it off the breach, 10,000 characters of headroom, so a chain reddens at 140,000
+while there is still room to answer it. It moves the bar rather than standing a second one beside
+it: a breach gate left at 150,000 could not fire while this one is green, which is what took
+`CEILING` out, so the two are one gate whose message names both numbers. It is measured off the
+tree's own growth rather than picked: over the 45 merges between #823 giving the chain its room
+back and this one, the most a day of ordinary work added to the dearest chain was 5,298, and
+10,000 is 1.89 of that — inside the half-again-to-twice band every bar here answers to, and held
+to it from both sides by `GROWN`, since a margin under half again of a day is one a day crosses
+without warning and one past twice it reddens a tree with room to spare. A day is the unit because
+that is what a relocation takes to land, this tree merging three to eight times in one. Nine notes
+moved to make the bar quiet — `xpath-linter.js`, `root-template-linter.js` and `corpus-linter.js`
+out of `src/linters/CLAUDE.md`, and `scaling.test.js`, `predicates.test.js`, `helpers.js`,
+`grammar-corpus.test.js`, `grammar-shapes.test.js` and `workflows.test.js` out of this one. A
+tenth was refused by the valve rather than chosen against: `test/conformance.test.js` stands at
+958 lines and its note is 150 more, and `max-lines` counts comments, so a section can outgrow the
+file it is about and relief has a floor — what answers that one is the note being cut, not moved.
+The index answers to the tree from both sides, every path it names existing and every module under
+`src/` being named by a row — the twenty-one linters by one of them, the `*` standing for a name
+and never for a directory — and a note answers to the index and to its own directory both, so a
+derivation the root has stopped pointing at turns red, and so does one standing where the reader
+who needs it will never load it. `test/guides.js` is the walk itself rather than a list of the
+five, since a guide left off a hand-written list would take its claims out of every gate at once,
+and the reading of a claim stands beside the walk: `worded` flattening a wrapped paragraph into
+one line, `DOCUMENTS` naming the guides and the README together, `NEARBY` bounding how far past a
+name a number may stand and still be a claim about it. Both gates ask it, so a count relocated
+into a guide is judged where it went, and so is the length a guide states of the file the line cap
+is lifted off, which is `test/conformance.test.js`'s to ask beside the cap it is an exemption
+from. The counts came the other way at that same sitting: `ATTRIBUTES` and `PATTERNS` are held to
+the lists in the code from here now, the file that held them having reached the 1000 lines it caps
+every other file at (#825).
 
 ## `test/strictness.js`
 
@@ -730,40 +676,6 @@ thirteen axis kinds are borrowed from `src/tokens.js`'s `AXIS_KINDS` rather than
 second time. What it is not is an oracle of validity — `child ::` holds a spaced separator and is no
 expression — so a gate reads it *beside* `parsed`, never instead of it, and
 `test/strictness.test.js` pins that with the class it names and refuses all the same.
-
-## `test/helpers.js`
-
-The only door to a child process in the suite: `runXslint`/`xslintStatus`/`xslintStreams` run the
-CLI, `xcopped` judges every stylesheet a directory holds, asking xcop over the directory rather than
-once per file — 0.1 seconds against 25 (#687) — and rather than over a list of paths, `cmd.exe`
-taking a command line of 8191 characters where 356 of these are four times that. What one run cannot
-give is a verdict apiece, xcop stopping at the first stylesheet it refuses, so it asks again from
-there: a refusal is recorded against the file it names and that file is renamed out of the five
-extensions xcop globs, which makes a sound directory one process, a directory holding two bad files
-three, and a bad file the only thing that ever fails (#694). A file no run mentioned takes the whole
-of what xcop printed as its verdict rather than asserting against nothing, `cmdAvailable` answers
-whether a tool is there by running it, and `walkedWith(dir, kilobytes)` runs `allFilesFrom` in a
-process whose JavaScript stack is that small. That last one hands back the largest spread the stack
-allows beside the walk's own answer, because a walk that survives proves nothing unless the trap was
-armed and how many arguments a spread carries is V8's business — a Node that moved the number would
-otherwise leave the test quietly proving nothing (#758). The kilobytes are the smallest stack worth
-asking for rather than the stack: node needs some seventy to start here and more where a platform's
-frames are wider, so the ask doubles until one answers and the stack that did comes back, for a
-caller that has a second question to put to the same size. `xslintUnread` is the one reader here
-that deliberately does not read: it leaves the pipe alone until stderr says how many defects were
-found, so the run is left writing into a pipe nobody is emptying, which is the write `process.exit`
-abandons (#767). What it must not do is leave that data there for somebody else to flush. It reads
-in **paused** mode with a `'readable'` listener standing on it from the start and takes the data
-with `read` once the stall is over, because one `process.nextTick` after a child exits `flushStdio`
-resumes every readable stdio stream of it — deliberately, so the stream can reach eof — and `resume`
-sets `state.flowing` to `!state.readableListening`, so a listener is what makes the paused mode
-node's own rather than merely this reader's. Attaching the reader at the end of the stall instead
-left that resume flowing, so wherever the run finished first the whole report was read and thrown
-away: the row asking for a report narrower than the pipe lost every line of it, and the wider row
-lost every line on a host whose buffer takes those 147,620 bytes whole, rultor's docker container
-among them — eleven merges in a row reading `-0` on a commit six GitHub runners passed (#822).
-Behind the trigger stands a fallback, since a run that never reaches the summary would otherwise
-leave the pipe unread and the promise unsettled.
 
 ## `test/packs.js`
 
@@ -780,63 +692,6 @@ twice and the two answers compared, because the first spelling marked a name see
 pack was loud and so registered nothing at all for the two directories whose quiet pack comes first
 — a harness that silently asks nothing reads exactly like one where everything is covered.
 
-## `test/scaling.test.js`
-
-The speed gate (see **Speed**): charges every stage its own processor time over a generated corpus
-at 40 stylesheets and again at 160, and fails one that spends more of its own run than `SHARES`
-allows it — `xpath-linter` at 46%, `xpath-validator` at 26%, `xsl-validator` at 18% since #845
-took the version off a climb and put it on the record, lifting every share taken against a run
-a twelfth cheaper, or — where it has no entry there — grew more than `GROWTH`
-beside the middle stage's growth. Cost is the sharp question and growth the loose one, because #755
-changed a constant and not an exponent, which is a difference the two distributions show plainly:
-15.1% to 15.7% of the run against the quadratic's 26.5% to 31.9%, where in growth the fix reads 1.85
-to 2.04 and the quadratic 1.66 to 2.43 — the lowest reading being the one judged, growth ranks them
-backwards. What the cost is a share **of** is the whole run, the readings summed, and it was the
-middle reading until #777: fourteen of the eighteen stages lie within a factor of two and keep
-swapping places, so the pair landing 9th and 10th decided the denominator of every share, and #775 —
-which made one of those two cheaper and touched the cross-file linter not at all — lifted every
-share by about a quarter and failed the gate. Growth still divides by the median, and for the reason
-cost cannot: every ordinary stage grows about as the corpus does, so a median growth is any ordinary
-stage's growth, where an ordinary *cost* is a coin toss between two near-identical readings. The
-corpus is the assertion as much as the bar is. It is copied from one committed
-`test/resources/scaling/stylesheet.xsl`, the way every test stylesheet here lives in a file, with
-the number of each file substituted into every name it holds — so no two share an expression, a
-declaration or a namespace, and the memo in `src/syntax.js` cannot make the larger corpus look
-cheaper than it is. That stylesheet holds a namespace nothing uses, an import, a literal result
-element, one unused parameter, one pattern opening with a `//`, and a call of every shape a linter
-is about, because a stage handed nothing it reads cannot be measured at all: the three per-document
-linters were exactly that, 0.3 ms with a spread of 358%, until it grew namespaces and imports. How
-*much* of a construct it grows is its own question, and the parameter is where that showed. A pair
-in each of the four templates read fine for `parameter-linter` and took `corpus-linter` from 9.5 to
-14.4 of the middle reading, past the 13 the bar stood at before #777 — every `@name` being a usage,
-and three of the four cross-file checks giving `//@*`. So it is armed with the fewest attributes
-that still leave the new stage a defect to build, which is one unused parameter, and against the
-whole run that costs nothing a reading can see: 16.4% to 17.7% for the cross-file linter where
-master reads 14.4% to 18.1% on the same machine, and 0.94% to 1.07% for the new stage. The `//`
-of #586 is armed the same way and for the same reason — five patterns a file reach
-`double-slash-linter` and none of them built a defect, so 0.08% to 0.11% of the run was the walk
-alone and every step past it went untimed, where one leading `//` reads 0.18% to 0.19% and takes the
-cross-file linter nowhere a reading can see, 6.46% to 7.10% against the 6.69% to 7.24% the unarmed
-corpus gives on the same machine. A corpus that arms one stage must not disarm the bar on another —
-which under the middle reading it could, one attribute per file having been enough to move a
-denominator two cheap stages were swapping places at. What one sheet copied cannot arm at all is the
-*skew* of a real corpus, which is where the cross-file stage really spends: `//@*` costs 1.3 to 3.2
-us a node under some 350 nodes and 50.4 at 4853, so five of DocBook-XSL's 315 stylesheets are two
-thirds of that selector's whole cost. Every fortieth stylesheet is a **heavy** one since #800 — the
-repeatable part of the sheet written out forty-eight times over under names of its own, 5207
-elements and attributes — which the sheet marks with a `<!-- repeated -->` comment of its own, since
-the `fixtures` job fails a `.test.js` holding a start tag and a marker a test matches on is the
-fixture's to spell either way, and the stage reads 15.95% to 18.94% where a uniform corpus of any
-density reads 7% to 10% against the 13.73% TEI charges it and the 21.95% DocBook-XSL does. `SHARES`
-and `SHARE` were re-derived a fourth time at #784, whose shared walk took `xpath-linter` under a
-third of the run and lifted every share taken against it (see **Speed**) — and the corpus this one
-built survives that, both sides having risen together: the stage reads 19.51% to 20.08% here against
-the 17.3% TEI charges it and the 25.7% DocBook-XSL does. That walk did not serve `//@*` itself, an
-attribute axis standing outside buckets that hold elements, so the one selector this stage is almost
-all of paid #635 in full until #811 gave the walk an attribute of its own — after which the stage
-reads 1.20% to 1.23% of the run here, its entry in `SHARES` is gone and `SHARE` is what it answers
-to, and the heavy stylesheet #800 armed it with arms the parse and the per-file checks alone.
-
 ## `test/xcop.deep.test.js`
 
 Writes every pack's inline XSL to one `mkdtempSync` directory — under a subdirectory named for the
@@ -846,33 +701,3 @@ must refuse, by the path each stands at, and every entry is asserted rather than
 pack xcop accepts turns red, which is how four stale exemptions were found. Two gates need no xcop
 at all and so run wherever the suite does — every entry names a pack that is there, and no two
 fixtures share a path.
-
-## `test/workflows.test.js`
-
-Every job granted the scope its own steps write with. Both nightly tiers end in a `report-fail` job
-whose only purpose is to say that they failed, and for as long as either has existed neither could:
-a workflow token here is granted `read` unless the workflow says otherwise, and neither
-`corpora.yml` nor `daily.yml` declared a `permissions:` block, so
-`jayqi/failed-build-issue-action` authenticated as a token that cannot POST and died on
-`Resource not accessible by integration` — inside a job that runs only when something has already
-failed, which is the one place a failure is heard by nobody. Two nightlies went red that way in one
-week and neither filed anything, the last `build failed` issue in the repository being five months
-old, so a red schedule read exactly like a green one unless somebody opened the Actions tab by hand
-(#826). It is the same shape as #645 and #701 one tier out: not a suite that asserts nothing,
-nor a checker that rewrites what it should fail on, but a gate whose **reporter** is broken.
-
-`permissions: issues: write` on each of those two jobs is the whole of the fix — on the job rather
-than the workflow, so the `lint` and `build` jobs they depend on stay read-only — and the two
-workflows that already needed write scope declare it the same way (`release.yml:9`,
-`docs.yml:12`), which is why these two read as missed rather than decided. What stops it going
-again is the gate: `WRITES` names each action that writes to this repository rather than reading
-it, against the scope its token needs, and every job of every workflow is read for the actions its
-steps run and the permissions in force over it — its own where it declares any, the workflow's
-otherwise, and `write-all` granting whatever is asked. It is red from both sides, as every
-exemption table here is: a job running such an action without the scope fails, and so does an entry
-naming an action no job runs, so neither half can rot in silence. Removing either `permissions:`
-block fails it naming that job by file and name.
-
-What no gate covers is the write itself. Nothing in CI POSTs an issue, so the token's scope is
-asserted where it is declared and not where it is used, and an action that starts needing a second
-scope would break exactly as quietly as this one did.

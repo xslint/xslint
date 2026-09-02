@@ -11,10 +11,12 @@ sits in, and arrives with that directory rather than with every turn:
 `src/CLAUDE.md`, `src/linters/CLAUDE.md`, `src/validators/CLAUDE.md`,
 `test/CLAUDE.md`, `scripts/CLAUDE.md`. A turn loads this file and the guide of
 every directory on the way down to whatever it touches, so a chain of them is
-what a bar on their size answers to, and the three notes that outgrew even that
-stand at the top of `src/grammar.js`, `src/syntax.js` and `src/predicates.js`
-themselves. So a claim goes where the code it is about goes, and the `Key files`
-index below names every file in one line. Both halves are machine-enforced —
+what a bar on their size answers to — standing under the breach since #844, so
+a chain reddens with room still left to answer it — and a note
+that outgrew even a chain stands at the top of the module it is about, the way
+`src/grammar.js` and every `-linter.js` note under `src/linters/` do. So a
+claim goes where the code it is about goes, and the `Key files` index below
+names every file in one line. Both halves are machine-enforced —
 `test/guides.test.js` for the size, the index, and the counts a guide states of
 a list in the code, `test/conformance.test.js` for the length one states of a
 file the line cap is lifted off (#821, #825).
@@ -51,8 +53,8 @@ three platforms and two node versions, and `corpora`, which times a real run
 The suite comes in two halves, and the line between them is a child process. A
 **deep** test starts one — it runs `xslint` or `xcop` the way a user does — and
 is named `*.deep.test.js`; every other test stays in this process. Four files
-are deep, and they still cost most of what the suite costs: 671 of the 2825
-tests, 9 of the 14 seconds. The other 2154 finish inside one, which is why
+are deep, and they still cost most of what the suite costs: 671 of the 2831
+tests, 9 of the 14 seconds. The other 2160 finish inside one, which is why
 `npm run fast` is the loop to work in and `npm test` the one to finish on. The
 deep target runs under `mocha --parallel`, so those four files run at once and
 the slowest of them sets the clock — `xslint.deep.test.js` alone, whose 52 tests
@@ -140,7 +142,7 @@ than the rest — `xpath-linter` at 46%, `xpath-validator` at 26%,
 7%; growth is asked only of the stages with no entry, against `GROWTH` at 3.0,
 since an entry pins what a stage costs outright and that is the stronger
 statement. `corpora.yml` is the nightly tier, timing DocBook-XSL, TEI and
-DITA-OT at pinned commits against a budget of 16, 16 and 6 seconds, and
+DITA-OT at pinned commits against a budget of 13, 13 and 6 seconds, and
 asserting what it read rather than only how long it took. What a gate measured
 at one size cannot see is a quadratic whose constant is still small there, so
 `test/import-linter.test.js` is a third instrument, timing one check over a
@@ -231,9 +233,10 @@ before: 268 descriptions in 65 files stood past that bar, the dearest of them
 142 lines, so a derivation grew wherever one was written the way the cross-file
 linter's cost grew before #755 (#832). The bar is not a licence to respell what
 a block cannot hold as a `/* */` beside it either — such prose is cut and not
-moved, the dearest chain of guides standing at 0.99 of `LOADED` with nowhere to
-put it, so the ticket number left standing in the surviving sentence is what
-keeps a derivation recoverable.
+moved, the dearest chain of guides standing at 0.89 of `LOADED` and reddening
+well under it, so a guide is no place to put it either and the ticket number
+left standing in the surviving sentence is what keeps a derivation
+recoverable.
 
 A parameter a caller may leave out therefore says so in the signature, with a
 default — `fix = undefined` on `defect` in `src/checks.js`. A JSDoc `[fix]`

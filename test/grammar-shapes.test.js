@@ -3,6 +3,37 @@
  * SPDX-License-Identifier: MIT
  */
 
+/*
+ * The same acceptance diff as `grammar-corpus.test.js`, asked of 14112
+ * expressions nobody wrote: every shape a head and one or two tails spell,
+ * spaced and glued. A corpus covers only what somebody has already written
+ * down, and every class #740 closed stood outside the repository's — so
+ * `GAPS` read empty while the grammar refused `text() + 1` and accepted
+ * `a?b`, and this sweep parted from the engine 1603 times on the same head.
+ * Both classes it was left with are closed by #742, and a generated sweep
+ * covers only what its own lists spell, which is the corpus limit one level
+ * up: the second was annotated `\? (WORDS)` over a `TAILS` naming no `+` at
+ * all, so `xs:integer+ and @b` stood outside its own net, and widening the
+ * annotation to `[?+]` uncovered `cast as xs:integer? instance of x` behind
+ * it. A predicate too broad to be a class is one failure mode, since an
+ * annotation that swallows the next defect turns nothing red; too narrow is
+ * the other, and this file was in it. What is annotated now is not a gap in
+ * the grammar at all — fontoxpath accepts a word run against the *arity* of
+ * a named function reference, where Saxon-HE 12.5 answers `abs#1div 2` with
+ * XPST0003 exactly as it answers `1div 2`. One engine's verdict is evidence
+ * and not an answer, which is why a second arbiter settles it;
+ * `net.sf.saxon.s9api`'s `XPathCompiler` judges them in well under a
+ * second, and reading its *code* rather than its exit status is what tells
+ * a syntax error from the undeclared prefix or unknown function behind one.
+ * That cost is why the fast half now answers in under two seconds rather
+ * than under one. The lists grew by four heads and three tails at #753,
+ * from 8064 shapes to 14112: a kind test carrying arguments is a head now,
+ * and the item types whose brackets hold a type are tails, so the
+ * productions that read them stand inside the net rather than beside it.
+ * The gate on the count moved with them, since a sweep that has been
+ * narrowed reads exactly like one that agrees.
+ */
+
 const {parsed} = require('../src/grammar')
 const {compiles} = require('../src/xpath')
 const assert = require('assert')
