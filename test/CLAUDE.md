@@ -576,14 +576,14 @@ the dearest single guide instead, which is a whole directory short: it read 130,
 that 0.87 of the bar while a turn touching `src/linters/` was loading 157,504 and over it. So the
 two dearest notes moved one step further down, out of `src/CLAUDE.md` and into the top of
 `src/grammar.js` and `src/syntax.js` — 24,681 characters. What a turn touching `test/` loads has
-overtaken it since, and the dearest chain is that same one at 134,243, which is 0.89. What answers
+overtaken it since, and the dearest chain is that same one at 134,485, which is 0.90. What answers
 a chain reaching the bar is that move again, a module's derivation into the file-header note of the
 module itself, and never a bar widened to fit what has grown past it: a docblock holds five lines
 of description since #832, so prose that has outgrown a
 guide does not simply move into one instead. A `CEILING` of half the bar stood beside it until it
 was seen to be a gate no tree could fail: the root stands in every chain, so the chain holding it
-above weighs each other guide against the bar less what stands over it — 32,422 for
-`src/linters/CLAUDE.md`, where half of the bar is 75,000 — and holds the root itself to 87,474, a
+above weighs each other guide against the bar less what stands over it — 32,408 for
+`src/linters/CLAUDE.md`, where half of the bar is 75,000 — and holds the root itself to 87,246, a
 number derived from the dearest chain rather than chosen. A gate no tree can fail is removed and
 not kept (#750, #660). All four of those figures — the chain, its ratio, and the two allowances —
 follow from three file sizes, so one guide growing moves every one of them, and none of them
@@ -602,49 +602,51 @@ figure wrong by 3,868 and the ratio by 0.03 with the suite reading 16 passing: t
 stopped reading that sentence and the anchor gate was happy off the other file. Each row therefore
 names every file expected to carry it and the matched set is compared whole, so rewording either
 carrier fails, and so does the claim appearing in a document no row names. Growing a guide by
-4,000 characters fails all four rows at once. The asking is `matchAll` and never `test`, a global
+4,000 characters fails all five rows at once. The asking is `matchAll` and never `test`, a global
 pattern leaving `lastIndex` where it stopped and answering `false` to the very next question about
-the same prose. The paragraph above stopped
-being advice while this change was being written: #846 grew `src/linters/CLAUDE.md` by 3,113 and
-the merged chain read 150,437, so the bar failed on a tree whose two authors had each stayed under
-it. The prescribed relief is the one taken — `src/predicates.js`'s derivation went into the
-file-header note of `src/predicates.js`, 2,507 characters out of the chain and none out of the
-record — which is the third note to move that way after `src/grammar.js` and `src/syntax.js`, and
-the first to move because the bar said so rather than in the change that wrote it. It said so a
-merge too late, though, which is the half #844 answers: a gate that fires on the breach fires
-where the relief no longer fits, the tree having to be red for as long as a relocation takes to
-land. `ROOM` moves it off the breach, 10,000 characters of headroom, so a chain reddens at 140,000
-while there is still room to answer it. It moves the bar rather than standing a second one beside
-it: a breach gate left at 150,000 could not fire while this one is green, which is what took
-`CEILING` out, so the two are one gate whose message names both numbers. It is measured off the
-tree's own growth rather than picked: over the 45 merges between #823 giving the chain its room
-back and this one, the most a day of ordinary work added to the dearest chain was 5,298, and
-10,000 is 1.89 of that — inside the half-again-to-twice band every bar here answers to, and held
-to it from both sides by `GROWN`, since a margin under half again of a day is one a day crosses
-without warning and one past twice it reddens a tree with room to spare. A day is the unit because
-that is what a relocation takes to land, this tree merging three to eight times in one. Nine notes
-moved to make the bar quiet — `xpath-linter.js`, `root-template-linter.js` and `corpus-linter.js`
-out of `src/linters/CLAUDE.md`, and `scaling.test.js`, `predicates.test.js`, `helpers.js`,
-`grammar-corpus.test.js`, `grammar-shapes.test.js` and `workflows.test.js` out of this one. A
-tenth was refused by the valve rather than chosen against: `test/conformance.test.js` stands at
-958 lines and its note is 150 more, and `max-lines` counts comments, so a section can outgrow the
+the same prose. The paragraph above stopped being advice while this change was being written: #846
+grew `src/linters/CLAUDE.md` by 3,113 and the merged chain read 150,437, so the bar failed on a tree
+whose two authors had each stayed under it. The prescribed relief is the one taken —
+`src/predicates.js`'s derivation went into the file-header note of `src/predicates.js`, 2,507
+characters out of the chain and none out of the record — which is the third note to move that way
+after `src/grammar.js` and `src/syntax.js`, and the first to move because the bar said so rather
+than in the change that wrote it. It said so a merge too late, though, which is the half #844
+answers: a gate that fires on the breach fires where the relief no longer fits, the tree having to
+be red for as long as a relocation takes to land. `ROOM` moves it off the breach, 10,000 characters
+of headroom, so a chain reddens at 140,000 while there is still room to answer it. It moves the bar
+rather than standing a second one beside it: a breach gate left at 150,000 could not fire while this
+one is green, which is what took `CEILING` out, so the two are one gate whose message names both
+numbers. It is measured off the tree's own growth rather than picked: over the 45 merges
+between #823 giving the chain its room back and this one, the most a day of ordinary work added to
+the dearest chain was 5,298, and 10,000 is 1.89 of that — inside the half-again-to-twice band every
+bar here answers to, and held to it from both sides by `GROWN`, since a margin under half again of a
+day is one a day crosses without warning and one past twice it reddens a tree with room to spare. A
+day is the unit because that is what a relocation takes to land, this tree merging three to eight
+times in one. Nine notes moved to make the bar quiet — `xpath-linter.js`, `root-template-linter.js`
+and `corpus-linter.js` out of `src/linters/CLAUDE.md`, and `scaling.test.js`, `predicates.test.js`,
+`helpers.js`, `grammar-corpus.test.js`, `grammar-shapes.test.js` and `workflows.test.js` out of this
+one. A tenth was refused by the valve rather than chosen against: `test/conformance.test.js` stands
+at 958 lines and its note is 150 more, and `max-lines` counts comments, so a section can outgrow the
 file it is about and relief has a floor — what answers that one is the note being cut, not moved.
-What that leaves is 5,757 characters of headroom, off a chain that is this file's own rather than
-`src/linters/`: six of those nine came out of this one and the note this change adds went back in.
+What that leaves is 5,515 characters of headroom, off a chain that is this file's own rather than
+`src/linters/`: six of those nine came out of this one, and the note #855 added went back in. It is
+a fifth figure of the same class as the four, and the one that proves the point twice over — it
+stood outside the table and drifted 418 behind the rows in it with every one of them green, so it
+has a row of its own since #856.
 The index answers to the tree from both sides, every path it names existing and every module under
-`src/` being named by a row — the twenty-one linters by one of them, the `*` standing for a name
-and never for a directory — and a note answers to the index and to its own directory both, so a
-derivation the root has stopped pointing at turns red, and so does one standing where the reader
-who needs it will never load it. `test/guides.js` is the walk itself rather than a list of the
-five, since a guide left off a hand-written list would take its claims out of every gate at once,
-and the reading of a claim stands beside the walk: `worded` flattening a wrapped paragraph into
-one line, `DOCUMENTS` naming the guides and the README together, `NEARBY` bounding how far past a
-name a number may stand and still be a claim about it. Both gates ask it, so a count relocated
-into a guide is judged where it went, and so is the length a guide states of the file the line cap
-is lifted off, which is `test/conformance.test.js`'s to ask beside the cap it is an exemption
-from. The counts came the other way at that same sitting: `ATTRIBUTES` and `PATTERNS` are held to
-the lists in the code from here now, the file that held them having reached the 1000 lines it caps
-every other file at (#825).
+`src/` being named by a row — the twenty-one linters by one of them, the `*` standing for a name and
+never for a directory — and a note answers to the index and to its own directory both, so a
+derivation the root has stopped pointing at turns red, and so does one standing where the reader who
+needs it will never load it. `test/guides.js` is the walk itself rather than a list of the five,
+since a guide left off a hand-written list would take its claims out of every gate at once, and the
+reading of a claim stands beside the walk: `worded` flattening a wrapped paragraph into one line,
+`DOCUMENTS` naming the guides and the README together, `NEARBY` bounding how far past a name a
+number may stand and still be a claim about it. Both gates ask it, so a count relocated into a guide
+is judged where it went, and so is the length a guide states of the file the line cap is lifted off,
+which is `test/conformance.test.js`'s to ask beside the cap it is an exemption from. The counts came
+the other way at that same sitting: `ATTRIBUTES` and `PATTERNS` are held to the lists in the code
+from here now, the file that held them having reached the 1000 lines it caps every other file at
+(#825).
 
 ## `test/strictness.js`
 
