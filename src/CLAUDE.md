@@ -146,6 +146,24 @@ reader checking it against the tree it arrived in. The per-pull-request gate doe
 either — its corpus is not 1.0-anchored and the check barely fires there — so no bar in
 `test/scaling.test.js` moves, which is what the nightly corpora tier exists to catch instead.
 
+A **conjunction** is parted clause by clause since the fifth phase, and it is the first split not
+about an axis at all: a predicate the vocabulary refuses whole may be an `and` of clauses it
+answers one at a time, `[a and b]` selecting what `[a][b]` selects wherever both filter. So
+`weighed` hands `answered` the clauses rather than the brackets, `conjunctsOf` reading them off
+the parse and never off the text, and the engine keeps the residual alone. Three guards decide it,
+and the middle one is why the shape is safe: a predicate the vocabulary already answers is left
+whole, at least one clause must be answerable or the parting buys a `satisfies` call for nothing,
+and **every** clause must pass `filtered` on its own — XPath reading a bare number as a test of the
+context position, so `[2 and @select]` is the effective boolean value of `2` and selects everything
+where the `[2]` a careless parting leaves behind selects the second candidate alone. What kept the
+class out was a gap one module over: `filters` read a `parenthesized` node by its kind, which is on
+no list, so `(count(*) = 1)` — how three checks spell a clause — was refused while the
+`count(*) = 1` inside it is served. The per-pull-request gate sees none of the saving, five
+`xsl:variable` and four `xsl:if` a stylesheet being too few candidates for it to clear the machine:
+over ten interleaved gate runs a side `xpath-linter` reads 22.97% to 26.82% against 18.76% to
+25.62%, so no bar in `test/scaling.test.js` moves and the evidence for the change stands over the
+three corpora instead, at the top of `src/predicates.js`.
+
 ## `src/predicates.js`
 
 Its derivation stands at the top of `src/predicates.js` itself, for the reason the note above

@@ -695,6 +695,9 @@ Then run `npx grunt checks`, `npm test`, `npm run coverage`, and
   predicate `src/predicates.js` recognises being answered off the walk while
   one it does not is refused rather than guessed at, over-acceptance there
   being a wrong report where under-acceptance is only the engine call it was.
+  A predicate refused whole is parted at its top-level `and` since that
+  ticket's fifth phase, each clause answered or asked on its own, so what
+  reaches the engine is the residual and never the conjunction.
   A **union** of such paths is served the
   same way since #811, each branch carrying an axis and a tail of its own and
   the survivors merged by rank, since XPath answers a union in document order

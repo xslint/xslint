@@ -17,7 +17,7 @@
  * predicate answered here.
  *
  * The compile is off the parse and never the text, kept against the text, so
- * each of the 38 distinct predicates in the tree is compiled once a run; 30
+ * each of the 44 distinct predicates in the tree is compiled once a run; 36
  * of them are. What refuses is as deliberate as what serves — a regex, whose
  * XPath flavour is not JavaScript's; the `text()` composite whose meaning
  * `xml:space` decides; a conditional; an absolute path, which asks the
@@ -43,7 +43,7 @@
  * of its whole subtree, so a comparison reading one off a step answered
  * `undefined` against every element there is; `carrying` refuses a step in
  * a value position unless it names the attribute axis, which costs nothing
- * the tree spells — 30 of the 38 compile either way.
+ * the tree spells — 36 of the 44 compile either way.
  *
  * None of the three was the oracle's fault and all three were its blind
  * spot: `CANDIDATES` asks the engine what a spelling selects, so what it
@@ -53,7 +53,7 @@
  * whose parent is no element at all.
  *
  * `answered(tail)` in `src/selectors.js` parts per **predicate** and not
- * per tail, #837's lesson one level down: `predicated` already parts the
+ * per tail, #837's lesson one level down: `weighed` already parts the
  * brackets and `filtered` guarantees none reads a position, so `[a][b]` is
  * `[a and b]`, the compiled ones run first, and what the engine is still
  * asked it is asked once, of a sequence they have pruned — a `@select`
@@ -67,6 +67,47 @@
  * over DocBook-XSL and TEI; over DITA-OT the two ranges touch at one, which
  * is what a corpus reading 2.5 seconds against a 6-second budget has to
  * show.
+ *
+ * A **clause** is what is weighed since #811 and no longer a bracket:
+ * `weighed` parts each predicate on its top-level `and`, so the half a
+ * conjunction spells that this vocabulary answers prunes the sequence the
+ * other half is asked of, where before the whole of it went to the engine.
+ * Three guards decide whether a predicate parts, and each is a way of being
+ * wrong. The whole must not compile already, parting what is served buying
+ * nothing. **Some** clause must, a parting nothing answers being the same
+ * conjunction in more brackets. And **every** clause must filter on its
+ * own, since XPath reads a lone number as a position where `and` reads it
+ * as a boolean: `[2 and @select]` is true of every candidate and `[2]` of
+ * the second alone.
+ *
+ * What kept that class out was `filters` reading a bracket by its kind.
+ * Three of the five checks written this way spell `(count(*) = 1) and …`,
+ * and a `parenthesized` node settled nothing, so no clause of theirs could
+ * be weighed and each conjunction stayed whole — a bracket moving where an
+ * operator binds and never what it answers, which is one line of
+ * `src/syntax.js` and the whole of the phase. Asked alone over DocBook-XSL,
+ * three rounds a side, `blank-nested-if` reads 12-15 ms where it read
+ * 89-97, `setting-value-of-variable-incorrectly` 19-23 where it read 85-94,
+ * `variable-or-param-with-select-and-content` 33-36 where it read 74-75 and
+ * `empty-variable` 31-32 where it read 68-70. The fifth of the class,
+ * `empty-content-in-instructions`, reads 73-77 against 75-77: no clause of
+ * it compiles, so nothing parts and nothing is spent trying.
+ *
+ * Those four do not add up to what the run saves, and the gap belongs to
+ * the measurement rather than to the change. Eight interleaved rounds a
+ * side, one process per reading, report byte-identical at 3,624, 5,514 and
+ * 1,192 defects: `xpath-linter` falls from 1,549 ms to 1,484 over
+ * DocBook-XSL, 1,338 to 1,271 over TEI and 759 to 717 over DITA-OT, lowest
+ * of the eight — 4%, 5% and 5% off the dearest stage and under 2% off the
+ * staged run, whose own ranges overlap, so the stage is where this reading
+ * stands clear. Inside the sweep those same four read 109 ms where alone
+ * they read 316, because the first check to put a shape of question to the
+ * engine pays for the machinery and every check behind it rides free:
+ * `empty-content-in-instructions` reads 17-20 ms in the sweep over DITA-OT
+ * against the 33-36 it reads alone, unchanged by any of this. So a per-check
+ * reading taken inside a sweep is not that check's own cost, the four give
+ * back a third of what they stop spending, and the neighbours that had been
+ * riding on them pay the rest.
  *
  * The descendant axis is the one this vocabulary gathers rather than
  * follows, a subtree being no chain of links to climb: `below` pushes, an
@@ -741,6 +782,44 @@ const predicateOf = function(text) {
   return COMPILED.get(text)
 }
 
+/**
+ * Every clause an `and` joins, gathered into the list handed in rather than
+ * answered, a chain of them parsing left-nested: `a and b and c` is an `and`
+ * of an `and` and a step. Each leaf comes back as the parse read it, gaps and
+ * all, so a clause is the text its author wrote and never a respelling of it.
+ * @param {Array} tokens - The tokens the tree was parsed from
+ * @param {object} node - One node of it
+ * @param {Array.<string>} clauses - Where the text of each is put
+ */
+const joined = function(tokens, node, clauses) {
+  if (node.kind === 'and' && node.children.length === 2) {
+    node.children.forEach((kid) => joined(tokens, kid, clauses))
+  } else {
+    clauses.push(
+      tokens.slice(node.from, node.to).map((one) => one.value).join(''),
+    )
+  }
+}
+
+/**
+ * The clauses one predicate joins with `and`, or the whole of it where it
+ * joins none, each written as the parse read it. A clause the vocabulary
+ * answers prunes the sequence the rest of the conjunction is asked of, which
+ * is what a bracket outside the vocabulary cost until #811: a fontoxpath call
+ * on every candidate its cheapest clause would have refused.
+ * @param {string} text - What one predicate holds, its brackets off, which
+ *  parses by the time it is here: a split reading over its own quotes yields
+ *  the predicates of a selector and never a fragment of one
+ * @return {Array.<string>} - Each clause, in the order it stands
+ */
+const conjunctsOf = function(text) {
+  const {tokens, tree} = parsed(text, ASSUMED)
+  const clauses = []
+  joined(tokens, tree, clauses)
+  return clauses
+}
+
 module.exports = {
+  conjunctsOf,
   predicateOf,
 }
