@@ -591,14 +591,15 @@ the moment a motive under them was opened. The first spelling of the bar weighed
 the dearest single guide instead, which is a whole directory short: it read 130,933 and called
 that 0.87 of the bar while a turn touching `src/linters/` was loading 157,504 and over it. So the
 two dearest notes moved one step further down, out of `src/CLAUDE.md` and into the top of
-`src/grammar.js` and `src/syntax.js` — 24,681 characters — and the dearest chain is that same one
-at 133,081, which is 0.89. What answers a chain reaching the bar is that move again, a module's
-derivation into the file-header note of the module itself, and never a bar widened to fit what has
-grown past it: a docblock holds five lines of description since #832, so prose that has outgrown a
+`src/grammar.js` and `src/syntax.js` — 24,681 characters. What a turn touching `test/` loads has
+overtaken it since, and the dearest chain is that same one at 135,667, which is 0.90. What answers
+a chain reaching the bar is that move again, a module's derivation into the file-header note of the
+module itself, and never a bar widened to fit what has grown past it: a docblock holds five lines
+of description since #832, so prose that has outgrown a
 guide does not simply move into one instead. A `CEILING` of half the bar stood beside it until it
 was seen to be a gate no tree could fail: the root stands in every chain, so the chain holding it
-above weighs each other guide against the bar less what stands over it — 33,252 for
-`src/linters/CLAUDE.md`, where half of the bar is 75,000 — and holds the root itself to 88,321, a
+above weighs each other guide against the bar less what stands over it — 32,937 for
+`src/linters/CLAUDE.md`, where half of the bar is 75,000 — and holds the root itself to 86,050, a
 number derived from the dearest chain rather than chosen. A gate no tree can fail is removed and
 not kept (#750, #660). All four of those figures — the chain, its ratio, and the two allowances —
 follow from three file sizes, so one guide growing moves every one of them, and none of them
@@ -619,7 +620,7 @@ names every file expected to carry it and the matched set is compared whole, so 
 carrier fails, and so does the claim appearing in a document no row names. Growing a guide by
 4,000 characters fails all four rows at once. The asking is `matchAll` and never `test`, a global
 pattern leaving `lastIndex` where it stopped and answering `false` to the very next question about
-the same prose. What that leaves is 1,839 characters of headroom, and the paragraph above stopped
+the same prose. The paragraph above stopped
 being advice while this change was being written: #846 grew `src/linters/CLAUDE.md` by 3,113 and
 the merged chain read 150,437, so the bar failed on a tree whose two authors had each stayed under
 it. The prescribed relief is the one taken — `src/predicates.js`'s derivation went into the
@@ -644,6 +645,8 @@ out of `src/linters/CLAUDE.md`, and `scaling.test.js`, `predicates.test.js`, `he
 tenth was refused by the valve rather than chosen against: `test/conformance.test.js` stands at
 958 lines and its note is 150 more, and `max-lines` counts comments, so a section can outgrow the
 file it is about and relief has a floor — what answers that one is the note being cut, not moved.
+What that leaves is 4,333 characters of headroom, off a chain that is this file's own rather than
+`src/linters/`: six of those nine came out of this one and the note this change adds went back in.
 The index answers to the tree from both sides, every path it names existing and every module under
 `src/` being named by a row — the twenty-one linters by one of them, the `*` standing for a name
 and never for a directory — and a note answers to the index and to its own directory both, so a
@@ -697,3 +700,38 @@ must refuse, by the path each stands at, and every entry is asserted rather than
 pack xcop accepts turns red, which is how four stale exemptions were found. Two gates need no xcop
 at all and so run wherever the suite does — every entry names a pack that is there, and no two
 fixtures share a path.
+
+## `test/manifest.test.js`
+
+What `package.json` declares, held to what a grunt wrapper runs and what this repository's own
+JavaScript imports. It is #841 one tool over, in the same file and for the same reason:
+`grunt-eslint` 26 depends on `eslint ^9.22.0`, so npm nested a 9.39.4 under it while the root
+declared 10, and the `lint` job — with `npm run fast` and `npm test` behind it — read every rule
+this project sets through a major nobody chose. The pin holding `grunt-mocha-cli` to the declared
+mocha was written for mocha alone, and so was the conformance test beside it, so eslint went four
+majors unasked (#855).
+
+The second half is what that nesting was quietly supplying. `eslint.config.mjs` imports
+`@eslint/js` and `@eslint/eslintrc`, and the manifest declared neither; eslint 10 depends on
+neither either, so the only provider in the tree was the nested 9's own, hoisted to where the
+config resolved it. Every rule in this project stood on that accident until a dependabot bump took
+it away: `grunt-eslint` 27 wants `eslint ^10.9.1`, which dedupes against the root, and the 9
+leaving took `@eslint/js` with it — `Cannot find package '@eslint/js' imported from
+eslint.config.mjs`, three jobs red on one bump and an hourly sentinel tripping over it. What
+eslint 10 reported once it was the one running was seventeen errors of two rules 9 does not
+have — fifteen `no-useless-assignment`, two `preserve-caught-error` — every one a real dead
+initialiser or a rethrow dropping its cause.
+
+Four questions of the one manifest, each red from both sides. Every tool a grunt wrapper shares
+with the suite is pinned as `$name` in `overrides`, **and no pin stands for a wrapper the Gruntfile
+has stopped loading** — the expected side comes from `overrides` and the measured side from the
+Gruntfile, which is what the first spelling got wrong: it read `wrapped()` on both sides, so a
+wrapper deleted took the expectation with it and a stale pin went unjudged. Each pin then has to
+hold: the tool resolved from the wrapper's directory must be the file the root resolves to. Every
+bare specifier this repository's own JavaScript names must be declared. And every declared package
+must be named by that sweep or stand on `UNIMPORTED` beside what runs it, a dependency nothing
+imports being either a command some script runs or dead weight — and a sweep gone blind reads
+exactly like a manifest with nothing left over.
+
+It is a mocha test rather than an ESLint rule because `eslint.config.mjs` stands in ESLint's own
+`ignores` (#789), so no rule of ours can see the one file whose undeclared imports this is about.
