@@ -761,45 +761,23 @@ Then run `npx grunt checks`, `npm test`, `npm run coverage`, and
   usage, the `--fix`/suggestion lists), this file (architecture), and the docs
   site (`npx grunt docs`).
 
-### Maturity (`mature: true`)
+### No maturity flag
 
-A check that has passed a full maturity audit carries `mature: true` in its
-YAML. It is *frozen*: do not re-audit or churn it, and change its behavior only
-by first removing the flag — a "perfect" check that changes must re-earn the
-mark. A check is mature only when it meets every bar below; the last three are a
-human attestation the flag records, the rest are visible in the tree:
-
-- no false positive and no false negative (non-`xsl` prefixes, both roots, every
-  version, the construct buried / 3+ times / beside a lookalike negative);
-- the motive fully teaches it (see **Motive quality**);
-- if fixable, the fix is implemented, correctly tiered, and tested — otherwise it
-  is report-only *by nature* (no safe deterministic fix can exist); a fix merely
-  deferred to a future capability (#228, #486, #461, #460) does not qualify. The
-  report-only status shows in the wiring (no fixer), not the motive;
-- the pack exercises the hard cases (see **Test packs**);
-- version-dependence handled wherever the construct or fix needs it;
-- the selector is optimal (no needless `//`, no `name()=`/`local-name()` where a
-  namespace-bound node test works) — half of which is machine-enforced, a
-  `conformance.test.js` gate refusing `name()` in any selector of any kind
-  (#784), `local-name()` staying allowed because it is prefix-independent and one
-  check needs a negated set no union can spell;
-- it does not overlap another check.
-
-`test/conformance.test.js` enforces the machine-checkable floor for a `mature`
-check: its motive carries an `Incorrect:`/`Correct:` pair, and if it is fixable
-(a `src/fixers.js` entry or a `test/resources/fix/<name>.xsl` fixture) that
-fixture pair exists and `fixer.deep.test.js` runs it. The opinionated checks
-tracked in #499 are not marked mature until that issue is settled.
-
-**No check carries the flag today** (#637). The last two, both axis checks, were
-frozen around open bugs — `using-namespace-axis` around advice its own message
-cannot give inside a pattern (#632), `unabbreviated-axis` around a safe-tier fix
-that wrote a pattern no processor loads, re-flagged in `ad6bf7f` before it was
-true and then changed by six commits with the freeze still on. Nothing enforced
-the freeze either (#638), so the mark asserted what the tree could not back.
-Before adding it back, read the amendment in #644: nine checks have carried it
-and all nine were unfrozen, so the bar itself — not the discipline around it — is
-what is under review.
+There is no per-check maturity bar, and `mature: true` is a key a check may not
+carry. A check can always be shown to hold another bug, so a flag saying one is
+finished claims what no tree can back: nine carried it and all nine were
+unfrozen, the last two frozen around bugs that were open at the time — and one
+of those flagged in `ad6bf7f` before it was true, then changed by six commits
+with the freeze still on (#637, #638). What the freeze bought was ceremony in
+front of the one action that is always right, fixing a defect somebody hit.
+Every defect the corpus sweep found came from running DocBook-XSL, TEI and
+DITA-OT rather than from an audit, so that is where the next one comes from too
+— a corpus row, a pack case, a production run, never a checklist. Do not freeze
+a check, re-audit one, or grade one by anything but a test that turns red. The
+floors on a *test* stand unchanged, pack richness and the rest of **Test
+packs** among them: they are bars on what a test asserts, not claims about a
+check. `test/conformance.test.js` refuses the key in a check of any kind, so
+prose is not the only thing keeping the bar retired (#865).
 
 ## Test packs
 
@@ -1034,7 +1012,7 @@ one of them.
 | `scripts/generate-docs.js` | Builds the `docs/` site from checks + motives |
 | `scripts/generate-checks.js` | Builds `src/resources/checks.json` from the check YAML (`npx grunt checks`) |
 | `scripts/budget.js` | Judges what a corpus cost the nightly tier against its budget, from both sides |
-| `test/conformance.test.js` | Enforces naming, motives, selector hygiene, the `mature` freeze, the suite's own shape, and the length a guide states of the file the line cap is lifted off |
+| `test/conformance.test.js` | Enforces naming, motives, selector hygiene, the retirement of the `mature` flag, the suite's own shape, and the length a guide states of the file the line cap is lifted off |
 | `test/guides.js` | The guides as data: the chain a turn loads on its way to one file, what that chain may cost, and how a claim standing in one is read |
 | `test/guides.test.js` | The guides themselves: a bar on what a chain of them costs a turn, the index held to the tree from both sides, and the counts a guide states of a list in the code |
 | `test/grammar-corpus.test.js` | Round trip and acceptance diff over every expression the repository carries |
