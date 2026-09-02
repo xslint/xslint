@@ -597,7 +597,7 @@ const answered = function(tail) {
  * @return {Array.<Node>} - The nodes it selects, in document order
  */
 const narrowed = function(xsl, branch) {
-  let found = []
+  let found
   if (branch.refused === '') {
     found = axised(xsl, branch)
     if (branch.anchor !== '') {
@@ -649,7 +649,7 @@ const merged = function(xsl, branches) {
  */
 const chosen = function(xsl, xpath) {
   const branches = splitOf(xpath)
-  let found = []
+  let found
   if (branches.length === 0) {
     found = nodes(xsl, xpath)
   } else if (branches.length === 1) {
@@ -672,7 +672,7 @@ const chosen = function(xsl, xpath) {
  */
 const valued = function(xsl, xpath) {
   const branches = splitOf(xpath)
-  let found = []
+  let found
   if (branches.length === 1 && branches[0].attributes.length > 0) {
     found = chosen(xsl, xpath).map((node) => node.value)
   } else {

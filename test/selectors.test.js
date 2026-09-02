@@ -569,7 +569,7 @@ const placed = function(found) {
  * @return {Array.<string>} - Where each node it answers stands, in order
  */
 const answered = function(selection) {
-  let where = ['error']
+  let where
   try {
     where = placed(selection())
   } catch (refusal) {
