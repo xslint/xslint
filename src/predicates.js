@@ -17,11 +17,11 @@
  * predicate answered here.
  *
  * The compile is off the parse and never the text, kept against the text, so
- * each of the 38 distinct predicates in the tree is compiled once a run; 28
+ * each of the 38 distinct predicates in the tree is compiled once a run; 30
  * of them are. What refuses is as deliberate as what serves — a regex, whose
- * XPath flavour is not JavaScript's; a descending axis, wanting subtree
- * extents the walk does not keep; the `text()` composite whose meaning
- * `xml:space` decides; a conditional; an unprefixed element name, the
+ * XPath flavour is not JavaScript's; the `text()` composite whose meaning
+ * `xml:space` decides; a conditional; an absolute path, which asks the
+ * document rather than the candidate; an unprefixed element name, the
  * refusal `bucketed` already makes. **Over-acceptance is a wrong report**
  * where under-acceptance is only the engine call it was, so every branch
  * narrows rather than guesses and a comparison serves two numbers on any
@@ -43,7 +43,7 @@
  * of its whole subtree, so a comparison reading one off a step answered
  * `undefined` against every element there is; `carrying` refuses a step in
  * a value position unless it names the attribute axis, which costs nothing
- * the tree spells — 28 of the 38 compile either way.
+ * the tree spells — 30 of the 38 compile either way.
  *
  * None of the three was the oracle's fault and all three were its blind
  * spot: `CANDIDATES` asks the engine what a spelling selects, so what it
@@ -67,6 +67,26 @@
  * over DocBook-XSL and TEI; over DITA-OT the two ranges touch at one, which
  * is what a corpus reading 2.5 seconds against a 6-second budget has to
  * show.
+ *
+ * The descendant axis is the one this vocabulary gathers rather than
+ * follows, a subtree being no chain of links to climb: `below` pushes, an
+ * array grown by `concat` costing the square of the very thing a count is
+ * asked the size of. One spelling of it is served, `.//X`, whose double
+ * slash is a token standing between two children rather than a node of the
+ * tree — which is what `oversized-template` and `function-complexity` are
+ * written in, 231 ms to 17 and 11 to 3 over DocBook-XSL, 202 to 14 and 31
+ * to 3 over TEI, 137 to 17 and 13 to 4 over DITA-OT, the report
+ * byte-identical at 3,624, 5,514 and 1,192 defects. Reading those slashes
+ * is what a path had never done: `pathed` weighed no separator at all, so
+ * `a//b` answered as `a/b`, and `//x` and `/x` — the document's own
+ * question — answered as `child::x` of the candidate. Neither is reachable
+ * from a check the tree ships, so both were latent rather than wrong
+ * reports, and `CANDIDATES` asks the engine about each now. `parted` reads
+ * the token between two steps the way `signed` reads a comparison's sign,
+ * `rooted` whether one stands in front of the first, and a descent standing
+ * mid-path refuses in their place. #811 asked for an extent per element
+ * instead; the walk needed no new state, the subtrees a check descends
+ * being disjoint, so the reading above is what stands for it.
  */
 
 const {PREFIXES} = require('./xpath')
@@ -102,6 +122,7 @@ const AXES = {
   [TOKENS.PARENT]: 'parent',
   [TOKENS.CHILD]: 'child',
   [TOKENS.ANCESTOR]: 'ancestor',
+  [TOKENS.DESCENDANT]: 'descendant',
   [TOKENS.PRECEDING_SIBLING]: 'preceding-sibling',
   [TOKENS.FOLLOWING_SIBLING]: 'following-sibling',
 }
@@ -215,6 +236,32 @@ const elements = function(standing, link) {
 }
 
 /**
+ * Every element standing below a node, in document order. The descendant axis
+ * is the one axis of this vocabulary that no chain of links walks, so it is
+ * gathered rather than followed — and gathered by pushing, a walk growing an
+ * array by `concat` as `elements` does costing the square of a subtree that a
+ * count is asked the size of.
+ * @param {Node} node - The context node
+ * @return {Array.<Node>} - The elements below it, in document order
+ */
+const below = function(node) {
+  const found = []
+  /**
+   * Take a node's own elements and then each of theirs, which is the order a
+   * document is written in.
+   * @param {Node} standing - The node to descend from
+   */
+  const visit = function(standing) {
+    for (const one of elements(standing.firstChild, 'nextSibling')) {
+      found.push(one)
+      visit(one)
+    }
+  }
+  visit(node)
+  return found
+}
+
+/**
  * The node an axis climbs to from a context node: the element an attribute
  * hangs off, which the DOM answers as `ownerElement` and never as a parent,
  * or the parent of anything else. An attribute has no parent at all, so a
@@ -252,6 +299,8 @@ const reached = function(node, axis) {
     found = elements(node.nextSibling, 'nextSibling')
   } else if (axis === 'ancestor') {
     found = elements(above(node), 'parentNode')
+  } else if (axis === 'descendant') {
+    found = below(node)
   }
   return found
 }
@@ -351,10 +400,12 @@ const carrying = function(tokens, node) {
  * split is.
  * @param {Array} tokens - The tokens the tree was parsed from
  * @param {object} node - A step node of its tree
+ * @param {string} [under] - An axis the path around it puts the step on,
+ *  which only a step spelling none of its own may be moved to
  * @return {(function(Node): Array.<Node>|undefined)} - What it selects from
  *  a node, or undefined
  */
-const stepped = function(tokens, node) {
+const stepped = function(tokens, node, under = undefined) {
   let answer = undefined
   if (node.kind === 'step' &&
     node.children.every(
@@ -363,10 +414,11 @@ const stepped = function(tokens, node) {
     const {axis, named} = opening(tokens, node)
     const test = admitted(named, axis === 'attribute')
     const inner = node.children.map((kid) => tested(tokens, kid.children[0]))
-    if (test !== undefined && inner.every((one) => one !== undefined)) {
+    if (test !== undefined && inner.every((one) => one !== undefined) &&
+      (under === undefined || axis === 'child')) {
       answer = (context) => inner.reduce(
         (kept, one) => kept.filter(one),
-        reached(context, axis).filter((found) => admits(found, test)),
+        reached(context, under ?? axis).filter((found) => admits(found, test)),
       )
     }
   }
@@ -430,6 +482,77 @@ const worded = function(tokens, node) {
 }
 
 /**
+ * The separator standing between two adjacent steps of a path, read off the
+ * solid tokens the grammar consumed without a node of its own — a path holds
+ * its steps and not the slashes between them, the way a comparison holds its
+ * operands and not the sign.
+ * @param {Array} tokens - The tokens the tree was parsed from
+ * @param {object} node - A path node of its tree
+ * @param {number} index - Which child to read the separator in front of
+ * @return {string} - The separator's token type, or an empty string
+ */
+const parted = function(tokens, node, index) {
+  const between = solid(
+    tokens, node.children[index - 1].to, node.children[index].from,
+  )
+  let sign = ''
+  if (between.length === 1) {
+    sign = between[0].type
+  }
+  return sign
+}
+
+/**
+ * Whether a path opens with a separator of its own, which makes it absolute.
+ * `//x` and `/x` ask the document a candidate stands in rather than the
+ * candidate, and hold one step apiece where `a/x` holds two, so a reader
+ * counting children alone answers `child::x` to a question about the root.
+ * @param {Array} tokens - The tokens the tree was parsed from
+ * @param {object} node - A path node of its tree, holding a child
+ * @return {boolean} - True where a separator stands in front of its first step
+ */
+const rooted = function(tokens, node) {
+  return solid(tokens, node.from, node.children[0].from).length > 0
+}
+
+/**
+ * Whether a path is a chain of single slashes and nothing else. The separator
+ * is the whole of what tells `a/b` from `a//b`, and a reader blind to it
+ * answers the second as the first — an answer given wrongly rather than one
+ * withheld, which is the one failure a split may not commit.
+ * @param {Array} tokens - The tokens the tree was parsed from
+ * @param {object} node - A path node of its tree
+ * @return {boolean} - True where every step of it stands one slash on
+ */
+const slashed = function(tokens, node) {
+  return node.children.length > 0 && !rooted(tokens, node) &&
+    node.children.slice(1).every(
+      (kid, index) => parted(tokens, node, index + 1) === TOKENS.SLASH,
+    )
+}
+
+/**
+ * The elements a descending path selects from a context node, or undefined
+ * where the path is not one: `.//x` is `descendant::x`, whose double slash is
+ * a token between two children rather than a node of the tree. Only that
+ * spelling is served — `./x` names an axis a step already carries, and an
+ * absolute one asks the document rather than the candidate.
+ * @param {Array} tokens - The tokens the tree was parsed from
+ * @param {object} node - A path node of its tree
+ * @return {(function(Node): Array.<Node>|undefined)} - What it selects from
+ *  a node, or undefined
+ */
+const descending = function(tokens, node) {
+  let answer = undefined
+  if (node.children.length === 2 && node.children[0].kind === 'context' &&
+    !rooted(tokens, node) &&
+    parted(tokens, node, 1) === TOKENS.DOUBLE_SLASH) {
+    answer = stepped(tokens, node.children[1], 'descendant')
+  }
+  return answer
+}
+
+/**
  * The nodes a path of steps selects from a context node, each step asked of
  * what the one before it answered, or undefined where any step is outside the
  * vocabulary. Duplicates are left as they stand: every caller reads the values
@@ -441,8 +564,9 @@ const worded = function(tokens, node) {
  */
 const pathed = function(tokens, node) {
   const steps = node.children.map((kid) => stepped(tokens, kid))
-  let answer = undefined
-  if (steps.length > 0 && steps.every((one) => one !== undefined)) {
+  let answer = descending(tokens, node)
+  if (answer === undefined && slashed(tokens, node) &&
+    steps.every((one) => one !== undefined)) {
     answer = (context) => steps.reduce(
       (standing, one) => standing.flatMap((where) => one(where)),
       [context],
@@ -483,7 +607,8 @@ const counted = function(tokens, node) {
       answer = () => literal.value
     }
   } else if (calling(tokens, node, 'count') && node.children.length === 1) {
-    const selects = stepped(tokens, node.children[0])
+    const selects = stepped(tokens, node.children[0]) ??
+      descending(tokens, node.children[0])
     if (selects !== undefined) {
       answer = (context) => selects(context).length
     }

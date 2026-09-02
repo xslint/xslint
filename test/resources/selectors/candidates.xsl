@@ -38,4 +38,11 @@
   </xsl:variable>
   <xsl:variable name="𐀀" select="'x'"/>
   <xsl:variable name="my:𐀀"/>
+  <xsl:variable name="thirteen">
+    <xsl:variable name="fourteen">
+      <a>
+        <xsl:text>beta</xsl:text>
+      </a>
+    </xsl:variable>
+  </xsl:variable>
 </xsl:stylesheet>

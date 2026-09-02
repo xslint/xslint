@@ -73,8 +73,8 @@ rather than for one element; an unprefixed attribute is not, standing in no name
 rule where an unprefixed *element* name is a refusal. That second shape wants **both** halves, and
 only the attribute could refuse until #839: a list bucketing to nothing — a wildcard, or a prefix
 nothing binds — left the names empty beside a real attribute, which `axised` reads as the `//@*`
-case, so `//xsl:*/@name` answered every attribute of `candidates.xsl`, 29 where the engine answers
-14. Either half missing clears the other now. No shipped check spells the shape, so mutation found
+case, so `//xsl:*/@name` answered every attribute of `candidates.xsl`, 31 where the engine answers
+16. Either half missing clears the other now. No shipped check spells the shape, so mutation found
 it and the row that pins it asserts the **answer** and not only the refusal. Beside `splitOf` stand
 the two doors onto the served answer, `chosen(xsl, xpath)` and `valued(xsl, xpath)` — the second for
 a usage read as strings, an attribute's string value being the value it holds. They live here rather

@@ -7,10 +7,11 @@
  * The speed gate (see **Speed**): charges every stage its own processor
  * time over a generated corpus at 40 stylesheets and again at 160, and
  * fails one that spends more of its own run than `SHARES` allows it —
- * `xpath-linter` at 46%, `xpath-validator` at 26%, `xsl-validator` at 18%
- * since #845 took the version off a climb and put it on the record, lifting
- * every share taken against a run a twelfth cheaper, or — where it has no
- * entry there — grew more than `GROWTH`
+ * `xpath-linter` at 42%, `xpath-validator` at 26%, `xsl-validator` at 18%
+ * since #811's descendant phase took the dearest stage from 27.18% of the
+ * run to 24.82% and #845 took the version off a climb and put it on the
+ * record, lifting the two validators' shares against a run a twelfth
+ * cheaper, or — where it has no entry there — grew more than `GROWTH`
  * beside the middle stage's growth. Cost is the sharp question and growth
  * the loose one, because #755 changed a constant and not an exponent, which
  * is a difference the two distributions show plainly: 15.1% to 15.7% of the
@@ -111,15 +112,15 @@ const STEP = 4
  * @type {{[stage: string]: number}}
  */
 const SHARES = {
-  'xpath-linter': 46,
+  'xpath-linter': 42,
   'xpath-validator': 26,
   'xsl-validator': 18,
 }
 
 /**
  * What percentage of the run any stage not named in `SHARES` may spend. The
- * twenty of them read 0.43% to 5.32% here, so this is the bar a cheap stage
- * crosses by becoming an expensive one, which earns an entry above or a fix.
+ * twenty-one of them read 0.42% to 4.31% here, so this is the bar a cheap
+ * stage crosses by becoming an expensive one, earning an entry or a fix.
  * It comes up whenever a stage made cheaper shrinks the denominator, by the
  * ratio of the dearest reading (#784, #811, #845).
  * @type {number}

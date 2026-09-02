@@ -14,19 +14,22 @@
  * caught its author — widening the vocabulary to sibling and ancestor axes,
  * a path in a value position and two string functions turned five `REFUSED`
  * rows red in one run, which is the whole reason they are rows and not a
- * sentence.
+ * sentence. It caught him twice: the descendant axis took its own row off
+ * the table at #811's last phase, and two of the three replacing it are
+ * shapes `pathed` had been answering all along — an absolute path, and a
+ * descent standing mid-path — since it weighed no separator at all.
  *
  * A third gate stands beside them and its subject is the module's own
  * header note. Relocating a derivation into one — which is what the bar
  * below forced here — takes it out of the reach of the gate holding a
  * guide's counts to the code, `DOCUMENTS` naming guides and the README and
  * no source file but `src/attributes.js`. So the two counts that note
- * states of the vocabulary's reach, 28 of 38, are computed here from
+ * states of the vocabulary's reach, 30 of 38, are computed here from
  * `checks.json` and held to it: every branch a selector splits into that
  * the walk serves, parted by the `predicated` a run parts with, each
  * predicate asked once. Both kinds are read, a corpus check's declaration
  * and usage reaching `predicateOf` as a per-file selector does — the
- * `xpath` kind alone answers 26 of 35, which is no number a run ever sees,
+ * `xpath` kind alone answers 28 of 35, which is no number a run ever sees,
  * and counting it that way is how the note came to say 33 and 24. Two
  * sentences carry the pair in opposite orders, so both are read and
  * rewording either fails, the lesson `DERIVED` records one section down.
@@ -34,12 +37,18 @@
  * Neither table asks whether an answer is *correct*: that is `CANDIDATES`
  * in `test/selectors.test.js`, which asks fontoxpath what each spelling
  * selects over `candidates.xsl` and fails where serving answers anything
- * else — the oracle, 102 rows here against 32 before, and armed against the
+ * else — the oracle, 115 rows here against 32 before, and armed against the
  * engine before a line of the compiler existed. A row there is a question
  * rather than a claim, so enriching the fixture can only strengthen it; the
  * fixture grew five variables and a non-XSLT child so that presence, a
  * literal sequence, a string length, a parent and `count(*)` each split the
- * nine candidates unevenly. One thing it cannot hold is a prefix
+ * nine candidates unevenly, and a group three deep at #811's descendant
+ * phase, so that `xsl:variable//xsl:text` answers something
+ * `xsl:variable/xsl:text` does not — on the shallower fixture the two read
+ * alike, and the row asking about the descent would have passed while
+ * `pathed` weighed no separator at all. That width is held to the sweep
+ * from here on, having drifted twice inside a paragraph that reads like a
+ * question asked per spelling. One thing it cannot hold is a prefix
  * `src/xpath.js` does not bind: `my:thing` stands in the document for
  * `count(*)` to see and is named in no selector, the engine raising
  * `XPST0081` on an unbound prefix rather than answering.
@@ -205,6 +214,9 @@ const COMPILED = [
   'not(contains(@name, @nope))',
   'xsl:text',
   'parent::*',
+  'count(.//xsl:*) > 100',
+  'count(descendant::xsl:*) >= 2',
+  './/xsl:text',
 ]
 
 /**
@@ -219,10 +231,6 @@ const REFUSED = [
   {
     text: 'matches(@name, \'^[0-9]\')',
     why: 'a regex, whose XPath flavour is not JavaScript\'s',
-  },
-  {
-    text: 'count(.//xsl:*) > 100',
-    why: 'a descending axis, which wants each element\'s subtree extent',
   },
   {
     text: 'following::*',
@@ -275,6 +283,18 @@ const REFUSED = [
   {
     text: 'xsl:variable/xsl:text = "alpha"',
     why: 'a path ending at an element rather than at an attribute',
+  },
+  {
+    text: '//xsl:text',
+    why: 'an absolute path, which asks the document and not the candidate',
+  },
+  {
+    text: 'xsl:variable//xsl:text',
+    why: 'a descent standing mid-path, where each step answers the one before',
+  },
+  {
+    text: 'count(descendant-or-self::xsl:*) >= 2',
+    why: 'an axis holding the candidate itself, which no check writes',
   },
   {
     text: '@name = xsl:text',

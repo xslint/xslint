@@ -69,6 +69,22 @@ for a gate of another kind, which is why that change carries a structural one be
 share ceiling can stop a selector asking the engine to descend a tree the run has already walked,
 and `UNINDEXED` in `test/conformance.test.js` can.
 
+The eighth move is #811's descendant phase, and it is the first where the walk **gathers** rather
+than follows: a subtree is no chain of links to climb, so `below` in `src/predicates.js` pushes its
+way down one, and `.//X` — the whole of what two checks are written in — stops costing a fontoxpath
+descendant traversal per candidate. `oversized-template` goes from 231 ms to 17 over DocBook-XSL,
+202 to 14 over TEI and 137 to 17 over DITA-OT, `function-complexity` from 11 to 3, 31 to 3 and 13 to
+4, lowest of three interleaved rounds a side of processor time, which is 11%, 11% and 13% off
+`xpath-linter` and 4.7%, 3.9% and 4.7% off the staged run, the report byte-identical at 3,624, 5,514
+and 1,192 defects. Over the gate's own corpus the stage reads 24.82% where it read 27.18%, dearest
+of ten gate runs a side, so its entry comes down by its own ratio, 46 to 42. The other two stay,
+`xpath-validator` reading 1.00 of what it read and `xsl-validator` 1.04, which leaves 24 and 16 at
+1.09 and 1.52 of their dearest readings; `SHARE` stays at 7 for the reason it has stayed there
+before, the dearest cheap stage having moved by 1.03. Ten rounds rather than five because one round
+a side came out disturbed — a single stage eating a fifth of its run, and on both sides — and each
+is kept rather than dropped, since dropping a reading a machine has actually given is how a bar
+comes to stand on the runs that flattered it.
+
 The seventh move is #811's anchor phase, and what it shows is that a shape's name is not its cost.
 Three checks spell a guard in front of their descendant step —
 `(/xsl:stylesheet | /xsl:transform)//(xsl:stylesheet | xsl:transform)` and two like it — and the
@@ -251,8 +267,8 @@ asserts exactly that over the `src/linters/` directory, and another that no name
 stopped being a stage.
 
 `SHARES` names the three stages that legitimately cost more of a run than the rest: `xpath-linter`
-at 46%, `xpath-validator` at 26%, `xsl-validator` at 18%. Every other stage answers to one bar,
-`SHARE` at 7%, which the twenty of them sit below at 0.43% to 5.32% — so a cheap stage that
+at 42%, `xpath-validator` at 26%, `xsl-validator` at 18%. Every other stage answers to one bar,
+`SHARE` at 7%, which the twenty-one of them sit below at 0.42% to 4.31% — so a cheap stage that
 becomes an expensive one turns red, and earns either a fix or an entry. It named four until #811,
 and the fourth is the one worth reading the rule off. Two things set a ceiling. Where there is a
 defect to catch it goes **between the two measured distributions**: `corpus-linter` stood at 32, the
@@ -596,14 +612,14 @@ the dearest single guide instead, which is a whole directory short: it read 130,
 that 0.87 of the bar while a turn touching `src/linters/` was loading 157,504 and over it. So the
 two dearest notes moved one step further down, out of `src/CLAUDE.md` and into the top of
 `src/grammar.js` and `src/syntax.js` — 24,681 characters. What a turn touching `test/` loads has
-overtaken it since, and the dearest chain is that same one at 136,595, which is 0.91. What answers
+overtaken it since, and the dearest chain is that same one at 138,023, which is 0.92. What answers
 a chain reaching the bar is that move again, a module's derivation into the file-header note of the
 module itself, and never a bar widened to fit what has grown past it: a docblock holds five lines
 of description since #832, so prose that has outgrown a
 guide does not simply move into one instead. A `CEILING` of half the bar stood beside it until it
 was seen to be a gate no tree could fail: the root stands in every chain, so the chain holding it
 above weighs each other guide against the bar less what stands over it — 31,925 for
-`src/linters/CLAUDE.md`, where half of the bar is 75,000 — and holds the root itself to 85,379, a
+`src/linters/CLAUDE.md`, where half of the bar is 75,000 — and holds the root itself to 83,951, a
 number derived from the dearest chain rather than chosen. A gate no tree can fail is removed and
 not kept (#750, #660). All four of those figures — the chain, its ratio, and the two allowances —
 follow from three file sizes, so one guide growing moves every one of them, and none of them
@@ -648,7 +664,7 @@ and `corpus-linter.js` out of `src/linters/CLAUDE.md`, and `scaling.test.js`, `p
 one. A tenth was refused by the valve rather than chosen against: `test/conformance.test.js` stands
 at 958 lines and its note is 150 more, and `max-lines` counts comments, so a section can outgrow the
 file it is about and relief has a floor — what answers that one is the note being cut, not moved.
-What that leaves is 3,405 characters of headroom, off a chain that is this file's own rather than
+What that leaves is 1,977 characters of headroom, off a chain that is this file's own rather than
 `src/linters/`: six of those nine came out of this one, and the note #855 added went back in. It is
 a fifth figure of the same class as the four, and the one that proves the point twice over — it
 stood outside the table and drifted 418 behind the rows in it with every one of them green, so it
