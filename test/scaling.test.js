@@ -7,10 +7,10 @@
  * The speed gate (see **Speed**): charges every stage its own processor
  * time over a generated corpus at 40 stylesheets and again at 160, and
  * fails one that spends more of its own run than `SHARES` allows it —
- * `xpath-linter` at 46%, `xpath-validator` at 24%, `xsl-validator` at 16%
- * since #811's anchor phase took the dearest stage from 34.03% of the run
- * to 29.44% and lifted the twenty-two others by what it left the
- * denominator, or — where it has no entry there — grew more than `GROWTH`
+ * `xpath-linter` at 46%, `xpath-validator` at 26%, `xsl-validator` at 18%
+ * since #845 took the version off a climb and put it on the record, lifting
+ * every share taken against a run a twelfth cheaper, or — where it has no
+ * entry there — grew more than `GROWTH`
  * beside the middle stage's growth. Cost is the sharp question and growth
  * the loose one, because #755 changed a constant and not an exponent, which
  * is a difference the two distributions show plainly: 15.1% to 15.7% of the
@@ -107,21 +107,21 @@ const STEP = 4
  * growth is the assertion, #755's regression having been a constant growth
  * ranks backwards. A share is of the whole run, so a stage made cheaper lifts
  * every other entry and the table is re-derived by the ratio of the dearest
- * readings (#777, #783, #800, #784, #811); `test/CLAUDE.md` holds them.
+ * readings (#777, #783, #800, #784, #811, #845); `test/CLAUDE.md` holds them.
  * @type {{[stage: string]: number}}
  */
 const SHARES = {
   'xpath-linter': 46,
-  'xpath-validator': 24,
-  'xsl-validator': 16,
+  'xpath-validator': 26,
+  'xsl-validator': 18,
 }
 
 /**
  * What percentage of the run any stage not named in `SHARES` may spend. The
- * twenty of them read 0.37% to 4.27% here, so this is the bar a cheap stage
- * crosses by becoming an expensive one, and crossing it earns an entry above
- * or a fix. It comes up whenever a stage made cheaper shrinks the denominator,
- * by the ratio of the dearest reading and never of the range (#784, #811).
+ * twenty of them read 0.43% to 5.32% here, so this is the bar a cheap stage
+ * crosses by becoming an expensive one, which earns an entry above or a fix.
+ * It comes up whenever a stage made cheaper shrinks the denominator, by the
+ * ratio of the dearest reading (#784, #811, #845).
  * @type {number}
  */
 const SHARE = 7

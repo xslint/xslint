@@ -131,6 +131,13 @@ const CLASSED = {
     "Which kinds a comparison of two values comes back as is VALUED in src/syntax.js and nowhere else, src/grammar.js excepted, which mints the kinds: the general and the value comparison are two kinds and one question, and a check knowing only the first is blind to every 2.0 stylesheet written in the second (#763, #575). Two copies of a kind list are a kind missing from one of them, which is what OPAQUE and TRIVIA are each one list for"
 };
 
+const VERSIONED = {
+  selector:
+    "CallExpression[callee.name='versionOf'], ObjectPattern > Property[key.name='versionOf']",
+  message:
+    "The version in force at a node is derived by climbing to the root, so it is asked once per node — by expressionsOf, which is climbing them anyway — and read off the {node, start, expression, pattern, version} record after that. parseOf asked it in front of the parse memo, so every gathered, textOf, calls and isValid the expression tier issued paid a fresh climb: 950,645 of them over DocBook-XSL, dearer than twenty-one of the twenty-four stages a run is made of (#845). Take found.version, and where a linter holds a node and no record — the DOM tier, which reads a walk rather than an expression — name its file beside src/attributes.js in the group below"
+};
+
 const SPRAWLING = ["src/grammar.js"];
 
 export default defineConfig([
@@ -200,20 +207,29 @@ export default defineConfig([
     ignores: ["src/xslint.js"],
     rules: {
       "no-restricted-syntax":
+        ["error", ...RESTRICTED, STAGED, OPAQUE, TRIVIA, PAIRED, CLASSED,
+          VERSIONED]
+    }
+  },
+  {
+    files: ["src/attributes.js"],
+    rules: {
+      "no-restricted-syntax":
         ["error", ...RESTRICTED, STAGED, OPAQUE, TRIVIA, PAIRED, CLASSED]
     }
   },
   {
     files: ["src/tokens.js"],
     rules: {
-      "no-restricted-syntax": ["error", ...RESTRICTED, STAGED, CLASSED]
+      "no-restricted-syntax":
+        ["error", ...RESTRICTED, STAGED, CLASSED, VERSIONED]
     }
   },
   {
     files: ["src/grammar.js", "src/syntax.js"],
     rules: {
       "no-restricted-syntax":
-        ["error", ...RESTRICTED, STAGED, OPAQUE, TRIVIA, PAIRED]
+        ["error", ...RESTRICTED, STAGED, OPAQUE, TRIVIA, PAIRED, VERSIONED]
     }
   },
   {

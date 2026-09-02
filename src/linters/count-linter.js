@@ -6,7 +6,7 @@
 const {comparedToZero} = require('../comparisons')
 const {metaOf, suppressed, defect} = require('../checks')
 const {textOf} = require('../syntax')
-const {MODERN, since, versionOf} = require('../xsl-version')
+const {MODERN, since} = require('../xsl-version')
 const {logger} = require('../logger')
 
 /**
@@ -120,7 +120,7 @@ const lintByCount = function(expressions, suppressions = []) {
   if (!suppressed(CHECK, suppressions)) {
     for (const {source, found} of expressions) {
       const {node} = found
-      const modern = since(versionOf(node), MODERN)
+      const modern = since(found.version, MODERN)
       for (const {offset, value, test, argument} of comparisons(found)) {
         const whole = node.nodeName === 'test' &&
           node.nodeValue.trim() === value

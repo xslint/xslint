@@ -7,7 +7,7 @@
  * The one door between a record and what the grammar makes of it, and where
  * every check that reads a tree begins (#577). `parseOf(found)` forks on the
  * record — `matched` for a pattern, `parsed` for an expression — at the
- * version `versionOf` reads at the node, or at `ASSUMED` where it can place
+ * version that record carries, or at `ASSUMED` where `versionOf` could place
  * none: the most permissive version `KNOWN` holds, derived rather than
  * spelled, because a missing `version` is already
  * `missing-version-in-stylesheet`'s defect and letting it decide a syntax
@@ -110,7 +110,7 @@
 const {parsed, matched} = require('./grammar')
 const {holding} = require('./tree')
 const {TOKENS, TRIVIA} = require('./tokens')
-const {versionOf, KNOWN} = require('./xsl-version')
+const {KNOWN} = require('./xsl-version')
 
 /**
  * The namespace an unprefixed function name belongs to, which XPath calls the
@@ -205,13 +205,13 @@ const STEPPED = [
  * `matched` for a pattern, a different language rather than a second reading
  * of an expression, and `parsed` for the rest. So `1 cast as xs:integer` is
  * valid in a 2.0 sheet and a syntax error in a 1.0 one (#652).
- * @param {{node: Node, expression: string, pattern: boolean}} found - The
- *  expression, whole, as `expressionsOf` yields it
+ * @param {{expression: string, pattern: boolean, version: string}} found -
+ *  The expression, whole, as `expressionsOf` yields it
  * @return {{tokens: Array, tree: ?object, fault: string, at: number}} - The
  *  tokens, the tree when it parsed, and the complaint when it did not
  */
 const parseOf = function(found) {
-  let version = versionOf(found.node)
+  let version = found.version
   if (!KNOWN.includes(version)) {
     version = ASSUMED
   }

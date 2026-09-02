@@ -53,8 +53,8 @@ three platforms and two node versions, and `corpora`, which times a real run
 The suite comes in two halves, and the line between them is a child process. A
 **deep** test starts one — it runs `xslint` or `xcop` the way a user does — and
 is named `*.deep.test.js`; every other test stays in this process. Four files
-are deep, and they still cost most of what the suite costs: 671 of the 2841
-tests, 9 of the 14 seconds. The other 2170 finish inside one, which is why
+are deep, and they still cost most of what the suite costs: 671 of the 2842
+tests, 9 of the 14 seconds. The other 2171 finish inside one, which is why
 `npm run fast` is the loop to work in and `npm test` the one to finish on. The
 deep target runs under `mocha --parallel`, so those four files run at once and
 the slowest of them sets the clock — `xslint.deep.test.js` alone, whose 52 tests
@@ -140,8 +140,8 @@ builds at 40 stylesheets and again at 160, and asks two questions of each: what
 percentage of the whole run it cost, and how it grew beside the middle stage's
 growth. Both are quotients taken inside one process, which is what cancels the
 machine. `SHARES` names the three stages that legitimately cost more of a run
-than the rest — `xpath-linter` at 46%, `xpath-validator` at 24%,
-`xsl-validator` at 16% — and every other stage answers to one bar, `SHARE` at
+than the rest — `xpath-linter` at 46%, `xpath-validator` at 26%,
+`xsl-validator` at 18% — and every other stage answers to one bar, `SHARE` at
 7%; growth is asked only of the stages with no entry, against `GROWTH` at 3.0,
 since an entry pins what a stage costs outright and that is the stronger
 statement. `corpora.yml` is the nightly tier, timing DocBook-XSL, TEI and
@@ -236,7 +236,7 @@ before: 268 descriptions in 65 files stood past that bar, the dearest of them
 142 lines, so a derivation grew wherever one was written the way the cross-file
 linter's cost grew before #755 (#832). The bar is not a licence to respell what
 a block cannot hold as a `/* */` beside it either — such prose is cut and not
-moved, the dearest chain of guides standing at 0.90 of `LOADED` and reddening
+moved, the dearest chain of guides standing at 0.91 of `LOADED` and reddening
 well under it, so a guide is no place to put it either and the ticket number
 left standing in the surviving sentence is what keeps a derivation
 recoverable.
@@ -270,7 +270,8 @@ expression form has nowhere to put the `if`.
 
 One word names one thing. **`expression` is the text of an expression, never the
 node carrying it** — a node is an `attribute`, and the record pairing the two is
-`found` (`{node, start, expression, pattern}`, what `expressionsOf` yields).
+`found` (`{node, start, expression, pattern, version}`, what `expressionsOf`
+yields).
 `no-restricted-syntax` selectors enforce both halves: reading a node's property
 off an `expression` is an error, and so is handing `defect` a node and its text as
 two arguments. The word named the node in `src/validators/xpath-validator.js`
@@ -589,34 +590,37 @@ Then run `npx grunt checks`, `npm test`, `npm run coverage`, and
 
 ### Mandatory rules
 
-- **Version-dependence.** If a check's detection or fix is valid only for certain
-  XSLT versions, the version test is part of the check. Read the version with
-  `versionOf(node)` from `src/xsl-version.js` and test it with `since` against a
-  floor such as its `MODERN` (code) — a version gate is a lower bound, not a list
-  of spellings, so a construct 2.0 introduced is present in 4.0 too, and a hazard
-  that begins where backwards compatible behaviour stops only deepens after
-  (#619) — never
-  `documentElement.getAttribute('version')`, which an ESLint rule bans because it
-  misses a simplified stylesheet's `xsl:version`. Pass the **node under
-  judgement**, not the document: `version` may sit on any XSLT element and
-  `xsl:version` on any literal result element, each setting the version of its
-  own subtree, so a document-wide answer misjudges a template raised or lowered
-  against its root (#618). A code-based linter already holds that node from
-  `expressionsOf`, so the gate belongs inside its per-expression loop, not above
-  it. `versionOf` canonicalises the value too — `version` is an `xs:decimal`, so
-  `2`, `2.0` and `2.00` are one version and answer `2.0` — and hands back
-  anything it cannot place, which `malformed-version-in-stylesheet` reports rather
-  than let a gate guess (#614). A declarative rule reads it
-  structurally — `(/xsl:stylesheet | /xsl:transform)/@version` on an XSLT root,
-  `@xsl:version` on any other root (a literal result element standing in as the
-  stylesheet) — never a bare `/*/@version` (blind to a simplified root) or a
-  presence fallback `(@version | @xsl:version)` (an SVG root's own `version`
-  defeats it); `test/conformance.test.js` fails a selector naming `@version`
-  without `@xsl:version`. That gate read only a *comparison* until #608 — its
-  pattern was `@version` followed by `=` — so `missing-version-in-stylesheet`,
-  which asks `not(@version)`, slipped past the very rule written to catch it and
-  never asked a simplified root for the `xsl:version` XSLT requires of it. It
-  matches any mention of `@version` now, presence test included. Fork on the
+- **Version-dependence.** If a check's detection or fix is valid only for
+  certain XSLT versions, the version test is part of the check. Read the version
+  off the record — `found.version`, which `expressionsOf` derives once per node
+  — and test it with `since` against a floor such as its `MODERN` (code) — a
+  version gate is a lower bound, not a list of spellings, so a construct 2.0
+  introduced is present in 4.0 too, and a hazard that begins where backwards
+  compatible behaviour stops only deepens after (#619) — never
+  `documentElement.getAttribute('version')`, which an ESLint rule bans because
+  it misses a simplified stylesheet's `xsl:version`. What a record carries is
+  the version at the **node under judgement**, not the document's: `version` may
+  sit on any XSLT element and `xsl:version` on any literal result element, each
+  setting the version of its own subtree, so a document-wide answer misjudges a
+  template raised or lowered against its root (#618). A `no-restricted-syntax`
+  selector bans the call anywhere but there, since it remembers nothing and
+  `parseOf` stood in front of the parse memo: every `gathered` and `isValid` the
+  expression tier issued paid a fresh climb, 950,645 of them over DocBook-XSL
+  and 6% to 10% of a staged run (#845). `versionOf` canonicalises the value too
+  — `version` is an `xs:decimal`, so `2`, `2.0` and `2.00` are one version and
+  answer `2.0` — and hands back anything it cannot place, which
+  `malformed-version-in-stylesheet` reports rather than let a gate guess (#614).
+  A declarative rule reads it structurally — `(/xsl:stylesheet |
+  /xsl:transform)/@version` on an XSLT root, `@xsl:version` on any other root (a
+  literal result element standing in as the stylesheet) — never a bare
+  `/*/@version` (blind to a simplified root) or a presence fallback `(@version |
+  @xsl:version)` (an SVG root's own `version` defeats it);
+  `test/conformance.test.js` fails a selector naming `@version` without
+  `@xsl:version`. That gate read only a *comparison* until #608 — its pattern
+  was `@version` followed by `=` — so `missing-version-in-stylesheet`, which
+  asks `not(@version)`, slipped past the very rule written to catch it and never
+  asked a simplified root for the `xsl:version` XSLT requires of it. It matches
+  any mention of `@version` now, presence test included. Fork on the
   *namespace*, not on the two root names: `xsl:package` is a third XSLT root and
   takes the plain `version` as much as `xsl:stylesheet` does, so a rule reading
   `self::xsl:stylesheet or self::xsl:transform` demands `xsl:version` of a
@@ -626,17 +630,17 @@ Then run `npx grunt checks`, `npm test`, `npm run coverage`, and
   document binds — read with `lookupPrefix`, never assumed to be `xsl`. Where
   check and fixer fork differently the pair is worse than either alone: this one
   reported a package and then wrote a second `version` beside its first, turning
-  a valid module into a file no parser loads. A non-XSLT root is not a simplified
-  stylesheet on the strength of holding an `xsl:*` either — an *embedded*
-  stylesheet (XSLT 1.0 §2.7) is data around a real module root, which declares
-  its own version, so the else branch excludes a root holding one:
-  `not(.//(xsl:stylesheet | xsl:transform | xsl:package))`, one union step rather
-  than a descendant scan per name. Never emit a fix the declared
-  version cannot run; emit
-  the version-appropriate form instead (`count(x) > 0` -> `exists(x)` on 2.0+,
-  `boolean(x)`/`x` on 1.0). A version-sensitive check with no version guard is a
-  bug. Verify a version-based *exclusion* fires on the versions where its premise
-  does not hold — an inert 2.0 attribute in a 1.0 sheet is still a defect.
+  a valid module into a file no parser loads. A non-XSLT root is not a
+  simplified stylesheet on the strength of holding an `xsl:*` either — an
+  *embedded* stylesheet (XSLT 1.0 §2.7) is data around a real module root, which
+  declares its own version, so the else branch excludes a root holding one:
+  `not(.//(xsl:stylesheet | xsl:transform | xsl:package))`, one union step
+  rather than a descendant scan per name. Never emit a fix the declared version
+  cannot run; emit the version-appropriate form instead (`count(x) > 0` ->
+  `exists(x)` on 2.0+, `boolean(x)`/`x` on 1.0). A version-sensitive check with
+  no version guard is a bug. Verify a version-based *exclusion* fires on the
+  versions where its premise does not hold — an inert 2.0 attribute in a 1.0
+  sheet is still a defect.
 - **Root-robustness.** A declarative rule that anchors on the stylesheet root must
   match both spellings: `(/xsl:stylesheet | /xsl:transform)[...]`, never
   `/xsl:stylesheet[...]` — they are exact synonyms in every version. Broaden a
