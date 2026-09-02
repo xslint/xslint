@@ -3,6 +3,86 @@
  * SPDX-License-Identifier: MIT
  */
 
+/*
+ * `template-writes-nothing` and `output-method-xml`, of which only the
+ * second still asks which template is the *root* one — `starts-with(@match,
+ * '/')` until #788, where every absolute pattern begins that way. So a
+ * `match="/alpha"`, a template for an `alpha` element standing at a
+ * document's root, was read as the root template and told that it "contains
+ * only variable declarations", which is advice about a template the
+ * stylesheet does not have; this repository's own motive rule names that
+ * error. The pattern grammar answers it now: a pattern is a union of
+ * branches and the root is the branch holding no step at all, so
+ * `match="/"` is one and `match="alpha | /"` is one, where `match="/alpha"`
+ * and `match="document-node()"` are not. The first check asked it too until
+ * #559 and had no business to: what a template writes its own body decides,
+ * and a `match="item"` holding nothing but variables is as dead as the root
+ * one, in a way no processor reports since an empty result is legal. It
+ * reads every `xsl:template` off the shared walk now, named ones included,
+ * and is named for what it is about rather than for what the stylesheet
+ * produces. Both its packs had asserted the narrowing, each carrying a
+ * variable-only `match="/objects/o/o[…]"` the fixture expected to stay
+ * quiet, which is what #494's packs turned out to be doing. A body of
+ * nothing but `xsl:param` is left alone deliberately: DocBook-XSL's
+ * `xsl/fo/math.xsl` has both four lines apart, variable-only at 65 and
+ * parameter-only at 60, and a parameter is a signature a template may keep
+ * while producing nothing on purpose. That one at 65 is the whole of what
+ * the widening reports over the three corpora. A template writes nothing
+ * when every element it holds is an `xsl:variable` and every text node of
+ * it is blank — a CDATA section being one kind of text and not a construct
+ * of its own, which is what a `text()` step says too. The `xsl:output` the
+ * second check reports is taken from the stylesheet's own children, XSLT
+ * reading a declaration nowhere else, and its fix rewrites the value alone
+ * through `substitution`. What makes the result HTML is the **outermost**
+ * element the template builds and not an `html` anywhere under it, which is
+ * #495: an XML document may embed an HTML fragment and stay XML — an Atom
+ * entry's `content`, an XHTML island — so a check reading any descendant
+ * told a valid feed to serialize itself as HTML and `--fix-suggestions`
+ * rewrote the `method` to match, which emits unclosed tags and no XML
+ * declaration. Outermost means every element up to the template is an XSLT
+ * instruction that passes its content through, which is every one of them
+ * but the eleven in `DIVERTED` — three binding a value (`xsl:variable`,
+ * `xsl:param`, `xsl:with-param`), `xsl:element` building the wrapper its
+ * content becomes children of, three reducing it to a string
+ * (`xsl:attribute`, `xsl:comment`, `xsl:processing-instruction`),
+ * `xsl:message` writing to the message stream, `xsl:result-document`
+ * opening a secondary document with a serialization of its own, and
+ * `xsl:map-entry` and `xsl:array-member` building a map's value or an
+ * array's member, which is a value and not a node the element above it
+ * holds. Their containers are outside the list and the asymmetry is
+ * deliberate: an `xsl:map` holds a sequence of maps and an `xsl:array` a
+ * sequence of arrays, so an `html` directly inside one is invalid XSLT
+ * rather than output standing anywhere — that last being the one with
+ * teeth, since a stylesheet already declaring `method="html"` there drew
+ * the warning against its *primary* output and the fix would have rewritten
+ * that. The list is named for the rule rather than enumerated to fit it,
+ * which is what the first spelling did: `BOUND`, two names and a docblock
+ * about binding, left four shapes reporting that its own sentence excluded.
+ * What keeps it honest is a gate rather than the reviewer who found that,
+ * since the second round of the same defect was the packs and not the list
+ * — four names sat behind a `<report>` literal result element, which makes
+ * an `html` non-outermost whatever the list holds, so dropping all four
+ * left every test green, and `param` was asserted by nothing at all,
+ * inherited from the two-name spelling. A pack's zero has to come from the
+ * name under test: `test/root-template-linter.test.js` walks each `html` in
+ * each pack up to its template and refuses a name that no pack leaves
+ * standing **alone** above one, so a name masked by a wrapper or added
+ * without a shape of its own turns red — which is #645's shape, a fixture
+ * whose zero another mechanism produces reading exactly like one that
+ * passed. xsltproc settles the eight of them XSLT 1.0 has by showing what
+ * each builds — an `html` under `xsl:element` comes out
+ * `<wrapper><html/></wrapper>` and one under `xsl:message` never comes out
+ * at all — and `xsl:copy` is deliberately absent, copying the *document
+ * node* being transparent, so under a root template an `html` inside one
+ * really is the document element and xsltproc answers
+ * `<html><body/></html>`. The namespace decides the other half: an `html` a
+ * document puts in the XHTML namespace is XHTML, which serializes as `xml`
+ * in 1.0 and `xhtml` from 2.0 and never as the `html` this check
+ * recommends, so it is left alone rather than given advice its version
+ * cannot take — the false negative #495 names beside the false positive,
+ * which wants a check of its own rather than the wrong half of this one.
+ */
+
 const {expressionsOf, whole} = require('../attributes')
 const {gathered, isValid} = require('../syntax')
 const {metaOf, suppressed} = require('../checks')

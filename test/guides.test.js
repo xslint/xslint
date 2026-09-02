@@ -7,8 +7,8 @@ const {allFilesFrom} = require('../src/helpers')
 const {ATTRIBUTES, PATTERNS} = require('../src/attributes')
 const {GAP} = require('../src/tokens')
 const {
-  ROOT, GUIDES, DOCUMENTS, DERIVED, LOADED, NEARBY, carries, slashed, sized,
-  worded, chained, loaded, indexed, noted, globbed,
+  ROOT, GUIDES, DOCUMENTS, DERIVED, LOADED, ROOM, NEARBY, carries, slashed,
+  sized, worded, chained, loaded, indexed, noted, globbed,
 } = require('./guides')
 const path = require('path')
 const assert = require('assert')
@@ -28,6 +28,16 @@ const PROSE = ['src/attributes.js']
  * @type {Array.<string>}
  */
 const MEASURED = DOCUMENTS.concat(['test/guides.js'])
+
+/**
+ * The most a day of ordinary work has added to the dearest chain since #823
+ * gave that chain its room back, read over the 45 merges between then and #844.
+ * A day is the unit because a relocation lands in about one, this tree taking
+ * three to eight merges a day, so it is what a chain has to survive between
+ * turning red and being answered.
+ * @type {number}
+ */
+const GROWN = 5298
 
 /**
  * Each list as a document may name it, paired with what it holds. `NAMED` is
@@ -67,19 +77,30 @@ describe('guides', function() {
         'judged by nobody',
     )
   })
-  it('cannot fill a turn with the guides one directory loads', function() {
+  it('cannot come within reach of what a turn may load', function() {
     assert.deepEqual(
-      GUIDES.filter((one) => loaded(one) > LOADED).map(
+      GUIDES.filter((one) => loaded(one) > LOADED - ROOM).map(
         (one) => `${one} loads ${loaded(one)} in ${
           chained(one).map((each) => `${each} at ${sized(each)}`).join(' + ')}`,
       ),
       [],
-      `cannot load a chain of guides past the ${LOADED} characters the ` +
-        'harness warns at, a turn touching a file loading the root guide and ' +
-        'the guide of every directory over it — what answers this is the ' +
-        'derivation moving one directory further down, into the file-header ' +
-        'note of the module it is about, and never a bar widened to fit what ' +
-        'has grown past it',
+      `cannot load a chain of guides within ${ROOM} characters of the ` +
+        `${LOADED} the harness warns at, a turn touching a file loading the ` +
+        'root guide and the guide of every directory over it — the bar ' +
+        `stands at ${LOADED - ROOM} so that a derivation still has somewhere ` +
+        'to go when it fires, what answers it being that derivation moving ' +
+        'one directory further down, into the file-header note of the module ' +
+        'it is about, and never a bar widened to fit what has grown past it',
+    )
+  })
+  it('keeps room enough to answer a chain that has reached the bar', function() {
+    assert.ok(
+      ROOM >= GROWN * 1.5 && ROOM <= GROWN * 2,
+      `cannot keep ${ROOM} characters under the bar against a dearest day ` +
+        `of ${GROWN}: a margin under half again of it is one a single day of ` +
+        'work crosses without warning, and one past twice it reddens a tree ' +
+        'that has room to spare, both of which are a bar that has stopped ' +
+        'being one',
     )
   })
   it('names in its index only files the tree holds', function() {
