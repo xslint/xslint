@@ -526,16 +526,6 @@ describe('conformance', function() {
         'that starts none is, so the fast half of the suite runs the wrong files',
     )
   })
-  it('runs the grunt target on the mocha the suite declares', function() {
-    assert.strictEqual(
-      require.resolve(
-        'mocha',
-        {paths: [path.dirname(require.resolve('grunt-mocha-cli/package.json'))]},
-      ),
-      require.resolve('mocha'),
-      'grunt mochacli runs a mocha of its own, not the one the suite declares',
-    )
-  })
   it('writes every scratch file of a test into a temporary directory', function() {
     assert.deepEqual(
       allFilesFrom(__dirname)

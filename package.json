@@ -40,6 +40,8 @@
     "yaml": "^2.7.0"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.7",
+    "@eslint/js": "^10.0.1",
     "@stryker-mutator/core": "^10.0.0",
     "@stryker-mutator/mocha-runner": "^10.0.0",
     "@stylistic/eslint-plugin": "^5.10.0",
@@ -50,7 +52,7 @@
     "globals": "^17.6.0",
     "grunt": "^1.6.1",
     "grunt-cli": "^1.5.0",
-    "grunt-eslint": "^26.0.0",
+    "grunt-eslint": "^27.0.0",
     "grunt-mocha-cli": "^7.0.0",
     "marked": "^18.0.7",
     "mocha": "^11.0.1"
@@ -59,6 +61,9 @@
     "diff": "^9.0.0",
     "grunt": {
       "js-yaml": "^4.3.1"
+    },
+    "grunt-eslint": {
+      "eslint": "$eslint"
     },
     "grunt-mocha-cli": {
       "mocha": "$mocha"
