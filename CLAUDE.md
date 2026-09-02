@@ -53,8 +53,8 @@ three platforms and two node versions, and `corpora`, which times a real run
 The suite comes in two halves, and the line between them is a child process. A
 **deep** test starts one — it runs `xslint` or `xcop` the way a user does — and
 is named `*.deep.test.js`; every other test stays in this process. Four files
-are deep, and they still cost most of what the suite costs: 671 of the 2850
-tests, 9 of the 14 seconds. The other 2179 finish inside one, which is why
+are deep, and they still cost most of what the suite costs: 671 of the 2853
+tests, 9 of the 14 seconds. The other 2182 finish inside one, which is why
 `npm run fast` is the loop to work in and `npm test` the one to finish on. The
 deep target runs under `mocha --parallel`, so those four files run at once and
 the slowest of them sets the clock — `xslint.deep.test.js` alone, whose 52 tests
@@ -236,7 +236,7 @@ before: 268 descriptions in 65 files stood past that bar, the dearest of them
 142 lines, so a derivation grew wherever one was written the way the cross-file
 linter's cost grew before #755 (#832). The bar is not a licence to respell what
 a block cannot hold as a `/* */` beside it either — such prose is cut and not
-moved, the dearest chain of guides standing at 0.90 of `LOADED` and reddening
+moved, the dearest chain of guides standing at 0.91 of `LOADED` and reddening
 well under it, so a guide is no place to put it either and the ticket number
 left standing in the surviving sentence is what keeps a derivation
 recoverable.
@@ -1038,5 +1038,5 @@ one of them.
 | `test/packs.js` | The one harness every pack directory is read through |
 | `test/scaling.test.js` | The speed gate: every stage's own processor time as a share of the run, at two corpus sizes |
 | `test/xcop.deep.test.js` | Writes every pack's inline XSL to one directory and runs xcop over it |
-| `test/workflows.test.js` | Every job granted the scope its own steps write with, red from both sides |
+| `test/workflows.test.js` | Every job granted the scope its own steps write with, and left the scope they read with |
 | `test/manifest.test.js` | What `package.json` declares, held to what a grunt wrapper runs and what this repository's own JavaScript imports |
