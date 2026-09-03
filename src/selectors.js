@@ -470,8 +470,8 @@ const spilled = function(xpath) {
  * The arms of one bracketed union, each served where the walk can serve it and
  * swept where it cannot. Safe because `spread` admits element steps alone, so
  * an arm the engine answers comes back as elements `named` already ranks.
- * Refused outright where no arm can be served, and where a served arm carries
- * an attribute, an attribute holding no rank to merge on (#811).
+ * Refused where no arm serves, and where a served arm carries an attribute
+ * beside a refused arm carrying none, which puts `merged` on the element rank.
  * @param {string} xpath - The selector a declarative check is written in
  * @return {Array.<object>} - A branch an arm, or nothing to serve
  */

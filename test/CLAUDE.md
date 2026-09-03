@@ -102,24 +102,6 @@ a side came out disturbed — a single stage eating a fifth of its run, and on b
 is kept rather than dropped, since dropping a reading a machine has actually given is how a bar
 comes to stand on the runs that flattered it.
 
-The seventh move is #811's anchor phase, and what it shows is that a shape's name is not its cost.
-Three checks spell a guard in front of their descendant step —
-`(/xsl:stylesheet | /xsl:transform)//(xsl:stylesheet | xsl:transform)` and two like it — and the
-split refused every one of them for being *anchored at the root*, which is a true statement about
-the anchor and says nothing about the sweep behind it. `P//X` is every `X` standing below a node `P`
-chose, so the anchor is one question the engine answers for a document — 4.4 ms over the whole of
-DocBook-XSL — where the sweep behind it was a traversal apiece. `xpath-linter` goes from 3.33 s to
-2.78 s over DocBook-XSL, 2.32 to 2.05 over TEI and 1.13 to 1.06 over DITA-OT, lowest of three
-interleaved rounds a side of processor time, which is 17%, 12% and 6% off the stage, and the three
-checks themselves go from 442 ms to 25 over DocBook-XSL, 334 to 30 over TEI and 132 to 21 over
-DITA-OT — the report byte-identical on all three at 3843, 5713 and 1266 defects. Over the gate's own
-corpus the stage reads 29.44% where it read 34.03%, dearest of five gate runs a side, so its entry
-comes down by its own ratio, 53 to 46, and the twenty-two stages that cost what they always did read
-dearer by 0.97 to 1.32 — which this time moves both validators, `xpath-validator` 13.60% to 14.89%
-and `xsl-validator` 9.16% to 10.21%, leaving entries of 22 and 14 at 1.48 and 1.37 times their own
-readings where the band allows no closer than half again, so each is re-derived by its own ratio to
-24 and 16. `SHARE` stays at 7: the dearest cheap stage moved by 1.04 alone.
-
 The eighth move is #845, and it is the first to make nearly every stage cheaper at once rather than
 one of them. `versionOf` climbs to the root and remembers nothing, and `parseOf` asked it in front
 of the parse memo #689 put there, so the memo saved the parse and never the walk: every `gathered`,
@@ -139,6 +121,24 @@ to 18, and `xpath-linter` keeps its 46 at 1.59, inside the band. `SHARE` stays a
 it has stayed there before: the dearest cheap stage moved by 1.03 alone, 5.17% to 5.32%, so its own
 ratio re-derives 7 to 7.2 — and its standing at 1.32 rather than half again is not this change's
 doing, master reading 1.35 before it. A bar raised on nobody's failure is a bar loosened.
+
+The seventh move is #811's anchor phase, and what it shows is that a shape's name is not its cost.
+Three checks spell a guard in front of their descendant step —
+`(/xsl:stylesheet | /xsl:transform)//(xsl:stylesheet | xsl:transform)` and two like it — and the
+split refused every one of them for being *anchored at the root*, which is a true statement about
+the anchor and says nothing about the sweep behind it. `P//X` is every `X` standing below a node `P`
+chose, so the anchor is one question the engine answers for a document — 4.4 ms over the whole of
+DocBook-XSL — where the sweep behind it was a traversal apiece. `xpath-linter` goes from 3.33 s to
+2.78 s over DocBook-XSL, 2.32 to 2.05 over TEI and 1.13 to 1.06 over DITA-OT, lowest of three
+interleaved rounds a side of processor time, which is 17%, 12% and 6% off the stage, and the three
+checks themselves go from 442 ms to 25 over DocBook-XSL, 334 to 30 over TEI and 132 to 21 over
+DITA-OT — the report byte-identical on all three at 3843, 5713 and 1266 defects. Over the gate's own
+corpus the stage reads 29.44% where it read 34.03%, dearest of five gate runs a side, so its entry
+comes down by its own ratio, 53 to 46, and the twenty-two stages that cost what they always did read
+dearer by 0.97 to 1.32 — which this time moves both validators, `xpath-validator` 13.60% to 14.89%
+and `xsl-validator` 9.16% to 10.21%, leaving entries of 22 and 14 at 1.48 and 1.37 times their own
+readings where the band allows no closer than half again, so each is re-derived by its own ratio to
+24 and 16. `SHARE` stays at 7: the dearest cheap stage moved by 1.04 alone.
 
 Two things were measured beside it and refused, which is the more useful half of the phase. Serving
 `//xsl:*` off a namespace bucket — the shape the ticket named next, and one line of `src/tree.js` —
@@ -644,7 +644,7 @@ module itself, and never a bar widened to fit what has grown past it: a docblock
 of description since #832, so prose that has outgrown a
 guide does not simply move into one instead. A `CEILING` of half the bar stood beside it until it
 was seen to be a gate no tree could fail: the root stands in every chain, so the chain holding it
-above weighs each other guide against the bar less what stands over it — 29,864 for
+above weighs each other guide against the bar less what stands over it — 29,807 for
 `src/linters/CLAUDE.md`, where half of the bar is 75,000 — and holds the root itself to 81,690, a
 number derived from the dearest chain rather than chosen. A gate no tree can fail is removed and
 not kept (#750, #660). All four of those figures — the chain, its ratio, and the two allowances —

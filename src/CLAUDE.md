@@ -116,14 +116,15 @@ it comes in, and the tail distributes because `filtered` admits no predicate rea
 of the sequence it came from, a filtering one answering the same of a node whichever sequence
 carried it there. So `spread` writes the arms out and `apart` judges each on its own. What makes
 that safe is the arms themselves: `spread` parts a sweep only where every arm
-is one element step, so an arm the walk refuses comes back from the engine as elements `named`
-has already ranked and `merged` orders both kinds together. Refusing outright is still the answer
-where *no* arm can be served, there being nothing to gain from asking the engine one selector in
-pieces, and where a served arm carries an **attribute**, an attribute holding no rank either. Both
-of those guards are `UNPARTED` in `test/selectors.test.js`, asserted from two sides apiece: that
-the shape is refused, and that the answer is the engine's regardless — the second because a guard
-removed must be caught whether or not the shape it admits happens to answer wrongly on one
-document. Neither had a row when the phase was first written, and dropping either failed nothing
+is one element step, so an arm the walk refuses comes back from the engine as elements `named` has
+already ranked and `merged` orders both kinds together. Refusing outright is still the answer where
+*no* arm can be served, there being nothing to gain from asking the engine one selector in pieces,
+and where a served arm carries an **attribute**, a refused arm beside it holding none, which puts
+`merged` back on the rank kept for elements. Both of those guards are `UNPARTED` in
+`test/selectors.test.js`, asserted from two sides apiece: that the shape is refused, and that the
+answer is the engine's regardless — the second because a guard removed must be caught whether or not
+the shape it admits happens to answer wrongly on one document. Neither had a row when the phase was
+first written, and dropping either failed nothing
 in 2577 tests: without `stepped`, `//(xsl:variable | @name)` and `//(xsl:variable | text())` are
 distributed and hand `merged` a node whose rank is `undefined`, so `undefined - n` is `NaN`, the
 sort stands pat, and every walk-served node prints ahead of every engine-served one; without the

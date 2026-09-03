@@ -20,13 +20,14 @@ const {worded} = require('./guides')
 const XSLT = 'http://www.w3.org/1999/XSL/Transform'
 
 /**
- * The rows of four tables below whose selector opens on a bare attribute
+ * The rows of five tables below whose selector opens on a bare attribute
  * sweep. A check spells one in YAML and this file cannot: `//@name` is an
  * ESLint error in every JavaScript here, a linter narrowing to one attribute
  * through `whole` instead, so the subjects of the split are read in the
  * language a check is written in rather than transcribed into another (#811).
  * @type {{attributed: Array.<object>, merged: Array.<string>,
- *  distributed: Array.<string>, whole: Array.<object>}}
+ *  distributed: Array.<string>, whole: Array.<object>,
+ *  unspilled: Array.<object>}}
  */
 const AXES = yaml.parsedFromFile(
   path.resolve(__dirname, 'resources', 'selectors', 'axes.yaml'),
@@ -585,16 +586,13 @@ const APART = [
 ]
 
 /**
- * Unions the sweep must not part, each beside the arm that stops it. Both
- * halves are asserted of every row: that no branch is served, and that the
- * answer is the engine's all the same, so a guard removed is caught whether or
- * not the shape it admits happens to answer wrongly on this document.
+ * Unions the sweep must not part, each beside the arm that stops it.
  * @type {Array.<{xpath: string, why: string}>}
  */
 const UNPARTED = [
   {
     xpath: '//(xsl:variable | @name)',
-    why: 'an arm selecting an attribute, which carries no rank to merge on',
+    why: 'an arm selecting an attribute, where a spread admits a step alone',
   },
   {
     xpath: '//(xsl:variable | text())',
@@ -610,8 +608,28 @@ const UNPARTED = [
   },
   {
     xpath: '//(xsl:variable[@as] | xsl:template)/@name',
-    why: 'an arm served with an attribute, the merge ranking elements alone',
+    why: 'an arm served with an attribute beside a refused arm carrying none',
   },
+]
+
+/**
+ * Unions no outer predicate may be distributed over, each beside the arm
+ * that stops it.
+ * @type {Array.<{xpath: string, why: string}>}
+ */
+const UNSPILLED = AXES.unspilled
+
+/**
+ * The two tables above, each beside the document its rows are asked over and
+ * the verb for what the split must not do to them. Both halves are asserted of
+ * every row — that no branch is served, and that the answer is the engine's
+ * all the same — so a guard removed is caught whether or not what it admits
+ * happens to answer wrongly on the document it is asked over.
+ * @type {Array.<{rows: Array.<object>, sheet: Document, verb: string}>}
+ */
+const WITHHELD = [
+  {rows: UNPARTED, sheet: APARTING, verb: 'part'},
+  {rows: UNSPILLED, sheet: DISTRIBUTING, verb: 'spill'},
 ]
 
 /**
@@ -906,26 +924,31 @@ describe('selectors', function() {
       )
     })
   })
-  UNPARTED.forEach((one) => {
-    it(`refuses to part ${one.xpath}, it holding ${one.why}`, function() {
-      assert.deepStrictEqual(
-        splitOf(one.xpath),
-        [],
-        `parting ${one.xpath} distributes the anchor and the tail over ` +
-          `${one.why}, so an arm comes back as something the walk keeps no ` +
-          'rank for and the merge orders it by nothing at all',
-      )
+  WITHHELD.forEach((table) => {
+    table.rows.forEach((one) => {
+      it(`refuses to ${table.verb} ${one.xpath}, it holding ${one.why}`,
+        function() {
+          assert.deepStrictEqual(
+            splitOf(one.xpath),
+            [],
+            `the split ${table.verb}s ${one.xpath} over ${one.why}, so an ` +
+              'arm comes back as something the walk keeps no rank for, or ' +
+              'an arm the selector asked for comes back not at all',
+          )
+        })
     })
   })
-  UNPARTED.forEach((one) => {
-    it(`answers ${one.xpath} whole, as the engine answers it`, function() {
-      assert.deepStrictEqual(
-        placed(chosen(APARTING, one.xpath)),
-        placed(nodes(APARTING, one.xpath)),
-        `${one.xpath} answers other nodes than the engine answers of it, or ` +
-          'answers them in another order, so parting a union the sweep ' +
-          'cannot promise costs the report the order it is printed in',
-      )
+  WITHHELD.forEach((table) => {
+    table.rows.forEach((one) => {
+      it(`answers ${one.xpath} whole, as the engine answers it`, function() {
+        assert.deepStrictEqual(
+          placed(chosen(table.sheet, one.xpath)),
+          placed(nodes(table.sheet, one.xpath)),
+          `${one.xpath} answers other nodes than the engine answers of it, ` +
+            'or answers them in another order, so a union the walk cannot ' +
+            `promise every arm of is ${table.verb}ed all the same`,
+        )
+      })
     })
   })
   DOORS.forEach((one) => {
