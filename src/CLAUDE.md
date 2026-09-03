@@ -23,7 +23,7 @@ reorders under any wiring change at all. `compared` ranks two strings the way
 collation data the runtime carries rather than to the report: it orders letters case-insensitively,
 so all three committed snapshots come back in a different order under it — TEI at its very first
 line, `Documentation/param.xsl` behind `bibtex/convertbib.xsl` where code units put it in front,
-DocBook at its 81st and DITA-OT at its 12th.
+DocBook at its 81st file and line 698, DITA-OT at its 12th file and line 66.
 
 ## `src/config.js`
 

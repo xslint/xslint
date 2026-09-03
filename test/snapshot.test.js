@@ -134,12 +134,20 @@ const CASES = [
       '-a.xsl:1:1 count-compared-to-zero fix "not(a)"',
   },
   {
-    name: 'reports a difference standing in nothing but a repeated line',
+    name: 'reports a run repeating a line its snapshot holds once',
     expected: ['a.xsl:1:1 short-names'],
     reading: ['a.xsl:1:1 short-names', 'a.xsl:1:1 short-names'],
     said: 'linting docbook no longer draws what its snapshot holds, 2 ' +
       'defects against 1, so regenerate it once the change is meant: ' +
-      'nothing but how often a line repeats',
+      'nothing but the order the lines stand in, or how often one repeats',
+  },
+  {
+    name: 'reports a run drawing the same lines in another order',
+    expected: ['a.xsl:1:1 short-names', 'b.xsl:2:2 long-names'],
+    reading: ['b.xsl:2:2 long-names', 'a.xsl:1:1 short-names'],
+    said: 'linting docbook no longer draws what its snapshot holds, 2 ' +
+      'defects against 2, so regenerate it once the change is meant: ' +
+      'nothing but the order the lines stand in, or how often one repeats',
   },
 ]
 

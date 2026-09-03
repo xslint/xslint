@@ -498,13 +498,15 @@ json now rather than text, which is where the summary's defect count comes from 
 line, `wc -l` over a pretty-printed array meaning nothing.
 
 Four things pin the wiring, since a gate nobody has seen red is a gate nobody has. `yamllint` reads
-the workflow clean; 38 tests across `snapshot`, `budget` and `workflows` hold the matrix, the
-script and the step to each other; the step's own shell, replayed over a real DITA-OT clone at its
-pinned commit, reads `linted=190`, `found=1192` and `judged=0`; and the same replay over a
-*mutated* copy of this tree exits 1 with an annotation naming a detection that had gone and the
-replacements that had been rewritten, ending `, and 33 more` — `SHOWN` being ten, gains before
-losses, since a report that has moved wholesale must say so in one screen rather than in ten
-thousand lines.
+the workflow clean; 45 tests across `snapshot`, `budget` and `workflows` hold the matrix, the script
+and the step to each other — 39 of them in this process and 6 in the two deep halves, which run each
+script the way the shell does, since the exit code is the whole of what arms either judge and a
+verdict returned to nobody leaves the tier as unable to fail as #785 found it; the step's own shell,
+replayed over a real DITA-OT clone at its pinned commit, reads `linted=190`, `found=1192` and
+`judged=0`; and the same replay over a *mutated* copy of this tree exits 1 with an annotation naming
+a detection that had gone and the replacements that had been rewritten, ending `, and 33 more` —
+`SHOWN` being ten, gains before losses, since a report that has moved wholesale must say so in one
+screen rather than in ten thousand lines.
 
 `_typos.toml` excludes that directory, and the entry is the one exemption in this guide with **no
 both-sides ratchet**. Every word in a snapshot is somebody else's: a replacement quotes the
@@ -671,14 +673,14 @@ the dearest single guide instead, which is a whole directory short: it read 130,
 that 0.87 of the bar while a turn touching `src/linters/` was loading 157,504 and over it. So the
 two dearest notes moved one step further down, out of `src/CLAUDE.md` and into the top of
 `src/grammar.js` and `src/syntax.js` — 24,681 characters. What a turn touching `test/` loads has
-overtaken it since, and the dearest chain is that same one at 138,852, which is 0.93. What answers
+overtaken it since, and the dearest chain is that same one at 139,098, which is 0.93. What answers
 a chain reaching the bar is that move again, a module's derivation into the file-header note of the
 module itself, and never a bar widened to fit what has grown past it: a docblock holds five lines
 of description since #832, so prose that has outgrown a
 guide does not simply move into one instead. A `CEILING` of half the bar stood beside it until it
 was seen to be a gate no tree could fail: the root stands in every chain, so the chain holding it
-above weighs each other guide against the bar less what stands over it — 29,010 for
-`src/linters/CLAUDE.md`, where half of the bar is 75,000 — and holds the root itself to 82,625, a
+above weighs each other guide against the bar less what stands over it — 28,978 for
+`src/linters/CLAUDE.md`, where half of the bar is 75,000 — and holds the root itself to 82,379, a
 number derived from the dearest chain rather than chosen. A gate no tree can fail is removed and
 not kept (#750, #660). All four of those figures — the chain, its ratio, and the two allowances —
 follow from three file sizes, so one guide growing moves every one of them, and none of them
@@ -723,7 +725,7 @@ and `corpus-linter.js` out of `src/linters/CLAUDE.md`, and `scaling.test.js`, `p
 one. A tenth was refused by the valve rather than chosen against: `test/conformance.test.js` stands
 at 926 lines and its note is 150 more, and `max-lines` counts comments, so a section can outgrow the
 file it is about and relief has a floor — what answers that one is the note being cut, not moved.
-What that leaves is 1,148 characters of headroom, off a chain that is this file's own rather than
+What that leaves is 902 characters of headroom, off a chain that is this file's own rather than
 `src/linters/`: six of those nine came out of this one, and the note #855 added went back in. It is
 a fifth figure of the same class as the four, and the one that proves the point twice over — it
 stood outside the table and drifted 418 behind the rows in it with every one of them green, so it

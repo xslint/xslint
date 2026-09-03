@@ -79,15 +79,17 @@ const parted = function(expected, reading) {
 
 /**
  * As many of the differing lines as a message may name, and how many more there
- * are. An empty difference is a difference all the same: the two lists hold the
- * same lines and disagree over how often one of them repeats.
+ * are. An empty difference is a difference all the same, in one of two ways:
+ * the lines are the same and stand in another order, or one of them repeats a
+ * different number of times. A reorder says nothing about any single line, so
+ * naming repetition alone would point a reader at the wrong cause.
  * @param {Array.<string>} lines - The difference
  * @return {string} - What to name of it
  */
 const some = function(lines) {
   let said = lines.slice(0, SHOWN).join(', ')
   if (lines.length === 0) {
-    said = 'nothing but how often a line repeats'
+    said = 'nothing but the order the lines stand in, or how often one repeats'
   } else if (lines.length > SHOWN) {
     said = `${said}, and ${lines.length - SHOWN} more`
   }
