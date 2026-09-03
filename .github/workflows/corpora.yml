@@ -64,11 +64,12 @@ jobs:
           stylesheets=$(find corpus -name '*.xsl' | wc -l)
           started=$(date +%s%3N)
           set +e
-          node src/index.mjs corpus > defects.txt 2> log.txt
+          node src/index.mjs --format json corpus > report.json 2> log.txt
           code=$?
           set -e
           spent=$(( $(date +%s%3N) - started ))
           linted=$(sed -n 's/.*Processed files: \([0-9]*\).*/\1/p' log.txt | tail -1)
+          found=$(sed -n 's/.*Defects found: \([0-9]*\).*/\1/p' log.txt | tail -1)
           {
             echo "### $NAME"
             echo ""
@@ -78,7 +79,7 @@ jobs:
             echo "| commit | $COMMIT |"
             echo "| stylesheets on disk | $stylesheets |"
             echo "| stylesheets read | ${linted:-none} |"
-            echo "| defects | $(wc -l < defects.txt) |"
+            echo "| defects | ${found:-0} |"
             echo "| exit code | $code |"
             echo "| milliseconds | $spent |"
             echo "| budget | $BUDGET |"
@@ -99,7 +100,11 @@ jobs:
               "clean run nor defects found"
             exit 1
           fi
-          node scripts/budget.js "$NAME" "$spent" "$BUDGET"
+          judged=0
+          node scripts/snapshot.js corpus report.json \
+            "test/resources/corpora/$NAME.txt" || judged=1
+          node scripts/budget.js "$NAME" "$spent" "$BUDGET" || judged=1
+          exit "$judged"
   report-fail:
     name: Create issue on failure
     needs: lint

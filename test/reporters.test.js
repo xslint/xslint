@@ -42,6 +42,15 @@ const defect = function(severity) {
   }
 }
 
+/**
+ * A defect carrying the given fix, so a report is asked about the fix alone.
+ * @param {object} fix - The fix it carries
+ * @return {object} - Defect
+ */
+const fixed = function(fix) {
+  return {...defect('warning'), fix: fix}
+}
+
 describe('reporters', function() {
   it('reports a defect as a JSON object with position and message', function() {
     assert.deepStrictEqual(
@@ -54,6 +63,37 @@ describe('reporters', function() {
         line: 16,
         column: 3,
       },
+    )
+  })
+  it('carries the span and the replacement of a fix into the JSON report',
+    function() {
+      assert.deepStrictEqual(
+        JSON.parse(capture(reporterOf('json'), [fixed(
+          {line: 16, col: 12, value: 'count(a) = 0', replacement: 'not(a)'},
+        )]))[0].fix,
+        {
+          line: 16,
+          column: 12,
+          value: 'count(a) = 0',
+          replacement: 'not(a)',
+          suggestion: false,
+        },
+      )
+    })
+  it('grades a suggested fix as one in the JSON report', function() {
+    assert.equal(
+      JSON.parse(capture(reporterOf('json'), [fixed({
+        line: 16, col: 12, value: '//a', replacement: 'a', suggestion: true,
+      })]))[0].fix.suggestion,
+      true,
+    )
+  })
+  it('carries no fix at all on a defect that has none', function() {
+    assert.ok(
+      !Object.hasOwn(
+        JSON.parse(capture(reporterOf('json'), [defect('warning')]))[0], 'fix',
+      ),
+      'a defect nothing can fix carries a fix in the JSON report',
     )
   })
   it('reports an empty JSON array when there are no defects', function() {

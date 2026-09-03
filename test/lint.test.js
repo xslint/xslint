@@ -154,6 +154,44 @@ describe('lint (programmatic API)', function() {
       [true],
     )
   })
+  it('groups the report by file rather than interleaving two of them',
+    function() {
+      const reported = lint([
+        source('refused/refused-expressions.xsl'),
+        source('fix/starts-with-double-slash.xsl'),
+      ]).map((defect) => defect.file)
+      assert.ok(
+        reported.lastIndexOf('fix/starts-with-double-slash.xsl') <
+          reported.indexOf('refused/refused-expressions.xsl'),
+        'the defects of two files stand interleaved rather than grouped',
+      )
+    })
+  it('orders the defects of one file by the line each stands on', function() {
+    assert.deepEqual(
+      lint([source('stylesheets/xsl-with-some-violations.xsl')])
+        .map((defect) => defect.line),
+      [16, 16, 31, 45],
+    )
+  })
+  it('orders two defects on one line by the column each stands at', function() {
+    assert.deepEqual(
+      lint([source('fix/starts-with-double-slash-outside-a-template.xsl')])
+        .filter((defect) => defect.line === 10)
+        .map((defect) => defect.pos),
+      [58, 88],
+    )
+  })
+  it('orders two defects at one place by the check that found them', function() {
+    assert.deepEqual(
+      lint([source('fix/variable-or-param-with-select-spelled-oddly.xsl')])
+        .filter((defect) => defect.line === 8)
+        .map((defect) => defect.name),
+      [
+        'unused-function-template-parameter',
+        'variable-or-param-with-select-and-content',
+      ],
+    )
+  })
   it('keeps both declarative fixes on the valid template', function() {
     assert.deepEqual(
       lint([source('refused/refused-by-a-declarative-fix.xsl')])
