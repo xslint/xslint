@@ -485,6 +485,61 @@ for a wall clock as it does for a share, and a bar raised on nobody's failure is
 And **DITA-OT** is not too small to gate: at 2830 ms a tick is one part in 2830, and its margin is
 the best of the three. The corpus was never what was too small.
 
+## Snapshots
+
+Both tiers above are about cost, and nothing was about the answer: the nightly timed a run and
+counted the stylesheets it read, printed what it drew into the step summary, and no assertion ever
+looked at that. So a check whose reach changed over a real stylesheet changed it in silence, which
+is the gap #638 is about. Two things stand on that silence in this tree. Nine checks carried
+`mature: true`, a flag whose whole claim was that nothing about them had moved, and the tree could
+not have shown otherwise (#637, #865). And #811's evidence is an identity — swapping one module
+leaves all three reports byte-identical — established by taking the reports by hand at review time
+and rechecked by nothing since.
+
+A snapshot is `test/resources/corpora/<name>.txt`, one line per defect: the file relative to the
+corpus root, the line, the column, the check, and where the defect is fixable the tier and the
+replacement. The relative path is what keeps the runner's own checkout directory out of the file.
+The replacement is there because half of what a run says is in it — 1818 of DocBook-XSL's 3624
+lines, 3504 of TEI's 5514 and 457 of DITA-OT's 1192 carry one as this lands — so a fixer that
+began writing something else while its detections held would move nothing a detection-only record
+could see, and `--fix` is the one thing here that edits a user's files. No count is quoted as a
+bar: the file **is** the expectation, exactly, so a figure repeated here would rot at the first
+intended change. What makes any of it a gate rather than a flake is that `lint` now hands its
+defects back in one total order, derived in `src/CLAUDE.md`.
+
+The step runs two judges and owns the combining itself. Under `set -e` the first non-zero exit ends
+the step, so a snapshot diff chained in front of `scripts/budget.js` would abort before the budget
+was asked and a slowed night would hide behind a changed report; a command on the left of `||` is
+exempt from errexit, so each judge sets `judged` and the step exits on that. The timed run renders
+json now rather than text, which is where the summary's defect count comes from — the run's own log
+line, `wc -l` over a pretty-printed array meaning nothing.
+
+Four things pin the wiring, since a gate nobody has seen red is a gate nobody has. `yamllint` reads
+the workflow clean; 45 tests across `snapshot`, `budget` and `workflows` hold the matrix, the script
+and the step to each other — 39 of them in this process and 6 in the two deep halves, which run each
+script the way the shell does, since the exit code is the whole of what arms either judge and a
+verdict returned to nobody leaves the tier as unable to fail as #785 found it; the step's own shell,
+replayed over a real DITA-OT clone at its pinned commit, reads `linted=190`, `found=1192` and
+`judged=0`; and the same replay over a *mutated* copy of this tree exits 1 with an annotation naming
+a detection that had gone and the replacements that had been rewritten, ending `, and 33 more` —
+`SHOWN` being ten, gains before losses, since a report that has moved wholesale must say so in one
+screen rather than in ten thousand lines.
+
+`_typos.toml` excludes that directory, and the entry is the one exemption in this guide with **no
+both-sides ratchet**. Every word in a snapshot is somebody else's: a replacement quotes the
+corpora's own stylesheets, 13 readings of which the tool calls misspellings, and nothing here can
+fix one, the corpora standing at pinned commits. An entry that had stopped being needed therefore
+cannot redden, because the only thing that would say so is those stylesheets changing their prose,
+which happens when a commit is repinned and not otherwise. What is machine-enforced instead is the
+exclusion's **scope**: `test/snapshot.test.js` reads the directory and refuses any file in it but a
+snapshot the nightly matrix names, so nothing hand-written can ever come to sit behind it.
+
+The open question #638 left — whether a small committed corpus should carry the same diff per pull
+request — is answered no. What a snapshot is worth comes from its corpus being code nobody wrote
+for these checks, and a stylesheet committed here would assert what the packs already assert, one
+step further from the check that draws it. The packs are that tier: `found.fixes` has pinned every
+replacement since #607, and it fails in the fast half rather than by morning.
+
 ## `test/conformance.test.js`
 
 Enforces naming, motives, selector hygiene — including that a selector comparing an expression's
@@ -637,15 +692,15 @@ the moment a motive under them was opened. The first spelling of the bar weighed
 the dearest single guide instead, which is a whole directory short: it read 130,933 and called
 that 0.87 of the bar while a turn touching `src/linters/` was loading 157,504 and over it. So the
 two dearest notes moved one step further down, out of `src/CLAUDE.md` and into the top of
-`src/grammar.js` and `src/syntax.js` — 24,681 characters. What a turn touching `test/` loads has
-overtaken it since, and the dearest chain is that same one at 139,154, which is 0.93. What answers
+`src/grammar.js` and `src/syntax.js` — 24,681 characters. A turn touching `test/` has run it
+close ever since, and the dearest chain is that same one at 138,993, which is 0.93. What answers
 a chain reaching the bar is that move again, a module's derivation into the file-header note of the
 module itself, and never a bar widened to fit what has grown past it: a docblock holds five lines
 of description since #832, so prose that has outgrown a
 guide does not simply move into one instead. A `CEILING` of half the bar stood beside it until it
 was seen to be a gate no tree could fail: the root stands in every chain, so the chain holding it
-above weighs each other guide against the bar less what stands over it — 29,807 for
-`src/linters/CLAUDE.md`, where half of the bar is 75,000 — and holds the root itself to 81,690, a
+above weighs each other guide against the bar less what stands over it — 27,340 for
+`src/linters/CLAUDE.md`, where half of the bar is 75,000 — and holds the root itself to 80,320, a
 number derived from the dearest chain rather than chosen. A gate no tree can fail is removed and
 not kept (#750, #660). All four of those figures — the chain, its ratio, and the two allowances —
 follow from three file sizes, so one guide growing moves every one of them, and none of them
@@ -690,8 +745,11 @@ and `corpus-linter.js` out of `src/linters/CLAUDE.md`, and `scaling.test.js`, `p
 one. A tenth was refused by the valve rather than chosen against: `test/conformance.test.js` stands
 at 926 lines and its note is 150 more, and `max-lines` counts comments, so a section can outgrow the
 file it is about and relief has a floor — what answers that one is the note being cut, not moved.
-What that leaves is 846 characters of headroom, off a chain that is this file's own rather than
-`src/linters/`: six of those nine came out of this one, and the note #855 added went back in. It is
+What that leaves is 1,007 characters of headroom, off a chain that is `src/linters/`'s own once
+more rather than this file's: the merge behind #811's bracket phase breached the bar by 844 with
+neither branch having crossed it alone, and the root's `src/xslint.js` derivation moved into
+`src/CLAUDE.md` to answer it — 2,147 characters out of every chain but the three standing under
+`src/`. It is
 a fifth figure of the same class as the four, and the one that proves the point twice over — it
 stood outside the table and drifted 418 behind the rows in it with every one of them green, so it
 has a row of its own since #856.
@@ -726,18 +784,9 @@ expression — so a gate reads it *beside* `parsed`, never instead of it, and
 
 ## `test/packs.js`
 
-The one harness every pack directory is read through — `test/conformance.test.js` holds that
-one-to-one rather than leaving it to the prose: `harness({dir, noun, run})` asserts the amount, the
-position, the name, the severity and the message of every defect a pack expects, the `fixes` and
-`values` it declares, and that each check the directory expects a defect from goes quiet when the
-run suppresses it. It was twenty-two files of one loop with three things swapped, so an assertion
-had to be written twenty-two times and one written twenty-one times failed nowhere — which is how
-`import-packs` came to assert no fix while `redundant-import` attached a real deletion (#660).
-Suppression is asked under a *prefix* of the check's name, `--suppress` matching by substring, so a
-linter comparing the two for identity fails rather than passes. Which checks to ask it of is derived
-twice and the two answers compared, because the first spelling marked a name seen whether or not the
-pack was loud and so registered nothing at all for the two directories whose quiet pack comes first
-— a harness that silently asks nothing reads exactly like one where everything is covered.
+Its derivation stands at the top of `test/packs.js` itself, the fourteenth note to stand at the top
+of its own module and the second of the two this chain moved to make room for the snapshot tier
+above (#821, #638).
 
 ## `test/xcop.deep.test.js`
 
@@ -751,35 +800,6 @@ fixtures share a path.
 
 ## `test/manifest.test.js`
 
-What `package.json` declares, held to what a grunt wrapper runs and what this repository's own
-JavaScript imports. It is #841 one tool over, in the same file and for the same reason:
-`grunt-eslint` 26 depends on `eslint ^9.22.0`, so npm nested a 9.39.4 under it while the root
-declared 10, and the `lint` job — with `npm run fast` and `npm test` behind it — read every rule
-this project sets through a major nobody chose. The pin holding `grunt-mocha-cli` to the declared
-mocha was written for mocha alone, and so was the conformance test beside it, so eslint went four
-majors unasked (#855).
-
-The second half is what that nesting was quietly supplying. `eslint.config.mjs` imports
-`@eslint/js` and `@eslint/eslintrc`, and the manifest declared neither; eslint 10 depends on
-neither either, so the only provider in the tree was the nested 9's own, hoisted to where the
-config resolved it. Every rule in this project stood on that accident until a dependabot bump took
-it away: `grunt-eslint` 27 wants `eslint ^10.9.1`, which dedupes against the root, and the 9
-leaving took `@eslint/js` with it — `Cannot find package '@eslint/js' imported from
-eslint.config.mjs`, three jobs red on one bump and an hourly sentinel tripping over it. What
-eslint 10 reported once it was the one running was seventeen errors of two rules 9 does not
-have — fifteen `no-useless-assignment`, two `preserve-caught-error` — every one a real dead
-initialiser or a rethrow dropping its cause.
-
-Four questions of the one manifest, each red from both sides. Every tool a grunt wrapper shares
-with the suite is pinned as `$name` in `overrides`, **and no pin stands for a wrapper the Gruntfile
-has stopped loading** — the expected side comes from `overrides` and the measured side from the
-Gruntfile, which is what the first spelling got wrong: it read `wrapped()` on both sides, so a
-wrapper deleted took the expectation with it and a stale pin went unjudged. Each pin then has to
-hold: the tool resolved from the wrapper's directory must be the file the root resolves to. Every
-bare specifier this repository's own JavaScript names must be declared. And every declared package
-must be named by that sweep or stand on `UNIMPORTED` beside what runs it, a dependency nothing
-imports being either a command some script runs or dead weight — and a sweep gone blind reads
-exactly like a manifest with nothing left over.
-
-It is a mocha test rather than an ESLint rule because `eslint.config.mjs` stands in ESLint's own
-`ignores` (#789), so no rule of ours can see the one file whose undeclared imports this is about.
+Its derivation stands at the top of `test/manifest.test.js` itself, the thirteenth note to stand at
+the top of its own module and the first of the two this chain moved to make room for the snapshot
+tier above (#821, #638).

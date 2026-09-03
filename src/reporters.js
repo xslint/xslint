@@ -50,22 +50,41 @@ const text = function(defects) {
 }
 
 /**
+ * A defect as the JSON report carries it, with the fix under a key of its own
+ * where it holds one — the span, the text it replaces and the tier, everything
+ * a caller applying it needs and everything a record of what a corpus draws
+ * needs, a replacement that changes being a behaviour change as much as a
+ * detection that appears (#638).
+ * @param {object} defect - The defect to render
+ * @return {object} - What the report holds for it
+ */
+const rendered = function(defect) {
+  const found = {
+    rule: defect.name,
+    severity: defect.severity,
+    message: defect.message,
+    file: located(defect.file),
+    line: defect.line,
+    column: defect.pos,
+  }
+  if (defect.fix) {
+    found.fix = {
+      line: defect.fix.line,
+      column: defect.fix.col,
+      value: defect.fix.value,
+      replacement: defect.fix.replacement,
+      suggestion: Boolean(defect.fix.suggestion),
+    }
+  }
+  return found
+}
+
+/**
  * Print defects as a flat JSON array, one object per defect.
  * @param {Array.<object>} defects - Defects to print
  */
 const json = function(defects) {
-  console.log(JSON.stringify(
-    defects.map((defect) => ({
-      rule: defect.name,
-      severity: defect.severity,
-      message: defect.message,
-      file: located(defect.file),
-      line: defect.line,
-      column: defect.pos,
-    })),
-    null,
-    2,
-  ))
+  console.log(JSON.stringify(defects.map(rendered), null, 2))
 }
 
 /**

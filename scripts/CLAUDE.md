@@ -28,3 +28,20 @@ already happened reddens a build on a tree nobody has touched — and asserts th
 calls the script and still times with the clock a tick is written in; `test/budget.deep.test.js`
 runs the file the way the shell does, since the exit code is the whole of what arms the gate and a
 verdict returned to nobody leaves the tier as unable to fail as #785 found it.
+
+## `scripts/snapshot.js`
+
+Judges what linting a corpus *drew* against the report committed beside it, which is the same tier
+one question over: the budget holds what a night cost and this holds what it found. `lined` renders
+the JSON report as one line per defect — the file relative to the corpus root, the line, the
+column, the check, and where a fix stands the tier and the replacement, since a fix that changes is
+a behaviour change as much as a detection that does — and `verdict` says how the reading differs
+from `test/resources/corpora/<name>.txt`, gains first and losses after, `SHOWN` of them and then a
+count. `--write` regenerates the file, which is the whole of how a meant change is accepted. The
+step calls it for `budget.js`'s reason and combines the two exits itself: under `set -e` the first
+non-zero aborts the step, so a snapshot diff chained in front would take the budget's verdict with
+it, and a command on the left of `||` is exempt — hence `judged=0` and two `|| judged=1` lines.
+`test/snapshot.test.js` reads the workflow as data and holds every corpus the matrix names to a
+committed snapshot and back, so neither a corpus without one nor a file nothing lints survives;
+`test/snapshot.deep.test.js` runs the file the way the shell does, for the exit code, and the
+`--write` path through it.

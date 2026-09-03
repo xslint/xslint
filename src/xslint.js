@@ -237,6 +237,36 @@ const leveled = function(quiet, level) {
 }
 
 /**
+ * Two strings ranked by code unit, the order `Array.prototype.sort` gives with
+ * no comparator at all, rather than `localeCompare`, whose answer belongs to
+ * the machine's locale and so cannot underlie a report committed once and
+ * diffed on every runner (#638).
+ * @param {string} one - A string
+ * @param {string} two - Another string
+ * @return {number} - Negative, zero or positive, as a comparator answers
+ */
+const compared = function(one, two) {
+  return Number(one > two) - Number(one < two)
+}
+
+/**
+ * Where a defect stands in a report: by the file holding it, then by the line
+ * and the column it stands at, then by the check that found it. A total order
+ * over the defects themselves, so a report carries neither the order the
+ * filesystem handed the stylesheets over in nor the order the linters happen to
+ * be wired in (#638).
+ * @param {object} one - A defect
+ * @param {object} two - Another defect
+ * @return {number} - Negative, zero or positive, as a comparator answers
+ */
+const ranked = function(one, two) {
+  return compared(one.file, two.file) ||
+    one.line - two.line ||
+    one.pos - two.pos ||
+    compared(one.name, two.name)
+}
+
+/**
  * Lint stylesheet sources and return the defects, without touching the
  * filesystem, printing output, or exiting — the reusable core the command line
  * wraps and an editor or LSP can call in-process. Each defect carries `{name,
@@ -282,7 +312,7 @@ const lint = function(sources, {suppress = [], overrides = {}} = {}) {
   }
   return defects.filter(
     (defect) => !suppresses(directives.get(defect.file), defect),
-  )
+  ).sort(ranked)
 }
 
 /**

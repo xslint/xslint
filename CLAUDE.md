@@ -52,20 +52,20 @@ three platforms and two node versions, and `corpora`, which times a real run
 
 The suite comes in two halves, and the line between them is a child process. A
 **deep** test starts one — it runs `xslint` or `xcop` the way a user does — and
-is named `*.deep.test.js`; every other test stays in this process. Five files
-are deep, and they still cost most of what the suite costs: 671 of the 2924
-tests, 9 of the 15 seconds. The other 2253 finish inside one, which is why
+is named `*.deep.test.js`; every other test stays in this process. Six files
+are deep, and they still cost most of what the suite costs: 674 of the 2951
+tests, 9 of the 13 seconds. The other 2277 finish inside one, which is why
 `npm run fast` is the loop to work in and `npm test` the one to finish on. The
-deep target runs under `mocha --parallel`, so those five files run at once and
+deep target runs under `mocha --parallel`, so those six files run at once and
 the slowest of them sets the clock — `xslint.deep.test.js` alone, whose 52 tests
 each try the CLI with different arguments and so cannot share a process the way
-`fixer.deep.test.js` and `xcop.deep.test.js` now do. `walk.deep.test.js` starts
-node rather than `xslint`: it walks a wide directory in a process given the
-smallest JavaScript stack node will start with, because the crash of #758 needs
-a spread wider than the stack carries and scaling the stack down is what puts
-that within half a second of fixture-building instead of the 125,000 files it
-takes at full size. How wide the directory is, it does not decide: the same run
-measures the largest spread that stack carries and the tree is a fifth wider
+the other five now do. Another, `walk.deep.test.js`, starts node rather than
+`xslint`: it walks a wide directory in a process given the smallest JavaScript
+stack node will start with, because the crash of #758 needs a spread wider than
+the stack carries and scaling the stack down is what puts that within half a
+second of fixture-building instead of the 125,000 files it takes at full size.
+How wide the directory is, it does not decide: the same run measures the
+largest spread that stack carries and the tree is a fifth wider
 than that, some eleven thousand files. A fixed 30,000 was the first spelling and
 it read as cheap on the platform it was written on — a second there, over ten on
 Windows, where the deep target's own timeout took it down. Writing those files is
@@ -146,7 +146,10 @@ than the rest — `xpath-linter` at 39%, `xpath-validator` at 26%,
 since an entry pins what a stage costs outright and that is the stronger
 statement. `corpora.yml` is the nightly tier, timing DocBook-XSL, TEI and
 DITA-OT at pinned commits against a budget of 13, 13 and 6 seconds, and
-asserting what it read rather than only how long it took. What a gate measured
+asserting what it read rather than only how long it took — including every
+defect it drew since #638, diffed by `scripts/snapshot.js` against a report
+committed per corpus, since a check that changes what it reports over a real
+stylesheet is a change nothing else here notices. What a gate measured
 at one size cannot see is a quadratic whose constant is still small there, so
 `test/import-linter.test.js` is a third instrument, timing one check over a
 chain of 200 stylesheets and again over 800 and failing past a growth of 8
@@ -380,41 +383,17 @@ written from the same place (#715). The `-linter` suffix stays inside
 `src/linters/` for one reason — dropping it would put `linters/xpath.js` one word
 from `src/xpath.js`, the fontoxpath environment.
 
-`src/xslint.js` exposes the whole staging as a pure function,
-`lint(sources, {suppress, overrides}) => defects`: no file I/O, prints nothing,
-never exits. The command-line `xslint(paths, options)` in the same module wraps
-it — resolves config, reads the `.xsl` files, calls `lint`, applies `--fix`,
-reports, and sets the exit code. It sets it as `process.exitCode` and never
-`process.exit`, which ends the process where it stands and abandons every write
-the kernel has not taken: node's stdout is asynchronous to a pipe on POSIX —
-synchronous to a file, to a terminal, and to a pipe on Windows — so whether the
-report arrived whole depended on how fast the other end read it. Twenty
-stylesheets draw 720 defects here, 165,500 bytes of report: a file or a terminal
-takes all of it, a shell pipe whose reader stalls for two seconds takes 65,492
-bytes, and the socket `spawn` hands a child takes none at all. The exit code was
-right in each of those, so nothing announced the loss (#767). A
-`no-restricted-syntax` selector bans the call across the repository, nothing
-here having a use for it — the `catch` around the parse in `src/index.mjs` sets
-the same field. What pins it is a pair of runs whose reader stays paused until
-stderr says how many defects were found, counting the report's lines against
-that number: one report wider than the pipe and one narrower, since how wide a
-pipe the host gives is what decides which of the two shapes a run of this suite
-meets. The wide one leaves the run writing into a pipe nobody is emptying, which
-is the write `process.exit` abandons and the whole of what #767 is
-about — put back, it reports 312 of the 760 lines it counted. The narrow one is
-taken whole before the reader looks, so the run is over and the hazard is node's
-own rather than this project's: one `process.nextTick` after a child exits,
-`flushStdio` resumes every readable stdio stream of it, deliberately, so the
-stream can reach eof, and an untouched one is read and thrown away. A stalled
-reader must therefore own the data rather than leave it for that flush, which is
-`test/helpers.js`'s business and what the narrow row pins. Twenty stylesheets
-were the whole of the test until #822, so its verdict stood on the host's socket
-buffer and not on the run: those twenty are 147,620 bytes of report now, which
-fits whatever rultor's docker container gives, so the run finished first, node
-discarded the report, and eleven merges in a row read `-0` on a commit six
-GitHub runners passed. The package `main` re-exports `lint` and
-`fixed` so an embedder (the planned LSP server, #336) can lint a buffer without
-shelling out; the bin stays `src/index.mjs`.
+`src/xslint.js` exposes the whole staging as a pure function, `lint(sources,
+{suppress, overrides}) => defects`: no file I/O, prints nothing, never exits,
+and hands the defects back in one total order rather than in the order the
+walk or the wiring happened to give (#638). The command-line `xslint(paths,
+options)` in the same module wraps it — resolves config, reads the `.xsl`
+files, calls `lint`, applies `--fix`, reports, and sets the exit code as
+`process.exitCode`, a `no-restricted-syntax` selector banning the
+`process.exit` that ends the process where it stands and abandons every write
+the kernel has not taken (#767, #822). The package `main` re-exports `lint`
+and `fixed` so an embedder (the planned LSP server, #336) can lint a buffer
+without shelling out; the bin stays `src/index.mjs`.
 
 `src/index.mjs` reaches `xslint.js` through a dynamic `import` inside the
 command action, not a top-level one, and so runs `program.parseAsync`. Importing
@@ -1011,6 +990,7 @@ one of them.
 | `scripts/generate-docs.js` | Builds the `docs/` site from checks + motives |
 | `scripts/generate-checks.js` | Builds `src/resources/checks.json` from the check YAML (`npx grunt checks`) |
 | `scripts/budget.js` | Judges what a corpus cost the nightly tier against its budget, from both sides |
+| `scripts/snapshot.js` | Judges what a corpus drew against the report committed beside it, and rewrites that report on `--write` |
 | `test/conformance.test.js` | Enforces naming, motives, selector hygiene, the retirement of the `mature` flag, the suite's own shape, and the length a guide states of the file the line cap is lifted off |
 | `test/guides.js` | The guides as data: the chain a turn loads on its way to one file, what that chain may cost, and how a claim standing in one is read |
 | `test/guides.test.js` | The guides themselves: a bar on what a chain of them costs a turn, the index held to the tree from both sides, and the counts a guide states of a list in the code |

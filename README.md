@@ -231,6 +231,14 @@ xslint --format sarif path/to/dir    # a SARIF 2.1.0 log
 xslint --format github path/to/dir   # ::warning/::error annotations for CI
 ```
 
+Each entry of the `json` array names the check as `rule` and carries its
+`severity`, its `message`, and the `file`, `line` and `column` the defect stands
+at. A fixable one carries a `fix` beside them, holding that span's own `line`
+and `column`, the `value` it replaces, the `replacement` it would write, and
+whether it is a `suggestion`. Defects come out ordered by file, then line, then
+column, then rule — so two runs over one tree emit the same document, and a
+report committed today diffs against one taken tomorrow.
+
 Inside a GitHub Action, `--format github` makes each defect an inline
 annotation on the pull-request diff with no upload step — the lowest-friction
 way to see findings on a review.
@@ -511,7 +519,8 @@ const {contents} = fixed(sources, defects)
 ```
 
 `lint(sources, {suppress, overrides})` runs every validator and linter over the
-`{file, content}` sources and honors inline `xslint-disable` directives;
+`{file, content}` sources, honors inline `xslint-disable` directives, and hands
+the defects back in the order the reports print them — file, line, column, rule;
 `fixed(sources, defects, suggestions)` returns the rewritten content per file.
 
 ## Editors

@@ -3,6 +3,25 @@
  * SPDX-License-Identifier: MIT
  */
 
+/*
+ * The one harness every pack directory is read through —
+ * `test/conformance.test.js` holds that one-to-one rather than leaving it to
+ * the prose: `harness({dir, noun, run})` asserts the amount, the position, the
+ * name, the severity and the message of every defect a pack expects, the
+ * `fixes` and `values` it declares, and that each check the directory expects
+ * a defect from goes quiet when the run suppresses it. It was twenty-two files
+ * of one loop with three things swapped, so an assertion had to be written
+ * twenty-two times and one written twenty-one times failed nowhere — which is
+ * how `import-packs` came to assert no fix while `redundant-import` attached a
+ * real deletion (#660). Suppression is asked under a *prefix* of the check's
+ * name, `--suppress` matching by substring, so a linter comparing the two for
+ * identity fails rather than passes. Which checks to ask it of is derived
+ * twice and the two answers compared, because the first spelling marked a name
+ * seen whether or not the pack was loud and so registered nothing at all for
+ * the two directories whose quiet pack comes first — a harness that silently
+ * asks nothing reads exactly like one where everything is covered.
+ */
+
 const {allFilesFrom, xml, yaml} = require('../src/helpers')
 const {kinds} = require('../src/resources/checks.json')
 const path = require('path')
