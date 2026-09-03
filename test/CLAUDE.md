@@ -693,13 +693,13 @@ the dearest single guide instead, which is a whole directory short: it read 130,
 that 0.87 of the bar while a turn touching `src/linters/` was loading 157,504 and over it. So the
 two dearest notes moved one step further down, out of `src/CLAUDE.md` and into the top of
 `src/grammar.js` and `src/syntax.js` — 24,681 characters. A turn touching `test/` has run it
-close ever since, and the dearest chain is that same one at 138,993, which is 0.93. What answers
+close ever since, and the dearest chain is that same one at 137,890, which is 0.92. What answers
 a chain reaching the bar is that move again, a module's derivation into the file-header note of the
 module itself, and never a bar widened to fit what has grown past it: a docblock holds five lines
 of description since #832, so prose that has outgrown a
 guide does not simply move into one instead. A `CEILING` of half the bar stood beside it until it
 was seen to be a gate no tree could fail: the root stands in every chain, so the chain holding it
-above weighs each other guide against the bar less what stands over it — 27,340 for
+above weighs each other guide against the bar less what stands over it — 28,443 for
 `src/linters/CLAUDE.md`, where half of the bar is 75,000 — and holds the root itself to 80,320, a
 number derived from the dearest chain rather than chosen. A gate no tree can fail is removed and
 not kept (#750, #660). All four of those figures — the chain, its ratio, and the two allowances —
@@ -745,7 +745,7 @@ and `corpus-linter.js` out of `src/linters/CLAUDE.md`, and `scaling.test.js`, `p
 one. A tenth was refused by the valve rather than chosen against: `test/conformance.test.js` stands
 at 926 lines and its note is 150 more, and `max-lines` counts comments, so a section can outgrow the
 file it is about and relief has a floor — what answers that one is the note being cut, not moved.
-What that leaves is 1,007 characters of headroom, off a chain that is `src/linters/`'s own once
+What that leaves is 2,110 characters of headroom, off a chain that is `src/linters/`'s own once
 more rather than this file's: the merge behind #811's bracket phase breached the bar by 844 with
 neither branch having crossed it alone, and the root's `src/xslint.js` derivation moved into
 `src/CLAUDE.md` to answer it — 2,147 characters out of every chain but the three standing under

@@ -137,18 +137,24 @@ const EXPRESSION_LINTERS = [
 ]
 
 /**
- * Every linting stage a run passes through, named by the module it lives in and
- * paired with what it is handed — the corpus for one that reads the document,
- * the expressions the validator kept for one that reads a derivation. Derived
- * from the two lists rather than written out beside them, so a linter cannot be
- * wired into the pipeline and left out of what measures how it grows (#756).
- * @type {Array.<{name: string, over: string,
+ * Every linting stage a run passes through, with what it is handed — the
+ * corpus, or the expressions the validator kept — and the checks it owns, a
+ * stage run under every name but one being how a check is weighed alone.
+ * Derived from the two lists, so neither a linter nor a check can be wired into
+ * the pipeline and left out of what measures it (#756, #811).
+ * @type {Array.<{name: string, over: string, checks: Array.<string>,
  *  run: function(Array, Array.<string>): Array.<object>}>}
  */
 const STAGES = [
-  ...LINTERS.map(({name, run}) => ({name: name, run: run, over: 'corpus'})),
+  ...LINTERS.map(
+    ({name, run, checks}) => ({
+      name: name, run: run, over: 'corpus', checks: checks,
+    }),
+  ),
   ...EXPRESSION_LINTERS.map(
-    ({name, run}) => ({name: name, run: run, over: 'expressions'}),
+    ({name, run, checks}) => ({
+      name: name, run: run, over: 'expressions', checks: checks,
+    }),
   ),
 ]
 

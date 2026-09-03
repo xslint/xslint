@@ -53,8 +53,8 @@ three platforms and two node versions, and `corpora`, which times a real run
 The suite comes in two halves, and the line between them is a child process. A
 **deep** test starts one — it runs `xslint` or `xcop` the way a user does — and
 is named `*.deep.test.js`; every other test stays in this process. Six files
-are deep, and they still cost most of what the suite costs: 674 of the 2951
-tests, 9 of the 13 seconds. The other 2277 finish inside one, which is why
+are deep, and they still cost most of what the suite costs: 674 of the 2953
+tests, 9 of the 14 seconds. The other 2279 finish inside one, which is why
 `npm run fast` is the loop to work in and `npm test` the one to finish on. The
 deep target runs under `mocha --parallel`, so those six files run at once and
 the slowest of them sets the clock — `xslint.deep.test.js` alone, whose 52 tests
@@ -100,29 +100,9 @@ count with it — a race parallel mode turns from theory into one failure in fou
 `conformance.test.js` fails any test file that writes without asking for a
 temporary directory.
 
-Both halves run on one mocha, and did not until #841: `grunt-mocha-cli` pins
-`mocha ^8.2.0`, so `npm install` nested a second mocha under it — 8.4.0,
-from 2021 — and `grunt mochacli` ran the suite there while `npm run coverage`
-ran it on 11. That nested tree is where two of the nine advisories `npm audit`
-read on master stood and nowhere else, `nanoid` and `minimatch`. An
-`overrides` entry in `package.json` holds it to the `mocha` the root declares,
-and `manifest.test.js` asks it of every tool a grunt wrapper runs — of
-`grunt-eslint`'s `eslint` too since #855, which had nested a 9 under the
-declared 10 the same way, and had been supplying the config's own imports out
-of that nest. The rest of
-that entry lifts `diff` and `serialize-javascript` to the majors mocha 12 ships
-with — every version mocha 11's own ranges admit is an advisory, and its one
-call into each is unchanged in 12 — grunt's `js-yaml` to 4, whose `safeLoad`
-grunt calls only in a `readYAML` nothing here calls, 3.x never having been
-patched, and `typed-rest-client`'s exact `qs` up one patch. The two majors
-are spelled at the top level rather than under `mocha`, because npm 11.12
-honours a range scoped under `grunt` or `grunt-mocha-cli` and drops the
-same range scoped under `mocha`. `daily.yml` runs `npm audit` in a job of its
-own beside the six cells that run the suite, so the next advisory files an
-issue by morning without taking a platform's test result down with it — an
-advisory this project waits on upstream to patch would otherwise leave
-Windows unmeasured for as long as the wait lasts, and six identical audits
-say one thing.
+Both halves run on one mocha, and did not until #841, whose `overrides` entry
+in `package.json` — the pins standing around it, and the audit job beside
+them — is derived at the top of `test/manifest.test.js`.
 
 ## Speed
 
@@ -144,16 +124,20 @@ than the rest — `xpath-linter` at 39%, `xpath-validator` at 26%,
 `xsl-validator` at 18% — and every other stage answers to one bar, `SHARE` at
 7%; growth is asked only of the stages with no entry, against `GROWTH` at 3.0,
 since an entry pins what a stage costs outright and that is the stronger
-statement. `corpora.yml` is the nightly tier, timing DocBook-XSL, TEI and
-DITA-OT at pinned commits against a budget of 13, 13 and 6 seconds, and
-asserting what it read rather than only how long it took — including every
-defect it drew since #638, diffed by `scripts/snapshot.js` against a report
-committed per corpus, since a check that changes what it reports over a real
-stylesheet is a change nothing else here notices. What a gate measured
-at one size cannot see is a quadratic whose constant is still small there, so
-`test/import-linter.test.js` is a third instrument, timing one check over a
-chain of 200 stylesheets and again over 800 and failing past a growth of 8
-(#769).
+statement. The same pair stands one level down since #811, a stage's share
+being blind to one check of thirty-eight going quadratic: every check of a
+stage owning several answers to `COST` at 5%, and `COSTS` names the two that
+legitimately cost more, `name-starts-with-numeric` at 8% and
+`text-outside-xsl-text` at 10%. `corpora.yml` is the nightly tier, timing
+DocBook-XSL, TEI and DITA-OT at pinned commits against a budget of 13, 13 and 6
+seconds, and asserting what it read rather than only how long it took —
+including every defect it drew since #638, diffed by `scripts/snapshot.js`
+against a report committed per corpus, since a check that changes what it
+reports over a real stylesheet is a change nothing else here notices. What a
+gate measured at one size cannot see is a quadratic whose constant is still
+small there, so `test/import-linter.test.js` is a third instrument, timing one
+check over a chain of 200 stylesheets and again over 800 and failing past a
+growth of 8 (#769).
 
 Every one of those tables is a **ratchet and not a licence**, red from both
 sides: past the bar, or so far under it that `SLACK` (four) says the bar has
@@ -239,7 +223,7 @@ before: 268 descriptions in 65 files stood past that bar, the dearest of them
 142 lines, so a derivation grew wherever one was written the way the cross-file
 linter's cost grew before #755 (#832). The bar is not a licence to respell what
 a block cannot hold as a `/* */` beside it either — such prose is cut and not
-moved, the dearest chain of guides standing at 0.93 of `LOADED` and reddening
+moved, the dearest chain of guides standing at 0.92 of `LOADED` and reddening
 well under it, so a guide is no place to put it either and the ticket number
 left standing in the surviving sentence is what keeps a derivation
 recoverable.
