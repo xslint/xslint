@@ -140,7 +140,7 @@ builds at 40 stylesheets and again at 160, and asks two questions of each: what
 percentage of the whole run it cost, and how it grew beside the middle stage's
 growth. Both are quotients taken inside one process, which is what cancels the
 machine. `SHARES` names the three stages that legitimately cost more of a run
-than the rest — `xpath-linter` at 42%, `xpath-validator` at 26%,
+than the rest — `xpath-linter` at 39%, `xpath-validator` at 26%,
 `xsl-validator` at 18% — and every other stage answers to one bar, `SHARE` at
 7%; growth is asked only of the stages with no entry, against `GROWTH` at 3.0,
 since an entry pins what a stage costs outright and that is the stronger
@@ -236,7 +236,7 @@ before: 268 descriptions in 65 files stood past that bar, the dearest of them
 142 lines, so a derivation grew wherever one was written the way the cross-file
 linter's cost grew before #755 (#832). The bar is not a licence to respell what
 a block cannot hold as a `/* */` beside it either — such prose is cut and not
-moved, the dearest chain of guides standing at 0.92 of `LOADED` and reddening
+moved, the dearest chain of guides standing at 0.93 of `LOADED` and reddening
 well under it, so a guide is no place to put it either and the ticket number
 left standing in the surviving sentence is what keeps a derivation
 recoverable.
@@ -715,20 +715,19 @@ Then run `npx grunt checks`, `npm test`, `npm run coverage`, and
   behind it used to cost a traversal for every check spelling one. A wildcard
   or a predicate that could answer a number — picking one node out of
   the sequence rather than filtering it — cannot be served, and a selector
-  spelling one of those goes on `UNINDEXED` in `test/conformance.test.js`
-  beside the shape that keeps it out — which is enforced from both sides, so
-  neither a selector that could be served and is listed nor one that is served
-  and unlisted survives (#784). An attribute axis is served since #811, both
-  `//@*` and one named attribute of named elements, so it is no longer a reason
-  to be on that list, and neither is an anchor, nor a union of any spelling; a
-  cross-file check answers to a
+  spelling one of those goes on `UNINDEXED` in `test/conformance.test.js`, the
+  five selectors left, each beside the shape that keeps it out — which is
+  enforced from both sides, so neither a selector that could be served and is
+  listed nor one that is served and unlisted survives (#784). An attribute axis
+  is served since #811, both `//@*` and one named attribute of named elements,
+  so it is no longer a reason to be on that list, and neither is an anchor, nor
+  a union of any spelling, nor one spelled inside brackets a predicate stands
+  outside of; a cross-file check answers to a
   gate with no list at all, every one of its selectors being served and a fifth
-  belonging in that shape too. What keeps the seven that are left out is a
-  descending **predicate** for five of them — the axis is the root itself, one
-  node, and everything the selector costs is inside the brackets — a wildcard
-  for one, and for one a union of attribute paths spelled inside brackets a
-  predicate stands outside of, which is neither a sweep to part nor an axis the
-  merge can order.
+  belonging in that shape too. What keeps those five out is a descending
+  **predicate** for all but one of them — the axis is the root itself, one
+  node, and everything the selector costs is inside the brackets — and for that
+  one a wildcard, which names no bucket the walk holds.
 - **Fix in the same change.** If a check is fixable, land the fix with the
   detection — never defer it. A declarative rule gets a `node => fix` builder in
   `src/fixers.js`; a code-based linter attaches the `fix` to its defect. Mark it
@@ -992,7 +991,7 @@ one of them.
 | `src/predicates.js` | `predicateOf` — what one predicate of a served selector answers of a candidate, off the walk rather than the engine, or nothing where the engine must answer it |
 | `src/attributes.js` | `expressionsOf` — every expression a stylesheet carries; `PATTERNS`, and `whole` for a linter that narrows to one attribute |
 | `src/xsl-version.js` | `versionOf` and `since` — the version in force at a node, and a lower-bound gate over it |
-| `src/tree.js` | One pass over a document, remembered against it: `walked`, `named`, `attributed`, `holding` |
+| `src/tree.js` | One pass over a document, remembered against it: `walked`, `named`, `attributed`, `ranked`, `holding` |
 | `src/comparisons.js` | `comparedToZero` — the shared scan for a call compared with `0`/`1` (count, string-length) |
 | `src/booleans.js` | `coerced` and `unwrapped` — where nothing but an effective boolean value is taken, and what may stand there instead |
 | `src/expressions.js` | `enclosed` — the expressions an attribute value template holds in its braces |

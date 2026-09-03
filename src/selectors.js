@@ -5,7 +5,7 @@
 
 const {GAP, WHITESPACE} = require('./tokens')
 const {PREFIXES, nodes, satisfies, strings} = require('./xpath')
-const {attributed, named} = require('./tree')
+const {attributed, named, ranked} = require('./tree')
 const {parsed} = require('./grammar')
 const {ASSUMED, filters} = require('./syntax')
 const {conjunctsOf, predicateOf} = require('./predicates')
@@ -243,10 +243,10 @@ const pointed = function(marked) {
 
 /**
  * The axis a selector opens with: the element buckets to read, and the
- * attribute to take off each. Two shapes carry one — every attribute of a
- * document, which no element name narrows, and one named attribute of named
- * elements — and the second wants both halves or neither, either alone being
- * another selector (#839).
+ * attribute to take off each. Three shapes carry one — every attribute of a
+ * document, one named attribute of named elements, and one named off no element
+ * at all, which is the walk filtered by name. The middle wants both halves or
+ * neither, either alone being another selector (#839, #811).
  * @param {string} listed - The names as the selector spells them
  * @param {string} marked - The attribute behind them, or undefined
  * @return {{names: Array, attributes: Array}} - What the walk is asked for
@@ -254,8 +254,11 @@ const pointed = function(marked) {
 const opened = function(listed, marked) {
   let names = bucketed(listed)
   let attributes = []
-  if (marked === undefined && names.length === 0 && listed === `@${EVERY}`) {
-    attributes = [{uri: '', local: EVERY}]
+  if (marked === undefined && names.length === 0 && listed.startsWith('@')) {
+    attributes = pointed(listed.slice(1))
+    if (listed === `@${EVERY}`) {
+      attributes = [{uri: '', local: EVERY}]
+    }
   } else if (marked !== undefined) {
     attributes = pointed(marked)
     if (attributes.length === 0 || names.length === 0) {
@@ -411,6 +414,59 @@ const swept = function(xpath) {
 }
 
 /**
+ * A union wearing one predicate outside its brackets, spelled out as one whole
+ * selector per arm: `(A | B)[P]` is `A[P] | B[P]`, a predicate distributing
+ * over a set as it does over a sweep. What stands behind the brackets must be
+ * predicates alone, a step there reaching past what either arm answered (#811).
+ * @param {string} xpath - The selector a declarative check is written in
+ * @return {Array.<string>} - One whole selector an arm, or nothing to spill
+ */
+const distributed = function(xpath) {
+  let arms = NOTHING
+  if (xpath.startsWith('(')) {
+    const shut = closed(xpath)
+    const tail = xpath.slice(shut + 1)
+    const parts = branched(xpath.slice(1, shut)).map((one) => one.trim())
+    if (shut > 0 && parts.length > 1 && tail !== '' &&
+      predicated(tail).length > 0) {
+      arms = parts.map((one) => `${one}${tail}`)
+    }
+  }
+  return arms
+}
+
+/**
+ * Whether every branch of a union yields the one kind of node, elements or
+ * attributes. The merge orders on a rank and each kind keeps its own, so a
+ * union spanning both has no one numbering to be put back into document order
+ * by, and goes to the engine whole (#811).
+ * @param {Array.<object>} branches - What a split made of each arm
+ * @return {boolean} - Whether one rank orders them all
+ */
+const alike = function(branches) {
+  return branches.every((one) => one.attributes.length === 0) ||
+    branches.every((one) => one.attributes.length > 0)
+}
+
+/**
+ * The branches a distributed union splits into, or nothing where any arm of it
+ * is a shape the walk cannot serve. Stricter than `apart`, which lets a refused
+ * arm go to the engine: an arm of this shape may carry an attribute axis, and
+ * an engine answering one hands back a node the merge holds no rank for.
+ * @param {string} xpath - The selector a declarative check is written in
+ * @return {Array.<object>} - A branch an arm, or nothing to serve
+ */
+const spilled = function(xpath) {
+  const arms = distributed(xpath)
+  const branches = arms.flatMap((one) => swept(one))
+  let split = NOTHING
+  if (arms.length > 1 && branches.length === arms.length && alike(branches)) {
+    split = branches
+  }
+  return split
+}
+
+/**
  * The arms of one bracketed union, each served where the walk can serve it and
  * swept where it cannot. Safe because `spread` admits element steps alone, so
  * an arm the engine answers comes back as elements `named` already ranks.
@@ -440,8 +496,8 @@ const apart = function(xpath) {
  * Every branch of a split, or nothing where the walk cannot answer one. A
  * union of whole paths is served whole or not at all, a branch left to the
  * engine needing answers merged across a sequence one side never enumerated;
- * one spelled inside a sweep is parted arm by arm by `apart`. A union of
- * **attribute** axes is refused for another: the merge wants a rank (#811).
+ * one spelled inside a sweep is parted arm by arm by `apart`, and one wearing
+ * a predicate outside its brackets is spilled arm by arm by `spilled` (#811).
  * @param {string} xpath - The selector a declarative check is written in
  * @return {Array.<{names: Array.<{uri: string, local: string}>,
  *  attributes: Array.<{uri: string, local: string}>, tail: string}>} - A branch
@@ -452,11 +508,13 @@ const parted = function(xpath) {
   const branches = spelled.flatMap((one) => swept(one))
   let split = NOTHING
   if (branches.length === spelled.length &&
-    (branches.length === 1 ||
-      branches.every((one) => one.attributes.length === 0))) {
+    (branches.length === 1 || alike(branches))) {
     split = branches
   } else if (spelled.length === 1) {
     split = apart(xpath.trim())
+    if (split.length === 0) {
+      split = spilled(xpath.trim())
+    }
   }
   return split
 }
@@ -476,11 +534,24 @@ const splitOf = function(xpath) {
 }
 
 /**
+ * Whether an attribute is the one an axis named, by local name and namespace.
+ * An attribute carrying no prefix stands in no namespace, which xmldom answers
+ * as a null rather than the empty string XPath reads.
+ * @param {Node} node - An attribute of a stylesheet
+ * @param {{uri: string, local: string}} name - What the axis asked for
+ * @return {boolean} - Whether it is that attribute
+ */
+const marks = function(node, name) {
+  return node.localName === name.local &&
+    (node.namespaceURI ?? '') === name.uri
+}
+
+/**
  * The nodes an axis answers, before any predicate narrows them: every
- * attribute of the document where no name stands in front of one, otherwise
- * the elements of each bucket merged by document-order rank — which is what a
- * union needs, XPath answering a path in document order — and then the named
- * attribute of each, where the selector asked for one.
+ * attribute of the document where no name stands in front of one, that walk
+ * filtered where a name does and no element is asked for, otherwise the
+ * elements of each bucket merged by document-order rank — which is what a union
+ * needs — and then the named attribute of each.
  * @param {Document} xsl - Parsed stylesheet
  * @param {object} split - One branch of what `splitOf` made of the selector
  * @return {Array.<Node>} - What the axis yields, in document order
@@ -497,10 +568,11 @@ const axised = function(xsl, split) {
     }
     if (split.attributes.length > 0) {
       found = found.flatMap((node) => Array.from(node.attributes).filter(
-        (one) => one.localName === split.attributes[0].local &&
-          (one.namespaceURI ?? '') === split.attributes[0].uri,
+        (one) => marks(one, split.attributes[0]),
       ))
     }
+  } else if (split.attributes[0].local !== EVERY) {
+    found = found.filter((one) => marks(one, split.attributes[0]))
   }
   return found
 }
@@ -654,17 +726,20 @@ const narrowed = function(xsl, branch) {
 }
 
 /**
- * What a union of branches answers: every branch's nodes, deduplicated and put
- * back into document order. Both halves are XPath's own answer rather than a
- * convenience — a union is a set, and a path answers in document order, so the
- * branches are merged by the rank `named` remembers. Appending would report
- * every `xsl:otherwise` after every `xsl:when` (#784, #811).
+ * What a union of branches answers: every branch's nodes, deduplicated and
+ * put back into document order, XPath's own answer rather than a convenience:
+ * appending would report every `xsl:otherwise` after every `xsl:when`. The
+ * rank is the axis's own — `named` counts elements, `ranked` attributes —
+ * and `alike` is why one of them answers every branch (#784, #811).
  * @param {Document} xsl - Parsed stylesheet
  * @param {Array.<object>} branches - What `splitOf` made of the selector
  * @return {Array.<Node>} - What they select between them, in document order
  */
 const merged = function(xsl, branches) {
-  const {rank} = named(xsl)
+  let rank = named(xsl).rank
+  if (branches.every((one) => one.attributes.length > 0)) {
+    rank = ranked(xsl)
+  }
   return Array.from(
     new Set(branches.flatMap((branch) => narrowed(xsl, branch))),
   ).sort((one, two) => rank.get(one) - rank.get(two))

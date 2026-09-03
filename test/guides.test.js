@@ -5,6 +5,8 @@
 
 const {allFilesFrom} = require('../src/helpers')
 const {ATTRIBUTES, PATTERNS} = require('../src/attributes')
+const {kinds} = require('../src/resources/checks.json')
+const {splitOf} = require('../src/selectors')
 const {GAP} = require('../src/tokens')
 const {
   ROOT, GUIDES, DOCUMENTS, DERIVED, LOADED, ROOM, NEARBY, carries, slashed,
@@ -40,6 +42,20 @@ const MEASURED = DOCUMENTS.concat(['test/guides.js'])
 const GROWN = 5298
 
 /**
+ * The selectors a shared walk cannot serve as an axis, which is what
+ * `UNINDEXED` in `test/conformance.test.js` lists and what a guide counts
+ * beside that name. Read off the checks rather than off the table, the table
+ * answering to the same checks one gate over, so prose, code and table are one
+ * chain rather than two claims about each other.
+ * @return {number} - How many of them there are
+ */
+const unindexed = function() {
+  return Object.values(kinds.xpath).filter(
+    (check) => splitOf(check.xpath).length === 0,
+  ).length
+}
+
+/**
  * Each list as a document may name it, paired with what it holds. `NAMED` is
  * `ATTRIBUTES` as a set, so it counts to the same and answers to a claim about
  * either name.
@@ -49,6 +65,7 @@ const LENGTHS = new Map([
   ['ATTRIBUTES', ATTRIBUTES.length],
   ['PATTERNS', PATTERNS.length],
   ['NAMED', ATTRIBUTES.length],
+  ['UNINDEXED', unindexed()],
 ])
 
 /**
@@ -207,7 +224,7 @@ describe('guides', function() {
       `(${[...LENGTHS.keys()].join('|')})(?=(.{0,${NEARBY}}))`, 'g',
     )
     const counted = new RegExp(
-      `([a-z-]+)${GAP}+(?:names|attributes|descendant scans)`,
+      `([a-z-]+)${GAP}+(?:names|attributes|descendant scans|selectors)`,
     )
     for (const file of DOCUMENTS) {
       for (const [, list, after] of worded(file).matchAll(near)) {

@@ -64,13 +64,14 @@ path and not this one. And a prefix the run does not bind is refused rather than
 `namespaced` reading `PREFIXES` from `src/xpath.js` so a bucket means by `xsl:` exactly what the
 predicate beside it will mean. The bracket scan walks characters rather than matching a regular
 expression, because a predicate may hold a bracket inside a string literal: `contains(@match, '[')`
-is one predicate holding one, and counting brackets would part the selector inside the literal. Two
-more shapes are served since #811, both of them an **attribute** axis: `//@*`, which `attributed` in
-`src/tree.js` answers whole, and one named attribute of named elements, taken off each element a
-bucket yielded. A wildcard behind an element name is refused with the rest, no selector spelling one
-and the order an element's attributes come in being a question the walk answers for a document
-rather than for one element; an unprefixed attribute is not, standing in no namespace by XPath's own
-rule where an unprefixed *element* name is a refusal. That second shape wants **both** halves, and
+is one predicate holding one, and counting brackets would part the selector inside the literal.
+Three more shapes are served since #811, each of them an **attribute** axis: `//@*`, which
+`attributed` in `src/tree.js` answers whole, one named attribute of named elements, taken off each
+element a bucket yielded, and one named off no element at all, which is that same walk filtered by
+name. A wildcard behind an element name is refused with the rest, no selector spelling one and the
+order an element's attributes come in being a question the walk answers for a document rather than
+for one element; an unprefixed attribute is not, standing in no namespace by XPath's own rule where
+an unprefixed *element* name is a refusal. That second shape wants **both** halves, and
 only the attribute could refuse until #839: a list bucketing to nothing — a wildcard, or a prefix
 nothing binds — left the names empty beside a real attribute, which `axised` reads as the `//@*`
 case, so `//xsl:*/@name` answered every attribute of `candidates.xsl`, 31 where the engine answers
@@ -92,21 +93,21 @@ remembers, deduplicated, both of those being what XPath's own `|` answers rather
 Appending branch to branch would report every `xsl:otherwise` after every `xsl:when`, which is the
 defect two buckets of *one* axis had before #784 merged them this way. A union of whole paths is
 served whole or not at all, a branch left to the engine needing the two answers merged across a
-sequence one side never enumerated; and a union of **attribute** axes is refused for a reason of
-another kind — the
-merge orders by a rank the walk keeps for elements, an attribute having none, so
-`(//@version | //@xsl:version)`, the one selector spelling it, stays with the engine while one
-branch carrying an attribute is served as it always was. A branch also carries an **anchor** since
-the third phase, which is whatever the selector spells in front of its `//`: `anchored` parts the
-two at the first `//` standing outside brackets and quotes, the engine answers the anchor once for
-the document, and `descended` keeps the candidates that have one of its answers above them —
-climbing to a parent rather than descending from the anchor, so an anchor that chose nothing keeps
-nothing, where the other direction would report the whole sweep wherever a guard failed. Nothing is
-asked of the anchor's own shape: a path holding no `//` outside brackets reaches a bounded depth
-from wherever it starts, which is what makes it cheap, so it goes to the engine as the selector
-spelled it rather than being matched against a list of the shapes a root anchor may take. An
-attribute axis is refused where an anchor stands in front of it, and that one is about the walk
-rather than the shape — the climb reads a node's parent, and an attribute has none.
+sequence one side never enumerated; and a union of **attribute** axes merges on a rank of its own
+since the sixth phase, `ranked` in `src/tree.js` numbering the sequence `attributed` already holds,
+so `(//@version | //@xsl:version)` is served where the rank `named` keeps for elements had nothing
+to say about it. What `alike` refuses is a union spanning *both* kinds: an arm the engine answers
+comes back as elements, and no one rank orders an element beside an attribute. A branch also carries
+an **anchor** since the third phase, which is whatever the selector spells in front of its `//`:
+`anchored` parts the two at the first `//` standing outside brackets and quotes, the engine answers
+the anchor once for the document, and `descended` keeps the candidates that have one of its answers
+above them — climbing to a parent rather than descending from the anchor, so an anchor that chose
+nothing keeps nothing, where the other direction would report the whole sweep wherever a guard
+failed. Nothing is asked of the anchor's own shape: a path holding no `//` outside brackets reaches
+a bounded depth from wherever it starts, which is what makes it cheap, so it goes to the engine as
+the selector spelled it rather than being matched against a list of the shapes a root anchor may
+take. An attribute axis is refused where an anchor stands in front of it, and that one is about the
+walk rather than the shape — the climb reads a node's parent, and an attribute has none.
 
 A union spelled **inside** one sweep is the fourth phase, and the one place a split is not
 all-or-nothing. `P//(a | b | c)[Q]` is `P//a[Q] | P//b[Q] | P//c[Q]` — a union is a set, so
@@ -164,6 +165,19 @@ machine: over ten interleaved gate runs a side `xpath-linter` reads 22.97% to 26
 to 25.62%, so no bar in `test/scaling.test.js` moves and the evidence for the change stands over the
 three corpora instead, at the top of `src/predicates.js`.
 
+A union wearing its predicate **outside** the brackets is the sixth phase, and its subject is
+one selector — `malformed-version-in-stylesheet`'s `(//@version | //@xsl:version)[Q]`, one
+predicate over two attribute axes, which was neither a sweep to part nor an axis the merge could
+order. `(A | B)[Q]` is `A[Q] | B[Q]` for the reason `P//(a | b)[Q]` parts: a union is a set, and
+a filtering predicate answers the same of a node whichever sequence carried it there. So
+`distributed` writes each arm out with the tail behind it and `spilled` judges the branches
+together. Where `apart` lets one arm go to the engine, this split is all-or-nothing, and `alike`
+is why — an arm the engine answers hands back elements, and no rank orders those beside
+attributes. What stands behind the brackets must be predicates alone, a step there reaching past
+what either arm selected. The check reads 17 ms over DocBook-XSL where it read 200, 14 against
+181 over TEI and 24 against 87 over DITA-OT, and it is the only one of the thirty-eight whose
+split moved at all.
+
 ## `src/predicates.js`
 
 Its derivation stands at the top of `src/predicates.js` itself, for the reason the note above
@@ -202,33 +216,37 @@ version off the record it was handed, which an ESLint selector holds them to (#8
 
 ## `src/tree.js`
 
-`walked(xsl)` — every attribute, text node and CDATA section of a document in document order, walked
-once and remembered against it, because fontoxpath evaluates a descendant step over an xmldom tree
-quadratically (#635). Beside it `holding(node)` answers which element a node hangs off — an
-attribute the element carrying it, a text node its parent, a document its root — which is where
-anything a stylesheet's *structure* says about a node is read: the version in force there, and the
-namespace a prefix inside an expression resolves to. It lived in `src/xsl-version.js` while the
-version was the only such question; the second one is #577's, and xmldom's own `lookupNamespaceURI`
-answers null on an attribute rather than walking to its element, so both callers need the same
-answer rather than each reaching for an element its own way. Beside them `named(xsl)` answers that
-walk asked a different way: every element of the document in one pass, bucketed by `namespaceURI`
-and `localName`, with the document-order rank of each — which is what lets a declarative check take
-its **axis** off the walk instead of having fontoxpath descend the tree once per check (#784). One
-walk over 66,008 elements costs 11 to 20 ms where one fontoxpath `//*` over the same tree costs 817
-to 1003, so the 43 selectors needing a descendant step were paying for 43 traversals of a corpus the
-run had already walked. The rank is what a union needs: `//(xsl:variable | xsl:template)` is a path,
-XPath answers a path in document order, and nothing downstream sorts a defect list — so two buckets
-are merged by rank rather than concatenated, or every `xsl:template` defect would be reported after
-every `xsl:variable` one. `attributed(xsl)` is the third question over the same pass, every
-attribute of a document in document order: the sequence `//@*` selects, which three of the four
-cross-file checks are written in and which cost fontoxpath 1.613 s over DocBook-XSL — 18% of a whole
-run for one selector — where these 72,077 attributes come off the walk in 8 ms (#811). Correcting
-one thing made that possible: the walk sorted an element's attributes by **node** name and this row
-claimed that was the order the engine yields them in, which holds only until an attribute carries a
-prefix. fontoxpath sorts by **local** name, ties left as written, so a `table` written
-`summary border xml:id` comes back `border xml:id summary` where the whole name puts `summary` first
-— 37 files of the three corpora hold such an element, and with the comparator corrected the walk and
-the engine agree on all 152,296 attributes of them.
+`walked(xsl)` — every attribute, text node and CDATA section of a document in document order,
+walked once and remembered against it, because fontoxpath evaluates a descendant step over an
+xmldom tree quadratically (#635). Beside it `holding(node)` answers which element a node hangs off
+— an attribute the element carrying it, a text node its parent, a document its root — which is
+where anything a stylesheet's *structure* says about a node is read: the version in force there,
+and the namespace a prefix inside an expression resolves to. It lived in `src/xsl-version.js`
+while the version was the only such question; the second one is #577's, and xmldom's own
+`lookupNamespaceURI` answers null on an attribute rather than walking to its element, so both
+callers need the same answer rather than each reaching for an element its own way. Beside them
+`named(xsl)` answers that walk asked a different way: every element of the document in one pass,
+bucketed by `namespaceURI` and `localName`, with the document-order rank of each — which is what
+lets a declarative check take its **axis** off the walk instead of having fontoxpath descend the
+tree once per check (#784). One walk over 66,008 elements costs 11 to 20 ms where one fontoxpath
+`//*` over the same tree costs 817 to 1003, so the 43 selectors needing a descendant step were
+paying for 43 traversals of a corpus the run had already walked. The rank is what a union needs:
+`//(xsl:variable | xsl:template)` is a path, XPath answers a path in document order, and nothing
+downstream sorts a defect list — so two buckets are merged by rank rather than concatenated, or
+every `xsl:template` defect would be reported after every `xsl:variable` one. `attributed(xsl)` is
+the third question over the same pass, every attribute of a document in document order: the
+sequence `//@*` selects, which three of the four cross-file checks are written in and which cost
+fontoxpath 1.613 s over DocBook-XSL — 18% of a whole run for one selector — where these 72,077
+attributes come off the walk in 8 ms (#811). Correcting one thing made that possible: the walk
+sorted an element's attributes by **node** name and this row claimed that was the order the engine
+yields them in, which holds only until an attribute carries a prefix. fontoxpath sorts by
+**local** name, ties left as written, so a `table` written `summary border xml:id` comes back
+`border xml:id summary` where the whole name puts `summary` first — 37 files of the three corpora
+hold such an element, and with the comparator corrected the walk and the engine agree on all
+152,296 attributes of them. `ranked(xsl)` is a fourth question over that same pass, and it exists
+for the reason the element rank does: a union merges on a rank, and the one `named` keeps counts
+elements alone, so `(//@version | //@xsl:version)` had nothing to merge on until this one numbered
+the sequence `attributed` already holds (#811).
 
 ## `src/comparisons.js`
 

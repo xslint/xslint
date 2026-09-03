@@ -138,6 +138,32 @@ const attributed = function(xsl) {
 }
 
 /**
+ * The attribute ranks already taken for a document, remembered the way the
+ * walk they come off is.
+ * @type {WeakMap}
+ */
+const RANKED = new WeakMap()
+
+/**
+ * Where each attribute of a document stands in document order. A union merges
+ * on a rank, and the rank `named` keeps counts elements alone, so a union of
+ * attribute axes has none to merge on until this one — the same numbering, over
+ * the sequence `attributed` already holds (#811).
+ * @param {Document} xsl - Parsed stylesheet
+ * @return {Map.<Node, number>} - Where each attribute stands in document order
+ */
+const ranked = function(xsl) {
+  if (!RANKED.has(xsl)) {
+    const rank = new Map()
+    for (const node of attributed(xsl)) {
+      rank.set(node, rank.size)
+    }
+    RANKED.set(xsl, rank)
+  }
+  return RANKED.get(xsl)
+}
+
+/**
  * The elements already bucketed for a document. Every declarative check that
  * sweeps descendants wants the same buckets, so they are built once and
  * remembered against the document the way `walked` is.
@@ -186,5 +212,6 @@ module.exports = {
   attributed,
   holding,
   named,
+  ranked,
   walked,
 }

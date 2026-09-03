@@ -8,7 +8,7 @@ const fs = require('fs')
 const path = require('path')
 const {EVERY, answered, chosen, splitOf, valued} = require('../src/selectors')
 const {nodes, strings} = require('../src/xpath')
-const {xml} = require('../src/helpers')
+const {xml, yaml} = require('../src/helpers')
 const {kinds} = require('../src/resources/checks.json')
 const {worded} = require('./guides')
 
@@ -18,6 +18,19 @@ const {worded} = require('./guides')
  * @type {string}
  */
 const XSLT = 'http://www.w3.org/1999/XSL/Transform'
+
+/**
+ * The rows of four tables below whose selector opens on a bare attribute
+ * sweep. A check spells one in YAML and this file cannot: `//@name` is an
+ * ESLint error in every JavaScript here, a linter narrowing to one attribute
+ * through `whole` instead, so the subjects of the split are read in the
+ * language a check is written in rather than transcribed into another (#811).
+ * @type {{attributed: Array.<object>, merged: Array.<string>,
+ *  distributed: Array.<string>, whole: Array.<object>}}
+ */
+const AXES = yaml.parsedFromFile(
+  path.resolve(__dirname, 'resources', 'selectors', 'axes.yaml'),
+)
 
 /**
  * Selectors an index can serve, each with the local names its axis yields and
@@ -56,10 +69,11 @@ const SPLIT = [
 ]
 
 /**
- * Selectors whose axis is one attribute of named elements, each with the
- * element names it is taken off, the attribute itself, and the tail left for
- * the predicate. The attributes of a document are walked and remembered exactly
- * as its elements are (#811).
+ * Selectors whose axis is an attribute, each with the element names it is
+ * taken off, the attribute itself, and the tail left for the predicate. The
+ * walk remembers a document's attributes as it does its elements, so one
+ * named off no element at all is that walk filtered by name — the shape a
+ * distributed union leaves behind, and the one no row here can spell (#811).
  * @type {Array.<{xpath: string, locals: Array.<string>,
  *  attribute: {uri: string, local: string}, tail: string}>}
  */
@@ -82,7 +96,7 @@ const ATTRIBUTED = [
     attribute: {uri: XSLT, local: 'version'},
     tail: '',
   },
-]
+].concat(AXES.attributed)
 
 /**
  * Selectors standing below an anchor: whatever a selector spells in front of
@@ -217,10 +231,6 @@ const WHOLE = [
     why: 'a union whose second branch names no bucket',
   },
   {
-    xpath: '//xsl:variable/@name | //xsl:template/@match',
-    why: 'a union of attribute axes, the walk ranking elements alone',
-  },
-  {
     xpath: '//xsl:template[1][@match]',
     why: 'a positional predicate ahead of another',
   },
@@ -287,7 +297,7 @@ const WHOLE = [
     xpath: '//(xsl:variable | xsl:param)/@name/xsl:x',
     why: 'a step behind an attribute off a union',
   },
-]
+].concat(AXES.whole)
 
 /**
  * The stylesheet the two answers are compared over: four variables of distinct
@@ -345,7 +355,35 @@ const MERGED = [
   '//xsl:template[@name] | //xsl:template[@match]',
   '//xsl:template[@name] | //xsl:template[@name]',
   '//xsl:variable | //xsl:sort',
-]
+  '//xsl:variable/@name | //xsl:template/@match',
+].concat(AXES.merged)
+
+/**
+ * A stylesheet declaring versions two arms of one union reach: a root and two
+ * literal result elements no XSLT version names, beside an `xsl:output` and a
+ * third element the check leaves alone. So a distributed union is judged where
+ * both its arms answer something and each excludes what the other reports.
+ * @type {Document}
+ */
+const DISTRIBUTING = xml.parsedFromString(
+  fs.readFileSync(
+    path.resolve(__dirname, 'resources', 'selectors', 'distributed.xsl'),
+    'utf-8',
+  ),
+)
+
+/**
+ * Unions wearing one predicate outside their brackets, which is `(A | B)[P]`
+ * and answers what `A[P] | B[P]` answers, a predicate distributing over a set.
+ * The first is the check the shape was found in; the rest carry two attribute
+ * arms, two element arms, an arm answering nothing, and an outer predicate
+ * standing behind an inner one.
+ * @type {Array.<string>}
+ */
+const DISTRIBUTED = [
+  kinds.xpath['malformed-version-in-stylesheet'].xpath,
+  '(//xsl:template | //xsl:variable)[@name]',
+].concat(AXES.distributed)
 
 /**
  * A stylesheet whose elements stand at depths an anchor tells apart: a
@@ -765,16 +803,29 @@ describe('selectors', function() {
       )
     })
   })
-  it('refuses an attribute axis standing in a bracketed union',
-    function() {
-      assert.deepStrictEqual(
-        splitOf(kinds.xpath['malformed-version-in-stylesheet'].xpath),
-        [],
-        'a union wearing one predicate outside its brackets is a shape the ' +
-          'split does not part, so the attribute axis inside each half of ' +
-          'one is refused with it',
+  DISTRIBUTED.forEach((one) => {
+    it(`distributes the outer predicate of ${one} over its arms`, function() {
+      assert.equal(
+        splitOf(one).length,
+        2,
+        `the union ${one} wears one predicate outside its brackets and is ` +
+          'not parted into the two arms that predicate distributes over, so ' +
+          'both halves go to the engine as one sweep over every node there is',
       )
     })
+  })
+  DISTRIBUTED.forEach((one) => {
+    it(`serves ${one} as the engine answers it`, function() {
+      assert.deepStrictEqual(
+        placed(chosen(DISTRIBUTING, one)),
+        placed(nodes(DISTRIBUTING, one)),
+        `the nodes served for the distributed union ${one} are not the ` +
+          'nodes the engine chooses in the order it chooses them, so a ' +
+          'predicate standing outside the brackets is being dropped from an ' +
+          'arm, or the arms are merged on a rank the walk keeps for elements',
+      )
+    })
+  })
   WHOLE.forEach((one) => {
     it(`refuses ${one.xpath}, being ${one.why}`, function() {
       assert.deepStrictEqual(
