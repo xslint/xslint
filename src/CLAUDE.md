@@ -12,6 +12,19 @@ and `STAGES` — every linter the pipeline runs, named by its module and paired 
 handed, derived from `LINTERS`/`EXPRESSION_LINTERS` rather than written out beside them so the speed
 gate cannot be measuring a list the run has moved on from.
 
+`lint` sorts what it hands back, by `ranked`: the file, then the line, the column, and the check
+that found it. Nothing about the run decides the order any more — not the order `allFilesFrom`
+handed the stylesheets over in, nor the order the linters happen to be wired in — which is what a
+report committed once and diffed against every night needs (#638). It is the **report** that is
+sorted and not the walk, deliberately: readdir answers in code-unit order on APFS already, so no
+fixture written here could turn red on a walk left unsorted, where a defect list ordered by stage
+reorders under any wiring change at all. `compared` ranks two strings the way
+`Array.prototype.sort` does with no comparator, never `localeCompare`, whose answer belongs to the
+collation data the runtime carries rather than to the report: it orders letters case-insensitively,
+so all three committed snapshots come back in a different order under it — TEI at its very first
+line, `Documentation/param.xsl` behind `bibtex/convertbib.xsl` where code units put it in front,
+DocBook at its 81st file and line 698, DITA-OT at its 12th file and line 66.
+
 ## `src/config.js`
 
 Resolves `.xslint.yml` (severities/`off`, excludes, `max-warnings`).
@@ -22,7 +35,14 @@ Parses inline `xslint-disable-*` comment directives.
 
 ## `src/reporters.js`
 
-`reporterOf(format)` — `text`, `json`, `sarif`, or `github` output.
+`reporterOf(format)` — `text`, `json`, `sarif`, or `github` output. The `json` one is what the
+nightly snapshot is taken off, so it carries every field a behaviour change could move: `rule`,
+`severity`, `message`, `file`, `line`, `column`, and a `fix` of its own where the defect is fixable,
+holding that fix's `line`, `column`, `value`, `replacement` and `suggestion`. The fix was absent
+until #638 — a report said a defect was there and said nothing about what would be written over it,
+so a fixer rewriting every replacement it offers read exactly like a run that had not changed.
+`suggestion` is written as a boolean either way rather than left off the safe tier, a key missing
+from a snapshot line being one nothing distinguishes from a tier nobody set.
 
 ## `src/checks.js`
 

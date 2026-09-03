@@ -1,6 +1,16 @@
 # SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
 # SPDX-License-Identifier: MIT
 
+# The corpus snapshots are a machine-written record of what DocBook-XSL, TEI
+# and DITA-OT draw, so every word in one is somebody else's: a replacement
+# names the text of their stylesheets, and 13 of those read as misspellings
+# here. Nothing in this repository can fix one of them, the corpora standing at
+# pinned commits, so the tool is pointed at prose that is not this project's.
+# Nothing hand-written can hide behind it either: test/snapshot.test.js refuses
+# any file under that directory but a snapshot the nightly matrix names.
+[files]
+extend-exclude = ["test/resources/corpora/*.txt"]
+
 # DITA-OT is the DITA Open Toolkit; its "-OT" tokenises to "OT", which typos
 # would otherwise flag.
 [default.extend-words]
