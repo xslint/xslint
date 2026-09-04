@@ -329,12 +329,14 @@ far under it that `SLACK` (four, for the same runner's sake) says the ceiling ha
 bar and wants retightening. Growth is asked only of the stages with no entry, since an entry pins
 what a stage costs outright, which is the stronger statement; those nineteen read 0.47 to 1.24,
 against a `GROWTH` bar of 3.0 and the 4.0 a stage that had gone quadratic would read. #877 leaves 18
-where it stands: an attribute value walked beside every text node costs `xsl-validator` 1.09 of what
-it did, dearest reading 12.40% against 11.35% over ten runs of the master it was measured on. What
-the entry is a multiple of that dearest reading moved again on the merge, #872 having made
-`xpath-linter` a twelfth cheaper and so lifted every other share without one of them costing a
-millisecond more: 1.26 over five runs since, where it was 1.45 before. Both stand under the band,
-which is the tight side of a ceiling and the safe one.
+where it stands: an attribute value walked beside every text node cost `xsl-validator` 1.09 of what
+it did, dearest reading 12.40% against 11.35% over ten runs of the master it was measured on. Every
+attribute joined those runs once the scan stopped borrowing `walked`'s sequence, and none of the
+readings moved — a pass of its own replaces that traversal rather than adding to it, the dearest of
+nine attempts reading 14.90%. What the entry is a multiple of the dearest reading is 1.21 there,
+where it was 1.26 over the five runs after the merge, #872 having made `xpath-linter` a twelfth
+cheaper and so lifted every other share without one of them costing a millisecond more, and 1.45
+before that. All three stand under the band, which is the tight side of a ceiling and the safe one.
 
 Three stages arrived at #788, and the corpus was armed for each in the same change: an `xsl:element`
 with a static name, an `xsl:output` beside an `html` the root template builds, and an
@@ -704,14 +706,14 @@ the dearest single guide instead, which is a whole directory short: it read 130,
 that 0.87 of the bar while a turn touching `src/linters/` was loading 157,504 and over it. So the
 two dearest notes moved one step further down, out of `src/CLAUDE.md` and into the top of
 `src/grammar.js` and `src/syntax.js` — 24,681 characters. A turn touching `test/` has run it
-close ever since, and the dearest chain is that same one at 139,596, which is 0.93. What answers
+close ever since, and the dearest chain is that same one at 139,839, which is 0.93. What answers
 a chain reaching the bar is that move again, a module's derivation into the file-header note of the
 module itself, and never a bar widened to fit what has grown past it: a docblock holds five lines
 of description since #832, so prose that has outgrown a
 guide does not simply move into one instead. A `CEILING` of half the bar stood beside it until it
 was seen to be a gate no tree could fail: the root stands in every chain, so the chain holding it
-above weighs each other guide against the bar less what stands over it — 26,737 for
-`src/linters/CLAUDE.md`, where half of the bar is 75,000 — and holds the root itself to 78,653, a
+above weighs each other guide against the bar less what stands over it — 26,494 for
+`src/linters/CLAUDE.md`, where half of the bar is 75,000 — and holds the root itself to 78,410, a
 number derived from the dearest chain rather than chosen. A gate no tree can fail is removed and
 not kept (#750, #660). All four of those figures — the chain, its ratio, and the two allowances —
 follow from three file sizes, so one guide growing moves every one of them, and none of them
@@ -756,11 +758,11 @@ and `corpus-linter.js` out of `src/linters/CLAUDE.md`, and `scaling.test.js`, `p
 one. A tenth was refused by the valve rather than chosen against: `test/conformance.test.js` stands
 at 926 lines and its note is 150 more, and `max-lines` counts comments, so a section can outgrow the
 file it is about and relief has a floor — what answers that one is the note being cut, not moved.
-What that leaves is 404 characters of headroom, off a chain that is `src/linters/`'s own once
+What that leaves is 161 characters of headroom, off a chain that is `src/linters/`'s own once
 more rather than this file's: the merge behind #811's bracket phase breached the bar by 844 with
 neither branch having crossed it alone, and the root's `src/xslint.js` derivation moved into
 `src/CLAUDE.md` to answer it — 2,147 characters out of every chain but the three standing under
-`src/`, of which #877 spent 1,288 on the two answers it derives there. So the relief lasted one
+`src/`, of which #877 has spent 1,910 on what it derives there. So the relief lasted one
 ticket, and what answers the next red is the move again, on the dearest note this guide holds
 rather than on the newest. It is
 a fifth figure of the same class as the four, and the one that proves the point twice over — it

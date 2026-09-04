@@ -87,6 +87,11 @@ const KEPT = [
     file: 'attributed.xsl',
     content: '<a b="ends on ]]> here"/>',
   },
+  {
+    name: 'should keep a declaration whose ampersand opens a reference',
+    file: 'bound.xsl',
+    content: '<a xmlns:q="urn:x&amp;y"/>',
+  },
 ]
 
 /**
@@ -193,6 +198,31 @@ const REPORTED = [
     name: 'should report a section close a third bracket runs into',
     file: 'bracketed.xsl',
     content: '<a>x ]]]> y</a>',
+  },
+  {
+    name: 'should report a bare ampersand in a namespace declaration',
+    file: 'namespaced.xsl',
+    content: '<a xmlns:q="urn:x&y"/>',
+  },
+  {
+    name: 'should report a bare ampersand declaring the default namespace',
+    file: 'defaulted.xsl',
+    content: '<a xmlns="urn:x&y"/>',
+  },
+  {
+    name: 'should report an unreachable entity in a namespace declaration',
+    file: 'unbound.xsl',
+    content: '<a xmlns:q="&nope;"/>',
+  },
+  {
+    name: 'should report a namespace declaration standing behind an attribute',
+    file: 'aside.xsl',
+    content: '<a b="ok" xmlns:q="urn:x&y"/>',
+  },
+  {
+    name: 'should report a namespace declaration deep in the tree',
+    file: 'descended.xsl',
+    content: '<a><b/><c xmlns:q="urn:x&y"/></a>',
   },
 ]
 

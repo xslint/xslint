@@ -270,7 +270,8 @@ version off the record it was handed, which an ESLint selector holds them to (#8
 
 ## `src/tree.js`
 
-`walked(xsl)` — every attribute, text node and CDATA section of a document in document order,
+`walked(xsl)` — every attribute XPath counts (never an `xmlns`), text node and CDATA section of a
+document in document order,
 walked once and remembered against it, because fontoxpath evaluates a descendant step over an
 xmldom tree quadratically (#635). Beside it `holding(node)` answers which element a node hangs off
 — an attribute the element carrying it, a text node its parent, a document its root — which is
@@ -636,12 +637,15 @@ of that corpus's stylesheets reported as malformed on it (#877). What stands in 
 anything at all where an external subset nobody read is in play. Beside it are the two sequences the
 parser accepts in silence, at no level — an `&` that opens no reference, which it rewrites to
 `&amp;`, and a `]]>` that closes no section, which it keeps as it stands (#691). The runs come from
-`src/tree.js`'s `walked` and not from a scan of the source, because both are legal in a comment and
-a processing instruction, and inside a CDATA section an `&` is text while a `]]>` is the close — a
-text node cannot be any of the three, so those are excluded by construction rather than by finding
-them. An attribute value is walked too since #877, `amiss` taking the `]]>` rule on a flag: such a
+the tree and not from a scan of the source, because both are legal in a comment and a processing
+instruction, and inside a CDATA section an `&` is text while a `]]>` is the close — a text node
+cannot be any of the three, so those are excluded by construction rather than by finding them. An
+attribute value is a run too since #877, `strayed` taking the `]]>` rule from its caller: such a
 value is not character data, so it holds a `]]>` legally and a bare `&` no more legally than text
-does — which nothing reported at all while the walk read text nodes. The YAML parser is required
+does. That pass is `forbidden`'s own and not `walked`'s XPath-shaped one, well-formedness being a
+lexical question about every attribute the source spells: borrowing that sequence kept an
+`xmlns:q="urn:x&y"` out of the report and a namespace URI no conformant parser produces in the
+tree. The YAML parser is required
 inside the function, not at the top: nothing on the linting path reads YAML any more, so a run that
 has no `.xslint.yml` never loads it.
 

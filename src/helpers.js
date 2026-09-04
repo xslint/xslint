@@ -8,7 +8,6 @@ const path = require('path')
 const {DOMParser} = require('@xmldom/xmldom')
 const {GAP} = require('./tokens')
 const {NAMED, parted, offsetAt, placeAt} = require('./source')
-const {walked} = require('./tree')
 
 /**
  * A reference to a general entity, `&name;`, as it survives in a parsed value.
@@ -224,31 +223,54 @@ const amiss = function(str, at, data, reaches) {
 }
 
 /**
- * The complaint the first sequence a document must not hold earns, or an empty
- * string when it holds none. The runs are reached through the tree rather than
- * scanned out of the source: an `&` is text inside a CDATA section and legal
- * in a comment, a `]]>` closes the one and stands legally in the other, and an
- * attribute value is neither (#691, #877).
+ * The complaint the run of source one node spans earns: an attribute value up
+ * to the quote closing it, or a text node up to the `<` that ends it. Which of
+ * the two decides whether a `]]>` standing there is forbidden at all, so the
+ * kind is the caller's to say once rather than the loop's to ask per character.
  * @param {string} str - XML source
- * @param {Document} doc - The document the parser built from it
+ * @param {Node} node - The attribute or text node spanning the run
+ * @param {boolean} data - Whether the run is character data
  * @param {function(string): boolean} reaches - Whether a name resolves
  * @return {string} - The complaint, or an empty string when there is none
  */
-const forbidden = function(str, doc, reaches) {
+const strayed = function(str, node, data, reaches) {
+  const opening = offsetAt(str, node.lineNumber, node.columnNumber)
+  let stop = '<'
+  let at = opening
+  if (!data) {
+    stop = str[opening]
+    at = opening + 1
+  }
   let found = ''
-  for (const node of walked(doc)) {
-    if (!found && (node.nodeType === 2 || node.nodeType === 3)) {
-      const opening = offsetAt(str, node.lineNumber, node.columnNumber)
-      let stop = '<'
-      let at = opening
-      if (node.nodeType === 2) {
-        stop = str[opening]
-        at = opening + 1
-      }
-      while (!found && at < str.length && str[at] !== stop) {
-        found = amiss(str, at, node.nodeType === 3, reaches)
-        at += 1
-      }
+  while (!found && at < str.length && str[at] !== stop) {
+    found = amiss(str, at, data, reaches)
+    at += 1
+  }
+  return found
+}
+
+/**
+ * The complaint the first sequence a document must not hold earns, or an empty
+ * string when it holds none. The runs are reached through the tree rather than
+ * scanned out of the source, and by a pass of this function's own rather than
+ * `walked`'s, which drops the namespace declarations (#691, #877).
+ * @param {string} str - XML source
+ * @param {Node} node - The document, or a node within it
+ * @param {function(string): boolean} reaches - Whether a name resolves
+ * @return {string} - The complaint, or an empty string when there is none
+ */
+const forbidden = function(str, node, reaches) {
+  let found = ''
+  if (node.attributes) {
+    for (let index = 0; !found && index < node.attributes.length; index++) {
+      found = strayed(str, node.attributes.item(index), false, reaches)
+    }
+  }
+  for (let kid = node.firstChild; !found && kid; kid = kid.nextSibling) {
+    if (kid.nodeType === 3) {
+      found = strayed(str, kid, true, reaches)
+    } else if (kid.nodeType === 1) {
+      found = forbidden(str, kid, reaches)
     }
   }
   return found
