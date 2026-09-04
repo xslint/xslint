@@ -703,7 +703,7 @@ and the merge behind the wildcard phase breached it again by 162 with neither br
 crossed it alone either — the same arithmetic a second time, which is what a shared budget does
 to two branches that each measured themselves alone. What answered it was the move again, on the
 dearest note this guide holds rather than on the newest, or a change's own note where that change
-fires it: the nightly tier's derivation stands at the top of `test/budget.test.js` since, 4,535
+fires it: the nightly tier's derivation stands at the top of `test/budget.test.js` since, 4,516
 characters out of every chain through `test/` and none out of the one that is dearest without it.
 The relief that bought lasted one ticket again, and the third breach is the plainest of the
 three: #884 gave `scripts/` a third script and so the root a third index row, and the root stands
@@ -727,13 +727,13 @@ derivation the root has stopped pointing at turns red, and so does one standing 
 needs it will never load it. `test/guides.js` is the walk itself rather than a list of the five,
 since a guide left off a hand-written list would take its claims out of every gate at once, and the
 reading of a claim stands beside the walk: `worded` flattening a wrapped paragraph into one line,
-`DOCUMENTS` naming the guides and the README together, `NEARBY` bounding how far past a name a
-number may stand and still be a claim about it. Both gates ask it, so a count relocated into a guide
-is judged where it went, and so is the length a guide states of the file the line cap is lifted off,
-which is `test/conformance.test.js`'s to ask beside the cap it is an exemption from. The counts came
-the other way at that same sitting: `ATTRIBUTES` and `PATTERNS` are held to the lists in the code
-from here now, the file that held them having reached the 1000 lines it caps every other file at
-(#825).
+`DOCUMENTS` naming the guides, the README and the release notes together, `NEARBY` bounding how
+far past a name a number may stand and still be a claim about it. Both gates ask it, so a count
+relocated into a guide is judged where it went, and so is the length a guide states of the file
+the line cap is lifted off, which is `test/conformance.test.js`'s to ask beside the cap it is an
+exemption from. The counts came the other way at that same sitting: `ATTRIBUTES` and `PATTERNS`
+are held to the lists in the code from here now, the file that held them having reached the 1000
+lines it caps every other file at (#825).
 
 ## `test/strictness.js`
 
