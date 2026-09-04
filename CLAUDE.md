@@ -129,8 +129,8 @@ of thirty-eight going quadratic: every check of a stage owning several answers
 to `COST` at 3%, and `COSTS` names the three that legitimately cost more,
 `name-starts-with-numeric` at 7%, `text-outside-xsl-text` at 8% and
 `too-many-templates` at 4%. `corpora.yml` is the nightly tier, timing
-DocBook-XSL, TEI and DITA-OT at pinned commits against a budget of 13, 13 and 6
-seconds, and asserting what it read rather than only how long it took —
+DocBook-XSL, TEI and DITA-OT at pinned commits against a budget of 9.5, 9 and
+4.5 seconds, and asserting what it read rather than only how long it took —
 including every defect it drew since #638, diffed by `scripts/snapshot.js`
 against a report committed per corpus, since a check that changes what it
 reports over a real stylesheet is a change nothing else here notices. What a
@@ -223,7 +223,7 @@ before: 268 descriptions in 65 files stood past that bar, the dearest of them
 142 lines, so a derivation grew wherever one was written the way the cross-file
 linter's cost grew before #755 (#832). The bar is not a licence to respell what
 a block cannot hold as a `/* */` beside it either — such prose is cut and not
-moved, the dearest chain of guides standing at 0.92 of `LOADED` and reddening
+moved, the dearest chain of guides standing at 0.93 of `LOADED` and reddening
 well under it, so a guide is no place to put it either and the ticket number
 left standing in the surviving sentence is what keeps a derivation
 recoverable.

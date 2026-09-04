@@ -463,32 +463,41 @@ that cut stood on the clock the tier had, and #827 stands rescoped to the clock 
 having closed #826 alone.
 
 `date +%s%3N` is that clock, and the first thing it settles is the spread. Six dispatched runs on
-the tree #849 left give 5899, 6923, 5746, 4666, 6888 and 6859 ms over DocBook-XSL, 6732, 6454,
-6463, 6287, 6381 and 5013 over TEI, and 2997, 3056, 2878, 3311, 3290 and 2830 over DITA-OT — spans
-of 1.48, 1.34 and 1.17 rather than the factor of two whole seconds reported, since a true 4666
-reads as 4 and a true 6923 as 6 and the grid widens the pair before anything measures it. The
-margin was a grid artefact the same way: under the old 16000 a millisecond DocBook-XSL stands 1.17
-above the ratchet, where 4 against a threshold of 4 says exactly none. Twice the dearest is
-**13000, 13000 and 6000**, whose quarters are 3250, 3250 and 1500 against cheapest nights of 4666,
-5013 and 2830 — margins of 1.44, 1.54 and 1.89, each budget standing between 1.81 and 1.93 times
-its own dearest reading.
+the tree #849 left spanned 1.48, 1.34 and 1.17 over DocBook-XSL, TEI and DITA-OT rather than the
+factor of two whole seconds reported, since a true 4666 reads as 4 and a true 6923 as 6 and the
+grid widens the pair before anything measures it. Twice the dearest of those readings gave
+**13000, 13000 and 6000**, margins of 1.44, 1.54 and 1.89 under cheapest nights of 4666, 5013
+and 2830.
+
+Serving outgrew that cut. #811 took DocBook-XSL from 5899 to 6923 ms down to 4191 to 5459, and
+DITA-OT from 2830 to 3311 down to 1936 to 2636, so a budget cut at twice the old dearest stands
+over four times the new cheapest, and the ratchet fired on DITA-OT at 1424 against 6000 — the
+first time the loose side of it caught anything in production. Six runs dispatched on the tree #872
+left, and the night one merge behind it, give dearest readings of 5459, 5656 and 2636 against
+cheapest ones of 3296, 2846 and 1424. Each budget is the geometric middle of the window its own two
+ends leave — half again to twice the dearest, capped where `SLACK` times the cheapest over `MARGIN`
+cuts in — which is **9500, 9000 and 4500**, at 1.74, 1.59 and 1.71 times their dearest and leaving
+margins of 1.39, 1.26 and 1.27. The cap is what binds for TEI and DITA-OT rather than twice the
+dearest — TEI's window closes at 9487 and not 11312, DITA-OT's at 4747 and not 5272 — and only
+DocBook-XSL's spread leaves it slack.
 
 That margin is the bar the tick used to stand in for. `MARGIN` in `test/budget.test.js` asks each
 budget to stay quiet on a night 1.2 times faster than the cheapest on record — the geometric middle
-of the 1.00 the whole-second cut recorded and the 1.44 this one leaves — and `RESOLUTION` asks a
-tick to stand under 0.013 of what its corpus costs, the middle of DITA-OT's half and its 2830th.
-The row those two replace asked for one tick of margin, which a millisecond grid turns into a
-question no tree can fail; and since both are written in ticks, a third row reads the workflow for
-the `date +%s%3N` that makes a tick what `TICK` says it is. On master all three redden — every
-corpus fails `RESOLUTION`, DocBook-XSL fails `MARGIN`, and the step spells `date +%s`.
+of the 1.00 the whole-second cut recorded and the 1.44 the cut beside it left — and `RESOLUTION`
+asks a tick to stand under 0.013 of what its corpus costs, the middle of DITA-OT's half and its
+1424th. The row those two replace asked for one tick of margin, which a millisecond grid turns into
+a question no tree can fail; and since both are written in ticks, a third row reads the workflow
+for the `date +%s%3N` that makes a tick what `TICK` says it is. On the tree #827 found, all three
+redden — every corpus fails `RESOLUTION`, DocBook-XSL fails `MARGIN`, and the step spells
+`date +%s`.
 
 Three questions #827 parked are answered by that table rather than by a change. A **median of
-several runs** narrows nothing a 1.48 span cannot already carry inside a fourfold window, and would
-cost the tier a clone a night to defend a margin that is 1.44 at its worst. **`SLACK` at four** is
-a span the widest observed spread fills a third of, leaving 1.44 under and 1.88 over, so it holds
+several runs** narrows nothing a fourfold window cannot already carry, and would cost the tier a
+clone a night to defend a margin that is 1.26 at its worst. **`SLACK` at four** is a span the
+widest observed spread fills half of, leaving 1.26 under and 1.59 over at their worst, so it holds
 for a wall clock as it does for a share, and a bar raised on nobody's failure is a bar loosened.
-And **DITA-OT** is not too small to gate: at 2830 ms a tick is one part in 2830, and its margin is
-the best of the three. The corpus was never what was too small.
+And **DITA-OT** is not too small to gate: at 1424 ms a tick is one part in 1424, and its margin is
+no worse than TEI's. The corpus was never what was too small.
 
 ## Snapshots
 
@@ -698,14 +707,14 @@ the dearest single guide instead, which is a whole directory short: it read 130,
 that 0.87 of the bar while a turn touching `src/linters/` was loading 157,504 and over it. So the
 two dearest notes moved one step further down, out of `src/CLAUDE.md` and into the top of
 `src/grammar.js` and `src/syntax.js` — 24,681 characters. A turn touching `test/` has run it
-close ever since, and the dearest chain is that same one at 138,308, which is 0.92. What answers
-a chain reaching the bar is that move again, a module's derivation into the file-header note of the
-module itself, and never a bar widened to fit what has grown past it: a docblock holds five lines
-of description since #832, so prose that has outgrown a
-guide does not simply move into one instead. A `CEILING` of half the bar stood beside it until it
+close ever since and is the dearest chain there is now: the dearest reads 138,970, which is 0.93.
+What answers a chain reaching the bar is that move again, a module's derivation into the
+file-header note of the module itself, and never a bar widened to fit what has grown past it: a
+docblock holds five lines of description since #832, so prose that has outgrown a guide does not
+simply move into one instead. A `CEILING` of half the bar stood beside it until it
 was seen to be a gate no tree could fail: the root stands in every chain, so the chain holding it
-above weighs each other guide against the bar less what stands over it — 28,414 for
-`src/linters/CLAUDE.md`, where half of the bar is 75,000 — and holds the root itself to 79,931, a
+above weighs each other guide against the bar less what stands over it — 28,412 for
+`src/linters/CLAUDE.md`, where half of the bar is 75,000 — and holds the root itself to 79,271, a
 number derived from the dearest chain rather than chosen. A gate no tree can fail is removed and
 not kept (#750, #660). All four of those figures — the chain, its ratio, and the two allowances —
 follow from three file sizes, so one guide growing moves every one of them, and none of them
@@ -750,14 +759,13 @@ and `corpus-linter.js` out of `src/linters/CLAUDE.md`, and `scaling.test.js`, `p
 one. A tenth was refused by the valve rather than chosen against: `test/conformance.test.js` stands
 at 926 lines and its note is 150 more, and `max-lines` counts comments, so a section can outgrow the
 file it is about and relief has a floor — what answers that one is the note being cut, not moved.
-What that leaves is 1,692 characters of headroom, off a chain that is `src/linters/`'s own once
-more rather than this file's: the merge behind #811's bracket phase breached the bar by 844 with
-neither branch having crossed it alone, and the root's `src/xslint.js` derivation moved into
-`src/CLAUDE.md` to answer it — 2,147 characters out of every chain but the three standing under
-`src/`. It is
-a fifth figure of the same class as the four, and the one that proves the point twice over — it
-stood outside the table and drifted 418 behind the rows in it with every one of them green, so it
-has a row of its own since #856.
+What that leaves is 1,030 characters of headroom, off a chain that is this file's own again rather
+than `src/linters/`'s, the re-cut above being written here: the merge behind #811's bracket phase
+breached the bar by 844 with neither branch having crossed it alone, and the root's
+`src/xslint.js` derivation moved into `src/CLAUDE.md` to answer it — 2,147 characters out of every
+chain but the three standing under `src/`. It is a fifth figure of the same class as the four, and
+the one that proves the point twice over — it stood outside the table and drifted 418 behind the
+rows in it with every one of them green, so it has a row of its own since #856.
 The index answers to the tree from both sides, every path it names existing and every module under
 `src/` being named by a row — the twenty-one linters by one of them, the `*` standing for a name and
 never for a directory — and a note answers to the index and to its own directory both, so a
