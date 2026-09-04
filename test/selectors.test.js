@@ -475,6 +475,7 @@ const CANDIDATES = [
   'string-length(@select) = 3', 'count(*) = 1', 'count(*) >= 2',
   'not(*)', '*', 'count(a) = count(*)', 'count(a[@x]) = 1',
   'a[not(@x)]', 'a[@x = "1"]', 'self::xsl:variable', 'not(self::xsl:param)',
+  'local-name() = "variable"', 'not(local-name() = ("variable", "param"))',
   'parent::xsl:stylesheet', 'not(parent::xsl:stylesheet)',
   'parent::xsl:template', 'parent::*', 'parent::*[not(self::xsl:template)]',
   '(@select)', '((@select))', '(@select and @as) or @mode',

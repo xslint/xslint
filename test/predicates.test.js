@@ -37,7 +37,7 @@
  * Neither table asks whether an answer is *correct*: that is `CANDIDATES`
  * in `test/selectors.test.js`, which asks fontoxpath what each spelling
  * selects over `candidates.xsl` and fails where serving answers anything
- * else — the oracle, 137 rows here against 32 before, and armed against the
+ * else — the oracle, 139 rows here against 32 before, and armed against the
  * engine before a line of the compiler existed. A row there is a question
  * rather than a claim, so enriching the fixture can only strengthen it; the
  * fixture grew five variables and a non-XSLT child so that presence, a
