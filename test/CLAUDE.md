@@ -492,7 +492,7 @@ DocBook-XSL's spread leaves it slack.
 That margin is the bar the tick used to stand in for. `MARGIN` in `test/budget.test.js` asks each
 budget to stay quiet on a night 1.2 times faster than the cheapest on record — the geometric middle
 of the 1.00 the whole-second cut recorded and the 1.44 the cut beside it left — and `RESOLUTION`
-asks a tick to stand under 0.013 of what its corpus costs, the middle of DITA-OT's half and its
+asks a tick to stand under 0.019 of what its corpus costs, the middle of DITA-OT's half and its
 1424th. The row those two replace asked for one tick of margin, which a millisecond grid turns into
 a question no tree can fail; and since both are written in ticks, a third row reads the workflow
 for the `date +%s%3N` that makes a tick what `TICK` says it is. On the tree #827 found, all three

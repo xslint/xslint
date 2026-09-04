@@ -87,16 +87,17 @@ const CASES = [
  * stand at. A reading is true to within a tick, so a clock coarse beside what
  * it times spends the window on quantisation before the runner's own variance
  * is paid for: whole seconds put a tick at half of what DITA-OT costs where
- * milliseconds put it at a 2830th, and this is the middle of the two (#827).
+ * milliseconds put it at a 1424th, and this is the middle (#827, #811).
  * @type {number}
  */
-const RESOLUTION = 0.013
+const RESOLUTION = 0.019
 
 /**
  * How much faster than the cheapest night on record a run may be before the
  * ratchet under it fires. Whole seconds left DocBook-XSL none at all — the
  * budget fired at the cheapest reading itself, so what stood under it was the
- * clock and not a margin — where milliseconds leave 1.44 (#827).
+ * clock and not a margin — where milliseconds left 1.44, and this cut 1.26 at
+ * worst (#827, #811).
  * @type {number}
  */
 const MARGIN = 1.2
