@@ -10,24 +10,26 @@
  * Both halves of the suite run on one mocha, and did not until #841:
  * `grunt-mocha-cli` pins `mocha ^8.2.0`, so `npm install` nested a second
  * mocha under it — 8.4.0, from 2021 — and `grunt mochacli` ran the suite
- * there while `npm run coverage` ran it on 11. That nested tree is where two
- * of the nine advisories `npm audit` read on master stood and nowhere else,
- * `nanoid` and `minimatch`. An `overrides` entry in `package.json` holds it
- * to the `mocha` the root declares, and the first question below asks it of
- * every tool a grunt wrapper runs. The rest of that entry lifts `diff` and
- * `serialize-javascript` to the majors mocha 12 ships with — every version
- * mocha 11's own ranges admit is an advisory, and its one call into each is
- * unchanged in 12 — grunt's `js-yaml` to 4, whose `safeLoad` grunt calls only
- * in a `readYAML` nothing here calls, 3.x never having been patched, and
- * `typed-rest-client`'s exact `qs` up one patch. The two majors are spelled
- * at the top level rather than under `mocha`, because npm 11.12 honours a
- * range scoped under `grunt` or `grunt-mocha-cli` and drops the same range
- * scoped under `mocha`. `daily.yml` runs `npm audit` in a job of its own
- * beside the six cells that run the suite, so the next advisory files an
- * issue by morning without taking a platform's test result down with it — an
- * advisory this project waits on upstream to patch would otherwise leave
- * Windows unmeasured for as long as the wait lasts, and six identical audits
- * say one thing.
+ * there while `npm run coverage` ran it on 11. That nested tree is where
+ * two of the nine advisories `npm audit` read on master stood and nowhere
+ * else, `nanoid` and `minimatch`. An `overrides` entry in `package.json`
+ * holds it to the `mocha` the root declares, and the first question below
+ * asks it of every tool a grunt wrapper runs. The rest of that entry lifts
+ * `diff` and `serialize-javascript` to the majors mocha 12 ships with —
+ * every version mocha 11's own ranges admit is an advisory, and its one
+ * call into each is unchanged in 12 — grunt's `js-yaml` to 4, whose
+ * `safeLoad` grunt calls only in a `readYAML` nothing here calls, 3.x
+ * never having been patched, and `typed-rest-client`'s exact `qs` up a
+ * minor — a floor and not a pin, the range two advisories cover having
+ * since reached the patch #841 first lifted it to (#870). The two majors
+ * are spelled at the top level rather than under `mocha`, because npm
+ * 11.12 honours a range scoped under `grunt` or `grunt-mocha-cli` and
+ * drops the same range scoped under `mocha`. `daily.yml` runs `npm audit`
+ * in a job of its own beside the six cells that run the suite, so the next
+ * advisory files an issue by morning without taking a platform's test
+ * result down with it — an advisory this project waits on upstream to
+ * patch would otherwise leave Windows unmeasured for as long as the wait
+ * lasts, and six identical audits say one thing.
  *
  * It is that ticket one tool over, in the same file and for the same reason:
  * `grunt-eslint` 26 depends on `eslint ^9.22.0`, so npm nested a 9.39.4 under
