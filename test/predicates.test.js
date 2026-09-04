@@ -255,6 +255,10 @@ const REFUSED = [
     why: 'a whitespace test the engine answers wider than XPath (#881)',
   },
   {
+    text: 'local-name(@name) = "name"',
+    why: 'a call taking a node set, where this answers the candidate\'s own',
+  },
+  {
     text: 'normalize-space() = ""',
     why: 'the context node itself, whose value is the whole subtree under it',
   },

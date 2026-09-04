@@ -235,6 +235,7 @@ const WHOLE = [
   {xpath: '/*[not(@version)]', why: 'the root itself, not a descendant sweep'},
   {xpath: '//xsl:template[@match]/xsl:param', why: 'a step behind the tail'},
   {xpath: '//mine:thing[@a]', why: 'a prefix nothing binds'},
+  {xpath: '//mine:*', why: 'a wildcard on a prefix nothing binds'},
   {xpath: '//xsl:template[1]', why: 'a positional predicate'},
   {
     xpath: '//xsl:variable | /xsl:stylesheet',
