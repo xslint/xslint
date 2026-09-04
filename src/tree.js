@@ -3,6 +3,26 @@
  * SPDX-License-Identifier: MIT
  */
 
+/*
+ * `walked`, `named`, `attributed` and `holding` — one pass over a document,
+ * remembered against it, and the axis every served selector comes off.
+ * `named` buckets each element twice since #811's wildcard phase, once under
+ * its own name and once under its namespace beside a literal `*`, which no
+ * local name is — so `//xsl:*` is a bucket the walk already holds rather than
+ * the one shape past a name that a sweep still paid for. That second key has
+ * to be the *walk's* rather than a gather at the door, and the difference is
+ * the whole of what the phase buys: building the wildcard's candidates by
+ * filtering the buckets and sorting the union of them by rank reads every XSLT
+ * element there is before a predicate has narrowed anything, where a bucket
+ * standing in document order already needs neither.
+ * `modern-construct-in-xslt-1` reads 116-120 ms over DocBook-XSL with its
+ * wildcard arm at the engine and 31 with the bucket, and DITA-OT 10.1-10.8
+ * against 3.1-3.7. TEI is the one corpus it leaves dearer, 11.3-14.0 against
+ * 14.1-16.4: three quarters of its elements are XSLT and the arm's own
+ * predicate is what narrows them, so the bucket hands over nearly everything
+ * the sweep would have.
+ */
+
 /**
  * The kind of node an attribute is, which is the one kind of the three below a
  * selector reaches by an axis of its own.
@@ -172,11 +192,25 @@ const ranked = function(xsl) {
 const NAMED = new WeakMap()
 
 /**
- * Every element of a document bucketed by namespace and local name, each
- * bucket in document order, beside the rank each element holds in that order.
- * This is what a `//xsl:variable` selects, reached by walking rather than by a
- * descendant step the engine answers quadratically (#635, #784). The rank is
- * what a union needs, so the merge happens here.
+ * Put an element in the bucket one key names, opening that bucket where the
+ * element is the first to want it.
+ * @param {Map.<string, Array.<Node>>} buckets - What the walk has bucketed
+ * @param {string} key - Namespace and name the bucket stands under
+ * @param {Node} node - The element to put in it
+ */
+const bucket = function(buckets, key, node) {
+  if (!buckets.has(key)) {
+    buckets.set(key, [])
+  }
+  buckets.get(key).push(node)
+}
+
+/**
+ * Every element of a document bucketed by namespace and local name, and again
+ * by namespace alone under `*`, which a local name never is, each bucket in
+ * document order beside the rank each element holds in it. This is what a
+ * `//xsl:variable` and a `//xsl:*` select, walked rather than swept by a step
+ * the engine answers quadratically (#635, #784, #811).
  * @param {Document} xsl - Parsed stylesheet
  * @return {{buckets: Map.<string, Array.<Node>>, rank: Map.<Node, number>}} -
  *  The buckets, and where each element stands in document order
@@ -192,11 +226,8 @@ const named = function(xsl) {
     const visit = function(node) {
       for (let kid = node.firstChild; kid !== null; kid = kid.nextSibling) {
         if (kid.nodeType === 1) {
-          const key = `${kid.namespaceURI} ${kid.localName}`
-          if (!buckets.has(key)) {
-            buckets.set(key, [])
-          }
-          buckets.get(key).push(kid)
+          bucket(buckets, `${kid.namespaceURI} ${kid.localName}`, kid)
+          bucket(buckets, `${kid.namespaceURI} *`, kid)
           rank.set(kid, rank.size)
           visit(kid)
         }

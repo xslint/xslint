@@ -67,6 +67,22 @@ const SPLIT = [
     locals: ['variable'],
     tail: '[ancestor::xsl:template[1]]',
   },
+  {xpath: '//xsl:*', locals: [EVERY], tail: ''},
+  {
+    xpath: '//(xsl:variable | xsl:*)',
+    locals: ['variable', EVERY],
+    tail: '',
+  },
+  {
+    xpath: '//(xsl:variable | xsl:*)[@select]',
+    locals: ['variable', EVERY],
+    tail: '[@select]',
+  },
+  {
+    xpath: kinds.xpath['text-outside-xsl-text'].xpath,
+    locals: [EVERY],
+    tail: kinds.xpath['text-outside-xsl-text'].xpath.slice('//xsl:*'.length),
+  },
 ]
 
 /**
@@ -95,6 +111,12 @@ const ATTRIBUTED = [
     xpath: '//xsl:output/@xsl:version',
     locals: ['output'],
     attribute: {uri: XSLT, local: 'version'},
+    tail: '',
+  },
+  {
+    xpath: '//xsl:*/@name',
+    locals: [EVERY],
+    attribute: {uri: '', local: 'name'},
     tail: '',
   },
 ].concat(AXES.attributed)
@@ -185,19 +207,14 @@ const UNIONS = [
 ]
 
 /**
- * Selectors no index may serve, each with why. A wildcard names no bucket; a
- * root-anchored path is not a descendant sweep; an attribute is not an
- * element; a step behind the predicate reaches past what the axis answered; an
- * unbound prefix resolves to no namespace; a named attribute off a list that
- * buckets to nothing narrows nothing; and a position reads the whole sequence.
+ * Selectors no index may serve, each beside what puts it out of reach: a bare
+ * wildcard naming no namespace to gather from, a root-anchored path that is
+ * no descendant sweep, a step behind the predicate reaching past what the
+ * axis answered, an unbound prefix, a name that buckets to nothing, and a
+ * position, which reads the whole sequence.
  * @type {Array.<{xpath: string, why: string}>}
  */
 const WHOLE = [
-  {xpath: '//xsl:*', why: 'a wildcard names no one bucket'},
-  {
-    xpath: '//xsl:*/@name',
-    why: 'an attribute named off a wildcard that names no bucket',
-  },
   {
     xpath: '//*/@name',
     why: 'an attribute named off every element there is',
@@ -228,7 +245,7 @@ const WHOLE = [
     why: 'a union whose second branch reads a position',
   },
   {
-    xpath: '//xsl:variable | //xsl:*',
+    xpath: '//xsl:variable | //*',
     why: 'a union whose second branch names no bucket',
   },
   {
@@ -340,11 +357,11 @@ const MERGING = xml.parsedFromString(
 )
 
 /**
- * Unions the door is judged on against the engine: the three checks written as
- * one, plus two buckets that interleave, one entered twice under different
- * tails, a branch written twice, and one that finds nothing. A fourth rides
- * along for the other half of an anchor — this sheet is 3.0, so its guard
- * answers nothing and the two functions go unreported (#811).
+ * Unions the door is judged on against the engine: the three checks written
+ * as one, plus two buckets that interleave, one entered twice under
+ * different tails, a branch written twice, one that finds nothing, and a
+ * fourth whose 3.0 guard answers nothing. The last three set a wildcard
+ * beside a name of its own namespace, which reaches all that name does.
  * @type {Array.<string>}
  */
 const MERGED = [
@@ -357,6 +374,9 @@ const MERGED = [
   '//xsl:template[@name] | //xsl:template[@name]',
   '//xsl:variable | //xsl:sort',
   '//xsl:variable/@name | //xsl:template/@match',
+  '//xsl:variable | //xsl:*',
+  '//(xsl:variable | xsl:*)',
+  '//(xsl:variable | xsl:*)[@select]',
 ].concat(AXES.merged)
 
 /**
@@ -521,10 +541,10 @@ const HEADED = [
 
 /**
  * Whole selectors the two doors are judged on, served and unserved alike,
- * since what they promise is one answer whichever way it was reached. Four of
+ * since what they promise is one answer whichever way it was reached. Five of
  * the seven are served — one bucket, two merged by rank, one attribute off
- * each element, and every attribute of the document. The other three are
- * refused: at the root, on a position, and on an attribute off no bucket.
+ * each element, every attribute of the document, and one off every element
+ * of a namespace — and two are refused, at the root and on a position.
  * @type {Array.<string>}
  */
 const DOORS = [
@@ -552,23 +572,24 @@ const APARTING = xml.parsedFromString(
 )
 
 /**
- * Unions no single axis can carry, because one arm names a bucket and another
- * does not. Each is served by the arms that can be and swept by the arms that
- * cannot, which is what makes them different from `WHOLE`: refusing the whole
- * selector for one arm is what this table exists to stop.
+ * Unions no single axis can carry, because the arms carry different tails or
+ * because one of them names no bucket. Each is served by the arms that can be
+ * and swept by the arms that cannot, which is what makes them different from
+ * `WHOLE`: refusing the whole selector for one arm is what this table exists
+ * to stop.
  * @type {Array.<{xpath: string, why: string}>}
  */
 const APART = [
   {
-    xpath: '//(xsl:variable | xsl:*)',
-    why: 'a wildcard arm beside a named one',
+    xpath: '//(xsl:variable | *)',
+    why: 'a bare wildcard arm beside a named one',
   },
   {
     xpath: '//(xsl:variable | xsl:sequence | xsl:*[@as])',
     why: 'a wildcard arm carrying a predicate of its own',
   },
   {
-    xpath: '//(xsl:variable | xsl:*)[@select]',
+    xpath: '//(xsl:variable | *)[@select]',
     why: 'a tail the arms have to carry apiece',
   },
   {
@@ -634,74 +655,15 @@ const WITHHELD = [
 
 /**
  * Tails whose bracket joins clauses with `and`, each with how many of them the
- * walk answers and what is left for the engine. A clause outside the vocabulary
- * refused the whole bracket until #811, so a conjunction cost a fontoxpath call
- * on every candidate its cheapest clause would have refused. A bracket nothing
- * answers is kept whole, and so is one whose clause alone picks a position.
+ * walk answers and what is left for the engine. A clause outside the
+ * vocabulary refused the whole bracket until #811, so a conjunction cost a
+ * fontoxpath call on every candidate its cheapest would have refused; one
+ * nothing answers is kept whole, as is one whose clause picks a position.
  * @type {Array.<{tail: string, served: number, asked: string}>}
  */
-const CLAUSED = [
-  {
-    tail: '[count(*) = 1 and not(text()[normalize-space()])]',
-    served: 1,
-    asked: '[not(text()[normalize-space()])]',
-  },
-  {
-    tail: '[@select and not(node()) and not(text()[normalize-space()])]',
-    served: 1,
-    asked: '[not(node())][not(text()[normalize-space()])]',
-  },
-  {
-    tail: '[not(@select) and not(@_select) and not(node())]',
-    served: 2,
-    asked: '[not(node())]',
-  },
-  {
-    tail: '[not(node()) and @select][count(*) = 1 and not(node())]',
-    served: 2,
-    asked: '[not(node())][not(node())]',
-  },
-  {
-    tail: '[@select and @as]',
-    served: 1,
-    asked: '',
-  },
-  {
-    tail: '[not(node()) and not(text()[normalize-space()])]',
-    served: 0,
-    asked: '[not(node()) and not(text()[normalize-space()])]',
-  },
-  {
-    tail: '[2 and @select]',
-    served: 0,
-    asked: '[2 and @select]',
-  },
-  {
-    tail: '[count(a) and @select]',
-    served: 0,
-    asked: '[count(a) and @select]',
-  },
-  {
-    tail: '[@select or not(node())]',
-    served: 0,
-    asked: '[@select or not(node())]',
-  },
-  {
-    tail: '[(count(*) = 1) and (count(xsl:if) = 1) and not(text()[normalize-space()])]',
-    served: 2,
-    asked: '[not(text()[normalize-space()])]',
-  },
-  {
-    tail: '[@select and (* or text()[normalize-space()])]',
-    served: 1,
-    asked: '[(* or text()[normalize-space()])]',
-  },
-  {
-    tail: '[(2) and @select]',
-    served: 0,
-    asked: '[(2) and @select]',
-  },
-]
+const CLAUSED = yaml.parsedFromFile(
+  path.resolve(__dirname, 'resources', 'selectors', 'clauses.yaml'),
+)
 
 /**
  * Where each node of a selection stands, which is how two answers are compared
@@ -862,7 +824,7 @@ describe('selectors', function() {
         `the nodes served for the union ${one} are not the nodes the engine ` +
           'chooses in the order it chooses them, so a union is being ' +
           'appended bucket after bucket rather than merged by rank, or a ' +
-          'node standing in two branches is reported twice',
+          'node standing in two branches or two arms is reported twice',
       )
     })
   })

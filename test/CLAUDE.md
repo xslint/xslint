@@ -142,17 +142,17 @@ readings where the band allows no closer than half again, so each is re-derived 
 
 Two things were measured beside it and refused, which is the more useful half of the phase. Serving
 `//xsl:*` off a namespace bucket — the shape the ticket named next, and one line of `src/tree.js` —
-makes the run **slower**: 88% of DocBook-XSL's 66,008 elements stand in the XSLT namespace, so the
-bucket narrows almost nothing and the split trades one sweep for 58,044 predicate calls at 8.4 us
-each. Measured end to end, `text-outside-xsl-text` reads 244 ms where it read 236, and the selector
-alone 490 ms where the sweep costs 318. So serving pays only where the axis **narrows**, and the
-per-candidate call is the tax that says by how much — a rule the ticket's own sizing did not have.
-The same arithmetic re-sizes what is left of it: the dearest unserved check,
-`modern-construct-in-xslt-1` at 631 ms, needs that bucket and two more things before it pays, and
-with all three it reads 10 ms rather than 620 — the nine narrow arms of its union off the walk, and
-its tenth arm's `[@as]` answered by `hasAttribute` rather than by the engine, which is 10 ms against
-the 150 the same union costs with that one predicate asked per candidate. Neither of those is this
-change, and both are measured rather than estimated.
+made the run **slower** on its own: 88% of DocBook-XSL's 66,008 elements stand in the XSLT
+namespace, so the bucket narrows almost nothing and the split traded one sweep for 58,044 predicate
+calls at 8.4 us each. Measured end to end, `text-outside-xsl-text` read 244 ms where it read 236,
+and the selector alone 490 ms where the sweep cost 318. So serving pays only where the axis
+**narrows**, and the per-candidate call is the tax that says by how much — a rule the ticket's own
+sizing did not have. The same arithmetic sized what was left of it: the dearest unserved check,
+`modern-construct-in-xslt-1` at 631 ms, needed that bucket and two more things before it paid.
+
+The bucket landed in #811's wildcard phase, and what lifted the refusal is the second of those
+things and not the first: a predicate the walk answers is what pays the tax the bucket levies. The
+note beside `COSTS` carries what the gate's own corpus still cannot see.
 
 The sixth move is #811's union phase, and it is the first to move the dearest stage by making it
 cheaper rather than by moving what the others are a share of. Three checks are written as a union of
@@ -571,13 +571,15 @@ pack gives one position per defect it expects, too: the harness walks the `posit
 `amount` standing above their number is a count asserted and a place asserted nowhere — three packs
 of #565's own were written that way and passed, pinning four runs' replacements while saying nothing
 about where any of them stood. It also asks `splitOf` of every `xpath` selector and holds the answer
-to `UNINDEXED`, the five selectors a shared walk cannot serve as an axis, each listed beside the
+to `UNINDEXED`, the four selectors a shared walk cannot serve as an axis, each listed beside the
 shape that keeps it out (#784) — fourteen until #811's union phase served three of them, eleven
 until its anchor phase served three more, eight until its fourth parted the one selector spelling a
-union *inside* a sweep, and six until its fifth served a **named** attribute axis and distributed
+union *inside* a sweep, six until its fifth served a **named** attribute axis and distributed
 the bracket of `malformed-version-in-stylesheet`, whose two arms open on `//@version` and
-`//@xsl:version` and needed both halves in one change: so no union of any spelling, no anchor and
-no attribute is a reason to be on the table any longer. Fifteen was the count before #556 gave
+`//@xsl:version` and needed both halves in one change, and five until its wildcard phase keyed a
+bucket on the namespace alone and `text-outside-xsl-text` came off: so no union of any spelling, no
+anchor, no attribute and no *prefixed* wildcard is a reason to be on the table any longer, and what
+is left is one shape four times over. Fifteen was the count before #556 gave
 `using-disable-output-escaping` an element test, which took it off the table by making it servable
 rather than by anybody editing the list. A structural gate rather than a share
 bar, because a bar can only notice the cost after a selector has been written the broad way: a check
@@ -706,14 +708,14 @@ the dearest single guide instead, which is a whole directory short: it read 130,
 that 0.87 of the bar while a turn touching `src/linters/` was loading 157,504 and over it. So the
 two dearest notes moved one step further down, out of `src/CLAUDE.md` and into the top of
 `src/grammar.js` and `src/syntax.js` — 24,681 characters. A turn touching `test/` has run it
-close ever since, and the dearest chain is that same one at 139,839, which is 0.93. What answers
+close ever since, and the dearest chain is that same one at 139,900, which is 0.93. What answers
 a chain reaching the bar is that move again, a module's derivation into the file-header note of the
 module itself, and never a bar widened to fit what has grown past it: a docblock holds five lines
 of description since #832, so prose that has outgrown a
 guide does not simply move into one instead. A `CEILING` of half the bar stood beside it until it
 was seen to be a gate no tree could fail: the root stands in every chain, so the chain holding it
-above weighs each other guide against the bar less what stands over it — 26,494 for
-`src/linters/CLAUDE.md`, where half of the bar is 75,000 — and holds the root itself to 78,410, a
+above weighs each other guide against the bar less what stands over it — 26,433 for
+`src/linters/CLAUDE.md`, where half of the bar is 75,000 — and holds the root itself to 78,393, a
 number derived from the dearest chain rather than chosen. A gate no tree can fail is removed and
 not kept (#750, #660). All four of those figures — the chain, its ratio, and the two allowances —
 follow from three file sizes, so one guide growing moves every one of them, and none of them
@@ -758,13 +760,13 @@ and `corpus-linter.js` out of `src/linters/CLAUDE.md`, and `scaling.test.js`, `p
 one. A tenth was refused by the valve rather than chosen against: `test/conformance.test.js` stands
 at 926 lines and its note is 150 more, and `max-lines` counts comments, so a section can outgrow the
 file it is about and relief has a floor — what answers that one is the note being cut, not moved.
-What that leaves is 161 characters of headroom, off a chain that is `src/linters/`'s own once
+What that leaves is 100 characters of headroom, off a chain that is `src/linters/`'s own once
 more rather than this file's: the merge behind #811's bracket phase breached the bar by 844 with
 neither branch having crossed it alone, and the root's `src/xslint.js` derivation moved into
 `src/CLAUDE.md` to answer it — 2,147 characters out of every chain but the three standing under
 `src/`, of which #877 has spent 1,910 on what it derives there. So the relief lasted one
 ticket, and what answers the next red is the move again, on the dearest note this guide holds
-rather than on the newest. It is
+rather than on the newest, or a change's own note where that change fires it. It is
 a fifth figure of the same class as the four, and the one that proves the point twice over — it
 stood outside the table and drifted 418 behind the rows in it with every one of them green, so it
 has a row of its own since #856.
