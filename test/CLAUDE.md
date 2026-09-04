@@ -330,8 +330,11 @@ bar and wants retightening. Growth is asked only of the stages with no entry, si
 what a stage costs outright, which is the stronger statement; those nineteen read 0.47 to 1.24,
 against a `GROWTH` bar of 3.0 and the 4.0 a stage that had gone quadratic would read. #877 leaves 18
 where it stands: an attribute value walked beside every text node costs `xsl-validator` 1.09 of what
-it did, dearest judged reading 12.40% against 11.35% over ten of master, so the entry is 1.45 of it
-— under the band, which is the safe side.
+it did, dearest reading 12.40% against 11.35% over ten runs of the master it was measured on. What
+the entry is a multiple of that dearest reading moved again on the merge, #872 having made
+`xpath-linter` a twelfth cheaper and so lifted every other share without one of them costing a
+millisecond more: 1.26 over five runs since, where it was 1.45 before. Both stand under the band,
+which is the tight side of a ceiling and the safe one.
 
 Three stages arrived at #788, and the corpus was armed for each in the same change: an `xsl:element`
 with a static name, an `xsl:output` beside an `html` the root template builds, and an
