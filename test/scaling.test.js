@@ -118,8 +118,9 @@
  * middle lands at 4.54, where a second machine's judged minima put the
  * unserved side as low as 4.32% and a bar of 5 inside it. With that arm
  * unserved the gate fails four of four, and passes four of four with it
- * back. It is a ratchet like every table here: an entry of 20 over a
- * 4.55% reading fails for having stopped being a bar.
+ * back. It is a ratchet like every table here: an entry of 30 over
+ * dearest readings of 4.69%, 4.49% and 4.61% fails three of three for
+ * having stopped being a bar.
  *
  * The three entries answer the other rule, none having a second
  * distribution to leave room for, and each is judged the same way over the
@@ -134,6 +135,17 @@
  * five, anchored on the root and spending everything it costs inside a
  * predicate that descends the tree, so a bar of 3 stood 1.43 times over a
  * check nobody had touched.
+ *
+ * Which end of the readings answers depends on which side is asking. A
+ * ceiling is judged off the cheapest, noise inflating a measurement
+ * rather than deflating it; the slack clause is judged off the dearest,
+ * because *this bar has stopped being one* is a claim about the check at
+ * its most expensive and one cheap attempt is no evidence for it. Judged
+ * off the floor instead, the retry loop worked against that clause — a
+ * further attempt can only lower a minimum — and a Windows runner, whose
+ * processor time comes in ticks coarser than a single check costs, read
+ * `name-starts-with-numeric` at 1.63% where this machine reads 4.03% and
+ * called an entry derived from the dearest reading loose.
  *
  * `SHADOWED` is the one place the sweep is knowingly wrong, and it is
  * wrong upward. `--suppress` matches by substring, so a check whose name
@@ -505,16 +517,17 @@ const weighed = function(attempt) {
 
 /**
  * What is wrong with a stage's readings, or an empty string when nothing is.
- * The lowest of them answers every question, noise making one attempt disagree
- * where a real change reads the same way in all. A non-finite growth is no
- * reading and is dropped: Windows charges processor time in ticks coarser than
- * a cheap stage costs over the small corpus. The share is unhurt.
+ * A ceiling is judged off the cheapest of them and the slack off the dearest,
+ * each side asked of the reading that most favours passing. A non-finite growth
+ * is no reading and is dropped: Windows charges in ticks coarser than a cheap
+ * stage costs over the small corpus, which leaves the share unhurt.
  * @param {string} name - Name of the stage
  * @param {Array.<{share: number, growth: number}>} readings - Per attempt
  * @return {string} - The fault, or an empty string
  */
 const fault = function(name, readings) {
-  const share = Math.min(...readings.map((one) => one.share))
+  const cheapest = Math.min(...readings.map((one) => one.share))
+  const dearest = Math.max(...readings.map((one) => one.share))
   const growths = readings.map((one) => one.growth).filter(Number.isFinite)
   const named = Object.hasOwn(SHARES, name)
   let ceiling = SHARE
@@ -522,16 +535,16 @@ const fault = function(name, readings) {
     ceiling = SHARES[name]
   }
   let said = ''
-  if (share > ceiling) {
-    said = `${name} spends ${share.toFixed(2)}% of its own run, past the ` +
+  if (cheapest > ceiling) {
+    said = `${name} spends ${cheapest.toFixed(2)}% of its own run, past the ` +
       `${ceiling}% that test/scaling.test.js allows it`
   } else if (!named && growths.length > 0 && Math.min(...growths) > GROWTH) {
     said = `${name} grew ${Math.min(...growths).toFixed(2)} times what the ` +
       `middle stage grew when the corpus grew ${STEP} times, so its shape has ` +
       `changed`
-  } else if (named && ceiling > SLACK * share) {
-    said = `${name} spends only ${share.toFixed(2)}% of its run where it is ` +
-      `allowed ${ceiling}%, so the entry has stopped being a bar and wants ` +
+  } else if (named && ceiling > SLACK * dearest) {
+    said = `${name} spends at most ${dearest.toFixed(2)}% of its run where it ` +
+      `is allowed ${ceiling}%, so the entry has stopped being a bar and wants ` +
       `tightening`
   }
   return said
@@ -540,26 +553,27 @@ const fault = function(name, readings) {
 /**
  * What is wrong with one check's readings, or an empty string when nothing is.
  * No growth question stands beside the share: a check is part of one stage, and
- * the stage is asked how it grew already. The lowest reading answers here as it
- * does for a stage, noise inflating a measurement rather than deflating it.
+ * the stage is asked how it grew already. The two ends of the readings answer
+ * the two sides here as they do for a stage, and for the same reason.
  * @param {string} name - Name of the check
  * @param {Array.<number>} readings - Its share of the run, per attempt
  * @return {string} - The fault, or an empty string
  */
 const overspent = function(name, readings) {
-  const share = Math.min(...readings)
+  const cheapest = Math.min(...readings)
+  const dearest = Math.max(...readings)
   const named = Object.hasOwn(COSTS, name)
   let ceiling = COST
   if (named) {
     ceiling = COSTS[name]
   }
   let said = ''
-  if (share > ceiling) {
-    said = `${name} costs ${share.toFixed(2)}% of the run, past the ` +
+  if (cheapest > ceiling) {
+    said = `${name} costs ${cheapest.toFixed(2)}% of the run, past the ` +
       `${ceiling}% that test/scaling.test.js allows it`
-  } else if (named && ceiling > SLACK * share) {
-    said = `${name} costs only ${share.toFixed(2)}% of the run where it is ` +
-      `allowed ${ceiling}%, so the entry has stopped being a bar and wants ` +
+  } else if (named && ceiling > SLACK * dearest) {
+    said = `${name} costs at most ${dearest.toFixed(2)}% of the run where it ` +
+      `is allowed ${ceiling}%, so the entry has stopped being a bar and wants ` +
       `tightening`
   }
   return said
