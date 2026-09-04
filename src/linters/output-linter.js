@@ -3,6 +3,62 @@
  * SPDX-License-Identifier: MIT
  */
 
+/*
+ * `not-using-output` was a per-file selector — `[xsl:template and
+ * not(xsl:output)]` — and an `xsl:output` is not a per-file fact. It merges
+ * into the sheet that imports it and governs the whole import tree, so a main
+ * module that pushes its serialization into a shared `_output.xsl` was
+ * reported for missing what it had, and the module holding it was reported by
+ * `stylesheet-has-no-templates` for holding nothing else. One decomposition,
+ * punished at both ends, and the one `too-many-templates` recommends (#548,
+ * #494).
+ *
+ * The question needs the graph, so the check moved to the code stage and the
+ * YAML kept only its severity and message. `graphOf` yields an edge only where
+ * the target is in the corpus, which is half of what #468's guardrail asks;
+ * the other half is that an href leaving the linted set means *external,
+ * assume fine*. Both are the same rule read from either side — never invent a
+ * defect out of what we were not handed — so linting one file of a project
+ * cannot report what linting all of them does not. Reachability is transitive,
+ * an `xsl:output` three imports down governing as surely as one directly
+ * imported, and it is not directional either: a tree serializes together, so
+ * the module holding the only templates is answered by the sheet importing it
+ * as much as by the ones it imports. Saxon over a `main.xsl` declaring
+ * `method="text"` and a `_lib.xsl` declaring nothing emits text, where
+ * `_lib.xsl` alone emits XML. So the question is the tree's rather than the
+ * file's, and a module is quiet when any tree holding it declares an output or
+ * reaches outside. Downward alone answers the smaller half: DocBook-XSL's 178
+ * reports fall to 143 that way and to 19 with both directions, TEI's 159 to
+ * 112 and then to 14, DITA-OT's 118 to 95. What survives is what should —
+ * `anttools/xspec/coverage-report.xsl` is a `match="/"` with no `xsl:output`
+ * that nobody imports.
+ *
+ * Ten *decisions* carry it, `rooted` being two and `outward` two, and mutating
+ * each says what pins it: seven redden a single pack, `supplying` four, and
+ * the file's own place in its own reach five. Read coarsely — `rooted` one
+ * decision and `outward` one — it is four that redden a single pack. Neither
+ * reading is the other's, so a count here is stated with the decomposition it
+ * was taken under, a sentence claiming five having been true under neither.
+ *
+ * One decision no pack defeats. The namespace half of `rooted` fires only on a
+ * root *named* stylesheet or transform outside the XSLT namespace while
+ * holding XSLT children, which is no stylesheet at all, and it stays: a
+ * local-name test standing without its namespace is the shape this repository
+ * refuses everywhere else. Two the first spelling carried are gone, for two
+ * different reasons. `!holds(xsl, 'output')` beside the report was redundant
+ * against every input there is, a file holding one being in `supplying` and so
+ * settled through its own reach before the conjunct is read. `rooted` inside
+ * `supplying` fired only on a root that is neither stylesheet nor transform
+ * yet holds a top-level `xsl:output` — an `xsl:package`, where it was wrong, a
+ * package's output governing the modules it imports as any other does, or a
+ * shape XSLT refuses; 842 corpus stylesheets hold neither. So one went for
+ * deciding nothing, one for deciding wrongly, and the third stays for deciding
+ * rightly where nothing valid reaches it. What `rooted` decides whole is the
+ * file judged, and the package is that live case: reached by
+ * `xsl:use-package`, an edge this linter does not follow, so judging one
+ * invents a defect out of a tree nobody handed us — #468 once more.
+ */
+
 const {graphOf, importsOf} = require('../import-graph')
 const {logger} = require('../logger')
 const {metaOf, suppressed} = require('../checks')

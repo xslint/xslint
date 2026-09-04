@@ -52,14 +52,14 @@ three platforms and two node versions, and `corpora`, which times a real run
 
 The suite comes in two halves, and the line between them is a child process. A
 **deep** test starts one — it runs `xslint` or `xcop` the way a user does — and
-is named `*.deep.test.js`; every other test stays in this process. Six files
-are deep, and they still cost most of what the suite costs: 678 of the 2976
-tests, 9 of the 14 seconds. The other 2298 finish inside one, which is why
+is named `*.deep.test.js`; every other test stays in this process. Seven files
+are deep, and they still cost most of what the suite costs: 682 of the 3009
+tests, 9 of the 14 seconds. The other 2327 finish inside one, which is why
 `npm run fast` is the loop to work in and `npm test` the one to finish on. The
-deep target runs under `mocha --parallel`, so those six files run at once and
+deep target runs under `mocha --parallel`, so those seven files run at once and
 the slowest of them sets the clock — `xslint.deep.test.js` alone, whose 52 tests
 each try the CLI with different arguments and so cannot share a process the way
-the other five now do. Another, `walk.deep.test.js`, starts node rather than
+the other six now do. Another, `walk.deep.test.js`, starts node rather than
 `xslint`: it walks a wide directory in a process given the smallest JavaScript
 stack node will start with, because the crash of #758 needs a spread wider than
 the stack carries and scaling the stack down is what puts that within half a
@@ -223,7 +223,7 @@ before: 268 descriptions in 65 files stood past that bar, the dearest of them
 142 lines, so a derivation grew wherever one was written the way the cross-file
 linter's cost grew before #755 (#832). The bar is not a licence to respell what
 a block cannot hold as a `/* */` beside it either — such prose is cut and not
-moved, the dearest chain of guides standing at 0.93 of `LOADED` and reddening
+moved, the dearest chain of guides standing at 0.91 of `LOADED` and reddening
 well under it, so a guide is no place to put it either and the ticket number
 left standing in the surviving sentence is what keeps a derivation
 recoverable.
@@ -973,6 +973,7 @@ one of them.
 | `src/version.js` | `what` and `when`, rewritten by the `.rultor.yml` release pipeline |
 | `scripts/generate-docs.js` | Builds the `docs/` site from checks + motives |
 | `scripts/generate-checks.js` | Builds `src/resources/checks.json` from the check YAML (`npx grunt checks`) |
+| `scripts/audit.js` | Judges what `npm audit` read for the nightly job: an advisory, a clean tree, or a registry that answered nothing |
 | `scripts/budget.js` | Judges what a corpus cost the nightly tier against its budget, from both sides |
 | `scripts/snapshot.js` | Judges what a corpus drew against the report committed beside it, and rewrites that report on `--write` |
 | `test/conformance.test.js` | Enforces naming, motives, selector hygiene, the retirement of the `mature` flag, the suite's own shape, and the length a guide states of the file the line cap is lifted off |
