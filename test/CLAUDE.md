@@ -306,7 +306,10 @@ the `SPRAWLING` pattern one property over, and it turns red from both sides: pas
 far under it that `SLACK` (four, for the same runner's sake) says the ceiling has stopped being a
 bar and wants retightening. Growth is asked only of the stages with no entry, since an entry pins
 what a stage costs outright, which is the stronger statement; those nineteen read 0.47 to 1.24,
-against a `GROWTH` bar of 3.0 and the 4.0 a stage that had gone quadratic would read.
+against a `GROWTH` bar of 3.0 and the 4.0 a stage that had gone quadratic would read. #877 leaves 18
+where it stands: an attribute value walked beside every text node costs `xsl-validator` 1.09 of what
+it did, dearest judged reading 12.40% against 11.35% over ten of master, so the entry is 1.45 of it
+— under the band, which is the safe side.
 
 Three stages arrived at #788, and the corpus was armed for each in the same change: an `xsl:element`
 with a static name, an `xsl:output` beside an `html` the root template builds, and an
@@ -482,8 +485,8 @@ and rechecked by nothing since.
 A snapshot is `test/resources/corpora/<name>.txt`, one line per defect: the file relative to the
 corpus root, the line, the column, the check, and where the defect is fixable the tier and the
 replacement. The relative path is what keeps the runner's own checkout directory out of the file.
-The replacement is there because half of what a run says is in it — 1818 of DocBook-XSL's 3624
-lines, 3504 of TEI's 5514 and 457 of DITA-OT's 1192 carry one as this lands — so a fixer that
+The replacement is there because half of what a run says is in it — 1909 of DocBook-XSL's 3753
+lines, 3504 of TEI's 5514 and 457 of DITA-OT's 1194 carry one as this lands — so a fixer that
 began writing something else while its detections held would move nothing a detection-only record
 could see, and `--fix` is the one thing here that edits a user's files. No count is quoted as a
 bar: the file **is** the expectation, exactly, so a figure repeated here would rot at the first
@@ -502,7 +505,7 @@ the workflow clean; 45 tests across `snapshot`, `budget` and `workflows` hold th
 and the step to each other — 39 of them in this process and 6 in the two deep halves, which run each
 script the way the shell does, since the exit code is the whole of what arms either judge and a
 verdict returned to nobody leaves the tier as unable to fail as #785 found it; the step's own shell,
-replayed over a real DITA-OT clone at its pinned commit, reads `linted=190`, `found=1192` and
+replayed over a real DITA-OT clone at its pinned commit, reads `linted=190`, `found=1194` and
 `judged=0`; and the same replay over a *mutated* copy of this tree exits 1 with an annotation naming
 a detection that had gone and the replacements that had been rewritten, ending `, and 33 more` —
 `SHOWN` being ten, gains before losses, since a report that has moved wholesale must say so in one
@@ -673,14 +676,14 @@ the dearest single guide instead, which is a whole directory short: it read 130,
 that 0.87 of the bar while a turn touching `src/linters/` was loading 157,504 and over it. So the
 two dearest notes moved one step further down, out of `src/CLAUDE.md` and into the top of
 `src/grammar.js` and `src/syntax.js` — 24,681 characters. What a turn touching `test/` loads has
-overtaken it since, and the dearest chain is that same one at 139,214, which is 0.93. What answers
+overtaken it since, and the dearest chain is that same one at 139,482, which is 0.93. What answers
 a chain reaching the bar is that move again, a module's derivation into the file-header note of the
 module itself, and never a bar widened to fit what has grown past it: a docblock holds five lines
 of description since #832, so prose that has outgrown a
 guide does not simply move into one instead. A `CEILING` of half the bar stood beside it until it
 was seen to be a gate no tree could fail: the root stands in every chain, so the chain holding it
-above weighs each other guide against the bar less what stands over it — 28,862 for
-`src/linters/CLAUDE.md`, where half of the bar is 75,000 — and holds the root itself to 82,379, a
+above weighs each other guide against the bar less what stands over it — 27,185 for
+`src/linters/CLAUDE.md`, where half of the bar is 75,000 — and holds the root itself to 82,121, a
 number derived from the dearest chain rather than chosen. A gate no tree can fail is removed and
 not kept (#750, #660). All four of those figures — the chain, its ratio, and the two allowances —
 follow from three file sizes, so one guide growing moves every one of them, and none of them
@@ -725,7 +728,7 @@ and `corpus-linter.js` out of `src/linters/CLAUDE.md`, and `scaling.test.js`, `p
 one. A tenth was refused by the valve rather than chosen against: `test/conformance.test.js` stands
 at 926 lines and its note is 150 more, and `max-lines` counts comments, so a section can outgrow the
 file it is about and relief has a floor — what answers that one is the note being cut, not moved.
-What that leaves is 786 characters of headroom, off a chain that is this file's own rather than
+What that leaves is 518 characters of headroom, off a chain that is this file's own rather than
 `src/linters/`: six of those nine came out of this one, and the note #855 added went back in. It is
 a fifth figure of the same class as the four, and the one that proves the point twice over — it
 stood outside the table and drifted 418 behind the rows in it with every one of them green, so it

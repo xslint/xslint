@@ -7,7 +7,7 @@ const fs = require('fs')
 const path = require('path')
 const {DOMParser} = require('@xmldom/xmldom')
 const {GAP} = require('./tokens')
-const {offsetAt, placeAt} = require('./source')
+const {NAMED, parted, offsetAt, placeAt} = require('./source')
 const {walked} = require('./tree')
 
 /**
@@ -79,22 +79,32 @@ const expand = function(node, entities) {
 }
 
 /**
- * XML parser for the given source. Its error handler raises on any well-
- * formedness problem the parser reports, the recoverable ones included, so a
- * not-well-formed document never parses: the level is not consulted,
- * `@xmldom/xmldom` grading an unquoted attribute a `warning` and then
- * repairing it (#574). An entity the document is entitled to is the exception.
- * @param {string} str - XML source the parser will read
- * @param {Map.<string, string>} declared - Entities declared inline
+ * Every complaint `@xmldom/xmldom` raises about an entity reference, none of
+ * which it repairs. Its pre-scan reads a name as `\w+`, narrower than XML's
+ * `Name`, so a well declared `&sc.name;` earns the second of these — and it
+ * resolves no entity for us either way, so whether a reference is legal is
+ * `forbidden`'s question rather than its (#877).
+ * @type {Array.<string>}
+ */
+const ENTITIES = [
+  'entity not found:',
+  'EntityRef: expecting ;',
+  'entity not matching Reference production:',
+]
+
+/**
+ * XML parser. Its error handler raises on any well-formedness problem the
+ * parser reports, the recoverable ones included, so a not-well-formed document
+ * never parses: the level is not consulted, `@xmldom/xmldom` grading an
+ * unquoted attribute a `warning` and then repairing it (#574). An entity
+ * complaint is the exception, `ENTITIES` saying why.
  * @return {DOMParser} - Configured parser
  */
-const parserFor = function(str, declared) {
-  const loose = external(str)
+const parserFor = function() {
   return new DOMParser({
     onError: (level, message) => {
       const text = message.trim()
-      const missing = text.match(/^entity not found:&(.+?);/)
-      if (!missing || !(loose || declared.has(missing[1]))) {
+      if (!ENTITIES.some((one) => text.startsWith(one))) {
         throw new Error(text)
       }
     },
@@ -139,14 +149,14 @@ const fromFile = function(type, fromString) {
 }
 
 /**
- * A reference as it must be spelled where one opens: a named entity, a decimal
- * character reference, or a hexadecimal one. Character data admits an `&` only
- * here, so an `&` this does not match at is a well-formedness error. Whether
- * the name is *declared* is the parser's question, and a `&primary;` from an
- * external subset is a reference.
+ * A reference as it must be spelled where one opens: a named entity, whose
+ * name is captured, a decimal character reference, or a hexadecimal one. An
+ * `&` may stand nowhere else, so one this does not match at is a well-
+ * formedness error, and a name it captures is one the document must reach an
+ * entity by.
  * @type {RegExp}
  */
-const OPENS = /^&(?:#[0-9]+|#x[0-9A-Fa-f]+|[A-Za-z_][\w.-]*);/
+const OPENS = /^&(?:#[0-9]+|#x[0-9A-Fa-f]+|([A-Za-z_][\w.-]*));/
 
 /**
  * The one string XML reserves outright: `]]>` marks the end of a CDATA section
@@ -170,28 +180,73 @@ const complaint = function(str, at, what, why) {
 }
 
 /**
- * The complaint the first sequence character data must not hold earns, or an
- * empty string when it holds neither. There are two, and `@xmldom/xmldom`
- * accepts both silently: a bare `&`, rewritten to `&amp;` (#574), and a `]]>`
- * closing no section (#691). The data is reached through the tree, both being
- * legal in a comment.
+ * Whether the document reaches an entity of that name: one of XML's five
+ * predefined ones, one its internal subset declares, or any name at all where
+ * an external subset nobody read is in play.
+ * @param {string} name - The name a reference spells
+ * @param {Map.<string, string>} entities - Entities declared inline
+ * @param {boolean} loose - Whether an external subset is in play
+ * @return {boolean} - True when a reference by that name resolves
+ */
+const entitled = function(name, entities, loose) {
+  return loose || entities.has(name) || Object.hasOwn(NAMED, name)
+}
+
+/**
+ * The complaint the sequence standing at that offset earns, or an empty string
+ * when it earns none. `@xmldom/xmldom` lets three stand: a bare `&`, which it
+ * rewrites to `&amp;` (#574), a reference to an entity nothing declares, and a
+ * `]]>` closing no section (#691) — that last one content's alone, an
+ * attribute value holding one legally, not being character data.
  * @param {string} str - XML source
- * @param {Document} doc - The document the parser built from it
+ * @param {number} at - Offset to weigh
+ * @param {boolean} data - Whether the run is character data
+ * @param {function(string): boolean} reaches - Whether a name resolves
  * @return {string} - The complaint, or an empty string when there is none
  */
-const forbidden = function(str, doc) {
+const amiss = function(str, at, data, reaches) {
+  let found = ''
+  if (str[at] === '&') {
+    const opens = OPENS.exec(str.slice(at))
+    if (!opens) {
+      found = complaint(
+        str, at, 'ampersand', 'opens no entity or character reference')
+    } else if (opens[1] && !reaches(opens[1])) {
+      found = complaint(
+        str, at, `entity "${opens[1]}"`,
+        'is declared nowhere this document reaches')
+    }
+  } else if (data && str.startsWith(CLOSE, at)) {
+    found = complaint(
+      str, at, `"${CLOSE}"`, 'closes a CDATA section that never opened')
+  }
+  return found
+}
+
+/**
+ * The complaint the first sequence a document must not hold earns, or an empty
+ * string when it holds none. The runs are reached through the tree rather than
+ * scanned out of the source: an `&` is text inside a CDATA section and legal
+ * in a comment, a `]]>` closes the one and stands legally in the other, and an
+ * attribute value is neither (#691, #877).
+ * @param {string} str - XML source
+ * @param {Document} doc - The document the parser built from it
+ * @param {function(string): boolean} reaches - Whether a name resolves
+ * @return {string} - The complaint, or an empty string when there is none
+ */
+const forbidden = function(str, doc, reaches) {
   let found = ''
   for (const node of walked(doc)) {
-    if (!found && node.nodeType === 3) {
-      let at = offsetAt(str, node.lineNumber, node.columnNumber)
-      while (!found && at < str.length && str[at] !== '<') {
-        if (str[at] === '&' && !OPENS.test(str.slice(at))) {
-          found = complaint(
-            str, at, 'ampersand', 'opens no entity or character reference')
-        } else if (str.startsWith(CLOSE, at)) {
-          found = complaint(
-            str, at, `"${CLOSE}"`, 'closes a CDATA section that never opened')
-        }
+    if (!found && (node.nodeType === 2 || node.nodeType === 3)) {
+      const opening = offsetAt(str, node.lineNumber, node.columnNumber)
+      let stop = '<'
+      let at = opening
+      if (node.nodeType === 2) {
+        stop = str[opening]
+        at = opening + 1
+      }
+      while (!found && at < str.length && str[at] !== stop) {
+        found = amiss(str, at, node.nodeType === 3, reaches)
         at += 1
       }
     }
@@ -200,15 +255,19 @@ const forbidden = function(str, doc) {
 }
 
 /**
- * Parse XML from string.
+ * Parse XML from string. A byte order mark the text opens with is held aside
+ * rather than parsed, `parted` saying why.
  * @param {string} str - XML as string
  * @return {Document} - Parsed XML as Document
  */
 const xmlFromString = function(str) {
-  const entities = declaredEntities(str)
+  const {text} = parted(str)
+  const entities = declaredEntities(text)
+  const loose = external(text)
   try {
-    const doc = parserFor(str, entities).parseFromString(str, 'text/xml')
-    const refused = forbidden(str, doc)
+    const doc = parserFor().parseFromString(text, 'text/xml')
+    const refused = forbidden(
+      text, doc, (name) => entitled(name, entities, loose))
     if (refused) {
       throw new Error(refused)
     }
@@ -218,7 +277,7 @@ const xmlFromString = function(str) {
     return doc
   } catch (err) {
     throw new Error(
-      `Couldn't parse XML:\n${str}\n\nCause: ${err.message}`, {cause: err},
+      `Couldn't parse XML:\n${text}\n\nCause: ${err.message}`, {cause: err},
     )
   }
 }

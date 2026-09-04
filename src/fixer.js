@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {character, offsetAt} = require('./source')
+const {character, offsetAt, parted} = require('./source')
 const {logger} = require('./logger')
 
 /**
@@ -71,7 +71,8 @@ const disjoint = function(edits) {
  * names a position already worked out against the raw text, so the fixer goes
  * straight there and matches `value` decoding as it goes. A fix whose source
  * no longer decodes, or that overlaps an accepted one, is skipped.
- * @param {Array.<{file: string, content: string}>} sources - Original sources
+ * @param {Array.<{file: string, content: string}>} sources - The original
+ *  sources as they were read, a byte order mark `parted` off and written back
  * @param {Array.<{file: string, fix: {line: number, col: number, value: string,
  *  replacement: string, suggestion: boolean}}>} defects - Defects; only those
  *  carrying a `fix` are fixed (`offset` defaults to 0)
@@ -86,7 +87,9 @@ const fixed = function(sources, defects, suggestions = false) {
   )
   const contents = new Map()
   const applied = []
-  for (const {file, content} of sources) {
+  for (const source of sources) {
+    const {file} = source
+    const {mark, text: content} = parted(source.content)
     const edits = disjoint(
       fixable
         .filter((defect) => defect.file === file)
@@ -117,7 +120,7 @@ const fixed = function(sources, defects, suggestions = false) {
           text.slice(end)
         applied.push(defect)
       }
-      contents.set(file, text)
+      contents.set(file, mark + text)
     }
   }
   return {contents: contents, applied: applied}
