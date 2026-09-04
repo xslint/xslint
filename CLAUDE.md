@@ -114,7 +114,9 @@ that entry lifts `diff` and `serialize-javascript` to the majors mocha 12 ships
 with — every version mocha 11's own ranges admit is an advisory, and its one
 call into each is unchanged in 12 — grunt's `js-yaml` to 4, whose `safeLoad`
 grunt calls only in a `readYAML` nothing here calls, 3.x never having been
-patched, and `typed-rest-client`'s exact `qs` up one patch. The two majors
+patched, and `typed-rest-client`'s exact `qs` up a minor — a floor and not a
+pin, the range two advisories cover having since reached the patch #841 first
+lifted it to (#870). The two majors
 are spelled at the top level rather than under `mocha`, because npm 11.12
 honours a range scoped under `grunt` or `grunt-mocha-cli` and drops the
 same range scoped under `mocha`. `daily.yml` runs `npm audit` in a job of its

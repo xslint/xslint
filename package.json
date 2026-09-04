@@ -70,7 +70,7 @@
     },
     "serialize-javascript": "^7.1.0",
     "typed-rest-client": {
-      "qs": "^6.15.3"
+      "qs": "^6.16.0"
     }
   }
 }
