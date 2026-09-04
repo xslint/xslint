@@ -688,11 +688,16 @@ and the merge behind the wildcard phase breached it again by 162 with neither br
 crossed it alone either — the same arithmetic a second time, which is what a shared budget does
 to two branches that each measured themselves alone. What answered it was the move again, on the
 dearest note this guide holds rather than on the newest, or a change's own note where that change
-fires it: the nightly tier's derivation stands at the top of `test/budget.test.js` since, 8,423
+fires it: the nightly tier's derivation stands at the top of `test/budget.test.js` since, 6,579
 characters out of every chain through `test/` and none out of the one that is dearest without it.
-It is a fifth figure of the same class as the four, and the one that proves the point twice over —
-it stood outside the table and drifted 418 behind the rows in it with every one of them green, so
-it has a row of its own since #856.
+That is what the chain carries less of against what it carried before the move, and not what the
+note weighs where it landed — a move out of a guide and into a docblock pays the comment prefixes
+and the reflow both, where the guide-to-guide move above is one number for either reading. The
+headroom is one of the same class, the fifth of them and the one that proves the point twice over —
+it stood outside the table and drifted 418 behind the rows in it with every one of them green, so it
+has a row of its own since #856, and the relief has one beside it since this phase — a live figure
+in the very paragraph about a live figure drifting being the one thing that cannot stand outside the
+table.
 The index answers to the tree from both sides, every path it names existing and every module under
 `src/` being named by a row — the twenty-one linters by one of them, the `*` standing for a name and
 never for a directory — and a note answers to the index and to its own directory both, so a

@@ -186,10 +186,21 @@ const carries = function(claim, text) {
 }
 
 /**
+ * What a turn through `test/` loaded before that guide's nightly-tier note left
+ * it for the top of `test/budget.test.js`, which is what the relief it states
+ * is read against — the chain's own delta, and not what the note weighs where
+ * it landed, a move out of a guide and into a docblock paying the comment
+ * prefixes and the reflow both (#844, #856).
+ * @type {number}
+ */
+const CARRIED = 139947
+
+/**
  * Every figure a guide states about the chain: the phrase carrying it, every
  * file expected to carry that phrase, and what the tree makes of its captures.
- * All five follow from three file sizes, so one guide growing moves the lot,
- * and the bar stays quiet until 140,000 — which is why they drift (#750, #825).
+ * Five follow from three file sizes and the sixth from one of those against a
+ * reading taken before a move, so one guide growing moves the lot, and the bar
+ * stays quiet until 140,000 — which is why they drift (#750, #825).
  * @type {Array.<{claim: RegExp, carriers: Array.<string>,
  *  truth: function(): Array.<string>}>}
  */
@@ -226,6 +237,15 @@ const DERIVED = [
     ),
     carriers: ['test/CLAUDE.md'],
     truth: () => [thousands(LOADED - ROOM - dearest())],
+  },
+  {
+    claim: new RegExp(
+      `([\\d,]*\\d)${GAP}+characters out of every chain through${GAP}+` +
+        '`test/`',
+      'g',
+    ),
+    carriers: ['test/CLAUDE.md'],
+    truth: () => [thousands(CARRIED - loaded('test/CLAUDE.md'))],
   },
 ]
 

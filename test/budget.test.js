@@ -105,6 +105,20 @@
  * dearest — TEI's window closes at 9487 and not 11312, DITA-OT's at 4747 and
  * not 5272 — and only DocBook-XSL's spread leaves it slack.
  *
+ * A later six did not displace that set, and why is what makes the table a
+ * record rather than a snapshot. #811's wildcard phase takes 6.7, 2.8 and
+ * 2.6% off the three corpora, where one tree's own six readings span 1.68,
+ * 1.47 and 1.78 — 3204 to 5389 over DocBook-XSL, 3525 to 5174 over TEI, 1453
+ * to 2586 over DITA-OT — so the runner disagrees with itself by an order more
+ * than a cut of this size moves, and a fresh set joins the record rather than
+ * replacing it. One reading moved: DocBook-XSL's cheapest, 3296 down to 3204,
+ * which closes its window at 10680 rather than 10918 and so puts the cap in
+ * front of twice the dearest there too. Its middle is 9352, so the budget
+ * stays 9500, quiet now on a night 1.35 times faster than the cheapest rather
+ * than 1.39. Merging the two sets is safe because the ratchet polices it: a
+ * record a real halving has left behind is a budget standing over four times
+ * the cheapest, which is the side `scripts/budget.js` fails from.
+ *
  * That margin is the bar the tick used to stand in for. `MARGIN` in
  * `test/budget.test.js` asks each budget to stay quiet on a night 1.2 times
  * faster than the cheapest on record — the geometric middle of the 1.00 the
@@ -151,23 +165,23 @@ const WORKFLOW = path.resolve(
 const CORPORA = yaml.parsedFromFile(WORKFLOW).jobs.lint.strategy.matrix.include
 
 /**
- * The dearest milliseconds each corpus has read on the runner the nightly tier
- * runs on, over six runs dispatched on the tree #872 left and the night that
- * ran one merge behind it. A budget answers to this and not to a developer
- * machine, a share cancelling a machine's speed where a wall clock carries it,
- * and each stands at the middle of the window its own two ends leave (#811).
+ * The dearest milliseconds each corpus has read on the runner, over the six
+ * runs #811's wildcard phase dispatched and the six before them, one tree's
+ * own spread being an order above what a cut moves. A budget answers to this
+ * and not to a developer machine, a share cancelling a machine's speed where
+ * a wall clock carries it, and each stands at the middle of its window (#811).
  * @type {{[name: string]: number}}
  */
 const RUNS = {docbook: 5459, tei: 5656, ditaot: 2636}
 
 /**
- * The cheapest of those same readings, which is the side a ratchet can turn red
+ * The cheapest of that record, which is the side a ratchet can turn red
  * from. A budget of `SLACK` times a reading fires on everything below a quarter
  * of it, so one must stand above the dearest night and leave `MARGIN` under the
  * cheapest, or a fast night reddens a tree nobody has touched (#827, #811).
  * @type {{[name: string]: number}}
  */
-const CHEAPEST = {docbook: 3296, tei: 2846, ditaot: 1424}
+const CHEAPEST = {docbook: 3204, tei: 2846, ditaot: 1424}
 
 /**
  * What a verdict has to say about a reading, one row per side of the window and
