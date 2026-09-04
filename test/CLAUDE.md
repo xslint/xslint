@@ -715,14 +715,14 @@ the dearest single guide instead, which is a whole directory short: it read 130,
 that 0.87 of the bar while a turn touching `src/linters/` was loading 157,504 and over it. So the
 two dearest notes moved one step further down, out of `src/CLAUDE.md` and into the top of
 `src/grammar.js` and `src/syntax.js` — 24,681 characters. A turn touching `test/` has run it
-close ever since, and the dearest reads 139,947, which is 0.93. What answers a chain reaching the
+close ever since, and the dearest reads 139,966, which is 0.93. What answers a chain reaching the
 bar is that move again, a module's derivation into the file-header note of the module itself, and
 never a bar widened to fit what has grown past it: a docblock holds five lines of description
 since #832, so prose that has outgrown a guide does not simply move into one instead. A `CEILING`
 of half the bar stood beside it until it
 was seen to be a gate no tree could fail: the root stands in every chain, so the chain holding it
 above weighs each other guide against the bar less what stands over it — 26,492 for
-`src/linters/CLAUDE.md`, where half of the bar is 75,000 — and holds the root itself to 78,304, a
+`src/linters/CLAUDE.md`, where half of the bar is 75,000 — and holds the root itself to 78,285, a
 number derived from the dearest chain rather than chosen. A gate no tree can fail is removed and
 not kept (#750, #660). All four of those figures — the chain, its ratio, and the two allowances —
 follow from three file sizes, so one guide growing moves every one of them, and none of them
@@ -768,7 +768,7 @@ and `corpus-linter.js` out of `src/linters/CLAUDE.md`, and `scaling.test.js`, `p
 one. A tenth was refused by the valve rather than chosen against: `test/conformance.test.js` stands
 at 926 lines and its note is 150 more, and `max-lines` counts comments, so a section can outgrow the
 file it is about and relief has a floor — what answers that one is the note being cut, not moved.
-What that leaves is 53 characters of headroom, off a chain that is this file's own again rather
+What that leaves is 34 characters of headroom, off a chain that is this file's own again rather
 than `src/linters/`'s, the budget re-cut above being written here: the merge behind #811's bracket
 phase breached the bar by 844 with neither branch having crossed it alone, and the root's
 `src/xslint.js` derivation moved into `src/CLAUDE.md` to answer it — 2,147 characters out of every
@@ -784,13 +784,13 @@ derivation the root has stopped pointing at turns red, and so does one standing 
 needs it will never load it. `test/guides.js` is the walk itself rather than a list of the five,
 since a guide left off a hand-written list would take its claims out of every gate at once, and the
 reading of a claim stands beside the walk: `worded` flattening a wrapped paragraph into one line,
-`DOCUMENTS` naming the guides and the README together, `NEARBY` bounding how far past a name a
-number may stand and still be a claim about it. Both gates ask it, so a count relocated into a guide
-is judged where it went, and so is the length a guide states of the file the line cap is lifted off,
-which is `test/conformance.test.js`'s to ask beside the cap it is an exemption from. The counts came
-the other way at that same sitting: `ATTRIBUTES` and `PATTERNS` are held to the lists in the code
-from here now, the file that held them having reached the 1000 lines it caps every other file at
-(#825).
+`DOCUMENTS` naming the guides, the README and the release notes together, `NEARBY` bounding how
+far past a name a number may stand and still be a claim about it. Both gates ask it, so a count
+relocated into a guide is judged where it went, and so is the length a guide states of the file
+the line cap is lifted off, which is `test/conformance.test.js`'s to ask beside the cap it is an
+exemption from. The counts came the other way at that same sitting: `ATTRIBUTES` and `PATTERNS`
+are held to the lists in the code from here now, the file that held them having reached the 1000
+lines it caps every other file at (#825).
 
 ## `test/strictness.js`
 

@@ -56,9 +56,23 @@ const unindexed = function() {
 }
 
 /**
- * Each list as a document may name it, paired with what it holds. `NAMED` is
- * `ATTRIBUTES` as a set, so it counts to the same and answers to a claim about
- * either name.
+ * The XSLT elements one check's selector names, off the selector itself rather
+ * than off a list written beside it, so prose counting them answers to what the
+ * check reads. A union arm names a subset — the missing-attribute arm of this
+ * one names fewer, `xsl:with-param` going to a check of its own — so what is
+ * counted is the names the whole selector holds (#838).
+ * @param {string} check - Name of the check, as its own YAML spells it
+ * @return {number} - How many XSLT elements it names
+ */
+const elements = function(check) {
+  return new Set(kinds.xpath[check].xpath.match(/xsl:[a-z-]+/g)).size
+}
+
+/**
+ * Each list as a document may name it, paired with what it holds — a constant
+ * of ours, or a check, whose list is the elements its own selector names.
+ * `NAMED` is `ATTRIBUTES` as a set, so it counts to the same and answers to a
+ * claim about either name.
  * @type {Map.<string, number>}
  */
 const LENGTHS = new Map([
@@ -66,6 +80,7 @@ const LENGTHS = new Map([
   ['PATTERNS', PATTERNS.length],
   ['NAMED', ATTRIBUTES.length],
   ['UNINDEXED', unindexed()],
+  ['missing-or-empty-name', elements('missing-or-empty-name')],
 ])
 
 /**
@@ -224,7 +239,8 @@ describe('guides', function() {
       `(${[...LENGTHS.keys()].join('|')})(?=(.{0,${NEARBY}}))`, 'g',
     )
     const counted = new RegExp(
-      `([a-z-]+)${GAP}+(?:names|attributes|descendant scans|selectors)`,
+      `([a-z-]+)${GAP}+` +
+        '(?:names|attributes|descendant scans|selectors|XSLT elements)',
     )
     for (const file of DOCUMENTS) {
       for (const [, list, after] of worded(file).matchAll(near)) {

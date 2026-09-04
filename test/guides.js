@@ -76,21 +76,21 @@ const worded = function(named) {
 }
 
 /**
- * The documents a claim of ours may stand in: every guide the tree holds and
- * the README the user reads, walked rather than written down, so a claim that
- * moves out of the root is judged where it went and one written into a guide
- * nobody listed is judged nowhere. Each is read where its prose *names* what
- * it counts, reading one whole having judged four claims of fifteen (#821).
+ * The documents a claim of ours may stand in: every guide the tree holds, the
+ * README the user reads, and the notes a release cuts from, which nothing read
+ * until one of them miscounted a list a check names. Each is read where its
+ * prose *names* what it counts, so a claim that moves out of the root is judged
+ * where it went and one written where nobody looks is judged nowhere (#821).
  * @type {Array.<string>}
  */
-const DOCUMENTS = GUIDES.concat(['README.md'])
+const DOCUMENTS = GUIDES.concat(['README.md', 'CHANGELOG.md'])
 
 /**
  * How far past the name of a thing a number may stand and still be a claim
- * about it, a list and a file alike: one clause, the three claims in the tree
- * standing 3, 12 and 2 characters off their name, where a number further away
- * than this belongs to a sentence about something else — which is the whole
- * of what anchoring buys.
+ * about it, a list and a file alike: one clause, the five claims in the tree
+ * standing 3 to 39 characters off their name, so the bar is about twice the
+ * dearest of them, where a number further away belongs to a sentence about
+ * something else — which is the whole of what anchoring buys.
  * @type {number}
  */
 const NEARBY = 80
@@ -100,7 +100,7 @@ const NEARBY = 80
  * than one of ours: Claude Code warns past 150,000 characters of them. What
  * arrives against it is a chain and not a pair — the root guide, and the
  * guide of every directory down to the file a turn touches, each injected
- * once — and the dearest reads 139,947, which is 0.93 (#750, #660, #825).
+ * once — and the dearest reads 139,966, which is 0.93 (#750, #660, #825).
  * @type {number}
  */
 const LOADED = 150000

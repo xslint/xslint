@@ -15,7 +15,7 @@ publication date only; detailed notes begin with the Unreleased section.
   with it (#559).
 
 - **Breaking:** rename `variable-or-param-without-name` to
-  `missing-or-empty-name` and widen it to all eleven XSLT elements that take
+  `missing-or-empty-name` and widen it to all twelve XSLT elements that take
   an `@name`, an empty value counting as a missing one; add
   `missing-or-empty-href` beside it for an `xsl:import` or `xsl:include`
   written without one, which used to crash the run (#838, #597).
