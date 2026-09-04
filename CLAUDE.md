@@ -109,9 +109,9 @@ them — is derived at the top of `test/manifest.test.js`.
 Speed is machine-enforced like every other convention here, and it was the one
 that was not: the cross-file linter went quadratic and reached master with
 eighteen jobs green, at 52% to 72% of the whole run over the three corpora the
-README advertises (#755, #756). Two tiers hold it now, and the evidence under
-every bar either of them stands on is in `test/CLAUDE.md`, beside
-`test/scaling.test.js`, `test/import-linter.test.js` and `scripts/budget.js`.
+README advertises (#755, #756). Two tiers hold it now, each beside its gate: `test/CLAUDE.md` for
+`test/scaling.test.js` and `test/import-linter.test.js`, and the top of
+`test/budget.test.js` for the nightly one.
 
 `test/scaling.test.js` is the per-pull-request tier. It charges every stage its
 own **processor time** — `process.cpuUsage`, never the wall clock, which charges
@@ -129,8 +129,8 @@ of thirty-eight going quadratic: every check of a stage owning several answers
 to `COST` at 3%, and `COSTS` names the three that legitimately cost more,
 `name-starts-with-numeric` at 7%, `text-outside-xsl-text` at 8% and
 `too-many-templates` at 4%. `corpora.yml` is the nightly tier, timing
-DocBook-XSL, TEI and DITA-OT at pinned commits against a budget of 13, 13 and 6
-seconds, and asserting what it read rather than only how long it took —
+DocBook-XSL, TEI and DITA-OT at pinned commits against a budget of 9.5, 9 and
+4.5 seconds, and asserting what it read rather than only how long it took —
 including every defect it drew since #638, diffed by `scripts/snapshot.js`
 against a report committed per corpus, since a check that changes what it
 reports over a real stylesheet is a change nothing else here notices. What a
