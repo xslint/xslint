@@ -109,22 +109,31 @@
  * `COST` stands between two measured distributions, which is where a bar
  * with a defect to catch goes. Un-serving `//(xsl:for-each | xsl:if)` in
  * `splitOf` — one arm of `empty-content-in-instructions` and nothing else
- * about the check — takes it from 1.59% to 3.56% over six runs to 5.80% to
- * 10.45% over nine, so the middle is the geometric one at 4.54 and the bar
- * is 5. With that arm unserved the gate fails three of three, at 5.90%,
- * 6.26% and 6.00%, and passes four of four with it back. It is a ratchet
- * like every table here: an entry of 30 over a 4.18% reading fails for
- * having stopped being a bar.
+ * about the check — takes it from 1.65% to 1.84% to 4.81% to 6.11% over
+ * six interleaved rounds a side, so the middle is the geometric one at
+ * 2.97 and the bar is 3. Both distributions are read the way the gate
+ * reads one, the warm-up discarded and the lowest of three attempts
+ * judged, which is the whole of why the first cut of this bar was wrong:
+ * off single attempts the same probe reads 3.56% against 5.80% and the
+ * middle lands at 4.54, where a second machine's judged minima put the
+ * unserved side as low as 4.32% and a bar of 5 inside it. With that arm
+ * unserved the gate fails four of four, and passes four of four with it
+ * back. It is a ratchet like every table here: an entry of 20 over a
+ * 4.55% reading fails for having stopped being a bar.
  *
- * The two entries answer the other rule, neither having a second
- * distribution to leave room for. `name-starts-with-numeric` reads 4.89%
- * at its dearest over ten runs, so half again to twice puts it at 8; it
- * asks an XSD regex of every candidate, which the walk cannot answer
- * without taking a second opinion about regex dialects.
- * `text-outside-xsl-text` reads 6.50% and takes 10; it opens on a wildcard,
- * and the one bucket that could serve it was measured slower — 88% of
- * DocBook-XSL's elements stand in the XSLT namespace, so the check read
- * 244 ms where the sweep read 236.
+ * The three entries answer the other rule, none having a second
+ * distribution to leave room for, and each is judged the same way over the
+ * same twelve rounds. `name-starts-with-numeric` reads 4.03% at its
+ * dearest, so half again to twice puts it at 7; it asks an XSD regex of
+ * every candidate, which the walk cannot answer without taking a second
+ * opinion about regex dialects. `text-outside-xsl-text` reads 4.55% and
+ * takes 8; it opens on a wildcard, and the one bucket that could serve it
+ * was measured slower — 88% of DocBook-XSL's elements stand in the XSLT
+ * namespace, so the check read 244 ms where the sweep read 236.
+ * `too-many-templates` reads 2.09% and takes 4; it is one of `UNINDEXED`'s
+ * five, anchored on the root and spending everything it costs inside a
+ * predicate that descends the tree, so a bar of 3 stood 1.43 times over a
+ * check nobody had touched.
  *
  * `SHADOWED` is the one place the sweep is knowingly wrong, and it is
  * wrong upward. `--suppress` matches by substring, so a check whose name
@@ -184,26 +193,27 @@ const SHARE = 7
 
 /**
  * The checks that legitimately cost more of a run than the rest, the way
- * `SHARES` names the three dear stages. `name-starts-with-numeric` asks an XSD
- * regex of every candidate, which the walk cannot answer without taking a
- * second opinion about regex dialects; `text-outside-xsl-text` opens on a
- * wildcard, and serving one off a namespace bucket was measured slower (#811).
+ * `SHARES` names the three dear stages: an XSD regex asked of every candidate,
+ * a selector opening on a wildcard, and one anchored on the root that spends
+ * everything it costs inside a predicate descending the tree. What each reads,
+ * and what puts its entry where it stands, is in the note above (#811).
  * @type {{[check: string]: number}}
  */
 const COSTS = {
-  'name-starts-with-numeric': 8,
-  'text-outside-xsl-text': 10,
+  'name-starts-with-numeric': 7,
+  'text-outside-xsl-text': 8,
+  'too-many-templates': 4,
 }
 
 /**
  * What percentage of the run one check of a stage owning several may spend.
  * This one stands between two measured distributions rather than under one: a
- * check the walk stops serving reads 5.80% at its cheapest where the dearest
- * served reading is 3.56%. A check whose stage owns it alone is that stage and
+ * check the walk stops serving reads 4.32% at its cheapest where the dearest
+ * served reading is 1.84%. A check whose stage owns it alone is that stage and
  * answers to `SHARE` already (#811).
  * @type {number}
  */
-const COST = 5
+const COST = 3
 
 /**
  * The checks a sibling of their own stage rides along with. `--suppress`

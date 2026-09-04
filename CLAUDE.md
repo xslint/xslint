@@ -120,15 +120,15 @@ builds at 40 stylesheets and again at 160, and asks two questions of each: what
 percentage of the whole run it cost, and how it grew beside the middle stage's
 growth. Both are quotients taken inside one process, which is what cancels the
 machine. `SHARES` names the three stages that legitimately cost more of a run
-than the rest — `xpath-linter` at 39%, `xpath-validator` at 26%,
-`xsl-validator` at 18% — and every other stage answers to one bar, `SHARE` at
-7%; growth is asked only of the stages with no entry, against `GROWTH` at 3.0,
-since an entry pins what a stage costs outright and that is the stronger
-statement. The same pair stands one level down since #811, a stage's share
-being blind to one check of thirty-eight going quadratic: every check of a
-stage owning several answers to `COST` at 5%, and `COSTS` names the two that
-legitimately cost more, `name-starts-with-numeric` at 8% and
-`text-outside-xsl-text` at 10%. `corpora.yml` is the nightly tier, timing
+than the rest — `xpath-linter` at 39%, `xpath-validator` at 26%, `xsl-validator`
+at 18% — and every other stage answers to one bar, `SHARE` at 7%; growth is
+asked only of the stages with no entry, against `GROWTH` at 3.0, since an entry
+pins what a stage costs outright and that is the stronger statement. The same
+pair stands one level down since #811, a stage's share being blind to one check
+of thirty-eight going quadratic: every check of a stage owning several answers
+to `COST` at 3%, and `COSTS` names the three that legitimately cost more,
+`name-starts-with-numeric` at 7%, `text-outside-xsl-text` at 8% and
+`too-many-templates` at 4%. `corpora.yml` is the nightly tier, timing
 DocBook-XSL, TEI and DITA-OT at pinned commits against a budget of 13, 13 and 6
 seconds, and asserting what it read rather than only how long it took —
 including every defect it drew since #638, diffed by `scripts/snapshot.js`
