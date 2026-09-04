@@ -2,5 +2,5 @@
 # SPDX-License-Identifier: MIT
 ---
 xpath: (/xsl:stylesheet | /xsl:transform)[not(xsl:*)]
-severity: error
+severity: warning
 message: The stylesheet declares nothing at all, so it contributes nothing to a transformation. Add a declaration, or delete the file.

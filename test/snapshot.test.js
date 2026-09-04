@@ -4,6 +4,7 @@
  */
 
 const {lined, verdict, SHOWN} = require('../scripts/snapshot')
+const {kinds} = require('../src/resources/checks.json')
 const {yaml} = require('../src/helpers')
 const path = require('path')
 const fs = require('fs')
@@ -151,6 +152,60 @@ const CASES = [
   },
 ]
 
+/**
+ * How every check is graded, as a run reads it: the severity `checks.json`
+ * holds against the name, whichever of the four kinds carries the entry.
+ * @type {Map.<string, string>}
+ */
+const GRADED = new Map(
+  Object.values(kinds).flatMap(
+    (checks) => Object.entries(checks).map(
+      ([name, one]) => [name, one.severity],
+    ),
+  ),
+)
+
+/**
+ * The checks the corpora draw at `error`, each beside the fault that leaves
+ * the module unloadable: an error stops a build, so one fires over
+ * DocBook-XSL, TEI or DITA-OT only where a processor refuses the file as well
+ * (#499, #876).
+ * @type {{[key: string]: string}}
+ */
+const REFUSED = {
+  'malformed-stylesheet':
+    'not well-formed XML, so no parser reaches a tree through it',
+  'mode-or-priority-without-match':
+    'XTSE0500, a mode or a priority on a template with nothing to match',
+  'duplicate-param-name':
+    'XTSE0580, two parameters of one template sharing a name',
+  'function-use-in-xslt-1':
+    'an xsl:function in a sheet whose declared version has none, which a ' +
+      'conformant processor of that version rejects',
+  'modern-construct-in-xslt-1':
+    'a 2.0 instruction in a sheet declared 1.0, where forwards-compatible ' +
+      'processing is off and the same refusal follows',
+}
+
+/**
+ * The checks one snapshot draws at anything but `warning`, each once. A name
+ * the grading does not know counts as one of them rather than being dropped,
+ * so a line this parse misreads fails the gate instead of leaving a hole in
+ * it.
+ * @param {string} corpus - Name of the corpus, as the matrix spells it
+ * @return {Array.<string>} - The names it draws
+ */
+const erring = function(corpus) {
+  return Array.from(
+    new Set(
+      fs.readFileSync(path.join(SNAPSHOTS, `${corpus}.txt`), 'utf-8')
+        .split('\n').filter((line) => line.length > 0)
+        .map((line) => line.split(' ')[1])
+        .filter((name) => GRADED.get(name) !== 'warning'),
+    ),
+  )
+}
+
 describe('snapshot', function() {
   LINES.forEach((row) => {
     it(row.name, function() {
@@ -200,6 +255,17 @@ describe('snapshot', function() {
       [],
       'a snapshot stands under test/resources/corpora that no corpus of the ' +
         'nightly tier is read against, so nothing regenerates it',
+    )
+  })
+  it('grades an error only where a processor refuses the file too', function() {
+    assert.deepEqual(
+      Array.from(
+        new Set(CORPORA.flatMap((one) => erring(one.name))),
+      ).sort(),
+      Object.keys(REFUSED).sort(),
+      'the error-graded checks the corpora draw are not the ones REFUSED ' +
+        'names, so either a build stops over a stylesheet no processor ' +
+        'faults or an entry has outlived what justified it',
     )
   })
   it('diffs each corpus through the script the workflow calls', function() {
