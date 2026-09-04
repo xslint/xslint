@@ -59,6 +59,15 @@ const QUALIFIED =
   /^(?:([\p{L}_][\p{L}\p{N}\p{M}_.-]*):)?([\p{L}_][\p{L}\p{N}\p{M}_.-]*)$/u
 
 /**
+ * A prefixed wildcard, the one shape past `QUALIFIED` an axis may still bucket:
+ * every element of one namespace, which is every bucket the walk holds under
+ * that URI rather than one. A bare `*` is refused, naming no namespace to
+ * gather from and so narrowing nothing (#811).
+ * @type {RegExp}
+ */
+const WIDE = /^([\p{L}_][\p{L}\p{N}\p{M}_.-]*):\*$/u
+
+/**
  * The top-level predicates a tail holds, or none at all where it is not a chain
  * of them — a step behind the brackets reaches past what the axis answered. A
  * quote carries its own brackets — `contains(@match, '[')` is one predicate
@@ -196,6 +205,26 @@ const namespaced = function(prefix) {
 }
 
 /**
+ * The bucket one name on an axis reads, or undefined where it is a shape an
+ * index cannot bucket. A prefixed wildcard names every bucket its namespace
+ * holds rather than one, which is what `EVERY` stands for here and what
+ * `gathered` reads it as.
+ * @param {string} spelled - One name as the selector spells it
+ * @return {?{uri: string, local: string}} - The bucket, or undefined
+ */
+const bucket = function(spelled) {
+  const hit = QUALIFIED.exec(spelled)
+  const wide = WIDE.exec(spelled)
+  let answer = undefined
+  if (hit !== null && namespaced(hit[1]) !== '') {
+    answer = {uri: namespaced(hit[1]), local: hit[2]}
+  } else if (wide !== null && namespaced(wide[1]) !== '') {
+    answer = {uri: namespaced(wide[1]), local: EVERY}
+  }
+  return answer
+}
+
+/**
  * The names one axis yields, or an empty list where any of them is a shape an
  * index cannot bucket.
  * @param {string} listed - The names as the selector spells them
@@ -205,15 +234,11 @@ const bucketed = function(listed) {
   const names = []
   let sound = true
   for (const spelled of listed.split('|').map((one) => one.trim())) {
-    const hit = QUALIFIED.exec(spelled)
-    let uri = ''
-    if (hit !== null) {
-      uri = namespaced(hit[1])
-    }
-    if (uri === '') {
+    const name = bucket(spelled)
+    if (name === undefined) {
       sound = false
     } else {
-      names.push({uri: uri, local: hit[2]})
+      names.push(name)
     }
   }
   let answer = []
@@ -549,9 +574,9 @@ const marks = function(node, name) {
 /**
  * The nodes an axis answers, before any predicate narrows them: every
  * attribute of the document where no name stands in front of one, that walk
- * filtered where a name does and no element is asked for, otherwise the
- * elements of each bucket merged by document-order rank — which is what a union
- * needs — and then the named attribute of each.
+ * filtered where a name does and no element is asked for, otherwise every
+ * bucket's elements merged by rank and taken once apiece — which a union and
+ * a wildcard both need — and then the named attribute of each.
  * @param {Document} xsl - Parsed stylesheet
  * @param {object} split - One branch of what `splitOf` made of the selector
  * @return {Array.<Node>} - What the axis yields, in document order
@@ -564,7 +589,9 @@ const axised = function(xsl, split) {
       (name) => buckets.get(`${name.uri} ${name.local}`) ?? [],
     )
     if (split.names.length > 1) {
-      found.sort((one, two) => rank.get(one) - rank.get(two))
+      found = Array.from(new Set(found)).sort(
+        (one, two) => rank.get(one) - rank.get(two),
+      )
     }
     if (split.attributes.length > 0) {
       found = found.flatMap((node) => Array.from(node.attributes).filter(

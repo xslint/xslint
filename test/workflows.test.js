@@ -55,6 +55,21 @@
  * What no gate covers is the write itself. Nothing in CI POSTs anything,
  * so a token's scope is asserted where it is declared and not where it is
  * used.
+ *
+ * Granting the scope only bought the reporter the right to file, and what
+ * it files is one issue per **label** rather than one per failure: the
+ * action lists the open issues carrying its `label-name` and comments on
+ * the newest instead of opening another. Both nightlies took the default,
+ * `build failed`, so whichever of the two failed first owned that label
+ * and every later failure of *either* — a slowed corpus, a broken audit,
+ * a platform gone red — arrived as a comment under it. One issue, two
+ * schedules, and no way to close the one without losing the other's
+ * thread (#884). So each names a label of its own, and the gate asks
+ * twice: that a job running the reporter names one at all, the default
+ * being what pooled them, and that no two name the same. Both halves
+ * matter, since a third nightly copying the block would pool with
+ * whichever it copied and neither the scope gates above nor a yamllint
+ * pass says a word about it.
  */
 
 const {allFilesFrom, yaml} = require('../src/helpers')
@@ -69,6 +84,14 @@ const assert = require('assert')
 const WORKFLOWS = path.resolve(__dirname, '..', '.github', 'workflows')
 
 /**
+ * The action either nightly reports its own failure through, which files one
+ * issue per label rather than one per failure — so the label is what decides
+ * whether two schedules keep two threads or share one (#884).
+ * @type {string}
+ */
+const REPORTER = 'jayqi/failed-build-issue-action'
+
+/**
  * Each action that writes to this repository rather than reading it, against
  * the scope GitHub's own token needs before it can. A token is granted `read`
  * unless a workflow says otherwise, so such an action either carries a
@@ -77,7 +100,7 @@ const WORKFLOWS = path.resolve(__dirname, '..', '.github', 'workflows')
  * @type {{[action: string]: string}}
  */
 const WRITES = {
-  'jayqi/failed-build-issue-action': 'issues',
+  [REPORTER]: 'issues',
   'maxonfjvipon/deps-sentinel-action': 'pull-requests',
 }
 
@@ -117,9 +140,9 @@ const granting = function(workflow, job) {
 
 /**
  * Every job of every workflow, each knowing where it stands, which actions its
- * steps run and what it may write. A permission is granted to a job and needed
- * by a step, so neither half answers on its own.
- * @type {Array.<{where: string, uses: Array.<string>,
+ * steps run, what it may write and which label it reports under. A permission
+ * is granted to a job and needed by a step, so neither half answers on its own.
+ * @type {Array.<{where: string, uses: Array.<string>, labels: Array.<string>,
  *   granted: function(string): string}>}
  */
 const JOBS = allFilesFrom(WORKFLOWS)
@@ -132,9 +155,19 @@ const JOBS = allFilesFrom(WORKFLOWS)
         .map((step) => step.uses)
         .filter((action) => action !== undefined)
         .map((action) => action.split('@')[0]),
+      labels: (entry[1].steps ?? [])
+        .filter((step) => (step.uses ?? '').split('@')[0] === REPORTER)
+        .map((step) => (step.with ?? {})['label-name'] ?? ''),
       granted: granting(workflow, entry[1]),
     }))
   })
+
+/**
+ * Every label a reporting job files under, the empty string standing for a job
+ * that named none and so took the action's own default with every other.
+ * @type {Array.<string>}
+ */
+const LABELS = JOBS.flatMap((job) => job.labels)
 
 describe('workflows', function() {
   it('grants every job the scope its own steps write with', function() {
@@ -157,6 +190,29 @@ describe('workflows', function() {
       'a job narrows itself to a block naming nothing about a scope one of ' +
         'its own steps reads with, so a step that asked for nothing loses ' +
         'what a job declaring no block at all would have been granted',
+    )
+  })
+  it('names the label every reporting job files its own issue under',
+    function() {
+      assert.deepEqual(
+        JOBS.filter((job) => job.labels.includes('')).map((job) => job.where),
+        [],
+        'a job reports its own failure under whatever label the action ' +
+          'defaults to, and the action comments on the newest open issue ' +
+          'carrying that label rather than opening one, so this schedule ' +
+          'files under whatever else took the default first',
+      )
+    })
+  it('leaves no two reporting jobs filing under one label', function() {
+    assert.deepEqual(
+      JOBS.filter((job) => job.labels.some(
+        (label) => LABELS.indexOf(label) !== LABELS.lastIndexOf(label),
+      )).map((job) => job.where),
+      [],
+      'two jobs report their failures under one label, so the second to ' +
+        'fail comments on the first one\'s issue and two schedules keep one ' +
+        'thread between them — which cannot be closed for either without ' +
+        'losing the other',
     )
   })
   it('holds no action the tree has stopped running', function() {

@@ -25,11 +25,14 @@
  * are spelled at the top level rather than under `mocha`, because npm
  * 11.12 honours a range scoped under `grunt` or `grunt-mocha-cli` and
  * drops the same range scoped under `mocha`. `daily.yml` runs `npm audit`
- * in a job of its own beside the six cells that run the suite, so the next
- * advisory files an issue by morning without taking a platform's test
- * result down with it — an advisory this project waits on upstream to
- * patch would otherwise leave Windows unmeasured for as long as the wait
- * lasts, and six identical audits say one thing.
+ * in a job of its own beside the six cells that run the suite, so an
+ * advisory this project waits on upstream to patch does not take a
+ * platform's test result down with it for as long as the wait lasts, and
+ * six identical audits say one thing. What that job could not do was say
+ * which of the two it had read: `npm audit` exits 1 on a registry 503 as
+ * readily as on an advisory, so the issue it filed named neither the
+ * packages nor the outage. `scripts/audit.js` judges the JSON now, and
+ * `scripts/CLAUDE.md` carries that derivation (#884).
  *
  * It is that ticket one tool over, in the same file and for the same reason:
  * `grunt-eslint` 26 depends on `eslint ^9.22.0`, so npm nested a 9.39.4 under

@@ -1,0 +1,7 @@
+{
+  "message": "request to https://registry.npmjs.invalid/-/npm/v1/security/advisories/bulk failed, reason: getaddrinfo ENOTFOUND registry.npmjs.invalid",
+  "error": {
+    "summary": "",
+    "detail": ""
+  }
+}
