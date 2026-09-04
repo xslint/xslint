@@ -100,7 +100,7 @@ const NEARBY = 80
  * than one of ours: Claude Code warns past 150,000 characters of them. What
  * arrives against it is a chain and not a pair — the root guide, and the
  * guide of every directory down to the file a turn touches, each injected
- * once — and the dearest reads 136,706, which is 0.91 (#750, #660, #825).
+ * once — and the dearest reads 136,758, which is 0.91 (#750, #660, #825).
  * @type {number}
  */
 const LOADED = 150000
@@ -186,10 +186,21 @@ const carries = function(claim, text) {
 }
 
 /**
- * Every figure this tree states about the chain: the phrase carrying it, every
+ * What a turn through `test/` loaded before that guide's nightly-tier note left
+ * it for the top of `test/budget.test.js`, which is what the relief it states
+ * is read against — the chain's own delta, and not what the note weighs where
+ * it landed, a move out of a guide and into a docblock paying the comment
+ * prefixes and the reflow both (#844, #856).
+ * @type {number}
+ */
+const CARRIED = 139947
+
+/**
+ * Every figure a guide states about the chain: the phrase carrying it, every
  * file expected to carry that phrase, and what the tree makes of its captures.
- * All five follow from three file sizes, so one guide growing moves the lot,
- * and the bar stays quiet until 140,000 — which is why they drift (#750, #825).
+ * Five follow from three file sizes and the sixth from one of those against a
+ * reading taken before a move, so one guide growing moves the lot, and the bar
+ * stays quiet until 140,000 — which is why they drift (#750, #825).
  * @type {Array.<{claim: RegExp, carriers: Array.<string>,
  *  truth: function(): Array.<string>}>}
  */
@@ -200,7 +211,7 @@ const DERIVED = [
         '+which is (0[.]\\d\\d)',
       'g',
     ),
-    carriers: ['test/guides.test.js', 'test/guides.js'],
+    carriers: ['test/CLAUDE.md', 'test/guides.js'],
     truth: () => [thousands(dearest()), (dearest() / LOADED).toFixed(2)],
   },
   {
@@ -212,20 +223,29 @@ const DERIVED = [
   },
   {
     claim: new RegExp('([\\d,]*\\d) for `src/linters/CLAUDE[.]md`', 'g'),
-    carriers: ['test/guides.test.js'],
+    carriers: ['test/CLAUDE.md'],
     truth: () => [thousands(allowed('src/linters/CLAUDE.md'))],
   },
   {
     claim: new RegExp(`holds the root itself to ([\\d,]*\\d)`, 'g'),
-    carriers: ['test/guides.test.js'],
+    carriers: ['test/CLAUDE.md'],
     truth: () => [thousands(LOADED - (dearest() - sized('CLAUDE.md')))],
   },
   {
     claim: new RegExp(
       `What that leaves is ([\\d,]*\\d) characters of${GAP}+headroom`, 'g',
     ),
-    carriers: ['test/guides.test.js'],
+    carriers: ['test/CLAUDE.md'],
     truth: () => [thousands(LOADED - ROOM - dearest())],
+  },
+  {
+    claim: new RegExp(
+      `([\\d,]*\\d)${GAP}+characters out of every chain through${GAP}+` +
+        '`test/`',
+      'g',
+    ),
+    carriers: ['test/CLAUDE.md'],
+    truth: () => [thousands(CARRIED - loaded('test/CLAUDE.md'))],
   },
 ]
 

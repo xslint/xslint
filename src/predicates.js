@@ -12,21 +12,21 @@
  * call per candidate over 144,427 of them, about 7.3 us each for questions a
  * property read answers in tens of nanoseconds. Serving an axis *without*
  * its predicate is a loss, which is what sizes the phase:
- * `text-outside-xsl-text` reads 206-219 ms whole from the engine, 233-239
- * with the walk's axis and the tail asked per candidate, and 27-28 with the
- * predicate answered here.
+ * `text-outside-xsl-text` reads 239-258 ms whole from the engine, 262-299
+ * with the walk's axis and the tail asked per candidate, and 156-172 with
+ * the `local-name()` half of its predicate answered here.
  *
  * The compile is off the parse and never the text, kept against the text, so
- * each of the 48 distinct predicates in the tree is compiled once a run; 39
+ * each of the 51 distinct predicates in the tree is compiled once a run; 41
  * of them are. What refuses is as deliberate as what serves — a regex, whose
- * XPath flavour is not JavaScript's; the `text()` composite whose meaning
- * `xml:space` decides; a conditional; an absolute path, which asks the
- * document rather than the candidate; an unprefixed element name, the
- * refusal `bucketed` already makes. **Over-acceptance is a wrong report**
- * where under-acceptance is only the engine call it was, so every branch
- * narrows rather than guesses and a comparison serves two numbers on any
- * sign but strings on `=` alone, a negated existential being the shape
- * easiest to answer wrongly.
+ * XPath flavour is not JavaScript's; `text()[normalize-space()]`, which the
+ * engine reads wider than XPath does (#881); a conditional; an absolute
+ * path, which asks the document rather than the candidate; an unprefixed
+ * element name, the refusal `bucketed` already makes. **Over-acceptance is
+ * a wrong report** where under-acceptance is only the engine call it was,
+ * so every branch narrows rather than guesses and a comparison serves two
+ * numbers on any sign but strings on `=` alone, a negated existential being
+ * the shape easiest to answer wrongly.
  *
  * Three of those narrowings were bought by review, and each is a JavaScript
  * built-in whose notion is not XPath's — the genre of #643's `\s`.
@@ -43,7 +43,7 @@
  * of its whole subtree, so a comparison reading one off a step answered
  * `undefined` against every element there is; `carrying` refuses a step in
  * a value position unless it names the attribute axis, which costs nothing
- * the tree spells — 39 of the 48 compile either way.
+ * the tree spells — 41 of the 51 compile either way.
  *
  * None of the three was the oracle's fault and all three were its blind
  * spot: `CANDIDATES` asks the engine what a spelling selects, so what it
@@ -469,8 +469,9 @@ const stepped = function(tokens, node, under = undefined) {
 /**
  * The strings an operand of a comparison carries, or undefined where it is
  * outside the vocabulary. A bare attribute step answers the values it selects,
- * empty where it selects nothing, and `normalize-space` of one answers a single
- * string, empty where the attribute is absent — XPath's two different answers.
+ * empty where it selects nothing, `normalize-space` of one answers a single
+ * string, empty where the attribute is absent — XPath's two different answers
+ * — and `local-name()` answers the one name the candidate itself carries.
  * @param {Array} tokens - The tokens the tree was parsed from
  * @param {object} node - A node standing as one side of a comparison
  * @return {(function(Node): Array.<string>|undefined)} - The strings it
@@ -518,6 +519,9 @@ const worded = function(tokens, node) {
         normalized(selects(context).map((one) => one.value)[0] ?? ''),
       ]
     }
+  } else if (calling(tokens, node, 'local-name') &&
+    node.children.length === 0) {
+    answer = (context) => [context.localName]
   }
   return answer
 }

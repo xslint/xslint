@@ -1,0 +1,39 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+- tail: "[count(*) = 1 and not(text()[normalize-space()])]"
+  served: 1
+  asked: "[not(text()[normalize-space()])]"
+- tail: "[@select and not(node()) and not(text()[normalize-space()])]"
+  served: 1
+  asked: "[not(node())][not(text()[normalize-space()])]"
+- tail: "[not(@select) and not(@_select) and not(node())]"
+  served: 2
+  asked: "[not(node())]"
+- tail: "[not(node()) and @select][count(*) = 1 and not(node())]"
+  served: 2
+  asked: "[not(node())][not(node())]"
+- tail: "[@select and @as]"
+  served: 1
+  asked: ""
+- tail: "[not(node()) and not(comment())]"
+  served: 0
+  asked: "[not(node()) and not(comment())]"
+- tail: "[2 and @select]"
+  served: 0
+  asked: "[2 and @select]"
+- tail: "[count(a) and @select]"
+  served: 0
+  asked: "[count(a) and @select]"
+- tail: "[@select or not(node())]"
+  served: 0
+  asked: "[@select or not(node())]"
+- tail: "[(count(*) = 1) and (count(xsl:if) = 1) and not(text()[normalize-space()])]"
+  served: 2
+  asked: "[not(text()[normalize-space()])]"
+- tail: "[@select and (* or text()[normalize-space()])]"
+  served: 1
+  asked: "[(* or text()[normalize-space()])]"
+- tail: "[(2) and @select]"
+  served: 0
+  asked: "[(2) and @select]"

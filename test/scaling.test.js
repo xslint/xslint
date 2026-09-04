@@ -127,12 +127,15 @@
  * same twelve rounds. `name-starts-with-numeric` reads 4.03% at its
  * dearest, so half again to twice puts it at 7; it asks an XSD regex of
  * every candidate, which the walk cannot answer without taking a second
- * opinion about regex dialects. `text-outside-xsl-text` reads 4.55% and
- * takes 8; it opens on a wildcard, and the one bucket that could serve it
- * was measured slower — 88% of DocBook-XSL's elements stand in the XSLT
- * namespace, so the check read 244 ms where the sweep read 236.
+ * opinion about regex dialects. `text-outside-xsl-text` reads 4.48% and
+ * takes 8; it is served since #811 — its axis off a bucket keyed on the
+ * namespace alone, its `local-name()` clause off the walk — and this
+ * corpus is the one that cannot see what that bought. 78% of its elements
+ * stand in the XSLT namespace and 87% of those outlive the clause, so two
+ * in three still reach the engine and the check reads 42-45 ms either
+ * way; DocBook-XSL, which hands it 55%, reads 156-172 against 239-258.
  * `too-many-templates` reads 2.09% and takes 4; it is one of `UNINDEXED`'s
- * five, anchored on the root and spending everything it costs inside a
+ * four, anchored on the root and spending everything it costs inside a
  * predicate that descends the tree, so a bar of 3 stood 1.43 times over a
  * check nobody had touched.
  *
@@ -206,9 +209,9 @@ const SHARE = 7
 /**
  * The checks that legitimately cost more of a run than the rest, the way
  * `SHARES` names the three dear stages: an XSD regex asked of every candidate,
- * a selector opening on a wildcard, and one anchored on the root that spends
- * everything it costs inside a predicate descending the tree. What each reads,
- * and what puts its entry where it stands, is in the note above (#811).
+ * a served selector this corpus is too uniform for the serving to narrow, and
+ * one anchored on the root that spends everything inside a predicate that
+ * descends the tree. What each reads is in the note above (#811).
  * @type {{[check: string]: number}}
  */
 const COSTS = {
