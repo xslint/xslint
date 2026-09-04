@@ -31,7 +31,32 @@ jobs:
         with:
           node-version: 22
       - run: npm install
-      - run: npm audit
+      - name: Audit the tree, and say which of the two it read
+        run: |
+          set -e
+          judged=2
+          for attempt in 1 2 3; do
+            if [ "$attempt" -gt 1 ]; then
+              echo "::notice::the registry answered nothing, asking again"
+              sleep 20
+            fi
+            npm audit --json > audit.json || true
+            judged=0
+            node scripts/audit.js audit.json || judged=$?
+            if [ "$judged" -ne 2 ]; then
+              break
+            fi
+          done
+          if [ "$judged" -eq 2 ]; then
+            {
+              echo "### npm audit"
+              echo ""
+              echo "The registry answered nothing in three attempts, so this"
+              echo "tree went unaudited tonight."
+            } >> "$GITHUB_STEP_SUMMARY"
+            judged=0
+          fi
+          exit "$judged"
   report-fail:
     name: Create issue on failure
     needs: [ build, audit ]
@@ -43,3 +68,4 @@ jobs:
       - uses: jayqi/failed-build-issue-action@v1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          label-name: daily failed

@@ -10,6 +10,35 @@ Builds the `docs/` site from checks + motives.
 
 Builds `src/resources/checks.json` from the check YAML (`npx grunt checks`).
 
+## `scripts/audit.js`
+
+Judges what `npm audit --json` read, which is three things and not two. npm exits `1` for an
+advisory and for a registry answering 503 alike, so the nightly `audit` job reddened on both and
+the issue it filed named neither. Two consecutive nights showed both: a real `qs` advisory reaching
+us through `typed-rest-client`, and then the registry's own
+`503 Service Unavailable` on a tree nobody had touched, which took the whole nightly red — the
+thing #841 split this job out to avoid (#884). A report is told from what npm printed in its place by
+the keys: `auditReportVersion` beside a `metadata.vulnerabilities` tally is a report, and a
+`verdict` over one names every package and grade, worst first, `SHOWN` of them and then a count,
+since a tally alone names nothing to act on. Otherwise it forks once more, and that third status
+is the whole design rather than a nicety: npm names a fault of *its own* in `error.code` — an
+`ENOLOCK`, a bad flag — and names none for a registry that did not answer, so the first reddens
+and the second is `UNANSWERED`, which the step retries three times and then announces in the job
+summary. Two statuses would have to choose, and either choice is a known disease — an outage
+reddening the night is a red schedule nobody reads, and a *broken* audit forgiven is a tree that
+goes unaudited every night while the job stays green, which is #645 one tier out. Whatever npm
+printed that is no JSON at all reads as the third too, under the key an npm fault carries its
+message in, since a crash says as much about the audit as a refusal does.
+
+`test/audit.test.js` holds each verdict to the sentence it prints, over seven readings a real
+`npm audit --json` wrote rather than any composed here — which keys npm chooses being the whole of
+what this file stands on — and reads the step as data for the `node scripts/audit.js` it calls and
+the `UNANSWERED` it tests, that status being the one number the shell and this file share. The
+step's own retry count and pause stay the step's: a constant exported to be asserted against
+itself is no gate. `test/audit.deep.test.js` runs the file the way the shell does, for `budget.js`'s
+reason, and its `unusable` row is the load-bearing one — it pins that a refused npm reddens rather
+than being forgiven with the outages.
+
 ## `scripts/budget.js`
 
 Judges what a corpus cost the nightly tier against the budget `corpora.yml` gives it, from both

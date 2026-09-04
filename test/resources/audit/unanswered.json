@@ -1,0 +1,33 @@
+{
+  "message": "503 Service Unavailable - POST https://registry.npmjs.org/-/npm/v1/security/advisories/bulk - Service Unavailable",
+  "method": "POST",
+  "uri": "https://registry.npmjs.org/-/npm/v1/security/advisories/bulk",
+  "headers": {
+    "content-type": [
+      "application/json"
+    ],
+    "date": [
+      "Fri, 04 Sep 2026 18:31:34 GMT"
+    ],
+    "connection": [
+      "keep-alive"
+    ],
+    "keep-alive": [
+      "timeout=5"
+    ],
+    "transfer-encoding": [
+      "chunked"
+    ],
+    "x-fetch-attempts": [
+      "1"
+    ]
+  },
+  "statusCode": 503,
+  "body": {
+    "error": "Service Unavailable"
+  },
+  "error": {
+    "summary": "",
+    "detail": ""
+  }
+}
