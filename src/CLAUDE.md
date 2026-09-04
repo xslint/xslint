@@ -83,7 +83,16 @@ reasoning about whitespace cannot see a wrap in the value it holds and has to as
 
 ## `src/source.js`
 
-Raw-text walking shared by `checks` and `fixer`: `offsetAt`, `placeAt`, `character`, `skip`.
+Raw-text walking shared by `checks` and `fixer`: `parted`, `offsetAt`, `placeAt`, `character`,
+`skip`. `parted(str)` holds a **leading** byte order mark aside as `{mark, text}` — never a
+`replace`, U+FEFF anywhere else being a legal ZERO WIDTH NO-BREAK SPACE the stylesheet meant — and
+is one primitive at three doors rather than a strip written wherever a mark was met:
+`xmlFromString`, xmldom throwing a fatal `ParseError` past every handler where a declaration stands
+behind the mark; `lint`, so that no column counts a character the parse did not; and `fixed`, which
+writes the mark back. That middle door is the one a test reaches for on purpose: `offsetAt` walks
+lines from the start of the text, so a mark left in shifts the columns of **line one** alone, and
+what moves there is a fix's `col` and not the reported `pos`, xmldom's own line and column being
+right either way (#877).
 
 ## `src/selectors.js`
 
@@ -261,7 +270,8 @@ version off the record it was handed, which an ESLint selector holds them to (#8
 
 ## `src/tree.js`
 
-`walked(xsl)` — every attribute, text node and CDATA section of a document in document order,
+`walked(xsl)` — every attribute XPath counts (never an `xmlns`), text node and CDATA section of a
+document in document order,
 walked once and remembered against it, because fontoxpath evaluates a descendant step over an
 xmldom tree quadratically (#635). Beside it `holding(node)` answers which element a node hangs off
 — an attribute the element carrying it, a text node its parent, a document its root — which is
@@ -587,7 +597,9 @@ holds, and #718's ban saw only the subtraction it was written for.
 Applies a defect's `fix` to source (decode-walk, verify-before-apply, end-to-start). A line ending
 in the source answers to a space in the fix's `value`, the last normalisation between the two texts,
 without which no fix could reach an expression a line wrap crossed — announced as fixable and then
-refused with "the source no longer matches", naming an edit that never happened (#629).
+refused with "the source no longer matches", naming an edit that never happened (#629). The mark
+`parted` held aside goes back in front of the text it writes, a fix to a file opening with one
+having cost it three bytes otherwise (#877).
 
 ## `src/xpath.js`
 
@@ -616,15 +628,26 @@ own checkout grew to 768,731 files and every run over it died with a `RangeError
 XSL was read, the walk being asked before anything is filtered for `.xsl` (#758). It refuses what
 `@xmldom/xmldom` would repair rather than reject: the level of a diagnostic is not consulted, since
 an attribute written without quotes arrives a mere `warning` and is then invented into a value
-(#574), and `forbidden` walks the text nodes for the two sequences character data may not hold — an
-`&` that opens no reference, which the parser rewrites to `&amp;`, and a `]]>` that closes no
-section, which it keeps as it stands (#691). Both are accepted in silence, at no level. Text nodes
-come from `src/tree.js`'s `walked`, not from a scan of the source, because both are legal in a
-comment and a processing instruction, and inside a CDATA section an `&` is text while a `]]>` is the
-close — a text node cannot be any of the three, so those are excluded by construction rather than by
-finding them, and an attribute value, where `]]>` is legal because it is not content, is outside the
-walk for the same reason. The YAML parser is required inside the function, not at the top: nothing
-on the linting path reads YAML any more, so a run that has no `.xslint.yml` never loads it.
+(#574). Which sequences a document may not hold is `forbidden`'s question rather than the parser's,
+`ENTITIES` naming the three complaints it lets stand: xmldom resolves no entity for us either way,
+and its pre-scan reads a name as `\w+` where XML's `Name` admits a dot, so a DocBook module
+declaring `&sc.name;` in its internal subset and using it correctly earned `entity not found`, six
+of that corpus's stylesheets reported as malformed on it (#877). What stands in their place is
+`entitled`: a name resolves when it is one of XML's five, one the internal subset declares, or
+anything at all where an external subset nobody read is in play. Beside it are the two sequences the
+parser accepts in silence, at no level — an `&` that opens no reference, which it rewrites to
+`&amp;`, and a `]]>` that closes no section, which it keeps as it stands (#691). The runs come from
+the tree and not from a scan of the source, because both are legal in a comment and a processing
+instruction, and inside a CDATA section an `&` is text while a `]]>` is the close — a text node
+cannot be any of the three, so those are excluded by construction rather than by finding them. An
+attribute value is a run too since #877, `strayed` taking the `]]>` rule from its caller: such a
+value is not character data, so it holds a `]]>` legally and a bare `&` no more legally than text
+does. That pass is `forbidden`'s own and not `walked`'s XPath-shaped one, well-formedness being a
+lexical question about every attribute the source spells: borrowing that sequence kept an
+`xmlns:q="urn:x&y"` out of the report and a namespace URI no conformant parser produces in the
+tree. The YAML parser is required
+inside the function, not at the top: nothing on the linting path reads YAML any more, so a run that
+has no `.xslint.yml` never loads it.
 
 ## `src/resources/checks.json`
 

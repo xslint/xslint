@@ -445,6 +445,18 @@ const APPLIED = [
     before: 'a-fix-across-a-line-wrap.xsl',
     after: 'a-fix-across-a-line-wrap.fixed.xsl',
   },
+  {
+    name: 'should keep the byte order mark a file opens with under --fix',
+    flag: '--fix',
+    before: 'a-mark-the-fixer-keeps.xsl',
+    after: 'a-mark-the-fixer-keeps.fixed.xsl',
+  },
+  {
+    name: 'should count no column in the byte order mark under --fix',
+    flag: '--fix',
+    before: 'a-mark-no-column-counts-in.xsl',
+    after: 'a-mark-no-column-counts-in.fixed.xsl',
+  },
 ]
 
 /**

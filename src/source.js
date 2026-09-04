@@ -10,6 +10,29 @@
 const NAMED = {lt: '<', gt: '>', amp: '&', quot: '"', apos: '\''}
 
 /**
+ * The byte order mark, which `parted` holds aside.
+ * @type {string}
+ */
+const MARK = '\uFEFF'
+
+/**
+ * The mark the text opens with, and the text behind it. XML admits a byte order
+ * mark in front of the declaration as a signature of the encoding, so no
+ * position is counted in it and a rewritten file opens on it again rather than
+ * losing three bytes to a tidy-up. Only a leading one: further in, the
+ * character is a legal ZERO WIDTH NO-BREAK SPACE (#877).
+ * @param {string} text - Source text as it was read
+ * @return {{mark: string, text: string}} - The mark, and the text behind it
+ */
+const parted = function(text) {
+  let read = {mark: '', text: text}
+  if (text.startsWith(MARK)) {
+    read = {mark: MARK, text: text.slice(MARK.length)}
+  }
+  return read
+}
+
+/**
  * The three spellings of a line ending XML 1.0 §2.11 recognises, which a parser
  * counts alike when it numbers lines — so a walk that honours only `\n` would
  * disagree with the line a node reports itself on.
@@ -122,6 +145,7 @@ const skip = function(content, at, count) {
 
 module.exports = {
   NAMED,
+  parted,
   offsetAt,
   placeAt,
   character,

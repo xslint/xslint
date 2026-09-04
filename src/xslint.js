@@ -6,6 +6,7 @@
 const path = require('path')
 const fs = require('fs')
 const {allFilesFrom} = require('./helpers')
+const {parted} = require('./source')
 const {validate: validateXsls, names: xslChecks} =
   require('./validators/xsl-validator')
 const {
@@ -278,14 +279,18 @@ const ranked = function(one, two) {
  * wraps and an editor or LSP can call in-process. Each defect carries `{name,
  * severity, message, file, line, pos}` and, when fixable, a `fix`. Inline
  * `xslint-disable` directives are honored.
- * @param {Array.<{file: string, content: string}>} sources - Raw stylesheets
+ * @param {Array.<{file: string, content: string}>} sources - Raw stylesheets,
+ *  each as it was read, a byte order mark it opens with held aside by `parted`
  * @param {{suppress: Array.<string>, overrides: {[check: string]: string}}}
  *  options - Check-name substrings to skip, and per-check severity re-grades
  * @return {Array.<object>} - The defects that survive suppression
  */
 const lint = function(sources, {suppress = [], overrides = {}} = {}) {
   const suppressions = validatedSuppressions(suppress)
-  const {corpus, defects: malformed} = validateXsls(sources, suppressions)
+  const read = sources.map((source) => ({
+    file: source.file, content: parted(source.content).text,
+  }))
+  const {corpus, defects: malformed} = validateXsls(read, suppressions)
   const {expressions, defects: invalid} = validateXpaths(corpus, suppressions)
   const defects = [
     ...malformed,
@@ -299,7 +304,7 @@ const lint = function(sources, {suppress = [], overrides = {}} = {}) {
     }
   }
   const directives = new Map(
-    sources.map((source) => [source.file, directivesFrom(source.content)]),
+    read.map((source) => [source.file, directivesFrom(source.content)]),
   )
   for (const [file, list] of directives) {
     for (const directive of list) {

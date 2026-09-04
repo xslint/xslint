@@ -467,7 +467,8 @@ src/main/plugins/org.dita.pdf2.fop/xsl/fo/topic2fo_shell_fop_template.xsl:9:1 mi
 src/main/plugins/org.dita.pdf2.fop/xsl/fo/topic_fop.xsl:9:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.pdf2.fop/xsl/fo/topic_fop.xsl:9:1 not-using-output
 src/main/plugins/org.dita.pdf2.fop/xsl/fo/topic_fop.xsl:11:5 redundant-namespace-declarations fix ""
-src/main/plugins/org.dita.pdf2/cfg/fo/attrs/basic-settings.xsl:1:1 malformed-stylesheet
+src/main/plugins/org.dita.pdf2/cfg/fo/attrs/basic-settings.xsl:7:1 missing-id-in-stylesheet
+src/main/plugins/org.dita.pdf2/cfg/fo/attrs/basic-settings.xsl:64:3 unused-variable
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/commons-attr.xsl:34:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/commons-attr.xsl:35:5 redundant-namespace-declarations fix ""
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/commons-attr.xsl:36:5 redundant-namespace-declarations fix ""
@@ -639,7 +640,9 @@ src/main/plugins/org.dita.pdf2/xsl/fo/front-matter.xsl:34:1 not-using-output
 src/main/plugins/org.dita.pdf2/xsl/fo/front-matter.xsl:34:1 too-many-templates
 src/main/plugins/org.dita.pdf2/xsl/fo/front-matter.xsl:76:38 select-starts-with-double-slash suggestion ".//"
 src/main/plugins/org.dita.pdf2/xsl/fo/front-matter.xsl:102:33 select-starts-with-double-slash suggestion ".//"
-src/main/plugins/org.dita.pdf2/xsl/fo/glossary.xsl:1:1 malformed-stylesheet
+src/main/plugins/org.dita.pdf2/xsl/fo/glossary.xsl:9:1 missing-id-in-stylesheet
+src/main/plugins/org.dita.pdf2/xsl/fo/glossary.xsl:9:1 not-using-output
+src/main/plugins/org.dita.pdf2/xsl/fo/glossary.xsl:36:51 use-double-slash
 src/main/plugins/org.dita.pdf2/xsl/fo/hazard-d.xsl:6:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.pdf2/xsl/fo/hazard-d.xsl:6:1 not-using-output
 src/main/plugins/org.dita.pdf2/xsl/fo/hi-domain.xsl:34:1 missing-id-in-stylesheet
@@ -771,7 +774,6 @@ src/main/plugins/org.dita.pdf2/xsl/fo/root-processing.xsl:185:5 use-choose-witho
 src/main/plugins/org.dita.pdf2/xsl/fo/static-content.xsl:34:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.pdf2/xsl/fo/static-content.xsl:34:1 not-using-output
 src/main/plugins/org.dita.pdf2/xsl/fo/static-content.xsl:34:1 too-many-templates
-src/main/plugins/org.dita.pdf2/xsl/fo/static-content.xsl:113:5 unused-named-template
 src/main/plugins/org.dita.pdf2/xsl/fo/static-content.xsl:552:5 unused-named-template
 src/main/plugins/org.dita.pdf2/xsl/fo/static-content.xsl:559:5 unused-named-template
 src/main/plugins/org.dita.pdf2/xsl/fo/static-content.xsl:668:5 unused-named-template
