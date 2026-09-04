@@ -109,9 +109,9 @@ them — is derived at the top of `test/manifest.test.js`.
 Speed is machine-enforced like every other convention here, and it was the one
 that was not: the cross-file linter went quadratic and reached master with
 eighteen jobs green, at 52% to 72% of the whole run over the three corpora the
-README advertises (#755, #756). Two tiers hold it now, and the evidence under
-every bar either of them stands on is in `test/CLAUDE.md`, beside
-`test/scaling.test.js`, `test/import-linter.test.js` and `scripts/budget.js`.
+README advertises (#755, #756). Two tiers hold it now, each beside its gate: `test/CLAUDE.md` for
+`test/scaling.test.js` and `test/import-linter.test.js`, and the top of
+`test/budget.test.js` for the nightly one.
 
 `test/scaling.test.js` is the per-pull-request tier. It charges every stage its
 own **processor time** — `process.cpuUsage`, never the wall clock, which charges
@@ -669,28 +669,28 @@ Then run `npx grunt checks`, `npm test`, `npm run coverage`, and
   A union spelled **inside** one sweep is parted arm by arm since that ticket's
   fourth phase, `P//(a | b)[Q]` being `P//a[Q] | P//b[Q]`, so an arm the walk
   cannot reach is asked of the engine alone instead of answering for every arm
-  it can — which is one arm in `modern-construct-in-xslt-1`, whose other nine
-  cost 9 ms over DocBook-XSL against 646 for the ten together.
+  it can — which was one arm in `modern-construct-in-xslt-1` until the prefixed
+  wildcard joined the buckets.
   What a selector spells in **front** of its `//` is served too since #811's
   third phase: `P//X` is every `X` standing below a node `P` chose, so the
   anchor is one question the engine answers for the document and the walk keeps
   the candidates that have one of its answers above them — where the sweep
-  behind it used to cost a traversal for every check spelling one. A wildcard
-  or a predicate that could answer a number — picking one node out of
-  the sequence rather than filtering it — cannot be served, and a selector
-  spelling one of those goes on `UNINDEXED` in `test/conformance.test.js`, the
-  five selectors left, each beside the shape that keeps it out — which is
-  enforced from both sides, so neither a selector that could be served and is
-  listed nor one that is served and unlisted survives (#784). An attribute axis
-  is served since #811, both `//@*` and one named attribute of named elements,
-  so it is no longer a reason to be on that list, and neither is an anchor, nor
-  a union of any spelling, nor one spelled inside brackets a predicate stands
-  outside of; a cross-file check answers to a
-  gate with no list at all, every one of its selectors being served and a fifth
-  belonging in that shape too. What keeps those five out is a descending
-  **predicate** for all but one of them — the axis is the root itself, one
-  node, and everything the selector costs is inside the brackets — and for that
-  one a wildcard, which names no bucket the walk holds.
+  behind it used to cost a traversal for every check spelling one. A **bare**
+  wildcard, naming no namespace to gather from, or a predicate that could answer
+  a number — picking one node out of the sequence rather than filtering it —
+  cannot be served, and a selector spelling one of those goes on `UNINDEXED` in
+  `test/conformance.test.js`, the four selectors left, each beside the shape that
+  keeps it out — which is enforced from both sides, so neither a selector that
+  could be served and is listed nor one that is served and unlisted survives
+  (#784). An attribute axis is served since #811, both `//@*` and one named
+  attribute of named elements, so it is no longer a reason to be on that list,
+  and neither is an anchor, a union of any spelling, one spelled inside brackets
+  a predicate stands outside of, nor a **prefixed** wildcard, `xsl:*` being every
+  bucket the walk holds under that URI rather than one; a cross-file check
+  answers to a gate with no list at all, every one of its selectors being served
+  and a fifth belonging in that shape too. What keeps the four out is one shape
+  in each: a descending **predicate**, the axis being the root itself, one node,
+  and everything the selector costs standing inside the brackets.
 - **Fix in the same change.** If a check is fixable, land the fix with the
   detection — never defer it. A declarative rule gets a `node => fix` builder in
   `src/fixers.js`; a code-based linter attaches the `fix` to its defect. Mark it

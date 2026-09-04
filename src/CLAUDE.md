@@ -99,8 +99,9 @@ right either way (#877).
 `splitOf(xpath)` — a declarative selector parted into the **names** a shared walk can serve as its
 axis and the **tail** the engine must still answer, or no names at all where it can serve nothing
 (#784). One shape is split, `//name` or `//(name | name)` with predicates behind it, because that is
-the shape a walk bucketed by name answers exactly: a wildcard names no one bucket, an attribute axis
-yields no element, and a selector anchored at the root is not a descendant sweep at all. Two
+the shape a walk bucketed by name answers exactly: a bare wildcard names no one bucket, an
+attribute axis yields no element, and a selector anchored at the root is not a descendant sweep
+at all. Two
 refusals are worth knowing. A **positional** predicate cannot be split, `//x[1]` and `//x[last()]`
 asking about the sequence the descendant step produced where a candidate tested on its own is a
 sequence of one. Which predicates those are is `filters` in `src/syntax.js`, read off the **parse**
@@ -125,12 +126,13 @@ name. A wildcard behind an element name is refused with the rest, no selector sp
 order an element's attributes come in being a question the walk answers for a document rather than
 for one element; an unprefixed attribute is not, standing in no namespace by XPath's own rule where
 an unprefixed *element* name is a refusal. That second shape wants **both** halves, and
-only the attribute could refuse until #839: a list bucketing to nothing — a wildcard, or a prefix
-nothing binds — left the names empty beside a real attribute, which `axised` reads as the `//@*`
-case, so `//xsl:*/@name` answered every attribute of `candidates.xsl`, 31 where the engine answers
-16. Either half missing clears the other now. No shipped check spells the shape, so mutation found
-it and the row that pins it asserts the **answer** and not only the refusal. Beside `splitOf` stand
-the two doors onto the served answer, `chosen(xsl, xpath)` and `valued(xsl, xpath)` — the second for
+only the attribute could refuse until #839: a list bucketing to nothing — a bare wildcard, or a
+prefix nothing binds — left the names empty beside a real attribute, which `axised` reads as the
+`//@*` case, so `//*/@name` answered every attribute of `candidates.xsl`, 31 where the engine
+answers 16. Either half missing clears the other now. No shipped check spells the shape, so
+mutation found it and the row that pins it asserts the **answer** and not only the refusal. Beside
+`splitOf` stand the two doors onto the served answer, `chosen(xsl, xpath)` and `valued(xsl, xpath)`
+— the second for
 a usage read as strings, an attribute's string value being the value it holds. They live here rather
 than in a linter because both the per-file and the cross-file kind ask them and no linter may import
 another. The engine is asked inside the branch that needs it rather than as the binding's initial
@@ -187,9 +189,10 @@ would pay over and over for the very traversal the split exists to avoid, and DI
 win at all until the anchor was remembered against its document — 4.4 ms over the whole of
 DocBook-XSL is cheap once and is not cheap ten times. The cost of the old rule was one arm
 answering for the rest:
-`modern-construct-in-xslt-1` unions nine named instructions with an `xsl:*[@as]` no bucket names,
-so all ten went to the engine and the check read 646 ms over DocBook-XSL, where the nine cost 9,
-the wildcard arm 128 and the anchor 11. Over that corpus `xpath-linter` falls 3.62 s to 2.73 and
+`modern-construct-in-xslt-1` unions nine named instructions with an `xsl:*[@as]` no bucket named
+until #811, so all ten went to the engine and the check read 646 ms over DocBook-XSL, where the
+nine cost 9, the wildcard arm 128 and the anchor 11. Over that corpus `xpath-linter` falls 3.62 s
+to 2.73 and
 the staged run 7.02 s to 6.18; TEI and DITA-OT are neutral, that check already
 costing about 10 ms on each. The identity is stated as the method
 rather than as a count, a count being the one half of it that rots: swapping this module alone for

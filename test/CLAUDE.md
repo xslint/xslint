@@ -142,17 +142,17 @@ readings where the band allows no closer than half again, so each is re-derived 
 
 Two things were measured beside it and refused, which is the more useful half of the phase. Serving
 `//xsl:*` off a namespace bucket — the shape the ticket named next, and one line of `src/tree.js` —
-makes the run **slower**: 88% of DocBook-XSL's 66,008 elements stand in the XSLT namespace, so the
-bucket narrows almost nothing and the split trades one sweep for 58,044 predicate calls at 8.4 us
-each. Measured end to end, `text-outside-xsl-text` reads 244 ms where it read 236, and the selector
-alone 490 ms where the sweep costs 318. So serving pays only where the axis **narrows**, and the
-per-candidate call is the tax that says by how much — a rule the ticket's own sizing did not have.
-The same arithmetic re-sizes what is left of it: the dearest unserved check,
-`modern-construct-in-xslt-1` at 631 ms, needs that bucket and two more things before it pays, and
-with all three it reads 10 ms rather than 620 — the nine narrow arms of its union off the walk, and
-its tenth arm's `[@as]` answered by `hasAttribute` rather than by the engine, which is 10 ms against
-the 150 the same union costs with that one predicate asked per candidate. Neither of those is this
-change, and both are measured rather than estimated.
+made the run **slower** on its own: 88% of DocBook-XSL's 66,008 elements stand in the XSLT
+namespace, so the bucket narrows almost nothing and the split traded one sweep for 58,044 predicate
+calls at 8.4 us each. Measured end to end, `text-outside-xsl-text` read 244 ms where it read 236,
+and the selector alone 490 ms where the sweep cost 318. So serving pays only where the axis
+**narrows**, and the per-candidate call is the tax that says by how much — a rule the ticket's own
+sizing did not have. The same arithmetic sized what was left of it: the dearest unserved check,
+`modern-construct-in-xslt-1` at 631 ms, needed that bucket and two more things before it paid.
+
+The bucket landed in #811's wildcard phase, and what lifted the refusal is the second of those
+things and not the first: a predicate the walk answers is what pays the tax the bucket levies. The
+note beside `COSTS` carries what the gate's own corpus still cannot see.
 
 The sixth move is #811's union phase, and it is the first to move the dearest stage by making it
 cheaper rather than by moving what the others are a share of. Three checks are written as a union of
@@ -410,102 +410,10 @@ pass needed a whole measurement discarded in front of it, the way the speed gate
 growth 3.10 to 4.56 over ten runs even so, where a window of sixty-four is warm by its own fourth
 pass and reads 4.34 to 4.66 with no warm-up at all.
 
-The second tier is for what a corpus of our own making cannot show at all. `corpora.yml` runs
-nightly, cloning DocBook-XSL, TEI and DITA-OT **at pinned commits** — a branch tip would drift under
-the numbers — restoring them through `actions/cache`, writing what it found to the job summary, and
-failing past a per-corpus budget so `jayqi/failed-build-issue-action` opens an issue the way
-`daily.yml` does — which neither of them could do until #826, and `test/workflows.test.js` is what
-holds it now. Vendoring those corpora instead is a trap: each carries its own licence, and
-`reuse`, `copyrights` and `xcop` would all have to be told to look away.
-
-That tier asserts **what it read** and not only how long it took, because a budget alone is blind to
-the failure it most wants to catch. It timed `xslint … --quiet || true` at first, so a run that
-linted nothing passed: point it at a path that does not exist and the exit code is *zero*, no code
-distinguishing "found defects" from "died", and the whole of #758 — a walk that crashes before a
-byte of XSL is read — would have stayed green under it. So the step drops `--quiet`, keeps stderr,
-and compares the stylesheets `find` sees on disk against the count the run reports having processed,
-which are the same number or the run did not do its job. Past that it fails on an exit code above 1,
-since neither a clean run nor defects found can produce one, and then on the budget.
-
-The budget is a **ratchet and not a licence**, which is the half that was missing for as long as the
-tier has existed. Cut once when it was written and then left behind by #755, #770, #776, #777, #783
-and #784, the three stood 9, 14 and 18 times what they gated by the time #785 was filed, so nothing
-short of a total collapse could have failed them — #755's own quadratic cost DocBook-XSL 44 s
-against a budget of 180 and would have passed it twice over. So `scripts/budget.js` judges a reading
-from both sides, past the budget and further than `SLACK` (four, as in `test/scaling.test.js` and
-for the same reason) under it, and the step calls it rather than comparing two numbers of its own —
-which `test/budget.test.js` asserts, a ratchet nobody has to route through being one an inline
-comparison quietly replaces. What a budget answers to is a measurement **on the runner**: a share
-cancels a machine's speed where a wall clock carries it, so a developer machine cannot set this bar,
-and the notice each run now prints is where the reading is read off. Six runs of it on the tree #784
-left — one nightly, five dispatched — give 13, 14, 20, 13, 13 and 14 seconds over DocBook-XSL, 9,
-10, 11, 10, 10 and 8 over TEI, and 5, 4, 5, 4, 3 and 5 over DITA-OT, so the runner disagrees with
-itself about one tree by half as much again and the window has to hold a slow night as well as a
-fast one. The budgets were twice the dearest of those — 40, 22 and 10 — which put each budget's own
-quarter at 10, 5.5 and 2.5 seconds and left the ratchet firing at 9, 5 and 2 and under, the clock
-counting in whole seconds. Those three stood below the 13, 8 and 3 their corpora had given, which is
-the property a budget has to hold and not merely a fact about those numbers: `CHEAPEST` in
-`test/budget.test.js` asserts it, since a budget wide enough to fire on a night that has already
-happened reddens a build on a tree nobody has touched.
-
-That ratchet is what spoke next, and it is the first of either tier's to have spoken at all.
-Three changes — #812, #815 and #818 — took a quarter, a fifth and a tenth off the staged run over
-the three corpora, and two nightlies went red on budgets that had stopped being bars: DocBook-XSL
-at 6 seconds against 40, DITA-OT at 2 against 10 (#827). Nine runs on the tree #818 left, two
-nightly and seven dispatched, give 7, 6, 8, 8, 5, 8, 7, 8 and 4 seconds over DocBook-XSL, 5, 8, 8,
-6, 7, 7, 7, 7 and 7 over TEI, and 3, 2, 3, 3, 3, 3, 3, 2 and 3 over DITA-OT. Twice the dearest of
-those is **16, 16 and 6**, whose quarters are 4, 4 and 1.5, so the ratchet fires **at 3, 3 and 1 and
-under** against cheapest nights of 4, 5 and 2. Reverting the matrix to 40, 22 and 10 fails four rows
-of `test/budget.test.js`, three of them `CHEAPEST`'s; a budget under the dearest night fails that
-corpus's ceiling row alone; one tick past the new cut, DocBook-XSL at 21, fails `CHEAPEST` on its
-own, and DITA-OT does at 9.
-
-What is thin is the **clock** rather than the cut, and the ninth of those runs is where that shows.
-It read DocBook-XSL at 4 seconds where the eight before it read 5 to 8, so one corpus spans a factor
-of two on a tree nothing has touched — and since `SLACK` is four, a window can hold a fourfold
-span at most, which leaves that observed spread filling half of it and the ratchet standing one tick
-under the cheapest night rather than two. DITA-OT is the same thing at the clock's own edge: 2 to 3
-seconds where `date +%s` counts in whole ones is a third to a half of the reading in quantisation
-alone, so a bar cut from it is cut partly from noise. Both windows held — [4, 16] and [2, 6] — so
-that cut stood on the clock the tier had, and #827 stands rescoped to the clock itself, the cut
-having closed #826 alone.
-
-`date +%s%3N` is that clock, and the first thing it settles is the spread. Six dispatched runs on
-the tree #849 left spanned 1.48, 1.34 and 1.17 over DocBook-XSL, TEI and DITA-OT rather than the
-factor of two whole seconds reported, since a true 4666 reads as 4 and a true 6923 as 6 and the
-grid widens the pair before anything measures it. Twice the dearest of those readings gave
-**13000, 13000 and 6000**, margins of 1.44, 1.54 and 1.89 under cheapest nights of 4666, 5013
-and 2830.
-
-Serving outgrew that cut. #811 took DocBook-XSL from 5899 to 6923 ms down to 4191 to 5459, and
-DITA-OT from 2830 to 3311 down to 1936 to 2636, so a budget cut at twice the old dearest stands
-over four times the new cheapest, and the ratchet fired on DITA-OT at 1424 against 6000 — the
-first time the loose side of it caught anything in production. Six runs dispatched on the tree #872
-left, and the night one merge behind it, give dearest readings of 5459, 5656 and 2636 against
-cheapest ones of 3296, 2846 and 1424. Each budget is the geometric middle of the window its own two
-ends leave — half again to twice the dearest, capped where `SLACK` times the cheapest over `MARGIN`
-cuts in — which is **9500, 9000 and 4500**, at 1.74, 1.59 and 1.71 times their dearest and leaving
-margins of 1.39, 1.26 and 1.27. The cap is what binds for TEI and DITA-OT rather than twice the
-dearest — TEI's window closes at 9487 and not 11312, DITA-OT's at 4747 and not 5272 — and only
-DocBook-XSL's spread leaves it slack.
-
-That margin is the bar the tick used to stand in for. `MARGIN` in `test/budget.test.js` asks each
-budget to stay quiet on a night 1.2 times faster than the cheapest on record — the geometric middle
-of the 1.00 the whole-second cut recorded and the 1.44 the cut beside it left — and `RESOLUTION`
-asks a tick to stand under 0.019 of what its corpus costs, the middle of DITA-OT's half and its
-1424th. The row those two replace asked for one tick of margin, which a millisecond grid turns into
-a question no tree can fail; and since both are written in ticks, a third row reads the workflow
-for the `date +%s%3N` that makes a tick what `TICK` says it is. On the tree #827 found, all three
-redden — every corpus fails `RESOLUTION`, DocBook-XSL fails `MARGIN`, and the step spells
-`date +%s`.
-
-Three questions #827 parked are answered by that table rather than by a change. A **median of
-several runs** narrows nothing a fourfold window cannot already carry, and would cost the tier a
-clone a night to defend a margin that is 1.26 at its worst. **`SLACK` at four** is a span the
-widest observed spread fills half of, leaving 1.26 under and 1.59 over at their worst, so it holds
-for a wall clock as it does for a share, and a bar raised on nobody's failure is a bar loosened.
-And **DITA-OT** is not too small to gate: at 1424 ms a tick is one part in 1424, and its margin is
-no worse than TEI's. The corpus was never what was too small.
+The second tier is the nightly one, and its derivation stands at the top of `test/budget.test.js`
+rather than here, the tables it is under being that file's: `corpora.yml` times DocBook-XSL, TEI
+and DITA-OT at pinned commits against a budget apiece, and `scripts/budget.js` judges each reading
+from both sides, past the budget and further than `SLACK` under it.
 
 ## Snapshots
 
@@ -580,13 +488,15 @@ pack gives one position per defect it expects, too: the harness walks the `posit
 `amount` standing above their number is a count asserted and a place asserted nowhere — three packs
 of #565's own were written that way and passed, pinning four runs' replacements while saying nothing
 about where any of them stood. It also asks `splitOf` of every `xpath` selector and holds the answer
-to `UNINDEXED`, the five selectors a shared walk cannot serve as an axis, each listed beside the
+to `UNINDEXED`, the four selectors a shared walk cannot serve as an axis, each listed beside the
 shape that keeps it out (#784) — fourteen until #811's union phase served three of them, eleven
 until its anchor phase served three more, eight until its fourth parted the one selector spelling a
-union *inside* a sweep, and six until its fifth served a **named** attribute axis and distributed
+union *inside* a sweep, six until its fifth served a **named** attribute axis and distributed
 the bracket of `malformed-version-in-stylesheet`, whose two arms open on `//@version` and
-`//@xsl:version` and needed both halves in one change: so no union of any spelling, no anchor and
-no attribute is a reason to be on the table any longer. Fifteen was the count before #556 gave
+`//@xsl:version` and needed both halves in one change, and five until its wildcard phase keyed a
+bucket on the namespace alone and `text-outside-xsl-text` came off: so no union of any spelling, no
+anchor, no attribute and no *prefixed* wildcard is a reason to be on the table any longer, and what
+is left is one shape four times over. Fifteen was the count before #556 gave
 `using-disable-output-escaping` an element test, which took it off the table by making it servable
 rather than by anybody editing the list. A structural gate rather than a share
 bar, because a bar can only notice the cost after a selector has been written the broad way: a check
@@ -714,15 +624,16 @@ the moment a motive under them was opened. The first spelling of the bar weighed
 the dearest single guide instead, which is a whole directory short: it read 130,933 and called
 that 0.87 of the bar while a turn touching `src/linters/` was loading 157,504 and over it. So the
 two dearest notes moved one step further down, out of `src/CLAUDE.md` and into the top of
-`src/grammar.js` and `src/syntax.js` — 24,681 characters. A turn touching `test/` has run it
-close ever since, and the dearest reads 139,947, which is 0.93. What answers a chain reaching the
-bar is that move again, a module's derivation into the file-header note of the module itself, and
-never a bar widened to fit what has grown past it: a docblock holds five lines of description
-since #832, so prose that has outgrown a guide does not simply move into one instead. A `CEILING`
-of half the bar stood beside it until it
+`src/grammar.js` and `src/syntax.js` — 24,681 characters. A turn touching `test/` ran it close
+ever since, until #811's wildcard phase moved this guide's nightly-tier note into
+`test/budget.test.js`; the dearest reads 139,893, which is 0.93, and is `src/linters/`'s once
+more. What answers a chain reaching the bar is that move again, a module's derivation into the
+file-header note of the module itself, and never a bar widened to fit what has grown past it: a
+docblock holds five lines of description since #832, so prose that has outgrown a guide does not
+simply move into one instead. A `CEILING` of half the bar stood beside it until it
 was seen to be a gate no tree could fail: the root stands in every chain, so the chain holding it
-above weighs each other guide against the bar less what stands over it — 26,492 for
-`src/linters/CLAUDE.md`, where half of the bar is 75,000 — and holds the root itself to 78,304, a
+above weighs each other guide against the bar less what stands over it — 26,440 for
+`src/linters/CLAUDE.md`, where half of the bar is 75,000 — and holds the root itself to 78,393, a
 number derived from the dearest chain rather than chosen. A gate no tree can fail is removed and
 not kept (#750, #660). All four of those figures — the chain, its ratio, and the two allowances —
 follow from three file sizes, so one guide growing moves every one of them, and none of them
@@ -768,15 +679,25 @@ and `corpus-linter.js` out of `src/linters/CLAUDE.md`, and `scaling.test.js`, `p
 one. A tenth was refused by the valve rather than chosen against: `test/conformance.test.js` stands
 at 926 lines and its note is 150 more, and `max-lines` counts comments, so a section can outgrow the
 file it is about and relief has a floor — what answers that one is the note being cut, not moved.
-What that leaves is 53 characters of headroom, off a chain that is this file's own again rather
-than `src/linters/`'s, the budget re-cut above being written here: the merge behind #811's bracket
-phase breached the bar by 844 with neither branch having crossed it alone, and the root's
-`src/xslint.js` derivation moved into `src/CLAUDE.md` to answer it — 2,147 characters out of every
-chain but the three standing under `src/`, of which #877 has spent 1,910. So the relief lasted one
-ticket, and what answers the next red is the move again, on the dearest note this guide holds
-rather than on the newest. It is a fifth figure of the same class as the four, and the one that
-proves the point twice over — it stood outside the table and drifted 418 behind the rows in it
-with every one of them green, so it has a row of its own since #856.
+What that leaves is 107 characters of headroom, off a chain that is `src/linters/`'s own once
+more rather than this file's: the merge behind #811's bracket phase breached the bar by 844 with
+neither branch having crossed it alone, and the root's `src/xslint.js` derivation moved into
+`src/CLAUDE.md` to answer it — 2,147 characters out of every chain but the three standing under
+`src/`, of which #877 has spent 1,910 on what it derives there. So the relief lasted one ticket,
+and the merge behind the wildcard phase breached it again by 162 with neither branch having
+crossed it alone either — the same arithmetic a second time, which is what a shared budget does
+to two branches that each measured themselves alone. What answered it was the move again, on the
+dearest note this guide holds rather than on the newest, or a change's own note where that change
+fires it: the nightly tier's derivation stands at the top of `test/budget.test.js` since, 6,579
+characters out of every chain through `test/` and none out of the one that is dearest without it.
+That is what the chain carries less of against what it carried before the move, and not what the
+note weighs where it landed — a move out of a guide and into a docblock pays the comment prefixes
+and the reflow both, where the guide-to-guide move above is one number for either reading. The
+headroom is one of the same class, the fifth of them and the one that proves the point twice over —
+it stood outside the table and drifted 418 behind the rows in it with every one of them green, so it
+has a row of its own since #856, and the relief has one beside it since this phase — a live figure
+in the very paragraph about a live figure drifting being the one thing that cannot stand outside the
+table.
 The index answers to the tree from both sides, every path it names existing and every module under
 `src/` being named by a row — the twenty-one linters by one of them, the `*` standing for a name and
 never for a directory — and a note answers to the index and to its own directory both, so a
