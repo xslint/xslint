@@ -9,6 +9,206 @@ publication date only; detailed notes begin with the Unreleased section.
 
 ## Unreleased
 
+- **Breaking:** rename `null-output-from-stylesheet` to
+  `template-writes-nothing`, and ask it of every template rather than only a
+  `/`-prefixed match, so `--suppress` strings and config `rules` keys change
+  with it (#559).
+
+- **Breaking:** rename `variable-or-param-without-name` to
+  `missing-or-empty-name` and widen it to all eleven XSLT elements that take
+  an `@name`, an empty value counting as a missing one; add
+  `missing-or-empty-href` beside it for an `xsl:import` or `xsl:include`
+  written without one, which used to crash the run (#838, #597).
+
+- Add the `modern-construct-in-xslt-1` check (error): a construct XSLT 2.0 or
+  later introduced, standing in a stylesheet that declares `version="1.0"`,
+  is something a 1.0 processor cannot run (#533, #532, #544).
+
+- Add the `malformed-version-in-stylesheet` check (error): a `@version` that
+  is not an `xs:decimal` used to disable every version gate in silence, so a
+  `version="2"` stylesheet was judged as a versionless one. `2`, `2.0` and
+  `2.00` are one version now, and a value nothing can place is reported
+  rather than guessed at (#614).
+
+- Add the fixable `redundant-boolean-call` check: a `boolean()` standing
+  where nothing but a truth is taken drops its wrapper, so
+  `test="boolean(@x)"` becomes `test="@x"`. An operand of a comparison keeps
+  it, and so does a predicate, where XPath reads a number as a position
+  rather than a truth (#370).
+
+- Add the fixable `predicate-position-literal` check: a positional predicate
+  written the long way is shortened, so `item[position() = 1]` becomes
+  `item[1]` and `item[position() = last()]` becomes `item[last()]`, the XSLT
+  2.0 value comparisons read the same way (#371).
+
+- Judge XPath and patterns with a grammar of this project's own — the XPath
+  3.1 expression productions and the restricted set a pattern admits, as
+  recursive descent over the positioned lexer — rather than taking a verdict
+  from fontoxpath at 3.1 whatever the stylesheet declares.
+  `invalid-xpath-expression` answers at the version in force now, a `cast as`
+  in a `version="1.0"` sheet included, and a malformed `match` or attribute
+  value template is no longer silent. A round-trip proof and an acceptance
+  diff against the engine gate it, over every expression this repository
+  carries and 14112 nobody wrote, which is what turned up the lexer and
+  grammar defects behind it (#677, #678, #679, #680, #732, #708, #731, #249,
+  #617, #641, #676, #685, #703, #709, #711, #724, #726, #728, #736, #738,
+  #740, #742, #746, #752, #753, #764).
+
+- Report one defect per fault. An expression the XPath validator refuses
+  reaches no check at all now, where ten linters used to rescan the corpus
+  and report a second defect on the same text: `select="child::"` drew an
+  `invalid-xpath-expression` and an `unabbreviated-axis` both, and the advice
+  stood on text no processor accepts (#750, #636, #651, #586, #788).
+
+- Read the version in force at the node under judgement rather than at the
+  document root. `version` stands on any XSLT element and `xsl:version` on
+  any literal result element, each setting the version of its own subtree, so
+  a template raised or lowered against its root is judged as itself; a
+  simplified stylesheet is read through its `xsl:version` rather than skipped
+  by every version gate; and an embedded stylesheet's host root is no longer
+  reported as a stylesheet missing one (#603, #608, #618, #702, #544).
+
+- Read every expression a stylesheet carries, and only those. An attribute
+  value template's braces, an XSLT 3.0 text value template, a shadow
+  attribute (`_select` for `select`) and `xsl:use-when` in the XSLT namespace
+  are validated and linted now, where 165 of 451 expressions used to reach
+  nothing at all. A `test` or `select` that an attribute of a literal result
+  element happens to spell is text bound for the result tree, so it is left
+  alone rather than read as XPath and rewritten (#589, #579, #606, #849,
+  #654, #647, #788, #556).
+
+- Stop reading an element by the prefix one document chose. A stylesheet
+  writing its XSLT as `XSL:` was read by no check that asked for `xsl:`, and
+  a literal result element whose `xsl:` is bound elsewhere drew eight of them
+  at once (#784).
+
+- Withdraw the check-specific false positives: `not-using-output` where the
+  `xsl:output` comes from an imported module (#548);
+  `stylesheet-has-no-templates` on an import-only, output-only or overriding
+  module (#494); `output-method-xml` on an XML document embedding an html
+  fragment (#495); `sort-not-first` on an `xsl:with-param` standing before
+  the `xsl:sort` (#487); `blank-nested-if` where the outer `xsl:if` holds
+  text (#491); `name-starts-with-numeric` on an empty `@name` (#489);
+  `using-disable-output-escaping` on a literal result element (#556);
+  `use-node-set-extension` on any `*:node-set(` (#557);
+  `redundant-namespace-declarations` on a prefix named only by an
+  `exclude-result-prefixes`, and two columns to the right of a spaced
+  declaration (#553, #681); `use-double-slash` on a union branch opening with
+  `//` (#586); `using-namespace-axis` on a string literal (#497, #595); the
+  two `count(*)` checks on whitespace an `xml:space="preserve"` keeps (#817);
+  and the `count`/`string-length` comparisons on an arithmetic operand
+  (#573).
+
+- Find the constructs a text scan missed: an `fn:`-prefixed call (#577,
+  #596), the `eq`/`ne`/`lt` family XSLT 2.0 added (#763), a double-quoted
+  string literal (#598), a call whose argument count makes the rewrite wrong
+  (#576, #730), a `self::node()` and a whitespaced axis (#564), the `@use`,
+  `@value`, `@group-by` and pattern attributes (#502), and every gap XML
+  calls whitespace rather than the wider set JavaScript's `\s` matches (#643,
+  #615, #639, #642).
+
+- Accept the stylesheets every processor loads, and refuse what XML forbids.
+  An entity whose name holds a dot and a file opening with a UTF-8 byte order
+  mark are no longer `malformed-stylesheet` — which had left them linted by
+  nothing at all — while a bare `&`, an unquoted attribute value and a `]]>`
+  in character data are (#877, #574, #691).
+
+- Stop `--fix` corrupting a stylesheet. Two fixes whose spans overlap cannot
+  both be applied in one run: the left-most wins, the wider of two starting
+  together wins, and the loser is announced and left in the report for a
+  later run (#571). A comparison written with `&lt;` or `&gt;`, or shifted by
+  an entity earlier in the same value, is located and fixed rather than
+  skipped (#518, #525, #803); a CRLF line ending counts as one character
+  (#626); a fix value is matched across a line wrap (#629); and five fix
+  builders read an attribute's column and text off the source rather than
+  inventing them (#718, #594, #611).
+
+- Correct the fix tiers that changed behaviour. `count-compared-to-zero`
+  emits the version-appropriate form — `exists()`/`empty()` on 2.0 and later,
+  `boolean()`/`not()` on 1.0 — rather than XPath 2.0 functions a 1.0
+  processor has never had (#485, #537); `string-length-compared-to-zero` no
+  longer rewrites an emptiness test into one that differs when its subject is
+  absent (#488); `starts-with-double-slash` withholds inside an
+  `xsl:template`, where dropping the `//` shifts the rule's priority (#583);
+  and `redundant-import` deletes only where deleting cannot move import
+  precedence, on every spelling of an href rather than one (#667, #793).
+
+- Stop the crashes and the silent losses. Walking a wide directory no longer
+  throws a `RangeError`: the walk spread its findings into a `push`, whose
+  arguments V8 caps at roughly 125 per kilobyte of stack, so this
+  repository's own 768,731 files died before a byte of XSL was read (#758).
+  The report is no longer truncated when stdout is a pipe, `process.exit`
+  having ended the process where it stood and abandoned every write the
+  kernel had not taken — 720 defects over twenty stylesheets arrived as
+  65,492 of 165,500 bytes, with the exit code still right (#767, #822). And a
+  defect built with one argument missing no longer reports at the wrong place
+  (#601).
+
+- Order the report deterministically — by file, then line, then column, then
+  rule — so two runs over one tree emit the same document; and give the
+  `json` reporter a `fix` object per fixable defect, holding that span's own
+  line and column, the value it replaces, the replacement it would write, and
+  whether it is a suggestion (#638).
+
+- Make the run linear where it was quadratic. The cross-file linter tested
+  every declaration against every usage and cost DocBook-XSL 44 seconds; it
+  builds one index instead (#755, #783). Every internal `//` scan is served
+  from one remembered walk of the document rather than a traversal per check
+  (#635, #633, #784, #839, #811), `circular-import` walks the graph once
+  rather than once per edge (#769), `unused-function-template-parameter`
+  reads a body once rather than once per parameter (#776), and the version
+  lookup remembers the ancestor chain it used to re-walk 950,645 times a run
+  (#845).
+
+- Answer in 72 ms where `--version`, `--help` and every rejected argument
+  used to cost 137: the pipeline is imported inside the command action rather
+  than at the top of the entry point, and the 68 check YAMLs are pre-rendered
+  to one JSON a run requires (#687, #689).
+
+- Measure speed, which nothing did while that quadratic reached master with
+  eighteen jobs green. Every stage answers for its own share of a run's
+  processor time at two corpus sizes on every pull request, and a nightly job
+  times DocBook-XSL, TEI and DITA-OT at pinned commits against a budget
+  judged from both sides — past it the run has slowed, far under it the
+  budget has stopped being a bar (#756, #777, #785, #800, #827). Every defect
+  the three corpora draw is committed and diffed too, so a check that changes
+  what it reports, or what it would rewrite, says so (#638).
+
+- Retire the `mature: true` freeze rather than leave a mark the tree could
+  not back. Nine checks carried it, all nine were unfrozen, and the gate that
+  was meant to hold them asserted nothing (#568, #588, #637, #865).
+
+- Derive the `CHECKS` list that `--suppress` and the config `rules` keys
+  match from the linters themselves, so a name cannot desync from the check
+  it suppresses, and share one defect builder and one comparison scan across
+  the code-based linters (#503, #500, #501).
+
+- Enforce the conventions this project states. A source file stops at 1000
+  lines and a JSDoc block at five lines of description (#748, #821, #825,
+  #832, #844), a function leaves through one `return` (#623), no linter or
+  validator imports another (#715), and a check selector may not test
+  existence by counting, name an element by its prefix, or read one spelling
+  of an attribute XSLT allows in two (#621, #784, #849).
+
+- Fold twenty-two pack harnesses into one, so an assertion the packs carry is
+  written once and every directory gets it — one of them asserted no fix at
+  all while `redundant-import` attached a real deletion, the block written
+  into the others never having reached it (#660, #607, #592, #506, #507).
+  The xcop suite registers a pending fixture rather than skipping in silence
+  when the tool is unreachable, reads each fixture's verdict out of one
+  report rather than spending a ruby interpreter per assertion, and no longer
+  loses every verdict behind the first file it refuses (#645, #693, #687,
+  #505, #504).
+
+- Fix the CI that could not report. The nightly and corpora `report-fail`
+  jobs had no `issues: write` and so filed nothing (#826), `deps-sentinel`
+  had no `pull-requests: write` and so commented nothing (#856), and `grunt
+  mochacli` and `grunt eslint` ran a nested mocha 8 and eslint 9 beneath the
+  12 and 10 `package.json` declares — where two of nine advisories lived
+  (#841, #855). ESLint runs once rather than across the six-cell matrix, and
+  before mocha rather than after it, where a failing test masked it (#509,
+  #510, #511).
+
 - Add the `redundant-double-negation` check: `not(not(x))` is a redundant
   double negation — exactly `boolean(x)`. Reported in any `@test`/`@select`,
   with a safe `--fix` that rewrites it to `boolean(x)` (always equivalent). An
