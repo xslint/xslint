@@ -69,7 +69,24 @@ for a gate of another kind, which is why that change carries a structural one be
 share ceiling can stop a selector asking the engine to descend a tree the run has already walked,
 and `UNINDEXED` in `test/conformance.test.js` can.
 
-The eighth move is #811's descendant phase, and it is the first where the walk **gathers** rather
+The tenth move is #811's bracket phase, and its subject is the one selector the fourth phase could
+not part: `malformed-version-in-stylesheet` spells a union of two attribute paths *inside* a bracket
+its predicate stands outside of, which is neither a sweep to part nor an axis the merge could order.
+`(A | B)Q` is `AQ | BQ`, so distributing the tail leaves two selectors the walk already serves, and
+`ranked` in `src/tree.js` numbers a document's attributes for the merge to order them by, `named`
+ranking elements alone. The check goes from 200 ms to 17 over DocBook-XSL, 181 to 14 over TEI and 87
+to 24 over DITA-OT, lowest of three interleaved rounds a side of processor time, which is 8.9%,
+14.2% and 10.7% off `xpath-linter` and 4.1%, 3.7% and 3.7% off the staged run, the report
+byte-identical at 3,624, 5,514 and 1,192 defects; no other check's split changed. Over the gate's
+own corpus the stage reads 28.48% where it read 30.42%, dearest of six gate runs a side, so its
+entry comes down by its own ratio, 42 to 39, and the other two stay, `xpath-validator` reading 1.04
+of what it read and `xsl-validator` 1.00, which leaves 26 and 18 at 1.59 and 1.34 of their dearest
+readings; `SHARE` stays at 7, the dearest cheap stage having moved by 1.01. By the ratio and not by
+the band, since this machine reads 30.42% where #845 read 24.82% on the same code: a ratio leaves
+every runner the margin it had where an absolute re-cut moves an entry by a quarter on nobody's
+change.
+
+The ninth move is #811's descendant phase, and it is the first where the walk **gathers** rather
 than follows: a subtree is no chain of links to climb, so `below` in `src/predicates.js` pushes its
 way down one, and `.//X` — the whole of what two checks are written in — stops costing a fontoxpath
 descendant traversal per candidate. `oversized-template` goes from 231 ms to 17 over DocBook-XSL,
@@ -84,24 +101,6 @@ before, the dearest cheap stage having moved by 1.03. Ten rounds rather than fiv
 a side came out disturbed — a single stage eating a fifth of its run, and on both sides — and each
 is kept rather than dropped, since dropping a reading a machine has actually given is how a bar
 comes to stand on the runs that flattered it.
-
-The seventh move is #811's anchor phase, and what it shows is that a shape's name is not its cost.
-Three checks spell a guard in front of their descendant step —
-`(/xsl:stylesheet | /xsl:transform)//(xsl:stylesheet | xsl:transform)` and two like it — and the
-split refused every one of them for being *anchored at the root*, which is a true statement about
-the anchor and says nothing about the sweep behind it. `P//X` is every `X` standing below a node `P`
-chose, so the anchor is one question the engine answers for a document — 4.4 ms over the whole of
-DocBook-XSL — where the sweep behind it was a traversal apiece. `xpath-linter` goes from 3.33 s to
-2.78 s over DocBook-XSL, 2.32 to 2.05 over TEI and 1.13 to 1.06 over DITA-OT, lowest of three
-interleaved rounds a side of processor time, which is 17%, 12% and 6% off the stage, and the three
-checks themselves go from 442 ms to 25 over DocBook-XSL, 334 to 30 over TEI and 132 to 21 over
-DITA-OT — the report byte-identical on all three at 3843, 5713 and 1266 defects. Over the gate's own
-corpus the stage reads 29.44% where it read 34.03%, dearest of five gate runs a side, so its entry
-comes down by its own ratio, 53 to 46, and the twenty-two stages that cost what they always did read
-dearer by 0.97 to 1.32 — which this time moves both validators, `xpath-validator` 13.60% to 14.89%
-and `xsl-validator` 9.16% to 10.21%, leaving entries of 22 and 14 at 1.48 and 1.37 times their own
-readings where the band allows no closer than half again, so each is re-derived by its own ratio to
-24 and 16. `SHARE` stays at 7: the dearest cheap stage moved by 1.04 alone.
 
 The eighth move is #845, and it is the first to make nearly every stage cheaper at once rather than
 one of them. `versionOf` climbs to the root and remembers nothing, and `parseOf` asked it in front
@@ -122,6 +121,24 @@ to 18, and `xpath-linter` keeps its 46 at 1.59, inside the band. `SHARE` stays a
 it has stayed there before: the dearest cheap stage moved by 1.03 alone, 5.17% to 5.32%, so its own
 ratio re-derives 7 to 7.2 — and its standing at 1.32 rather than half again is not this change's
 doing, master reading 1.35 before it. A bar raised on nobody's failure is a bar loosened.
+
+The seventh move is #811's anchor phase, and what it shows is that a shape's name is not its cost.
+Three checks spell a guard in front of their descendant step —
+`(/xsl:stylesheet | /xsl:transform)//(xsl:stylesheet | xsl:transform)` and two like it — and the
+split refused every one of them for being *anchored at the root*, which is a true statement about
+the anchor and says nothing about the sweep behind it. `P//X` is every `X` standing below a node `P`
+chose, so the anchor is one question the engine answers for a document — 4.4 ms over the whole of
+DocBook-XSL — where the sweep behind it was a traversal apiece. `xpath-linter` goes from 3.33 s to
+2.78 s over DocBook-XSL, 2.32 to 2.05 over TEI and 1.13 to 1.06 over DITA-OT, lowest of three
+interleaved rounds a side of processor time, which is 17%, 12% and 6% off the stage, and the three
+checks themselves go from 442 ms to 25 over DocBook-XSL, 334 to 30 over TEI and 132 to 21 over
+DITA-OT — the report byte-identical on all three at 3843, 5713 and 1266 defects. Over the gate's own
+corpus the stage reads 29.44% where it read 34.03%, dearest of five gate runs a side, so its entry
+comes down by its own ratio, 53 to 46, and the twenty-two stages that cost what they always did read
+dearer by 0.97 to 1.32 — which this time moves both validators, `xpath-validator` 13.60% to 14.89%
+and `xsl-validator` 9.16% to 10.21%, leaving entries of 22 and 14 at 1.48 and 1.37 times their own
+readings where the band allows no closer than half again, so each is re-derived by its own ratio to
+24 and 16. `SHARE` stays at 7: the dearest cheap stage moved by 1.04 alone.
 
 Two things were measured beside it and refused, which is the more useful half of the phase. Serving
 `//xsl:*` off a namespace bucket — the shape the ticket named next, and one line of `src/tree.js` —
@@ -260,15 +277,20 @@ leaning on the mechanism meant for something else, and one failing about a third
 Forty stylesheets only shrink it, to 3.2 and 5.1. A discarded measurement removes it — every stage
 within five percent over six processes, no attempt ever retried — and costs nothing, being the retry
 no longer spent. A disagreeing measurement is still taken again, up to three times, over a corpus of
-its own, and the *lowest* reading answers: noise inflates, so the floor of three attempts is the
-honest one. And the stages are read from `STAGES`, derived in `src/xslint.js` from the two linter
-lists, so a linter cannot be wired into the pipeline and left outside what measures it — one test
-asserts exactly that over the `src/linters/` directory, and another that no name in `SHARES` has
-stopped being a stage.
+its own, and which end of them answers depends on the side asking. A ceiling reads the *lowest*,
+noise inflating a measurement rather than deflating it. The slack clause reads the *dearest*, one
+cheap attempt being no evidence that a bar has stopped being one — read off the floor instead it had
+the retry working against it, a further attempt only ever lowering a minimum, and a Windows runner
+whose processor time comes in ticks coarser than a single check costs read
+`name-starts-with-numeric` at 1.63% where this machine reads 4.03%, calling an entry drawn from the
+dearest reading loose (#811). And the stages are read from `STAGES`, derived in `src/xslint.js` from
+the two linter lists, so a linter cannot be wired into the pipeline and left outside what measures
+it — one test asserts exactly that over the `src/linters/` directory, and another that no name in
+`SHARES` has stopped being a stage.
 
 `SHARES` names the three stages that legitimately cost more of a run than the rest: `xpath-linter`
-at 42%, `xpath-validator` at 26%, `xsl-validator` at 18%. Every other stage answers to one bar,
-`SHARE` at 7%, which the twenty-one of them sit below at 0.42% to 4.31% — so a cheap stage that
+at 39%, `xpath-validator` at 26%, `xsl-validator` at 18%. Every other stage answers to one bar,
+`SHARE` at 7%, which the twenty-one of them sit below at 0.69% to 4.95% — so a cheap stage that
 becomes an expensive one turns red, and earns either a fix or an entry. It named four until #811,
 and the fourth is the one worth reading the rule off. Two things set a ceiling. Where there is a
 defect to catch it goes **between the two measured distributions**: `corpus-linter` stood at 32, the
@@ -544,14 +566,15 @@ pack gives one position per defect it expects, too: the harness walks the `posit
 `amount` standing above their number is a count asserted and a place asserted nowhere — three packs
 of #565's own were written that way and passed, pinning four runs' replacements while saying nothing
 about where any of them stood. It also asks `splitOf` of every `xpath` selector and holds the answer
-to `UNINDEXED`, the seven that a shared walk cannot serve as an axis, each listed beside the shape
-that keeps it out (#784) — fourteen until #811's union phase served three of them, eleven until its
-anchor phase served three more, and eight until its fourth parted the one selector spelling a union
-*inside* a sweep, so neither a union nor an anchor is a reason to be on the table any longer:
-`malformed-version-in-stylesheet` stays out as a **bracketed** union of attribute
-paths, which is one predicate standing outside the brackets and an axis the merge cannot order —
-fifteen until #556 gave `using-disable-output-escaping` an element test, which took it off the table
-by making it servable rather than by anybody editing the list. A structural gate rather than a share
+to `UNINDEXED`, the five selectors a shared walk cannot serve as an axis, each listed beside the
+shape that keeps it out (#784) — fourteen until #811's union phase served three of them, eleven
+until its anchor phase served three more, eight until its fourth parted the one selector spelling a
+union *inside* a sweep, and six until its fifth served a **named** attribute axis and distributed
+the bracket of `malformed-version-in-stylesheet`, whose two arms open on `//@version` and
+`//@xsl:version` and needed both halves in one change: so no union of any spelling, no anchor and
+no attribute is a reason to be on the table any longer. Fifteen was the count before #556 gave
+`using-disable-output-escaping` an element test, which took it off the table by making it servable
+rather than by anybody editing the list. A structural gate rather than a share
 bar, because a bar can only notice the cost after a selector has been written the broad way: a check
 whose selector becomes servable and stays on the list fails, and so does one on nobody’s list that
 has stopped being served, so neither half can rot in silence. It also holds the pack harness to
@@ -569,18 +592,20 @@ can rot is one the sweep cannot see, walking the checks rather than the table: #
 selectors into code and three of them were listed here, so the entries outlived the checks they were
 written for, and a test of its own holds every name on the table to `checks/xpath/`. A cross-file
 selector answers to a gate beside it with no table at all: all five of them are served since #811,
-and where the per-file kind has fourteen shapes a walk cannot reach, four checks of one shape each
-are few enough that a fifth belongs in that shape too. An attribute axis has also stopped being a
+and where the per-file kind keeps a table of five, four checks of one shape each are few enough that
+a fifth belongs in that shape too. An attribute axis has also stopped being a
 reason to be on the table, which is the second way an entry rots — a refusal that stands while the
-reason for it has gone: `malformed-version-in-stylesheet` stays out as a union of two whole paths,
-not as the attribute path each half of it opens with. Selector hygiene grew a fourth question
-at #491: a selector counting the elements a node holds — `count(*) = 1`, which is how a check spells
-*nothing but this one instruction* — must weigh its text too, text standing beside the instruction
-answering that question as much as a second element does. Two of the three selectors spelling it
-were false positives on real code, `blank-nested-if` on an `xsl:if` whose text a collapse would drop
-and `setting-value-of-variable-incorrectly` on a variable body concatenating a prefix onto a value;
-the third is exempt on `COUNTING` because what its advice writes carries the text along, an
-attribute value template holding literal text beside the expression so that
+reason for it has gone: `malformed-version-in-stylesheet` outlived half of its own, the walk having
+answered `//@*` since the phase that made the cross-file stage cheap while the two *named* attribute
+paths its bracketed union opens with went on costing a sweep apiece — and it came off the table only
+when #811's sixth phase served those and parted the bracket around them. Selector hygiene grew a
+fourth question at #491: a selector counting the elements a node holds — `count(*) = 1`, which is
+how a check spells *nothing but this one instruction* — must weigh its text too, text standing
+beside the instruction answering that question as much as a second element does. Two of the three
+selectors spelling it were false positives on real code, `blank-nested-if` on an `xsl:if` whose text
+a collapse would drop and `setting-value-of-variable-incorrectly` on a variable body concatenating a
+prefix onto a value; the third is exempt on `COUNTING` because what its advice writes carries the
+text along, an attribute value template holding literal text beside the expression so that
 `Prefix: <xsl:value-of select="heading"/>` inlines as `class="Prefix: {heading}"`. That exemption
 ratchets from both sides as the rest do: an entry whose selector has started weighing text, or
 stopped counting elements, turns red.
@@ -675,15 +700,15 @@ the moment a motive under them was opened. The first spelling of the bar weighed
 the dearest single guide instead, which is a whole directory short: it read 130,933 and called
 that 0.87 of the bar while a turn touching `src/linters/` was loading 157,504 and over it. So the
 two dearest notes moved one step further down, out of `src/CLAUDE.md` and into the top of
-`src/grammar.js` and `src/syntax.js` — 24,681 characters. What a turn touching `test/` loads has
-overtaken it since, and the dearest chain is that same one at 139,482, which is 0.93. What answers
+`src/grammar.js` and `src/syntax.js` — 24,681 characters. A turn touching `test/` has run it
+close ever since, and the dearest chain is that same one at 139,596, which is 0.93. What answers
 a chain reaching the bar is that move again, a module's derivation into the file-header note of the
 module itself, and never a bar widened to fit what has grown past it: a docblock holds five lines
 of description since #832, so prose that has outgrown a
 guide does not simply move into one instead. A `CEILING` of half the bar stood beside it until it
 was seen to be a gate no tree could fail: the root stands in every chain, so the chain holding it
-above weighs each other guide against the bar less what stands over it — 27,185 for
-`src/linters/CLAUDE.md`, where half of the bar is 75,000 — and holds the root itself to 82,121, a
+above weighs each other guide against the bar less what stands over it — 26,737 for
+`src/linters/CLAUDE.md`, where half of the bar is 75,000 — and holds the root itself to 78,653, a
 number derived from the dearest chain rather than chosen. A gate no tree can fail is removed and
 not kept (#750, #660). All four of those figures — the chain, its ratio, and the two allowances —
 follow from three file sizes, so one guide growing moves every one of them, and none of them
@@ -728,8 +753,13 @@ and `corpus-linter.js` out of `src/linters/CLAUDE.md`, and `scaling.test.js`, `p
 one. A tenth was refused by the valve rather than chosen against: `test/conformance.test.js` stands
 at 926 lines and its note is 150 more, and `max-lines` counts comments, so a section can outgrow the
 file it is about and relief has a floor — what answers that one is the note being cut, not moved.
-What that leaves is 518 characters of headroom, off a chain that is this file's own rather than
-`src/linters/`: six of those nine came out of this one, and the note #855 added went back in. It is
+What that leaves is 404 characters of headroom, off a chain that is `src/linters/`'s own once
+more rather than this file's: the merge behind #811's bracket phase breached the bar by 844 with
+neither branch having crossed it alone, and the root's `src/xslint.js` derivation moved into
+`src/CLAUDE.md` to answer it — 2,147 characters out of every chain but the three standing under
+`src/`, of which #877 spent 1,288 on the two answers it derives there. So the relief lasted one
+ticket, and what answers the next red is the move again, on the dearest note this guide holds
+rather than on the newest. It is
 a fifth figure of the same class as the four, and the one that proves the point twice over — it
 stood outside the table and drifted 418 behind the rows in it with every one of them green, so it
 has a row of its own since #856.

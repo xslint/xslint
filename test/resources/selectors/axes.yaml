@@ -1,0 +1,41 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+attributed:
+  - xpath: "//@version"
+    locals: [ ]
+    attribute:
+      uri: ""
+      local: version
+    tail: ""
+  - xpath: "//@xsl:version[not(parent::xsl:*)]"
+    locals: [ ]
+    attribute:
+      uri: "http://www.w3.org/1999/XSL/Transform"
+      local: version
+    tail: "[not(parent::xsl:*)]"
+  - xpath: "//@name[string-length(.) = 1]"
+    locals: [ ]
+    attribute:
+      uri: ""
+      local: name
+    tail: "[string-length(.) = 1]"
+merged:
+  - "//@name | //@match"
+  - "//@name | //xsl:template/@match"
+distributed:
+  - "(//@name | //@match)[string-length(.) = 5]"
+  - "(//@version | //@select)[contains(., '1.0')]"
+  - "(//@name | //@nothing)[. = 'one']"
+  - "(//@name[. = 'beta'] | //@match)[string-length(.) = 4]"
+  - "(//@version | //@xsl:version)[. = '2.0']"
+whole:
+  - xpath: "//xsl:template | //@name"
+    why: "a union spanning both kinds, each ranked on a numbering of its own"
+  - xpath: "//@name | //xsl:template/@match | //xsl:variable"
+    why: "a union spanning both kinds, whichever arm carries which"
+unspilled:
+  - xpath: "(//@name | //xsl:template)[string-length(.) > 0]"
+    why: "arms of two kinds, no one rank ordering an attribute beside an element"
+  - xpath: "(//@name | //xsl:*/text())[string-length(.) > 0]"
+    why: "an arm the walk cannot serve at all, whose nodes no other arm answers"

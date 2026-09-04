@@ -7,9 +7,9 @@
  * The speed gate (see **Speed**): charges every stage its own processor
  * time over a generated corpus at 40 stylesheets and again at 160, and
  * fails one that spends more of its own run than `SHARES` allows it —
- * `xpath-linter` at 42%, `xpath-validator` at 26%, `xsl-validator` at 18%
- * since #811's descendant phase took the dearest stage from 27.18% of the
- * run to 24.82% and #845 took the version off a climb and put it on the
+ * `xpath-linter` at 39%, `xpath-validator` at 26%, `xsl-validator` at 18%
+ * since #811's bracket phase took the dearest stage from 30.42% of the
+ * run to 28.48% and #845 took the version off a climb and put it on the
  * record, lifting the two validators' shares against a run a twelfth
  * cheaper, or — where it has no entry there — grew more than `GROWTH`
  * beside the middle stage's growth. Cost is the sharp question and growth
@@ -80,6 +80,82 @@
  * `SHARES` is gone and `SHARE` is what it answers to, and the heavy
  * stylesheet #800 armed it with arms the parse and the per-file checks
  * alone.
+ *
+ * Since #811 the same question is asked one level down, of a check rather
+ * than of a stage. A share cannot see one check of thirty-eight going
+ * quadratic: the anchor phase took three of them from 442 ms to 25 over
+ * DocBook-XSL and moved their stage by four points, so the granularity a
+ * bar is asked at is the granularity a regression hides under. `COST` is
+ * that bar and `COSTS` its two entries, read the way `SHARE` and `SHARES`
+ * are read of a stage. It reaches the forty-nine checks whose stage owns
+ * more than one — thirty-eight of `xpath-linter`, four of `corpus-linter`,
+ * three of `double-slash-linter` and two each of `import-linter` and
+ * `root-template-linter` — the other seventeen of the twenty-two stages
+ * owning one check apiece, where the check *is* the stage and `SHARE` has
+ * bounded it all along.
+ *
+ * A check is weighed by running its stage with every other check of that
+ * stage suppressed, over the corpus the stage tier has already built. That
+ * is why the sweep rides inside `weighed` rather than in a second `it`: a
+ * corpus of its own would pay for the building and the discarded warm-up
+ * twice, where sharing this one costs the gate 4.48 seconds at its dearest
+ * over six interleaved rounds a side, against 3.90 for the same tree
+ * without it once the first round's cold 5.02 is set aside — inside the 4.5
+ * `test/CLAUDE.md` states of it. The readings are the checks' own and not
+ * one walk charged thirty-eight times, `src/tree.js` remembering its pass
+ * against the document: thirty-four of `xpath-linter`'s thirty-eight read
+ * under 0.85% of the run, and four stand above 1.5%.
+ *
+ * `COST` stands between two measured distributions, which is where a bar
+ * with a defect to catch goes. Un-serving `//(xsl:for-each | xsl:if)` in
+ * `splitOf` — one arm of `empty-content-in-instructions` and nothing else
+ * about the check — takes it from 1.65% to 1.84% to 4.81% to 6.11% over
+ * six interleaved rounds a side, so the middle is the geometric one at
+ * 2.97 and the bar is 3. Both distributions are read the way the gate
+ * reads one, the warm-up discarded and the lowest of three attempts
+ * judged, which is the whole of why the first cut of this bar was wrong:
+ * off single attempts the same probe reads 3.56% against 5.80% and the
+ * middle lands at 4.54, where a second machine's judged minima put the
+ * unserved side as low as 4.32% and a bar of 5 inside it. With that arm
+ * unserved the gate fails four of four, and passes four of four with it
+ * back. It is a ratchet like every table here: an entry of 30 over
+ * dearest readings of 4.69%, 4.49% and 4.61% fails three of three for
+ * having stopped being a bar.
+ *
+ * The three entries answer the other rule, none having a second
+ * distribution to leave room for, and each is judged the same way over the
+ * same twelve rounds. `name-starts-with-numeric` reads 4.03% at its
+ * dearest, so half again to twice puts it at 7; it asks an XSD regex of
+ * every candidate, which the walk cannot answer without taking a second
+ * opinion about regex dialects. `text-outside-xsl-text` reads 4.55% and
+ * takes 8; it opens on a wildcard, and the one bucket that could serve it
+ * was measured slower — 88% of DocBook-XSL's elements stand in the XSLT
+ * namespace, so the check read 244 ms where the sweep read 236.
+ * `too-many-templates` reads 2.09% and takes 4; it is one of `UNINDEXED`'s
+ * five, anchored on the root and spending everything it costs inside a
+ * predicate that descends the tree, so a bar of 3 stood 1.43 times over a
+ * check nobody had touched.
+ *
+ * Which end of the readings answers depends on which side is asking. A
+ * ceiling is judged off the cheapest, noise inflating a measurement
+ * rather than deflating it; the slack clause is judged off the dearest,
+ * because *this bar has stopped being one* is a claim about the check at
+ * its most expensive and one cheap attempt is no evidence for it. Judged
+ * off the floor instead, the retry loop worked against that clause — a
+ * further attempt can only lower a minimum — and a Windows runner, whose
+ * processor time comes in ticks coarser than a single check costs, read
+ * `name-starts-with-numeric` at 1.63% where this machine reads 4.03% and
+ * called an entry derived from the dearest reading loose.
+ *
+ * `SHADOWED` is the one place the sweep is knowingly wrong, and it is
+ * wrong upward. `--suppress` matches by substring, so a check whose name
+ * stands inside a sibling's cannot be silenced while that sibling runs:
+ * `select-starts-with-double-slash` carries `starts-with-double-slash`
+ * along and the pair is charged to one bar. Over-statement is the safe
+ * side of a ceiling, and the table is what stops a second such pair
+ * arriving unread — the other clash in the tree, `unused-function` inside
+ * `unused-function-template-parameter`, crosses two stages and so is never
+ * weighed together.
  */
 
 const assert = require('assert')
@@ -112,20 +188,56 @@ const STEP = 4
  * @type {{[stage: string]: number}}
  */
 const SHARES = {
-  'xpath-linter': 42,
+  'xpath-linter': 39,
   'xpath-validator': 26,
   'xsl-validator': 18,
 }
 
 /**
  * What percentage of the run any stage not named in `SHARES` may spend. The
- * twenty-one of them read 0.42% to 4.31% here, so this is the bar a cheap
+ * twenty-one of them read 0.69% to 4.95% here, so this is the bar a cheap
  * stage crosses by becoming an expensive one, earning an entry or a fix.
  * It comes up whenever a stage made cheaper shrinks the denominator, by the
  * ratio of the dearest reading (#784, #811, #845).
  * @type {number}
  */
 const SHARE = 7
+
+/**
+ * The checks that legitimately cost more of a run than the rest, the way
+ * `SHARES` names the three dear stages: an XSD regex asked of every candidate,
+ * a selector opening on a wildcard, and one anchored on the root that spends
+ * everything it costs inside a predicate descending the tree. What each reads,
+ * and what puts its entry where it stands, is in the note above (#811).
+ * @type {{[check: string]: number}}
+ */
+const COSTS = {
+  'name-starts-with-numeric': 7,
+  'text-outside-xsl-text': 8,
+  'too-many-templates': 4,
+}
+
+/**
+ * What percentage of the run one check of a stage owning several may spend.
+ * This one stands between two measured distributions rather than under one: a
+ * check the walk stops serving reads 4.32% at its cheapest where the dearest
+ * served reading is 1.84%. A check whose stage owns it alone is that stage and
+ * answers to `SHARE` already (#811).
+ * @type {number}
+ */
+const COST = 3
+
+/**
+ * The checks a sibling of their own stage rides along with. `--suppress`
+ * matches by substring, so a name standing inside another cannot be left
+ * running while that other is silenced, and the sweep below charges the pair to
+ * one bar. The error is upward, which is the safe side of a ceiling; the table
+ * is what stops a second such pair arriving unread (#811).
+ * @type {{[check: string]: string}}
+ */
+const SHADOWED = {
+  'select-starts-with-double-slash': 'starts-with-double-slash',
+}
 
 /**
  * How many times its own reading a ceiling may stand above before it has
@@ -305,25 +417,52 @@ const timed = function(fun) {
  * Milliseconds each stage spends over one corpus, timed directly rather than by
  * subtracting one run from another: the error of two timings compounds, and a
  * stage whose own reading is stable to three percent reads twenty that way.
+ * What each stage was handed comes back beside what it spent, since weighing
+ * one check means running its stage again over that same input.
  * @param {number} from - Number of the first stylesheet
  * @param {number} files - How many the corpus holds
- * @return {Map.<string, number>} - Milliseconds by stage
+ * @return {{spans: Map.<string, number>, given: Map.<string, Array>}} - Both
  */
 const measured = function(from, files) {
   const sources = corpus(from, files)
   const spans = new Map()
+  const given = new Map()
   const xsls = timed(() => validateXsls(sources, []))
   spans.set('xsl-validator', xsls.span)
   const xpaths = timed(() => validateXpaths(xsls.answer.corpus, []))
   spans.set('xpath-validator', xpaths.span)
   for (const stage of STAGES) {
-    let given = xpaths.answer.expressions
+    given.set(stage.name, xpaths.answer.expressions)
     if (stage.over === 'corpus') {
-      given = xsls.answer.corpus
+      given.set(stage.name, xsls.answer.corpus)
     }
-    spans.set(stage.name, timed(() => stage.run(given, [])).span)
+    spans.set(
+      stage.name, timed(() => stage.run(given.get(stage.name), [])).span,
+    )
   }
-  return spans
+  return {spans: spans, given: given}
+}
+
+/**
+ * Milliseconds one check of a stage owning several spends, each timed by
+ * running that stage again over the same input under every other name it owns.
+ * The filter asks what the check's own name holds rather than what it equals,
+ * which drops the check itself and leaves a sibling standing inside it running,
+ * that being a name no suppression can reach past (#811).
+ * @param {Map.<string, Array>} given - What each stage was handed
+ * @return {Map.<string, number>} - Milliseconds by check
+ */
+const costed = function(given) {
+  const costs = new Map()
+  for (const stage of STAGES.filter((one) => one.checks.length > 1)) {
+    for (const check of stage.checks) {
+      costs.set(check, timed(() => stage.run(
+        given.get(stage.name),
+        stage.checks.filter((one) => !check.includes(one)),
+      )).span)
+    }
+  }
+  return costs
 }
 
 /**
@@ -342,42 +481,53 @@ const middle = function(list) {
 }
 
 /**
- * What percentage of its run each stage spends, and how it grew as a multiple
- * of the middle stage's growth. Two quotients taken inside one process, which
- * is what survives a shared machine, each divided by something the whole run
- * supplies, which is what survives a different one. The cost is divided by the
- * readings summed and the growth by their median (#777).
+ * What percentage of its run each stage spends, how it grew as a multiple of
+ * the middle stage's growth, and what each check of a stage owning several
+ * costs of that same run. Quotients taken inside one process, which is what
+ * survives a shared machine, each divided by something the whole run supplies,
+ * which is what survives a different one (#777, #811).
  * @param {number} attempt - Which attempt this is, deciding the file numbers
- * @return {Map.<string, {share: number, growth: number}>} - Cost and growth
+ * @return {{stages: Map.<string, object>, checks: Map.<string, number>}} - Both
  */
 const weighed = function(attempt) {
   const small = measured(attempt * SPREAD, SMALL)
   const large = measured(attempt * SPREAD + SPREAD / 2, SMALL * STEP)
   const ratios = new Map(
-    Array.from(small, ([name, span]) => [name, large.get(name) / span]),
+    Array.from(
+      small.spans, ([name, span]) => [name, large.spans.get(name) / span],
+    ),
   )
-  const whole = Array.from(large.values()).reduce((one, two) => one + two, 0)
+  const whole = Array.from(large.spans.values())
+    .reduce((one, two) => one + two, 0)
   const linear = middle(Array.from(ratios.values()))
-  return new Map(
-    Array.from(large, ([name, span]) => [name, {
-      share: 100 * span / whole,
-      growth: ratios.get(name) / linear,
-    }]),
-  )
+  return {
+    stages: new Map(
+      Array.from(large.spans, ([name, span]) => [name, {
+        share: 100 * span / whole,
+        growth: ratios.get(name) / linear,
+      }]),
+    ),
+    checks: new Map(
+      Array.from(
+        costed(large.given), ([name, span]) => [name, 100 * span / whole],
+      ),
+    ),
+  }
 }
 
 /**
  * What is wrong with a stage's readings, or an empty string when nothing is.
- * The lowest of them answers every question, noise making one attempt disagree
- * where a real change reads the same way in all. A non-finite growth is no
- * reading and is dropped: Windows charges processor time in ticks coarser than
- * a cheap stage costs over the small corpus. The share is unhurt.
+ * A ceiling is judged off the cheapest of them and the slack off the dearest,
+ * each side asked of the reading that most favours passing. A non-finite growth
+ * is no reading and is dropped: Windows charges in ticks coarser than a cheap
+ * stage costs over the small corpus, which leaves the share unhurt.
  * @param {string} name - Name of the stage
  * @param {Array.<{share: number, growth: number}>} readings - Per attempt
  * @return {string} - The fault, or an empty string
  */
 const fault = function(name, readings) {
-  const share = Math.min(...readings.map((one) => one.share))
+  const cheapest = Math.min(...readings.map((one) => one.share))
+  const dearest = Math.max(...readings.map((one) => one.share))
   const growths = readings.map((one) => one.growth).filter(Number.isFinite)
   const named = Object.hasOwn(SHARES, name)
   let ceiling = SHARE
@@ -385,43 +535,92 @@ const fault = function(name, readings) {
     ceiling = SHARES[name]
   }
   let said = ''
-  if (share > ceiling) {
-    said = `${name} spends ${share.toFixed(2)}% of its own run, past the ` +
+  if (cheapest > ceiling) {
+    said = `${name} spends ${cheapest.toFixed(2)}% of its own run, past the ` +
       `${ceiling}% that test/scaling.test.js allows it`
   } else if (!named && growths.length > 0 && Math.min(...growths) > GROWTH) {
     said = `${name} grew ${Math.min(...growths).toFixed(2)} times what the ` +
       `middle stage grew when the corpus grew ${STEP} times, so its shape has ` +
       `changed`
-  } else if (named && ceiling > SLACK * share) {
-    said = `${name} spends only ${share.toFixed(2)}% of its run where it is ` +
-      `allowed ${ceiling}%, so the entry has stopped being a bar and wants ` +
+  } else if (named && ceiling > SLACK * dearest) {
+    said = `${name} spends at most ${dearest.toFixed(2)}% of its run where it ` +
+      `is allowed ${ceiling}%, so the entry has stopped being a bar and wants ` +
       `tightening`
   }
   return said
 }
 
 /**
- * Every stage whose cost or growth disagrees with what its bar says, measured
- * again up to `ATTEMPTS` times while any of them does, beside the whole table
- * of readings — a gate that fails must say what it measured. The first
- * measurement is thrown away, on the one principle a warm-up has: warm the
- * code with the work about to be timed.
+ * What is wrong with one check's readings, or an empty string when nothing is.
+ * No growth question stands beside the share: a check is part of one stage, and
+ * the stage is asked how it grew already. The two ends of the readings answer
+ * the two sides here as they do for a stage, and for the same reason.
+ * @param {string} name - Name of the check
+ * @param {Array.<number>} readings - Its share of the run, per attempt
+ * @return {string} - The fault, or an empty string
+ */
+const overspent = function(name, readings) {
+  const cheapest = Math.min(...readings)
+  const dearest = Math.max(...readings)
+  const named = Object.hasOwn(COSTS, name)
+  let ceiling = COST
+  if (named) {
+    ceiling = COSTS[name]
+  }
+  let said = ''
+  if (cheapest > ceiling) {
+    said = `${name} costs ${cheapest.toFixed(2)}% of the run, past the ` +
+      `${ceiling}% that test/scaling.test.js allows it`
+  } else if (named && ceiling > SLACK * dearest) {
+    said = `${name} costs at most ${dearest.toFixed(2)}% of the run where it ` +
+      `is allowed ${ceiling}%, so the entry has stopped being a bar and wants ` +
+      `tightening`
+  }
+  return said
+}
+
+/**
+ * What one attempt measured, as the line a failing gate prints: every stage
+ * with its growth beside its share, then every check answering to a bar of its
+ * own, dearest first, that being the order a re-cut of `COST` reads them in.
+ * @param {{stages: Map, checks: Map}} weight - One attempt's readings
+ * @return {string} - The readings, joined
+ */
+const tabled = function(weight) {
+  return Array.from(weight.stages, ([name, one]) =>
+    `${name} ${one.share.toFixed(2)}% of its run, grew ` +
+    `${one.growth.toFixed(2)}`).concat(
+    Array.from(weight.checks).sort((one, two) => two[1] - one[1]).map(
+      ([name, share]) => `${name} ${share.toFixed(2)}%`,
+    ),
+  ).join(', ')
+}
+
+/**
+ * Every stage whose cost or growth, and every check whose cost, disagrees with
+ * what its bar says, measured again up to `ATTEMPTS` times while any of them
+ * does, beside the whole table of readings — a gate that fails must say what it
+ * measured. The first measurement is thrown away, on the one principle a
+ * warm-up has: warm the code with the work about to be timed.
  * @return {{faults: Array.<string>, table: string}} - Faults and the readings
  */
 const judged = function() {
   weighed(ATTEMPTS)
   const readings = new Map()
+  const costs = new Map()
   let found = []
   let table = ''
   for (let attempt = 0; attempt < ATTEMPTS; attempt++) {
     const weight = weighed(attempt)
-    for (const [name, one] of weight) {
+    for (const [name, one] of weight.stages) {
       readings.set(name, (readings.get(name) ?? []).concat([one]))
     }
-    table = Array.from(weight, ([name, one]) =>
-      `${name} ${one.share.toFixed(2)}% of its run, grew ` +
-      `${one.growth.toFixed(2)}`).join(', ')
+    for (const [name, share] of weight.checks) {
+      costs.set(name, (costs.get(name) ?? []).concat([share]))
+    }
+    table = tabled(weight)
     found = Array.from(readings, ([name, list]) => fault(name, list))
+      .concat(Array.from(costs, ([name, list]) => overspent(name, list)))
       .filter((said) => said !== '')
     if (found.length === 0) {
       break
@@ -439,9 +638,12 @@ const judged = function() {
  * @type {{[name: string]: string}}
  */
 const QUOTED = Object.assign(
-  {SHARE: `${SHARE}%`, GROWTH: GROWTH.toFixed(1)},
+  {SHARE: `${SHARE}%`, GROWTH: GROWTH.toFixed(1), COST: `${COST}%`},
   Object.fromEntries(
     Object.keys(SHARES).map((name) => [name, `${SHARES[name]}%`]),
+  ),
+  Object.fromEntries(
+    Object.keys(COSTS).map((name) => [name, `${COSTS[name]}%`]),
   ),
 )
 
@@ -483,7 +685,7 @@ const misquoted = function(guide) {
   )
 }
 describe('scaling', function() {
-  it('holds every stage to the cost and growth its bar allows', function() {
+  it('holds every stage and check to the bar it answers to', function() {
     this.timeout(120000)
     if (instrumented()) {
       this.skip()
@@ -492,7 +694,7 @@ describe('scaling', function() {
     assert.deepEqual(
       judgement.faults,
       [],
-      'a stage no longer costs or grows the way the bars in ' +
+      'a stage or a check no longer costs or grows the way the bars in ' +
         `test/scaling.test.js say, over a corpus of ${SMALL} stylesheets and ` +
         `one of ${SMALL * STEP}: ${judgement.table}`,
     )
@@ -506,6 +708,32 @@ describe('scaling', function() {
       [],
       'a stage is allowed a cost of its own by name, yet nothing of that name ' +
         'runs any more, so the entry weighs on nothing',
+    )
+  })
+  it('names in COSTS only checks the pipeline still runs', function() {
+    assert.deepEqual(
+      Object.keys(COSTS).filter(
+        (name) => !STAGES.some((stage) => stage.checks.includes(name)),
+      ),
+      [],
+      'a check is allowed a cost of its own by name, yet no stage owns one ' +
+        'of that name any more, so the entry weighs on nothing',
+    )
+  })
+  it('names in SHADOWED every check a sibling rides along with', function() {
+    assert.deepEqual(
+      Object.fromEntries(
+        STAGES.flatMap((stage) => stage.checks.map((check) => [
+          check,
+          stage.checks.filter(
+            (one) => one !== check && check.includes(one),
+          ).join(' '),
+        ])).filter((pair) => pair[1] !== ''),
+      ),
+      SHADOWED,
+      'a check name stands inside another of its own stage, so the sweep ' +
+        'above cannot run the one without the other and charges the pair to ' +
+        'a single bar without saying so',
     )
   })
   it('measures every linter the pipeline is staged from', function() {

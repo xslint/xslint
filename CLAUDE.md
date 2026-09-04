@@ -53,8 +53,8 @@ three platforms and two node versions, and `corpora`, which times a real run
 The suite comes in two halves, and the line between them is a child process. A
 **deep** test starts one — it runs `xslint` or `xcop` the way a user does — and
 is named `*.deep.test.js`; every other test stays in this process. Six files
-are deep, and they still cost most of what the suite costs: 674 of the 2927
-tests, 9 of the 14 seconds. The other 2253 finish inside one, which is why
+are deep, and they still cost most of what the suite costs: 674 of the 2953
+tests, 9 of the 14 seconds. The other 2279 finish inside one, which is why
 `npm run fast` is the loop to work in and `npm test` the one to finish on. The
 deep target runs under `mocha --parallel`, so those six files run at once and
 the slowest of them sets the clock — `xslint.deep.test.js` alone, whose 52 tests
@@ -100,31 +100,9 @@ count with it — a race parallel mode turns from theory into one failure in fou
 `conformance.test.js` fails any test file that writes without asking for a
 temporary directory.
 
-Both halves run on one mocha, and did not until #841: `grunt-mocha-cli` pins
-`mocha ^8.2.0`, so `npm install` nested a second mocha under it — 8.4.0,
-from 2021 — and `grunt mochacli` ran the suite there while `npm run coverage`
-ran it on 11. That nested tree is where two of the nine advisories `npm audit`
-read on master stood and nowhere else, `nanoid` and `minimatch`. An
-`overrides` entry in `package.json` holds it to the `mocha` the root declares,
-and `manifest.test.js` asks it of every tool a grunt wrapper runs — of
-`grunt-eslint`'s `eslint` too since #855, which had nested a 9 under the
-declared 10 the same way, and had been supplying the config's own imports out
-of that nest. The rest of
-that entry lifts `diff` and `serialize-javascript` to the majors mocha 12 ships
-with — every version mocha 11's own ranges admit is an advisory, and its one
-call into each is unchanged in 12 — grunt's `js-yaml` to 4, whose `safeLoad`
-grunt calls only in a `readYAML` nothing here calls, 3.x never having been
-patched, and `typed-rest-client`'s exact `qs` up a minor — a floor and not a
-pin, the range two advisories cover having since reached the patch #841 first
-lifted it to (#870). The two majors
-are spelled at the top level rather than under `mocha`, because npm 11.12
-honours a range scoped under `grunt` or `grunt-mocha-cli` and drops the
-same range scoped under `mocha`. `daily.yml` runs `npm audit` in a job of its
-own beside the six cells that run the suite, so the next advisory files an
-issue by morning without taking a platform's test result down with it — an
-advisory this project waits on upstream to patch would otherwise leave
-Windows unmeasured for as long as the wait lasts, and six identical audits
-say one thing.
+Both halves run on one mocha, and did not until #841, whose `overrides` entry
+in `package.json` — the pins standing around it, and the audit job beside
+them — is derived at the top of `test/manifest.test.js`.
 
 ## Speed
 
@@ -142,20 +120,24 @@ builds at 40 stylesheets and again at 160, and asks two questions of each: what
 percentage of the whole run it cost, and how it grew beside the middle stage's
 growth. Both are quotients taken inside one process, which is what cancels the
 machine. `SHARES` names the three stages that legitimately cost more of a run
-than the rest — `xpath-linter` at 42%, `xpath-validator` at 26%,
-`xsl-validator` at 18% — and every other stage answers to one bar, `SHARE` at
-7%; growth is asked only of the stages with no entry, against `GROWTH` at 3.0,
-since an entry pins what a stage costs outright and that is the stronger
-statement. `corpora.yml` is the nightly tier, timing DocBook-XSL, TEI and
-DITA-OT at pinned commits against a budget of 13, 13 and 6 seconds, and
-asserting what it read rather than only how long it took — including every
-defect it drew since #638, diffed by `scripts/snapshot.js` against a report
-committed per corpus, since a check that changes what it reports over a real
-stylesheet is a change nothing else here notices. What a gate measured
-at one size cannot see is a quadratic whose constant is still small there, so
-`test/import-linter.test.js` is a third instrument, timing one check over a
-chain of 200 stylesheets and again over 800 and failing past a growth of 8
-(#769).
+than the rest — `xpath-linter` at 39%, `xpath-validator` at 26%, `xsl-validator`
+at 18% — and every other stage answers to one bar, `SHARE` at 7%; growth is
+asked only of the stages with no entry, against `GROWTH` at 3.0, since an entry
+pins what a stage costs outright and that is the stronger statement. The same
+pair stands one level down since #811, a stage's share being blind to one check
+of thirty-eight going quadratic: every check of a stage owning several answers
+to `COST` at 3%, and `COSTS` names the three that legitimately cost more,
+`name-starts-with-numeric` at 7%, `text-outside-xsl-text` at 8% and
+`too-many-templates` at 4%. `corpora.yml` is the nightly tier, timing
+DocBook-XSL, TEI and DITA-OT at pinned commits against a budget of 13, 13 and 6
+seconds, and asserting what it read rather than only how long it took —
+including every defect it drew since #638, diffed by `scripts/snapshot.js`
+against a report committed per corpus, since a check that changes what it
+reports over a real stylesheet is a change nothing else here notices. What a
+gate measured at one size cannot see is a quadratic whose constant is still
+small there, so `test/import-linter.test.js` is a third instrument, timing one
+check over a chain of 200 stylesheets and again over 800 and failing past a
+growth of 8 (#769).
 
 Every one of those tables is a **ratchet and not a licence**, red from both
 sides: past the bar, or so far under it that `SLACK` (four) says the bar has
@@ -385,45 +367,17 @@ written from the same place (#715). The `-linter` suffix stays inside
 `src/linters/` for one reason — dropping it would put `linters/xpath.js` one word
 from `src/xpath.js`, the fontoxpath environment.
 
-`src/xslint.js` exposes the whole staging as a pure function,
-`lint(sources, {suppress, overrides}) => defects`: no file I/O, prints nothing,
-never exits. It hands the defects back in one total order — file, line, column,
-check name, by code unit and never by locale — so a report taken today diffs
-against one taken tomorrow, and neither the order the walk found the files in
-nor the order the linters are wired in reaches a reader (#638). The
-command-line `xslint(paths, options)` in the same module wraps
-it — resolves config, reads the `.xsl` files, calls `lint`, applies `--fix`,
-reports, and sets the exit code. It sets it as `process.exitCode` and never
-`process.exit`, which ends the process where it stands and abandons every write
-the kernel has not taken: node's stdout is asynchronous to a pipe on POSIX —
-synchronous to a file, to a terminal, and to a pipe on Windows — so whether the
-report arrived whole depended on how fast the other end read it. Twenty
-stylesheets draw 720 defects here, 165,500 bytes of report: a file or a terminal
-takes all of it, a shell pipe whose reader stalls for two seconds takes 65,492
-bytes, and the socket `spawn` hands a child takes none at all. The exit code was
-right in each of those, so nothing announced the loss (#767). A
-`no-restricted-syntax` selector bans the call across the repository, nothing
-here having a use for it — the `catch` around the parse in `src/index.mjs` sets
-the same field. What pins it is a pair of runs whose reader stays paused until
-stderr says how many defects were found, counting the report's lines against
-that number: one report wider than the pipe and one narrower, since how wide a
-pipe the host gives is what decides which of the two shapes a run of this suite
-meets. The wide one leaves the run writing into a pipe nobody is emptying, which
-is the write `process.exit` abandons and the whole of what #767 is
-about — put back, it reports 312 of the 760 lines it counted. The narrow one is
-taken whole before the reader looks, so the run is over and the hazard is node's
-own rather than this project's: one `process.nextTick` after a child exits,
-`flushStdio` resumes every readable stdio stream of it, deliberately, so the
-stream can reach eof, and an untouched one is read and thrown away. A stalled
-reader must therefore own the data rather than leave it for that flush, which is
-`test/helpers.js`'s business and what the narrow row pins. Twenty stylesheets
-were the whole of the test until #822, so its verdict stood on the host's socket
-buffer and not on the run: those twenty are 147,620 bytes of report now, which
-fits whatever rultor's docker container gives, so the run finished first, node
-discarded the report, and eleven merges in a row read `-0` on a commit six
-GitHub runners passed. The package `main` re-exports `lint` and
-`fixed` so an embedder (the planned LSP server, #336) can lint a buffer without
-shelling out; the bin stays `src/index.mjs`.
+`src/xslint.js` exposes the whole staging as a pure function, `lint(sources,
+{suppress, overrides}) => defects`: no file I/O, prints nothing, never exits,
+and hands the defects back in one total order rather than in the order the
+walk or the wiring happened to give (#638). The command-line `xslint(paths,
+options)` in the same module wraps it — resolves config, reads the `.xsl`
+files, calls `lint`, applies `--fix`, reports, and sets the exit code as
+`process.exitCode`, a `no-restricted-syntax` selector banning the
+`process.exit` that ends the process where it stands and abandons every write
+the kernel has not taken (#767, #822). The package `main` re-exports `lint`
+and `fixed` so an embedder (the planned LSP server, #336) can lint a buffer
+without shelling out; the bin stays `src/index.mjs`.
 
 `src/index.mjs` reaches `xslint.js` through a dynamic `import` inside the
 command action, not a top-level one, and so runs `program.parseAsync`. Importing
@@ -724,20 +678,19 @@ Then run `npx grunt checks`, `npm test`, `npm run coverage`, and
   behind it used to cost a traversal for every check spelling one. A wildcard
   or a predicate that could answer a number — picking one node out of
   the sequence rather than filtering it — cannot be served, and a selector
-  spelling one of those goes on `UNINDEXED` in `test/conformance.test.js`
-  beside the shape that keeps it out — which is enforced from both sides, so
-  neither a selector that could be served and is listed nor one that is served
-  and unlisted survives (#784). An attribute axis is served since #811, both
-  `//@*` and one named attribute of named elements, so it is no longer a reason
-  to be on that list, and neither is an anchor, nor a union of any spelling; a
-  cross-file check answers to a
+  spelling one of those goes on `UNINDEXED` in `test/conformance.test.js`, the
+  five selectors left, each beside the shape that keeps it out — which is
+  enforced from both sides, so neither a selector that could be served and is
+  listed nor one that is served and unlisted survives (#784). An attribute axis
+  is served since #811, both `//@*` and one named attribute of named elements,
+  so it is no longer a reason to be on that list, and neither is an anchor, nor
+  a union of any spelling, nor one spelled inside brackets a predicate stands
+  outside of; a cross-file check answers to a
   gate with no list at all, every one of its selectors being served and a fifth
-  belonging in that shape too. What keeps the seven that are left out is a
-  descending **predicate** for five of them — the axis is the root itself, one
-  node, and everything the selector costs is inside the brackets — a wildcard
-  for one, and for one a union of attribute paths spelled inside brackets a
-  predicate stands outside of, which is neither a sweep to part nor an axis the
-  merge can order.
+  belonging in that shape too. What keeps those five out is a descending
+  **predicate** for all but one of them — the axis is the root itself, one
+  node, and everything the selector costs is inside the brackets — and for that
+  one a wildcard, which names no bucket the walk holds.
 - **Fix in the same change.** If a check is fixable, land the fix with the
   detection — never defer it. A declarative rule gets a `node => fix` builder in
   `src/fixers.js`; a code-based linter attaches the `fix` to its defect. Mark it
@@ -1001,7 +954,7 @@ one of them.
 | `src/predicates.js` | `predicateOf` — what one predicate of a served selector answers of a candidate, off the walk rather than the engine, or nothing where the engine must answer it |
 | `src/attributes.js` | `expressionsOf` — every expression a stylesheet carries; `PATTERNS`, and `whole` for a linter that narrows to one attribute |
 | `src/xsl-version.js` | `versionOf` and `since` — the version in force at a node, and a lower-bound gate over it |
-| `src/tree.js` | One pass over a document, remembered against it: `walked`, `named`, `attributed`, `holding` |
+| `src/tree.js` | One pass over a document, remembered against it: `walked`, `named`, `attributed`, `ranked`, `holding` |
 | `src/comparisons.js` | `comparedToZero` — the shared scan for a call compared with `0`/`1` (count, string-length) |
 | `src/booleans.js` | `coerced` and `unwrapped` — where nothing but an effective boolean value is taken, and what may stand there instead |
 | `src/expressions.js` | `enclosed` — the expressions an attribute value template holds in its braces |
