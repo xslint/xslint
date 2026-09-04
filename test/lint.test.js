@@ -200,4 +200,12 @@ describe('lint (programmatic API)', function() {
       [true, true],
     )
   })
+  it('counts no column of the first line in a byte order mark', function() {
+    assert.deepEqual(
+      lint([source('fix/a-mark-no-column-counts-in.xsl')])
+        .filter((defect) => defect.line === 1)
+        .map((defect) => defect.fix.col),
+      [103],
+    )
+  })
 })

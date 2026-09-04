@@ -17,6 +17,11 @@ const KEPT = [
     content: '<a><b/></a>',
   },
   {
+    name: 'should keep a stylesheet that opens on a byte order mark',
+    file: 'marked.xsl',
+    content: '\uFEFF<a><b/></a>',
+  },
+  {
     name: 'should keep a stylesheet that declares an internal entity',
     file: 'declared.xsl',
     content: '<!DOCTYPE a [<!ENTITY sc "x">]>\n<a>&sc;</a>',
@@ -25,6 +30,27 @@ const KEPT = [
     name: 'should keep a stylesheet whose entities come from an external subset',
     file: 'external.xsl',
     content: '<!DOCTYPE a [<!ENTITY % ent SYSTEM "e.ent"> %ent;]>\n<a>&primary;</a>',
+  },
+  {
+    name: 'should keep a stylesheet whose entity name holds a dot',
+    file: 'dotted.xsl',
+    content: '<!DOCTYPE a [<!ENTITY sc.name "x">]>\n<a>&sc.name;</a>',
+  },
+  {
+    name: 'should keep a stylesheet whose entity name holds a hyphen',
+    file: 'hyphened.xsl',
+    content: '<!DOCTYPE a [<!ENTITY sc-name "x">]>\n<a>&sc-name;</a>',
+  },
+  {
+    name: 'should keep a stylesheet whose dotted entity comes from a DTD',
+    file: 'inherited.xsl',
+    content: '<!DOCTYPE a [<!ENTITY % ent SYSTEM "e.ent"> %ent;]>\n' +
+      '<a>&comment.block.parents;</a>',
+  },
+  {
+    name: 'should keep a stylesheet whose dotted entity stands in an attribute',
+    file: 'valued.xsl',
+    content: '<!DOCTYPE a [<!ENTITY sc.name "x">]>\n<a b="&sc.name;"/>',
   },
   {
     name: 'should keep a stylesheet whose ampersand stands inside a comment',
@@ -60,6 +86,11 @@ const KEPT = [
     name: 'should keep a stylesheet whose section close stands in an attribute',
     file: 'attributed.xsl',
     content: '<a b="ends on ]]> here"/>',
+  },
+  {
+    name: 'should keep a declaration whose ampersand opens a reference',
+    file: 'bound.xsl',
+    content: '<a xmlns:q="urn:x&amp;y"/>',
   },
 ]
 
@@ -104,6 +135,36 @@ const REPORTED = [
     content: '<a>Tom & Jerry</a><!-- ; -->',
   },
   {
+    name: 'should report an ampersand that opens no reference in an attribute',
+    file: 'attribute.xsl',
+    content: '<a b="Tom & Jerry"/>',
+  },
+  {
+    name: 'should report a bare ampersand standing in a later attribute',
+    file: 'second.xsl',
+    content: '<a b="ok" c="Tom & Jerry"/>',
+  },
+  {
+    name: 'should report a bare ampersand in an attribute deep in the tree',
+    file: 'nested.xsl',
+    content: '<a><b/><c d="Tom & Jerry"/></a>',
+  },
+  {
+    name: 'should report an ampersand whose semicolon never arrives in text',
+    file: 'truncated.xsl',
+    content: '<a>&amp Jerry</a>',
+  },
+  {
+    name: 'should report an ampersand whose semicolon never arrives in a value',
+    file: 'clipped.xsl',
+    content: '<a b="&amp Jerry"/>',
+  },
+  {
+    name: 'should report a stylesheet malformed behind a byte order mark',
+    file: 'stamped.xsl',
+    content: '\uFEFF<a><b></a>',
+  },
+  {
     name: 'should report an attribute value standing without any quotes',
     file: 'unquoted.xsl',
     content: '<a b=c/>',
@@ -138,6 +199,31 @@ const REPORTED = [
     file: 'bracketed.xsl',
     content: '<a>x ]]]> y</a>',
   },
+  {
+    name: 'should report a bare ampersand in a namespace declaration',
+    file: 'namespaced.xsl',
+    content: '<a xmlns:q="urn:x&y"/>',
+  },
+  {
+    name: 'should report a bare ampersand declaring the default namespace',
+    file: 'defaulted.xsl',
+    content: '<a xmlns="urn:x&y"/>',
+  },
+  {
+    name: 'should report an unreachable entity in a namespace declaration',
+    file: 'unbound.xsl',
+    content: '<a xmlns:q="&nope;"/>',
+  },
+  {
+    name: 'should report a namespace declaration standing behind an attribute',
+    file: 'aside.xsl',
+    content: '<a b="ok" xmlns:q="urn:x&y"/>',
+  },
+  {
+    name: 'should report a namespace declaration deep in the tree',
+    file: 'descended.xsl',
+    content: '<a><b/><c xmlns:q="urn:x&y"/></a>',
+  },
 ]
 
 /**
@@ -148,6 +234,12 @@ const EXPAND = [
   {
     name: 'should expand an internal entity into the parsed value',
     content: '<!DOCTYPE a [<!ENTITY lc "\'abc\'">]>\n<a t="translate(.,&lc;,X)"/>',
+    expected: 'translate(.,\'abc\',X)',
+  },
+  {
+    name: 'should expand an entity whose name holds a dot',
+    content: '<!DOCTYPE a [<!ENTITY lc.set "\'abc\'">]>\n' +
+      '<a t="translate(.,&lc.set;,X)"/>',
     expected: 'translate(.,\'abc\',X)',
   },
   {

@@ -5,7 +5,11 @@ the root `CLAUDE.md`.
 
 ## `src/validators/xsl-validator.js`
 
-Builds the corpus; reports each non-well-formed stylesheet.
+Builds the corpus; reports each non-well-formed stylesheet. What "well-formed" means is
+`xmlFromString`'s rather than `@xmldom/xmldom`'s, which both repairs faults of its own accord and
+refuses documents every processor loads: eight stylesheets of the three corpora were reported here
+for an entity name holding a dot or a byte order mark opening the file, and the derivation of both
+answers stands under `src/helpers.js` and `src/source.js` in `src/CLAUDE.md` (#877).
 
 ## `src/validators/xpath-validator.js`
 

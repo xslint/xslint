@@ -928,8 +928,6 @@ xsl/common/l10n.xsl:2:1 missing-id-in-stylesheet
 xsl/common/l10n.xsl:2:1 too-many-templates
 xsl/common/l10n.xsl:164:1 unused-named-template
 xsl/common/l10n.xsl:281:1 unused-named-template
-xsl/common/l10n.xsl:340:1 unused-named-template
-xsl/common/l10n.xsl:346:1 unused-named-template
 xsl/common/l10n.xsl:378:1 oversized-template
 xsl/common/l10n.xsl:398:18 count-compared-to-zero fix "not($localization.node)"
 xsl/common/l10n.xsl:410:18 count-compared-to-zero fix "not($context.node)"
@@ -1664,7 +1662,32 @@ xsl/fo/formal.xsl:360:7 text-outside-xsl-text suggestion "<xsl:text>before</xsl:
 xsl/fo/formal.xsl:373:5 use-choose-without-otherwise
 xsl/fo/formal.xsl:538:7 text-outside-xsl-text suggestion "<xsl:text>before</xsl:text>"
 xsl/fo/formal.xsl:607:5 use-choose-without-otherwise
-xsl/fo/glossary.xsl:1:1 malformed-stylesheet
+xsl/fo/glossary.xsl:6:1 missing-id-in-stylesheet
+xsl/fo/glossary.xsl:6:1 too-many-templates
+xsl/fo/glossary.xsl:33:1 text-outside-xsl-text suggestion "<xsl:text>\n\n  &setup-language-variable;\n\n  </xsl:text>"
+xsl/fo/glossary.xsl:150:3 unused-variable
+xsl/fo/glossary.xsl:224:1 text-outside-xsl-text suggestion "<xsl:text>\n  &setup-language-variable;\n\n  </xsl:text>"
+xsl/fo/glossary.xsl:334:1 text-outside-xsl-text suggestion "<xsl:text>\n\n  &setup-language-variable;\n\n  </xsl:text>"
+xsl/fo/glossary.xsl:336:35 select-starts-with-double-slash suggestion ".//"
+xsl/fo/glossary.xsl:512:3 unused-variable
+xsl/fo/glossary.xsl:582:1 text-outside-xsl-text suggestion "<xsl:text>\n\n  &setup-language-variable;\n\n  </xsl:text>"
+xsl/fo/glossary.xsl:632:1 text-outside-xsl-text suggestion "<xsl:text>\n\n  &setup-language-variable;\n\n  </xsl:text>"
+xsl/fo/glossary.xsl:681:1 text-outside-xsl-text suggestion "<xsl:text>\n\n  &setup-language-variable;\n\n  </xsl:text>"
+xsl/fo/glossary.xsl:728:3 unused-variable
+xsl/fo/glossary.xsl:736:11 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
+xsl/fo/glossary.xsl:738:11 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
+xsl/fo/glossary.xsl:801:3 text-outside-xsl-text suggestion "<xsl:text>, </xsl:text>"
+xsl/fo/glossary.xsl:806:3 text-outside-xsl-text suggestion "<xsl:text>, </xsl:text>"
+xsl/fo/glossary.xsl:811:3 text-outside-xsl-text suggestion "<xsl:text>, </xsl:text>"
+xsl/fo/glossary.xsl:865:34 name-compared-to-string
+xsl/fo/glossary.xsl:939:1 text-outside-xsl-text suggestion "<xsl:text>\n  &setup-language-variable;\n\n  </xsl:text>"
+xsl/fo/glossary.xsl:979:3 unused-variable
+xsl/fo/glossary.xsl:987:11 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
+xsl/fo/glossary.xsl:989:11 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
+xsl/fo/glossary.xsl:1039:3 text-outside-xsl-text suggestion "<xsl:text>, </xsl:text>"
+xsl/fo/glossary.xsl:1044:3 text-outside-xsl-text suggestion "<xsl:text>, </xsl:text>"
+xsl/fo/glossary.xsl:1049:3 text-outside-xsl-text suggestion "<xsl:text>, </xsl:text>"
+xsl/fo/glossary.xsl:1098:34 name-compared-to-string
 xsl/fo/graphics.xsl:6:1 missing-id-in-stylesheet
 xsl/fo/graphics.xsl:6:1 too-many-templates
 xsl/fo/graphics.xsl:57:3 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
@@ -1758,7 +1781,43 @@ xsl/fo/index.xsl:475:5 text-outside-xsl-text suggestion "<xsl:text>fo:block</xsl
 xsl/fo/index.xsl:476:5 text-outside-xsl-text suggestion "<xsl:text>fo:wrapper</xsl:text>"
 xsl/fo/index.xsl:477:5 text-outside-xsl-text suggestion "<xsl:text>fo:inline</xsl:text>"
 xsl/fo/info.xsl:2:1 missing-id-in-stylesheet
-xsl/fo/inline.xsl:1:1 malformed-stylesheet
+xsl/fo/inline.xsl:6:1 missing-id-in-stylesheet
+xsl/fo/inline.xsl:6:1 too-many-templates
+xsl/fo/inline.xsl:39:7 use-choose-without-otherwise
+xsl/fo/inline.xsl:66:11 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
+xsl/fo/inline.xsl:70:11 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
+xsl/fo/inline.xsl:79:11 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
+xsl/fo/inline.xsl:81:11 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
+xsl/fo/inline.xsl:108:29 count-compared-to-zero fix "not($target)"
+xsl/fo/inline.xsl:150:25 count-compared-to-zero fix "not($target)"
+xsl/fo/inline.xsl:173:1 unused-named-template
+xsl/fo/inline.xsl:191:15 text-outside-xsl-text suggestion "<xsl:text>ltr</xsl:text>"
+xsl/fo/inline.xsl:192:15 text-outside-xsl-text suggestion "<xsl:text>rtl</xsl:text>"
+xsl/fo/inline.xsl:223:15 text-outside-xsl-text suggestion "<xsl:text>ltr</xsl:text>"
+xsl/fo/inline.xsl:224:15 text-outside-xsl-text suggestion "<xsl:text>rtl</xsl:text>"
+xsl/fo/inline.xsl:254:11 text-outside-xsl-text suggestion "<xsl:text>ltr</xsl:text>"
+xsl/fo/inline.xsl:255:11 text-outside-xsl-text suggestion "<xsl:text>rtl</xsl:text>"
+xsl/fo/inline.xsl:279:11 text-outside-xsl-text suggestion "<xsl:text>ltr</xsl:text>"
+xsl/fo/inline.xsl:280:11 text-outside-xsl-text suggestion "<xsl:text>rtl</xsl:text>"
+xsl/fo/inline.xsl:304:11 text-outside-xsl-text suggestion "<xsl:text>ltr</xsl:text>"
+xsl/fo/inline.xsl:305:11 text-outside-xsl-text suggestion "<xsl:text>rtl</xsl:text>"
+xsl/fo/inline.xsl:329:11 text-outside-xsl-text suggestion "<xsl:text>ltr</xsl:text>"
+xsl/fo/inline.xsl:330:11 text-outside-xsl-text suggestion "<xsl:text>rtl</xsl:text>"
+xsl/fo/inline.xsl:354:11 text-outside-xsl-text suggestion "<xsl:text>ltr</xsl:text>"
+xsl/fo/inline.xsl:355:11 text-outside-xsl-text suggestion "<xsl:text>rtl</xsl:text>"
+xsl/fo/inline.xsl:379:11 text-outside-xsl-text suggestion "<xsl:text>ltr</xsl:text>"
+xsl/fo/inline.xsl:380:11 text-outside-xsl-text suggestion "<xsl:text>rtl</xsl:text>"
+xsl/fo/inline.xsl:412:11 text-outside-xsl-text suggestion "<xsl:text>ltr</xsl:text>"
+xsl/fo/inline.xsl:413:11 text-outside-xsl-text suggestion "<xsl:text>rtl</xsl:text>"
+xsl/fo/inline.xsl:952:25 count-compared-to-zero fix "not($targets)"
+xsl/fo/inline.xsl:1001:7 text-outside-xsl-text suggestion "<xsl:text>element</xsl:text>"
+xsl/fo/inline.xsl:1113:15 not-creating-attribute-correctly
+xsl/fo/inline.xsl:1136:7 text-outside-xsl-text suggestion "<xsl:text>+</xsl:text>"
+xsl/fo/inline.xsl:1137:7 text-outside-xsl-text suggestion "<xsl:text>-</xsl:text>"
+xsl/fo/inline.xsl:1138:7 text-outside-xsl-text suggestion "<xsl:text>-</xsl:text>"
+xsl/fo/inline.xsl:1139:7 text-outside-xsl-text suggestion "<xsl:text>-</xsl:text>"
+xsl/fo/inline.xsl:1141:7 text-outside-xsl-text suggestion "<xsl:text>+</xsl:text>"
+xsl/fo/inline.xsl:1267:40 select-starts-with-double-slash suggestion ".//"
 xsl/fo/keywords.xsl:2:1 missing-id-in-stylesheet
 xsl/fo/keywords.xsl:5:3 redundant-namespace-declarations fix ""
 xsl/fo/lists.xsl:2:1 missing-id-in-stylesheet
@@ -1935,9 +1994,6 @@ xsl/fo/passivetex.xsl:2:1 not-using-output
 xsl/fo/passivetex.xsl:5:3 redundant-namespace-declarations fix ""
 xsl/fo/pi.xsl:2:1 missing-id-in-stylesheet
 xsl/fo/pi.xsl:2:1 too-many-templates
-xsl/fo/pi.xsl:248:1 unused-named-template
-xsl/fo/pi.xsl:287:1 unused-named-template
-xsl/fo/pi.xsl:326:1 unused-named-template
 xsl/fo/pi.xsl:976:7 text-outside-xsl-text suggestion "<xsl:text>0pt</xsl:text>"
 xsl/fo/ptc.xsl:1:1 missing-id-in-stylesheet
 xsl/fo/publishers.xsl:2:1 missing-id-in-stylesheet
@@ -2203,7 +2259,6 @@ xsl/html/admon.xsl:52:7 text-outside-xsl-text suggestion "<xsl:text>Important</x
 xsl/html/admon.xsl:52:23 name-compared-to-string
 xsl/html/admon.xsl:53:7 text-outside-xsl-text suggestion "<xsl:text>Note</xsl:text>"
 xsl/html/annotations.xsl:2:1 missing-id-in-stylesheet
-xsl/html/annotations.xsl:24:1 unused-named-template
 xsl/html/annotations.xsl:30:27 select-starts-with-double-slash suggestion ".//"
 xsl/html/annotations.xsl:60:7 short-names
 xsl/html/annotations.xsl:72:7 short-names
@@ -2213,7 +2268,21 @@ xsl/html/autoidx-kimber.xsl:11:1 not-using-output
 xsl/html/autoidx-kosek.xsl:6:1 missing-id-in-stylesheet
 xsl/html/autoidx-kosek.xsl:6:1 not-using-output
 xsl/html/autoidx-ng.xsl:2:1 missing-id-in-stylesheet
-xsl/html/autoidx.xsl:1:1 malformed-stylesheet
+xsl/html/autoidx.xsl:6:1 missing-id-in-stylesheet
+xsl/html/autoidx.xsl:6:1 too-many-templates
+xsl/html/autoidx.xsl:9:17 leaking-result-namespace suggestion "exslt d xlink"
+xsl/html/autoidx.xsl:194:3 unused-function-template-parameter
+xsl/html/autoidx.xsl:225:3 unused-function-template-parameter
+xsl/html/autoidx.xsl:365:3 use-choose-without-otherwise
+xsl/html/autoidx.xsl:456:3 use-choose-without-otherwise
+xsl/html/autoidx.xsl:548:3 use-choose-without-otherwise
+xsl/html/autoidx.xsl:720:3 unused-function-template-parameter
+xsl/html/autoidx.xsl:721:3 unused-function-template-parameter
+xsl/html/autoidx.xsl:722:3 unused-function-template-parameter
+xsl/html/autoidx.xsl:779:3 unused-function-template-parameter
+xsl/html/autoidx.xsl:780:3 unused-function-template-parameter
+xsl/html/autoidx.xsl:781:3 unused-function-template-parameter
+xsl/html/autoidx.xsl:861:3 use-choose-without-otherwise
 xsl/html/autotoc.xsl:2:1 missing-id-in-stylesheet
 xsl/html/autotoc.xsl:2:1 too-many-templates
 xsl/html/autotoc.xsl:17:5 text-outside-xsl-text suggestion "<xsl:text>dt</xsl:text>"
@@ -2522,7 +2591,30 @@ xsl/html/formal.xsl:322:7 text-outside-xsl-text suggestion "<xsl:text>before</xs
 xsl/html/formal.xsl:375:7 text-outside-xsl-text suggestion "<xsl:text>before</xsl:text>"
 xsl/html/formal.xsl:398:7 text-outside-xsl-text suggestion "<xsl:text>before</xsl:text>"
 xsl/html/formal.xsl:459:3 unused-variable
-xsl/html/glossary.xsl:1:1 malformed-stylesheet
+xsl/html/glossary.xsl:6:1 missing-id-in-stylesheet
+xsl/html/glossary.xsl:6:1 too-many-templates
+xsl/html/glossary.xsl:22:1 text-outside-xsl-text suggestion "<xsl:text>\n  &setup-language-variable;\n  </xsl:text>"
+xsl/html/glossary.xsl:85:1 text-outside-xsl-text suggestion "<xsl:text>\n  &setup-language-variable;\n  </xsl:text>"
+xsl/html/glossary.xsl:111:1 text-outside-xsl-text suggestion "<xsl:text>\n  &setup-language-variable;\n  </xsl:text>"
+xsl/html/glossary.xsl:163:15 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
+xsl/html/glossary.xsl:164:15 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
+xsl/html/glossary.xsl:171:15 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
+xsl/html/glossary.xsl:172:15 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
+xsl/html/glossary.xsl:195:15 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
+xsl/html/glossary.xsl:196:15 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
+xsl/html/glossary.xsl:203:15 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
+xsl/html/glossary.xsl:204:15 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
+xsl/html/glossary.xsl:224:15 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
+xsl/html/glossary.xsl:225:15 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
+xsl/html/glossary.xsl:232:15 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
+xsl/html/glossary.xsl:233:15 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
+xsl/html/glossary.xsl:254:3 text-outside-xsl-text suggestion "<xsl:text>, </xsl:text>"
+xsl/html/glossary.xsl:259:3 text-outside-xsl-text suggestion "<xsl:text>, </xsl:text>"
+xsl/html/glossary.xsl:264:3 text-outside-xsl-text suggestion "<xsl:text>, </xsl:text>"
+xsl/html/glossary.xsl:332:36 name-compared-to-string
+xsl/html/glossary.xsl:406:1 text-outside-xsl-text suggestion "<xsl:text>\n  &setup-language-variable;\n  </xsl:text>"
+xsl/html/glossary.xsl:409:25 select-starts-with-double-slash suggestion ".//"
+xsl/html/glossary.xsl:494:1 text-outside-xsl-text suggestion "<xsl:text>\n\n  &setup-language-variable;\n\n  </xsl:text>"
 xsl/html/graphics.xsl:2:1 missing-id-in-stylesheet
 xsl/html/graphics.xsl:2:1 too-many-templates
 xsl/html/graphics.xsl:33:3 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
@@ -2643,7 +2735,30 @@ xsl/html/index.xsl:250:7 use-choose-without-otherwise
 xsl/html/index.xsl:251:25 count-compared-to-zero fix "$see.intersection"
 xsl/html/index.xsl:254:25 count-compared-to-zero fix "not($next.entry)"
 xsl/html/info.xsl:2:1 missing-id-in-stylesheet
-xsl/html/inline.xsl:1:1 malformed-stylesheet
+xsl/html/inline.xsl:6:1 missing-id-in-stylesheet
+xsl/html/inline.xsl:6:1 too-many-templates
+xsl/html/inline.xsl:24:1 oversized-template
+xsl/html/inline.xsl:39:7 use-choose-without-otherwise
+xsl/html/inline.xsl:59:7 text-outside-xsl-text suggestion "<xsl:text>_blank</xsl:text>"
+xsl/html/inline.xsl:60:7 text-outside-xsl-text suggestion "<xsl:text>_top</xsl:text>"
+xsl/html/inline.xsl:76:13 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
+xsl/html/inline.xsl:80:13 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
+xsl/html/inline.xsl:89:13 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
+xsl/html/inline.xsl:91:13 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
+xsl/html/inline.xsl:118:31 count-compared-to-zero fix "not($target)"
+xsl/html/inline.xsl:171:15 not-creating-attribute-correctly
+xsl/html/inline.xsl:181:15 use-choose-without-otherwise
+xsl/html/inline.xsl:797:1 unused-named-template
+xsl/html/inline.xsl:823:28 redundant-whitespace fix " "
+xsl/html/inline.xsl:1037:45 select-starts-with-double-slash suggestion ".//"
+xsl/html/inline.xsl:1108:25 count-compared-to-zero fix "not($targets)"
+xsl/html/inline.xsl:1170:7 text-outside-xsl-text suggestion "<xsl:text>element</xsl:text>"
+xsl/html/inline.xsl:1273:7 text-outside-xsl-text suggestion "<xsl:text>+</xsl:text>"
+xsl/html/inline.xsl:1274:7 text-outside-xsl-text suggestion "<xsl:text>-</xsl:text>"
+xsl/html/inline.xsl:1275:7 text-outside-xsl-text suggestion "<xsl:text>-</xsl:text>"
+xsl/html/inline.xsl:1276:7 text-outside-xsl-text suggestion "<xsl:text>-</xsl:text>"
+xsl/html/inline.xsl:1278:7 text-outside-xsl-text suggestion "<xsl:text>+</xsl:text>"
+xsl/html/inline.xsl:1384:40 select-starts-with-double-slash suggestion ".//"
 xsl/html/its.xsl:2:1 missing-id-in-stylesheet
 xsl/html/keywords.xsl:2:1 missing-id-in-stylesheet
 xsl/html/keywords.xsl:30:3 text-outside-xsl-text suggestion "<xsl:text>, </xsl:text>"
@@ -3054,7 +3169,22 @@ xsl/profiling/xsl2profile.xsl:110:25 name-compared-to-string
 xsl/profiling/xsl2profile.xsl:110:65 redundant-whitespace fix " "
 xsl/profiling/xsl2profile.xsl:113:25 name-compared-to-string
 xsl/profiling/xsl2profile.xsl:148:29 use-double-slash
-xsl/roundtrip/blocks2dbk.xsl:1:1 malformed-stylesheet
+xsl/roundtrip/blocks2dbk.xsl:13:1 missing-id-in-stylesheet
+xsl/roundtrip/blocks2dbk.xsl:13:1 too-many-templates
+xsl/roundtrip/blocks2dbk.xsl:94:3 oversized-template
+xsl/roundtrip/blocks2dbk.xsl:407:11 use-single-option-for-choose
+xsl/roundtrip/blocks2dbk.xsl:646:17 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
+xsl/roundtrip/blocks2dbk.xsl:649:17 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
+xsl/roundtrip/blocks2dbk.xsl:766:5 use-single-option-for-choose
+xsl/roundtrip/blocks2dbk.xsl:779:5 use-single-option-for-choose
+xsl/roundtrip/blocks2dbk.xsl:833:4 use-choose-without-otherwise
+xsl/roundtrip/blocks2dbk.xsl:916:7 use-choose-without-otherwise
+xsl/roundtrip/blocks2dbk.xsl:963:3 oversized-template
+xsl/roundtrip/blocks2dbk.xsl:964:5 use-choose-without-otherwise
+xsl/roundtrip/blocks2dbk.xsl:1306:5 use-choose-without-otherwise
+xsl/roundtrip/blocks2dbk.xsl:1393:5 use-choose-without-otherwise
+xsl/roundtrip/blocks2dbk.xsl:1701:5 unused-function-template-parameter
+xsl/roundtrip/blocks2dbk.xsl:1717:5 unused-function-template-parameter
 xsl/roundtrip/dbk2ooo.xsl:1:1 missing-id-in-stylesheet
 xsl/roundtrip/dbk2ooo.xsl:1:1 too-many-templates
 xsl/roundtrip/dbk2ooo.xsl:6:3 redundant-namespace-declarations fix ""
@@ -3420,7 +3550,6 @@ xsl/webhelp/xsl/titlepage.templates.xsl:3410:3 use-choose-without-otherwise
 xsl/webhelp/xsl/titlepage.templates.xsl:3450:9 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 xsl/webhelp/xsl/titlepage.templates.xsl:3465:9 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 xsl/webhelp/xsl/titlepage.templates.xsl:3498:3 use-choose-without-otherwise
-xsl/webhelp/xsl/titlepage.templates.xsl:3527:1 unused-named-template
 xsl/webhelp/xsl/titlepage.templates.xsl:3538:9 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 xsl/webhelp/xsl/titlepage.templates.xsl:3553:9 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 xsl/webhelp/xsl/titlepage.templates.xsl:3586:3 use-choose-without-otherwise
