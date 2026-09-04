@@ -27,21 +27,22 @@ const CORPORA = yaml.parsedFromFile(WORKFLOW).jobs.lint.strategy.matrix.include
 
 /**
  * The dearest milliseconds each corpus has read on the runner the nightly tier
- * runs on, over six runs dispatched on the clock #827 gave it. A budget answers
- * to this and not to a developer machine, a share cancelling a machine's speed
- * where a wall clock carries it, and each budget stands under twice its own.
+ * runs on, over six runs dispatched on the tree #872 left and the night that
+ * ran one merge behind it. A budget answers to this and not to a developer
+ * machine, a share cancelling a machine's speed where a wall clock carries it,
+ * and each stands at the middle of the window its own two ends leave (#811).
  * @type {{[name: string]: number}}
  */
-const RUNS = {docbook: 6923, tei: 6732, ditaot: 3311}
+const RUNS = {docbook: 5459, tei: 5656, ditaot: 2636}
 
 /**
  * The cheapest of those same readings, which is the side a ratchet can turn red
  * from. A budget of `SLACK` times a reading fires on everything below a quarter
  * of it, so one must stand above the dearest night and leave `MARGIN` under the
- * cheapest, or a fast night reddens a tree nobody has touched (#827).
+ * cheapest, or a fast night reddens a tree nobody has touched (#827, #811).
  * @type {{[name: string]: number}}
  */
-const CHEAPEST = {docbook: 4666, tei: 5013, ditaot: 2830}
+const CHEAPEST = {docbook: 3296, tei: 2846, ditaot: 1424}
 
 /**
  * What a verdict has to say about a reading, one row per side of the window and
@@ -86,16 +87,17 @@ const CASES = [
  * stand at. A reading is true to within a tick, so a clock coarse beside what
  * it times spends the window on quantisation before the runner's own variance
  * is paid for: whole seconds put a tick at half of what DITA-OT costs where
- * milliseconds put it at a 2830th, and this is the middle of the two (#827).
+ * milliseconds put it at a 1424th, and this is the middle (#827, #811).
  * @type {number}
  */
-const RESOLUTION = 0.013
+const RESOLUTION = 0.019
 
 /**
  * How much faster than the cheapest night on record a run may be before the
  * ratchet under it fires. Whole seconds left DocBook-XSL none at all — the
  * budget fired at the cheapest reading itself, so what stood under it was the
- * clock and not a margin — where milliseconds leave 1.44 (#827).
+ * clock and not a margin — where milliseconds left 1.44, and this cut 1.26 at
+ * worst (#827, #811).
  * @type {number}
  */
 const MARGIN = 1.2

@@ -129,8 +129,8 @@ of thirty-eight going quadratic: every check of a stage owning several answers
 to `COST` at 3%, and `COSTS` names the three that legitimately cost more,
 `name-starts-with-numeric` at 7%, `text-outside-xsl-text` at 8% and
 `too-many-templates` at 4%. `corpora.yml` is the nightly tier, timing
-DocBook-XSL, TEI and DITA-OT at pinned commits against a budget of 13, 13 and 6
-seconds, and asserting what it read rather than only how long it took —
+DocBook-XSL, TEI and DITA-OT at pinned commits against a budget of 9.5, 9 and
+4.5 seconds, and asserting what it read rather than only how long it took —
 including every defect it drew since #638, diffed by `scripts/snapshot.js`
 against a report committed per corpus, since a check that changes what it
 reports over a real stylesheet is a change nothing else here notices. What a
