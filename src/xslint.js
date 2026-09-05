@@ -7,6 +7,7 @@ const path = require('path')
 const fs = require('fs')
 const {allFilesFrom} = require('./helpers')
 const {parted} = require('./source')
+const {kinds} = require('./resources/checks.json')
 const {validate: validateXsls, names: xslChecks} =
   require('./validators/xsl-validator')
 const {
@@ -177,6 +178,19 @@ const CHECKS = [
 ]
 
 /**
+ * The checks a stable run withholds, each paired with the open issue reporting
+ * it wrong — read off the checks themselves, where a `nursery` mark names that
+ * issue, so the tier is the tree's answer rather than a list kept beside it. A
+ * whole name and never a substring, which is what `suppress` matches (#581).
+ * @type {Map.<string, string>}
+ */
+const NURSERY = new Map(
+  Object.values(kinds).flatMap((kind) => Object.entries(kind))
+    .filter(([, check]) => Object.hasOwn(check, 'nursery'))
+    .map(([name, check]) => [name, check.nursery]),
+)
+
+/**
  * Deleting incorrect substring-suppressions from array of arguments
  * @param {Array.<string>} suppressions - Array of suppressed checks
  * @return {Array.<string>} - Normalizing list of suppressions
@@ -281,11 +295,14 @@ const ranked = function(one, two) {
  * `xslint-disable` directives are honored.
  * @param {Array.<{file: string, content: string}>} sources - Raw stylesheets,
  *  each as it was read, a byte order mark it opens with held aside by `parted`
- * @param {{suppress: Array.<string>, overrides: {[check: string]: string}}}
- *  options - Check-name substrings to skip, and per-check severity re-grades
+ * @param {{suppress: Array.<string>, overrides: {[check: string]: string},
+ *  stable: boolean}} options - Check-name substrings to skip, per-check
+ *  severity re-grades, and whether to withhold the `NURSERY`
  * @return {Array.<object>} - The defects that survive suppression
  */
-const lint = function(sources, {suppress = [], overrides = {}} = {}) {
+const lint = function(
+  sources, {suppress = [], overrides = {}, stable = false} = {},
+) {
   const suppressions = validatedSuppressions(suppress)
   const read = sources.map((source) => ({
     file: source.file, content: parted(source.content).text,
@@ -321,8 +338,17 @@ const lint = function(sources, {suppress = [], overrides = {}} = {}) {
       logger.warn(`Unused xslint-disable directive at ${file}:${stale.line}`)
     }
   }
+  const gated = new Set()
+  if (stable) {
+    for (const name of NURSERY.keys()) {
+      if (!Object.hasOwn(overrides, name)) {
+        gated.add(name)
+      }
+    }
+  }
   return defects.filter(
-    (defect) => !suppresses(directives.get(defect.file), defect),
+    (defect) => !gated.has(defect.name) &&
+      !suppresses(directives.get(defect.file), defect),
   ).sort(ranked)
 }
 
@@ -330,7 +356,8 @@ const lint = function(sources, {suppress = [], overrides = {}} = {}) {
  * Entry point for the command line.
  * @param {Array.<string>} pths - Files or directories with .xsl to lint
  * @param {object} options - CLI options: `logLevel`, `quiet`, `suppress`,
- *  `maxWarnings`, `config`, `format`, `fix`, `fixDryRun`, `fixSuggestions`
+ *  `maxWarnings`, `config`, `format`, `stable`, `fix`, `fixDryRun`,
+ *  `fixSuggestions`
  */
 const xslint = function(pths, options) {
   logger.setLevel(leveled(options.quiet, options.logLevel))
@@ -375,6 +402,7 @@ const xslint = function(pths, options) {
   let reported = lint(sources, {
     suppress: [...options.suppress, ...disabled],
     overrides: overrides,
+    stable: options.stable ?? config.stable ?? false,
   })
   if (options.fix || options.fixDryRun || options.fixSuggestions) {
     /**

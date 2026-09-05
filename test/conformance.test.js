@@ -69,6 +69,37 @@ const RESOURCES = path.resolve(__dirname, 'resources')
 const KINDS = ['xpath', 'corpus', 'validation', 'format']
 
 /**
+ * The checks `--stable` withholds, each beside the open issues its own YAML
+ * names, read as those numbers rather than as a flag. A ratchet both ways: a
+ * check joining the nursery, one whose ticket has changed, and one still
+ * marked once its ticket closed all turn it red (#581, #637, #876).
+ * @type {{[name: string]: string}}
+ */
+const NURSERY = {
+  'empty-variable': '#851',
+  'function-use-in-xslt-1': '#851',
+  'missing-version-in-stylesheet': '#705',
+  'mode-or-priority-without-match': '#550 #851',
+  'modern-construct-in-xslt-1': '#555 #851',
+  'setting-value-of-variable-incorrectly': '#590',
+  'template-has-no-name-or-match': '#550',
+  'text-outside-xsl-text': '#881',
+  'unreachable-function': '#498',
+  'unused-function': '#498',
+  'unused-named-template': '#498',
+  'unused-variable': '#498',
+  'using-namespace-axis': '#632',
+  'variable-or-param-with-select-and-content': '#851',
+  'with-param-use-in-invalid-parent-node': '#566',
+}
+
+/**
+ * A ticket as this repository writes one.
+ * @type {RegExp}
+ */
+const TICKET = /#\d+/g
+
+/**
  * Rule kinds paired with the one directory holding their packs. The code-driven
  * kinds are enforced separately: a format check's packs are scattered across
  * the per-linter directories (so it is matched by `pack:` name across them),
@@ -316,6 +347,28 @@ const names = function(kind) {
 }
 
 /**
+ * Every check carrying a nursery mark, paired with the tickets its own YAML
+ * names. Read off the checks so the table beside it answers to the tree rather
+ * than to itself, and a mark spelling no ticket at all comes back empty and
+ * matches nothing a reader could have written down.
+ * @return {{[name: string]: string}} - The marks, by check name
+ */
+const nursed = function() {
+  const found = {}
+  for (const kind of KINDS) {
+    for (const name of names(kind)) {
+      const check = yaml.parsedFromFile(
+        path.join(CHECKS, kind, `${name}.yaml`),
+      )
+      if (Object.hasOwn(check, 'nursery')) {
+        found[name] = (String(check.nursery).match(TICKET) || []).join(' ')
+      }
+    }
+  }
+  return found
+}
+
+/**
  * Whether the document is XSLT at all: an element in the XSLT namespace, or an
  * attribute in it, which is the whole of what a simplified stylesheet has. A
  * pack whose fixture holds neither is a fixture no check can see a node of, so
@@ -391,6 +444,16 @@ describe('conformance', function() {
         )
       }
     }
+  })
+  it('stands every nursery check on an open issue of its own', function() {
+    assert.deepStrictEqual(
+      nursed(), NURSERY,
+      'the checks `--stable` withholds are not the checks the NURSERY table ' +
+        'of test/conformance.test.js names. A mark is a pointer at an open ' +
+        'issue reporting that check wrong, so it goes when the issue closes ' +
+        'and the tier only ever grows; a mark naming no issue asserts the ' +
+        'unfalsifiable finishedness the retired `mature` flag did (#581, #637)',
+    )
   })
   it('gives every rule check at least one test pack', function() {
     for (const [kind, dir] of Object.entries(PACKED)) {

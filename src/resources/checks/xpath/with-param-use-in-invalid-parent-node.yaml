@@ -4,3 +4,4 @@
 xpath: //xsl:with-param[not(parent::xsl:call-template or parent::xsl:apply-templates or parent::xsl:apply-imports or parent::xsl:next-match or parent::xsl:next-iteration)]
 severity: error
 message: xsl:with-param is allowed only within xsl:call-template, xsl:apply-templates, xsl:apply-imports, xsl:next-match and xsl:next-iteration.
+nursery: "#566, which accepts a 2.0-only parent in a 1.0 stylesheet"

@@ -3,3 +3,4 @@
 ---
 severity: warning
 message: "The namespace:: axis is deprecated in XSLT 2.0 and later. Use in-scope-prefixes() and namespace-uri-for-prefix() instead."
+nursery: "#632, whose advice names functions that cannot stand inside a pattern"

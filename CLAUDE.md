@@ -53,8 +53,8 @@ three platforms and two node versions, and `corpora`, which times a real run
 The suite comes in two halves, and the line between them is a child process. A
 **deep** test starts one — it runs `xslint` or `xcop` the way a user does — and
 is named `*.deep.test.js`; every other test stays in this process. Seven files
-are deep, and they still cost most of what the suite costs: 682 of the 3024
-tests, 9 of the 14 seconds. The other 2342 finish inside one, which is why
+are deep, and they still cost most of what the suite costs: 686 of the 3035
+tests, 10 of the 15 seconds. The other 2349 finish inside one, which is why
 `npm run fast` is the loop to work in and `npm test` the one to finish on. The
 deep target runs under `mocha --parallel`, so those seven files run at once and
 the slowest of them sets the clock — `xslint.deep.test.js` alone, whose 52 tests
@@ -223,7 +223,7 @@ before: 268 descriptions in 65 files stood past that bar, the dearest of them
 142 lines, so a derivation grew wherever one was written the way the cross-file
 linter's cost grew before #755 (#832). The bar is not a licence to respell what
 a block cannot hold as a `/* */` beside it either — such prose is cut and not
-moved, the dearest chain of guides standing at 0.91 of `LOADED` and reddening
+moved, the dearest chain of guides standing at 0.92 of `LOADED` and reddening
 well under it, so a guide is no place to put it either and the ticket number
 left standing in the surviving sentence is what keeps a derivation
 recoverable.
@@ -499,6 +499,10 @@ Validator and format checks — `checks/{validation,format}/<name>.yaml` — car
 only `severity` and `message`; their logic lives in code and the YAML just tunes
 those two.
 
+A check of any kind may carry one more key, `nursery:` — a sentence opening
+with the number of the open issue reporting that check wrong, which is what
+`--stable` withholds it on (see **User configuration**).
+
 ## Adding a rule
 
 Names are kebab-case with no `template-match-` (or other noise) prefix. Every
@@ -741,6 +745,12 @@ packs** among them: they are bars on what a test asserts, not claims about a
 check. `test/conformance.test.js` refuses the key in a check of any kind, so
 prose is not the only thing keeping the bar retired (#865).
 
+The `nursery:` mark **User configuration** describes is not that flag returning
+under another name: `mature: true` asserted a check had no more bugs, which no
+tree can show, where a mark names an open issue reporting one, which a closed
+ticket retracts. So it is deleted on evidence rather than earned on
+attestation, and it freezes nothing (#581).
+
 ## Test packs
 
 Each linter owns a `test/resources/<name>-packs/` directory, auto-discovered by
@@ -881,10 +891,17 @@ the 22 and could only ever ask whether the string appeared.
 
 - **Suppress**: `xslint --suppress=<rule-substring>` matches names across every
   validator and linter.
+- **Stable tier**: `--stable` (or `stable: true` in the config) withholds the
+  **nursery**, the fifteen of sixty-eight checks an open issue reports wrong
+  about code a processor accepts. Each says so itself, in a `nursery:` mark
+  opening with that issue's number, so the tier is derived from the tree and
+  grows as tickets close. A check the config grades by name is re-admitted
+  (#581).
 - **Config**: `.xslint.yml` (found by walking up, or `--config <path>`) can turn
   rules `off`, re-grade severity, `exclude:` file globs, and default
-  `max-warnings`/`log-level`/`quiet`. Flags override the file overrides the
-  defaults (`src/config.js`). Unknown keys and no-match patterns are reported.
+  `max-warnings`/`log-level`/`quiet`/`stable`. Flags override the file overrides
+  the defaults (`src/config.js`). Unknown keys and no-match patterns are
+  reported.
 - **Inline directives**: XML comments `xslint-disable-next-line`,
   `xslint-disable-line`, `xslint-disable-file`, each with optional space-separated
   rule names (`src/directives.js`); an unused directive is reported.

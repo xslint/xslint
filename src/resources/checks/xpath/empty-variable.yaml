@@ -4,3 +4,4 @@
 xpath: "//xsl:variable[not(@select) and not(@_select) and not(node()) and not((@as or @_as) and (if (/xsl:stylesheet | /xsl:transform) then /*/@version else /*/@xsl:version) = ('2.0', '3.0'))]"
 severity: warning
 message: An empty xsl:variable binds the empty string for no reason. Give it a @select or some content, or remove it.
+nursery: "#851, whose version gate reads @version as text and so never sees the shadow spelling of it"

@@ -4,3 +4,4 @@
 xpath: //xsl:variable[(count(*) = 1) and (count(xsl:value-of) = 1) and not(text()[normalize-space() or ancestor::*[@xml:space][1]/@xml:space = 'preserve'])]
 severity: warning
 message: A variable is assigned via a nested xsl:value-of instead of the select attribute. Use select syntax instead.
+nursery: "#590, which advises a select onto a variable already carrying one"

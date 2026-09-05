@@ -7,3 +7,4 @@ reference: "{name}("
 reachable: true
 severity: warning
 message: A stylesheet function is called only from within a recursion cycle that nothing else enters, so it can never run. Remove it, or call it from a template.
+nursery: "#498, whose reference detection matches a name as a substring rather than as a token"
