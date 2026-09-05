@@ -58,7 +58,7 @@
         "message": "xsl:element is used with a static name. Use a literal result element instead."
       },
       "not-using-output": {
-        "severity": "error",
+        "severity": "warning",
         "message": "The xsl:output instruction is missing. Declare it to specify the serialization format explicitly."
       },
       "output-method-xml": {
@@ -273,7 +273,7 @@
       },
       "stylesheet-has-no-templates": {
         "xpath": "(/xsl:stylesheet | /xsl:transform)[not(xsl:*)]",
-        "severity": "error",
+        "severity": "warning",
         "message": "The stylesheet declares nothing at all, so it contributes nothing to a transformation. Add a declaration, or delete the file."
       },
       "template-has-no-name-or-match": {

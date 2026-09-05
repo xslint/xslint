@@ -40,7 +40,8 @@ Given a stylesheet like this:
 xslint points at each problem with its exact position and how to fix it:
 
 ```text
-[ERROR] sheet.xsl(2:1) The xsl:output instruction is missing. Declare it to specify the serialization format explicitly. (not-using-output)
+[WARNING] sheet.xsl(2:1) The '@id' attribute is missing in the 'xsl:stylesheet' element. Declare it to specify the unique identifier explicitly. (missing-id-in-stylesheet)
+[WARNING] sheet.xsl(2:1) The xsl:output instruction is missing. Declare it to specify the serialization format explicitly. (not-using-output)
 [WARNING] sheet.xsl(3:24) A pattern alternative starts with //, which is redundant since every XSLT pattern already matches at any depth, and it lowers the rule's default priority from 0.5 to that of the step alone. Remove the leading // and give the rule an explicit priority if it must keep ranking as it does. (starts-with-double-slash)
 [WARNING] sheet.xsl(4:5) A variable, function, or template has a single-character name. Use a descriptive name that reveals intent. (short-names)
 ```

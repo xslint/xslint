@@ -99,6 +99,15 @@ publication date only; detailed notes begin with the Unreleased section.
   and the `count`/`string-length` comparisons on an arithmetic operand
   (#573).
 
+- Stop grading `not-using-output` and `stylesheet-has-no-templates` as
+  errors. An error stops a build, and neither of them faults anything a
+  processor refuses: the spec fixes the default serialization method, and an
+  empty module is a file somebody started. Both are warnings now, which is
+  141 of the 167 error-graded defects the three corpora drew. Which checks
+  may grade an error is held against those corpora rather than left to
+  prose — the five that survive are the ones whose fault leaves the module
+  unloadable (#499).
+
 - Find the constructs a text scan missed: an `fn:`-prefixed call (#577,
   #596), the `eq`/`ne`/`lt` family XSLT 2.0 added (#763), a double-quoted
   string literal (#598), a call whose argument count makes the rewrite wrong

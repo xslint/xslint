@@ -444,9 +444,23 @@ exempt from errexit, so each judge sets `judged` and the step exits on that. The
 json now rather than text, which is where the summary's defect count comes from — the run's own log
 line, `wc -l` over a pretty-printed array meaning nothing.
 
+A snapshot also holds what the packs cannot: which checks a *real* stylesheet draws at `error`, and
+an error is the grade that stops somebody's build. So `REFUSED` in `test/snapshot.test.js` names the
+five the three corpora draw, each beside the fault that leaves the module unloadable — malformed
+XML, XTSE0500, XTSE0580, and the two a declared version refuses outright — and the gate is one set
+comparison against what the snapshots actually carry, which reddens from both sides at once: a
+check that begins stopping a build over a stylesheet no processor faults, and an entry that has
+outlived the defect justifying it. Two checks failed it as it landed, `not-using-output` on 129
+lines and `stylesheet-has-no-templates` on 12, both downgraded to `warning` in the same change
+(#499). What the criterion is *not* is a per-check audit: #865 retired that practice, and the whole
+point of grounding this on the corpora is that no judgement about a check in the abstract is being
+asked for — the corpora say which checks stop a build, and only those need a reason. A name the
+grading does not know counts as erring rather than being dropped, so a snapshot line this parse
+misreads fails the gate by name instead of leaving a hole in it.
+
 Four things pin the wiring, since a gate nobody has seen red is a gate nobody has. `yamllint` reads
-the workflow clean; 45 tests across `snapshot`, `budget` and `workflows` hold the matrix, the script
-and the step to each other — 39 of them in this process and 6 in the two deep halves, which run each
+the workflow clean; 48 tests across `snapshot`, `budget` and `workflows` hold the matrix, the script
+and the step to each other — 42 of them in this process and 6 in the two deep halves, which run each
 script the way the shell does, since the exit code is the whole of what arms either judge and a
 verdict returned to nobody leaves the tier as unable to fail as #785 found it; the step's own shell,
 replayed over a real DITA-OT clone at its pinned commit, reads `linted=190`, `found=1194` and
@@ -689,7 +703,7 @@ and the merge behind the wildcard phase breached it again by 162 with neither br
 crossed it alone either — the same arithmetic a second time, which is what a shared budget does
 to two branches that each measured themselves alone. What answered it was the move again, on the
 dearest note this guide holds rather than on the newest, or a change's own note where that change
-fires it: the nightly tier's derivation stands at the top of `test/budget.test.js` since, 5,752
+fires it: the nightly tier's derivation stands at the top of `test/budget.test.js` since, 4,516
 characters out of every chain through `test/` and none out of the one that is dearest without it.
 The relief that bought lasted one ticket again, and the third breach is the plainest of the
 three: #884 gave `scripts/` a third script and so the root a third index row, and the root stands
