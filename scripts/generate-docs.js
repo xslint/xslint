@@ -59,6 +59,22 @@ const CSS = `
     font-weight: 600;
     white-space: nowrap;
   }
+  .nursery {
+    background: #ddf4ff;
+    color: #0969da;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .nursery-note {
+    background: #ddf4ff;
+    border-left: 4px solid #0969da;
+    padding: 8px 12px;
+    margin: 0 0 24px;
+    font-size: 0.9rem;
+  }
   .back { display: inline-block; margin-bottom: 24px; font-size: 0.9rem; }
   .meta { display: flex; gap: 12px; align-items: flex-start; margin: 12px 0 24px; flex-wrap: wrap; }
   .xpath {
@@ -105,7 +121,25 @@ const severityBadge = (severity) => {
   return `<span class="severity-${severity}">${severity}</span>`
 }
 
+const nurseryBadge = (lint) => {
+  let badge = ''
+  if (lint.nursery) {
+    badge = ' <span class="nursery">nursery</span>'
+  }
+  return badge
+}
+
 const escaped = (xpath) => xpath.replace(/</g, '&lt;').replace(/>/g, '&gt;')
+
+const nurseryNote = (lint) => {
+  let note = ''
+  if (lint.nursery) {
+    note = `\n  <p class="nursery-note"><code>--stable</code> withholds this
+  check while an open issue reports it wrong about code a processor accepts:
+  ${escaped(lint.nursery)}.</p>`
+  }
+  return note
+}
 
 const expressions = (kind, lint) => {
   let shown
@@ -146,7 +180,7 @@ const generate = function() {
     return `  <tr>
     <td><a href="checks/${name}.html">${name}</a></td>
     <td>${kind}</td>
-    <td>${severityBadge(lint.severity)}</td>
+    <td>${severityBadge(lint.severity)}${nurseryBadge(lint)}</td>
     <td>${lint.message}</td>
   </tr>`
   }).join('\n')
@@ -211,9 +245,9 @@ ${indexRows}
     }
     const checkBody = `  <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
-    ${severityBadge(lint.severity)}
+    ${severityBadge(lint.severity)}${nurseryBadge(lint)}
     ${expressions(kind, lint)}
-  </div>
+  </div>${nurseryNote(lint)}
   <div class="check-content">
 ${mdHtml}
   </div>`

@@ -6,3 +6,4 @@ usage: //@*
 reference: "{name}("
 severity: warning
 message: A stylesheet function is never called in any expression across the corpus. Remove it or call it.
+nursery: "#498, whose reference detection matches a name as a substring rather than as a token"

@@ -61,6 +61,47 @@ describe('lint (programmatic API)', function() {
       'error',
     )
   })
+  it('withholds every nursery check under the stable tier', function() {
+    assert.deepEqual(
+      lint(
+        [source('stylesheets/xsl-with-some-violations.xsl')],
+        {stable: true},
+      ).map((defect) => defect.name),
+      ['short-names', 'starts-with-double-slash'],
+    )
+  })
+  it('keeps every check where no stable tier is asked for', function() {
+    assert.deepEqual(
+      lint([source('stylesheets/xsl-with-some-violations.xsl')])
+        .map((defect) => defect.name),
+      [
+        'setting-value-of-variable-incorrectly',
+        'short-names',
+        'starts-with-double-slash',
+        'unused-named-template',
+      ],
+    )
+  })
+  it('withholds a nursery check by its whole name, never a substring',
+    function() {
+      assert.deepEqual(
+        lint(
+          [source('fix/variable-or-param-with-select-spelled-oddly.xsl')],
+          {stable: true},
+        ).map((defect) => defect.name),
+        ['not-using-output', 'unused-function-template-parameter'],
+      )
+    })
+  it('re-admits a nursery check a configuration grades by name', function() {
+    assert.ok(
+      lint(
+        [source('stylesheets/xsl-with-some-violations.xsl')],
+        {stable: true, overrides: {'unused-named-template': 'error'}},
+      ).some((defect) => defect.name === 'unused-named-template'),
+      'cannot re-admit a nursery check the configuration grades outright, ' +
+        'where a grade written against the name is the user asking for it',
+    )
+  })
   it('exposes the fix engine for callers to apply', function() {
     const sources = [source('stylesheets/xsl-with-no-violations.xsl')]
     assert.equal(fixed(sources, lint(sources)).contents.size, 0)

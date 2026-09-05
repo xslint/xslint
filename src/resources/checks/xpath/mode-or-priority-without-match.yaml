@@ -4,3 +4,4 @@
 xpath: //xsl:template[not(@match) and not(@_match) and (@mode or @priority)]
 severity: error
 message: An xsl:template that has no match attribute must have no mode attribute and no priority attribute. Add match attribute or remove mode or priority.
+nursery: "#550, which draws a second defect on one matchless template, and #851, which reads only the plain spelling of @mode"

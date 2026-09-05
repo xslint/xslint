@@ -7,3 +7,4 @@ reference: "${name}"
 scoped: true
 severity: warning
 message: A variable is declared but never referenced by $name across the corpus. Remove it or use it.
+nursery: "#498, whose reference detection matches a name as a substring rather than as a token"

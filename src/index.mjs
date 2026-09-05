@@ -24,6 +24,11 @@ program
       .default('text'),
   )
   .option('--config <path>', 'Path to a configuration file')
+  .option(
+    '--stable',
+    'Report only the checks no open issue reports wrong, withholding the ' +
+    'nursery',
+  )
   .option('--fix', 'Rewrite the fixable defects in place')
   .option(
     '--fix-suggestions',

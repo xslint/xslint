@@ -347,6 +347,38 @@ describe('xslint', function() {
     fs.rmSync(dir, {recursive: true, force: true})
     assert.ok(!streams.stderr.includes('Processed files'))
   })
+  it('should withhold a nursery check with --stable', function() {
+    const streams = xslintStreams([
+      'test/resources/stylesheets/xsl-with-some-violations.xsl',
+      '--stable',
+    ])
+    assert.ok(!streams.stdout.includes('unused-named-template'))
+  })
+  it('should keep a settled check with --stable', function() {
+    const streams = xslintStreams([
+      'test/resources/stylesheets/xsl-with-some-violations.xsl',
+      '--stable',
+    ])
+    assert.ok(streams.stdout.includes('short-names'))
+  })
+  it('should read the stable tier from the config file', function() {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-'))
+    const cfg = path.join(dir, '.xslint.yml')
+    fs.writeFileSync(cfg, 'stable: true\n')
+    const streams = xslintStreams([
+      'test/resources/stylesheets/xsl-with-some-violations.xsl',
+      `--config=${cfg}`,
+    ])
+    fs.rmSync(dir, {recursive: true, force: true})
+    assert.ok(!streams.stdout.includes('unused-named-template'))
+  })
+  it('should not call a directive over a withheld check unused', function() {
+    const streams = xslintStreams([
+      'test/resources/directives/wrapped.xsl',
+      '--stable',
+    ])
+    assert.ok(!streams.stderr.includes('Unused xslint-disable'))
+  })
   it('should suppress a defect with an inline disable-next-line', function() {
     const streams = xslintStreams(['test/resources/directives/used.xsl'])
     assert.ok(!streams.stdout.includes('short-names'))

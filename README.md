@@ -148,6 +148,18 @@ If you want to suppress many checks, use `--suppress` as many times as you need:
 xslint --suppress=oversized-template --suppress=short-names
 ```
 
+To hear only from the checks no open issue reports wrong about code a processor
+accepts, use `--stable`:
+
+```bash
+xslint --stable
+```
+
+It withholds the fifteen checks in the *nursery* — the ones whose [check
+page][checks] names the open issue keeping them there — and reports the other
+fifty-three. A check leaves the nursery when its issue closes, so the tier only
+ever grows, and grading one by name in `.xslint.yml` re-admits it.
+
 ## Configuration
 
 Project-wide settings live in a `.xslint.yml` file, discovered by walking up
@@ -164,6 +176,7 @@ exclude:
 max-warnings: 10                        # default for --max-warnings
 log-level: info                         # default for --log-level
 quiet: false                            # default for --quiet
+stable: false                           # default for --stable
 ```
 
 - **`rules`** maps a check name — or a glob such as `unused-*` — to
@@ -171,8 +184,10 @@ quiet: false                            # default for --quiet
   `warning` and `error` re-grade its severity.
 - **`exclude`** lists globs, relative to the config file's own directory, whose
   matching files are not linted.
-- **`max-warnings`**, **`log-level`**, and **`quiet`** set the defaults for the
-  matching command-line flags.
+- **`max-warnings`**, **`log-level`**, **`quiet`**, and **`stable`** set the
+  defaults for the matching command-line flags. A check named outright under
+  `rules` outranks `stable`, so grading a nursery check `warning` or `error`
+  puts it back in the report.
 
 Unknown top-level keys, rule names that match no check, and values of the wrong
 type (a non-numeric `max-warnings`, a non-list `exclude`, a non-boolean

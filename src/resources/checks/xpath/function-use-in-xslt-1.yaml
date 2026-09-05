@@ -4,3 +4,4 @@
 xpath: "/*[not((if (self::xsl:stylesheet or self::xsl:transform) then @version else @xsl:version) = ('2.0', '3.0'))]//xsl:function"
 severity: error
 message: "'xsl:function' requires XSLT 2.0 or later, but this stylesheet is not version 2.0 or 3.0. Use a named template, or set the version to 2.0."
+nursery: "#851, whose version gate reads @version as text and so never sees the shadow spelling of it"
