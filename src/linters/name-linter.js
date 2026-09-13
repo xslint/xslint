@@ -33,9 +33,15 @@
  * A step is not the only thing a predicate can hang off, either. Brackets take
  * one as a *filter*, so `(@one | @two)[name() = 'eff']` carries no axis for
  * anything to ask about, and what answers instead is whatever the filter
- * yields: a union off every arm at once, a path off its last step, and a
- * variable, a call, the context item or an empty pair of brackets off nothing,
- * so those answer no.
+ * yields: a union off every arm at once — every, since one attribute arm is
+ * enough to put the rewrite back on a node a name cannot name — a path off its
+ * last step, and a variable, a call, the context item or an empty pair of
+ * brackets off nothing, so those answer no. Three shapes answer no that could
+ * have answered otherwise: a `Q{urn:x}foo` name test and a `..` step, which
+ * select an element and nothing else, and a bare `.`, whose context is whatever
+ * stands outside the expression. Each is a report withheld rather than a file
+ * broken, and admitting all three draws not one further defect over the three
+ * corpora.
  *
  * What is withheld is the whole report and not the fix alone, since the
  * message names the rewrite it cannot make. XPath 2.0 does have a node test
