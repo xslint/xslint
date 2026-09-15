@@ -102,8 +102,6 @@ src/main/plugins/org.dita.base/xsl/preprocess/maplinkImpl.xsl:344:60 use-double-
 src/main/plugins/org.dita.base/xsl/preprocess/maplinkImpl.xsl:363:9 use-choose-without-otherwise
 src/main/plugins/org.dita.base/xsl/preprocess/maplinkImpl.xsl:380:7 use-choose-without-otherwise
 src/main/plugins/org.dita.base/xsl/preprocess/maplinkImpl.xsl:461:5 use-choose-without-otherwise
-src/main/plugins/org.dita.base/xsl/preprocess/maplinkImpl.xsl:593:98 name-compared-to-string suggestion "self::ditaot"
-src/main/plugins/org.dita.base/xsl/preprocess/maplinkImpl.xsl:618:54 name-compared-to-string suggestion "self::ditaot"
 src/main/plugins/org.dita.base/xsl/preprocess/maplinkImpl.xsl:636:5 use-single-option-for-choose
 src/main/plugins/org.dita.base/xsl/preprocess/maplinkImpl.xsl:679:27 string-length-compared-to-zero suggestion "$back != ''"
 src/main/plugins/org.dita.base/xsl/preprocess/maplink_template.xsl:10:1 missing-id-in-stylesheet
@@ -112,7 +110,6 @@ src/main/plugins/org.dita.base/xsl/preprocess/mappullImpl.xsl:35:1 too-many-temp
 src/main/plugins/org.dita.base/xsl/preprocess/mappullImpl.xsl:53:5 use-choose-without-otherwise
 src/main/plugins/org.dita.base/xsl/preprocess/mappullImpl.xsl:176:11 use-choose-without-otherwise
 src/main/plugins/org.dita.base/xsl/preprocess/mappullImpl.xsl:333:7 text-outside-xsl-text suggestion "<xsl:text>#none#</xsl:text>"
-src/main/plugins/org.dita.base/xsl/preprocess/mappullImpl.xsl:333:49 name-compared-to-string suggestion "self::reparse"
 src/main/plugins/org.dita.base/xsl/preprocess/mappullImpl.xsl:335:7 text-outside-xsl-text suggestion "<xsl:text>#none#</xsl:text>"
 src/main/plugins/org.dita.base/xsl/preprocess/mappullImpl.xsl:408:5 unused-function-template-parameter
 src/main/plugins/org.dita.base/xsl/preprocess/mappullImpl.xsl:464:8 text-outside-xsl-text suggestion "<xsl:text>otherfile</xsl:text>"
@@ -161,10 +158,6 @@ src/main/plugins/org.dita.base/xsl/preprocess/topicpullImpl.xsl:272:9 use-single
 src/main/plugins/org.dita.base/xsl/preprocess/topicpullImpl.xsl:629:9 use-choose-without-otherwise
 src/main/plugins/org.dita.base/xsl/preprocess/topicpullImpl.xsl:1116:95 redundant-whitespace fix " "
 src/main/plugins/org.dita.base/xsl/preprocess/topicpullImpl.xsl:1169:25 string-length-compared-to-zero suggestion "$callout != ''"
-src/main/plugins/org.dita.base/xsl/preprocess/topicpullImpl.xsl:1423:48 name-compared-to-string suggestion "self::ditaot"
-src/main/plugins/org.dita.base/xsl/preprocess/topicpullImpl.xsl:1424:55 name-compared-to-string suggestion "self::ditaot"
-src/main/plugins/org.dita.base/xsl/preprocess/topicpullImpl.xsl:1434:48 name-compared-to-string suggestion "self::ditaot"
-src/main/plugins/org.dita.base/xsl/preprocess/topicpullImpl.xsl:1435:55 name-compared-to-string suggestion "self::ditaot"
 src/main/plugins/org.dita.base/xsl/preprocess/topicpull_template.xsl:9:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.html5/xsl/abbrev-d.xsl:9:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.html5/xsl/abbrev-d.xsl:9:1 not-using-output
@@ -585,7 +578,6 @@ src/main/plugins/org.dita.pdf2/xsl/common/topicmergeImpl.xsl:36:1 too-many-templ
 src/main/plugins/org.dita.pdf2/xsl/common/topicmergeImpl.xsl:48:3 unused-variable
 src/main/plugins/org.dita.pdf2/xsl/common/topicmergeImpl.xsl:54:37 starts-with-double-slash fix ""
 src/main/plugins/org.dita.pdf2/xsl/common/topicmergeImpl.xsl:189:23 use-choose-without-otherwise
-src/main/plugins/org.dita.pdf2/xsl/common/topicmergeImpl.xsl:258:45 name-compared-to-string suggestion "not(self::id)"
 src/main/plugins/org.dita.pdf2/xsl/common/topicmerge_template.xsl:9:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.pdf2/xsl/common/vars.xsl:34:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.pdf2/xsl/common/vars.xsl:34:1 not-using-output
@@ -652,7 +644,6 @@ src/main/plugins/org.dita.pdf2/xsl/fo/i18n-postprocessImpl.xsl:37:1 missing-id-i
 src/main/plugins/org.dita.pdf2/xsl/fo/i18n-postprocessImpl.xsl:37:1 not-using-output
 src/main/plugins/org.dita.pdf2/xsl/fo/i18n-postprocessImpl.xsl:37:1 too-many-templates
 src/main/plugins/org.dita.pdf2/xsl/fo/i18n-postprocessImpl.xsl:56:35 use-double-slash
-src/main/plugins/org.dita.pdf2/xsl/fo/i18n-postprocessImpl.xsl:101:41 name-compared-to-string suggestion "self::font-family"
 src/main/plugins/org.dita.pdf2/xsl/fo/i18n-postprocessImpl.xsl:116:52 use-double-slash
 src/main/plugins/org.dita.pdf2/xsl/fo/i18n-postprocessImpl.xsl:121:33 use-double-slash
 src/main/plugins/org.dita.pdf2/xsl/fo/i18n-postprocessImpl.xsl:124:33 use-double-slash
@@ -692,14 +683,11 @@ src/main/plugins/org.dita.pdf2/xsl/fo/links.xsl:34:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.pdf2/xsl/fo/links.xsl:34:1 too-many-templates
 src/main/plugins/org.dita.pdf2/xsl/fo/links.xsl:52:5 unused-function-template-parameter
 src/main/plugins/org.dita.pdf2/xsl/fo/links.xsl:55:9 use-choose-without-otherwise
-src/main/plugins/org.dita.pdf2/xsl/fo/links.xsl:58:54 name-compared-to-string suggestion "self::ditaot"
 src/main/plugins/org.dita.pdf2/xsl/fo/links.xsl:78:5 unused-named-template
-src/main/plugins/org.dita.pdf2/xsl/fo/links.xsl:101:53 name-compared-to-string suggestion "self::ditaot"
 src/main/plugins/org.dita.pdf2/xsl/fo/links.xsl:284:73 redundant-whitespace fix " "
 src/main/plugins/org.dita.pdf2/xsl/fo/links.xsl:287:73 redundant-whitespace fix " "
 src/main/plugins/org.dita.pdf2/xsl/fo/links.xsl:317:7 blank-nested-if
 src/main/plugins/org.dita.pdf2/xsl/fo/links.xsl:317:69 redundant-whitespace fix " "
-src/main/plugins/org.dita.pdf2/xsl/fo/links.xsl:319:56 name-compared-to-string suggestion "self::ditaot"
 src/main/plugins/org.dita.pdf2/xsl/fo/links.xsl:591:87 redundant-whitespace fix " "
 src/main/plugins/org.dita.pdf2/xsl/fo/links.xsl:709:3 unused-named-template
 src/main/plugins/org.dita.pdf2/xsl/fo/lists.xsl:37:1 missing-id-in-stylesheet

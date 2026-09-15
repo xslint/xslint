@@ -24,9 +24,7 @@ anttools/xspec/format-utils.xsl:43:3 setting-value-of-variable-incorrectly
 anttools/xspec/format-utils.xsl:51:13 using-namespace-axis
 anttools/xspec/format-utils.xsl:51:90 using-namespace-axis
 anttools/xspec/format-utils.xsl:52:21 using-namespace-axis
-anttools/xspec/format-utils.xsl:52:34 name-compared-to-string
 anttools/xspec/format-utils.xsl:52:55 using-namespace-axis
-anttools/xspec/format-utils.xsl:52:68 name-compared-to-string
 anttools/xspec/format-utils.xsl:90:21 unabbreviated-axis fix ""
 anttools/xspec/format-utils.xsl:119:5 text-outside-xsl-text suggestion "<xsl:text> /></xsl:text>"
 anttools/xspec/format-utils.xsl:157:11 use-choose-without-otherwise
@@ -153,9 +151,6 @@ contrib/samples/assembly/assemble.xsl:309:3 use-choose-without-otherwise
 contrib/samples/assembly/assemble.xsl:341:21 string-length-compared-to-zero suggestion "$fileref = ''"
 contrib/samples/assembly/assemble.xsl:349:21 count-compared-to-zero fix "not($ref.content/*)"
 contrib/samples/assembly/assemble.xsl:386:13 use-choose-without-otherwise
-contrib/samples/assembly/assemble.xsl:409:27 name-compared-to-string
-contrib/samples/assembly/assemble.xsl:410:27 name-compared-to-string
-contrib/samples/assembly/assemble.xsl:411:27 name-compared-to-string
 contrib/samples/assembly/topic-maker-chunk.xsl:1:1 missing-id-in-stylesheet
 contrib/samples/assembly/topic-maker-chunk.xsl:3:17 redundant-namespace-declarations fix ""
 contrib/samples/assembly/topic-maker-chunk.xsl:4:17 leaking-result-namespace suggestion "exsl d"
@@ -462,9 +457,6 @@ contrib/xsl/xsd2db/xsd2db.xsl:178:4 unused-variable
 contrib/xsl/xsd2db/xsd2db.xsl:213:4 unused-variable
 contrib/xsl/xsd2db/xsd2db.xsl:219:4 unused-variable
 contrib/xsl/xsd2db/xsd2db.xsl:339:9 not-creating-attribute-correctly
-contrib/xsl/xsd2db/xsd2db.xsl:350:37 name-compared-to-string
-contrib/xsl/xsd2db/xsd2db.xsl:351:58 name-compared-to-string
-contrib/xsl/xsd2db/xsd2db.xsl:369:45 name-compared-to-string
 contrib/xsl/xsd2db/xsd2db.xsl:437:7 unused-variable
 contrib/xsl/xsd2db/xsd2db.xsl:487:9 not-creating-attribute-correctly
 contrib/xsl/xsd2db/xsd2db.xsl:545:9 not-creating-attribute-correctly
@@ -632,7 +624,6 @@ releasetools/modified-markup.xsl:81:90 redundant-whitespace fix " "
 releasetools/modified-markup.xsl:173:2 use-choose-without-otherwise
 releasetools/modified-markup.xsl:205:2 use-choose-without-otherwise
 releasetools/w2docbook.xsl:10:1 missing-id-in-stylesheet
-releasetools/w2docbook.xsl:24:29 name-compared-to-string
 releasetools/xslnsfiles/addns.xsl:2:1 missing-id-in-stylesheet
 releasetools/xslnsfiles/addns.xsl:5:17 redundant-namespace-declarations fix ""
 releasetools/xslnsfiles/manpages.table.xsl:2:1 missing-id-in-stylesheet
@@ -647,10 +638,6 @@ releasetools/xslnsfiles/manpages.table.xsl:569:5 unused-variable
 releasetools/xslnsfiles/manpages.table.xsl:570:5 unused-variable
 releasetools/xslnsfiles/manpages.table.xsl:582:5 unused-variable
 releasetools/xslnsfiles/manpages.table.xsl:588:5 unused-variable
-releasetools/xslnsfiles/manpages.table.xsl:650:37 name-compared-to-string suggestion "self::xml:id"
-releasetools/xslnsfiles/manpages.table.xsl:651:41 name-compared-to-string suggestion "self::version"
-releasetools/xslnsfiles/manpages.table.xsl:662:37 name-compared-to-string suggestion "self::xml:id"
-releasetools/xslnsfiles/manpages.table.xsl:663:41 name-compared-to-string suggestion "self::version"
 releasetools/xslnsfiles/titlepage.xsl:2:1 missing-id-in-stylesheet
 releasetools/xslnsfiles/titlepage.xsl:2:1 not-using-output
 releasetools/xslnsfiles/titlepage.xsl:2:1 too-many-templates
@@ -681,7 +668,6 @@ releasetools/xslnsfiles/titlepage.xsl:1317:11 text-outside-xsl-text suggestion "
 releasetools/xslnsfiles/titlepage.xsl:1329:21 name-compared-to-string
 releasetools/xslnsfiles/titlepage.xsl:1339:21 name-compared-to-string
 releasetools/xtangle.xsl:10:1 missing-id-in-stylesheet
-releasetools/xtangle.xsl:15:57 name-compared-to-string
 releasetools/xtangle.xsl:67:3 using-disable-output-escaping suggestion ""
 releasetools/xtangle.xsl:80:29 name-compared-to-string suggestion "self::disable-output-escaping"
 releasetools/xtangle.xsl:117:63 redundant-whitespace fix " "
@@ -733,20 +719,9 @@ xsl/assembly/assemble.xsl:356:3 use-choose-without-otherwise
 xsl/assembly/assemble.xsl:383:23 string-length-compared-to-zero suggestion "$fragment.id != ''"
 xsl/assembly/assemble.xsl:406:21 string-length-compared-to-zero suggestion "$fileref = ''"
 xsl/assembly/assemble.xsl:433:21 count-compared-to-zero fix "not($ref.content)"
-xsl/assembly/assemble.xsl:489:43 name-compared-to-string suggestion "self::xml:id"
-xsl/assembly/assemble.xsl:512:29 name-compared-to-string
-xsl/assembly/assemble.xsl:513:29 name-compared-to-string
-xsl/assembly/assemble.xsl:514:29 name-compared-to-string
-xsl/assembly/assemble.xsl:515:29 name-compared-to-string
-xsl/assembly/assemble.xsl:529:54 name-compared-to-string suggestion "self::xml:id"
 xsl/assembly/assemble.xsl:530:13 use-choose-without-otherwise
-xsl/assembly/assemble.xsl:554:27 name-compared-to-string
-xsl/assembly/assemble.xsl:555:27 name-compared-to-string
-xsl/assembly/assemble.xsl:556:27 name-compared-to-string
-xsl/assembly/assemble.xsl:557:27 name-compared-to-string
 xsl/assembly/assemble.xsl:589:7 use-choose-without-otherwise
 xsl/assembly/assemble.xsl:621:21 string-length-compared-to-zero suggestion "$fileref != ''"
-xsl/assembly/assemble.xsl:667:50 name-compared-to-string
 xsl/assembly/effectivity.xsl:2:1 missing-id-in-stylesheet
 xsl/assembly/effectivity.xsl:2:1 not-using-output
 xsl/assembly/effectivity.xsl:55:3 oversized-template
@@ -1064,32 +1039,7 @@ xsl/common/refentry.xsl:1321:3 unused-function-template-parameter
 xsl/common/stripns.xsl:2:1 missing-id-in-stylesheet
 xsl/common/stripns.xsl:2:1 not-using-output
 xsl/common/stripns.xsl:2:1 too-many-templates
-xsl/common/stripns.xsl:25:37 name-compared-to-string suggestion "self::xml:id"
-xsl/common/stripns.xsl:26:41 name-compared-to-string suggestion "self::version"
-xsl/common/stripns.xsl:40:37 name-compared-to-string suggestion "self::xml:id"
-xsl/common/stripns.xsl:41:41 name-compared-to-string suggestion "self::version"
-xsl/common/stripns.xsl:60:37 name-compared-to-string suggestion "self::xml:id"
-xsl/common/stripns.xsl:61:41 name-compared-to-string suggestion "self::version"
-xsl/common/stripns.xsl:72:37 name-compared-to-string suggestion "self::xml:id"
-xsl/common/stripns.xsl:73:41 name-compared-to-string suggestion "self::version"
 xsl/common/stripns.xsl:126:7 text-outside-xsl-text suggestion "<xsl:text>blockinfo</xsl:text>"
-xsl/common/stripns.xsl:131:33 name-compared-to-string suggestion "self::xml:id"
-xsl/common/stripns.xsl:132:34 name-compared-to-string suggestion "self::version"
-xsl/common/stripns.xsl:166:32 name-compared-to-string suggestion "self::xml:id"
-xsl/common/stripns.xsl:167:19 name-compared-to-string suggestion "self::version"
-xsl/common/stripns.xsl:168:19 name-compared-to-string
-xsl/common/stripns.xsl:180:30 name-compared-to-string suggestion "self::xml:id"
-xsl/common/stripns.xsl:181:41 name-compared-to-string suggestion "self::version"
-xsl/common/stripns.xsl:207:35 name-compared-to-string suggestion "self::xml:id"
-xsl/common/stripns.xsl:208:15 name-compared-to-string suggestion "self::version"
-xsl/common/stripns.xsl:209:15 name-compared-to-string
-xsl/common/stripns.xsl:222:33 name-compared-to-string suggestion "self::xml:id"
-xsl/common/stripns.xsl:223:13 name-compared-to-string suggestion "self::version"
-xsl/common/stripns.xsl:224:13 name-compared-to-string suggestion "self::linkend"
-xsl/common/stripns.xsl:225:13 name-compared-to-string
-xsl/common/stripns.xsl:242:33 name-compared-to-string suggestion "self::xml:id"
-xsl/common/stripns.xsl:243:37 name-compared-to-string suggestion "self::version"
-xsl/common/stripns.xsl:244:37 name-compared-to-string suggestion "self::entityref"
 xsl/common/stripns.xsl:251:5 use-single-option-for-choose
 xsl/common/stripns.xsl:341:7 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 xsl/common/stripns.xsl:345:7 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
@@ -1112,7 +1062,6 @@ xsl/common/table.xsl:487:1 unused-named-template
 xsl/common/targets.xsl:2:1 missing-id-in-stylesheet
 xsl/common/targets.xsl:2:1 too-many-templates
 xsl/common/targets.xsl:122:3 use-choose-without-otherwise
-xsl/common/targets.xsl:302:33 name-compared-to-string
 xsl/common/targets.xsl:310:35 select-starts-with-double-slash suggestion ".//"
 xsl/common/titles.xsl:2:1 missing-id-in-stylesheet
 xsl/common/titles.xsl:2:1 too-many-templates
@@ -2664,8 +2613,6 @@ xsl/html/graphics.xsl:1064:9 text-outside-xsl-text suggestion "<xsl:text>middle<
 xsl/html/graphics.xsl:1167:3 setting-value-of-variable-incorrectly
 xsl/html/graphics.xsl:1173:31 redundant-whitespace fix ""
 xsl/html/graphics.xsl:1327:3 blank-nested-if
-xsl/html/graphics.xsl:1347:33 name-compared-to-string
-xsl/html/graphics.xsl:1352:55 name-compared-to-string
 xsl/html/highlight.xsl:2:1 missing-id-in-stylesheet
 xsl/html/highlight.xsl:2:1 not-using-output
 xsl/html/highlight.xsl:2:1 too-many-templates
@@ -3095,7 +3042,6 @@ xsl/manpages/endnotes.xsl:263:25 name-compared-to-string
 xsl/manpages/endnotes.xsl:264:25 name-compared-to-string
 xsl/manpages/endnotes.xsl:348:5 setting-value-of-variable-incorrectly
 xsl/manpages/endnotes.xsl:419:3 setting-value-of-variable-incorrectly
-xsl/manpages/endnotes.xsl:504:36 name-compared-to-string
 xsl/manpages/info.xsl:2:1 missing-id-in-stylesheet
 xsl/manpages/info.xsl:2:1 too-many-templates
 xsl/manpages/info.xsl:275:5 use-choose-without-otherwise
@@ -3146,8 +3092,6 @@ xsl/manpages/synop.xsl:298:38 name-compared-to-string
 xsl/manpages/synop.xsl:301:38 name-compared-to-string
 xsl/manpages/table.xsl:2:1 missing-id-in-stylesheet
 xsl/manpages/table.xsl:49:21 name-compared-to-string
-xsl/manpages/table.xsl:147:33 name-compared-to-string suggestion "self::xml:id"
-xsl/manpages/table.xsl:148:37 name-compared-to-string suggestion "self::version"
 xsl/manpages/tbl.xsl:2:1 missing-id-in-stylesheet
 xsl/manpages/tbl.xsl:2:1 too-many-templates
 xsl/manpages/tbl.xsl:4:3 leaking-result-namespace suggestion "exsl d"
@@ -3160,9 +3104,7 @@ xsl/manpages/utility.xsl:2:1 missing-id-in-stylesheet
 xsl/manpages/utility.xsl:2:1 too-many-templates
 xsl/manpages/utility.xsl:56:5 unused-function-template-parameter
 xsl/manpages/utility.xsl:134:5 setting-value-of-variable-incorrectly
-xsl/manpages/utility.xsl:273:54 name-compared-to-string
 xsl/manpages/utility.xsl:302:91 redundant-whitespace fix " "
-xsl/manpages/utility.xsl:303:54 name-compared-to-string
 xsl/manpages/utility.xsl:307:13 use-choose-without-otherwise
 xsl/manpages/utility.xsl:348:5 use-single-option-for-choose
 xsl/manpages/utility.xsl:388:5 blank-nested-if
@@ -3420,11 +3362,9 @@ xsl/tools/xsl/build/db4-upgrade.xsl:1390:27 name-compared-to-string
 xsl/tools/xsl/build/dblatex-release-notes.xsl:1:1 missing-id-in-stylesheet
 xsl/tools/xsl/build/doc-link-docbook.xsl:2:1 missing-id-in-stylesheet
 xsl/tools/xsl/build/docparam2txt.xsl:2:1 missing-id-in-stylesheet
-xsl/tools/xsl/build/docparam2txt.xsl:16:35 name-compared-to-string
 xsl/tools/xsl/build/entify.xsl:1:1 missing-id-in-stylesheet
 xsl/tools/xsl/build/entify.xsl:2:17 redundant-namespace-declarations fix ""
 xsl/tools/xsl/build/fix-params-ns.xsl:1:1 missing-id-in-stylesheet
-xsl/tools/xsl/build/fix-params-ns.xsl:16:35 name-compared-to-string
 xsl/tools/xsl/build/fix-params-ns.xsl:27:26 name-compared-to-string
 xsl/tools/xsl/build/fix-params-ns.xsl:28:5 not-creating-element-correctly
 xsl/tools/xsl/build/fix-params-ns.xsl:33:26 name-compared-to-string

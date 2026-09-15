@@ -9,6 +9,7 @@
       <xsl:variable name="body" select="name() != 'span'"/>
       <xsl:value-of select="local-name() = 'p'"/>
       <xsl:value-of select="'em' = name()"/>
+      <xsl:copy-of select="@*[name() != 'as']"/>
     </xsl:if>
   </xsl:template>
 </xsl:stylesheet>

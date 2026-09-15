@@ -522,7 +522,6 @@ common/functions.xsl:1607:11 text-outside-xsl-text suggestion "<xsl:text>image/j
 common/functions.xsl:1615:7 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 common/functions.xsl:1638:7 text-outside-xsl-text suggestion "<xsl:text>false</xsl:text>"
 common/functions.xsl:1654:7 text-outside-xsl-text suggestion "<xsl:text>1970-01-01</xsl:text>"
-common/functions.xsl:1672:47 name-compared-to-string suggestion "self::entity"
 common/i18n.xsl:2:1 missing-id-in-stylesheet
 common/identity.xsl:2:1 missing-id-in-stylesheet
 common/identity.xsl:2:17 redundant-namespace-declarations fix ""
@@ -2033,11 +2032,8 @@ docx/to/relationships.xsl:68:5 short-names
 docx/to/relationships.xsl:82:9 short-names
 docx/to/relationships.xsl:90:2 short-names
 docx/to/relationships.xsl:91:9 short-names
-docx/to/relationships.xsl:130:36 name-compared-to-string suggestion "self::Place"
 docx/to/relationships.xsl:136:27 count-compared-to-zero fix "empty(key('ALLHEADERS',1))"
 docx/to/relationships.xsl:136:60 count-compared-to-zero fix "empty(key('ALLFOOTERS',1))"
-docx/to/relationships.xsl:157:36 name-compared-to-string suggestion "self::Place"
-docx/to/relationships.xsl:173:36 name-compared-to-string suggestion "self::Place"
 docx/to/relationships.xsl:202:2 text-outside-xsl-text suggestion "<xsl:text>End</xsl:text>"
 docx/to/relationships.xsl:203:2 text-outside-xsl-text suggestion "<xsl:text>Foot</xsl:text>"
 docx/to/relationships.xsl:204:2 text-outside-xsl-text suggestion "<xsl:text>Document</xsl:text>"
@@ -2224,8 +2220,6 @@ epub/epub-common.xsl:538:7 short-names
 epub/epub-common.xsl:601:5 setting-value-of-variable-incorrectly
 epub/epub-common.xsl:601:5 short-names
 epub/epub-preflight.xsl:2:1 missing-id-in-stylesheet
-epub/epub-preflight.xsl:73:39 name-compared-to-string suggestion "self::*:url"
-epub/epub-preflight.xsl:99:39 name-compared-to-string suggestion "self::*:facs"
 epub/tei-to-epub.xsl:2:1 missing-id-in-stylesheet
 epub/tei-to-epub.xsl:2:1 too-many-templates
 epub/tei-to-epub.xsl:91:3 oversized-template
@@ -2309,7 +2303,6 @@ fo/fo.xsl:299:15 setting-value-of-variable-incorrectly
 fo/fo.xsl:341:32 count-compared-to-zero fix "exists($tableSpecs/Info/TableSpec[$no=@xml:id])"
 fo/fo_core.xsl:2:1 missing-id-in-stylesheet
 fo/fo_core.xsl:2:1 too-many-templates
-fo/fo_core.xsl:58:49 name-compared-to-string suggestion "self::xmltex"
 fo/fo_core.xsl:81:32 use-double-slash
 fo/fo_core.xsl:83:10 text-outside-xsl-text
 fo/fo_core.xsl:140:7 unused-function-template-parameter
@@ -2570,7 +2563,6 @@ html/html_figures.xsl:367:174 name-compared-to-string suggestion "self::cellpadd
 html/html_figures.xsl:397:7 use-choose-without-otherwise
 html/html_figures.xsl:448:13 short-names
 html/html_figures.xsl:463:17 not-creating-attribute-correctly
-html/html_figures.xsl:477:45 name-compared-to-string suggestion "self::style"
 html/html_header.xsl:2:1 missing-id-in-stylesheet
 html/html_header.xsl:5:17 redundant-namespace-declarations fix ""
 html/html_header.xsl:97:7 setting-value-of-variable-incorrectly
@@ -2697,7 +2689,6 @@ html/html_textcrit.xsl:10:17 redundant-namespace-declarations fix ""
 html/html_textstructure.xsl:2:1 missing-id-in-stylesheet
 html/html_textstructure.xsl:2:1 too-many-templates
 html/html_textstructure.xsl:132:32 count-compared-to-zero fix "exists(id($requestedID))"
-html/html_textstructure.xsl:208:50 name-compared-to-string suggestion "self::xmltex"
 html/html_textstructure.xsl:548:13 not-creating-attribute-correctly
 html/html_textstructure.xsl:665:7 unused-function-template-parameter
 html/html_textstructure.xsl:777:29 string-length-compared-to-zero suggestion "$doclang != ''"
@@ -2789,7 +2780,6 @@ json/teitojson.xsl:28:5 text-outside-xsl-text suggestion "<xsl:text>,</xsl:text>
 json/teitojson.xsl:31:3 text-outside-xsl-text suggestion "<xsl:text>,</xsl:text>"
 latex/latex.xsl:2:1 missing-id-in-stylesheet
 latex/latex.xsl:2:1 too-many-templates
-latex/latex.xsl:75:49 name-compared-to-string suggestion "self::tex"
 latex/latex.xsl:80:7 unused-function-template-parameter
 latex/latex.xsl:87:7 unused-function-template-parameter
 latex/latex.xsl:179:5 unused-function-template-parameter
@@ -3149,7 +3139,6 @@ odds/RngToRnc.xsl:1448:57 redundant-whitespace fix " "
 odds/RngToRnc.xsl:1480:5 short-names
 odds/classatts.xsl:2:1 missing-id-in-stylesheet
 odds/classatts.xsl:46:5 short-names
-odds/classatts.xsl:48:43 name-compared-to-string suggestion "self::mode"
 odds/classatts.xsl:118:5 short-names
 odds/classatts.xsl:174:5 short-names
 odds/classatts.xsl:178:9 short-names
@@ -3255,8 +3244,6 @@ odds/odd2dtd.xsl:753:10 text-outside-xsl-text suggestion "<xsl:text> IDREFS </xs
 odds/odd2dtd.xsl:754:10 text-outside-xsl-text suggestion "<xsl:text> CDATA </xsl:text>"
 odds/odd2dtd.xsl:765:7 text-outside-xsl-text suggestion "<xsl:text> CDATA </xsl:text>"
 odds/odd2dtd.xsl:800:16 text-outside-xsl-text suggestion "<xsl:text>|</xsl:text>"
-odds/odd2dtd.xsl:839:49 name-compared-to-string suggestion "self::teidtd"
-odds/odd2dtd.xsl:842:49 name-compared-to-string suggestion "self::teidtd"
 odds/odd2dtd.xsl:868:13 text-outside-xsl-text suggestion "<xsl:text>(</xsl:text>"
 odds/odd2dtd.xsl:870:13 text-outside-xsl-text suggestion "<xsl:text>)</xsl:text>"
 odds/odd2dtd.xsl:878:7 short-names
@@ -3265,7 +3252,6 @@ odds/odd2dtd.xsl:975:10 text-outside-xsl-text suggestion "<xsl:text>;[ </xsl:tex
 odds/odd2dtd.xsl:984:38 count-compared-to-zero fix "empty(key('ElementModule',@depend))"
 odds/odd2dtd.xsl:997:7 text-outside-xsl-text suggestion "<xsl:text>;[ </xsl:text>"
 odds/odd2dtd.xsl:1006:35 count-compared-to-zero fix "empty(key('ElementModule',@depend))"
-odds/odd2dtd.xsl:1036:50 name-compared-to-string suggestion "self::NameList"
 odds/odd2dtd.xsl:1144:2 use-choose-without-otherwise
 odds/odd2dtd.xsl:1217:21 string-length-compared-to-zero suggestion "$maybeatts != ''"
 odds/odd2dtd.xsl:1324:7 use-choose-without-otherwise
@@ -3423,7 +3409,6 @@ odds/odd2odd.xsl:1654:5 unused-function-template-parameter
 odds/odd2odd.xsl:1655:5 unused-variable
 odds/odd2odd.xsl:1695:3 unused-named-template
 odds/odd2odd.xsl:1700:5 unused-function-template-parameter
-odds/odd2odd.xsl:1711:45 name-compared-to-string suggestion "self::mode"
 odds/odd2odd.xsl:1721:39 redundant-whitespace fix " "
 odds/odd2odd.xsl:1741:13 setting-value-of-variable-incorrectly
 odds/odd2odd.xsl:1768:11 setting-value-of-variable-incorrectly
@@ -3532,7 +3517,6 @@ odds/table2list.xsl:64:133 redundant-whitespace fix " "
 odds/table2list.xsl:86:60 redundant-whitespace fix " "
 odds/table2list.xsl:86:97 redundant-whitespace fix " "
 odds/table2list.xsl:86:135 redundant-whitespace fix " "
-odds/table2list.xsl:93:49 name-compared-to-string suggestion "self::tex"
 odds/teiodds.xsl:2:1 missing-id-in-stylesheet
 odds/teiodds.xsl:2:1 too-many-templates
 odds/teiodds.xsl:98:41 use-double-slash
@@ -3607,8 +3591,6 @@ odds/teiodds.xsl:1831:11 short-names
 odds/teiodds.xsl:1863:5 setting-value-of-variable-incorrectly
 odds/teiodds.xsl:1863:5 unused-variable
 odds/teiodds.xsl:1915:5 use-choose-without-otherwise
-odds/teiodds.xsl:1916:74 name-compared-to-string suggestion "self::TEIVERSION"
-odds/teiodds.xsl:1926:100 name-compared-to-string suggestion "self::TEIVERSION"
 odds/teiodds.xsl:1928:9 unused-variable
 odds/teiodds.xsl:2022:11 not-creating-attribute-correctly
 odds/teiodds.xsl:2030:11 not-creating-attribute-correctly
@@ -4372,7 +4354,6 @@ profiles/iso/docx/to.xsl:1047:5 setting-value-of-variable-incorrectly
 profiles/iso/docx/to.xsl:1050:5 short-names
 profiles/iso/docx/to.xsl:1086:11 not-creating-attribute-correctly
 profiles/iso/docx/to.xsl:1098:9 not-creating-attribute-correctly
-profiles/iso/docx/to.xsl:1125:49 name-compared-to-string suggestion "self::isotoc"
 profiles/iso/docx/to.xsl:1218:5 short-names
 profiles/iso/epub/to.xsl:2:1 missing-id-in-stylesheet
 profiles/iso/fo/to.xsl:2:1 missing-id-in-stylesheet
@@ -4399,7 +4380,6 @@ profiles/iso/html/web.xsl:2:1 missing-id-in-stylesheet
 profiles/iso/html/web.xsl:2:1 too-many-templates
 profiles/iso/html/web.xsl:14:17 leaking-result-namespace suggestion "tei html t a rng iso tbx       cals teix w its"
 profiles/iso/html/web.xsl:62:7 use-single-option-for-choose
-profiles/iso/html/web.xsl:69:50 name-compared-to-string suggestion "self::ISOerror"
 profiles/iso/html/web.xsl:153:6 unused-function-template-parameter
 profiles/iso/html/web.xsl:158:3 use-choose-without-otherwise
 profiles/iso/html/web.xsl:231:4 use-choose-without-otherwise
@@ -4741,7 +4721,6 @@ profiles/iso/validate.xsl:2:1 missing-id-in-stylesheet
 profiles/iso/validate.xsl:2:1 too-many-templates
 profiles/iso/validate.xsl:62:8 use-choose-without-otherwise
 profiles/iso/validate.xsl:69:3 text-outside-xsl-text suggestion "<xsl:text>\n\t   Annex </xsl:text>"
-profiles/iso/validate.xsl:90:50 name-compared-to-string suggestion "self::ISOerror"
 profiles/iso/validate.xsl:114:13 text-outside-xsl-text suggestion "<xsl:text>:\n            </xsl:text>"
 profiles/iso/validate.xsl:154:6 unused-function-template-parameter
 profiles/iso/validate.xsl:155:6 unused-function-template-parameter
@@ -4766,7 +4745,6 @@ profiles/jsi/docx/from.xsl:532:20 string-length-compared-to-zero suggestion ". !
 profiles/jsi/docx/from.xsl:549:80 string-length-compared-to-zero suggestion ". = ''"
 profiles/jsi/docx/from.xsl:553:24 string-length-compared-to-zero suggestion ". = ''"
 profiles/jsi/docx/from.xsl:555:52 string-length-compared-to-zero suggestion ". = ''"
-profiles/jsi/docx/from.xsl:610:29 name-compared-to-string suggestion "not(self::rend)"
 profiles/jsi/docx/from.xsl:688:52 name-compared-to-string suggestion "self::del"
 profiles/jsi/docx/from.xsl:688:68 name-compared-to-string suggestion "self::add"
 profiles/jsi/docx/from.xsl:689:38 name-compared-to-string suggestion "self::del"
@@ -4875,7 +4853,6 @@ profiles/jtei/pdf/to.xsl:626:33 use-double-slash
 profiles/jtei/pdf/to.xsl:626:48 use-double-slash
 profiles/jtei/pdf/to.xsl:772:32 use-double-slash
 profiles/jtei/pdf/to.xsl:781:32 use-double-slash
-profiles/jtei/pdf/to.xsl:1005:43 name-compared-to-string suggestion "self::rows"
 profiles/jtei/pdf/to.xsl:1101:31 select-starts-with-double-slash suggestion ".//"
 profiles/jtei/pdf/to.xsl:1117:9 text-outside-xsl-text suggestion "<xsl:text>15</xsl:text>"
 profiles/jtei/pdf/to.xsl:1118:9 text-outside-xsl-text suggestion "<xsl:text>12</xsl:text>"
@@ -5309,8 +5286,6 @@ tcp/tcp2tei.xsl:6:1 missing-id-in-stylesheet
 tcp/tcp2tei.xsl:6:1 too-many-templates
 tcp/tcp2tei.xsl:56:35 select-starts-with-double-slash suggestion ".//"
 tcp/tcp2tei.xsl:108:5 unused-variable
-tcp/tcp2tei.xsl:228:40 name-compared-to-string
-tcp/tcp2tei.xsl:228:55 name-compared-to-string suggestion "self::UNIT"
 tcp/tcp2tei.xsl:276:23 redundant-whitespace fix ""
 tcp/tcp2tei.xsl:276:51 redundant-whitespace fix " "
 tcp/tcp2tei.xsl:276:77 redundant-whitespace fix " "
@@ -5443,8 +5418,6 @@ tools/processpb.xsl:2:1 missing-id-in-stylesheet
 tools/processpb.xsl:2:1 too-many-templates
 tools/tei-to-tree.xsl:2:1 missing-id-in-stylesheet
 tools/tei-to-tree.xsl:9:46 select-starts-with-double-slash suggestion ".//"
-tools/tei-to-tree.xsl:85:28 name-compared-to-string suggestion "self::special"
-tools/tei-to-tree.xsl:88:33 name-compared-to-string suggestion "self::special"
 tools/timing-profile.xsl:2:1 missing-id-in-stylesheet
 tools/timing-profile.xsl:12:33 select-starts-with-double-slash suggestion ".//"
 tools/timing-profile.xsl:19:13 not-creating-attribute-correctly

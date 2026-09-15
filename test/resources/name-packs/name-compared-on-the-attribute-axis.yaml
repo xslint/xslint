@@ -1,0 +1,20 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: name-compared-to-string
+found:
+  amount: 2
+  positions: [ [ 8, 43 ], [ 9, 28 ] ]
+  fixes: [ "self::gee", "self::aitch" ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="s">
+    <xsl:template match="/">
+      <xsl:copy-of select="@*[name() != 'as']"/>
+      <xsl:copy-of select="attribute::*[local-name() = 'bee' and name() != 'cee']"/>
+      <xsl:copy-of select="namespace::*[name() = 'dee']"/>
+      <xsl:copy-of select="@*[not(name() = 'eff')]"/>
+      <xsl:copy-of select="@*[../child::zed[name() = 'gee']]"/>
+      <xsl:copy-of select="*[name() = 'aitch']"/>
+    </xsl:template>
+  </xsl:stylesheet>

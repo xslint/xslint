@@ -73,7 +73,7 @@ Pointed at core stylesheets from the three most widely-used XSLT projects —
 [DocBook-XSL](https://github.com/docbook/xslt10-stylesheets) (1.0),
 [TEI](https://github.com/TEIC/Stylesheets) (2.0), and
 [DITA-OT](https://github.com/dita-ot/dita-ot) (1.0/2.0) — xslint surfaced
-**10,488 findings across 43 different checks in 867 stylesheets, with no false
+**10,389 findings across 43 different checks in 867 stylesheets, with no false
 positives from its validators**: 3,300 pieces of literal text outside
 `xsl:text`, 639 `xsl:choose` blocks with no `xsl:otherwise`, and 586 template
 and function parameters nothing reads. Real stylistic and logical findings in
