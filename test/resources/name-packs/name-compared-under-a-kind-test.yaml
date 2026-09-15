@@ -4,7 +4,7 @@
 pack: name-compared-to-string
 found:
   amount: 5
-  positions: [ [ 12, 40 ], [ 13, 39 ], [ 14, 46 ], [ 15, 35 ], [ 16, 37 ] ]
+  positions: [ [ 12, 40 ], [ 13, 39 ], [ 14, 46 ], [ 15, 35 ], [ 17, 37 ] ]
   fixes: [ "self::jay", "self::ell", "self::vee", "self::zed", "self::tee" ]
 input: |-
   <?xml version="1.0"?>
@@ -22,6 +22,7 @@ input: |-
       <xsl:copy-of select="element(kay)[name() = 'ell']"/>
       <xsl:copy-of select="schema-element(you)[name() = 'vee']"/>
       <xsl:copy-of select="(ex/why)[name() = 'zed']"/>
+      <xsl:copy-of select="(ex/@why)[name() = 'kyu']"/>
       <xsl:copy-of select="child:: ar[name() = 'tee']"/>
     </xsl:template>
   </xsl:stylesheet>
