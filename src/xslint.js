@@ -78,9 +78,13 @@
  * covering that name at any depth takes the run to 10,971 entries and tens of
  * milliseconds, and as a post-walk filter the same line buys nothing: that is
  * what a prune is worth over a filter, and why the half a user can reach for
- * is the pattern rather than the floor. What neither half reaches is the rest
- * of what a `.gitignore` names, a walk that read one being a walk that asks
- * git what it holds (#929).
+ * is the pattern rather than the floor. A third answer stands beside those
+ * two since #929, and it is neither the walk's nor the configuration's: the
+ * project's own `.gitignore` files, read as the walk passes each directory,
+ * which refuse that `.claude` with no line of configuration at all — the run
+ * over eo reported 5,031 stylesheets for a checkout holding 123. What one
+ * says, and what is deliberately left to git, is at the top of
+ * `src/gitignore.js`.
  *
  * A prune must not change *what* is reported, only what a run pays to report
  * it, so `pruned` accepts one shape: `COVERING`, the trailing `/**` that
@@ -176,7 +180,8 @@
 
 const path = require('path')
 const fs = require('fs')
-const {allFilesFrom} = require('./helpers')
+const {allFilesFrom, slashed} = require('./helpers')
+const {ignoring} = require('./gitignore')
 const {parted} = require('./source')
 const {SUGGESTION} = require('./checks')
 const {kinds} = require('./resources/checks.json')
@@ -453,17 +458,6 @@ const NEGATED = /^!/
 const DOTTED = {dot: true}
 
 /**
- * A path as an exclusion glob reads it: relative to the configuration's base
- * directory and in posix form, so the patterns stay portable.
- * @param {string} pth - Absolute path of a file or a directory
- * @param {string} base - Directory the globs resolve against
- * @return {string} - What a pattern is matched against
- */
-const slashed = function(pth, base) {
-  return path.relative(base, pth).split(path.sep).join('/')
-}
-
-/**
  * Whether a file matches any exclusion glob.
  * @param {string} file - Absolute path of a stylesheet
  * @param {Array.<string>} patterns - Exclusion globs from the configuration
@@ -498,9 +492,10 @@ const pruned = function(dir, patterns, base) {
 
 /**
  * The stylesheets a path holds: the file itself, or every one a directory has
- * under it, keeping only what a stylesheet is named. A directory the patterns
- * cover whole is never opened, so an exclusion costs nothing rather than the
- * walk it then throws away (#923).
+ * under it, keeping only what a stylesheet is named. A directory an exclusion
+ * covers whole is never opened (#923), nor is one the project's own
+ * `.gitignore` files name (#929); a path named outright is read whatever
+ * either says.
  * @param {string} pth - Path to a stylesheet or a directory holding some
  * @param {Array.<string>} patterns - Exclusion globs from the configuration
  * @param {string} base - Directory the globs resolve against
@@ -509,7 +504,10 @@ const pruned = function(dir, patterns, base) {
 const sheets = function(pth, patterns, base) {
   let files = [pth]
   if (fs.statSync(pth).isDirectory()) {
-    files = allFilesFrom(pth, (dir) => pruned(dir, patterns, base))
+    const ignored = ignoring(pth)
+    files = allFilesFrom(
+      pth, (dir) => pruned(dir, patterns, base) || ignored.directory(dir),
+    ).filter((file) => suffixed(file) && !ignored.file(file))
   }
   return files.filter((file) => suffixed(file))
 }

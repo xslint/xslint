@@ -458,6 +458,66 @@ describe('xslint', function() {
         'one cannot be read at all, so reaching it is the failure (#923)',
     )
   })
+  it('should never open a directory the project ignores', function() {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-'))
+    const shut = path.join(dir, 'shut')
+    fs.mkdirSync(shut)
+    fs.copyFileSync(CLEAN, path.join(shut, 'buried.xsl'))
+    fs.copyFileSync(CLEAN, path.join(dir, 'kept.xsl'))
+    fs.writeFileSync(path.join(dir, '.gitignore'), 'shut/\n')
+    fs.chmodSync(shut, 0o000)
+    let opens = true
+    try {
+      fs.readdirSync(shut)
+    } catch {
+      opens = false
+    }
+    if (opens) {
+      fs.chmodSync(shut, 0o755)
+      fs.rmSync(dir, {recursive: true, force: true})
+      this.skip()
+    }
+    const streams = xslintStreams([dir])
+    fs.chmodSync(shut, 0o755)
+    fs.rmSync(dir, {recursive: true, force: true})
+    assert.ok(
+      streams.stderr.includes('Processed files: 1'),
+      'the run opened a directory the project itself does not track, which ' +
+        'is what reported a checkout of 123 stylesheets as 5031: this one ' +
+        'cannot be read at all, so reaching it is the failure (#929)',
+    )
+  })
+  it('should leave out a stylesheet the project ignores by name', function() {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-'))
+    fs.copyFileSync(CLEAN, path.join(dir, 'kept.xsl'))
+    fs.copyFileSync(CLEAN, path.join(dir, 'sheet.gen.xsl'))
+    fs.writeFileSync(path.join(dir, '.gitignore'), '*.gen.xsl\n')
+    const streams = xslintStreams([dir])
+    fs.rmSync(dir, {recursive: true, force: true})
+    assert.ok(
+      streams.stderr.includes('Processed files: 1'),
+      'a stylesheet the project ignores by name stands under no ignored ' +
+        'directory, so nothing the walk leaves unopened answers for it and ' +
+        'the run reports a generated file as source (#929)',
+    )
+  })
+  it('should read a directory named outright though the project ignores it',
+    function() {
+      const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-'))
+      const shut = path.join(dir, 'shut')
+      fs.mkdirSync(shut)
+      fs.mkdirSync(path.join(dir, '.git'))
+      fs.copyFileSync(CLEAN, path.join(shut, 'buried.xsl'))
+      fs.writeFileSync(path.join(dir, '.gitignore'), 'shut/\n')
+      const streams = xslintStreams([shut])
+      fs.rmSync(dir, {recursive: true, force: true})
+      assert.ok(
+        streams.stderr.includes('Processed files: 1'),
+        'a path named on the command line is what the run was asked for, ' +
+          'so reading the ignore files above it into a refusal answers a ' +
+          'question nobody put (#929)',
+      )
+    })
   it('should apply max-warnings from the config file', function() {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-'))
     const cfg = path.join(dir, '.xslint.yml')

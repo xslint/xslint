@@ -943,7 +943,8 @@ the 22 and could only ever ask whether the string appeared.
   the defaults (`src/config.js`). Unknown keys and no-match patterns are
   reported. An `exclude:` covering a whole directory (`dir/**`) also stops the
   walk descending it, so the pattern costs nothing rather than the walk it then
-  throws away (#923).
+  throws away (#923). What the project's own `.gitignore` files name is neither
+  walked nor reported either, and needs no pattern of its own (#929).
 - **Inline directives**: XML comments `xslint-disable-next-line`,
   `xslint-disable-line`, `xslint-disable-file`, each with optional space-separated
   rule names (`src/directives.js`); an unused directive is reported.
@@ -989,6 +990,7 @@ one of them.
 | `src/index.mjs` | CLI entry (commander.js, ESM); imports the pipeline inside the command action, so `--help` loads none of it |
 | `src/xslint.js` | Discovery, config, staging, output; exports the pure `lint` (package `main`), `fixed`, and the `STAGES` the speed gate times |
 | `src/config.js` | Resolves `.xslint.yml` (severities/`off`, excludes, `max-warnings`) |
+| `src/gitignore.js` | `ignoring(start)` — what the project's own `.gitignore` files refuse: a directory the walk never opens, a stylesheet it drops |
 | `src/directives.js` | Parses inline `xslint-disable-*` comment directives |
 | `src/reporters.js` | `reporterOf(format)` — `text`, `json`, `sarif`, or `github` output |
 | `src/validators/xsl-validator.js` | Builds the corpus; reports each non-well-formed stylesheet |
@@ -1019,7 +1021,7 @@ one of them.
 | `src/fixes.js` | Shared fix builders reading the raw source: `deletion`, `substitution`, `excision`, `standsAt` |
 | `src/fixer.js` | Applies a defect's `fix` to source (decode-walk, verify-before-apply, end-to-start) |
 | `src/xpath.js` | The fontoxpath environment, and what we add to it: `PREFIXES`, the two evaluators, `satisfies`, `compiles`, and the two functions a selector of ours reaches for, `xslint:normalize-space` and `xslint:version` |
-| `src/helpers.js` | XML parsing (expands internal-subset entities), YAML parsing, file recursion that opens no `.git` and no `node_modules` |
+| `src/helpers.js` | XML parsing (expands internal-subset entities), YAML parsing, `slashed`, and file recursion that opens no `.git` and no `node_modules` |
 | `src/resources/checks.json` | Every check as a run reads it, built from the YAML; never edited by hand |
 | `src/logger.js` | 4-level logger |
 | `src/output.js` | `colorful(stream)`, the one gate on coloring, and the leveled prefixed `writer` both streams are written through |

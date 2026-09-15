@@ -15,6 +15,11 @@ Its derivation stands at the top of `src/xslint.js` itself, for the reason the n
 
 Resolves `.xslint.yml` (severities/`off`, excludes, `max-warnings`, `stable`).
 
+## `src/gitignore.js`
+
+`ignoring(start)` — whether the project's own `.gitignore` files name a directory the walk is
+about to open, or a stylesheet beside it; the derivation is at the top of the module (#929).
+
 ## `src/directives.js`
 
 Parses inline `xslint-disable-*` comment directives.
