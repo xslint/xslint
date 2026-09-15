@@ -143,6 +143,34 @@ name sorts, which no node test expresses — and so is a comparison about anothe
 node, <code>name(@a) = &#39;x&#39;</code> speaking of the attribute rather than of the element a
 <code>self::</code> step would match. In a 1.0 stylesheet a <code>local-name()</code> comparison has no
 shorter equivalent at all, the <code>*:x</code> wildcard being XPath 2.0&#39;s.</p>
+<p>Where the comparison stands settles it as well, because a <code>self::</code> step asks
+about an element and the context need not be one. The <code>self</code> axis selects
+elements, so <code>self::as</code> is false for every attribute and every namespace node:
+in <code>@*[name() != &#39;as&#39;]</code> the name asked for is an attribute&#39;s, and the node test
+that looks like its equivalent excludes nothing at all — the attribute the
+predicate meant to drop survives it along with the rest. XPath 2.0 asks that one
+with a kind test, <code>@*[not(self::attribute(as))]</code>, and a 1.0 stylesheet has no
+node test for it at all, so there the string comparison is the only way to put
+the question.</p>
+<p>The node test in front of the predicate answers that as much as the axis does.
+A <code>processing-instruction()</code> stands on the child axis and yet selects no element,
+while its nodes do have a name — <code>name()</code> of a processing instruction is its
+target — so the two spellings part company outright:</p>
+<pre><code class="language-xsl">&lt;xsl:copy-of select=&quot;processing-instruction()[name() = &#39;ditaot&#39;]&quot;/&gt;
+&lt;xsl:copy-of select=&quot;processing-instruction()[self::ditaot]&quot;/&gt;
+</code></pre>
+<p>The first copies the instruction it names and the second copies nothing, in any
+document. XSLT 1.0 puts that question as <code>processing-instruction(&#39;ditaot&#39;)</code>. A
+<code>comment()</code> and a <code>text()</code> have no name for either spelling to read, and a
+<code>node()</code> reaches instructions and comments beside elements, so there too the
+comparison and the node test answer differently. Only a step selecting elements
+alone — by name, by a wildcard, or by the <code>element()</code> and <code>schema-element()</code>
+kind tests — asks one question in two ways.</p>
+<p>Brackets hang a predicate off whatever stands in front of them, which need not
+be a step at all. In <code>(@one | @two)[name() = &#39;eff&#39;]</code> the context is an attribute
+exactly as it is under <code>@*</code>, and the string comparison is again the only way to
+ask. Where every arm selects elements — <code>(gee | aitch)[name() = &#39;jay&#39;]</code> — the
+node test stands.</p>
 
   </div>
 </body>
