@@ -255,6 +255,12 @@ export default defineConfig([
     }
   },
   {
+    files: ["src/xslint.js"],
+    rules: {
+      "no-restricted-syntax": ["error", ...RESTRICTED, SPAWNED]
+    }
+  },
+  {
     files: ["src/gitignore.js"],
     rules: {
       "no-restricted-syntax":
