@@ -502,14 +502,14 @@ const pruned = function(dir, patterns, base) {
  * @return {Array.<string>} - Paths of the stylesheets found
  */
 const sheets = function(pth, patterns, base) {
-  let files = [pth]
+  let files = [pth].filter((file) => suffixed(file))
   if (fs.statSync(pth).isDirectory()) {
     const ignored = ignoring(pth)
     files = allFilesFrom(
       pth, (dir) => pruned(dir, patterns, base) || ignored.directory(dir),
     ).filter((file) => suffixed(file) && !ignored.file(file))
   }
-  return files.filter((file) => suffixed(file))
+  return files
 }
 
 /**

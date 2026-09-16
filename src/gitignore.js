@@ -28,6 +28,18 @@
  * answers only once its name says it is a stylesheet, so nothing the run
  * would not have read pays for the question.
  *
+ * The rules are the second question and not the first, git's own index
+ * outranking them: `git check-ignore` keeps a path the index holds whatever a
+ * line says of it, and this checkout tracks two stylesheets under its own
+ * `reports/`. Reading the rules alone reported 159 files where 161 stand, and
+ * withdrew three DocBook-XSL defects the nightly snapshot names. So
+ * `git ls-files` is asked once per repository — 18 ms here, against a walk of
+ * seconds — and a tree git cannot read ignores nothing at all rather than
+ * guessing at it. What the index does not buy back is a path under an ignored
+ * *directory*, git re-including nothing below one: a `reports/` line covers
+ * the `reports/stray.xsl` no index ever heard of, so `covered` asks the
+ * directories above a path before a rule is read about the path itself.
+ *
  * Every rule is matched by `Minimatch` with braces and extglobs switched off,
  * git's format having no word for either: `{one,two}` and `one+(two)` name
  * the characters they spell. That is the direction the whole translation errs
@@ -39,7 +51,10 @@
  * file's directory, and a rule holding none matches at any depth, which is
  * the double star written in front of it. A `!` takes a name back, the last
  * rule matching a path decides it, and an outer file's rules stand in front
- * of an inner one's.
+ * of an inner one's. A name is matched with its case, where git reads
+ * `core.ignorecase` and so ignores a `BUILD/` under a `build/` line on the
+ * filesystems that set it — the same direction again, a directory the walk
+ * pays for as it always did.
  *
  * It climbs no higher than the repository the walk starts inside — the
  * nearest ancestor holding a `.git`, a directory in a checkout and a file in
@@ -56,6 +71,7 @@
 
 const fs = require('fs')
 const path = require('path')
+const {execFileSync} = require('child_process')
 const {Minimatch} = require('minimatch')
 const {slashed} = require('./helpers')
 
@@ -85,6 +101,26 @@ const GLOB = {
   nocomment: true,
   nonegate: true,
 }
+
+/**
+ * What git is asked for: every path its index holds that its own ignore files
+ * name, `-z` so that a name holding a newline arrives whole.
+ * @type {Array.<string>}
+ */
+const TRACKED = ['ls-files', '-z', '--cached', '--ignored', '--exclude-standard']
+
+/**
+ * The index of a tree no repository stands over, which holds nothing.
+ * @type {object}
+ */
+const NOTHING = {has: () => false}
+
+/**
+ * The index a repository git cannot read stands for, which holds everything:
+ * nothing is ignored, and the walk reads what it read before.
+ * @type {object}
+ */
+const EVERY = {has: () => true}
 
 /**
  * One line of an ignore file as a rule: what it matches, where it matches
@@ -144,18 +180,19 @@ const rulesOf = function(dir) {
 }
 
 /**
- * The highest directory a rule is read from: the repository the walk starts
- * inside, or the directory itself where none stands over it.
+ * The highest directory a rule is read from, and whether a repository stands
+ * there at all: the nearest ancestor holding a `.git`, or the directory
+ * itself where none does.
  * @param {string} start - Absolute path the walk begins at
- * @return {string} - Where the climb stops
+ * @return {{top: string, repository: boolean}} - Where the climb stops
  */
 const toppedAt = function(start) {
-  let top = start
+  let found = {top: start, repository: false}
   let dir = start
   let climbing = true
   while (climbing) {
     if (fs.existsSync(path.join(dir, REPOSITORY))) {
-      top = dir
+      found = {top: dir, repository: true}
       climbing = false
     } else if (path.dirname(dir) === dir) {
       climbing = false
@@ -163,72 +200,184 @@ const toppedAt = function(start) {
       dir = path.dirname(dir)
     }
   }
-  return top
+  return found
 }
 
 /**
- * Every rule standing over one directory, an outer file's in front of an
+ * One path the index holds, and every directory standing over it up to the
+ * top, since a walk reaches a tracked file only by descending to it.
+ * @param {string} top - Where the climb stops
+ * @param {string} name - The path, as the index spells it
+ * @return {Array.<string>} - The path and its ancestors, absolute
+ */
+const below = function(top, name) {
+  const paths = []
+  let pth = path.join(top, name)
+  while (pth.length > top.length) {
+    paths.push(pth)
+    pth = path.dirname(pth)
+  }
+  return paths
+}
+
+/**
+ * What the index of a repository holds that its own ignore files name, which
+ * is the one answer no reading of those files supplies; `EVERY` where git
+ * stands over the tree and cannot say, so nothing is ignored at all.
+ * @param {{top: string, repository: boolean}} found - Where the climb stopped
+ * @return {object} - Every such path and the directories above it, or `EVERY`
+ */
+const trackedIn = function(found) {
+  let paths = NOTHING
+  if (found.repository) {
+    try {
+      paths = new Set(
+        execFileSync('git', TRACKED, {
+          cwd: found.top,
+          encoding: 'utf-8',
+          stdio: ['ignore', 'pipe', 'ignore'],
+          timeout: 30000,
+          maxBuffer: 64 * 1024 * 1024,
+          windowsHide: true,
+        }).split('\0')
+          .filter((name) => name !== '')
+          .flatMap((name) => below(found.top, name)),
+      )
+    } catch {
+      paths = EVERY
+    }
+  }
+  return paths
+}
+
+/**
+ * The rules one directory's own ignore file holds, as the group they are
+ * matched in: one relative name per group rather than one per rule.
+ * @param {string} dir - Absolute path of the directory
+ * @return {Array.<object>} - The group it holds, or nothing where it has none
+ */
+const grouped = function(dir) {
+  let groups = []
+  const rules = rulesOf(dir)
+  if (rules.length > 0) {
+    groups = [{base: dir, rules}]
+  }
+  return groups
+}
+
+/**
+ * Every group standing over one directory, an outer file's in front of an
  * inner file's, remembered so that a directory is read once however many
  * paths below it are asked about.
- * @param {string} dir - Absolute path of a directory, at `top` or below it
- * @param {string} top - Where the climb stops
- * @param {Map} memo - What the directories already read answered
- * @return {Array.<object>} - The rules, in the order they are read
+ * @param {string} dir - Absolute path of a directory, at the top or below it
+ * @param {object} yard - What the repository answers, and what it has answered
+ * @return {Array.<object>} - The groups, in the order they are read
  */
-const stacked = function(dir, top, memo) {
-  if (!memo.has(dir)) {
+const stacked = function(dir, yard) {
+  if (!yard.rules.has(dir)) {
     let above = []
-    if (dir !== top) {
-      above = stacked(path.dirname(dir), top, memo)
+    if (dir !== yard.top) {
+      above = stacked(path.dirname(dir), yard)
     }
-    memo.set(dir, above.concat(rulesOf(dir)))
+    yard.rules.set(dir, above.concat(grouped(dir)))
   }
-  return memo.get(dir)
+  return yard.rules.get(dir)
 }
 
 /**
  * Whether one rule names a path.
  * @param {object} rule - A rule, as `patterned` reads one
- * @param {string} pth - Absolute path of a file or a directory
+ * @param {string} name - The path, relative to the rule's own base
  * @param {boolean} directory - Whether the path is a directory
  * @return {boolean} - True where the rule names it
  */
-const matches = function(rule, pth, directory) {
-  return (directory || !rule.directory) &&
-    rule.glob.match(slashed(pth, rule.base))
+const names = function(rule, name, directory) {
+  return (directory || !rule.directory) && rule.glob.match(name)
 }
 
 /**
- * Whether the rules standing over a path ignore it, the last one naming it
+ * Whether the rules standing over a path deny it, the last one naming it
  * deciding.
  * @param {string} pth - Absolute path of a file or a directory
  * @param {boolean} directory - Whether the path is a directory
- * @param {string} top - Where the climb stops
- * @param {Map} memo - What the directories already read answered
- * @return {boolean} - True where the project ignores it
+ * @param {object} yard - What the repository answers, and what it has answered
+ * @return {boolean} - True where they deny it
  */
-const ignores = function(pth, directory, top, memo) {
+const denied = function(pth, directory, yard) {
   let ignored = false
-  stacked(path.dirname(pth), top, memo).forEach(function(rule) {
-    if (matches(rule, pth, directory)) {
-      ignored = !rule.negated
-    }
+  stacked(path.dirname(pth), yard).forEach(function(group) {
+    const name = slashed(pth, group.base)
+    group.rules.forEach(function(rule) {
+      if (names(rule, name, directory)) {
+        ignored = !rule.negated
+      }
+    })
   })
   return ignored
 }
 
 /**
- * What the ignore files over a directory say about the paths below it.
+ * Whether the rules put a directory out of reach, which settles everything
+ * below it: git re-includes nothing standing under a directory it excludes.
+ * The walk's own start is never out of reach, a path named outright being
+ * what the run was asked for.
+ * @param {string} dir - Absolute path of a directory, at the start or below
+ * @param {object} yard - What the repository answers, and what it has answered
+ * @return {boolean} - True where it, or a directory above it, is denied
+ */
+const covered = function(dir, yard) {
+  if (!yard.covers.has(dir)) {
+    let ignored = false
+    if (dir !== yard.start) {
+      ignored = covered(path.dirname(dir), yard) || denied(dir, true, yard)
+    }
+    yard.covers.set(dir, ignored)
+  }
+  return yard.covers.get(dir)
+}
+
+/**
+ * Whether the project ignores a path: never one its index holds, and
+ * otherwise whatever the rules say of it and of the directories over it.
+ * @param {string} pth - Absolute path of a file or a directory
+ * @param {boolean} directory - Whether the path is a directory
+ * @param {object} yard - What the repository answers, and what it has answered
+ * @return {boolean} - True where the project ignores it
+ */
+const ignores = function(pth, directory, yard) {
+  let ignored = false
+  if (!yard.tracked.has(pth)) {
+    if (directory) {
+      ignored = covered(pth, yard)
+    } else {
+      ignored = covered(path.dirname(pth), yard) || denied(pth, false, yard)
+    }
+  }
+  return ignored
+}
+
+/**
+ * What the ignore files over a directory, and the index of the repository
+ * holding it, say about the paths below it.
  * @param {string} start - Absolute path the walk begins at
  * @return {object} - `directory(pth)` and `file(pth)`, each answering a
  *   boolean
  */
 const ignoring = function(start) {
-  const top = toppedAt(start)
-  const memo = new Map()
+  if (!path.isAbsolute(start)) {
+    throw new Error(`a walk starts at an absolute path, not "${start}"`)
+  }
+  const found = toppedAt(start)
+  const yard = {
+    top: found.top,
+    start,
+    tracked: trackedIn(found),
+    rules: new Map(),
+    covers: new Map(),
+  }
   return {
-    directory: (dir) => ignores(dir, true, top, memo),
-    file: (file) => ignores(file, false, top, memo),
+    directory: (dir) => ignores(dir, true, yard),
+    file: (file) => ignores(file, false, yard),
   }
 }
 

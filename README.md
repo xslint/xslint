@@ -140,7 +140,8 @@ for both and everything else in it is stepped over, while a file named on the
 command line under any other suffix earns a warning rather than being counted
 as clean. A `.git` or a `node_modules` is never opened, wherever in the tree it
 stands, and neither is a directory the project's own `.gitignore` files name —
-a tree the project does not track is not its source. A path given on the
+a tree the project does not track is not its source. A file git tracks is read
+whatever a line says of it, the way git itself reads one, and a path given on the
 command line is read whatever those files say about it.
 
 You can suppress some [checks][checks] by using `--suppress` option:

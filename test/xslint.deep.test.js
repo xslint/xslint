@@ -4,7 +4,7 @@
  */
 
 const {
-  runXslint, xslintStatus, xslintStreams, xslintUnread,
+  runXslint, xslintStatus, xslintStreams, xslintUnread, repository,
 } = require('./helpers')
 const {SUFFIXES, excluded, pruned} = require('../src/xslint')
 const assert = require('assert')
@@ -506,16 +506,46 @@ describe('xslint', function() {
       const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-'))
       const shut = path.join(dir, 'shut')
       fs.mkdirSync(shut)
-      fs.mkdirSync(path.join(dir, '.git'))
       fs.copyFileSync(CLEAN, path.join(shut, 'buried.xsl'))
       fs.writeFileSync(path.join(dir, '.gitignore'), 'shut/\n')
-      const streams = xslintStreams([shut])
+      const made = repository(dir, ['.gitignore'])
+      let streams = {stderr: ''}
+      if (made) {
+        streams = xslintStreams([shut])
+      }
       fs.rmSync(dir, {recursive: true, force: true})
+      if (!made) {
+        this.skip()
+      }
       assert.ok(
         streams.stderr.includes('Processed files: 1'),
         'a path named on the command line is what the run was asked for, ' +
           'so reading the ignore files above it into a refusal answers a ' +
           'question nobody put (#929)',
+      )
+    })
+  it('should read a stylesheet the index holds though a rule names it',
+    function() {
+      const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-'))
+      fs.mkdirSync(path.join(dir, 'reports'))
+      fs.copyFileSync(CLEAN, path.join(dir, 'kept.xsl'))
+      fs.copyFileSync(CLEAN, path.join(dir, 'reports', 'tracked.xsl'))
+      fs.copyFileSync(CLEAN, path.join(dir, 'reports', 'stray.xsl'))
+      fs.writeFileSync(path.join(dir, '.gitignore'), 'reports/\n')
+      const made = repository(dir, ['reports/tracked.xsl'])
+      let streams = {stderr: ''}
+      if (made) {
+        streams = xslintStreams([dir])
+      }
+      fs.rmSync(dir, {recursive: true, force: true})
+      if (!made) {
+        this.skip()
+      }
+      assert.ok(
+        streams.stderr.includes('Processed files: 2'),
+        'git keeps a stylesheet its index holds whatever a rule says of it, ' +
+          'and this repository tracks two under a `reports/` line: reading ' +
+          'the rules alone reported 159 files where 161 stand (#929)',
       )
     })
   it('should apply max-warnings from the config file', function() {

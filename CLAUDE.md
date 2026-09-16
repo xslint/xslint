@@ -944,7 +944,9 @@ the 22 and could only ever ask whether the string appeared.
   reported. An `exclude:` covering a whole directory (`dir/**`) also stops the
   walk descending it, so the pattern costs nothing rather than the walk it then
   throws away (#923). What the project's own `.gitignore` files name is neither
-  walked nor reported either, and needs no pattern of its own (#929).
+  walked nor reported either, and needs no pattern of its own — unless git's
+  own index holds the path, which outranks every rule a `.gitignore` writes
+  (#929).
 - **Inline directives**: XML comments `xslint-disable-next-line`,
   `xslint-disable-line`, `xslint-disable-file`, each with optional space-separated
   rule names (`src/directives.js`); an unused directive is reported.

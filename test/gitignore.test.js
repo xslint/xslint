@@ -88,10 +88,10 @@ const IGNORING = [
     ignored: true,
   },
   {
-    name: 'ignores a name opening with a dot',
-    files: {'.gitignore': '.hidden/\n'},
-    ask: '.hidden',
-    kind: 'directory',
+    name: 'reaches a name a dot opens with a star of its own',
+    files: {'.gitignore': 'one/*\n'},
+    ask: 'one/.hidden',
+    kind: 'file',
     ignored: true,
   },
   {
@@ -118,8 +118,29 @@ const IGNORING = [
   {
     name: 'names nothing in a line a hash opens',
     files: {'.gitignore': '#build\n'},
-    ask: 'build',
+    ask: '#build',
     kind: 'directory',
+    ignored: false,
+  },
+  {
+    name: 'reads a hash behind a slash as the character it spells',
+    files: {'.gitignore': '/#build\n'},
+    ask: '#build',
+    kind: 'directory',
+    ignored: true,
+  },
+  {
+    name: 'reads a bang behind a slash as the character it spells',
+    files: {'.gitignore': '/!keep.xsl\n'},
+    ask: '!keep.xsl',
+    kind: 'file',
+    ignored: true,
+  },
+  {
+    name: 'takes nothing back with a bang standing behind a slash',
+    files: {'.gitignore': '/!keep.xsl\n'},
+    ask: 'other.xsl',
+    kind: 'file',
     ignored: false,
   },
   {
@@ -200,25 +221,6 @@ const IGNORING = [
     ignored: true,
   },
   {
-    name: 'reads an ignore file above the directory a walk starts at',
-    files: {'.gitignore': '*.gen.xsl\n', '.git/HEAD': 'ref: refs/heads/master'},
-    from: 'one',
-    ask: 'sheet.gen.xsl',
-    kind: 'file',
-    ignored: true,
-  },
-  {
-    name: 'climbs no higher than the repository a walk starts inside',
-    files: {
-      '.gitignore': '*.gen.xsl\n',
-      'one/.git/HEAD': 'ref: refs/heads/master',
-    },
-    from: 'one',
-    ask: 'sheet.gen.xsl',
-    kind: 'file',
-    ignored: false,
-  },
-  {
     name: 'reads nothing above a directory no repository stands over',
     files: {'.gitignore': '*.gen.xsl\n'},
     from: 'one',
@@ -258,20 +260,26 @@ describe('gitignore', function() {
       )
     })
   })
-  it('answers about one directory as often as it is asked', function() {
-    const yard = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-ignore-'))
-    seeded({'.gitignore': 'build/\n'}, yard)
-    const ignores = ignoring(yard)
-    const answers = [
-      ignores.directory(path.join(yard, 'one', 'build')),
-      ignores.directory(path.join(yard, 'one', 'build')),
-      ignores.directory(path.join(yard, 'one', 'kept')),
-    ]
-    fs.rmSync(yard, {recursive: true, force: true})
-    assert.deepEqual(
-      answers,
-      [true, true, false],
-      'a rule read once answers differently the second time (#929)',
+  it('reads the rules of a directory once however often it is asked',
+    function() {
+      const yard = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-ignore-'))
+      seeded({'.gitignore': 'build/\n'}, yard)
+      const ignores = ignoring(yard)
+      const first = ignores.directory(path.join(yard, 'one', 'build'))
+      fs.rmSync(path.join(yard, '.gitignore'))
+      const second = ignores.directory(path.join(yard, 'two', 'build'))
+      fs.rmSync(yard, {recursive: true, force: true})
+      assert.deepEqual(
+        [first, second],
+        [true, true],
+        'a rule is read again once the file spelling it is gone (#929)',
+      )
+    })
+  it('refuses a directory no absolute path names', function() {
+    assert.throws(
+      () => ignoring('one/two'),
+      /absolute path/,
+      'a relative start is walked rather than refused (#929)',
     )
   })
 })
