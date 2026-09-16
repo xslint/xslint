@@ -4,7 +4,7 @@
  */
 
 const {
-  runXslint, xslintStatus, xslintStreams, xslintUnread,
+  runXslint, xslintStatus, xslintStreams, xslintUnread, repository,
 } = require('./helpers')
 const {SUFFIXES, excluded, pruned} = require('../src/xslint')
 const assert = require('assert')
@@ -458,6 +458,120 @@ describe('xslint', function() {
         'one cannot be read at all, so reaching it is the failure (#923)',
     )
   })
+  it('should never open a directory the project ignores', function() {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-'))
+    const shut = path.join(dir, 'shut')
+    fs.mkdirSync(shut)
+    fs.copyFileSync(CLEAN, path.join(shut, 'buried.xsl'))
+    fs.copyFileSync(CLEAN, path.join(dir, 'kept.xsl'))
+    fs.writeFileSync(path.join(dir, '.gitignore'), 'shut/\n')
+    fs.chmodSync(shut, 0o000)
+    let opens = true
+    try {
+      fs.readdirSync(shut)
+    } catch {
+      opens = false
+    }
+    if (opens) {
+      fs.chmodSync(shut, 0o755)
+      fs.rmSync(dir, {recursive: true, force: true})
+      this.skip()
+    }
+    const streams = xslintStreams([dir])
+    fs.chmodSync(shut, 0o755)
+    fs.rmSync(dir, {recursive: true, force: true})
+    assert.ok(
+      streams.stderr.includes('Processed files: 1'),
+      'the run opened a directory the project itself does not track, which ' +
+        'is what reported a checkout of 123 stylesheets as 5031: this one ' +
+        'cannot be read at all, so reaching it is the failure (#929)',
+    )
+  })
+  it('should leave out a stylesheet the project ignores by name', function() {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-'))
+    fs.copyFileSync(CLEAN, path.join(dir, 'kept.xsl'))
+    fs.copyFileSync(CLEAN, path.join(dir, 'sheet.gen.xsl'))
+    fs.writeFileSync(path.join(dir, '.gitignore'), '*.gen.xsl\n')
+    const streams = xslintStreams([dir])
+    fs.rmSync(dir, {recursive: true, force: true})
+    assert.ok(
+      streams.stderr.includes('Processed files: 1'),
+      'a stylesheet the project ignores by name stands under no ignored ' +
+        'directory, so nothing the walk leaves unopened answers for it and ' +
+        'the run reports a generated file as source (#929)',
+    )
+  })
+  it('should read a directory named outright though the project ignores it',
+    function() {
+      const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-'))
+      const shut = path.join(dir, 'shut')
+      fs.mkdirSync(shut)
+      fs.copyFileSync(CLEAN, path.join(shut, 'buried.xsl'))
+      fs.writeFileSync(path.join(dir, '.gitignore'), 'shut/\n')
+      const made = repository(dir, ['.gitignore'])
+      let streams = {stderr: ''}
+      if (made) {
+        streams = xslintStreams([shut])
+      }
+      fs.rmSync(dir, {recursive: true, force: true})
+      if (!made) {
+        this.skip()
+      }
+      assert.ok(
+        streams.stderr.includes('Processed files: 1'),
+        'a path named on the command line is what the run was asked for, ' +
+          'so reading the ignore files above it into a refusal answers a ' +
+          'question nobody put (#929)',
+      )
+    })
+  it('should read a stylesheet the index holds though a rule names it',
+    function() {
+      const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-'))
+      fs.mkdirSync(path.join(dir, 'reports'))
+      fs.copyFileSync(CLEAN, path.join(dir, 'kept.xsl'))
+      fs.copyFileSync(CLEAN, path.join(dir, 'reports', 'tracked.xsl'))
+      fs.copyFileSync(CLEAN, path.join(dir, 'reports', 'stray.xsl'))
+      fs.writeFileSync(path.join(dir, '.gitignore'), 'reports/\n')
+      const made = repository(dir, ['reports/tracked.xsl'])
+      let streams = {stderr: ''}
+      if (made) {
+        streams = xslintStreams([dir])
+      }
+      fs.rmSync(dir, {recursive: true, force: true})
+      if (!made) {
+        this.skip()
+      }
+      assert.ok(
+        streams.stderr.includes('Processed files: 2'),
+        'git keeps a stylesheet its index holds whatever a rule says of it, ' +
+          'and this repository tracks two under a `reports/` line: reading ' +
+          'the rules alone reported 159 files where 161 stand (#929)',
+      )
+    })
+  it('should read what a repository met on the way down tracks itself',
+    function() {
+      const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-'))
+      const proj = path.join(dir, 'proj')
+      fs.mkdirSync(path.join(proj, 'reports'), {recursive: true})
+      fs.copyFileSync(CLEAN, path.join(proj, 'reports', 'tracked.xsl'))
+      fs.copyFileSync(CLEAN, path.join(proj, 'reports', 'stray.xsl'))
+      fs.writeFileSync(path.join(proj, '.gitignore'), 'reports/\n')
+      const made = repository(proj, ['reports/tracked.xsl'])
+      let streams = {stderr: ''}
+      if (made) {
+        streams = xslintStreams([dir])
+      }
+      fs.rmSync(dir, {recursive: true, force: true})
+      if (!made) {
+        this.skip()
+      }
+      assert.ok(
+        streams.stderr.includes('Processed files: 1'),
+        'a repository standing below the directory a walk starts at answers ' +
+          'for its own subtree, so reading its rules without its index drops ' +
+          'the stylesheet it tracks and reports nothing at all (#929)',
+      )
+    })
   it('should apply max-warnings from the config file', function() {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-'))
     const cfg = path.join(dir, '.xslint.yml')

@@ -358,9 +358,22 @@ const yamlFromString = function(str) {
   return parsed
 }
 
+/**
+ * A path as a glob reads it: relative to the directory the patterns resolve
+ * against and in posix form, so what a pattern is matched against says the
+ * same thing on every platform.
+ * @param {string} pth - Absolute path of a file or a directory
+ * @param {string} base - Directory the globs resolve against
+ * @return {string} - What a pattern is matched against
+ */
+const slashed = function(pth, base) {
+  return path.relative(base, pth).split(path.sep).join('/')
+}
+
 module.exports = {
   allFilesFrom,
   SEALED,
+  slashed,
   xml: {
     parsedFromFile: fromFile('XML', xmlFromString),
     parsedFromString: xmlFromString,

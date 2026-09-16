@@ -46,12 +46,52 @@
  * them — eleven merges in a row reading `-0` on a commit six GitHub runners
  * passed (#822). Behind the trigger stands a fallback, since a run that
  * never reaches the summary would otherwise leave the pipe unread and the
- * promise unsettled.
+ * promise unsettled. `repository(yard, tracked)` is the door a row about
+ * an index goes through: git's own answer to what it keeps is the one thing
+ * a reading of ignore files cannot supply, so a row that needs one asks git
+ * to make it rather than planting a `.git` of its own (#929).
  */
 
 const fs = require('fs')
 const path = require('path')
 const {execSync, spawn, spawnSync} = require('child_process')
+
+/**
+ * Run git inside a directory, answering the status alone, since a caller here
+ * asks whether the command ran and never what it printed.
+ * @param {string} yard - Directory it runs in
+ * @param {Array.<string>} args - What git is handed
+ * @return {number} - Its exit code, or `null` where git is not there at all
+ */
+const gitted = function(yard, args) {
+  return spawnSync(
+    'git',
+    args,
+    {
+      cwd: yard,
+      timeout: 120000,
+      windowsHide: true,
+      encoding: 'utf-8',
+    },
+  ).status
+}
+
+/**
+ * Put a repository around `yard` and force the paths under it into its index.
+ * That is the one thing a translation of ignore files cannot read for itself:
+ * git keeps a tracked stylesheet whatever a `.gitignore` says of it (#929). A
+ * machine with no git answers FALSE, for a row to skip on rather than fail.
+ * @param {string} yard - Directory a repository is made around
+ * @param {Array.<string>} tracked - Paths under it, as its index takes them
+ * @return {boolean} - TRUE when git made one
+ */
+const repository = function(yard, tracked) {
+  let made = false
+  if (gitted(yard, ['init', '--quiet']) === 0) {
+    made = gitted(yard, ['add', '--force'].concat(tracked)) === 0
+  }
+  return made
+}
 
 /**
  * Run the console command. A run told not to print captures nothing, and
@@ -458,4 +498,5 @@ module.exports = {
   xslintUnread,
   xcopped,
   cmdAvailable,
+  repository,
 }

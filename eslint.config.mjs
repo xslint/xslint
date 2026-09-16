@@ -173,6 +173,13 @@ const HOMED = {
     "Where the constant naming every name there is lives is src/tree.js and nowhere else: src/selectors.js kept an EVERY of its own while the walk keyed its bucket with a literal, so one key wore two spellings a file apart and a drift between them was reported by nothing — WIDENED beside this one bans the literal, which is how the key is written rather than where the constant belongs, so the defect this ticket is named after goes back in under its own title unless a second declaration is refused too (#893)"
 };
 
+const SPAWNED = {
+  selector:
+    "CallExpression[callee.name='require'][arguments.0.value='child_process'], ImportDeclaration[source.value='child_process'], ImportExpression[source.value='child_process']",
+  message:
+    "Only src/gitignore.js starts a process, and once per repository: what it asks git for is the index, which outranks every rule a .gitignore holds and which no file on disk answers (#929). Asking git about a path instead spends a fork per entry and answers nothing at all where git is absent or the tree is no repository, so everything else here reads files"
+};
+
 const SPRAWLING = ["src/grammar.js"];
 
 export default defineConfig([
@@ -244,6 +251,21 @@ export default defineConfig([
       "no-restricted-syntax":
         ["error", ...RESTRICTED, STAGED, OPAQUE, TRIVIA, PAIRED, CLASSED,
           VERSIONED, GRADED, QUOTED, WIDENED,
+          HOMED, SPAWNED]
+    }
+  },
+  {
+    files: ["src/xslint.js"],
+    rules: {
+      "no-restricted-syntax": ["error", ...RESTRICTED, SPAWNED]
+    }
+  },
+  {
+    files: ["src/gitignore.js"],
+    rules: {
+      "no-restricted-syntax":
+        ["error", ...RESTRICTED, STAGED, OPAQUE, TRIVIA, PAIRED, CLASSED,
+          VERSIONED, GRADED, QUOTED, WIDENED,
           HOMED]
     }
   },
@@ -252,7 +274,7 @@ export default defineConfig([
     rules: {
       "no-restricted-syntax":
         ["error", ...RESTRICTED, STAGED, OPAQUE, TRIVIA, PAIRED, CLASSED,
-          VERSIONED, GRADED, QUOTED, WIDENED]
+          VERSIONED, GRADED, QUOTED, WIDENED, SPAWNED]
     }
   },
   {
@@ -261,7 +283,7 @@ export default defineConfig([
       "no-restricted-syntax":
         ["error", ...RESTRICTED, STAGED, OPAQUE, TRIVIA, PAIRED, CLASSED,
           VERSIONED, QUOTED, WIDENED,
-          HOMED]
+          HOMED, SPAWNED]
     }
   },
   {
@@ -270,7 +292,7 @@ export default defineConfig([
       "no-restricted-syntax":
         ["error", ...RESTRICTED, STAGED, OPAQUE, TRIVIA, PAIRED, CLASSED,
           GRADED, QUOTED, WIDENED,
-          HOMED]
+          HOMED, SPAWNED]
     }
   },
   {
@@ -278,7 +300,7 @@ export default defineConfig([
     rules: {
       "no-restricted-syntax":
         ["error", ...RESTRICTED, STAGED, CLASSED, VERSIONED, GRADED, WIDENED,
-          HOMED]
+          HOMED, SPAWNED]
     }
   },
   {
@@ -287,7 +309,7 @@ export default defineConfig([
       "no-restricted-syntax":
         ["error", ...RESTRICTED, STAGED, OPAQUE, TRIVIA, PAIRED, VERSIONED,
           GRADED, QUOTED, WIDENED,
-          HOMED]
+          HOMED, SPAWNED]
     }
   },
   {
