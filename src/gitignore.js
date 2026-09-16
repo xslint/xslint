@@ -36,7 +36,8 @@
  * `git ls-files` is asked once of each repository the walk meets, and only
  * where a path below it is judged — 18 ms here, against a walk of seconds —
  * and a tree git cannot read ignores nothing at all rather than guessing at
- * it. What the index does not buy back is a path under an ignored
+ * it, saying so at debug level rather than going quiet where git is absent.
+ * What the index does not buy back is a path under an ignored
  * *directory*, git re-including nothing below one: a `reports/` line covers
  * the `reports/stray.xsl` no index ever heard of, so `covered` asks the
  * directories above a path before a rule is read about the path itself.
@@ -83,6 +84,7 @@ const path = require('path')
 const {execFileSync} = require('child_process')
 const {Minimatch} = require('minimatch')
 const {slashed} = require('./helpers')
+const {logger} = require('./logger')
 
 /**
  * The file a directory names what it ignores in.
@@ -262,6 +264,13 @@ const trackedIn = function(top) {
           .flatMap((name) => below(top, name)),
       )
     } catch {
+      logger.debug(
+        [
+          'Git said nothing about the index of "%s",',
+          'so no line of its own is read as ignoring anything',
+        ].join(' '),
+        top,
+      )
       paths = EVERY
     }
   }

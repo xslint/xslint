@@ -4,6 +4,7 @@
  */
 
 const {ignoring} = require('../src/gitignore')
+const {logger, levels} = require('../src/logger')
 const assert = require('assert')
 const fs = require('fs')
 const path = require('path')
@@ -275,6 +276,26 @@ describe('gitignore', function() {
         'a rule is read again once the file spelling it is gone (#929)',
       )
     })
+  it('says so where git answers nothing about a repository', function() {
+    const yard = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-ignore-'))
+    seeded({'.gitignore': 'reports/\n', 'reports/stray.xsl': ''}, yard)
+    fs.mkdirSync(path.join(yard, '.git'))
+    const said = []
+    const printer = console.error
+    console.error = (...args) => said.push(args.join(' '))
+    logger.setLevel(levels.DEBUG)
+    try {
+      ignoring(yard).file(path.join(yard, 'reports', 'stray.xsl'))
+    } finally {
+      console.error = printer
+      logger.setLevel(levels.INFO)
+      fs.rmSync(yard, {recursive: true, force: true})
+    }
+    assert.ok(
+      said.join('\n').includes(yard),
+      'the run said nothing about a repository git could not read (#929)',
+    )
+  })
   it('refuses a directory no absolute path names', function() {
     assert.throws(
       () => ignoring('one/two'),
