@@ -80,6 +80,50 @@ const TRACKING = [
     kind: 'file',
     ignored: false,
   },
+  {
+    name: 'keeps what a repository met on the way down tracks itself',
+    files: {'one/.gitignore': 'reports/\n', 'one/reports/kept.xsl': ''},
+    tracked: ['reports/kept.xsl'],
+    repo: 'one',
+    ask: 'one/reports/kept.xsl',
+    kind: 'file',
+    ignored: false,
+  },
+  {
+    name: 'opens a directory such a repository names to reach what it tracks',
+    files: {'one/.gitignore': 'reports/\n', 'one/reports/kept.xsl': ''},
+    tracked: ['reports/kept.xsl'],
+    repo: 'one',
+    ask: 'one/reports',
+    kind: 'directory',
+    ignored: false,
+  },
+  {
+    name: 'ignores what such a repository names and its index does not hold',
+    files: {
+      'one/.gitignore': 'reports/\n',
+      'one/reports/kept.xsl': '',
+      'one/reports/stray.xsl': '',
+    },
+    tracked: ['reports/kept.xsl'],
+    repo: 'one',
+    ask: 'one/reports/stray.xsl',
+    kind: 'file',
+    ignored: true,
+  },
+  {
+    name: 'reads no rule of a repository standing over the one below it',
+    files: {
+      '.gitignore': '*.gen.xsl\n',
+      'one/kept.xsl': '',
+      'one/sheet.gen.xsl': '',
+    },
+    tracked: ['kept.xsl'],
+    repo: 'one',
+    ask: 'one/sheet.gen.xsl',
+    kind: 'file',
+    ignored: false,
+  },
 ]
 
 /**

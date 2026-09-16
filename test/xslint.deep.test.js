@@ -548,6 +548,30 @@ describe('xslint', function() {
           'the rules alone reported 159 files where 161 stand (#929)',
       )
     })
+  it('should read what a repository met on the way down tracks itself',
+    function() {
+      const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-'))
+      const proj = path.join(dir, 'proj')
+      fs.mkdirSync(path.join(proj, 'reports'), {recursive: true})
+      fs.copyFileSync(CLEAN, path.join(proj, 'reports', 'tracked.xsl'))
+      fs.copyFileSync(CLEAN, path.join(proj, 'reports', 'stray.xsl'))
+      fs.writeFileSync(path.join(proj, '.gitignore'), 'reports/\n')
+      const made = repository(proj, ['reports/tracked.xsl'])
+      let streams = {stderr: ''}
+      if (made) {
+        streams = xslintStreams([dir])
+      }
+      fs.rmSync(dir, {recursive: true, force: true})
+      if (!made) {
+        this.skip()
+      }
+      assert.ok(
+        streams.stderr.includes('Processed files: 1'),
+        'a repository standing below the directory a walk starts at answers ' +
+          'for its own subtree, so reading its rules without its index drops ' +
+          'the stylesheet it tracks and reports nothing at all (#929)',
+      )
+    })
   it('should apply max-warnings from the config file', function() {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-'))
     const cfg = path.join(dir, '.xslint.yml')
