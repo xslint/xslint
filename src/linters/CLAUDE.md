@@ -134,26 +134,4 @@ boolean `[1 and @on]`. The operand that survives keeps the spelling its author g
 `fn:last()` stays prefixed, where a signature reading `TOKENS.NAME` alone never saw a prefixed call
 and left the predicate unreported. And the defect stands where its comparison does rather than just
 inside the `[`, so a padded `[ position() = 1 ]` is reported at the `p` and the fix replaces the
-comparison alone, leaving the author's gaps where they were. The double slash trio is one construct
-read three ways, and two of the questions it asks are ones a selector had no way to put. What a `//`
-*is*: `contains(@match, '//')` counted the one in `match="alpha[@url = 'http://example.com']"`,
-where the lexer gives a string literal, a comment and an inline `Q{...}` one token each and not one
-of them holds a separator (#490). And where one *stands*: the checks split the work by whether the
-slashes led the string, which holds only while the pattern is one branch, since a branch of a union
-is matched unanchored exactly as the whole pattern is. So the `//` of `match="alpha | //beta"` is
-the first check's redundancy and drew the second's advice instead, with no fix behind it — while the
-`//` of `mu[nu | //xi]` opens no branch, a predicate holding an expression rather than a pattern,
-and stays the broad step it is. A `branch` node with nothing of its own to the left of the `//` is
-the whole of the test, so a bracketed branch counts and 3.0 admits one anywhere in a path. Two more
-things came with the kind. The fix cuts the two characters where they stand rather than rewriting
-the value around them, so it no longer overlaps `redundant-whitespace` on a `match=" //spaced"` and
-both land in one run, and every branch of `match="alpha | //beta | //gamma"` loses its own where one
-whole-value substitution could only ever drop the first (#571). And the pair reads every attribute
-holding a pattern — `PATTERNS`' five names, standing in seven places over five elements — rather
-than `xsl:template/@match` alone, so an `xsl:key` matching `gamma//delta` is reported at last. The
-third check is the same shape one attribute over: `select-starts-with-double-slash` was declarative
-and selected `//*`, so it read the `select` of a literal result element as XPath — output data no
-processor evaluates — and `--fix-suggestions` wrote `.//` into the result tree, a check about
-expressions changing what a stylesheet emits (#788). It is handed the records the validator kept,
-which hold no such attribute, and the `//` it reports is the first token of the parse rather than
-the first characters of a value, so a comment or a gap standing in front of one no longer hides it.
+comparison alone, leaving the author's gaps where they were.

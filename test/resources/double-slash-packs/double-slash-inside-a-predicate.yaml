@@ -1,0 +1,31 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: use-double-slash
+# A predicate holds an expression, not a step of the pattern's path, and an
+# expression's inner `//` answers to no check of ours: `select="nu//xi"` draws
+# nothing, where the same text under a `@match` drew this one (#948). So the
+# three buried in one predicate go unreported, the one a nested predicate holds
+# with them, and the `nu//xi` standing beside the `lambda//mu` that is reported.
+# What survives is the pattern's own separator, and the `//` that *opens* a path
+# a predicate holds, which scans the document from the root once per candidate
+# and is the case #586 put here.
+found:
+  amount: 2
+  positions: [ [ 10, 30 ], [ 13, 42 ] ]
+  fixes: [ null, null ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="3.0" id="style1">
+    <xsl:output encoding="UTF-8" method="xml"/>
+    <xsl:template match="alpha[beta//gamma and delta//epsilon or not(.//zeta)]">
+      <xsl:copy-of select="."/>
+    </xsl:template>
+    <xsl:template match="eta[theta[iota//kappa]]">
+      <xsl:copy-of select="."/>
+    </xsl:template>
+    <xsl:template match="lambda//mu[nu//xi]">
+      <xsl:copy-of select="."/>
+    </xsl:template>
+    <xsl:key name="kk" match="omicron[pi | //rho]" use="@id"/>
+  </xsl:stylesheet>

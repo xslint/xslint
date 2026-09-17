@@ -3,14 +3,17 @@
 ---
 pack: use-double-slash
 # One pattern holding three separators pins that every one of them is reported
-# rather than the first alone, and the `//` of the predicate that it is reported
-# wherever it stands in the pattern. The two xsl:for-each-group attributes come
-# out sorted by name, `group-ending-with` in front of `group-starting-with`,
-# which is the order `walked` yields an element's attributes in.
+# rather than the first alone, and every attribute a pattern is written in that
+# each is read. The `nu[xi//omicron]` stands here as the neighbour that is not:
+# its `//` separates two steps of an expression a predicate holds, which is the
+# same text `select="xi//omicron"` draws nothing for (#948). The two
+# xsl:for-each-group attributes come out sorted by name, `group-ending-with` in
+# front of `group-starting-with`, which is the order `walked` yields an
+# element's attributes in.
 found:
-  amount: 10
-  positions: [ [ 4, 34 ], [ 5, 29 ], [ 5, 35 ], [ 5, 42 ], [ 6, 31 ], [ 6, 48 ], [ 7, 96 ], [ 7, 62 ], [ 11, 29 ], [ 15, 36 ] ]
-  fixes: [ null, null, null, null, null, null, null, null, null, null ]
+  amount: 9
+  positions: [ [ 4, 34 ], [ 5, 29 ], [ 5, 35 ], [ 5, 42 ], [ 6, 31 ], [ 6, 48 ], [ 7, 96 ], [ 7, 62 ], [ 15, 36 ] ]
+  fixes: [ null, null, null, null, null, null, null, null, null ]
 input: |-
   <?xml version="1.0"?>
   <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="3.0" id="style1">

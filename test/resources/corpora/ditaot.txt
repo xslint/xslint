@@ -779,7 +779,6 @@ src/main/plugins/org.dita.pdf2/xsl/fo/tables.xsl:10:3 leaking-result-namespace s
 src/main/plugins/org.dita.pdf2/xsl/fo/tables.xsl:18:5 unused-variable
 src/main/plugins/org.dita.pdf2/xsl/fo/tables.xsl:213:9 text-outside-xsl-text suggestion "<xsl:text>1*</xsl:text>"
 src/main/plugins/org.dita.pdf2/xsl/fo/tables.xsl:234:7 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
-src/main/plugins/org.dita.pdf2/xsl/fo/tables.xsl:371:106 use-double-slash
 src/main/plugins/org.dita.pdf2/xsl/fo/tables.xsl:375:11 not-creating-attribute-correctly
 src/main/plugins/org.dita.pdf2/xsl/fo/tables.xsl:517:13 use-choose-without-otherwise
 src/main/plugins/org.dita.pdf2/xsl/fo/tables.xsl:541:47 string-length-compared-to-zero suggestion "$char ne ''"

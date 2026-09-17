@@ -32,6 +32,26 @@ widens what one of those takes in exactly as it widens a template's `@match`:
 <xsl:key name="lookup" match="chapter/section/item" use="@id"/>
 ```
 
+A predicate is not part of the path the pattern walks. `match="item[.//note]"`
+matches an `item` and nothing else — the `.//note` between the brackets is a
+question asked *about* the node already in hand, and asking it at any depth is
+usually the whole point. It reads there exactly as it reads in a `select`, where
+nobody would call it vague:
+
+```xsl
+<xsl:template match="item[not(.//note)]">
+  <xsl:value-of select="@id"/>
+</xsl:template>
+```
+
+A `//` that *opens* a path inside a predicate is a different construct wearing
+the same two characters. It abandons the node in hand and walks the document
+from its root, once for every node the pattern is tested against:
+`match="item[//flag]"` asks whether the document holds a `flag` anywhere at all,
+which says nothing about the `item` being matched. Anchor it to the node you
+mean — `match="item[.//flag]"` — or name the path from the root that you really
+want.
+
 Characters that merely look like a step are none: the `//` of a URL inside a
 string literal, of a comment, or of the namespace an inline `Q{...}` spells is
 part of the thing it stands in and reaches no depth at all, so

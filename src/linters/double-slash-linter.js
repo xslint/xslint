@@ -3,6 +3,58 @@
  * SPDX-License-Identifier: MIT
  */
 
+/*
+ * The double slash trio is one construct read three ways, and all three of the
+ * questions it asks are ones a selector had no way to put. What a `//` *is*:
+ * `contains(@match, '//')` counted the one in `match="alpha[@url =
+ * 'http://example.com']"`, where the lexer gives a string literal, a comment
+ * and an inline `Q{...}` one token each and not one of them holds a separator
+ * (#490).
+ *
+ * Where one *stands*: the checks split the work by whether the slashes led the
+ * string, which holds only while the pattern is one branch, since a branch of
+ * a union is matched unanchored exactly as the whole pattern is. So the `//`
+ * of `match="alpha | //beta"` is the first check's redundancy and drew the
+ * second's advice instead, with no fix behind it — while the `//` of `mu[nu |
+ * //xi]` opens no branch, a predicate holding an expression rather than a
+ * pattern, and scans the document from its root once for every node the
+ * pattern is tested against. A `branch` node with nothing of its own to the
+ * left of the `//` is the whole of that test, so a bracketed branch counts and
+ * 3.0 admits one anywhere in a path.
+ *
+ * And *whose* path one is, which is the third question and #948's. A predicate
+ * holds an expression, and an expression's inner `//` answers to no check of
+ * ours anywhere: `select="xi//omicron"` draws nothing, where
+ * `match="nu[xi//omicron]"` drew the advice to name the path. There is no path
+ * there to name. The one the pattern walks is `nu` either way, and what the
+ * brackets hold is the question being asked about it — which a run over a real
+ * project reported on a `match="abstract[... and not(.//o[contains(@base,
+ * 'x')])]"`, advising against the very anchoring the third check recommends.
+ * So a `//` a predicate holds is reported only where it *opens* a path there,
+ * the token index standing at that path's own `from`, which is the `mu[nu |
+ * //xi]` above; everything else between the brackets is the expression's own
+ * business.
+ *
+ * Two more things came with the kind. The fix cuts the two characters where
+ * they stand rather than rewriting the value around them, so it no longer
+ * overlaps `redundant-whitespace` on a `match=" //spaced"` and both land in
+ * one run, and every branch of `match="alpha | //beta | //gamma"` loses its
+ * own where one whole-value substitution could only ever drop the first
+ * (#571). And the pair reads every attribute holding a pattern — `PATTERNS`'
+ * five names, standing in seven places over five elements — rather than
+ * `xsl:template/@match` alone, so an `xsl:key` matching `gamma//delta` is
+ * reported at last.
+ *
+ * The third check is the same shape one attribute over: it was declarative and
+ * selected `//*`, so `select-starts-with-double-slash` read the `select` of a
+ * literal result element as XPath — output data no processor evaluates — and
+ * `--fix-suggestions` wrote `.//` into the result tree, a check about
+ * expressions changing what a stylesheet emits (#788). It is handed the
+ * records the validator kept, which hold no such attribute, and the `//` it
+ * reports is the first token of the parse rather than the first characters of
+ * a value, so a comment or a gap standing in front of one no longer hides it.
+ */
+
 const {gathered, parseOf} = require('../syntax')
 const {metaOf, suppressed, defect} = require('../checks')
 const {TOKENS, TRIVIA} = require('../tokens')
@@ -85,6 +137,25 @@ const heads = function(branches, at) {
 }
 
 /**
+ * Whether the `//` at that token index is a step of the pattern's own path,
+ * rather than of an expression a predicate holds. A predicate holds an
+ * expression, whose inner `//` answers to no check of ours anywhere else — the
+ * `xi//omicron` a `select` carries draws nothing, where the same text under a
+ * `@match` drew this one (#948).
+ * @param {Array.<object>} inner - The predicate nodes the pattern holds
+ * @param {Array.<object>} paths - The path nodes it holds
+ * @param {number} at - Index of the `//` token
+ * @return {boolean} - True when the pattern's own path carries it
+ */
+const owned = function(inner, paths, at) {
+  let own = true
+  if (inner.some((one) => one.from <= at && at < one.to)) {
+    own = paths.some((one) => one.from === at)
+  }
+  return own
+}
+
+/**
  * The fix that drops a leading `//`: the two characters where they truly stand,
  * never sliced off the front of the value, since on `match=" //spaced"` that
  * would leave `/spaced` and turn an unanchored pattern into an absolute one.
@@ -115,9 +186,11 @@ const cut = function(found, token) {
  */
 const separators = function(found) {
   const branches = gathered(found, ['branch'])
+  const inner = gathered(found, ['predicate'])
+  const paths = gathered(found, ['path'])
   const results = []
   parseOf(found).tokens.forEach((token, at) => {
-    if (token.type === TOKENS.DOUBLE_SLASH) {
+    if (token.type === TOKENS.DOUBLE_SLASH && owned(inner, paths, at)) {
       let entry = {check: INNER}
       if (heads(branches, at)) {
         entry = {check: LEADING, fix: cut(found, token)}
