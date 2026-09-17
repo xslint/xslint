@@ -9,6 +9,106 @@ publication date only; detailed notes begin with the Unreleased section.
 
 ## Unreleased
 
+- Walk no tree the project itself ignores. `allFilesFrom` opened every
+  directory it was handed, so over `objectionary/eo` a checkout holding 123
+  stylesheets was linted as 5,031 — the rest standing under fifty-two
+  worktrees of one gitignored directory, with every tracked defect printed up
+  to thirty-four times. The walk reads the `.gitignore` files it passes as it
+  passes them, rather than asking `git check-ignore` per entry: a directory is
+  asked before it is opened and a file only once its name says it is a
+  stylesheet, so nothing under an ignored tree costs a rule match. The rules
+  are not the whole of git's answer, though, and the index outranks them — a
+  tracked path stays read however a line names it, where reading the lines
+  alone dropped two of this checkout's own stylesheets and three of
+  DocBook-XSL's, each of them named by the report the nightly diffs against. A
+  `.git` met on the way down is a top of its own, with its own rules and its
+  own index, an outer file's rules reaching no further into a nested project
+  than git's do. `.git/info/exclude` and `core.excludesFile` are left to git on
+  purpose, neither being the project's own statement about its tree, and a path
+  named on the command line is read whatever any of them says (#929).
+
+- Ask where a comparison stands before advising a `self::` node test in its
+  place. The `self` axis selects elements and `name-compared-to-string` asked
+  only what a predicate held, so `@*[name() != 'as']` drew
+  `@*[not(self::as)]` — a predicate that excludes nothing at all, copying into
+  the result the very attribute the stylesheet meant to drop, which Saxon 12.9
+  confirms and which went out as a one-click suggestion. The axis is half the
+  question: a `processing-instruction()` stands on the child axis and yet
+  selects no element, a `comment()` and a `text()` have no name for either
+  spelling to read, and brackets hang a predicate off no step at all. The check
+  walks the parse to ask whether the context is provably an element, and what
+  it withholds where the answer is no is the whole report rather than the fix
+  alone, its message naming a rewrite it cannot make. Ninety-nine reports go
+  across DocBook-XSL, TEI and DITA-OT, and the three snapshots are restated
+  with them (#930).
+
+- Spell the wildcard bucket key in the module that writes it. `src/tree.js`
+  built the key of its every-element bucket out of a literal while
+  `src/selectors.js` read that key back through a constant of its own, so one
+  key had two spellings in two files with nothing holding them together:
+  changing the constant reddened eight tests across the two suites that read
+  it, and not one of them named the file that spelled the literal. The constant
+  now lives where the key is written, and two selectors guard the halves — a
+  template ending in a literal `*` is refused under `src/`, and so is a
+  declarator initialised to a bare `*` anywhere but that one module, which is
+  the half the first selector cannot reach (#893).
+
+- Build `confusing-variable-and-node`'s scope out of the variables that bind a
+  value, in either spelling XSLT gives the attribute. A declaration's `@name`
+  was the whole of the test, so the identity-transform-and-merge idiom read as
+  a mistyped reference — five sites in eo's parser — and the fix the check
+  carries is where the damage stands: a variable bound by content holds a
+  parentless tree of its own, whose nodes are members of no `node()` the source
+  yields, so `node() except errors` subtracts the child element being replaced
+  and the `node() except $errors` offered in its place subtracts nothing at
+  all, SaxonJ-HE emitting the replaced element's text beside its replacement.
+  The shadow spelling counts as a binding, and the two places that asked the
+  question apart now ask it once (#922).
+
+- Stop the walk at a directory an `exclude:` covers whole, rather than reading
+  it and dropping what it held. `allFilesFrom` keeps a floor of its own now —
+  nothing opens a `.git` or a `node_modules`, 92% of this checkout's own
+  entries standing inside one — and takes a question a caller may add beside
+  it. Only a pattern covering a directory outright prunes, a bare `dir`
+  excluding no `dir/sheet.xsl`, so what a run reports cannot move and only what
+  it pays to report it does. Nothing in a report tells a prune from a filter, a
+  directory read and dropped saying precisely what one never opened says, so
+  what pins it is a predicate recording what the walk asked and a directory
+  made unreadable, which every run before this descended and died on (#923).
+
+- Read both spellings of a stylesheet name. The discovery filter knew `.xsl`
+  alone and it runs over the single-element list a named path becomes as
+  readily as over a walk, so `xslint sheet.xslt` printed `Processed files: 0`
+  and `No defects found` and left with a zero exit, where the same bytes named
+  `.xsl` drew four defects — a path that does not exist at least earns a
+  warning, and this one read as a clean file. One list answers it now, asked
+  through one function, with a selector banning either suffix spelled into an
+  `endsWith` or an equality anywhere in the repository: three sweeps over our
+  own fixtures carried the literal and would have stepped over such a file
+  exactly as discovery did. What that selector asks is whether a name *ends* in
+  one of the two, never whether it spells one alone, a composite such as
+  `.fixed.xsl` being how the third of them spelled it. A path given by name
+  that matches neither earns a warning; a walk stays quiet, having been handed
+  a directory rather than a request (#924).
+
+- Report syntax a later version admits as what it is, rather than as malformed
+  XPath. Text no version of XSLT admits and text a later one admits came back
+  alike from the parse and were reported alike, as an expression that cannot be
+  parsed and a fix that lies in its syntax — which is wrong three times over
+  for the second kind. eo's `add-default-package.xsl` declares `version="2.0"`
+  and writes a parenthesized pattern step XSLT 3.0 introduced, so Saxon-HE 12.5
+  runs the file exactly as though it said 3.0 while Saxon 9.1.0.8, conformant to
+  the version it promises, refuses the template at that offset: the expression
+  is not malformed, the fix is not in the expression, and a user who goes
+  looking for a typo concludes the tool is confused. The check's own motive had
+  already conceded that the fix is sometimes the stylesheet's `version`.
+  `syntax-newer-than-xslt-version` reports that kind now, told from the other by
+  asking the grammar at each version above the one in force — which rests on the
+  grammar being monotonic, measured over every shape the grammar sweep generates
+  rather than assumed. The partition itself does not move, such an expression is
+  still withheld from the linters, and the two checks suppress independently
+  (#925).
+
 - Anchor what a release writes, both halves of it having been wrong at 0.1.0.
   The version stamp replaced the string `0.0.0` wherever it stood, and
   `package.json` holds it three times: the version field, and two
