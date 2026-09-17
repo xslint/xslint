@@ -29,7 +29,7 @@
  * the top of `src/grammar.js` and `src/syntax.js` — 24,681 characters. A turn
  * touching `test/` ran it close ever since, until #811's wildcard phase moved
  * this guide's nightly-tier note into `test/budget.test.js`; the dearest
- * reads 139,780, which is 0.93, and is `src/linters/`'s once more. What
+ * reads 137,567, which is 0.92, and is `src/linters/`'s once more. What
  * answers a chain reaching the bar is that move again, a module's derivation
  * into the file-header note of the module itself, and never a bar widened to
  * fit what has grown past it: a docblock holds five lines of description
@@ -38,7 +38,7 @@
  * to be a gate no tree could fail: the root stands in every chain, so the
  * chain holding it above weighs each other guide against the bar less what
  * stands over it — 23,648 for `src/linters/CLAUDE.md`, where half of the bar
- * is 75,000 — and holds the root itself to 84,159, a number derived from the
+ * is 75,000 — and holds the root itself to 86,372, a number derived from the
  * dearest chain rather than chosen. A gate no tree can fail is removed and
  * not kept (#750, #660). All four of those figures — the chain, its ratio,
  * and the two allowances — follow from three file sizes, so one guide growing
@@ -99,7 +99,7 @@
  * cap allows and its note is 190 more, and `max-lines` counts comments, so a
  * section can outgrow the file it is about and relief has a floor — what
  * answers that one is the note being cut, not moved. What that leaves is
- * 220 characters of headroom, off a chain that is `src/linters/`'s own once
+ * 2,433 characters of headroom, off a chain that is `src/linters/`'s own once
  * more rather than `test/CLAUDE.md`'s: the merge behind #811's bracket phase
  * breached the bar by 844 with neither branch having crossed it alone, and
  * the root's `src/xslint.js` derivation moved into `src/CLAUDE.md` to answer
@@ -126,7 +126,15 @@
  * what it carried before the move, and not what the note weighs where it
  * landed — a move out of a guide and into a docblock pays the comment
  * prefixes and the reflow both, where the guide-to-guide move above is one
- * number for either reading. The headroom is one of the same class, the fifth
+ * number for either reading. The fourth breach never came, the move having
+ * been taken ahead of it: #948 met a false positive in
+ * `double-slash-linter.js` whose correction wanted a sentence the guide had
+ * 220 characters of room for, and a bar that reddens while a relocation
+ * still fits is a bar asking for one rather than for the sentence to be
+ * squeezed in. So the double slash trio's derivation went to the top of the
+ * module it is about, 2,213 characters out of that chain, and the fix's own
+ * paragraph was written where it landed rather than against what was left.
+ * The headroom is one of the same class, the fifth
  * of them and the one that proves the point twice over — it stood outside the
  * table and drifted 418 behind the rows in it with every one of them green,
  * so it has a row of its own since #856, and the relief has one beside it

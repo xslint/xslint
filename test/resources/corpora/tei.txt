@@ -1005,8 +1005,6 @@ docx/from/pass2.xsl:2:1 missing-id-in-stylesheet
 docx/from/pass2.xsl:2:1 too-many-templates
 docx/from/pass2.xsl:62:2 use-choose-without-otherwise
 docx/from/pass2.xsl:65:35 redundant-whitespace fix " "
-docx/from/pass2.xsl:89:35 use-double-slash
-docx/from/pass2.xsl:91:42 use-double-slash
 docx/from/pass2.xsl:128:34 string-length-compared-to-zero suggestion ". = ''"
 docx/from/pass2.xsl:201:36 select-starts-with-double-slash suggestion ".//"
 docx/from/pass2.xsl:203:50 name-compared-to-string suggestion "self::*:front"
@@ -4018,8 +4016,6 @@ profiles/iso/docx/from-pass3.xsl:88:7 use-choose-without-otherwise
 profiles/iso/docx/from.xsl:2:1 missing-id-in-stylesheet
 profiles/iso/docx/from.xsl:2:1 too-many-templates
 profiles/iso/docx/from.xsl:24:17 redundant-namespace-declarations fix ""
-profiles/iso/docx/from.xsl:115:31 use-double-slash
-profiles/iso/docx/from.xsl:120:31 use-double-slash
 profiles/iso/docx/from.xsl:154:4 text-outside-xsl-text suggestion "<xsl:text>en</xsl:text>"
 profiles/iso/docx/from.xsl:159:4 text-outside-xsl-text suggestion "<xsl:text>ru</xsl:text>"
 profiles/iso/docx/from.xsl:160:4 text-outside-xsl-text suggestion "<xsl:text>fr</xsl:text>"
@@ -4737,7 +4733,6 @@ profiles/jsi/docx/from.xsl:309:3 text-outside-xsl-text suggestion "<xsl:text>_ri
 profiles/jsi/docx/from.xsl:310:3 text-outside-xsl-text suggestion "<xsl:text>_inner</xsl:text>"
 profiles/jsi/docx/from.xsl:311:3 text-outside-xsl-text suggestion "<xsl:text>_outer</xsl:text>"
 profiles/jsi/docx/from.xsl:427:8 use-choose-without-otherwise
-profiles/jsi/docx/from.xsl:450:36 use-double-slash
 profiles/jsi/docx/from.xsl:504:18 string-length-compared-to-zero suggestion ". != ''"
 profiles/jsi/docx/from.xsl:514:23 string-length-compared-to-zero suggestion ". != ''"
 profiles/jsi/docx/from.xsl:529:80 string-length-compared-to-zero suggestion ". = ''"
@@ -4945,7 +4940,6 @@ profiles/oucscourses/docx/to.xsl:390:15 not-creating-attribute-correctly
 profiles/oulipo/docx/from.xsl:2:1 missing-id-in-stylesheet
 profiles/oulipo/docx/from.xsl:2:1 too-many-templates
 profiles/oulipo/docx/from.xsl:77:3 not-creating-element-correctly
-profiles/oulipo/docx/from.xsl:86:36 use-double-slash
 profiles/oulipo/docx/from.xsl:86:49 redundant-whitespace fix " "
 profiles/oulipo/docx/from.xsl:105:3 not-creating-element-correctly
 profiles/oulipo/docx/from.xsl:108:5 not-creating-element-correctly
