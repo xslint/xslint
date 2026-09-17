@@ -9,6 +9,8 @@ publication date only; detailed notes begin with the Unreleased section.
 
 ## Unreleased
 
+## 0.2.0 - 2026-09-17
+
 - Walk no tree the project itself ignores. `allFilesFrom` opened every
   directory it was handed, so over `objectionary/eo` a checkout holding 123
   stylesheets was linted as 5,031 — the rest standing under fifty-two
