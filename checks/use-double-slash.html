@@ -139,6 +139,22 @@ the input, name the path.</p>
 widens what one of those takes in exactly as it widens a template&#39;s <code>@match</code>:</p>
 <pre><code class="language-xsl">&lt;xsl:key name=&quot;lookup&quot; match=&quot;chapter/section/item&quot; use=&quot;@id&quot;/&gt;
 </code></pre>
+<p>A predicate is not part of the path the pattern walks. <code>match=&quot;item[.//note]&quot;</code>
+matches an <code>item</code> and nothing else — the <code>.//note</code> between the brackets is a
+question asked <em>about</em> the node already in hand, and asking it at any depth is
+usually the whole point. It reads there exactly as it reads in a <code>select</code>, where
+nobody would call it vague:</p>
+<pre><code class="language-xsl">&lt;xsl:template match=&quot;item[not(.//note)]&quot;&gt;
+  &lt;xsl:value-of select=&quot;@id&quot;/&gt;
+&lt;/xsl:template&gt;
+</code></pre>
+<p>A <code>//</code> that <em>opens</em> a path inside a predicate is a different construct wearing
+the same two characters. It abandons the node in hand and walks the document
+from its root, once for every node the pattern is tested against:
+<code>match=&quot;item[//flag]&quot;</code> asks whether the document holds a <code>flag</code> anywhere at all,
+which says nothing about the <code>item</code> being matched. Anchor it to the node you
+mean — <code>match=&quot;item[.//flag]&quot;</code> — or name the path from the root that you really
+want.</p>
 <p>Characters that merely look like a step are none: the <code>//</code> of a URL inside a
 string literal, of a comment, or of the namespace an inline <code>Q{...}</code> spells is
 part of the thing it stands in and reaches no depth at all, so
