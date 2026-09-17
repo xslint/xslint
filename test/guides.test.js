@@ -126,14 +126,15 @@
  * what it carried before the move, and not what the note weighs where it
  * landed — a move out of a guide and into a docblock pays the comment
  * prefixes and the reflow both, where the guide-to-guide move above is one
- * The fourth breach never came, the move having been taken ahead of it: #948
- * met a false positive in `double-slash-linter.js` whose correction wanted a
- * sentence the guide had 220 characters of room for, and a bar that reddens
- * while a relocation still fits is a bar asking for one rather than for the
- * sentence to be squeezed in. So the double slash trio's derivation went to
- * the top of the module it is about, 2,213 characters out of that chain, and
- * the fix's own paragraph was written where it landed rather than against what
- * was left. The headroom is one of the same class, the fifth
+ * number for either reading. The fourth breach never came, the move having
+ * been taken ahead of it: #948 met a false positive in
+ * `double-slash-linter.js` whose correction wanted a sentence the guide had
+ * 220 characters of room for, and a bar that reddens while a relocation
+ * still fits is a bar asking for one rather than for the sentence to be
+ * squeezed in. So the double slash trio's derivation went to the top of the
+ * module it is about, 2,213 characters out of that chain, and the fix's own
+ * paragraph was written where it landed rather than against what was left.
+ * The headroom is one of the same class, the fifth
  * of them and the one that proves the point twice over — it stood outside the
  * table and drifted 418 behind the rows in it with every one of them green,
  * so it has a row of its own since #856, and the relief has one beside it
