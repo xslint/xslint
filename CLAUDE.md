@@ -1048,6 +1048,6 @@ one of them.
 | `test/packs.js` | The one harness every pack directory is read through |
 | `test/scaling.test.js` | The speed gate: every stage's own processor time as a share of the run, at two corpus sizes |
 | `test/xcop.deep.test.js` | Writes every pack's inline XSL to one directory and runs xcop over it |
-| `test/workflows.test.js` | Every job granted the scope its own steps write with, and left the scope they read with; every version the README pins of its own release reached by a rewrite of the `up` job; every placeholder the stamped module carries answered by one substitution of the release stamp, every substitution held to reaching one place, and every release-notes command to naming a title |
+| `test/workflows.test.js` | Every job granted the scope its own steps write with, and left the scope they read with; every version the README pins of its own release reached by a rewrite of the `up` job; every placeholder the stamped module carries answered by one substitution of the release stamp, every substitution held to reaching one place, every release-notes command to naming a title, and the suite to running in front of the stamp |
 | `test/manifest.test.js` | What `package.json` declares, held to what a grunt wrapper runs, what this repository's own JavaScript imports, and the coordinates it states of itself |
 | `test/readme.test.js` | Every figure the README states, held to the tree, found exactly once, and naming a check that still exists |

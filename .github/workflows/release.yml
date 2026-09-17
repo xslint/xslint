@@ -22,6 +22,8 @@ jobs:
           node-version: 22
           registry-url: https://registry.npmjs.org
       - run: npm install
+      - run: npm test
+      - run: npm run coverage
       - name: Stamp the released version
         env:
           VERSION: ${{ github.ref_name }}
@@ -30,8 +32,6 @@ jobs:
           npm --no-git-tag-version version "${VERSION}"
           sed -i "s/what: '0\.0\.0'/what: '${VERSION}'/" src/version.js
           sed -i "s/when: '0000-00-00'/when: '${today}'/" src/version.js
-      - run: npm test
-      - run: npm run coverage
       - name: Publish to npm via OIDC
         run: |
           npm install -g npm@latest

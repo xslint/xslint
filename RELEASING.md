@@ -20,7 +20,7 @@ empty tag and refuses the release.
 Rultor validates and tests, tags the commit, and the tag triggers
 [`.github/workflows/release.yml`](.github/workflows/release.yml), which:
 
-1. stamps the version, runs the tests, and publishes `@maxonfjvipon/xslint`
+1. runs the tests, stamps the version, and publishes `@maxonfjvipon/xslint`
    to npm over OIDC (no token);
 2. cuts the GitHub release from the `CHANGELOG.md` section;
 3. fires a `repository_dispatch` (`xslint-released`, carrying the version) to
