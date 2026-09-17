@@ -144,6 +144,20 @@
  * other to answer. Two questions are asked here and neither is the outcome,
  * which only a real release shows: every release-notes command names a title,
  * and the notes are re-asserted on an event that fires after the race (#919).
+ *
+ * Both of the stamp gates read `src/version.js` off the working tree, and the
+ * job they guard rewrote it first: the stamp stood in front of `npm test`, so
+ * by the time either ran the placeholders were the stamped values and the
+ * patterns reached nothing. They pass on master and on every pull request and
+ * can only fail inside the one job they are about, which is where they did —
+ * 0.2.0 stopped at `npm test`, npm was never published, and the dispatch that
+ * releases `xslint-lsp` and `xslint-action` never fired. 0.1.0 was spared by a
+ * day, #917 having merged after that release ran. The suite belongs over the
+ * tree as it was committed, so the stamp moves behind it — and since the trap
+ * is re-armable by whoever reorders the job next, the order is a gate of its
+ * own: no step spending a script of ours may stand after one that rewrites the
+ * checkout, which is the two substitutions above and the `npm version` writing
+ * the manifest beside them (#946).
  */
 
 const {GAP, WHITESPACE} = require('../src/tokens')
@@ -438,6 +452,59 @@ const reaching = function(text, looks) {
   return text.split(literal(looks)).length - 1
 }
 
+/**
+ * Every script this repository declares, which is what tells a step running
+ * the suite from one running npm's own: `install` and `publish` are npm's
+ * commands and name no script of ours (#946).
+ * @type {Array.<string>}
+ */
+const SCRIPTS = Object.keys(require('../package.json').scripts)
+
+/**
+ * How a step rewrites the checkout — a `sed` substitution, or the `npm
+ * version` writing the manifest, the release stamp spending both.
+ * @type {Array.<RegExp>}
+ */
+const STAMPING = [
+  SUBSTITUTES,
+  new RegExp(
+    `npm${GAP}+(?:--[^${WHITESPACE}]+${GAP}+)*version(?![^${WHITESPACE}])`,
+  ),
+]
+
+/**
+ * Whether a step runs one of this repository's own npm scripts.
+ * @param {string} script - What the step runs
+ * @return {boolean} - Whether one of ours is spent there
+ */
+const spends = function(script) {
+  return SCRIPTS.some(
+    (name) => new RegExp(
+      `npm${GAP}+(?:run${GAP}+)?${name}(?![^${WHITESPACE}])`,
+    ).test(script),
+  )
+}
+
+/**
+ * Whether a step rewrites the checkout the suite reads.
+ * @param {string} script - What the step runs
+ * @return {boolean} - Whether it writes into the tree
+ */
+const stamps = function(script) {
+  return STAMPING.some((looks) => script.match(looks) !== null)
+}
+
+/**
+ * Every step of the release job in the order it runs, each knowing whether it
+ * spends a script of ours and whether it stamps the checkout (#946).
+ * @type {Array.<{where: string, spends: boolean, stamps: boolean}>}
+ */
+const RELEASED = RELEASE.jobs.release.steps.map((step) => ({
+  where: step.name ?? step.run ?? step.uses,
+  spends: spends(step.run ?? ''),
+  stamps: stamps(step.run ?? ''),
+}))
+
 describe('workflows', function() {
   it('grants every job the scope its own steps write with', function() {
     assert.deepEqual(
@@ -588,6 +655,22 @@ describe('workflows', function() {
         'cannot weigh a stamp written as anything but ordinary characters ' +
           'and escaped dots, what one reaches being read here as the ' +
           'literal it is (#917)',
+      )
+    })
+
+  it('spends every script of its own before the release stamps the tree',
+    function() {
+      assert.deepStrictEqual(
+        RELEASED.filter(
+          (step, index) => step.spends &&
+            RELEASED.slice(0, index).some((earlier) => earlier.stamps),
+        ).map((step) => step.where),
+        [],
+        'cannot run the suite over a tree the release has already stamped, ' +
+          'the two gates above reading the stamped module off the working ' +
+          'tree, so a placeholder rewritten in front of them reaches nothing ' +
+          'and the release dies at a test that is green everywhere else ' +
+          '(#946)',
       )
     })
 
