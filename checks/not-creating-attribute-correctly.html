@@ -113,7 +113,7 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-warning">warning</span>
-    <code class="xpath">//xsl:attribute[not(contains(@name, '{')) and not(@_name)][not(@namespace) and not(@_namespace)][parent::*[not(self::xsl:*)]][not(*) or (count(*) = 1 and xsl:value-of[not(@separator) and not(@_separator)])]</code>
+    <code class="xpath">//xsl:attribute[not(contains(@name, '{')) and not(@_name)][not(@namespace) and not(@_namespace)][parent::*[not(self::xsl:*)]][not(*) or (count(*) = 1 and xsl:value-of[not(@separator) and not(@_separator)])][not(preceding-sibling::*[not(self::xsl:variable) and not(self::xsl:attribute)])][not(preceding-sibling::xsl:attribute[@_name or not(@name) or contains(@name, '{')])][not(preceding-sibling::xsl:attribute/@name = @name)]</code>
   </div>
   <div class="check-content">
 <h1>Not creating attribute correctly</h1>
@@ -140,6 +140,26 @@ binds — so inlining it moves the attribute. An <code>xsl:value-of</code> carry
 <code>@separator</code> joins a sequence with the string it names, where the braces of an
 attribute value template join one with a single space, so the inline form
 writes something else whenever the value is more than one item.</p>
+<p>Position is the third. A literal attribute is written before the element&#39;s
+content is instantiated, so anything standing in front of the <code>xsl:attribute</code>
+that can supply an attribute of its own — an <code>xsl:copy-of</code>, an
+<code>xsl:apply-templates</code> or an <code>xsl:call-template</code> over attributes, bare or inside
+a conditional — overrides the inline form where the <code>xsl:attribute</code> overrides
+it. Here</p>
+<pre><code class="language-xsl">&lt;out&gt;
+  &lt;xsl:apply-templates select=&quot;@*&quot;/&gt;
+  &lt;xsl:attribute name=&quot;hop&quot;&gt;new&lt;/xsl:attribute&gt;
+&lt;/out&gt;
+</code></pre>
+<p>emits <code>hop=&quot;new&quot;</code> over a source <code>&lt;o hop=&quot;old&quot;/&gt;</code>, and</p>
+<pre><code class="language-xsl">&lt;out hop=&quot;new&quot;&gt;
+  &lt;xsl:apply-templates select=&quot;@*&quot;/&gt;
+&lt;/out&gt;
+</code></pre>
+<p>emits <code>hop=&quot;old&quot;</code>. The same holds for an earlier <code>xsl:attribute</code> repeating the
+name, or naming it through an attribute value template that might evaluate to
+it. Where a predecessor can reach the name, the two forms say different things
+and only reordering the stylesheet makes them agree.</p>
 
   </div>
 </body>
