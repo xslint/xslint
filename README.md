@@ -220,7 +220,8 @@ stable: false                           # default for --stable
 Unknown top-level keys, rule names that match no check, and values of the wrong
 type (a non-numeric `max-warnings`, a non-list `exclude`, a non-boolean
 `quiet`, a non-string `log-level`) are reported and ignored, so typos do not
-pass silently.
+pass silently. An `exclude` glob is named the same way when a run walks a
+directory and the glob excludes nothing anywhere under it.
 
 ## Inline suppression
 

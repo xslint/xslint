@@ -9,7 +9,7 @@
     <xsl:value-of select="//child::"/>
   </xsl:template>
   <xsl:template match="//alpha">
-    <xsl:value-of select="//beta"/>
+    <xsl:value-of select="child::beta"/>
   </xsl:template>
   <xsl:template match="//gamma">delta {1 +} epsilon</xsl:template>
 </xsl:stylesheet>

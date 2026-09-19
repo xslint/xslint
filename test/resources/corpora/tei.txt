@@ -26,11 +26,11 @@ Documentation/verbatim.xsl:69:1 text-outside-xsl-text suggestion "<xsl:text>xsl:
 Documentation/xsltdoc.xsl:2:1 missing-id-in-stylesheet
 Documentation/xsltdoc.xsl:76:5 text-outside-xsl-text suggestion "<xsl:text>/</xsl:text>"
 Test/checklinks.xsl:2:1 missing-id-in-stylesheet
-Test/checklinks.xsl:9:27 select-starts-with-double-slash suggestion ".//"
+Test/checklinks.xsl:9:27 select-starts-with-double-slash
 Test/formatexamples.xsl:2:1 missing-id-in-stylesheet
 Test/formatexamples.xsl:28:7 unused-function-template-parameter
 Test/poem.xsl:2:1 missing-id-in-stylesheet
-Test/poem.xsl:45:46 select-starts-with-double-slash suggestion ".//"
+Test/poem.xsl:45:46 select-starts-with-double-slash
 Test2/cleanForDiff.xsl:2:1 missing-id-in-stylesheet
 bibtex/convertbib.xsl:2:1 missing-id-in-stylesheet
 bibtex/convertbib.xsl:2:1 too-many-templates
@@ -178,7 +178,7 @@ common/common_tagdocs.xsl:2293:9 text-outside-xsl-text suggestion "<xsl:text> [<
 common/common_tagdocs.xsl:2325:9 text-outside-xsl-text suggestion "<xsl:text>] </xsl:text>"
 common/common_tagdocs.xsl:2355:19 count-compared-to-zero fix "exists($list/PattList/Item)"
 common/common_tagdocs.xsl:2398:19 count-compared-to-zero fix "exists($list2/PattList/Item)"
-common/common_tagdocs.xsl:2512:29 select-starts-with-double-slash suggestion ".//"
+common/common_tagdocs.xsl:2512:29 select-starts-with-double-slash
 common/common_tagdocs.xsl:2514:9 text-outside-xsl-text suggestion "<xsl:text>.\n        </xsl:text>"
 common/common_tagdocs.xsl:2537:5 setting-value-of-variable-incorrectly
 common/common_tagdocs.xsl:2542:5 setting-value-of-variable-incorrectly
@@ -187,7 +187,7 @@ common/common_tagdocs.xsl:2773:15 text-outside-xsl-text suggestion "<xsl:text>In
 common/common_tagdocs.xsl:2774:15 text-outside-xsl-text suggestion "<xsl:text>Global attributes and those inherited from</xsl:text>"
 common/common_tagdocs.xsl:2793:13 text-outside-xsl-text suggestion "<xsl:text>In addition to global attributes</xsl:text>"
 common/common_tagdocs.xsl:2794:13 text-outside-xsl-text suggestion "<xsl:text>Global attributes only</xsl:text>"
-common/common_tagdocs.xsl:2813:50 select-starts-with-double-slash suggestion ".//"
+common/common_tagdocs.xsl:2813:50 select-starts-with-double-slash
 common/common_tagdocs.xsl:2814:7 use-single-option-for-choose
 common/common_tagdocs.xsl:2921:3 unused-named-template
 common/common_tagdocs.xsl:2925:7 short-names
@@ -610,7 +610,7 @@ docx/from/docxtotei.xsl:341:30 redundant-whitespace fix " "
 docx/from/docxtotei.xsl:341:52 redundant-whitespace fix " "
 docx/from/docxtotei.xsl:342:30 redundant-whitespace fix " "
 docx/from/docxtotei.xsl:399:4 unused-named-template
-docx/from/docxtotei.xsl:470:36 select-starts-with-double-slash suggestion ".//"
+docx/from/docxtotei.xsl:470:36 select-starts-with-double-slash
 docx/from/docxtotei.xsl:472:12 not-creating-attribute-correctly
 docx/from/docxtotei.xsl:477:16 text-outside-xsl-text suggestion "<xsl:text>header</xsl:text>"
 docx/from/docxtotei.xsl:478:16 text-outside-xsl-text suggestion "<xsl:text>footer</xsl:text>"
@@ -1005,7 +1005,7 @@ docx/from/pass2.xsl:2:1 too-many-templates
 docx/from/pass2.xsl:62:2 use-choose-without-otherwise
 docx/from/pass2.xsl:65:35 redundant-whitespace fix " "
 docx/from/pass2.xsl:128:34 string-length-compared-to-zero suggestion ". = ''"
-docx/from/pass2.xsl:201:36 select-starts-with-double-slash suggestion ".//"
+docx/from/pass2.xsl:201:36 select-starts-with-double-slash
 docx/from/pass2.xsl:203:50 name-compared-to-string suggestion "self::*:front"
 docx/from/pass2.xsl:267:33 use-double-slash
 docx/from/pass2.xsl:326:10 string-length-compared-to-zero suggestion ". = ''"
@@ -2688,7 +2688,7 @@ html/html_textstructure.xsl:132:32 count-compared-to-zero fix "exists(id($reques
 html/html_textstructure.xsl:548:13 not-creating-attribute-correctly
 html/html_textstructure.xsl:665:7 unused-function-template-parameter
 html/html_textstructure.xsl:777:29 string-length-compared-to-zero suggestion "$doclang != ''"
-html/html_textstructure.xsl:781:38 select-starts-with-double-slash suggestion ".//"
+html/html_textstructure.xsl:781:38 select-starts-with-double-slash
 html/html_textstructure.xsl:894:7 unused-variable
 html/html_textstructure.xsl:920:48 name-compared-to-string suggestion "self::*:div"
 html/html_textstructure.xsl:1052:7 setting-value-of-variable-incorrectly
@@ -2720,7 +2720,7 @@ html/html_textstructure.xsl:2506:6 text-outside-xsl-text suggestion "<xsl:text>.
 html/html_textstructure.xsl:2598:16 unabbreviated-axis fix ""
 html/html_textstructure.xsl:2599:10 unused-variable
 html/html_textstructure.xsl:2609:10 unused-variable
-html/html_textstructure.xsl:2659:38 select-starts-with-double-slash suggestion ".//"
+html/html_textstructure.xsl:2659:38 select-starts-with-double-slash
 html/html_textstructure.xsl:2773:19 not-creating-attribute-correctly
 html/html_textstructure.xsl:2790:16 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 html/html_textstructure.xsl:2862:13 setting-value-of-variable-incorrectly
@@ -2741,18 +2741,18 @@ html/post-process-ids.xsl:2:1 missing-id-in-stylesheet
 icml/tei2icml.xsl:33:1 missing-id-in-stylesheet
 icml/tei2icml.xsl:33:1 not-using-output
 icml/tei2icml.xsl:33:1 too-many-templates
-icml/tei2icml.xsl:65:38 select-starts-with-double-slash suggestion ".//"
-icml/tei2icml.xsl:82:38 select-starts-with-double-slash suggestion ".//"
+icml/tei2icml.xsl:65:38 select-starts-with-double-slash
+icml/tei2icml.xsl:82:38 select-starts-with-double-slash
 icml/tei2icml.xsl:199:11 not-creating-attribute-correctly
 icml/tei2icml.xsl:200:41 unabbreviated-axis fix ""
 icml/tei2icml.xsl:202:11 not-creating-attribute-correctly
 icml/tei2icml.xsl:203:41 unabbreviated-axis fix ""
 icml/tei2icml.xsl:306:7 not-creating-attribute-correctly
 icml/tei2icml.xsl:319:5 unused-variable
-icml/tei2icml.xsl:463:38 select-starts-with-double-slash suggestion ".//"
-icml/tei2icml.xsl:478:40 select-starts-with-double-slash suggestion ".//"
-icml/tei2icml.xsl:528:38 select-starts-with-double-slash suggestion ".//"
-icml/tei2icml.xsl:539:40 select-starts-with-double-slash suggestion ".//"
+icml/tei2icml.xsl:463:38 select-starts-with-double-slash
+icml/tei2icml.xsl:478:40 select-starts-with-double-slash
+icml/tei2icml.xsl:528:38 select-starts-with-double-slash
+icml/tei2icml.xsl:539:40 select-starts-with-double-slash
 icml/tei2icml.xsl:588:5 short-names
 icml/tei2icml.xsl:610:5 short-names
 icml/tei2icml.xsl:628:7 not-creating-attribute-correctly
@@ -2982,7 +2982,7 @@ latex/latex_textstructure.xsl:163:21 count-compared-to-zero fix "exists(key('APP
 latex/latex_textstructure.xsl:200:4 text-outside-xsl-text suggestion "<xsl:text>\n     \\tableofcontents\n   </xsl:text>"
 latex/latex_textstructure.xsl:241:10 text-outside-xsl-text
 latex/latex_textstructure.xsl:258:3 text-outside-xsl-text
-latex/latex_textstructure.xsl:276:36 select-starts-with-double-slash suggestion ".//"
+latex/latex_textstructure.xsl:276:36 select-starts-with-double-slash
 latex/latex_transcr.xsl:2:1 missing-id-in-stylesheet
 latex/latex_transcr.xsl:7:17 redundant-namespace-declarations fix ""
 latex/latex_verse.xsl:2:1 missing-id-in-stylesheet
@@ -3287,16 +3287,16 @@ odds/odd2html.xsl:117:3 unused-named-template
 odds/odd2html.xsl:142:3 unused-named-template
 odds/odd2html.xsl:163:11 not-creating-element-correctly
 odds/odd2json.xsl:2:1 missing-id-in-stylesheet
-odds/odd2json.xsl:175:43 select-starts-with-double-slash suggestion ".//"
-odds/odd2json.xsl:200:43 select-starts-with-double-slash suggestion ".//"
-odds/odd2json.xsl:210:43 select-starts-with-double-slash suggestion ".//"
-odds/odd2json.xsl:219:47 select-starts-with-double-slash suggestion ".//"
-odds/odd2json.xsl:227:47 select-starts-with-double-slash suggestion ".//"
-odds/odd2json.xsl:236:43 select-starts-with-double-slash suggestion ".//"
-odds/odd2json.xsl:248:43 select-starts-with-double-slash suggestion ".//"
-odds/odd2json.xsl:260:43 select-starts-with-double-slash suggestion ".//"
-odds/odd2json.xsl:278:43 select-starts-with-double-slash suggestion ".//"
-odds/odd2json.xsl:286:43 select-starts-with-double-slash suggestion ".//"
+odds/odd2json.xsl:175:43 select-starts-with-double-slash
+odds/odd2json.xsl:200:43 select-starts-with-double-slash
+odds/odd2json.xsl:210:43 select-starts-with-double-slash
+odds/odd2json.xsl:219:47 select-starts-with-double-slash
+odds/odd2json.xsl:227:47 select-starts-with-double-slash
+odds/odd2json.xsl:236:43 select-starts-with-double-slash
+odds/odd2json.xsl:248:43 select-starts-with-double-slash
+odds/odd2json.xsl:260:43 select-starts-with-double-slash
+odds/odd2json.xsl:278:43 select-starts-with-double-slash
+odds/odd2json.xsl:286:43 select-starts-with-double-slash
 odds/odd2json.xsl:307:30 redundant-whitespace fix " "
 odds/odd2json.xsl:499:37 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 odds/odd2json.xsl:507:37 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
@@ -3449,7 +3449,7 @@ odds/odd2relax.xsl:132:12 redundant-whitespace fix ""
 odds/odd2relax.xsl:178:5 unused-variable
 odds/odd2relax.xsl:272:72 redundant-whitespace fix " "
 odds/odd2relax.xsl:300:5 unused-variable
-odds/odd2relax.xsl:320:29 select-starts-with-double-slash suggestion ".//"
+odds/odd2relax.xsl:320:29 select-starts-with-double-slash
 odds/odd2relax.xsl:392:10 use-choose-without-otherwise
 odds/odd2relax.xsl:419:9 text-outside-xsl-text suggestion "<xsl:text>http://www.tei-c.org/ns/1.0 teix:egXML</xsl:text>"
 odds/odd2relax.xsl:460:11 text-outside-xsl-text suggestion "<xsl:text>, 'http://www.tei-c.org/ns/1.0'</xsl:text>"
@@ -3495,7 +3495,7 @@ odds/odd2xslstripspace.xsl:152:7 unused-function-template-parameter
 odds/odd2xslstripspace.xsl:156:3 empty-variable
 odds/odd2xslstripspace.xsl:158:3 empty-variable
 odds/odd2xslstripspace.xsl:158:3 unused-variable
-odds/odd2xslstripspace.xsl:163:24 select-starts-with-double-slash suggestion ".//"
+odds/odd2xslstripspace.xsl:163:24 select-starts-with-double-slash
 odds/odd2xslstripspace.xsl:180:21 count-compared-to-zero fix "empty(Element)"
 odds/table2list.xsl:2:1 missing-id-in-stylesheet
 odds/table2list.xsl:54:60 redundant-whitespace fix " "
@@ -3834,11 +3834,11 @@ profiles/agora/docx/default-functions.xsl:88:17 text-outside-xsl-text suggestion
 profiles/agora/docx/default-functions.xsl:89:17 text-outside-xsl-text suggestion "<xsl:text>false</xsl:text>"
 profiles/agora/docx/from-orig.xsl:2:1 missing-id-in-stylesheet
 profiles/agora/docx/from-orig.xsl:2:1 too-many-templates
-profiles/agora/docx/from-orig.xsl:29:30 select-starts-with-double-slash suggestion ".//"
-profiles/agora/docx/from-orig.xsl:32:30 select-starts-with-double-slash suggestion ".//"
-profiles/agora/docx/from-orig.xsl:36:29 select-starts-with-double-slash suggestion ".//"
-profiles/agora/docx/from-orig.xsl:40:28 select-starts-with-double-slash suggestion ".//"
-profiles/agora/docx/from-orig.xsl:52:28 select-starts-with-double-slash suggestion ".//"
+profiles/agora/docx/from-orig.xsl:29:30 select-starts-with-double-slash
+profiles/agora/docx/from-orig.xsl:32:30 select-starts-with-double-slash
+profiles/agora/docx/from-orig.xsl:36:29 select-starts-with-double-slash
+profiles/agora/docx/from-orig.xsl:40:28 select-starts-with-double-slash
+profiles/agora/docx/from-orig.xsl:52:28 select-starts-with-double-slash
 profiles/agora/docx/from-orig.xsl:69:17 string-length-compared-to-zero suggestion ". != ''"
 profiles/agora/docx/from-orig.xsl:91:3 not-creating-element-correctly
 profiles/agora/docx/from-orig.xsl:174:4 not-creating-element-correctly
@@ -3846,21 +3846,21 @@ profiles/agora/docx/from-orig.xsl:188:3 setting-value-of-variable-incorrectly
 profiles/agora/docx/from-orig.xsl:203:3 not-creating-element-correctly
 profiles/agora/docx/from-post.xsl:2:1 missing-id-in-stylesheet
 profiles/agora/docx/from-post.xsl:2:1 too-many-templates
-profiles/agora/docx/from-post.xsl:34:46 select-starts-with-double-slash suggestion ".//"
-profiles/agora/docx/from-post.xsl:35:45 select-starts-with-double-slash suggestion ".//"
-profiles/agora/docx/from-post.xsl:37:34 select-starts-with-double-slash suggestion ".//"
-profiles/agora/docx/from-post.xsl:40:23 select-starts-with-double-slash suggestion ".//"
+profiles/agora/docx/from-post.xsl:34:46 select-starts-with-double-slash
+profiles/agora/docx/from-post.xsl:35:45 select-starts-with-double-slash
+profiles/agora/docx/from-post.xsl:37:34 select-starts-with-double-slash
+profiles/agora/docx/from-post.xsl:40:23 select-starts-with-double-slash
 profiles/agora/docx/from-post.xsl:98:1 setting-value-of-variable-incorrectly
 profiles/agora/docx/from-post.xsl:101:1 not-creating-element-correctly
 profiles/agora/docx/from.xsl:2:1 missing-id-in-stylesheet
 profiles/agora/docx/from.xsl:2:1 too-many-templates
 profiles/agora/docx/from.xsl:68:3 not-creating-element-correctly
-profiles/agora/docx/from.xsl:89:31 select-starts-with-double-slash suggestion ".//"
-profiles/agora/docx/from.xsl:95:30 select-starts-with-double-slash suggestion ".//"
-profiles/agora/docx/from.xsl:103:29 select-starts-with-double-slash suggestion ".//"
-profiles/agora/docx/from.xsl:110:29 select-starts-with-double-slash suggestion ".//"
-profiles/agora/docx/from.xsl:120:28 select-starts-with-double-slash suggestion ".//"
-profiles/agora/docx/from.xsl:134:28 select-starts-with-double-slash suggestion ".//"
+profiles/agora/docx/from.xsl:89:31 select-starts-with-double-slash
+profiles/agora/docx/from.xsl:95:30 select-starts-with-double-slash
+profiles/agora/docx/from.xsl:103:29 select-starts-with-double-slash
+profiles/agora/docx/from.xsl:110:29 select-starts-with-double-slash
+profiles/agora/docx/from.xsl:120:28 select-starts-with-double-slash
+profiles/agora/docx/from.xsl:134:28 select-starts-with-double-slash
 profiles/agora/docx/from.xsl:159:17 string-length-compared-to-zero suggestion ". != ''"
 profiles/agora/docx/from.xsl:243:23 starts-with-double-slash suggestion ""
 profiles/agora/docx/from.xsl:243:66 unabbreviated-axis fix ""
@@ -3884,10 +3884,10 @@ profiles/agora/docx/to.xsl:2:1 missing-id-in-stylesheet
 profiles/agora/html/from.xsl:2:1 missing-id-in-stylesheet
 profiles/agora/html/to.xsl:2:1 missing-id-in-stylesheet
 profiles/agora/html/to.xsl:2:1 too-many-templates
-profiles/agora/html/to.xsl:60:23 select-starts-with-double-slash suggestion ".//"
+profiles/agora/html/to.xsl:60:23 select-starts-with-double-slash
 profiles/agora/html5/to.xsl:2:1 missing-id-in-stylesheet
 profiles/agora/html5/to.xsl:2:1 too-many-templates
-profiles/agora/html5/to.xsl:60:23 select-starts-with-double-slash suggestion ".//"
+profiles/agora/html5/to.xsl:60:23 select-starts-with-double-slash
 profiles/agora/latex/to.xsl:2:1 missing-id-in-stylesheet
 profiles/agora/latex/to.xsl:34:1 text-outside-xsl-text
 profiles/agora/latex/to.xsl:37:1 text-outside-xsl-text
@@ -3903,7 +3903,7 @@ profiles/default/bibtex/to.xsl:2:1 missing-id-in-stylesheet
 profiles/default/cocoa/from.xsl:2:1 missing-id-in-stylesheet
 profiles/default/csv/from.xsl:3:1 missing-id-in-stylesheet
 profiles/default/csv/to.xsl:3:1 missing-id-in-stylesheet
-profiles/default/csv/to.xsl:67:28 select-starts-with-double-slash suggestion ".//"
+profiles/default/csv/to.xsl:67:28 select-starts-with-double-slash
 profiles/default/csv/to.xsl:78:7 text-outside-xsl-text suggestion "<xsl:text>,</xsl:text>"
 profiles/default/docbook/from.xsl:1:1 missing-id-in-stylesheet
 profiles/default/docbook/to.xsl:1:1 missing-id-in-stylesheet
@@ -3978,7 +3978,7 @@ profiles/enrich/docx/to.xsl:69:7 use-choose-without-otherwise
 profiles/enrich/docx/to.xsl:74:13 short-names
 profiles/enrich/fo/to.xsl:2:1 missing-id-in-stylesheet
 profiles/enrich/html/to.xsl:2:1 missing-id-in-stylesheet
-profiles/enrich/html/to.xsl:67:36 select-starts-with-double-slash suggestion ".//"
+profiles/enrich/html/to.xsl:67:36 select-starts-with-double-slash
 profiles/enrich/latex/to.xsl:2:1 missing-id-in-stylesheet
 profiles/enrich/latex/to.xsl:69:4 text-outside-xsl-text suggestion "<xsl:text>\n\\usepackage{makeidx}\n\\makeindex\n\\defaultfontfeatures{Scale=MatchLowercase}\n%\\setromanfont{DejaVu Serif}\n%\\setsansfont{DejaVu Sans}\n\\setmonofont{DejaVu Sans Mono}\n%\\setmonofont[Scale=0.9]{Lucida Sans Typewriter}\n%\\setsansfont[Scale=0.85]{Lucida Sans}\n%\\setromanfont{Times New Roman}\n\\setromanfont{Minion Pro}\n%\\setmonofont{CourierStd}\n\\setsansfont{Myriad Pro}\n\\setlength{\\headheight}{14pt}\n</xsl:text>"
 profiles/enrich/latex/to.xsl:214:7 text-outside-xsl-text suggestion "<xsl:text>\\mbox{}\\\\[-10pt] </xsl:text>"
@@ -4307,7 +4307,7 @@ profiles/iso/docx/to.xsl:490:38 redundant-whitespace fix " "
 profiles/iso/docx/to.xsl:508:13 unused-variable
 profiles/iso/docx/to.xsl:578:13 not-creating-attribute-correctly
 profiles/iso/docx/to.xsl:688:9 setting-value-of-variable-incorrectly
-profiles/iso/docx/to.xsl:754:43 select-starts-with-double-slash suggestion ".//"
+profiles/iso/docx/to.xsl:754:43 select-starts-with-double-slash
 profiles/iso/docx/to.xsl:822:3 unused-named-template
 profiles/iso/docx/to.xsl:944:15 not-creating-attribute-correctly
 profiles/iso/docx/to.xsl:973:15 not-creating-attribute-correctly
@@ -4425,7 +4425,7 @@ profiles/iso/isofooter.xsl:10:17 redundant-namespace-declarations fix ""
 profiles/iso/isofooter.xsl:11:17 leaking-result-namespace suggestion " exclude-result-prefixes=\"w\""
 profiles/iso/isofooter.xsl:12:17 redundant-namespace-declarations fix ""
 profiles/iso/isofooter.xsl:62:9 not-creating-element-correctly
-profiles/iso/isofooter.xsl:64:46 select-starts-with-double-slash suggestion ".//"
+profiles/iso/isofooter.xsl:64:46 select-starts-with-double-slash
 profiles/iso/isoheader.xsl:2:1 missing-id-in-stylesheet
 profiles/iso/isoheader.xsl:3:17 redundant-namespace-declarations fix ""
 profiles/iso/isoheader.xsl:4:17 redundant-namespace-declarations fix ""
@@ -4438,9 +4438,9 @@ profiles/iso/isoheader.xsl:10:17 redundant-namespace-declarations fix ""
 profiles/iso/isoheader.xsl:11:17 leaking-result-namespace suggestion " exclude-result-prefixes=\"w\""
 profiles/iso/isoheader.xsl:12:17 redundant-namespace-declarations fix ""
 profiles/iso/isoheader.xsl:62:9 not-creating-element-correctly
-profiles/iso/isoheader.xsl:64:39 select-starts-with-double-slash suggestion ".//"
-profiles/iso/isoheader.xsl:67:39 select-starts-with-double-slash suggestion ".//"
-profiles/iso/isoheader.xsl:70:39 select-starts-with-double-slash suggestion ".//"
+profiles/iso/isoheader.xsl:64:39 select-starts-with-double-slash
+profiles/iso/isoheader.xsl:67:39 select-starts-with-double-slash
+profiles/iso/isoheader.xsl:70:39 select-starts-with-double-slash
 profiles/iso/isotei-schema.xsl:2:1 missing-id-in-stylesheet
 profiles/iso/isotei-schema.xsl:2:1 too-many-templates
 profiles/iso/isotei-schema.xsl:264:38 name-compared-to-string suggestion "self::*:hi"
@@ -4768,16 +4768,16 @@ profiles/jtei/jtei.common.xsl:512:5 use-choose-without-otherwise
 profiles/jtei/odt/odt.common.xsl:14:1 missing-id-in-stylesheet
 profiles/jtei/odt/odt.common.xsl:14:1 too-many-templates
 profiles/jtei/odt/odt.common.xsl:104:13 use-choose-without-otherwise
-profiles/jtei/odt/odt.common.xsl:128:38 select-starts-with-double-slash suggestion ".//"
-profiles/jtei/odt/odt.common.xsl:130:38 select-starts-with-double-slash suggestion ".//"
-profiles/jtei/odt/odt.common.xsl:132:38 select-starts-with-double-slash suggestion ".//"
+profiles/jtei/odt/odt.common.xsl:128:38 select-starts-with-double-slash
+profiles/jtei/odt/odt.common.xsl:130:38 select-starts-with-double-slash
+profiles/jtei/odt/odt.common.xsl:132:38 select-starts-with-double-slash
 profiles/jtei/odt/odt.common.xsl:145:9 use-choose-without-otherwise
-profiles/jtei/odt/odt.common.xsl:153:34 select-starts-with-double-slash suggestion ".//"
-profiles/jtei/odt/odt.common.xsl:155:34 select-starts-with-double-slash suggestion ".//"
-profiles/jtei/odt/odt.common.xsl:157:34 select-starts-with-double-slash suggestion ".//"
+profiles/jtei/odt/odt.common.xsl:153:34 select-starts-with-double-slash
+profiles/jtei/odt/odt.common.xsl:155:34 select-starts-with-double-slash
+profiles/jtei/odt/odt.common.xsl:157:34 select-starts-with-double-slash
 profiles/jtei/odt/odt.common.xsl:187:34 unabbreviated-axis fix ""
 profiles/jtei/odt/odt.common.xsl:198:7 unused-variable
-profiles/jtei/odt/odt.common.xsl:211:31 select-starts-with-double-slash suggestion ".//"
+profiles/jtei/odt/odt.common.xsl:211:31 select-starts-with-double-slash
 profiles/jtei/odt/odt.common.xsl:373:7 text-outside-xsl-text suggestion "<xsl:text>teiListItem</xsl:text>"
 profiles/jtei/odt/odt.common.xsl:374:7 text-outside-xsl-text suggestion "<xsl:text>teiPara</xsl:text>"
 profiles/jtei/odt/odt.common.xsl:419:5 text-outside-xsl-text
@@ -4797,7 +4797,7 @@ profiles/jtei/openedition/to.xsl:283:9 text-outside-xsl-text suggestion "<xsl:te
 profiles/jtei/openedition/to.xsl:284:9 text-outside-xsl-text suggestion "<xsl:text>publisher</xsl:text>"
 profiles/jtei/openedition/to.xsl:285:9 text-outside-xsl-text suggestion "<xsl:text>ack</xsl:text>"
 profiles/jtei/openedition/to.xsl:286:9 text-outside-xsl-text suggestion "<xsl:text>correction</xsl:text>"
-profiles/jtei/openedition/to.xsl:316:63 select-starts-with-double-slash suggestion ".//"
+profiles/jtei/openedition/to.xsl:316:63 select-starts-with-double-slash
 profiles/jtei/openedition/to.xsl:417:32 use-double-slash
 profiles/jtei/openedition/to.xsl:514:32 use-double-slash
 profiles/jtei/openedition/to.xsl:516:40 redundant-whitespace fix ""
@@ -4842,7 +4842,7 @@ profiles/jtei/pdf/to.xsl:626:33 use-double-slash
 profiles/jtei/pdf/to.xsl:626:48 use-double-slash
 profiles/jtei/pdf/to.xsl:772:32 use-double-slash
 profiles/jtei/pdf/to.xsl:781:32 use-double-slash
-profiles/jtei/pdf/to.xsl:1101:31 select-starts-with-double-slash suggestion ".//"
+profiles/jtei/pdf/to.xsl:1101:31 select-starts-with-double-slash
 profiles/jtei/pdf/to.xsl:1117:9 text-outside-xsl-text suggestion "<xsl:text>15</xsl:text>"
 profiles/jtei/pdf/to.xsl:1118:9 text-outside-xsl-text suggestion "<xsl:text>12</xsl:text>"
 profiles/jtei/pdf/to.xsl:1119:9 text-outside-xsl-text suggestion "<xsl:text>10</xsl:text>"
@@ -4886,7 +4886,7 @@ profiles/ota/html/to.xsl:2:1 missing-id-in-stylesheet
 profiles/ota/html/to.xsl:122:20 name-compared-to-string suggestion "self::*:div"
 profiles/ota/html/to.xsl:214:5 unused-function-template-parameter
 profiles/ota/tcp/from.xsl:2:1 missing-id-in-stylesheet
-profiles/ota/tcp/from.xsl:89:29 select-starts-with-double-slash suggestion ".//"
+profiles/ota/tcp/from.xsl:89:29 select-starts-with-double-slash
 profiles/otapages/epub/to.xsl:2:1 missing-id-in-stylesheet
 profiles/otapages/epub/to.xsl:158:5 short-names
 profiles/otapages/epub/to.xsl:160:7 text-outside-xsl-text suggestion "<xsl:text>span</xsl:text>"
@@ -4941,7 +4941,7 @@ profiles/oulipo/docx/to.xsl:2:1 missing-id-in-stylesheet
 profiles/oulipo/docx/to.xsl:53:3 text-outside-xsl-text suggestion "<xsl:text>teidate</xsl:text>"
 profiles/oulipo/from_common.xsl:2:1 missing-id-in-stylesheet
 profiles/oulipo/from_common.xsl:2:1 too-many-templates
-profiles/oulipo/from_common.xsl:89:31 select-starts-with-double-slash suggestion ".//"
+profiles/oulipo/from_common.xsl:89:31 select-starts-with-double-slash
 profiles/oulipo/from_common.xsl:96:5 setting-value-of-variable-incorrectly
 profiles/oulipo/from_common.xsl:101:5 setting-value-of-variable-incorrectly
 profiles/oulipo/from_common.xsl:104:5 setting-value-of-variable-incorrectly
@@ -4966,9 +4966,9 @@ profiles/oulipo/from_common.xsl:320:7 text-outside-xsl-text suggestion "<xsl:tex
 profiles/oulipo/html/to.xsl:2:1 missing-id-in-stylesheet
 profiles/oulipo/html/to.xsl:45:1 empty-variable
 profiles/oulipo/html/to.xsl:58:1 text-outside-xsl-text suggestion "<xsl:text>\nThis page is made available under the Creative Commons General Public License \"Attribution, Non-Commercial, Share-Alike\", version 3.0 (CCPL BY-NC-SA) \n</xsl:text>"
-profiles/oulipo/html/to.xsl:68:27 select-starts-with-double-slash suggestion ".//"
+profiles/oulipo/html/to.xsl:68:27 select-starts-with-double-slash
 profiles/oulipo/html/to.xsl:69:7 short-names
-profiles/oulipo/html/to.xsl:122:33 select-starts-with-double-slash suggestion ".//"
+profiles/oulipo/html/to.xsl:122:33 select-starts-with-double-slash
 profiles/oulipo/html/to.xsl:170:7 text-outside-xsl-text suggestion "<xsl:text>-</xsl:text>"
 profiles/oulipo/latex/to.xsl:1:1 missing-id-in-stylesheet
 profiles/oulipo/latex/to.xsl:67:3 text-outside-xsl-text suggestion "<xsl:text>\n\\usepackage{pdfpages}\n  </xsl:text>"
@@ -5150,7 +5150,7 @@ rdf/make-acdc.xsl:1:1 missing-id-in-stylesheet
 rdf/make-acdc.xsl:23:3 unused-named-template
 rdf/make-acdc.xsl:25:23 string-length-compared-to-zero suggestion "$doclang != ''"
 rdf/make-acdc.xsl:34:5 unused-function-template-parameter
-rdf/make-acdc.xsl:60:27 select-starts-with-double-slash suggestion ".//"
+rdf/make-acdc.xsl:60:27 select-starts-with-double-slash
 rdf/make-acdc.xsl:62:2 short-names
 rdf/make-acdc.xsl:62:2 unused-variable
 rdf/make-acdc.xsl:63:2 not-creating-attribute-correctly
@@ -5272,7 +5272,7 @@ slides/teilatex-slides.xsl:356:7 use-single-option-for-choose
 tbx/teitotbx.xsl:2:1 missing-id-in-stylesheet
 tcp/tcp2tei.xsl:6:1 missing-id-in-stylesheet
 tcp/tcp2tei.xsl:6:1 too-many-templates
-tcp/tcp2tei.xsl:56:35 select-starts-with-double-slash suggestion ".//"
+tcp/tcp2tei.xsl:56:35 select-starts-with-double-slash
 tcp/tcp2tei.xsl:108:5 unused-variable
 tcp/tcp2tei.xsl:276:23 redundant-whitespace fix ""
 tcp/tcp2tei.xsl:276:51 redundant-whitespace fix " "
@@ -5296,7 +5296,7 @@ tcp/tcp2tei.xsl:276:395 redundant-whitespace fix " "
 tcp/tcp2tei.xsl:276:411 redundant-whitespace fix ""
 tcp/tcp2tei.xsl:288:85 redundant-whitespace fix " "
 tcp/tcp2tei.xsl:373:45 redundant-whitespace fix " "
-tcp/tcp2tei.xsl:479:35 select-starts-with-double-slash suggestion ".//"
+tcp/tcp2tei.xsl:479:35 select-starts-with-double-slash
 tcp/tcp2tei.xsl:487:7 use-choose-without-otherwise
 tcp/tcp2tei.xsl:509:64 redundant-whitespace fix " "
 tcp/tcp2tei.xsl:509:96 redundant-whitespace fix " "
@@ -5364,10 +5364,10 @@ tools/odd-to-csv.xsl:78:7 unused-variable
 tools/odd-to-csv.xsl:90:7 unused-variable
 tools/odd-to-tree.xsl:2:1 missing-id-in-stylesheet
 tools/odd-to-tree.xsl:6:5 leaking-result-namespace suggestion " exclude-result-prefixes=\"tei\""
-tools/odd-to-tree.xsl:16:27 select-starts-with-double-slash suggestion ".//"
+tools/odd-to-tree.xsl:16:27 select-starts-with-double-slash
 tools/odd-to-tree.xsl:36:3 use-choose-without-otherwise
-tools/odd-to-tree.xsl:49:13 select-starts-with-double-slash suggestion ".//"
-tools/odd-to-tree.xsl:85:29 select-starts-with-double-slash suggestion ".//"
+tools/odd-to-tree.xsl:49:13 select-starts-with-double-slash
+tools/odd-to-tree.xsl:85:29 select-starts-with-double-slash
 tools/odd2nuodd.xsl:2:1 missing-id-in-stylesheet
 tools/odd2nuodd.xsl:2:1 not-using-output
 tools/odd2nuodd.xsl:2:1 too-many-templates
@@ -5405,9 +5405,9 @@ tools/oddbyexample.xsl:658:5 use-choose-without-otherwise
 tools/processpb.xsl:2:1 missing-id-in-stylesheet
 tools/processpb.xsl:2:1 too-many-templates
 tools/tei-to-tree.xsl:2:1 missing-id-in-stylesheet
-tools/tei-to-tree.xsl:9:46 select-starts-with-double-slash suggestion ".//"
+tools/tei-to-tree.xsl:9:46 select-starts-with-double-slash
 tools/timing-profile.xsl:2:1 missing-id-in-stylesheet
-tools/timing-profile.xsl:12:33 select-starts-with-double-slash suggestion ".//"
+tools/timing-profile.xsl:12:33 select-starts-with-double-slash
 txt/tei-to-text.xsl:2:1 missing-id-in-stylesheet
 txt/tei-to-text.xsl:2:1 too-many-templates
 txt/tei-to-text.xsl:131:4 short-names

@@ -941,14 +941,16 @@ the 22 and could only ever ask whether the string appeared.
   rules `off`, re-grade severity, `exclude:` file globs, and default
   `max-warnings`/`log-level`/`quiet`/`stable`. Flags override the file overrides
   the defaults (`src/config.js`). Unknown keys and no-match patterns are
-  reported. An `exclude:` covering a whole directory (`dir/**`) also stops the
-  walk descending it, so the pattern costs nothing rather than the walk it then
-  throws away (#923). What the project's own `.gitignore` files name is neither
-  walked nor reported either, and needs no pattern of its own — unless git's
-  own index holds the path, which outranks every rule a `.gitignore` writes.
-  Every repository answers for its own subtree, so a `.git` met on the way
-  down is read with its own rules and its own index rather than the outer
-  tree's (#929).
+  reported, an `exclude:` that excluded nothing among them — counted at both
+  doors, a `dir/**` pruning a directory matching no file, and asked only of a
+  run that walked one (#951). An `exclude:` covering a whole directory
+  (`dir/**`) also stops the walk descending it, so the pattern costs nothing
+  rather than the walk it then throws away (#923). What the project's own
+  `.gitignore` files name is neither walked nor reported either, and needs no
+  pattern of its own — unless git's own index holds the path, which outranks
+  every rule a `.gitignore` writes. Every repository answers for its own
+  subtree, so a `.git` met on the way down is read with its own rules and its
+  own index rather than the outer tree's (#929).
 - **Inline directives**: XML comments `xslint-disable-next-line`,
   `xslint-disable-line`, `xslint-disable-file`, each with optional space-separated
   rule names (`src/directives.js`); an unused directive is reported.
