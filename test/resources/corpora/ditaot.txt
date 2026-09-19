@@ -421,7 +421,6 @@ src/main/plugins/org.dita.html5/xsl/ui-d.xsl:9:1 not-using-output
 src/main/plugins/org.dita.html5/xsl/ut-d.xsl:9:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.html5/xsl/ut-d.xsl:9:1 not-using-output
 src/main/plugins/org.dita.html5/xsl/ut-d.xsl:59:13 setting-value-of-variable-incorrectly
-src/main/plugins/org.dita.html5/xsl/ut-d.xsl:60:13 not-creating-attribute-correctly
 src/main/plugins/org.dita.html5/xsl/ut-d.xsl:72:13 setting-value-of-variable-incorrectly
 src/main/plugins/org.dita.html5/xsl/ut-d.xsl:74:31 string-length-compared-to-zero suggestion "$coordval != ''"
 src/main/plugins/org.dita.html5/xsl/ut-d.xsl:105:5 use-choose-without-otherwise
@@ -871,8 +870,6 @@ src/main/plugins/org.dita.xhtml/xsl/xslhtml/dita2htmlImpl.xsl:233:1 empty-variab
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/dita2htmlImpl.xsl:275:11 text-outside-xsl-text suggestion "<xsl:text>9</xsl:text>"
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/dita2htmlImpl.xsl:294:11 text-outside-xsl-text suggestion "<xsl:text>9</xsl:text>"
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/dita2htmlImpl.xsl:535:1 unused-named-template
-src/main/plugins/org.dita.xhtml/xsl/xslhtml/dita2htmlImpl.xsl:691:5 not-creating-attribute-correctly
-src/main/plugins/org.dita.xhtml/xsl/xslhtml/dita2htmlImpl.xsl:717:5 not-creating-attribute-correctly
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/dita2htmlImpl.xsl:942:7 text-outside-xsl-text suggestion "<xsl:text>dltermexpand</xsl:text>"
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/dita2htmlImpl.xsl:943:7 text-outside-xsl-text suggestion "<xsl:text>dlterm</xsl:text>"
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/dita2htmlImpl.xsl:1125:13 text-outside-xsl-text suggestion "<xsl:text>skip</xsl:text>"
@@ -1001,15 +998,11 @@ src/main/plugins/org.dita.xhtml/xsl/xslhtml/pr-d.xsl:10:1 too-many-templates
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/refdisplay.xsl:10:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/refdisplay.xsl:10:1 not-using-output
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/refdisplay.xsl:10:1 too-many-templates
-src/main/plugins/org.dita.xhtml/xsl/xslhtml/refdisplay.xsl:25:7 not-creating-attribute-correctly
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/refdisplay.xsl:29:13 text-outside-xsl-text suggestion "<xsl:text>simpletablenoborder</xsl:text>"
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/refdisplay.xsl:30:13 text-outside-xsl-text suggestion "<xsl:text>simpletableborder</xsl:text>"
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/refdisplay.xsl:132:6 use-choose-without-otherwise
-src/main/plugins/org.dita.xhtml/xsl/xslhtml/refdisplay.xsl:144:12 not-creating-attribute-correctly
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/refdisplay.xsl:151:6 use-choose-without-otherwise
-src/main/plugins/org.dita.xhtml/xsl/xslhtml/refdisplay.xsl:163:12 not-creating-attribute-correctly
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/refdisplay.xsl:170:6 use-choose-without-otherwise
-src/main/plugins/org.dita.xhtml/xsl/xslhtml/refdisplay.xsl:182:12 not-creating-attribute-correctly
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/refdisplay.xsl:209:7 text-outside-xsl-text suggestion "<xsl:text>-</xsl:text>"
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/refdisplay.xsl:229:6 use-choose-without-otherwise
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/refdisplay.xsl:244:6 use-choose-without-otherwise
@@ -1139,7 +1132,6 @@ src/main/plugins/org.dita.xhtml/xsl/xslhtml/ui-d.xsl:31:1 blank-nested-if
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/ut-d.xsl:10:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/ut-d.xsl:10:1 not-using-output
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/ut-d.xsl:65:11 setting-value-of-variable-incorrectly
-src/main/plugins/org.dita.xhtml/xsl/xslhtml/ut-d.xsl:66:11 not-creating-attribute-correctly
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/ut-d.xsl:78:11 setting-value-of-variable-incorrectly
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/ut-d.xsl:80:29 string-length-compared-to-zero suggestion "$coordval != ''"
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/ut-d.xsl:115:3 use-choose-without-otherwise

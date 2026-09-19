@@ -1,0 +1,34 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: not-creating-attribute-correctly
+# None of these is reported. A literal attribute is written before the element's
+# content is instantiated, so an instruction standing in front of the
+# xsl:attribute and copying attributes in would override the inline form where
+# it is overridden by the xsl:attribute here — the advice flips which value
+# survives (#950).
+found:
+  amount: 0
+  positions: [ ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="style1">
+    <xsl:output encoding="UTF-8" method="xml"/>
+    <xsl:template match="/objects/o">
+      <alpha>
+        <xsl:apply-templates select="@*"/>
+        <xsl:attribute name="hop">new</xsl:attribute>
+      </alpha>
+      <beta>
+        <xsl:copy-of select="@*"/>
+        <xsl:attribute name="lang">en</xsl:attribute>
+      </beta>
+      <gamma>
+        <xsl:call-template name="deco"/>
+        <xsl:attribute name="rel">next</xsl:attribute>
+      </gamma>
+    </xsl:template>
+    <xsl:template name="deco">
+      <xsl:attribute name="hop">old</xsl:attribute>
+    </xsl:template>
+  </xsl:stylesheet>

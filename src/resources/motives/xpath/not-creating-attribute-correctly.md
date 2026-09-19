@@ -30,3 +30,30 @@ binds — so inlining it moves the attribute. An `xsl:value-of` carrying
 `@separator` joins a sequence with the string it names, where the braces of an
 attribute value template join one with a single space, so the inline form
 writes something else whenever the value is more than one item.
+
+Position is the third. A literal attribute is written before the element's
+content is instantiated, so anything standing in front of the `xsl:attribute`
+that can supply an attribute of its own — an `xsl:copy-of`, an
+`xsl:apply-templates` or an `xsl:call-template` over attributes, bare or inside
+a conditional — overrides the inline form where the `xsl:attribute` overrides
+it. Here
+
+```xsl
+<out>
+  <xsl:apply-templates select="@*"/>
+  <xsl:attribute name="hop">new</xsl:attribute>
+</out>
+```
+
+emits `hop="new"` over a source `<o hop="old"/>`, and
+
+```xsl
+<out hop="new">
+  <xsl:apply-templates select="@*"/>
+</out>
+```
+
+emits `hop="old"`. The same holds for an earlier `xsl:attribute` repeating the
+name, or naming it through an attribute value template that might evaluate to
+it. Where a predecessor can reach the name, the two forms say different things
+and only reordering the stylesheet makes them agree.
