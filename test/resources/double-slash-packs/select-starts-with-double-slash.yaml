@@ -2,10 +2,16 @@
 # SPDX-License-Identifier: MIT
 ---
 pack: select-starts-with-double-slash
+# Every one of these is reported and none of them is fixed. A `.//` is rooted
+# at the context node where a `//` is rooted at the root of its tree, so the
+# two name the same nodes only where the context node is the document node —
+# and there they cost the same whole-tree walk, which is what the check is
+# about. The template here matches `/objects/o`, so the rewrite would have
+# selected nothing (#949).
 found:
   amount: 4
   positions: [ [ 5, 26 ], [ 6, 27 ], [ 7, 36 ], [ 8, 27 ] ]
-  fixes: [ ".//", ".//", ".//", ".//" ]
+  fixes: [ null, null, null, null ]
 input: |-
   <?xml version="1.0"?>
   <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="style1">

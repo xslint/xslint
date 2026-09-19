@@ -356,7 +356,7 @@ describe('lint (programmatic API)', function() {
       ],
     )
   })
-  it('keeps both declarative fixes on the valid template', function() {
+  it('keeps both fixes on the valid template', function() {
     assert.deepEqual(
       lint([source('refused/refused-by-a-declarative-fix.xsl')])
         .filter((defect) => [11, 12].includes(defect.line))

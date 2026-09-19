@@ -366,12 +366,6 @@ const APPLIED = [
     after: 'incorrect-use-of-boolean-constants.fixed.xsl',
   },
   {
-    name: 'should anchor a leading // select as .// with --fix-suggestions',
-    flag: '--fix-suggestions',
-    before: 'select-starts-with-double-slash.xsl',
-    after: 'select-starts-with-double-slash.fixed.xsl',
-  },
-  {
     name: 'should prepend $ to a bare variable name with --fix-suggestions',
     flag: '--fix-suggestions',
     before: 'confusing-variable-and-node.xsl',
@@ -385,9 +379,8 @@ const APPLIED = [
     after: 'spaced-attribute.fixed.xsl',
   },
   {
-    name: 'should keep every entity a rewritten value carries with ' +
-      '--fix-suggestions',
-    flag: '--fix-suggestions',
+    name: 'should keep every entity a rewritten value carries with --fix',
+    flag: '--fix',
     before: 'entity-in-a-rewritten-value.xsl',
     after: 'entity-in-a-rewritten-value.fixed.xsl',
   },
@@ -597,8 +590,8 @@ const UNCHANGED = [
     sheet: 'incorrect-use-of-boolean-constants.xsl',
   },
   {
-    name: 'cannot anchor a leading // select with plain --fix',
-    flag: '--fix',
+    name: 'cannot anchor a leading // select under any flag',
+    flag: '--fix-suggestions',
     sheet: 'select-starts-with-double-slash.xsl',
   },
   {
@@ -753,13 +746,6 @@ const DROPPED = [
     flag: '--fix-suggestions',
     sheet: 'incorrect-use-of-boolean-constants.xsl',
     check: 'incorrect-use-of-boolean-constants',
-  },
-  {
-    name: 'should drop the fixed select-starts-with-double-slash defect with ' +
-      '--fix-suggestions',
-    flag: '--fix-suggestions',
-    sheet: 'select-starts-with-double-slash.xsl',
-    check: 'select-starts-with-double-slash',
   },
   {
     name: 'should drop the fixed confusing-variable-and-node defect with ' +

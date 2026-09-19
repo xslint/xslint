@@ -53,6 +53,16 @@
  * records the validator kept, which hold no such attribute, and the `//` it
  * reports is the first token of the parse rather than the first characters of
  * a value, so a comment or a gap standing in front of one no longer hides it.
+ *
+ * It offers no fix, and did from #457 until #949. `.//` names the same nodes
+ * only where the context is the root, and there it walks the same tree the
+ * `//` walked — so the rewrite changes what is selected wherever it would save
+ * a traversal, and saves none wherever it is sound. Under Saxon 9.1.0.8 a
+ * template matching `/object/metas` answers 2 nodes for `//o` and 0 for
+ * `.//o`, where one matching `/` answers 2 for both. eo's `add-probes.xsl` is
+ * the first shape, a named template gathering its candidates and called from
+ * that match, so the rewrite left a stylesheet that compiles, runs and finds
+ * nothing. The report stands, the path being the author's to name.
  */
 
 const {gathered, parseOf} = require('../syntax')
@@ -202,14 +212,12 @@ const separators = function(found) {
 }
 
 /**
- * The `//` opening the expression, where one does, paired with the fix that
- * anchors it. Opening it means standing in front of every solid token, so a
- * comment or a gap ahead of the slashes changes nothing. The fix writes the `.`
- * where the slashes stand, so it cannot overlap `redundant-whitespace`'s
- * (#571), and `.//` is one of several anchors the check would accept.
+ * The `//` opening the expression, where one does, and no fix behind it.
+ * Opening it means standing in front of every solid token, so a comment or a
+ * gap ahead of the slashes changes nothing.
  * @param {{node: Node, expression: string, pattern: boolean}} found - The
  *  expression, whole, as `expressionsOf` yields it
- * @return {Array.<{check: string, at: number, fix: object}>} - The scan found
+ * @return {Array.<{check: string, at: number}>} - The scan found
  */
 const scanning = function(found) {
   const first = parseOf(found).tokens.find(
@@ -217,11 +225,7 @@ const scanning = function(found) {
   )
   const results = []
   if (first.type === TOKENS.DOUBLE_SLASH) {
-    results.push({
-      check: SCANNING,
-      at: first.start,
-      fix: {value: first.value, replacement: `.${first.value}`},
-    })
+    results.push({check: SCANNING, at: first.start})
   }
   return results
 }
