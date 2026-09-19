@@ -1,0 +1,35 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: not-creating-attribute-correctly
+# Neither is reported. What a conditional holds is instantiated where the
+# conditional stands, so an instruction copying attributes in reaches the
+# element from inside an xsl:if or an xsl:choose exactly as it does standing
+# bare, and the order the advice would change is the same order (#950).
+found:
+  amount: 0
+  positions: [ ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="style1">
+    <xsl:output encoding="UTF-8" method="xml"/>
+    <xsl:template match="/objects/o">
+      <delta>
+        <xsl:if test="@hop">
+          <xsl:copy-of select="@*"/>
+        </xsl:if>
+        <xsl:attribute name="cite">here</xsl:attribute>
+      </delta>
+      <epsilon>
+        <xsl:choose>
+          <xsl:when test="@hop">
+            <xsl:copy-of select="@*"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:apply-templates select="@*"/>
+          </xsl:otherwise>
+        </xsl:choose>
+        <xsl:attribute name="dir">ltr</xsl:attribute>
+      </epsilon>
+    </xsl:template>
+  </xsl:stylesheet>

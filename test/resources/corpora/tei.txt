@@ -714,7 +714,6 @@ docx/from/marginals.xsl:2:1 missing-id-in-stylesheet
 docx/from/maths.xsl:2:1 missing-id-in-stylesheet
 docx/from/maths.xsl:176:13 setting-value-of-variable-incorrectly
 docx/from/maths.xsl:190:13 setting-value-of-variable-incorrectly
-docx/from/maths.xsl:194:13 not-creating-attribute-correctly
 docx/from/omml2mml.xsl:3:1 missing-id-in-stylesheet
 docx/from/omml2mml.xsl:3:1 too-many-templates
 docx/from/omml2mml.xsl:13:33 redundant-whitespace fix " "
@@ -2383,7 +2382,6 @@ fo/fo_textstructure.xsl:771:19 text-outside-xsl-text suggestion "<xsl:text>onesi
 fo/fo_textstructure.xsl:776:19 text-outside-xsl-text suggestion "<xsl:text>twoside1</xsl:text>"
 fo/fo_textstructure.xsl:777:19 text-outside-xsl-text suggestion "<xsl:text>oneside1</xsl:text>"
 fo/fo_textstructure.xsl:1264:13 use-choose-without-otherwise
-fo/fo_textstructure.xsl:1352:10 not-creating-attribute-correctly
 fo/fo_textstructure.xsl:1371:13 not-creating-attribute-correctly
 fo/fo_textstructure.xsl:1372:13 use-choose-without-otherwise
 fo/fo_textstructure.xsl:1405:7 unused-function-template-parameter
@@ -3187,9 +3185,6 @@ odds/guidelines.xsl:349:33 count-compared-to-zero fix "exists(key('EXAMPLES',con
 odds/guidelines.xsl:358:29 count-compared-to-zero fix "exists($items/html:li)"
 odds/guidelines.xsl:364:31 count-compared-to-zero fix "exists(key('EXAMPLES',concat(@xml:id,$me)))"
 odds/guidelines.xsl:372:69 redundant-whitespace fix " "
-odds/guidelines.xsl:426:7 not-creating-attribute-correctly
-odds/guidelines.xsl:430:7 not-creating-attribute-correctly
-odds/guidelines.xsl:434:7 not-creating-attribute-correctly
 odds/guidelines.xsl:459:52 unabbreviated-axis fix ""
 odds/guidelines.xsl:484:13 use-choose-without-otherwise
 odds/guidelines.xsl:571:5 unused-function-template-parameter
@@ -4026,7 +4021,6 @@ profiles/iso/docx/from.xsl:363:25 not-creating-attribute-correctly
 profiles/iso/docx/from.xsl:370:25 not-creating-attribute-correctly
 profiles/iso/docx/from.xsl:383:29 not-creating-attribute-correctly
 profiles/iso/docx/from.xsl:386:29 not-creating-attribute-correctly
-profiles/iso/docx/from.xsl:416:29 not-creating-attribute-correctly
 profiles/iso/docx/from.xsl:475:21 use-choose-without-otherwise
 profiles/iso/docx/from.xsl:476:25 text-outside-xsl-text suggestion "<xsl:text>scope</xsl:text>"
 profiles/iso/docx/from.xsl:477:25 text-outside-xsl-text suggestion "<xsl:text>normativeReferences</xsl:text>"
@@ -5414,17 +5408,6 @@ tools/tei-to-tree.xsl:2:1 missing-id-in-stylesheet
 tools/tei-to-tree.xsl:9:46 select-starts-with-double-slash suggestion ".//"
 tools/timing-profile.xsl:2:1 missing-id-in-stylesheet
 tools/timing-profile.xsl:12:33 select-starts-with-double-slash suggestion ".//"
-tools/timing-profile.xsl:19:13 not-creating-attribute-correctly
-tools/timing-profile.xsl:27:21 not-creating-attribute-correctly
-tools/timing-profile.xsl:28:21 not-creating-attribute-correctly
-tools/timing-profile.xsl:29:21 not-creating-attribute-correctly
-tools/timing-profile.xsl:46:13 not-creating-attribute-correctly
-tools/timing-profile.xsl:47:13 not-creating-attribute-correctly
-tools/timing-profile.xsl:48:13 not-creating-attribute-correctly
-tools/timing-profile.xsl:49:13 not-creating-attribute-correctly
-tools/timing-profile.xsl:50:13 not-creating-attribute-correctly
-tools/timing-profile.xsl:51:13 not-creating-attribute-correctly
-tools/timing-profile.xsl:52:13 not-creating-attribute-correctly
 txt/tei-to-text.xsl:2:1 missing-id-in-stylesheet
 txt/tei-to-text.xsl:2:1 too-many-templates
 txt/tei-to-text.xsl:131:4 short-names
