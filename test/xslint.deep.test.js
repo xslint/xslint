@@ -120,6 +120,46 @@ const COVERED = [
  */
 const CLEAN = 'test/resources/excluded/sheet.xsl'
 
+/**
+ * What an `exclude:` glob reached, and so which one a run has cause to name.
+ * Either door meets one — the walk, which leaves a directory unopened and so
+ * hands the filter nothing from it, or the filter, which drops a file — and
+ * only a pattern neither met, over a run that walked at all, has excluded
+ * nothing (#923, #951).
+ * @type {Array.<{name: string, pattern: string, subject: string,
+ *  buried: boolean, warned: boolean}>}
+ */
+const REACHING = [
+  {
+    name: 'should warn about an exclusion that reaches nothing',
+    pattern: 'nowhere/**',
+    subject: 'dir',
+    buried: false,
+    warned: true,
+  },
+  {
+    name: 'should stay quiet about an exclusion that drops a file',
+    pattern: '*.xsl',
+    subject: 'dir',
+    buried: false,
+    warned: false,
+  },
+  {
+    name: 'should stay quiet about an exclusion that shuts a directory',
+    pattern: 'shut/**',
+    subject: 'dir',
+    buried: true,
+    warned: false,
+  },
+  {
+    name: 'should stay quiet about an exclusion no walk was asked for',
+    pattern: 'nowhere/**',
+    subject: 'file',
+    buried: false,
+    warned: false,
+  },
+]
+
 describe('xslint', function() {
   it('should print its own version', function() {
     const stdout = runXslint(['--version'])
@@ -457,6 +497,33 @@ describe('xslint', function() {
         'covers, which is the whole of what an exclusion used to cost: this ' +
         'one cannot be read at all, so reaching it is the failure (#923)',
     )
+  })
+  REACHING.forEach(({name, pattern, subject, buried, warned}) => {
+    it(name, function() {
+      const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-'))
+      fs.copyFileSync(CLEAN, path.join(dir, 'kept.xsl'))
+      if (buried) {
+        fs.mkdirSync(path.join(dir, 'shut'))
+        fs.copyFileSync(CLEAN, path.join(dir, 'shut', 'buried.xsl'))
+      }
+      const cfg = path.join(dir, '.xslint.yml')
+      fs.writeFileSync(cfg, `exclude:\n  - "${pattern}"\n`)
+      let read = dir
+      if (subject === 'file') {
+        read = path.join(dir, 'kept.xsl')
+      }
+      const streams = xslintStreams([read, `--config=${cfg}`])
+      fs.rmSync(dir, {recursive: true, force: true})
+      assert.equal(
+        streams.stderr.includes(
+          `Exclusion '${pattern}' in configuration excluded nothing`,
+        ),
+        warned,
+        'an exclusion that met neither the walk nor the filter goes ' +
+          'unnamed, or one that met either is named anyway, so a glob ' +
+          'gone stale reads as a run honouring it (#951)',
+      )
+    })
   })
   it('should never open a directory the project ignores', function() {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-'))
