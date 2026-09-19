@@ -5,7 +5,7 @@
 -->
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
   <xsl:template match = "objects">
-    <xsl:value-of select  =  ".//title"/>
+    <xsl:value-of select  =  "//title"/>
     <xsl:if
       test = "true()">
       <p>yes</p>
