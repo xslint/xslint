@@ -112,31 +112,53 @@
 <body>
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
-    <span class="severity-warning">warning</span> <span class="fix-suggestion">suggested fix</span>
+    <span class="severity-warning">warning</span>
     <code class="xpath">checked over the tokens, not an XPath rule</code>
   </div>
-  <p class="fix-note"><code>--fix-suggestions</code> rewrites this one, and a plain
-  <code>--fix</code> leaves it alone: the correction changes what the
-  stylesheet does, or is one of several the check would accept.</p>
   <div class="check-content">
 <h1>Select starts with double slash</h1>
 <p>A <code>select</code> whose XPath begins with <code>//</code> is evaluated as
 <code>/descendant-or-self::node()/…</code>, so it walks the entire document from the root
 every time it runs — and inside a template applied per node, that is once per
-node. It is also often a latent bug: the author usually meant &quot;descendants of
-the current node&quot; (<code>.//x</code>) or a specific path, not &quot;every <code>x</code> in the whole
-document&quot;.</p>
-<p>Unlike a <code>match</code> pattern, where a leading <code>//</code> is merely redundant, in a
+node. Unlike a <code>match</code> pattern, where a leading <code>//</code> is merely redundant, in a
 <code>select</code> it is a real, repeated, whole-tree scan.</p>
+<p>Most of the time the author meant something narrower than the whole document,
+and naming it removes the traversal outright:</p>
 <p>Incorrect:</p>
-<pre><code class="language-xsl">&lt;xsl:for-each select=&quot;//item&quot;&gt;
-  &lt;xsl:value-of select=&quot;.&quot;/&gt;
-&lt;/xsl:for-each&gt;
+<pre><code class="language-xsl">&lt;xsl:template match=&quot;section&quot;&gt;
+  &lt;xsl:for-each select=&quot;//item&quot;&gt;
+    &lt;xsl:value-of select=&quot;.&quot;/&gt;
+  &lt;/xsl:for-each&gt;
+&lt;/xsl:template&gt;
 </code></pre>
 <p>Correct:</p>
-<pre><code class="language-xsl">&lt;xsl:for-each select=&quot;.//item&quot;&gt;
-  &lt;xsl:value-of select=&quot;.&quot;/&gt;
-&lt;/xsl:for-each&gt;
+<pre><code class="language-xsl">&lt;xsl:template match=&quot;section&quot;&gt;
+  &lt;xsl:for-each select=&quot;item&quot;&gt;
+    &lt;xsl:value-of select=&quot;.&quot;/&gt;
+  &lt;/xsl:for-each&gt;
+&lt;/xsl:template&gt;
+</code></pre>
+<p>This is a change of meaning and not a respelling of the same expression, which
+is why there is no mechanical rewrite of it. <code>//item</code> selects every <code>item</code> in
+the document; <code>item</code> selects the children of the node being matched, and
+<code>.//item</code> its descendants. Those agree only when the current node is the root,
+and where they agree <code>.//item</code> walks the same tree the <code>//</code> did, so it buys
+nothing. Read the template that holds the expression and write the path the
+author was reaching for.</p>
+<p>Where the whole document genuinely is the subject and the lookup is by value,
+an <code>xsl:key</code> replaces the repeated scan with an index the processor builds
+once:</p>
+<p>Incorrect:</p>
+<pre><code class="language-xsl">&lt;xsl:template match=&quot;ref&quot;&gt;
+  &lt;xsl:value-of select=&quot;//item[@id = current()/@target]/title&quot;/&gt;
+&lt;/xsl:template&gt;
+</code></pre>
+<p>Correct:</p>
+<pre><code class="language-xsl">&lt;xsl:key name=&quot;items&quot; match=&quot;item&quot; use=&quot;@id&quot;/&gt;
+
+&lt;xsl:template match=&quot;ref&quot;&gt;
+  &lt;xsl:value-of select=&quot;key(&#39;items&#39;, @target)/title&quot;/&gt;
+&lt;/xsl:template&gt;
 </code></pre>
 <p>An inner <code>//</code> (<code>items//item</code>), a <code>//</code> inside a string literal, or one reached
 through a variable (<code>$root//item</code>) is left alone. So is the <code>select</code> of a
