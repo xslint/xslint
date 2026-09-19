@@ -122,6 +122,19 @@
  * while there is one walk to keep it, so `test/walk.deep.test.js` refuses a
  * `readdir` anywhere else in `src/`.
  *
+ * Whether a pattern ever excluded anything is the run's to say since #951. A
+ * rule name matching no check is warned on before the walk starts, while a
+ * glob matching nothing at all was handed to the filter and counted by
+ * nobody — so a directory renamed out from under an `exclude:` read as a run
+ * still honouring it. `reaching` counts at both doors rather than at the
+ * filter alone, because a `dir/**` that prunes correctly matches zero
+ * *files*: the walk never enumerates them, so a file-only counter would name
+ * every working directory-covering pattern there is. What it will not say is
+ * anything about a run that walked no directory — `xslint one.xsl` excludes
+ * nothing by anything, and the pre-commit hook handing over the files it
+ * changed would otherwise carry a line per pattern, every run, about a
+ * configuration written for the whole tree.
+ *
  * The exit code it sets is `process.exitCode` and never `process.exit`, which
  * ends the process where it stands and abandons every write the kernel has not
  * taken: node's stdout is asynchronous to a pipe on POSIX — synchronous to a
@@ -491,22 +504,71 @@ const pruned = function(dir, patterns, base) {
 }
 
 /**
+ * What the configuration's own exclusions reached, asked as the two questions
+ * a run puts to them and remembered as it answers: whether to leave a
+ * directory unopened, and whether to drop a file the walk handed back. A
+ * pattern met at either door has excluded something; one met at neither has
+ * excluded nothing, which is what `unreached` names (#951).
+ * @param {Array.<string>} patterns - Exclusion globs from the configuration
+ * @param {string} base - Directory the globs resolve against
+ * @return {object} - `walking()`, `directory(dir)`, `file(file)` and
+ *  `unreached()`
+ */
+const reaching = function(patterns, base) {
+  const met = new Set()
+  let walked = false
+  /**
+   * Whether a door excludes this path, remembering every pattern that did.
+   * @param {string} pth - Absolute path of a directory or of a stylesheet
+   * @param {function(string, Array.<string>, string): boolean} judge - The
+   *  door asked, `pruned` or `excluded`
+   * @return {boolean} - True where a pattern of the list excludes it
+   */
+  const noting = function(pth, judge) {
+    const hit = patterns.filter((pattern) => judge(pth, [pattern], base))
+    hit.forEach((pattern) => met.add(pattern))
+    return hit.length > 0
+  }
+  /**
+   * The patterns neither door ever met, which is none where no directory was
+   * walked: a run handed the one file it is to read excludes nothing by
+   * anything, and that says about the run rather than about the glob.
+   * @return {Array.<string>} - The exclusions that excluded nothing
+   */
+  const unreached = function() {
+    let left = []
+    if (walked) {
+      left = patterns.filter((pattern) => !met.has(pattern))
+    }
+    return left
+  }
+  return {
+    walking: () => {
+      walked = true
+    },
+    directory: (dir) => noting(dir, pruned),
+    file: (file) => noting(file, excluded),
+    unreached: unreached,
+  }
+}
+
+/**
  * The stylesheets a path holds: the file itself, or every one a directory has
  * under it, keeping only what a stylesheet is named. A directory an exclusion
  * covers whole is never opened (#923), nor is one the project's own
  * `.gitignore` files name (#929); a path named outright is read whatever
  * either says.
  * @param {string} pth - Path to a stylesheet or a directory holding some
- * @param {Array.<string>} patterns - Exclusion globs from the configuration
- * @param {string} base - Directory the globs resolve against
+ * @param {object} reach - What the exclusions have reached, from `reaching`
  * @return {Array.<string>} - Paths of the stylesheets found
  */
-const sheets = function(pth, patterns, base) {
+const sheets = function(pth, reach) {
   let files = [pth].filter((file) => suffixed(file))
   if (fs.statSync(pth).isDirectory()) {
+    reach.walking()
     const ignored = ignoring(pth)
     files = allFilesFrom(
-      pth, (dir) => pruned(dir, patterns, base) || ignored.directory(dir),
+      pth, (dir) => reach.directory(dir) || ignored.directory(dir),
     ).filter((file) => suffixed(file) && !ignored.file(file))
   }
   return files
@@ -670,6 +732,7 @@ const xslint = function(pths, options) {
   const maxWarnings = options.maxWarnings ?? config.maxWarnings ?? -1
   logger.info(`Directories and files to process: ${pths.join(', ')}`)
   pths = pths.map((pth) => path.resolve(process.cwd(), pth))
+  const reach = reaching(config.exclude, config.base)
   let stylesheets = []
   for (const pth of pths) {
     if (!fs.existsSync(pth)) {
@@ -680,14 +743,13 @@ const xslint = function(pths, options) {
           `a stylesheet being named ${SUFFIXES.join(' or ')}`,
       )
     } else {
-      stylesheets = [
-        ...stylesheets, ...sheets(pth, config.exclude, config.base),
-      ]
+      stylesheets = [...stylesheets, ...sheets(pth, reach)]
     }
   }
-  stylesheets = stylesheets.filter(
-    (file) => !excluded(file, config.exclude, config.base),
-  )
+  stylesheets = stylesheets.filter((file) => !reach.file(file))
+  for (const pattern of reach.unreached()) {
+    logger.warn(`Exclusion '${pattern}' in configuration excluded nothing`)
+  }
   logger.debug(`Found ${stylesheets.length} stylesheets to process`)
   const sources = stylesheets.map((stylesheet) => ({
     file: stylesheet,
