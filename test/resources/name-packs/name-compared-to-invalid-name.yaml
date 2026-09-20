@@ -1,15 +1,20 @@
 # SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
 # SPDX-License-Identifier: MIT
 ---
+# A string XML cannot spell a name with has no node test either, so the
+# comparison is left alone rather than reported with advice nothing can
+# follow. The sound one beside it still reports, which is what tells this
+# apart from a check gone quiet (#962).
 pack: name-compared-to-string
 found:
   amount: 1
-  positions: [ [ 4, 27 ] ]
-  fixes: [ null ]
+  positions: [ [ 5, 27 ] ]
+  fixes: [ "self::ay" ]
 input: |-
   <?xml version="1.0"?>
   <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="s">
     <xsl:template match="/">
       <xsl:value-of select="name() = 'a b'"/>
+      <xsl:value-of select="name() = 'ay'"/>
     </xsl:template>
   </xsl:stylesheet>
