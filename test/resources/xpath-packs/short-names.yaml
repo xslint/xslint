@@ -3,25 +3,37 @@
 ---
 pack: short-names
 found:
-  amount: 3
-  positions: [ [ 4, 3 ], [ 9, 3 ], [ 10, 5 ] ]
+  amount: 6
+  positions: [ [ 4, 3 ], [ 6, 3 ], [ 12, 5 ], [ 15, 3 ], [ 16, 5 ], [ 17, 5 ] ]
 input: |-
   <?xml version="1.0"?>
   <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="2.0" id="style1">
     <xsl:output encoding="UTF-8" method="xml"/>
+    <xsl:param name="e" as="xs:integer" select="1"/>
+    <xsl:param name="edition" as="xs:integer" select="2"/>
     <xsl:function name="my:v" as="xs:integer">
       <xsl:param name="number" as="xs:integer"/>
       <xsl:sequence
         select="if ($number=0) then 1 else $number * my:factorial($number-1)"/>
     </xsl:function>
+    <xsl:function name="my:volume" as="xs:integer">
+      <xsl:param name="f" as="xs:integer"/>
+      <xsl:sequence select="$f + $e + $edition"/>
+    </xsl:function>
     <xsl:template name="a">
-      <xsl:variable name="a" as="xs:string" select="ooo" />
+      <xsl:variable name="a" as="xs:string" select="ooo"/>
+      <xsl:variable name="my:k" as="xs:string" select="ooo"/>
+      <xsl:variable name="my:keeper" as="xs:string" select="ooo"/>
       <xsl:copy-of select="$a"/>
       <xsl:value-of select="my:v(3)"/>
+      <xsl:value-of select="my:volume(4)"/>
+      <xsl:value-of select="$my:k"/>
+      <xsl:value-of select="$my:keeper"/>
     </xsl:template>
     <xsl:template match='ooo'>
       <xsl:call-template name='a'>
         <xsl:with-param name='oooo'>bold</xsl:with-param>
+        <xsl:with-param name='q'>thin</xsl:with-param>
       </xsl:call-template>
     </xsl:template>
   </xsl:stylesheet>

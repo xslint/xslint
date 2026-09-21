@@ -10,9 +10,9 @@ input: |-
   <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="2.0" id="style1">
     <xsl:output encoding="UTF-8" method="xml"/>
     <xsl:template name="render">
-      <xsl:param name="p" as="xs:string" select="'a'"/>
-      <xsl:param name="p" as="xs:string" select="'b'"/>
-      <xsl:value-of select="$p"/>
+      <xsl:param name="prefix" as="xs:string" select="'a'"/>
+      <xsl:param name="prefix" as="xs:string" select="'b'"/>
+      <xsl:value-of select="$prefix"/>
     </xsl:template>
     <xsl:template match="/objects/o">
       <xsl:copy-of select="."/>

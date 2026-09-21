@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
 # SPDX-License-Identifier: MIT
 ---
-xpath: //(xsl:variable | xsl:template)[string-length(@name) = 1] | //xsl:function[string-length(substring-after(@name, ":")) = 1]
+xpath: //(xsl:variable | xsl:param | xsl:template | xsl:function)[string-length(substring-after(@name, ":")) = 1 or (string-length(@name) = 1 and not(contains(@name, ":")))]
 severity: warning
-message: A variable, function, or template has a single-character name. Use a descriptive name that reveals intent.
+message: A variable, parameter, function, or template has a single-character name. Use a descriptive name that reveals intent.

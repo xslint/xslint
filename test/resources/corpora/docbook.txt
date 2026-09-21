@@ -64,6 +64,7 @@ anttools/xspec/generate-common-tests.xsl:393:36 redundant-whitespace fix ""
 anttools/xspec/generate-common-tests.xsl:421:25 redundant-whitespace fix ""
 anttools/xspec/generate-common-tests.xsl:421:31 redundant-whitespace fix ""
 anttools/xspec/generate-common-tests.xsl:498:4 unused-function
+anttools/xspec/generate-common-tests.xsl:499:7 short-names
 anttools/xspec/generate-common-tests.xsl:513:13 text-outside-xsl-text suggestion "<xsl:text>/@</xsl:text>"
 anttools/xspec/generate-query-helper.xsl:11:1 missing-id-in-stylesheet
 anttools/xspec/generate-query-helper.xsl:56:13 text-outside-xsl-text
@@ -84,7 +85,9 @@ anttools/xspec/generate-tests-helper.xsl:123:1 unused-function
 anttools/xspec/generate-tests-utils.xsl:11:1 missing-id-in-stylesheet
 anttools/xspec/generate-tests-utils.xsl:17:17 leaking-result-namespace suggestion "xs t msxsl x"
 anttools/xspec/generate-tests-utils.xsl:27:1 unused-function
+anttools/xspec/generate-tests-utils.xsl:28:4 short-names
 anttools/xspec/generate-tests-utils.xsl:33:1 unreachable-function
+anttools/xspec/generate-tests-utils.xsl:34:4 short-names
 anttools/xspec/generate-tests-utils.xsl:69:1 unreachable-function
 anttools/xspec/generate-tests-utils.xsl:169:12 setting-value-of-variable-incorrectly
 anttools/xspec/generate-tests-utils.xsl:477:19 unabbreviated-axis fix ""
@@ -276,6 +279,7 @@ contrib/xsl/applethelp/htmlhelp-common.xsl:1030:9 using-disable-output-escaping 
 contrib/xsl/applethelp/htmlhelp-common.xsl:1033:9 using-disable-output-escaping suggestion ""
 contrib/xsl/applethelp/htmlhelp-common.xsl:1035:9 using-disable-output-escaping suggestion ""
 contrib/xsl/applethelp/htmlhelp-common.xsl:1037:7 using-disable-output-escaping suggestion ""
+contrib/xsl/applethelp/htmlhelp-common.xsl:1167:5 short-names
 contrib/xsl/cldr2dbk/cldr2dbk.xsl:2:1 missing-id-in-stylesheet
 contrib/xsl/cldr2dbk/cldr2dbk.xsl:95:27 select-starts-with-double-slash
 contrib/xsl/cldr2dbk/cldr2dbk.xsl:112:27 select-starts-with-double-slash
@@ -2423,6 +2427,7 @@ xsl/html/html-rtf.xsl:2:1 missing-id-in-stylesheet
 xsl/html/html-rtf.xsl:2:1 too-many-templates
 xsl/html/html-rtf.xsl:60:3 unused-function-template-parameter
 xsl/html/html-rtf.xsl:97:3 unused-function-template-parameter
+xsl/html/html-rtf.xsl:107:3 short-names
 xsl/html/html-rtf.xsl:299:1 unused-named-template
 xsl/html/html.xsl:2:1 missing-id-in-stylesheet
 xsl/html/html.xsl:2:1 too-many-templates
@@ -2740,6 +2745,7 @@ xsl/htmlhelp/htmlhelp-common.xsl:956:11 not-creating-attribute-correctly
 xsl/htmlhelp/htmlhelp-common.xsl:961:11 not-creating-attribute-correctly
 xsl/htmlhelp/htmlhelp-common.xsl:967:7 text-outside-xsl-text suggestion "<xsl:text><xsl:text xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">&#xA;</xsl:text>\n      </xsl:text>"
 xsl/htmlhelp/htmlhelp-common.xsl:969:11 not-creating-attribute-correctly
+xsl/htmlhelp/htmlhelp-common.xsl:1106:5 short-names
 xsl/htmlhelp/htmlhelp.xsl:2:1 missing-id-in-stylesheet
 xsl/htmlhelp/profile-htmlhelp.xsl:2:1 missing-id-in-stylesheet
 xsl/javahelp/javahelp.xsl:2:1 missing-id-in-stylesheet
@@ -2856,6 +2862,8 @@ xsl/manpages/utility.xsl:348:5 use-single-option-for-choose
 xsl/manpages/utility.xsl:388:5 blank-nested-if
 xsl/profiling/profile-mode.xsl:1:1 missing-id-in-stylesheet
 xsl/profiling/profile-mode.xsl:16:1 oversized-template
+xsl/profiling/profile-mode.xsl:237:3 short-names
+xsl/profiling/profile-mode.xsl:238:3 short-names
 xsl/profiling/profile-mode.xsl:248:3 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 xsl/profiling/profile-mode.xsl:248:104 redundant-whitespace fix ""
 xsl/profiling/profile.xsl:1:1 missing-id-in-stylesheet

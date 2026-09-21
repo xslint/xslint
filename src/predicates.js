@@ -18,7 +18,7 @@
  * whole of it answered here since #881 (below).
  *
  * The compile is off the parse and never the text, kept against the text, so
- * each of the 55 distinct predicates in the tree is compiled once a run; 45
+ * each of the 54 distinct predicates in the tree is compiled once a run; 44
  * of them are. What refuses is as deliberate as what serves — a regex, whose
  * XPath flavour is not JavaScript's; a bare `normalize-space`, which is the
  * engine's own and reads a wider gap than XPath defines, where every
@@ -46,7 +46,7 @@
  * of its whole subtree, so a comparison reading one off a step answered
  * `undefined` against every element there is; `carrying` refuses a step in
  * a value position unless it names the attribute axis, which costs nothing
- * the tree spells — 45 of the 55 compile either way.
+ * the tree spells — 44 of the 54 compile either way.
  *
  * None of the three was the oracle's fault and all three were its blind
  * spot: `CANDIDATES` asks the engine what a spelling selects, so what it

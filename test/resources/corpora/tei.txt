@@ -494,6 +494,7 @@ common/functions.xsl:1262:29 redundant-whitespace fix " "
 common/functions.xsl:1279:25 string-length-compared-to-zero suggestion "$doclang != ''"
 common/functions.xsl:1303:25 string-length-compared-to-zero suggestion "tei:gloss[1] = ''"
 common/functions.xsl:1317:11 short-names
+common/functions.xsl:1348:5 short-names
 common/functions.xsl:1358:35 redundant-whitespace fix " "
 common/functions.xsl:1358:39 redundant-whitespace fix " "
 common/functions.xsl:1364:11 short-names
@@ -633,36 +634,45 @@ docx/from/fields.xsl:109:4 setting-value-of-variable-incorrectly
 docx/from/fields.xsl:113:6 not-creating-attribute-correctly
 docx/from/fields.xsl:116:6 not-creating-attribute-correctly
 docx/from/functions.xsl:2:1 missing-id-in-stylesheet
+docx/from/functions.xsl:69:5 short-names
 docx/from/functions.xsl:71:7 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 docx/from/functions.xsl:72:7 text-outside-xsl-text suggestion "<xsl:text>false</xsl:text>"
+docx/from/functions.xsl:80:5 short-names
 docx/from/functions.xsl:81:5 short-names
 docx/from/functions.xsl:83:7 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 docx/from/functions.xsl:84:7 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 docx/from/functions.xsl:85:7 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 docx/from/functions.xsl:86:7 text-outside-xsl-text suggestion "<xsl:text>false</xsl:text>"
+docx/from/functions.xsl:94:5 short-names
 docx/from/functions.xsl:95:5 short-names
 docx/from/functions.xsl:97:7 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 docx/from/functions.xsl:98:7 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 docx/from/functions.xsl:99:7 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 docx/from/functions.xsl:100:7 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 docx/from/functions.xsl:101:7 text-outside-xsl-text suggestion "<xsl:text>false</xsl:text>"
+docx/from/functions.xsl:109:5 short-names
 docx/from/functions.xsl:113:7 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 docx/from/functions.xsl:114:7 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 docx/from/functions.xsl:115:7 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 docx/from/functions.xsl:116:7 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 docx/from/functions.xsl:117:7 text-outside-xsl-text suggestion "<xsl:text>false</xsl:text>"
+docx/from/functions.xsl:125:5 short-names
 docx/from/functions.xsl:127:7 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 docx/from/functions.xsl:128:7 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 docx/from/functions.xsl:129:7 text-outside-xsl-text suggestion "<xsl:text>false</xsl:text>"
+docx/from/functions.xsl:137:5 short-names
 docx/from/functions.xsl:139:7 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 docx/from/functions.xsl:140:7 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 docx/from/functions.xsl:141:7 text-outside-xsl-text suggestion "<xsl:text>false</xsl:text>"
+docx/from/functions.xsl:149:5 short-names
 docx/from/functions.xsl:151:7 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 docx/from/functions.xsl:152:7 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 docx/from/functions.xsl:153:7 text-outside-xsl-text suggestion "<xsl:text>false</xsl:text>"
+docx/from/functions.xsl:161:5 short-names
 docx/from/functions.xsl:163:7 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 docx/from/functions.xsl:164:7 text-outside-xsl-text suggestion "<xsl:text>false</xsl:text>"
 docx/from/functions.xsl:171:3 unused-function
+docx/from/functions.xsl:172:5 short-names
 docx/from/functions.xsl:174:7 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 docx/from/functions.xsl:175:7 text-outside-xsl-text suggestion "<xsl:text>false</xsl:text>"
 docx/from/functions.xsl:231:5 setting-value-of-variable-incorrectly
@@ -678,6 +688,7 @@ docx/from/functions.xsl:290:7 text-outside-xsl-text suggestion "<xsl:text>true</
 docx/from/functions.xsl:291:7 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 docx/from/functions.xsl:292:7 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 docx/from/functions.xsl:293:7 text-outside-xsl-text suggestion "<xsl:text>false</xsl:text>"
+docx/from/functions.xsl:303:5 short-names
 docx/from/functions.xsl:329:7 text-outside-xsl-text suggestion "<xsl:text>left</xsl:text>"
 docx/from/functions.xsl:330:7 text-outside-xsl-text suggestion "<xsl:text>right</xsl:text>"
 docx/from/functions.xsl:331:7 text-outside-xsl-text suggestion "<xsl:text>left</xsl:text>"
@@ -686,6 +697,7 @@ docx/from/functions.xsl:333:7 text-outside-xsl-text suggestion "<xsl:text>center
 docx/from/functions.xsl:334:7 text-outside-xsl-text suggestion "<xsl:text>justify</xsl:text>"
 docx/from/functions.xsl:335:7 text-outside-xsl-text suggestion "<xsl:text>left</xsl:text>"
 docx/from/graphics.xsl:2:1 missing-id-in-stylesheet
+docx/from/graphics.xsl:47:5 short-names
 docx/from/graphics.xsl:54:48 redundant-whitespace fix " "
 docx/from/graphics.xsl:59:15 short-names
 docx/from/graphics.xsl:80:15 not-creating-attribute-correctly
@@ -1013,6 +1025,7 @@ docx/from/pass2.xsl:341:61 redundant-whitespace fix " "
 docx/from/pass2.xsl:345:71 redundant-whitespace fix " "
 docx/from/pass2.xsl:355:76 redundant-whitespace fix " "
 docx/from/pass2.xsl:355:82 redundant-whitespace fix " "
+docx/from/pass2.xsl:395:5 short-names
 docx/from/pass2.xsl:397:7 use-choose-without-otherwise
 docx/from/pass2.xsl:404:52 redundant-whitespace fix " "
 docx/from/pass2.xsl:430:7 not-creating-attribute-correctly
@@ -1976,10 +1989,13 @@ docx/to/mml2omml.xsl:3308:19 text-outside-xsl-text suggestion "<xsl:text>D</xsl:
 docx/to/mml2omml.xsl:3309:19 text-outside-xsl-text suggestion "<xsl:text>E</xsl:text>"
 docx/to/mml2omml.xsl:3310:19 text-outside-xsl-text suggestion "<xsl:text>F</xsl:text>"
 docx/to/mml2omml.xsl:3311:19 text-outside-xsl-text suggestion "<xsl:text>A</xsl:text>"
+docx/to/mml2omml.xsl:3319:7 short-names
 docx/to/mml2omml.xsl:3325:7 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 docx/to/mml2omml.xsl:3326:10 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
+docx/to/mml2omml.xsl:3331:7 short-names
 docx/to/mml2omml.xsl:3337:7 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 docx/to/mml2omml.xsl:3338:10 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
+docx/to/mml2omml.xsl:3358:7 short-names
 docx/to/mml2omml.xsl:3374:7 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 docx/to/mml2omml.xsl:3377:7 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
 docx/to/mml2omml.xsl:3381:7 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
@@ -2335,6 +2351,7 @@ fo/fo_figures.xsl:355:13 setting-value-of-variable-incorrectly
 fo/fo_figures.xsl:358:13 setting-value-of-variable-incorrectly
 fo/fo_figures.xsl:442:8 not-creating-attribute-correctly
 fo/fo_header.xsl:2:1 missing-id-in-stylesheet
+fo/fo_header.xsl:71:7 short-names
 fo/fo_header.xsl:71:7 unused-function-template-parameter
 fo/fo_linking.xsl:2:1 missing-id-in-stylesheet
 fo/fo_linking.xsl:73:7 unused-function-template-parameter
@@ -2891,6 +2908,7 @@ latex/latex_figures.xsl:320:7 text-outside-xsl-text suggestion "<xsl:text>|</xsl
 latex/latex_figures.xsl:351:7 text-outside-xsl-text suggestion "<xsl:text>\\hline </xsl:text>"
 latex/latex_figures.xsl:360:10 text-outside-xsl-text suggestion "<xsl:text> \\hline </xsl:text>"
 latex/latex_figures.xsl:361:10 text-outside-xsl-text suggestion "<xsl:text> \\hline\\endfoot\\hline\\endlastfoot </xsl:text>"
+latex/latex_figures.xsl:369:7 short-names
 latex/latex_figures.xsl:372:5 text-outside-xsl-text suggestion "<xsl:text>B</xsl:text>"
 latex/latex_figures.xsl:373:5 text-outside-xsl-text suggestion "<xsl:text>M</xsl:text>"
 latex/latex_figures.xsl:374:5 text-outside-xsl-text suggestion "<xsl:text>P</xsl:text>"
@@ -2901,6 +2919,7 @@ latex/latex_figures.xsl:406:2 short-names
 latex/latex_figures.xsl:408:4 setting-value-of-variable-incorrectly
 latex/latex_figures.xsl:415:4 text-outside-xsl-text suggestion "<xsl:text>|</xsl:text>"
 latex/latex_figures.xsl:422:3 unused-named-template
+latex/latex_figures.xsl:423:7 short-names
 latex/latex_figures.xsl:426:10 text-outside-xsl-text suggestion "<xsl:text>|</xsl:text>"
 latex/latex_header.xsl:2:1 missing-id-in-stylesheet
 latex/latex_header.xsl:2:1 stylesheet-has-no-templates
@@ -3135,6 +3154,7 @@ odds/RngToRnc.xsl:1480:5 short-names
 odds/classatts.xsl:2:1 missing-id-in-stylesheet
 odds/classatts.xsl:46:5 short-names
 odds/classatts.xsl:118:5 short-names
+odds/classatts.xsl:171:5 short-names
 odds/classatts.xsl:174:5 short-names
 odds/classatts.xsl:178:9 short-names
 odds/classatts.xsl:219:7 not-creating-attribute-correctly
@@ -3176,6 +3196,7 @@ odds/extract-isosch.xsl:604:5 setting-value-of-variable-incorrectly
 odds/extract-isosch.xsl:604:5 short-names
 odds/extract-sch.xsl:2:1 missing-id-in-stylesheet
 odds/extract-sch.xsl:117:7 text-outside-xsl-text suggestion "<xsl:text>*</xsl:text>"
+odds/extract-sch.xsl:153:5 short-names
 odds/extract-schemaSpec-ident.xsl:18:1 missing-id-in-stylesheet
 odds/guidelines.xsl:2:1 missing-id-in-stylesheet
 odds/guidelines.xsl:2:1 too-many-templates
@@ -3286,6 +3307,7 @@ odds/odd2html.xsl:117:3 unused-named-template
 odds/odd2html.xsl:142:3 unused-named-template
 odds/odd2html.xsl:163:11 not-creating-element-correctly
 odds/odd2json.xsl:2:1 missing-id-in-stylesheet
+odds/odd2json.xsl:91:9 short-names
 odds/odd2json.xsl:175:43 select-starts-with-double-slash
 odds/odd2json.xsl:200:43 select-starts-with-double-slash
 odds/odd2json.xsl:210:43 select-starts-with-double-slash
@@ -3343,6 +3365,7 @@ odds/odd2odd.xsl:201:9 text-outside-xsl-text suggestion "<xsl:text>true</xsl:tex
 odds/odd2odd.xsl:202:9 text-outside-xsl-text suggestion "<xsl:text>false</xsl:text>"
 odds/odd2odd.xsl:202:58 redundant-whitespace fix " "
 odds/odd2odd.xsl:203:9 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
+odds/odd2odd.xsl:208:5 short-names
 odds/odd2odd.xsl:388:11 use-choose-without-otherwise
 odds/odd2odd.xsl:557:19 unabbreviated-axis fix ""
 odds/odd2odd.xsl:557:42 redundant-whitespace fix " "
@@ -3397,6 +3420,7 @@ odds/odd2odd.xsl:1500:71 redundant-whitespace fix ""
 odds/odd2odd.xsl:1516:15 short-names
 odds/odd2odd.xsl:1539:7 use-choose-without-otherwise
 odds/odd2odd.xsl:1610:5 short-names
+odds/odd2odd.xsl:1654:5 short-names
 odds/odd2odd.xsl:1654:5 unused-function-template-parameter
 odds/odd2odd.xsl:1655:5 unused-variable
 odds/odd2odd.xsl:1695:3 unused-named-template
@@ -3614,6 +3638,7 @@ odds/teiodds.xsl:2358:39 redundant-whitespace fix " "
 odds/teiodds.xsl:2359:9 text-outside-xsl-text suggestion "<xsl:text>+</xsl:text>"
 odds/teiodds.xsl:2359:34 redundant-whitespace fix " "
 odds/teiodds.xsl:2359:39 redundant-whitespace fix " "
+odds/teiodds.xsl:2396:5 short-names
 odds/teiodds.xsl:2423:7 unused-variable
 odds/teiodds.xsl:2457:9 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 odds/teiodds.xsl:2458:9 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
@@ -3631,6 +3656,7 @@ odt/fixgraphics.xsl:2:57 redundant-namespace-declarations fix ""
 odt/fixgraphics.xsl:3:17 leaking-result-namespace suggestion " exclude-result-prefixes=\"tiff\""
 odt/fixgraphics.xsl:4:17 redundant-namespace-declarations fix ""
 odt/grouping.xsl:1:1 missing-id-in-stylesheet
+odt/grouping.xsl:90:4 short-names
 odt/listgraphics.xsl:2:1 missing-id-in-stylesheet
 odt/listgraphics.xsl:54:10 setting-value-of-variable-incorrectly
 odt/listgraphics.xsl:54:10 short-names
@@ -3671,6 +3697,7 @@ odt/odttotei.xsl:905:31 unabbreviated-axis fix ""
 odt/odttotei.xsl:912:19 unabbreviated-axis fix ""
 odt/odttotei.xsl:915:31 unabbreviated-axis fix ""
 odt/odttotei.xsl:1043:3 text-outside-xsl-text
+odt/odttotei.xsl:1109:4 short-names
 odt/odttotei.xsl:1165:5 unused-variable
 odt/odttotei.xsl:1190:4 use-choose-without-otherwise
 odt/odttotei.xsl:1255:40 redundant-whitespace fix ""
@@ -3739,6 +3766,7 @@ odt/teitoodt.xsl:991:171 redundant-whitespace fix " "
 odt/teitoodt.xsl:991:185 redundant-whitespace fix " "
 odt/teitoodt.xsl:1015:3 unused-named-template
 odt/teitoodt.xsl:1017:3 unused-named-template
+odt/teitoodt.xsl:1026:5 short-names
 odt/teitoodt.xsl:1040:29 using-namespace-axis
 odt/teitoodt.xsl:1096:7 text-outside-xsl-text suggestion "<xsl:text>\n\t-1\n      </xsl:text>"
 odt/teitoodt.xsl:1104:5 unused-function-template-parameter
@@ -3772,6 +3800,7 @@ profiles/acm/latex/to.xsl:249:7 text-outside-xsl-text suggestion "<xsl:text>\\no
 profiles/acm/pdf/to.xsl:2:1 missing-id-in-stylesheet
 profiles/adams/docx/from.xsl:2:1 missing-id-in-stylesheet
 profiles/adams/docx/from.xsl:2:1 too-many-templates
+profiles/adams/docx/from.xsl:115:7 short-names
 profiles/adams/docx/from.xsl:116:7 short-names
 profiles/adams/docx/from.xsl:118:2 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 profiles/adams/docx/from.xsl:119:2 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
@@ -3779,6 +3808,7 @@ profiles/adams/docx/from.xsl:120:2 text-outside-xsl-text suggestion "<xsl:text>t
 profiles/adams/docx/from.xsl:121:2 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 profiles/adams/docx/from.xsl:122:2 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 profiles/adams/docx/from.xsl:123:2 text-outside-xsl-text suggestion "<xsl:text>false</xsl:text>"
+profiles/adams/docx/from.xsl:133:7 short-names
 profiles/adams/docx/from.xsl:134:7 short-names
 profiles/adams/docx/from.xsl:136:2 text-outside-xsl-text suggestion "<xsl:text>false</xsl:text>"
 profiles/adams/docx/from.xsl:137:2 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
@@ -3807,6 +3837,8 @@ profiles/adams/docx/from.xsl:159:2 text-outside-xsl-text suggestion "<xsl:text>t
 profiles/adams/docx/from.xsl:160:2 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 profiles/adams/docx/from.xsl:161:2 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 profiles/adams/docx/from.xsl:162:2 text-outside-xsl-text suggestion "<xsl:text>false</xsl:text>"
+profiles/adams/docx/from.xsl:167:7 short-names
+profiles/adams/docx/from.xsl:194:9 short-names
 profiles/adams/docx/from.xsl:196:13 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 profiles/adams/docx/from.xsl:197:13 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 profiles/adams/docx/from.xsl:198:13 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
@@ -4043,6 +4075,7 @@ profiles/iso/docx/from.xsl:794:8 setting-value-of-variable-incorrectly
 profiles/iso/docx/from.xsl:800:3 use-choose-without-otherwise
 profiles/iso/docx/from.xsl:815:7 not-creating-attribute-correctly
 profiles/iso/docx/from.xsl:818:7 not-creating-attribute-correctly
+profiles/iso/docx/from.xsl:942:6 short-names
 profiles/iso/docx/from.xsl:1017:17 redundant-whitespace fix ""
 profiles/iso/docx/from.xsl:1134:5 oversized-template
 profiles/iso/docx/from.xsl:1143:8 setting-value-of-variable-incorrectly
@@ -4083,6 +4116,7 @@ profiles/iso/docx/from.xsl:2090:6 unused-function-template-parameter
 profiles/iso/docx/from.xsl:2091:6 unused-function-template-parameter
 profiles/iso/docx/iso-functions.xsl:2:1 missing-id-in-stylesheet
 profiles/iso/docx/iso-functions.xsl:21:17 redundant-namespace-declarations fix ""
+profiles/iso/docx/iso-functions.xsl:117:7 short-names
 profiles/iso/docx/iso-functions.xsl:118:11 unused-variable
 profiles/iso/docx/iso-functions.xsl:121:2 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 profiles/iso/docx/iso-functions.xsl:122:2 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
@@ -4091,6 +4125,7 @@ profiles/iso/docx/iso-functions.xsl:124:2 text-outside-xsl-text suggestion "<xsl
 profiles/iso/docx/iso-functions.xsl:125:2 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 profiles/iso/docx/iso-functions.xsl:126:2 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 profiles/iso/docx/iso-functions.xsl:127:2 text-outside-xsl-text suggestion "<xsl:text>false</xsl:text>"
+profiles/iso/docx/iso-functions.xsl:137:7 short-names
 profiles/iso/docx/iso-functions.xsl:138:7 short-names
 profiles/iso/docx/iso-functions.xsl:140:2 text-outside-xsl-text suggestion "<xsl:text>false</xsl:text>"
 profiles/iso/docx/iso-functions.xsl:141:2 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
@@ -4137,6 +4172,7 @@ profiles/iso/docx/iso-functions.xsl:181:2 text-outside-xsl-text suggestion "<xsl
 profiles/iso/docx/iso-functions.xsl:182:2 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 profiles/iso/docx/iso-functions.xsl:183:2 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 profiles/iso/docx/iso-functions.xsl:184:2 text-outside-xsl-text suggestion "<xsl:text>false</xsl:text>"
+profiles/iso/docx/iso-functions.xsl:189:7 short-names
 profiles/iso/docx/iso-functions.xsl:227:4 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 profiles/iso/docx/iso-functions.xsl:228:4 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 profiles/iso/docx/iso-functions.xsl:229:4 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
@@ -4501,6 +4537,7 @@ profiles/iso/isoutils.xsl:176:4 text-outside-xsl-text suggestion "<xsl:text>(E)<
 profiles/iso/isoutils.xsl:177:4 text-outside-xsl-text suggestion "<xsl:text>(F)</xsl:text>"
 profiles/iso/isoutils.xsl:216:4 text-outside-xsl-text suggestion "<xsl:text>Clause title</xsl:text>"
 profiles/iso/isoutils.xsl:218:4 text-outside-xsl-text suggestion "<xsl:text>Clause subtitle</xsl:text>"
+profiles/iso/isoutils.xsl:279:5 short-names
 profiles/iso/isoutils.xsl:309:5 unused-function-template-parameter
 profiles/iso/isoutils.xsl:447:2 setting-value-of-variable-incorrectly
 profiles/iso/isoutils.xsl:452:6 text-outside-xsl-text suggestion "<xsl:text>termPreferred</xsl:text>"
@@ -4954,9 +4991,12 @@ profiles/oulipo/from_common.xsl:244:34 redundant-whitespace fix " "
 profiles/oulipo/from_common.xsl:245:13 redundant-whitespace fix " "
 profiles/oulipo/from_common.xsl:245:34 redundant-whitespace fix " "
 profiles/oulipo/from_common.xsl:247:7 use-choose-without-otherwise
+profiles/oulipo/from_common.xsl:300:5 short-names
+profiles/oulipo/from_common.xsl:307:5 short-names
 profiles/oulipo/from_common.xsl:309:7 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 profiles/oulipo/from_common.xsl:310:8 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 profiles/oulipo/from_common.xsl:311:7 text-outside-xsl-text suggestion "<xsl:text>false</xsl:text>"
+profiles/oulipo/from_common.xsl:315:5 short-names
 profiles/oulipo/from_common.xsl:317:7 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 profiles/oulipo/from_common.xsl:318:7 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 profiles/oulipo/from_common.xsl:319:7 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
@@ -4978,6 +5018,7 @@ profiles/oulipo/slides/to.xsl:67:3 text-outside-xsl-text suggestion "<xsl:text>\
 profiles/oulipo/slides/to.xsl:71:1 text-outside-xsl-text
 profiles/oxford/docx/from.xsl:2:1 missing-id-in-stylesheet
 profiles/oxford/docx/from.xsl:2:1 too-many-templates
+profiles/oxford/docx/from.xsl:122:7 short-names
 profiles/oxford/docx/from.xsl:123:7 short-names
 profiles/oxford/docx/from.xsl:125:2 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 profiles/oxford/docx/from.xsl:126:2 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
@@ -4986,6 +5027,7 @@ profiles/oxford/docx/from.xsl:128:2 text-outside-xsl-text suggestion "<xsl:text>
 profiles/oxford/docx/from.xsl:129:2 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 profiles/oxford/docx/from.xsl:130:2 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 profiles/oxford/docx/from.xsl:131:2 text-outside-xsl-text suggestion "<xsl:text>false</xsl:text>"
+profiles/oxford/docx/from.xsl:141:7 short-names
 profiles/oxford/docx/from.xsl:142:7 short-names
 profiles/oxford/docx/from.xsl:144:2 text-outside-xsl-text suggestion "<xsl:text>false</xsl:text>"
 profiles/oxford/docx/from.xsl:145:2 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
@@ -5016,6 +5058,7 @@ profiles/oxford/docx/from.xsl:169:2 text-outside-xsl-text suggestion "<xsl:text>
 profiles/oxford/docx/from.xsl:170:2 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 profiles/oxford/docx/from.xsl:171:2 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 profiles/oxford/docx/from.xsl:172:2 text-outside-xsl-text suggestion "<xsl:text>false</xsl:text>"
+profiles/oxford/docx/from.xsl:177:7 short-names
 profiles/oxford/docx/from.xsl:184:6 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 profiles/oxford/docx/from.xsl:185:6 text-outside-xsl-text suggestion "<xsl:text>2</xsl:text>"
 profiles/oxford/docx/from.xsl:186:6 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
@@ -5054,12 +5097,14 @@ profiles/saxonce/html/to.xsl:95:22 count-compared-to-zero fix "exists(id($curren
 profiles/saxonce/html/to.xsl:144:5 unused-variable
 profiles/saxonce/html/to.xsl:197:20 count-compared-to-zero fix "exists(id($target))"
 profiles/sciencejournal/docx/from.xsl:2:1 missing-id-in-stylesheet
+profiles/sciencejournal/docx/from.xsl:94:7 short-names
 profiles/sciencejournal/docx/from.xsl:95:7 short-names
 profiles/sciencejournal/docx/from.xsl:97:2 text-outside-xsl-text suggestion "<xsl:text>false</xsl:text>"
 profiles/sciencejournal/docx/from.xsl:98:2 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 profiles/sciencejournal/docx/from.xsl:99:2 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 profiles/sciencejournal/docx/from.xsl:100:2 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 profiles/sciencejournal/docx/from.xsl:101:2 text-outside-xsl-text suggestion "<xsl:text>false</xsl:text>"
+profiles/sciencejournal/docx/from.xsl:106:7 short-names
 profiles/sciencejournal/docx/from.xsl:113:6 text-outside-xsl-text suggestion "<xsl:text>2</xsl:text>"
 profiles/sciencejournal/docx/from.xsl:114:6 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 profiles/sciencejournal/docx/from.xsl:141:23 string-length-compared-to-zero suggestion ". = ''"
