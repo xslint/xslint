@@ -505,10 +505,10 @@
     <td>An XPath expression has redundant whitespace. Remove the extra spaces.</td>
   </tr>
   <tr>
-    <td><a href="checks/select-starts-with-double-slash.html">select-starts-with-double-slash</a></td>
+    <td><a href="checks/scans-whole-document.html">scans-whole-document</a></td>
     <td>format</td>
     <td><span class="severity-warning">warning</span></td>
-    <td>The select attribute starts with //, which scans the whole document from the root every time it runs. Name the path you mean, or look the nodes up with an xsl:key.</td>
+    <td>An expression opens a path with //, which scans the whole document from the root every time it is evaluated. Name the path you mean, look the nodes up with an xsl:key, or bind the scan once in a top-level variable.</td>
   </tr>
   <tr>
     <td><a href="checks/starts-with-double-slash.html">starts-with-double-slash</a></td>

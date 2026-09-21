@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>select-starts-with-double-slash</title>
+  <title>scans-whole-document</title>
   <style>
   * { box-sizing: border-box; }
   body {
@@ -116,12 +116,14 @@
     <code class="xpath">checked over the tokens, not an XPath rule</code>
   </div>
   <div class="check-content">
-<h1>Select starts with double slash</h1>
-<p>A <code>select</code> whose XPath begins with <code>//</code> is evaluated as
-<code>/descendant-or-self::node()/…</code>, so it walks the entire document from the root
-every time it runs — and inside a template applied per node, that is once per
-node. Unlike a <code>match</code> pattern, where a leading <code>//</code> is merely redundant, in a
-<code>select</code> it is a real, repeated, whole-tree scan.</p>
+<h1>Scans whole document</h1>
+<p>A path opening with <code>//</code> is evaluated as <code>/descendant-or-self::node()/…</code>, so it
+walks the entire document from the root — and it does so every time the
+expression it stands in is evaluated. Inside a template applied per node, that
+is once per node; inside the <code>use</code> of an <code>xsl:key</code>, once per node the key
+matches; inside an attribute value template, once per element instantiated.
+Unlike a <code>match</code> pattern, where a leading <code>//</code> is merely redundant, here it is
+a real, repeated, whole-tree scan.</p>
 <p>Most of the time the author meant something narrower than the whole document,
 and naming it removes the traversal outright:</p>
 <p>Incorrect:</p>
@@ -160,10 +162,28 @@ once:</p>
   &lt;xsl:value-of select=&quot;key(&#39;items&#39;, @target)/title&quot;/&gt;
 &lt;/xsl:template&gt;
 </code></pre>
-<p>An inner <code>//</code> (<code>items//item</code>), a <code>//</code> inside a string literal, or one reached
-through a variable (<code>$root//item</code>) is left alone. So is the <code>select</code> of a
-literal result element, which is output data on its way to the result tree
-rather than an expression any processor evaluates.</p>
+<p>Where the whole document is the subject and the answer does not depend on the
+node being processed, a top-level binding pays for the walk once:</p>
+<p>Incorrect:</p>
+<pre><code class="language-xsl">&lt;xsl:template match=&quot;ref&quot;&gt;
+  &lt;xsl:value-of select=&quot;count(//item)&quot;/&gt;
+&lt;/xsl:template&gt;
+</code></pre>
+<p>Correct:</p>
+<pre><code class="language-xsl">&lt;xsl:variable name=&quot;items&quot; select=&quot;//item&quot;/&gt;
+
+&lt;xsl:template match=&quot;ref&quot;&gt;
+  &lt;xsl:value-of select=&quot;count($items)&quot;/&gt;
+&lt;/xsl:template&gt;
+</code></pre>
+<p>That is why a <code>//</code> inside a top-level <code>xsl:variable</code> or <code>xsl:param</code> is left
+alone: it is bound once for the transformation, against the source root, and
+there is no cheaper way to name every <code>item</code> in a document.</p>
+<p>Where the slashes stand inside the expression does not matter, only whether
+they open a path. <code>distinct-values((//a, //b))</code> walks the tree twice for the
+same reason <code>//a</code> walks it once. An inner <code>//</code> (<code>items//item</code>), one inside a
+string literal, and one reached through a variable (<code>$root//item</code>) or the
+context node (<code>.//item</code>) are left alone — none of them starts at the root.</p>
 
   </div>
 </body>
