@@ -122,8 +122,9 @@ walks the entire document from the root — and it does so every time the
 expression it stands in is evaluated. Inside a template applied per node, that
 is once per node; inside the <code>use</code> of an <code>xsl:key</code>, once per node the key
 matches; inside an attribute value template, once per element instantiated.
-Unlike a <code>match</code> pattern, where a leading <code>//</code> is merely redundant, here it is
-a real, repeated, whole-tree scan.</p>
+Unlike the steps of a <code>match</code> pattern, where a leading <code>//</code> is merely redundant
+and an inner one only widens what the rule takes, here it is a real, repeated,
+whole-tree scan.</p>
 <p>Most of the time the author meant something narrower than the whole document,
 and naming it removes the traversal outright:</p>
 <p>Incorrect:</p>
@@ -179,6 +180,31 @@ node being processed, a top-level binding pays for the walk once:</p>
 <p>That is why a <code>//</code> inside a top-level <code>xsl:variable</code> or <code>xsl:param</code> is left
 alone: it is bound once for the transformation, against the source root, and
 there is no cheaper way to name every <code>item</code> in a document.</p>
+<p>A pattern carries the same construct between its brackets. A predicate holds an
+expression, so a <code>//</code> opening a path there abandons the node being tested and
+walks the document from its root, once for every candidate the pattern is
+matched against:</p>
+<p>Incorrect:</p>
+<pre><code class="language-xsl">&lt;xsl:template match=&quot;item[//flag]&quot;&gt;
+  &lt;xsl:value-of select=&quot;@id&quot;/&gt;
+&lt;/xsl:template&gt;
+</code></pre>
+<p>Correct:</p>
+<pre><code class="language-xsl">&lt;xsl:template match=&quot;item[.//flag]&quot;&gt;
+  &lt;xsl:value-of select=&quot;@id&quot;/&gt;
+&lt;/xsl:template&gt;
+</code></pre>
+<p>Anchoring buys something here that it does not buy above, because the context
+node in a predicate is the candidate rather than the root. It is a change of
+meaning all the same, and usually the meaning that was wanted: <code>//flag</code> asks
+whether the document holds a <code>flag</code> anywhere at all, which says nothing about
+the <code>item</code> in hand, so the rule takes every <code>item</code> or none of them. Decide which
+node the question is about, or name the path from the root you really meant.</p>
+<p>One of the three remedies above is not open to a pattern in every version. XSLT
+1.0 forbids a variable reference in one, so <code>match=&quot;item[$flags]&quot;</code> is rejected
+before the stylesheet runs; 2.0 and later allow it, and a global binding pays
+for the walk once there as it does anywhere else. An <code>xsl:key</code> is allowed in a
+pattern in every version.</p>
 <p>Where the slashes stand inside the expression does not matter, only whether
 they open a path. <code>distinct-values((//a, //b))</code> walks the tree twice for the
 same reason <code>//a</code> walks it once. An inner <code>//</code> (<code>items//item</code>), one inside a
