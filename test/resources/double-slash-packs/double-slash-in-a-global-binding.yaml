@@ -1,0 +1,24 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: scans-whole-document
+# A top-level binding is evaluated once for the transformation, against the
+# source root, so the scan it carries is the one traversal there is no cheaper
+# way to ask for — and hoisting the expression into such a binding is the
+# remedy the motive teaches. The same expression one level down, inside a
+# template, is evaluated for every node that template is applied to.
+found:
+  amount: 1
+  positions: [ [ 7, 40 ] ]
+  fixes: [ null ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="style1">
+    <xsl:output encoding="UTF-8" method="xml"/>
+    <xsl:param name="scope" select="//o[@root]"/>
+    <xsl:variable name="every" select="//o"/>
+    <xsl:template match="/objects/o">
+      <xsl:variable name="local" select="//o[@inner]"/>
+      <xsl:value-of select="count($local) + count($every) + count($scope)"/>
+    </xsl:template>
+  </xsl:stylesheet>

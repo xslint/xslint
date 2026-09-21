@@ -46,13 +46,33 @@
  * reported at last.
  *
  * The third check is the same shape one attribute over: it was declarative and
- * selected `//*`, so `select-starts-with-double-slash` read the `select` of a
- * literal result element as XPath — output data no processor evaluates — and
- * `--fix-suggestions` wrote `.//` into the result tree, a check about
- * expressions changing what a stylesheet emits (#788). It is handed the
- * records the validator kept, which hold no such attribute, and the `//` it
- * reports is the first token of the parse rather than the first characters of
- * a value, so a comment or a gap standing in front of one no longer hides it.
+ * selected `//*`, so it read the `select` of a literal result element as
+ * XPath — output data no processor evaluates — and `--fix-suggestions` wrote
+ * `.//` into the result tree, a check about expressions changing what a
+ * stylesheet emits (#788). It is handed the records the validator kept, which
+ * hold no such attribute.
+ *
+ * What it asks is #958's, and until then it asked about the spelling instead
+ * of the cost. It read one attribute, so the `//` of an `xsl:when`'s `test`
+ * drew nothing where a `select` beside it drew the warning, though both are
+ * evaluated for every node the template is applied to — and so did an
+ * `xsl:key`'s `use` and the braces of a literal result element. It read one
+ * token, the first solid one of the parse, so the two scans of
+ * `distinct-values((//o/@name, //o/@local))` were invisible although each
+ * walks the tree the whole of one walks. And it never asked how often the
+ * expression runs, so a **top-level** `xsl:variable` or `xsl:param` drew it —
+ * the one place the scan is paid once, against the source root, for the whole
+ * transformation, where naming a narrower path binds something else, an
+ * `xsl:key` answers a lookup by value, and hoisting into a global binding is
+ * what the stylesheet already did. That last one was 10 of the 147 reports
+ * over the three pinned corpora and is `once`; the other two are the `path`
+ * nodes the grammar built, a `//` counting where one opens a path of its own
+ * and nowhere else, which is the test `owned` already applies one language
+ * over. So `items//item` descends from a step, `/objects//o` from an absolute
+ * one, `$root//node` from a binding and `.//item` from the context node, and
+ * none of the four starts at the root. The name moved with the question:
+ * `select-starts-with-double-slash` named an attribute this no longer singles
+ * out and a position it no longer asks about.
  *
  * It offers no fix, and did from #457 until #949. `.//` names the same nodes
  * only where the context is the root, and there it walks the same tree the
@@ -67,8 +87,8 @@
 
 const {gathered, parseOf} = require('../syntax')
 const {metaOf, suppressed, defect} = require('../checks')
-const {TOKENS, TRIVIA} = require('../tokens')
-const {whole} = require('../attributes')
+const {TOKENS} = require('../tokens')
+const {XSLT} = require('../xsl-version')
 const {holding} = require('../tree')
 const {logger} = require('../logger')
 
@@ -85,14 +105,14 @@ const LEADING = 'starts-with-double-slash'
 const INNER = 'use-double-slash'
 
 /**
- * Name of the check for a `//` opening the expression of a `select`, which is
- * the same two characters asking a third question: a pattern is matched by
- * walking up from a node, so a `//` in front of one adds nothing, where an
- * expression is evaluated forwards and a `//` in front of that one scans the
- * whole document, once for every node the template is applied to.
+ * Name of the check for a `//` opening a path of an expression, which is the
+ * same two characters asking a third question: a pattern is matched by walking
+ * up from a node, so a `//` in front of one adds nothing, where an expression
+ * is evaluated forwards and a `//` opening a path there walks the document
+ * whole, once for every time the expression is evaluated.
  * @type {string}
  */
-const SCANNING = 'select-starts-with-double-slash'
+const SCANNING = 'scans-whole-document'
 
 /**
  * Names of the checks this linter owns.
@@ -110,14 +130,12 @@ const META = {
 }
 
 /**
- * The attribute whose expression is read for a scan from the root. It is one
- * name rather than every expression a stylesheet carries because that is the
- * check as it is written and named: a `//` opening a `@test` or a `@group-by`
- * scans the document exactly as this one does, and reporting it is a widening
- * with a message of its own to write.
- * @type {string}
+ * The two XSLT elements a top-level declaration of either binds once, against
+ * the source root, for the whole transformation — the one place a scan from
+ * the root is the cheapest spelling there is (#958).
+ * @type {Array.<string>}
  */
-const SELECT = 'select'
+const BOUND = ['variable', 'param']
 
 /**
  * The one XSLT element whose patterns are ranked against one another, which is
@@ -212,20 +230,41 @@ const separators = function(found) {
 }
 
 /**
- * The `//` opening the expression, where one does, and no fix behind it.
- * Opening it means standing in front of every solid token, so a comment or a
- * gap ahead of the slashes changes nothing.
+ * Whether the expression is evaluated once for the whole transformation. A
+ * top-level `xsl:variable` or `xsl:param` is bound once, against the source
+ * root, so `//item` there is one traversal and names every `item` in the
+ * document — which is what hoisting an expression into a global binding is
+ * for, and what the advice would otherwise be telling its author to do again.
+ * @param {{node: Node}} found - The expression, as `expressionsOf` yields it
+ * @return {boolean} - True when nothing evaluates it twice
+ */
+const once = function(found) {
+  const element = holding(found.node)
+  return element.namespaceURI === XSLT &&
+    BOUND.includes(element.localName) &&
+    element.parentNode === element.ownerDocument.documentElement
+}
+
+/**
+ * The `//` steps of an expression that open a path of their own, each one a
+ * walk of the document from its root, and no fix behind any of them. Where
+ * the slashes stand in the parse decides nothing, a sub-expression scanning
+ * the tree the whole of one scans, so what is asked is whether a path starts
+ * there rather than descends from something.
  * @param {{node: Node, expression: string, pattern: boolean}} found - The
  *  expression, whole, as `expressionsOf` yields it
- * @return {Array.<{check: string, at: number}>} - The scan found
+ * @return {Array.<{check: string, at: number}>} - The scans found
  */
 const scanning = function(found) {
-  const first = parseOf(found).tokens.find(
-    (token) => !TRIVIA.includes(token.type),
-  )
+  const paths = gathered(found, ['path'])
   const results = []
-  if (first.type === TOKENS.DOUBLE_SLASH) {
-    results.push({check: SCANNING, at: first.start})
+  if (!once(found)) {
+    parseOf(found).tokens.forEach((token, at) => {
+      if (token.type === TOKENS.DOUBLE_SLASH &&
+        paths.some((one) => one.from === at)) {
+        results.push({check: SCANNING, at: token.start})
+      }
+    })
   }
   return results
 }
@@ -246,11 +285,9 @@ const lintByDoubleSlash = function(expressions, suppressions = []) {
   logger.debug(`Double slash linting started`)
   const defects = []
   for (const {source, found} of expressions) {
-    let entries = []
+    let entries = scanning(found)
     if (found.pattern) {
       entries = separators(found)
-    } else if (whole(found, SELECT)) {
-      entries = scanning(found)
     }
     for (const {check, at, fix} of entries) {
       if (!suppressed(check, suppressions)) {

@@ -35,11 +35,11 @@ anttools/xspec/format-utils.xsl:161:13 text-outside-xsl-text suggestion "<xsl:te
 anttools/xspec/format-xspec-report-folding.xsl:11:1 missing-id-in-stylesheet
 anttools/xspec/format-xspec-report.xsl:11:1 missing-id-in-stylesheet
 anttools/xspec/format-xspec-report.xsl:11:1 too-many-templates
-anttools/xspec/format-xspec-report.xsl:115:44 select-starts-with-double-slash
-anttools/xspec/format-xspec-report.xsl:130:50 select-starts-with-double-slash
+anttools/xspec/format-xspec-report.xsl:115:44 scans-whole-document
+anttools/xspec/format-xspec-report.xsl:130:50 scans-whole-document
 anttools/xspec/format-xspec-report.xsl:142:20 redundant-whitespace fix ""
 anttools/xspec/format-xspec-report.xsl:142:39 redundant-whitespace fix ""
-anttools/xspec/format-xspec-report.xsl:159:54 select-starts-with-double-slash
+anttools/xspec/format-xspec-report.xsl:159:54 scans-whole-document
 anttools/xspec/format-xspec-report.xsl:245:13 text-outside-xsl-text suggestion "<xsl:text>Expecting</xsl:text>"
 anttools/xspec/format-xspec-report.xsl:246:13 text-outside-xsl-text suggestion "<xsl:text>Expected Result</xsl:text>"
 anttools/xspec/format-xspec-report.xsl:333:5 text-outside-xsl-text suggestion "<xsl:text>passed: </xsl:text>"
@@ -166,13 +166,13 @@ contrib/tools/emacs/docbook-menu/doc/html-common.xsl:1:1 missing-id-in-styleshee
 contrib/tools/emacs/docbook-menu/doc/make-help.xsl:1:1 missing-id-in-stylesheet
 contrib/tools/emacs/docbook-menu/doc/make-html.xsl:1:1 missing-id-in-stylesheet
 contrib/tools/emacs/docbook-menu/xsl/make-dbxsl-tcg.xsl:1:1 missing-id-in-stylesheet
-contrib/tools/emacs/docbook-menu/xsl/make-dbxsl-tcg.xsl:16:27 select-starts-with-double-slash
+contrib/tools/emacs/docbook-menu/xsl/make-dbxsl-tcg.xsl:16:27 scans-whole-document
 contrib/tools/emacs/docbook-menu/xsl/make-docbook-elements-list.xsl:1:1 missing-id-in-stylesheet
-contrib/tools/emacs/docbook-menu/xsl/make-docbook-elements-list.xsl:20:28 select-starts-with-double-slash
+contrib/tools/emacs/docbook-menu/xsl/make-docbook-elements-list.xsl:20:28 scans-whole-document
 contrib/tools/emacs/docbook-menu/xsl/make-docbook-xsl-params-list.xsl:1:1 missing-id-in-stylesheet
-contrib/tools/emacs/docbook-menu/xsl/make-docbook-xsl-params-list.xsl:36:28 select-starts-with-double-slash
+contrib/tools/emacs/docbook-menu/xsl/make-docbook-xsl-params-list.xsl:36:28 scans-whole-document
 contrib/tools/emacs/docbook-menu/xsl/make-tdg-menu.xsl:1:1 missing-id-in-stylesheet
-contrib/tools/emacs/docbook-menu/xsl/make-tdg-menu.xsl:20:28 select-starts-with-double-slash
+contrib/tools/emacs/docbook-menu/xsl/make-tdg-menu.xsl:20:28 scans-whole-document
 contrib/tools/fo-editor/src/schemas/convert.xsl:7:1 missing-id-in-stylesheet
 contrib/tools/fo-editor/src/schemas/convert.xsl:25:22 starts-with-double-slash suggestion ""
 contrib/tools/fo-editor/src/schemas/convert.xsl:25:30 starts-with-double-slash suggestion ""
@@ -196,9 +196,10 @@ contrib/tools/tennison/modify.xsl:8:1 missing-id-in-stylesheet
 contrib/xsl/applethelp/applethelp.xsl:5:1 missing-id-in-stylesheet
 contrib/xsl/applethelp/htmlhelp-common.xsl:2:1 missing-id-in-stylesheet
 contrib/xsl/applethelp/htmlhelp-common.xsl:2:1 too-many-templates
-contrib/xsl/applethelp/htmlhelp-common.xsl:17:54 select-starts-with-double-slash
 contrib/xsl/applethelp/htmlhelp-common.xsl:26:27 count-compared-to-zero fix "not(key('id',$rootid))"
+contrib/xsl/applethelp/htmlhelp-common.xsl:47:35 scans-whole-document
 contrib/xsl/applethelp/htmlhelp-common.xsl:100:1 oversized-template
+contrib/xsl/applethelp/htmlhelp-common.xsl:323:33 scans-whole-document
 contrib/xsl/applethelp/htmlhelp-common.xsl:353:1 mode-or-priority-without-match suggestion ""
 contrib/xsl/applethelp/htmlhelp-common.xsl:415:1 mode-or-priority-without-match suggestion ""
 contrib/xsl/applethelp/htmlhelp-common.xsl:442:1 mode-or-priority-without-match suggestion ""
@@ -261,8 +262,10 @@ contrib/xsl/applethelp/htmlhelp-common.xsl:852:7 using-disable-output-escaping s
 contrib/xsl/applethelp/htmlhelp-common.xsl:856:5 using-disable-output-escaping suggestion ""
 contrib/xsl/applethelp/htmlhelp-common.xsl:859:5 using-disable-output-escaping suggestion ""
 contrib/xsl/applethelp/htmlhelp-common.xsl:891:7 blank-nested-if
+contrib/xsl/applethelp/htmlhelp-common.xsl:892:27 scans-whole-document
 contrib/xsl/applethelp/htmlhelp-common.xsl:934:36 using-disable-output-escaping suggestion ""
 contrib/xsl/applethelp/htmlhelp-common.xsl:956:1 using-disable-output-escaping suggestion ""
+contrib/xsl/applethelp/htmlhelp-common.xsl:976:23 scans-whole-document
 contrib/xsl/applethelp/htmlhelp-common.xsl:983:5 using-disable-output-escaping suggestion ""
 contrib/xsl/applethelp/htmlhelp-common.xsl:989:7 using-disable-output-escaping suggestion ""
 contrib/xsl/applethelp/htmlhelp-common.xsl:994:7 using-disable-output-escaping suggestion ""
@@ -277,8 +280,8 @@ contrib/xsl/applethelp/htmlhelp-common.xsl:1033:9 using-disable-output-escaping 
 contrib/xsl/applethelp/htmlhelp-common.xsl:1035:9 using-disable-output-escaping suggestion ""
 contrib/xsl/applethelp/htmlhelp-common.xsl:1037:7 using-disable-output-escaping suggestion ""
 contrib/xsl/cldr2dbk/cldr2dbk.xsl:2:1 missing-id-in-stylesheet
-contrib/xsl/cldr2dbk/cldr2dbk.xsl:95:27 select-starts-with-double-slash
-contrib/xsl/cldr2dbk/cldr2dbk.xsl:112:27 select-starts-with-double-slash
+contrib/xsl/cldr2dbk/cldr2dbk.xsl:95:27 scans-whole-document
+contrib/xsl/cldr2dbk/cldr2dbk.xsl:112:27 scans-whole-document
 contrib/xsl/cldr2dbk/cldr2dbk.xsl:114:2 not-creating-attribute-correctly
 contrib/xsl/cldr2dbk/cldr2dbk.xsl:119:6 not-creating-attribute-correctly
 contrib/xsl/db2wiki/DocBook2Wiki.xsl:2:1 missing-id-in-stylesheet
@@ -431,7 +434,7 @@ contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:3806:5 text-outside-xsl-text sug
 contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:3807:5 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:3808:5 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
 contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:3814:3 unused-function-template-parameter
-contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:3819:27 select-starts-with-double-slash
+contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:3819:27 scans-whole-document
 contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:3833:1 oversized-template
 contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:3854:68 redundant-whitespace fix ""
 contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:3877:25 count-compared-to-zero fix "parent::*"
@@ -582,14 +585,14 @@ gentext/xsl/xsl.xsl:116:3 setting-value-of-variable-incorrectly
 litprog/.stylesheets/fo.xsl:2:1 missing-id-in-stylesheet
 litprog/.stylesheets/html.xsl:2:1 missing-id-in-stylesheet
 litprog/bootstrap-tangle.xsl:5:1 missing-id-in-stylesheet
-litprog/bootstrap-tangle.xsl:16:32 select-starts-with-double-slash
+litprog/bootstrap-tangle.xsl:16:32 scans-whole-document
 litprog/bootstrap-tangle.xsl:46:3 using-disable-output-escaping suggestion ""
 litprog/bootstrap-tangle.xsl:57:29 name-compared-to-string suggestion "self::disable-output-escaping"
-litprog/bootstrap-tangle.xsl:66:45 select-starts-with-double-slash
+litprog/bootstrap-tangle.xsl:66:45 scans-whole-document
 litprog/example/doc.xsl:2:1 missing-id-in-stylesheet
 litprog/example/doc.xsl:3:17 leaking-result-namespace suggestion "h src"
-litprog/example/doc.xsl:40:34 select-starts-with-double-slash
-litprog/example/doc.xsl:42:34 select-starts-with-double-slash
+litprog/example/doc.xsl:40:34 scans-whole-document
+litprog/example/doc.xsl:42:34 scans-whole-document
 releasetools/.identity.xsl:1:1 missing-id-in-stylesheet
 releasetools/.make-docbook-rng.xsl:1:1 missing-id-in-stylesheet
 releasetools/.make-litprog.xsl:1:1 missing-id-in-stylesheet
@@ -627,7 +630,9 @@ releasetools/xslnsfiles/titlepage.xsl:6:17 leaking-result-namespace suggestion "
 releasetools/xslnsfiles/titlepage.xsl:7:17 redundant-namespace-declarations fix ""
 releasetools/xslnsfiles/titlepage.xsl:25:3 use-choose-without-otherwise
 releasetools/xslnsfiles/titlepage.xsl:26:5 text-outside-xsl-text suggestion "<xsl:text>http://www.w3.org/1999/XSL/Format</xsl:text>"
+releasetools/xslnsfiles/titlepage.xsl:26:21 scans-whole-document
 releasetools/xslnsfiles/titlepage.xsl:27:5 text-outside-xsl-text suggestion "<xsl:text>http://www.w3.org/1999/xhtml</xsl:text>"
+releasetools/xslnsfiles/titlepage.xsl:27:21 scans-whole-document
 releasetools/xslnsfiles/titlepage.xsl:192:1 oversized-template
 releasetools/xslnsfiles/titlepage.xsl:625:23 count-compared-to-zero fix "child::*"
 releasetools/xslnsfiles/titlepage.xsl:625:29 unabbreviated-axis fix ""
@@ -658,13 +663,13 @@ testdocs/i18n/localize.xsl:40:31 predicate-position-literal fix "1"
 testdocs/i18n/localize.xsl:50:2 text-outside-xsl-text suggestion "<xsl:text>[none credited]</xsl:text>"
 testdocs/i18n/localize.xsl:70:41 predicate-position-literal fix "1"
 testdocs/i18n/translators.xsl:2:1 missing-id-in-stylesheet
-testdocs/i18n/translators.xsl:25:31 select-starts-with-double-slash
+testdocs/i18n/translators.xsl:25:31 scans-whole-document
 testdocs/xrefstyle.xsl:2:1 missing-id-in-stylesheet
 xsl/.make-catalog.xsl:2:1 missing-id-in-stylesheet
 xsl/VERSION.xsl:2:1 missing-id-in-stylesheet
 xsl/VERSION.xsl:5:3 redundant-namespace-declarations fix ""
 xsl/VERSION.xsl:6:3 redundant-namespace-declarations fix ""
-xsl/VERSION.xsl:77:36 select-starts-with-double-slash
+xsl/VERSION.xsl:77:36 scans-whole-document
 xsl/assembly/assemble.xsl:2:1 missing-id-in-stylesheet
 xsl/assembly/assemble.xsl:2:1 not-using-output
 xsl/assembly/assemble.xsl:2:1 too-many-templates
@@ -978,6 +983,10 @@ xsl/common/refentry.xsl:278:11 blank-nested-if
 xsl/common/refentry.xsl:336:3 unused-function-template-parameter
 xsl/common/refentry.xsl:410:11 use-choose-without-otherwise
 xsl/common/refentry.xsl:696:11 use-choose-without-otherwise
+xsl/common/refentry.xsl:753:36 scans-whole-document
+xsl/common/refentry.xsl:756:37 scans-whole-document
+xsl/common/refentry.xsl:766:36 scans-whole-document
+xsl/common/refentry.xsl:769:37 scans-whole-document
 xsl/common/refentry.xsl:880:11 use-choose-without-otherwise
 xsl/common/refentry.xsl:1228:5 not-creating-attribute-correctly
 xsl/common/refentry.xsl:1231:5 not-creating-attribute-correctly
@@ -1021,7 +1030,8 @@ xsl/common/table.xsl:487:1 unused-named-template
 xsl/common/targets.xsl:2:1 missing-id-in-stylesheet
 xsl/common/targets.xsl:2:1 too-many-templates
 xsl/common/targets.xsl:122:3 use-choose-without-otherwise
-xsl/common/targets.xsl:310:35 select-starts-with-double-slash
+xsl/common/targets.xsl:310:35 scans-whole-document
+xsl/common/targets.xsl:310:74 scans-whole-document
 xsl/common/titles.xsl:2:1 missing-id-in-stylesheet
 xsl/common/titles.xsl:2:1 too-many-templates
 xsl/common/titles.xsl:5:17 leaking-result-namespace suggestion "doc d xlink"
@@ -1044,10 +1054,11 @@ xsl/common/titles.xsl:783:25 count-compared-to-zero fix "not($etarget)"
 xsl/common/titles.xsl:840:3 unused-function-template-parameter
 xsl/common/utility.xsl:2:1 missing-id-in-stylesheet
 xsl/common/utility.xsl:215:3 use-choose-without-otherwise
-xsl/common/utility.xsl:218:29 select-starts-with-double-slash
+xsl/common/utility.xsl:216:21 scans-whole-document
+xsl/common/utility.xsl:218:29 scans-whole-document
 xsl/eclipse/eclipse.xsl:2:1 missing-id-in-stylesheet
 xsl/eclipse/eclipse.xsl:70:29 count-compared-to-zero fix "not(key('id',$rootid))"
-xsl/eclipse/eclipse.xsl:263:34 select-starts-with-double-slash
+xsl/eclipse/eclipse.xsl:263:34 scans-whole-document
 xsl/eclipse/eclipse.xsl:285:4 text-outside-xsl-text suggestion "<xsl:text>)</xsl:text>"
 xsl/eclipse/eclipse3.xsl:2:1 missing-id-in-stylesheet
 xsl/epub/bin/spec/files/test_cust.xsl:2:1 missing-id-in-stylesheet
@@ -1078,7 +1089,36 @@ xsl/epub/docbook.xsl:715:5 not-creating-element-correctly
 xsl/epub/docbook.xsl:761:5 unused-variable
 xsl/epub/docbook.xsl:803:13 text-outside-xsl-text suggestion "<xsl:text>no</xsl:text>"
 xsl/epub/docbook.xsl:864:7 use-choose-without-otherwise
-xsl/epub/docbook.xsl:882:36 select-starts-with-double-slash
+xsl/epub/docbook.xsl:882:36 scans-whole-document
+xsl/epub/docbook.xsl:883:36 scans-whole-document
+xsl/epub/docbook.xsl:884:36 scans-whole-document
+xsl/epub/docbook.xsl:885:36 scans-whole-document
+xsl/epub/docbook.xsl:886:36 scans-whole-document
+xsl/epub/docbook.xsl:889:36 scans-whole-document
+xsl/epub/docbook.xsl:890:36 scans-whole-document
+xsl/epub/docbook.xsl:891:36 scans-whole-document
+xsl/epub/docbook.xsl:892:36 scans-whole-document
+xsl/epub/docbook.xsl:893:36 scans-whole-document
+xsl/epub/docbook.xsl:894:36 scans-whole-document
+xsl/epub/docbook.xsl:895:36 scans-whole-document
+xsl/epub/docbook.xsl:896:36 scans-whole-document
+xsl/epub/docbook.xsl:897:36 scans-whole-document
+xsl/epub/docbook.xsl:898:36 scans-whole-document
+xsl/epub/docbook.xsl:899:36 scans-whole-document
+xsl/epub/docbook.xsl:900:36 scans-whole-document
+xsl/epub/docbook.xsl:901:36 scans-whole-document
+xsl/epub/docbook.xsl:902:36 scans-whole-document
+xsl/epub/docbook.xsl:903:36 scans-whole-document
+xsl/epub/docbook.xsl:904:36 scans-whole-document
+xsl/epub/docbook.xsl:905:36 scans-whole-document
+xsl/epub/docbook.xsl:906:36 scans-whole-document
+xsl/epub/docbook.xsl:907:36 scans-whole-document
+xsl/epub/docbook.xsl:908:36 scans-whole-document
+xsl/epub/docbook.xsl:909:36 scans-whole-document
+xsl/epub/docbook.xsl:910:36 scans-whole-document
+xsl/epub/docbook.xsl:911:36 scans-whole-document
+xsl/epub/docbook.xsl:923:47 scans-whole-document
+xsl/epub/docbook.xsl:923:63 scans-whole-document
 xsl/epub/docbook.xsl:997:69 redundant-whitespace fix " "
 xsl/epub/docbook.xsl:997:119 redundant-whitespace fix " "
 xsl/epub/docbook.xsl:1087:5 blank-nested-if
@@ -1302,7 +1342,8 @@ xsl/epub3/profile-docbook.xsl:172:151 redundant-whitespace fix " "
 xsl/epub3/profile-docbook.xsl:191:3 use-choose-without-otherwise
 xsl/epub3/profile-docbook.xsl:239:39 redundant-whitespace fix " "
 xsl/epub3/profile-docbook.xsl:247:3 unused-function-template-parameter
-xsl/epub3/profile-docbook.xsl:258:29 select-starts-with-double-slash
+xsl/epub3/profile-docbook.xsl:253:46 scans-whole-document
+xsl/epub3/profile-docbook.xsl:258:29 scans-whole-document
 xsl/epub3/profile-docbook.xsl:296:3 unused-function-template-parameter
 xsl/epub3/profile-docbook.xsl:300:3 unused-function-template-parameter
 xsl/epub3/profile-docbook.xsl:304:3 unused-function-template-parameter
@@ -1337,6 +1378,8 @@ xsl/fo/autoidx.xsl:6:1 too-many-templates
 xsl/fo/autoidx.xsl:10:17 leaking-result-namespace suggestion "exslt d xlink"
 xsl/fo/autoidx.xsl:188:3 unused-function-template-parameter
 xsl/fo/autoidx.xsl:220:3 unused-function-template-parameter
+xsl/fo/autoidx.xsl:326:57 scans-whole-document
+xsl/fo/autoidx.xsl:326:67 scans-whole-document
 xsl/fo/autoidx.xsl:783:3 unused-function-template-parameter
 xsl/fo/autoidx.xsl:784:3 unused-function-template-parameter
 xsl/fo/autoidx.xsl:785:3 unused-function-template-parameter
@@ -1344,9 +1387,13 @@ xsl/fo/autoidx.xsl:796:53 predicate-position-literal fix "last()"
 xsl/fo/autoidx.xsl:807:3 unused-function-template-parameter
 xsl/fo/autoidx.xsl:808:3 unused-function-template-parameter
 xsl/fo/autoidx.xsl:809:3 unused-function-template-parameter
+xsl/fo/autoidx.xsl:854:55 scans-whole-document
+xsl/fo/autoidx.xsl:854:65 scans-whole-document
 xsl/fo/autoidx.xsl:872:4 unused-function-template-parameter
 xsl/fo/autoidx.xsl:873:3 unused-function-template-parameter
 xsl/fo/autoidx.xsl:874:3 unused-function-template-parameter
+xsl/fo/autoidx.xsl:922:57 scans-whole-document
+xsl/fo/autoidx.xsl:922:67 scans-whole-document
 xsl/fo/autoidx.xsl:1053:3 text-outside-xsl-text suggestion "<xsl:text>,</xsl:text>"
 xsl/fo/autoidx.xsl:1108:3 text-outside-xsl-text suggestion "<xsl:text>,</xsl:text>"
 xsl/fo/autoidx.xsl:1160:3 text-outside-xsl-text suggestion "<xsl:text>,</xsl:text>"
@@ -1368,11 +1415,17 @@ xsl/fo/autotoc.xsl:938:24 unabbreviated-axis fix ""
 xsl/fo/autotoc.xsl:938:45 unabbreviated-axis fix ""
 xsl/fo/axf.xsl:2:1 missing-id-in-stylesheet
 xsl/fo/axf.xsl:5:3 redundant-namespace-declarations fix ""
+xsl/fo/axf.xsl:11:43 scans-whole-document
+xsl/fo/axf.xsl:11:54 scans-whole-document
+xsl/fo/axf.xsl:12:43 scans-whole-document
+xsl/fo/axf.xsl:12:58 scans-whole-document
 xsl/fo/axf.xsl:37:7 not-creating-element-correctly
+xsl/fo/axf.xsl:54:19 scans-whole-document
 xsl/fo/axf.xsl:55:7 not-creating-element-correctly
-xsl/fo/axf.xsl:59:23 select-starts-with-double-slash
+xsl/fo/axf.xsl:59:23 scans-whole-document
+xsl/fo/axf.xsl:71:19 scans-whole-document
 xsl/fo/axf.xsl:72:7 not-creating-element-correctly
-xsl/fo/axf.xsl:75:33 select-starts-with-double-slash
+xsl/fo/axf.xsl:75:33 scans-whole-document
 xsl/fo/axf.xsl:112:3 unused-function-template-parameter
 xsl/fo/biblio-iso690.xsl:2:1 missing-id-in-stylesheet
 xsl/fo/biblio-iso690.xsl:2:1 too-many-templates
@@ -1536,8 +1589,14 @@ xsl/fo/fop1.xsl:2:1 missing-id-in-stylesheet
 xsl/fo/fop1.xsl:67:2 not-creating-attribute-correctly
 xsl/fo/fop1.xsl:78:2 not-creating-attribute-correctly
 xsl/fo/fop1.xsl:115:3 setting-value-of-variable-incorrectly
-xsl/fo/fop1.xsl:189:37 select-starts-with-double-slash
-xsl/fo/fop1.xsl:206:27 select-starts-with-double-slash
+xsl/fo/fop1.xsl:133:41 scans-whole-document
+xsl/fo/fop1.xsl:133:52 scans-whole-document
+xsl/fo/fop1.xsl:133:63 scans-whole-document
+xsl/fo/fop1.xsl:133:78 scans-whole-document
+xsl/fo/fop1.xsl:187:25 scans-whole-document
+xsl/fo/fop1.xsl:189:37 scans-whole-document
+xsl/fo/fop1.xsl:203:25 scans-whole-document
+xsl/fo/fop1.xsl:206:27 scans-whole-document
 xsl/fo/formal.xsl:2:1 missing-id-in-stylesheet
 xsl/fo/formal.xsl:2:1 too-many-templates
 xsl/fo/formal.xsl:309:7 text-outside-xsl-text suggestion "<xsl:text>before</xsl:text>"
@@ -1551,7 +1610,8 @@ xsl/fo/glossary.xsl:33:1 text-outside-xsl-text suggestion "<xsl:text>\n\n  &setu
 xsl/fo/glossary.xsl:150:3 unused-variable
 xsl/fo/glossary.xsl:224:1 text-outside-xsl-text suggestion "<xsl:text>\n  &setup-language-variable;\n\n  </xsl:text>"
 xsl/fo/glossary.xsl:334:1 text-outside-xsl-text suggestion "<xsl:text>\n\n  &setup-language-variable;\n\n  </xsl:text>"
-xsl/fo/glossary.xsl:336:35 select-starts-with-double-slash
+xsl/fo/glossary.xsl:336:35 scans-whole-document
+xsl/fo/glossary.xsl:336:74 scans-whole-document
 xsl/fo/glossary.xsl:512:3 unused-variable
 xsl/fo/glossary.xsl:582:1 text-outside-xsl-text suggestion "<xsl:text>\n\n  &setup-language-variable;\n\n  </xsl:text>"
 xsl/fo/glossary.xsl:632:1 text-outside-xsl-text suggestion "<xsl:text>\n\n  &setup-language-variable;\n\n  </xsl:text>"
@@ -1696,7 +1756,9 @@ xsl/fo/inline.xsl:1137:7 text-outside-xsl-text suggestion "<xsl:text>-</xsl:text
 xsl/fo/inline.xsl:1138:7 text-outside-xsl-text suggestion "<xsl:text>-</xsl:text>"
 xsl/fo/inline.xsl:1139:7 text-outside-xsl-text suggestion "<xsl:text>-</xsl:text>"
 xsl/fo/inline.xsl:1141:7 text-outside-xsl-text suggestion "<xsl:text>+</xsl:text>"
-xsl/fo/inline.xsl:1267:40 select-starts-with-double-slash
+xsl/fo/inline.xsl:1230:41 scans-whole-document
+xsl/fo/inline.xsl:1230:59 scans-whole-document
+xsl/fo/inline.xsl:1267:40 scans-whole-document
 xsl/fo/keywords.xsl:2:1 missing-id-in-stylesheet
 xsl/fo/keywords.xsl:5:3 redundant-namespace-declarations fix ""
 xsl/fo/lists.xsl:2:1 missing-id-in-stylesheet
@@ -1989,13 +2051,19 @@ xsl/fo/verbatim.xsl:321:3 unused-variable
 xsl/fo/verbatim.xsl:371:7 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 xsl/fo/xep.xsl:2:1 missing-id-in-stylesheet
 xsl/fo/xep.xsl:5:3 redundant-namespace-declarations fix ""
+xsl/fo/xep.xsl:22:28 scans-whole-document
+xsl/fo/xep.xsl:22:39 scans-whole-document
+xsl/fo/xep.xsl:22:50 scans-whole-document
+xsl/fo/xep.xsl:22:65 scans-whole-document
 xsl/fo/xep.xsl:46:7 not-creating-element-correctly
 xsl/fo/xep.xsl:59:5 not-creating-element-correctly
 xsl/fo/xep.xsl:69:5 not-creating-element-correctly
+xsl/fo/xep.xsl:76:19 scans-whole-document
 xsl/fo/xep.xsl:77:7 not-creating-element-correctly
-xsl/fo/xep.xsl:81:23 select-starts-with-double-slash
+xsl/fo/xep.xsl:81:23 scans-whole-document
+xsl/fo/xep.xsl:93:19 scans-whole-document
 xsl/fo/xep.xsl:94:7 not-creating-element-correctly
-xsl/fo/xep.xsl:97:33 select-starts-with-double-slash
+xsl/fo/xep.xsl:97:33 scans-whole-document
 xsl/fo/xep.xsl:158:9 not-creating-attribute-correctly
 xsl/fo/xep.xsl:170:11 not-creating-attribute-correctly
 xsl/fo/xref.xsl:2:1 missing-id-in-stylesheet
@@ -2093,7 +2161,7 @@ xsl/html/admon.xsl:51:7 text-outside-xsl-text suggestion "<xsl:text>Tip</xsl:tex
 xsl/html/admon.xsl:52:7 text-outside-xsl-text suggestion "<xsl:text>Important</xsl:text>"
 xsl/html/admon.xsl:53:7 text-outside-xsl-text suggestion "<xsl:text>Note</xsl:text>"
 xsl/html/annotations.xsl:2:1 missing-id-in-stylesheet
-xsl/html/annotations.xsl:30:27 select-starts-with-double-slash
+xsl/html/annotations.xsl:30:27 scans-whole-document
 xsl/html/annotations.xsl:60:7 short-names
 xsl/html/annotations.xsl:72:7 short-names
 xsl/html/autoidx-kimber.xsl:11:1 missing-id-in-stylesheet
@@ -2230,7 +2298,8 @@ xsl/html/chunk-common.xsl:755:5 text-outside-xsl-text suggestion "<xsl:text>0</x
 xsl/html/chunk-common.xsl:755:21 count-compared-to-zero fix "not($node)"
 xsl/html/chunk-common.xsl:785:21 count-compared-to-zero fix "not($footnotes)"
 xsl/html/chunk-common.xsl:836:21 count-compared-to-zero fix "not($footnotes)"
-xsl/html/chunk-common.xsl:931:36 select-starts-with-double-slash
+xsl/html/chunk-common.xsl:923:46 scans-whole-document
+xsl/html/chunk-common.xsl:931:36 scans-whole-document
 xsl/html/chunk-common.xsl:995:4 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
 xsl/html/chunk-common.xsl:996:5 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 xsl/html/chunk-common.xsl:1001:29 count-compared-to-zero fix "boolean($node/preceding-sibling::d:sect1)"
@@ -2266,7 +2335,16 @@ xsl/html/chunk-common.xsl:1362:13 text-outside-xsl-text suggestion "<xsl:text>1<
 xsl/html/chunk-common.xsl:1363:13 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
 xsl/html/chunk-common.xsl:1366:9 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 xsl/html/chunk-common.xsl:1397:3 use-choose-without-otherwise
-xsl/html/chunk-common.xsl:1480:29 select-starts-with-double-slash
+xsl/html/chunk-common.xsl:1480:29 scans-whole-document
+xsl/html/chunk-common.xsl:1481:30 scans-whole-document
+xsl/html/chunk-common.xsl:1482:30 scans-whole-document
+xsl/html/chunk-common.xsl:1483:30 scans-whole-document
+xsl/html/chunk-common.xsl:1484:30 scans-whole-document
+xsl/html/chunk-common.xsl:1485:30 scans-whole-document
+xsl/html/chunk-common.xsl:1486:30 scans-whole-document
+xsl/html/chunk-common.xsl:1487:30 scans-whole-document
+xsl/html/chunk-common.xsl:1488:30 scans-whole-document
+xsl/html/chunk-common.xsl:1546:19 scans-whole-document
 xsl/html/chunk-common.xsl:1561:3 unused-function-template-parameter
 xsl/html/chunk-common.xsl:1567:37 count-compared-to-zero fix "boolean($prev)"
 xsl/html/chunk-common.xsl:1568:41 count-compared-to-zero fix "boolean($up)"
@@ -2284,7 +2362,9 @@ xsl/html/chunk-common.xsl:1699:19 text-outside-xsl-text
 xsl/html/chunk-common.xsl:1704:31 count-compared-to-zero fix "$next"
 xsl/html/chunk-common.xsl:1745:19 text-outside-xsl-text
 xsl/html/chunk-common.xsl:1811:17 not-creating-attribute-correctly
+xsl/html/chunk-common.xsl:1840:38 scans-whole-document
 xsl/html/chunk-common.xsl:1869:7 not-creating-attribute-correctly
+xsl/html/chunk-common.xsl:1873:39 scans-whole-document
 xsl/html/chunk.xsl:1:1 missing-id-in-stylesheet
 xsl/html/chunker.xsl:1:1 missing-id-in-stylesheet
 xsl/html/chunker.xsl:40:21 string-length-compared-to-zero suggestion "$base.dir = ''"
@@ -2326,7 +2406,8 @@ xsl/html/docbook.xsl:175:3 unused-function-template-parameter
 xsl/html/docbook.xsl:251:3 use-choose-without-otherwise
 xsl/html/docbook.xsl:274:3 use-choose-without-otherwise
 xsl/html/docbook.xsl:331:3 unused-function-template-parameter
-xsl/html/docbook.xsl:341:29 select-starts-with-double-slash
+xsl/html/docbook.xsl:337:46 scans-whole-document
+xsl/html/docbook.xsl:341:29 scans-whole-document
 xsl/html/docbook.xsl:375:3 unused-function-template-parameter
 xsl/html/docbook.xsl:384:3 unused-function-template-parameter
 xsl/html/docbook.xsl:388:3 unused-function-template-parameter
@@ -2348,7 +2429,8 @@ xsl/html/footnote.xsl:2:1 missing-id-in-stylesheet
 xsl/html/footnote.xsl:2:1 too-many-templates
 xsl/html/footnote.xsl:90:21 string-length-compared-to-zero suggestion "@label != ''"
 xsl/html/footnote.xsl:163:3 unused-variable
-xsl/html/footnote.xsl:292:36 select-starts-with-double-slash
+xsl/html/footnote.xsl:284:46 scans-whole-document
+xsl/html/footnote.xsl:292:36 scans-whole-document
 xsl/html/footnote.xsl:348:29 use-double-slash
 xsl/html/footnote.xsl:348:59 use-double-slash
 xsl/html/formal.xsl:2:1 missing-id-in-stylesheet
@@ -2380,7 +2462,8 @@ xsl/html/glossary.xsl:254:3 text-outside-xsl-text suggestion "<xsl:text>, </xsl:
 xsl/html/glossary.xsl:259:3 text-outside-xsl-text suggestion "<xsl:text>, </xsl:text>"
 xsl/html/glossary.xsl:264:3 text-outside-xsl-text suggestion "<xsl:text>, </xsl:text>"
 xsl/html/glossary.xsl:406:1 text-outside-xsl-text suggestion "<xsl:text>\n  &setup-language-variable;\n  </xsl:text>"
-xsl/html/glossary.xsl:409:25 select-starts-with-double-slash
+xsl/html/glossary.xsl:409:25 scans-whole-document
+xsl/html/glossary.xsl:409:64 scans-whole-document
 xsl/html/glossary.xsl:494:1 text-outside-xsl-text suggestion "<xsl:text>\n\n  &setup-language-variable;\n\n  </xsl:text>"
 xsl/html/graphics.xsl:2:1 missing-id-in-stylesheet
 xsl/html/graphics.xsl:2:1 too-many-templates
@@ -2510,7 +2593,7 @@ xsl/html/inline.xsl:118:31 count-compared-to-zero fix "not($target)"
 xsl/html/inline.xsl:181:15 use-choose-without-otherwise
 xsl/html/inline.xsl:797:1 unused-named-template
 xsl/html/inline.xsl:823:28 redundant-whitespace fix " "
-xsl/html/inline.xsl:1037:45 select-starts-with-double-slash
+xsl/html/inline.xsl:1037:45 scans-whole-document
 xsl/html/inline.xsl:1108:25 count-compared-to-zero fix "not($targets)"
 xsl/html/inline.xsl:1170:7 text-outside-xsl-text suggestion "<xsl:text>element</xsl:text>"
 xsl/html/inline.xsl:1273:7 text-outside-xsl-text suggestion "<xsl:text>+</xsl:text>"
@@ -2518,7 +2601,9 @@ xsl/html/inline.xsl:1274:7 text-outside-xsl-text suggestion "<xsl:text>-</xsl:te
 xsl/html/inline.xsl:1275:7 text-outside-xsl-text suggestion "<xsl:text>-</xsl:text>"
 xsl/html/inline.xsl:1276:7 text-outside-xsl-text suggestion "<xsl:text>-</xsl:text>"
 xsl/html/inline.xsl:1278:7 text-outside-xsl-text suggestion "<xsl:text>+</xsl:text>"
-xsl/html/inline.xsl:1384:40 select-starts-with-double-slash
+xsl/html/inline.xsl:1346:41 scans-whole-document
+xsl/html/inline.xsl:1346:59 scans-whole-document
+xsl/html/inline.xsl:1384:40 scans-whole-document
 xsl/html/its.xsl:2:1 missing-id-in-stylesheet
 xsl/html/keywords.xsl:2:1 missing-id-in-stylesheet
 xsl/html/keywords.xsl:30:3 text-outside-xsl-text suggestion "<xsl:text>, </xsl:text>"
@@ -2631,6 +2716,7 @@ xsl/html/task.xsl:27:7 text-outside-xsl-text suggestion "<xsl:text>before</xsl:t
 xsl/html/titlepage.xsl:2:1 missing-id-in-stylesheet
 xsl/html/titlepage.xsl:2:1 too-many-templates
 xsl/html/titlepage.xsl:233:19 count-compared-to-zero fix "not(preceding-sibling::d:editor)"
+xsl/html/titlepage.xsl:401:45 scans-whole-document
 xsl/html/titlepage.xsl:593:3 unused-variable
 xsl/html/titlepage.xsl:829:7 text-outside-xsl-text suggestion "<xsl:text>3</xsl:text>"
 xsl/html/titlepage.xsl:830:7 text-outside-xsl-text suggestion "<xsl:text>2</xsl:text>"
@@ -2719,9 +2805,10 @@ xsl/html/xref.xsl:1337:3 unused-function-template-parameter
 xsl/html/xref.xsl:1338:3 unused-function-template-parameter
 xsl/htmlhelp/htmlhelp-common.xsl:5:1 missing-id-in-stylesheet
 xsl/htmlhelp/htmlhelp-common.xsl:5:1 too-many-templates
-xsl/htmlhelp/htmlhelp-common.xsl:27:51 select-starts-with-double-slash
 xsl/htmlhelp/htmlhelp-common.xsl:91:31 count-compared-to-zero fix "not(key('id',$rootid))"
+xsl/htmlhelp/htmlhelp-common.xsl:120:41 scans-whole-document
 xsl/htmlhelp/htmlhelp-common.xsl:153:1 oversized-template
+xsl/htmlhelp/htmlhelp-common.xsl:406:33 scans-whole-document
 xsl/htmlhelp/htmlhelp-common.xsl:564:3 text-outside-xsl-text suggestion "<xsl:text><xsl:text xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">&#xA;</xsl:text>\n  </xsl:text>"
 xsl/htmlhelp/htmlhelp-common.xsl:581:5 text-outside-xsl-text suggestion "<xsl:text><xsl:text xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">&#xA;</xsl:text>\n    </xsl:text>"
 xsl/htmlhelp/htmlhelp-common.xsl:595:1 text-outside-xsl-text suggestion "<xsl:text><xsl:text xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">&#xA;</xsl:text>\n</xsl:text>"
@@ -2731,9 +2818,12 @@ xsl/htmlhelp/htmlhelp-common.xsl:633:7 text-outside-xsl-text suggestion "<xsl:te
 xsl/htmlhelp/htmlhelp-common.xsl:669:3 text-outside-xsl-text suggestion "<xsl:text><xsl:text xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">&#xA;</xsl:text>\n  </xsl:text>"
 xsl/htmlhelp/htmlhelp-common.xsl:676:7 text-outside-xsl-text suggestion "<xsl:text><xsl:text xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">&#xA;</xsl:text>\n      </xsl:text>"
 xsl/htmlhelp/htmlhelp-common.xsl:816:7 blank-nested-if
+xsl/htmlhelp/htmlhelp-common.xsl:817:27 scans-whole-document
 xsl/htmlhelp/htmlhelp-common.xsl:824:7 blank-nested-if
+xsl/htmlhelp/htmlhelp-common.xsl:825:27 scans-whole-document
 xsl/htmlhelp/htmlhelp-common.xsl:868:36 using-disable-output-escaping suggestion ""
 xsl/htmlhelp/htmlhelp-common.xsl:888:1 using-disable-output-escaping suggestion ""
+xsl/htmlhelp/htmlhelp-common.xsl:909:23 scans-whole-document
 xsl/htmlhelp/htmlhelp-common.xsl:940:7 not-creating-attribute-correctly
 xsl/htmlhelp/htmlhelp-common.xsl:945:7 text-outside-xsl-text
 xsl/htmlhelp/htmlhelp-common.xsl:956:11 not-creating-attribute-correctly
@@ -2756,8 +2846,27 @@ xsl/javahelp/javahelp.xsl:317:5 not-creating-attribute-correctly
 xsl/javahelp/javahelp.xsl:333:5 not-creating-attribute-correctly
 xsl/javahelp/javahelp.xsl:352:5 not-creating-attribute-correctly
 xsl/javahelp/javahelp.xsl:371:5 not-creating-attribute-correctly
-xsl/javahelp/javahelp.xsl:422:38 select-starts-with-double-slash
-xsl/javahelp/javahelp.xsl:553:38 select-starts-with-double-slash
+xsl/javahelp/javahelp.xsl:422:38 scans-whole-document
+xsl/javahelp/javahelp.xsl:423:40 scans-whole-document
+xsl/javahelp/javahelp.xsl:424:40 scans-whole-document
+xsl/javahelp/javahelp.xsl:425:40 scans-whole-document
+xsl/javahelp/javahelp.xsl:426:40 scans-whole-document
+xsl/javahelp/javahelp.xsl:427:40 scans-whole-document
+xsl/javahelp/javahelp.xsl:428:40 scans-whole-document
+xsl/javahelp/javahelp.xsl:429:40 scans-whole-document
+xsl/javahelp/javahelp.xsl:430:40 scans-whole-document
+xsl/javahelp/javahelp.xsl:431:40 scans-whole-document
+xsl/javahelp/javahelp.xsl:432:40 scans-whole-document
+xsl/javahelp/javahelp.xsl:433:40 scans-whole-document
+xsl/javahelp/javahelp.xsl:434:40 scans-whole-document
+xsl/javahelp/javahelp.xsl:435:40 scans-whole-document
+xsl/javahelp/javahelp.xsl:436:40 scans-whole-document
+xsl/javahelp/javahelp.xsl:437:40 scans-whole-document
+xsl/javahelp/javahelp.xsl:438:40 scans-whole-document
+xsl/javahelp/javahelp.xsl:439:40 scans-whole-document
+xsl/javahelp/javahelp.xsl:440:40 scans-whole-document
+xsl/javahelp/javahelp.xsl:441:12 scans-whole-document
+xsl/javahelp/javahelp.xsl:553:38 scans-whole-document
 xsl/javahelp/javahelp.xsl:584:7 setting-value-of-variable-incorrectly
 xsl/javahelp/javahelp.xsl:601:5 text-outside-xsl-text suggestion "<xsl:text>•</xsl:text>"
 xsl/javahelp/javahelp.xsl:602:5 text-outside-xsl-text suggestion "<xsl:text>©</xsl:text>"
@@ -2784,9 +2893,10 @@ xsl/manpages/charmap.groff.xsl:2:1 missing-id-in-stylesheet
 xsl/manpages/docbook.xsl:2:1 missing-id-in-stylesheet
 xsl/manpages/docbook.xsl:5:17 redundant-namespace-declarations fix ""
 xsl/manpages/docbook.xsl:6:17 redundant-namespace-declarations fix ""
-xsl/manpages/docbook.xsl:101:36 select-starts-with-double-slash
+xsl/manpages/docbook.xsl:92:21 scans-whole-document
+xsl/manpages/docbook.xsl:101:36 scans-whole-document
 xsl/manpages/endnotes.xsl:2:1 missing-id-in-stylesheet
-xsl/manpages/endnotes.xsl:93:27 select-starts-with-double-slash
+xsl/manpages/endnotes.xsl:93:27 scans-whole-document
 xsl/manpages/endnotes.xsl:95:9 not-creating-attribute-correctly
 xsl/manpages/endnotes.xsl:151:13 not-creating-attribute-correctly
 xsl/manpages/endnotes.xsl:154:13 not-creating-attribute-correctly
@@ -2796,11 +2906,21 @@ xsl/manpages/endnotes.xsl:348:5 setting-value-of-variable-incorrectly
 xsl/manpages/endnotes.xsl:419:3 setting-value-of-variable-incorrectly
 xsl/manpages/info.xsl:2:1 missing-id-in-stylesheet
 xsl/manpages/info.xsl:2:1 too-many-templates
+xsl/manpages/info.xsl:87:29 scans-whole-document
+xsl/manpages/info.xsl:92:29 scans-whole-document
+xsl/manpages/info.xsl:97:29 scans-whole-document
+xsl/manpages/info.xsl:102:29 scans-whole-document
+xsl/manpages/info.xsl:107:29 scans-whole-document
+xsl/manpages/info.xsl:112:29 scans-whole-document
+xsl/manpages/info.xsl:117:29 scans-whole-document
+xsl/manpages/info.xsl:122:29 scans-whole-document
 xsl/manpages/info.xsl:275:5 use-choose-without-otherwise
 xsl/manpages/info.xsl:314:9 setting-value-of-variable-incorrectly
 xsl/manpages/info.xsl:467:5 use-choose-without-otherwise
 xsl/manpages/info.xsl:515:27 unabbreviated-axis fix ""
 xsl/manpages/info.xsl:559:9 blank-nested-if
+xsl/manpages/info.xsl:757:19 scans-whole-document
+xsl/manpages/info.xsl:758:21 scans-whole-document
 xsl/manpages/inline.xsl:2:1 missing-id-in-stylesheet
 xsl/manpages/inline.xsl:2:1 too-many-templates
 xsl/manpages/inline.xsl:132:3 setting-value-of-variable-incorrectly
@@ -2815,13 +2935,13 @@ xsl/manpages/other.xsl:2:1 missing-id-in-stylesheet
 xsl/manpages/other.xsl:2:1 too-many-templates
 xsl/manpages/other.xsl:5:17 redundant-namespace-declarations fix ""
 xsl/manpages/other.xsl:6:17 redundant-namespace-declarations fix ""
-xsl/manpages/other.xsl:48:49 select-starts-with-double-slash
+xsl/manpages/other.xsl:48:49 scans-whole-document
 xsl/manpages/other.xsl:80:3 unused-function-template-parameter
 xsl/manpages/other.xsl:115:22 starts-with-double-slash suggestion ""
 xsl/manpages/other.xsl:115:34 use-double-slash
 xsl/manpages/other.xsl:123:22 starts-with-double-slash suggestion ""
 xsl/manpages/other.xsl:123:34 use-double-slash
-xsl/manpages/other.xsl:616:29 select-starts-with-double-slash
+xsl/manpages/other.xsl:616:29 scans-whole-document
 xsl/manpages/pi.xsl:2:1 missing-id-in-stylesheet
 xsl/manpages/pi.xsl:5:17 redundant-namespace-declarations fix ""
 xsl/manpages/refentry.xsl:2:1 missing-id-in-stylesheet
@@ -2921,7 +3041,6 @@ xsl/roundtrip/dbk2pages.xsl:1:1 missing-id-in-stylesheet
 xsl/roundtrip/dbk2pages.xsl:1:1 too-many-templates
 xsl/roundtrip/dbk2pages.xsl:3:3 leaking-result-namespace suggestion "doc rnd xi d"
 xsl/roundtrip/dbk2pages.xsl:6:3 redundant-namespace-declarations fix ""
-xsl/roundtrip/dbk2pages.xsl:34:13 select-starts-with-double-slash
 xsl/roundtrip/dbk2pages.xsl:269:5 unused-function-template-parameter
 xsl/roundtrip/dbk2pages.xsl:292:5 unused-function-template-parameter
 xsl/roundtrip/dbk2pages.xsl:293:5 unused-function-template-parameter
@@ -3031,6 +3150,8 @@ xsl/slides/fo/plain.xsl:2:1 missing-id-in-stylesheet
 xsl/slides/fo/plain.xsl:2:1 too-many-templates
 xsl/slides/fo/plain.xsl:154:1 unused-named-template
 xsl/slides/fo/plain.xsl:281:2 use-choose-without-otherwise
+xsl/slides/fo/plain.xsl:418:45 scans-whole-document
+xsl/slides/fo/plain.xsl:418:61 scans-whole-document
 xsl/slides/fo/plain.xsl:517:7 setting-value-of-variable-incorrectly
 xsl/slides/fo/plain.xsl:522:7 setting-value-of-variable-incorrectly
 xsl/slides/tools/dbs3-upgrade.xsl:2:1 missing-id-in-stylesheet
@@ -3048,7 +3169,7 @@ xsl/slides/xhtml/s5.xsl:20:7 text-outside-xsl-text suggestion "<xsl:text>visible
 xsl/slides/xhtml/s5.xsl:22:7 text-outside-xsl-text suggestion "<xsl:text>hidden</xsl:text>"
 xsl/slides/xhtml/s5.xsl:58:7 unused-variable
 xsl/slides/xhtml/slidy.xsl:2:1 missing-id-in-stylesheet
-xsl/slides/xhtml/slidy.xsl:67:38 select-starts-with-double-slash
+xsl/slides/xhtml/slidy.xsl:67:38 scans-whole-document
 xsl/slides/xhtml/slidy.xsl:70:5 not-creating-attribute-correctly
 xsl/template/titlepage.xsl:2:1 missing-id-in-stylesheet
 xsl/template/titlepage.xsl:2:1 not-using-output
@@ -3100,7 +3221,7 @@ xsl/tools/xsl/build/jref2refsect1.xsl:2:1 missing-id-in-stylesheet
 xsl/tools/xsl/build/jref2refsect1.xsl:2:1 too-many-templates
 xsl/tools/xsl/build/make-elements.xsl:2:1 missing-id-in-stylesheet
 xsl/tools/xsl/build/make-elements.xsl:3:17 leaking-result-namespace suggestion " exclude-result-prefixes=\"exsl\""
-xsl/tools/xsl/build/make-elements.xsl:41:23 select-starts-with-double-slash
+xsl/tools/xsl/build/make-elements.xsl:41:23 scans-whole-document
 xsl/tools/xsl/build/make-xsl-params.xsl:2:1 missing-id-in-stylesheet
 xsl/tools/xsl/build/make-xsl-params.xsl:3:17 leaking-result-namespace suggestion " exclude-result-prefixes=\"exsl\""
 xsl/tools/xsl/build/make-xsl-pi.xsl:2:1 missing-id-in-stylesheet
@@ -3259,7 +3380,7 @@ xsl/webhelp/xsl/webhelp-common.xsl:690:17 unused-variable
 xsl/webhelp/xsl/webhelp-common.xsl:701:17 unused-variable
 xsl/webhelp/xsl/webhelp-common.xsl:771:53 using-disable-output-escaping suggestion ""
 xsl/webhelp/xsl/webhelp-common.xsl:863:5 unused-named-template
-xsl/webhelp/xsl/webhelp-common.xsl:913:38 select-starts-with-double-slash
+xsl/webhelp/xsl/webhelp-common.xsl:913:38 scans-whole-document
 xsl/webhelp/xsl/webhelp.xsl:2:1 missing-id-in-stylesheet
 xsl/website/autolayout.xsl:2:1 missing-id-in-stylesheet
 xsl/website/autolayout.xsl:2:1 too-many-templates
@@ -3292,8 +3413,8 @@ xsl/website/olink.xsl:160:5 setting-value-of-variable-incorrectly
 xsl/website/olink.xsl:185:9 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 xsl/website/olink.xsl:186:9 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
 xsl/website/rss.xsl:2:1 missing-id-in-stylesheet
-xsl/website/rss.xsl:36:38 select-starts-with-double-slash
-xsl/website/rss.xsl:112:41 select-starts-with-double-slash
+xsl/website/rss.xsl:36:38 scans-whole-document
+xsl/website/rss.xsl:112:41 scans-whole-document
 xsl/website/tabular.xsl:2:1 missing-id-in-stylesheet
 xsl/website/tabular.xsl:2:1 too-many-templates
 xsl/website/tabular.xsl:156:44 unabbreviated-axis fix ""
@@ -3389,7 +3510,8 @@ xsl/xhtml5/xhtml-profile-docbook.xsl:172:151 redundant-whitespace fix " "
 xsl/xhtml5/xhtml-profile-docbook.xsl:191:3 use-choose-without-otherwise
 xsl/xhtml5/xhtml-profile-docbook.xsl:239:39 redundant-whitespace fix " "
 xsl/xhtml5/xhtml-profile-docbook.xsl:247:3 unused-function-template-parameter
-xsl/xhtml5/xhtml-profile-docbook.xsl:258:29 select-starts-with-double-slash
+xsl/xhtml5/xhtml-profile-docbook.xsl:253:46 scans-whole-document
+xsl/xhtml5/xhtml-profile-docbook.xsl:258:29 scans-whole-document
 xsl/xhtml5/xhtml-profile-docbook.xsl:296:3 unused-function-template-parameter
 xsl/xhtml5/xhtml-profile-docbook.xsl:300:3 unused-function-template-parameter
 xsl/xhtml5/xhtml-profile-docbook.xsl:304:3 unused-function-template-parameter

@@ -1,0 +1,5 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+severity: warning
+message: An expression opens a path with //, which scans the whole document from the root every time it is evaluated. Name the path you mean, look the nodes up with an xsl:key, or bind the scan once in a top-level variable.

@@ -181,15 +181,15 @@
  * taken over the corpus four times larger and against the whole run, so
  * only growth ever paid that clock (#892).
  *
- * `SHADOWED` is the one place the sweep is knowingly wrong, and it is
- * wrong upward. `--suppress` matches by substring, so a check whose name
- * stands inside a sibling's cannot be silenced while that sibling runs:
- * `select-starts-with-double-slash` carries `starts-with-double-slash`
- * along and the pair is charged to one bar. Over-statement is the safe
- * side of a ceiling, and the table is what stops a second such pair
- * arriving unread — the other clash in the tree, `unused-function` inside
- * `unused-function-template-parameter`, crosses two stages and so is never
- * weighed together.
+ * `SHADOWED` is where the sweep would be knowingly wrong, and wrong
+ * upward. `--suppress` matches by substring, so a check whose name stands
+ * inside a sibling's cannot be silenced while that sibling runs:
+ * `select-starts-with-double-slash` carried `starts-with-double-slash`
+ * along and the pair was charged to one bar, until #958 renamed it for the
+ * harm it reports. The table is empty now and the gate is what stops a
+ * second pair arriving unread — the other clash in the tree,
+ * `unused-function` inside `unused-function-template-parameter`, crosses
+ * two stages and so is never weighed together.
  */
 
 const assert = require('assert')
@@ -264,13 +264,11 @@ const COST = 3
  * The checks a sibling of their own stage rides along with. `--suppress`
  * matches by substring, so a name standing inside another cannot be left
  * running while that other is silenced, and the sweep below charges the pair to
- * one bar. The error is upward, which is the safe side of a ceiling; the table
- * is what stops a second such pair arriving unread (#811).
+ * one bar. It is empty since #958 renamed the one pair that clashed, and it
+ * stays because the gate below is what stops a second arriving unread (#811).
  * @type {{[check: string]: string}}
  */
-const SHADOWED = {
-  'select-starts-with-double-slash': 'starts-with-double-slash',
-}
+const SHADOWED = {}
 
 /**
  * What fraction of the checks may read `0` before the clock has resolved none
