@@ -1,0 +1,30 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: scans-whole-document
+# A predicate holds an expression, evaluated forwards, so a `//` opening a path
+# there walks the document from its root once for every node the pattern is
+# tested against — the construct the expression side is named for, and not the
+# breadth the pattern's own steps are about (#970). Three in one predicate, two
+# of them buried in a call, and a branch of a union is the fourth shape. What
+# opens no path from the root stays quiet: `.//lambda` descends from the node in
+# hand and `mu//nu` from a step, exactly as they do under a `select`.
+found:
+  amount: 5
+  positions: [ [ 4, 30 ], [ 7, 34 ], [ 7, 53 ], [ 7, 72 ], [ 10, 41 ] ]
+  fixes: [ null, null, null, null, null ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="3.0" id="style1">
+    <xsl:output encoding="UTF-8" method="xml"/>
+    <xsl:template match="alpha[//beta]">
+      <xsl:copy-of select="."/>
+    </xsl:template>
+    <xsl:template match="gamma[not(//delta) and count(//epsilon) = 2 and //zeta]">
+      <xsl:copy-of select="."/>
+    </xsl:template>
+    <xsl:key name="kk" match="eta[theta | //iota]" use="@id"/>
+    <xsl:template match="kappa[.//lambda and mu//nu]">
+      <xsl:copy-of select="."/>
+    </xsl:template>
+  </xsl:stylesheet>

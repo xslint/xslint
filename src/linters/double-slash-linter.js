@@ -33,7 +33,15 @@
  * So a `//` a predicate holds is reported only where it *opens* a path there,
  * the token index standing at that path's own `from`, which is the `mu[nu |
  * //xi]` above; everything else between the brackets is the expression's own
- * business.
+ * business. And the one that does open a path there answers to the third check
+ * rather than to either of the pair, which is #970's: a predicate holds an
+ * expression wherever it stands, so `match="item[//flag]"` walks the document
+ * from its root once for every candidate, exactly as the `select` beside it
+ * would. It drew the second check's advice to name a specific path, which is
+ * about breadth and has nothing to say to a test that names no node of the
+ * pattern at all — #432 having rewritten both messages to stop claiming a
+ * document scan, rightly for the steps of a path and wrongly for the one
+ * construct between brackets that performs one.
  *
  * Two more things came with the kind. The fix cuts the two characters where
  * they stand rather than rewriting the value around them, so it no longer
@@ -106,7 +114,8 @@ const {logger} = require('../logger')
 const LEADING = 'starts-with-double-slash'
 
 /**
- * Name of the check for a `//` standing anywhere else in it.
+ * Name of the check for a `//` standing anywhere else on the path the pattern
+ * itself walks, a predicate's own being an expression's and not that path's.
  * @type {string}
  */
 const INNER = 'use-double-slash'
@@ -182,19 +191,31 @@ const heads = function(branches, at) {
 }
 
 /**
- * Whether the `//` at that token index is a step of the pattern's own path,
- * rather than of an expression a predicate holds. A predicate holds an
- * expression, whose inner `//` answers to no check of ours anywhere else — the
+ * Whether the `//` at that token index stands inside a predicate, which is what
+ * decides the language it is written in: a predicate holds an expression, and
+ * everything the pattern spells outside one is a step of the path it walks.
+ * @param {Array.<object>} inner - The predicate nodes the pattern holds
+ * @param {number} at - Index of the `//` token
+ * @return {boolean} - True when a predicate holds it
+ */
+const buried = function(inner, at) {
+  return inner.some((one) => one.from <= at && at < one.to)
+}
+
+/**
+ * Whether the `//` at that token index is a step of the pattern's own path, or
+ * else opens a path of the expression a predicate holds. A descendant step
+ * between brackets answers to no check of ours anywhere else — the
  * `xi//omicron` a `select` carries draws nothing, where the same text under a
  * `@match` drew this one (#948).
  * @param {Array.<object>} inner - The predicate nodes the pattern holds
  * @param {Array.<object>} paths - The path nodes it holds
  * @param {number} at - Index of the `//` token
- * @return {boolean} - True when the pattern's own path carries it
+ * @return {boolean} - True when one of the two carries it
  */
 const owned = function(inner, paths, at) {
   let own = true
-  if (inner.some((one) => one.from <= at && at < one.to)) {
+  if (buried(inner, at)) {
     own = paths.some((one) => one.from === at)
   }
   return own
@@ -237,7 +258,9 @@ const separators = function(found) {
   parseOf(found).tokens.forEach((token, at) => {
     if (token.type === TOKENS.DOUBLE_SLASH && owned(inner, paths, at)) {
       let entry = {check: INNER}
-      if (heads(branches, at)) {
+      if (buried(inner, at)) {
+        entry = {check: SCANNING}
+      } else if (heads(branches, at)) {
         entry = {check: LEADING, fix: cut(found, token)}
       }
       results.push({...entry, at: token.start})

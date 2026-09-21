@@ -5,11 +5,11 @@ pack: starts-with-double-slash
 # A branch of a union is matched exactly as a whole pattern is, so a `//`
 # opening one is the same redundancy — including a branch of the pattern a
 # bracket holds. The `//` of the union inside a predicate opens no branch: that
-# is an expression, and there the leading `//` really does scan the document
-# (#586).
+# is an expression, and there the leading `//` really does scan the document, so
+# it is reported as the scan it is (#586, #970).
 found:
   amount: 7
-  positions: [ [ 4, 32 ], [ 7, 24 ], [ 7, 39, use-double-slash ], [ 10, 36 ], [ 10, 44 ], [ 11, 32 ], [ 14, 32, use-double-slash ] ]
+  positions: [ [ 4, 32 ], [ 7, 24 ], [ 7, 39, use-double-slash ], [ 10, 36 ], [ 10, 44 ], [ 11, 32 ], [ 14, 32, scans-whole-document ] ]
   fixes: [ "", "", null, "", "", "", null ]
 input: |-
   <?xml version="1.0"?>

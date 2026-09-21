@@ -8,13 +8,14 @@ pack: use-double-slash
 # three buried in one predicate go unreported, the one a nested predicate holds
 # with them, and the `nu//xi` standing beside the `lambda//mu` that is reported.
 # What survives is the pattern's own separator, and the `//` that *opens* a path
-# a predicate holds, which scans the document from the root once per candidate
-# and is the case #586 put here. The last row is where a predicate ends: the
+# a predicate holds — which scans the document from the root once per candidate,
+# so it answers to the check named for that and not to this one (#970). The last
+# row is where a predicate ends: the
 # `//` behind the `]` is the pattern's own, so the extent a predicate covers is
 # read up to its closing bracket and never over it.
 found:
   amount: 3
-  positions: [ [ 10, 30 ], [ 13, 42 ], [ 14, 34 ] ]
+  positions: [ [ 10, 30 ], [ 13, 42, scans-whole-document ], [ 14, 34 ] ]
   fixes: [ null, null, null ]
 input: |-
   <?xml version="1.0"?>
