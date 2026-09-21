@@ -258,7 +258,7 @@
         "message": "A variable, function, or template name starts with a digit, which is invalid in XPath. Rename it to start with a letter."
       },
       "not-creating-attribute-correctly": {
-        "xpath": "//xsl:attribute[not(contains(@name, '{')) and not(@_name)][not(@namespace) and not(@_namespace)][parent::*[not(self::xsl:*)]][not(*) or (count(*) = 1 and xsl:value-of[not(@separator) and not(@_separator)])][not(preceding-sibling::*[not(self::xsl:variable) and not(self::xsl:attribute)])][not(preceding-sibling::xsl:attribute[@_name or not(@name) or contains(@name, '{')])][not(preceding-sibling::xsl:attribute/@name = @name)]",
+        "xpath": "//xsl:attribute[not(contains(@name, '{')) and not(@_name)][not(@namespace) and not(@_namespace)][parent::*[not(self::xsl:*)]][not(*) or (count(*) = 1 and (xsl:value-of[not(@separator) and not(@_separator)] or xsl:text[not(@disable-output-escaping) and not(@_disable-output-escaping)]))][not(preceding-sibling::*[not(self::xsl:variable) and not(self::xsl:attribute)])][not(preceding-sibling::xsl:attribute[@_name or not(@name) or contains(@name, '{')])][not(preceding-sibling::xsl:attribute/@name = @name)]",
         "severity": "warning",
         "message": "xsl:attribute with a static name on a literal element can be a literal attribute (an AVT for a computed value). Write it inline."
       },
@@ -288,9 +288,9 @@
         "message": "A variable is assigned via a nested xsl:value-of instead of the select attribute. Use select syntax instead."
       },
       "short-names": {
-        "xpath": "//(xsl:variable | xsl:template)[string-length(@name) = 1] | //xsl:function[string-length(substring-after(@name, \":\")) = 1]",
+        "xpath": "//(xsl:variable | xsl:param | xsl:template | xsl:function)[string-length(substring-after(@name, \":\")) = 1 or (string-length(@name) = 1 and not(contains(@name, \":\")))]",
         "severity": "warning",
-        "message": "A variable, function, or template has a single-character name. Use a descriptive name that reveals intent."
+        "message": "A variable, parameter, function, or template has a single-character name. Use a descriptive name that reveals intent."
       },
       "sort-not-first": {
         "xpath": "//xsl:sort[preceding-sibling::*[not(self::xsl:sort) and not(self::xsl:with-param)]]",
