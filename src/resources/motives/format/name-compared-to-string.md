@@ -27,7 +27,11 @@ An ordering comparison is a different question — `name() lt 'm'` asks where th
 name sorts, which no node test expresses — and so is a comparison about another
 node, `name(@a) = 'x'` speaking of the attribute rather than of the element a
 `self::` step would match. In a 1.0 stylesheet a `local-name()` comparison has no
-shorter equivalent at all, the `*:x` wildcard being XPath 2.0's.
+shorter equivalent at all, the `*:x` wildcard being XPath 2.0's, so there it
+stands as written. Neither has a comparison with a string no name can be spelled
+with: `name() = ''` asks whether the node has a name at all, which is a question
+about text nodes and comments rather than about which element this is, and no
+node test puts it at any version.
 
 Where the comparison stands settles it as well, because a `self::` step asks
 about an element and the context need not be one. The `self` axis selects

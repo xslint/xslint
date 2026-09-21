@@ -49,6 +49,19 @@
  * name test — but that is a rewrite of another shape, and 1.0 has none at all,
  * so the string comparison is the only way to put the question there.
  *
+ * That rule reached the axis arm and not the version one until #962. `test`
+ * builds no node test for a `local-name()` comparison in a 1.0 stylesheet,
+ * the `*:name` wildcard being 2.0's, nor for a string XML cannot spell a name
+ * with, and `lintByName` reported both regardless and dropped the fix alone.
+ * So the advice named a rewrite the version has no spelling for, over
+ * `local-name()`, which is the one call that is *not* prefix-fragile and so
+ * answers half the message before it is read. 302 of the check's 498 rows
+ * over the three corpora were such reports: 293 a `local-name()` in 1.0
+ * DocBook-XSL, and 9 a `name() = ''`, which asks whether a node has a name at
+ * all and no node test spells at any version. What builds no replacement is
+ * withheld whole now, one rule over both causes rather than a version test
+ * standing beside a literal test.
+ *
  * The context is carried down a walk rather than climbed to, because the parse
  * holds no parent pointers and a step holds its predicates as its children.
  * Only a predicate moves it, and it moves to what the step or the filter
@@ -272,15 +285,15 @@ const test = function(local, operator, literal, modern) {
 }
 
 /**
- * The `name()`/`local-name()`-versus-string comparisons in an expression: each
- * carries the offset it starts at, its verbatim text, and the node test that
- * replaces it (or null when it cannot be rewritten). Both classes are gathered,
- * XPath spelling one question two ways from 2.0 on (#763), and the string is
- * what the literal holds rather than how it is written (#598).
+ * The `name()`/`local-name()`-versus-string comparisons a node test replaces:
+ * the offset each starts at, its verbatim text, and that test. One no test
+ * replaces is not among them, the report being withheld whole there (#962).
+ * Both classes are gathered (#763), and the string is what the literal holds
+ * rather than how it is written (#598).
  * @param {{node: Node, expression: string, pattern: boolean}} found - The
  *  expression, whole, as `expressionsOf` yields it
  * @param {boolean} modern - Whether the stylesheet is 2.0 or 3.0
- * @return {Array.<{offset: number, value: string, replacement: ?string}>} -
+ * @return {Array.<{offset: number, value: string, replacement: string}>} -
  *  The comparisons found
  */
 const comparisons = function(found, modern) {
@@ -288,11 +301,15 @@ const comparisons = function(found, modern) {
   for (const {node, names} of weighed(found)) {
     const pair = paired(found, node)
     const operator = operatorOf(found, node.children[0], node.children[1])
+    let replacement = null
     if (pair !== null && OPERATORS.includes(operator) && names) {
+      replacement = test(pair.local, operator, pair.literal, modern)
+    }
+    if (replacement !== null) {
       results.push({
         offset: offsetOf(found, node),
         value: textOf(found, node),
-        replacement: test(pair.local, operator, pair.literal, modern),
+        replacement: replacement,
       })
     }
   }
@@ -301,8 +318,8 @@ const comparisons = function(found, modern) {
 
 /**
  * Lint the valid expressions for `name()`/`local-name()` compared with a string
- * literal, reporting one defect per comparison with the fix that turns it into
- * a node test when one can be built.
+ * literal, reporting one defect per comparison a node test replaces, with the
+ * fix that turns it into one.
  * @param {Array.<{source: object, found: object}>} expressions - The valid
  *  expressions the validator kept, each paired with the file it came from
  * @param {Array.<string>} suppressions - Array of suppressed checks
@@ -316,12 +333,8 @@ const lintByName = function(expressions, suppressions = []) {
     for (const {source, found} of expressions) {
       const modern = since(found.version, MODERN)
       for (const {offset, value, replacement} of comparisons(found, modern)) {
-        let fix
-        if (replacement !== null) {
-          fix = {value, replacement}
-        }
         defects.push(
-          defect(CHECK, META, source, found, offset, fix),
+          defect(CHECK, META, source, found, offset, {value, replacement}),
         )
       }
     }

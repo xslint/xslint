@@ -575,7 +575,6 @@ common/verbatim.xsl:607:49 string-length-compared-to-zero suggestion "$ns-prefix
 common/verbatim.xsl:660:5 setting-value-of-variable-incorrectly
 common/verbatim.xsl:792:27 using-namespace-axis
 common/verbatim.xsl:793:7 unused-variable
-common/verbatim.xsl:800:25 name-compared-to-string
 common/verbatim.xsl:886:3 unused-named-template
 docbook/docbooktotei.xsl:1:1 missing-id-in-stylesheet
 docbook/docbooktotei.xsl:1:1 too-many-templates
@@ -3741,7 +3740,6 @@ odt/teitoodt.xsl:991:185 redundant-whitespace fix " "
 odt/teitoodt.xsl:1015:3 unused-named-template
 odt/teitoodt.xsl:1017:3 unused-named-template
 odt/teitoodt.xsl:1040:29 using-namespace-axis
-odt/teitoodt.xsl:1048:27 name-compared-to-string
 odt/teitoodt.xsl:1096:7 text-outside-xsl-text suggestion "<xsl:text>\n\t-1\n      </xsl:text>"
 odt/teitoodt.xsl:1104:5 unused-function-template-parameter
 odt/teitoodt.xsl:1105:5 unused-function-template-parameter

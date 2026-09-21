@@ -1,11 +1,15 @@
 # SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
 # SPDX-License-Identifier: MIT
 ---
+# The `name()` half reports and rewrites at 1.0, where `self::p` is spelled as
+# readily as anywhere. The `local-name()` half beside it draws nothing: 1.0 has
+# no `*:name` wildcard, so the message advising a node test names one the
+# version cannot spell (#962).
 pack: name-compared-to-string
 found:
-  amount: 2
-  positions: [ [ 4, 36 ], [ 5, 36 ] ]
-  fixes: [ "self::p", null ]
+  amount: 1
+  positions: [ [ 4, 36 ] ]
+  fixes: [ "self::p" ]
 input: |-
   <?xml version="1.0"?>
   <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" id="s">

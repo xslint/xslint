@@ -193,7 +193,6 @@ contrib/tools/pawson/checkparams.xsl:84:9 text-outside-xsl-text suggestion "<xsl
 contrib/tools/pawson/checkparams.xsl:91:50 redundant-whitespace fix ""
 contrib/tools/pawson/checkparams.xsl:95:9 text-outside-xsl-text suggestion "<xsl:text>'  \n          Missing .frag extension\n        </xsl:text>"
 contrib/tools/tennison/modify.xsl:8:1 missing-id-in-stylesheet
-contrib/tools/tennison/modify.xsl:42:26 name-compared-to-string
 contrib/xsl/applethelp/applethelp.xsl:5:1 missing-id-in-stylesheet
 contrib/xsl/applethelp/htmlhelp-common.xsl:2:1 missing-id-in-stylesheet
 contrib/xsl/applethelp/htmlhelp-common.xsl:2:1 too-many-templates
@@ -471,7 +470,6 @@ contrib/xsl/xsd2db/xsd2db.xsl:1197:16 use-choose-without-otherwise
 contrib/xsl/xsd2db/xsd2db.xsl:1199:22 use-choose-without-otherwise
 contrib/xsl/xsd2db/xsd2db.xsl:1369:13 use-choose-without-otherwise
 contrib/xsl/xsd2db/xsd2db.xsl:1469:13 use-choose-without-otherwise
-contrib/xsl/xsd2db/xsd2db.xsl:1496:26 name-compared-to-string
 contrib/xsl/xsd2db/xsd2db.xsl:1522:9 not-creating-attribute-correctly
 contrib/xsl/xsd2db/xsd2db.xsl:1581:9 not-creating-attribute-correctly
 contrib/xsl/xsd2db/xsd2db.xsl:1607:9 not-creating-attribute-correctly
@@ -483,7 +481,6 @@ contrib/xsl/xsd2db/xsd2db.xsl:2131:7 use-choose-without-otherwise
 contrib/xsl/xsd2db/xsd2db.xsl:2212:7 use-choose-without-otherwise
 contrib/xsl/xsd2db/xsd2db.xsl:2531:7 unused-function-template-parameter
 contrib/xsl/xsd2db/xsd2db.xsl:2536:19 text-outside-xsl-text suggestion "<xsl:text>attribute</xsl:text>"
-contrib/xsl/xsd2db/xsd2db.xsl:2536:35 name-compared-to-string
 contrib/xsl/xsd2db/xsd2db.xsl:2537:19 text-outside-xsl-text suggestion "<xsl:text>element</xsl:text>"
 contrib/xsl/xsd2db/xsd2db.xsl:2596:16 use-choose-without-otherwise
 contrib/xsl/xsd2db/xsd2db.xsl:2668:7 unused-function-template-parameter
@@ -493,11 +490,7 @@ contrib/xsl/xsd2db/xsd2db.xsl:2776:16 use-choose-without-otherwise
 contrib/xsl/xsd2db/xsd2db.xsl:2814:7 unused-function-template-parameter
 contrib/xsl/xsd2db/xsd2db.xsl:2844:16 use-choose-without-otherwise
 contrib/xsl/xsd2db/xsd2db.xsl:3810:7 unused-function-template-parameter
-contrib/xsl/xsd2db/xsd2db.xsl:3816:29 name-compared-to-string
-contrib/xsl/xsd2db/xsd2db.xsl:3822:29 name-compared-to-string
-contrib/xsl/xsd2db/xsd2db.xsl:3837:32 name-compared-to-string
 contrib/xsl/xsd2db/xsd2db.xsl:3841:19 unused-variable
-contrib/xsl/xsd2db/xsd2db.xsl:3861:24 name-compared-to-string
 contrib/xsl/xsd2db/xsd2db.xsl:3928:4 unused-named-template
 contrib/xsl/xsd2db/xsd2db.xsl:4092:10 use-choose-without-otherwise
 contrib/xsl/xsd2db/xsd2db.xsl:4195:10 use-choose-without-otherwise
@@ -512,22 +505,14 @@ contrib/xsl/xsd2db/xsd2db.xsl:4705:13 use-choose-without-otherwise
 contrib/xsl/xsd2db/xsd2db.xsl:4783:7 use-choose-without-otherwise
 contrib/xsl/xsd2db/xsd2db.xsl:4792:13 use-choose-without-otherwise
 contrib/xsl/xsd2db/xsd2db.xsl:5108:13 use-choose-without-otherwise
-contrib/xsl/xsd2db/xsd2db.xsl:5110:32 name-compared-to-string
-contrib/xsl/xsd2db/xsd2db.xsl:5123:32 name-compared-to-string
-contrib/xsl/xsd2db/xsd2db.xsl:5140:32 name-compared-to-string
-contrib/xsl/xsd2db/xsd2db.xsl:5151:32 name-compared-to-string
 contrib/xsl/xsd2db/xsd2db.xsl:5241:7 oversized-template
 contrib/xsl/xsd2db/xsd2db.xsl:5251:7 empty-content-in-instructions
 contrib/xsl/xsd2db/xsd2db.xsl:5253:7 use-choose-without-otherwise
 contrib/xsl/xsd2db/xsd2db.xsl:5261:13 unused-variable
-contrib/xsl/xsd2db/xsd2db.xsl:5293:46 name-compared-to-string
-contrib/xsl/xsd2db/xsd2db.xsl:5400:50 name-compared-to-string
 contrib/xsl/xsd2db/xsd2db.xsl:5461:7 oversized-template
 contrib/xsl/xsd2db/xsd2db.xsl:5471:7 empty-content-in-instructions
 contrib/xsl/xsd2db/xsd2db.xsl:5472:7 use-choose-without-otherwise
 contrib/xsl/xsd2db/xsd2db.xsl:5480:13 unused-variable
-contrib/xsl/xsd2db/xsd2db.xsl:5512:46 name-compared-to-string
-contrib/xsl/xsd2db/xsd2db.xsl:5619:50 name-compared-to-string
 contrib/xsl/xsd2db/xsd2db.xsl:5753:7 use-choose-without-otherwise
 contrib/xsl/xsd2db/xsd2db.xsl:5835:7 use-choose-without-otherwise
 contrib/xsl/xsd2db/xsd2db.xsl:5858:13 unused-variable
@@ -608,7 +593,6 @@ litprog/example/doc.xsl:42:34 select-starts-with-double-slash
 releasetools/.identity.xsl:1:1 missing-id-in-stylesheet
 releasetools/.make-docbook-rng.xsl:1:1 missing-id-in-stylesheet
 releasetools/.make-litprog.xsl:1:1 missing-id-in-stylesheet
-releasetools/.make-litprog.xsl:20:26 name-compared-to-string
 releasetools/eval-xpath.xsl:2:1 missing-id-in-stylesheet
 releasetools/eval-xpath.xsl:3:3 redundant-namespace-declarations fix ""
 releasetools/eval-xpath.xsl:11:5 use-choose-without-otherwise
@@ -629,7 +613,6 @@ releasetools/xslnsfiles/manpages.table.xsl:2:1 missing-id-in-stylesheet
 releasetools/xslnsfiles/manpages.table.xsl:2:1 not-using-output
 releasetools/xslnsfiles/manpages.table.xsl:2:1 too-many-templates
 releasetools/xslnsfiles/manpages.table.xsl:3:17 leaking-result-namespace suggestion "exsl d"
-releasetools/xslnsfiles/manpages.table.xsl:44:21 name-compared-to-string
 releasetools/xslnsfiles/manpages.table.xsl:340:5 setting-value-of-variable-incorrectly
 releasetools/xslnsfiles/manpages.table.xsl:414:7 setting-value-of-variable-incorrectly
 releasetools/xslnsfiles/manpages.table.xsl:437:5 use-single-option-for-choose
@@ -650,29 +633,19 @@ releasetools/xslnsfiles/titlepage.xsl:625:23 count-compared-to-zero fix "child::
 releasetools/xslnsfiles/titlepage.xsl:625:29 unabbreviated-axis fix ""
 releasetools/xslnsfiles/titlepage.xsl:781:7 text-outside-xsl-text suggestion "<xsl:text>d:docinfo</xsl:text>"
 releasetools/xslnsfiles/titlepage.xsl:796:3 unused-variable
-releasetools/xslnsfiles/titlepage.xsl:835:17 name-compared-to-string
-releasetools/xslnsfiles/titlepage.xsl:836:20 name-compared-to-string
-releasetools/xslnsfiles/titlepage.xsl:837:20 name-compared-to-string
 releasetools/xslnsfiles/titlepage.xsl:870:1 oversized-template
 releasetools/xslnsfiles/titlepage.xsl:895:7 text-outside-xsl-text suggestion "<xsl:text>d:docinfo</xsl:text>"
 releasetools/xslnsfiles/titlepage.xsl:904:7 text-outside-xsl-text suggestion "<xsl:text>recto</xsl:text>"
-releasetools/xslnsfiles/titlepage.xsl:968:25 name-compared-to-string
-releasetools/xslnsfiles/titlepage.xsl:969:28 name-compared-to-string
-releasetools/xslnsfiles/titlepage.xsl:970:28 name-compared-to-string
 releasetools/xslnsfiles/titlepage.xsl:1158:7 text-outside-xsl-text suggestion "<xsl:text>recto</xsl:text>"
 releasetools/xslnsfiles/titlepage.xsl:1170:21 name-compared-to-string suggestion "self::t:or"
 releasetools/xslnsfiles/titlepage.xsl:1211:7 text-outside-xsl-text suggestion "<xsl:text>recto</xsl:text>"
 releasetools/xslnsfiles/titlepage.xsl:1249:7 text-outside-xsl-text suggestion "<xsl:text>recto</xsl:text>"
 releasetools/xslnsfiles/titlepage.xsl:1317:11 text-outside-xsl-text suggestion "<xsl:text>|</xsl:text>"
-releasetools/xslnsfiles/titlepage.xsl:1329:21 name-compared-to-string
-releasetools/xslnsfiles/titlepage.xsl:1339:21 name-compared-to-string
 releasetools/xtangle.xsl:10:1 missing-id-in-stylesheet
 releasetools/xtangle.xsl:67:3 using-disable-output-escaping suggestion ""
 releasetools/xtangle.xsl:80:29 name-compared-to-string suggestion "self::disable-output-escaping"
 releasetools/xtangle.xsl:117:63 redundant-whitespace fix " "
-releasetools/xtangle.xsl:117:79 name-compared-to-string
 releasetools/xtangle.xsl:117:111 redundant-whitespace fix " "
-releasetools/xtangle.xsl:117:125 name-compared-to-string
 releasetools/xtangle.xsl:117:158 redundant-whitespace fix ""
 testdocs/fo-debug.xsl:2:1 missing-id-in-stylesheet
 testdocs/i18n/i18n-fo.xsl:2:1 missing-id-in-stylesheet
@@ -686,7 +659,6 @@ testdocs/i18n/localize.xsl:50:2 text-outside-xsl-text suggestion "<xsl:text>[non
 testdocs/i18n/localize.xsl:70:41 predicate-position-literal fix "1"
 testdocs/i18n/translators.xsl:2:1 missing-id-in-stylesheet
 testdocs/i18n/translators.xsl:25:31 select-starts-with-double-slash
-testdocs/i18n/translators.xsl:64:33 name-compared-to-string
 testdocs/xrefstyle.xsl:2:1 missing-id-in-stylesheet
 xsl/.make-catalog.xsl:2:1 missing-id-in-stylesheet
 xsl/VERSION.xsl:2:1 missing-id-in-stylesheet
@@ -770,9 +742,6 @@ xsl/common/autoidx-kosek.xsl:94:7 text-outside-xsl-text suggestion "<xsl:text>0<
 xsl/common/autoidx-kosek.xsl:117:18 count-compared-to-zero fix "$local.l10n.letters"
 xsl/common/autoidx-kosek.xsl:120:18 count-compared-to-zero fix "$l10n.letters"
 xsl/common/charmap.xsl:2:1 missing-id-in-stylesheet
-xsl/common/charmap.xsl:194:50 name-compared-to-string
-xsl/common/charmap.xsl:199:50 name-compared-to-string
-xsl/common/charmap.xsl:214:46 name-compared-to-string
 xsl/common/common.xsl:6:1 missing-id-in-stylesheet
 xsl/common/common.xsl:6:1 too-many-templates
 xsl/common/common.xsl:151:5 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
@@ -816,13 +785,9 @@ xsl/common/common.xsl:346:11 text-outside-xsl-text suggestion "<xsl:text>1</xsl:
 xsl/common/common.xsl:375:5 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 xsl/common/common.xsl:388:1 unused-named-template
 xsl/common/common.xsl:437:13 text-outside-xsl-text suggestion "<xsl:text>question</xsl:text>"
-xsl/common/common.xsl:437:29 name-compared-to-string
 xsl/common/common.xsl:438:13 text-outside-xsl-text suggestion "<xsl:text>answer</xsl:text>"
-xsl/common/common.xsl:438:29 name-compared-to-string
 xsl/common/common.xsl:439:13 text-outside-xsl-text suggestion "<xsl:text>qandadiv</xsl:text>"
-xsl/common/common.xsl:439:29 name-compared-to-string
 xsl/common/common.xsl:440:13 text-outside-xsl-text suggestion "<xsl:text>qandaset</xsl:text>"
-xsl/common/common.xsl:449:25 name-compared-to-string
 xsl/common/common.xsl:661:7 use-choose-without-otherwise
 xsl/common/common.xsl:812:3 unused-function-template-parameter
 xsl/common/common.xsl:1037:61 redundant-whitespace fix ""
@@ -932,13 +897,8 @@ xsl/common/labels.xsl:202:3 use-choose-without-otherwise
 xsl/common/labels.xsl:293:3 use-choose-without-otherwise
 xsl/common/labels.xsl:336:3 use-choose-without-otherwise
 xsl/common/labels.xsl:370:3 use-choose-without-otherwise
-xsl/common/labels.xsl:381:25 name-compared-to-string
-xsl/common/labels.xsl:384:25 name-compared-to-string
-xsl/common/labels.xsl:387:25 name-compared-to-string
-xsl/common/labels.xsl:390:25 name-compared-to-string
 xsl/common/labels.xsl:406:3 use-choose-without-otherwise
 xsl/common/labels.xsl:433:3 use-choose-without-otherwise
-xsl/common/labels.xsl:444:25 name-compared-to-string
 xsl/common/labels.xsl:501:3 use-choose-without-otherwise
 xsl/common/labels.xsl:542:5 blank-nested-if
 xsl/common/labels.xsl:552:3 use-single-option-for-choose
@@ -1065,20 +1025,14 @@ xsl/common/targets.xsl:310:35 select-starts-with-double-slash
 xsl/common/titles.xsl:2:1 missing-id-in-stylesheet
 xsl/common/titles.xsl:2:1 too-many-templates
 xsl/common/titles.xsl:5:17 leaking-result-namespace suggestion "doc d xlink"
-xsl/common/titles.xsl:42:21 name-compared-to-string
 xsl/common/titles.xsl:222:3 unused-function-template-parameter
 xsl/common/titles.xsl:240:7 text-outside-xsl-text suggestion "<xsl:text>REFENTRY WITHOUT TITLE???</xsl:text>"
 xsl/common/titles.xsl:471:11 use-choose-without-otherwise
 xsl/common/titles.xsl:472:13 text-outside-xsl-text suggestion "<xsl:text>Note</xsl:text>"
-xsl/common/titles.xsl:472:29 name-compared-to-string
 xsl/common/titles.xsl:473:13 text-outside-xsl-text suggestion "<xsl:text>Important</xsl:text>"
-xsl/common/titles.xsl:473:29 name-compared-to-string
 xsl/common/titles.xsl:474:13 text-outside-xsl-text suggestion "<xsl:text>Caution</xsl:text>"
-xsl/common/titles.xsl:474:29 name-compared-to-string
 xsl/common/titles.xsl:475:13 text-outside-xsl-text suggestion "<xsl:text>Warning</xsl:text>"
-xsl/common/titles.xsl:475:29 name-compared-to-string
 xsl/common/titles.xsl:476:13 text-outside-xsl-text suggestion "<xsl:text>Tip</xsl:text>"
-xsl/common/titles.xsl:476:29 name-compared-to-string
 xsl/common/titles.xsl:706:21 count-compared-to-zero fix "not(child::node())"
 xsl/common/titles.xsl:706:27 unabbreviated-axis fix ""
 xsl/common/titles.xsl:717:21 count-compared-to-zero fix "child::node()"
@@ -1090,13 +1044,7 @@ xsl/common/titles.xsl:783:25 count-compared-to-zero fix "not($etarget)"
 xsl/common/titles.xsl:840:3 unused-function-template-parameter
 xsl/common/utility.xsl:2:1 missing-id-in-stylesheet
 xsl/common/utility.xsl:215:3 use-choose-without-otherwise
-xsl/common/utility.xsl:216:25 name-compared-to-string
-xsl/common/utility.xsl:217:10 name-compared-to-string
 xsl/common/utility.xsl:218:29 select-starts-with-double-slash
-xsl/common/utility.xsl:218:33 name-compared-to-string
-xsl/common/utility.xsl:219:12 name-compared-to-string
-xsl/common/utility.xsl:223:18 name-compared-to-string
-xsl/common/utility.xsl:224:36 name-compared-to-string
 xsl/eclipse/eclipse.xsl:2:1 missing-id-in-stylesheet
 xsl/eclipse/eclipse.xsl:70:29 count-compared-to-zero fix "not(key('id',$rootid))"
 xsl/eclipse/eclipse.xsl:263:34 select-starts-with-double-slash
@@ -1203,7 +1151,6 @@ xsl/epub/docbook.xsl:1598:3 unused-named-template
 xsl/epub/docbook.xsl:1599:5 unused-function-template-parameter
 xsl/epub/docbook.xsl:1685:7 text-outside-xsl-text suggestion "<xsl:text>6</xsl:text>"
 xsl/epub/docbook.xsl:1693:5 blank-nested-if
-xsl/epub/docbook.xsl:1704:56 name-compared-to-string
 xsl/epub/docbook.xsl:1714:63 redundant-whitespace fix " "
 xsl/epub/docbook.xsl:1714:108 redundant-whitespace fix " "
 xsl/epub/docbook.xsl:1714:158 redundant-whitespace fix " "
@@ -1279,7 +1226,6 @@ xsl/epub3/epub3-element-mods.xsl:680:7 text-outside-xsl-text suggestion "<xsl:te
 xsl/epub3/epub3-element-mods.xsl:682:7 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 xsl/epub3/epub3-element-mods.xsl:684:7 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
 xsl/epub3/epub3-element-mods.xsl:961:7 use-choose-without-otherwise
-xsl/epub3/epub3-element-mods.xsl:1108:35 name-compared-to-string
 xsl/epub3/epub3-element-mods.xsl:1146:17 string-length-compared-to-zero suggestion "$docbook.css.source != ''"
 xsl/epub3/epub3-element-mods.xsl:1160:17 string-length-compared-to-zero suggestion "$custom.css.source != ''"
 xsl/epub3/epub3-element-mods.xsl:1240:3 use-choose-without-otherwise
@@ -1305,24 +1251,14 @@ xsl/epub3/epub3-element-mods.xsl:2337:17 text-outside-xsl-text suggestion "<xsl:
 xsl/epub3/epub3-element-mods.xsl:2338:17 text-outside-xsl-text suggestion "<xsl:text>ListofExamples</xsl:text>"
 xsl/epub3/epub3-element-mods.xsl:2339:17 text-outside-xsl-text suggestion "<xsl:text>ListofProcedures</xsl:text>"
 xsl/epub3/epub3-element-mods.xsl:2340:17 text-outside-xsl-text suggestion "<xsl:text>ListofUnknown</xsl:text>"
-xsl/epub3/epub3-element-mods.xsl:2365:23 name-compared-to-string
 xsl/epub3/epub3-element-mods.xsl:2368:7 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
-xsl/epub3/epub3-element-mods.xsl:2368:23 name-compared-to-string
 xsl/epub3/epub3-element-mods.xsl:2369:7 text-outside-xsl-text suggestion "<xsl:text>2</xsl:text>"
-xsl/epub3/epub3-element-mods.xsl:2369:23 name-compared-to-string
 xsl/epub3/epub3-element-mods.xsl:2370:7 text-outside-xsl-text suggestion "<xsl:text>3</xsl:text>"
-xsl/epub3/epub3-element-mods.xsl:2370:23 name-compared-to-string
 xsl/epub3/epub3-element-mods.xsl:2371:7 text-outside-xsl-text suggestion "<xsl:text>4</xsl:text>"
-xsl/epub3/epub3-element-mods.xsl:2371:23 name-compared-to-string
 xsl/epub3/epub3-element-mods.xsl:2372:7 text-outside-xsl-text suggestion "<xsl:text>5</xsl:text>"
-xsl/epub3/epub3-element-mods.xsl:2372:23 name-compared-to-string
 xsl/epub3/epub3-element-mods.xsl:2373:7 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
-xsl/epub3/epub3-element-mods.xsl:2373:23 name-compared-to-string
 xsl/epub3/epub3-element-mods.xsl:2374:7 text-outside-xsl-text suggestion "<xsl:text>2</xsl:text>"
-xsl/epub3/epub3-element-mods.xsl:2374:23 name-compared-to-string
 xsl/epub3/epub3-element-mods.xsl:2375:7 text-outside-xsl-text suggestion "<xsl:text>3</xsl:text>"
-xsl/epub3/epub3-element-mods.xsl:2375:23 name-compared-to-string
-xsl/epub3/epub3-element-mods.xsl:2376:23 name-compared-to-string
 xsl/epub3/epub3-element-mods.xsl:2382:11 text-outside-xsl-text suggestion "<xsl:text>2</xsl:text>"
 xsl/epub3/epub3-element-mods.xsl:2383:11 text-outside-xsl-text suggestion "<xsl:text>3</xsl:text>"
 xsl/epub3/epub3-element-mods.xsl:2384:11 text-outside-xsl-text suggestion "<xsl:text>4</xsl:text>"
@@ -1428,7 +1364,6 @@ xsl/fo/autotoc.xsl:111:3 unused-variable
 xsl/fo/autotoc.xsl:147:3 unused-variable
 xsl/fo/autotoc.xsl:193:3 unused-function-template-parameter
 xsl/fo/autotoc.xsl:231:3 unused-variable
-xsl/fo/autotoc.xsl:316:41 name-compared-to-string
 xsl/fo/autotoc.xsl:938:24 unabbreviated-axis fix ""
 xsl/fo/autotoc.xsl:938:45 unabbreviated-axis fix ""
 xsl/fo/axf.xsl:2:1 missing-id-in-stylesheet
@@ -1461,10 +1396,7 @@ xsl/fo/biblio.xsl:505:29 predicate-position-literal fix "last()"
 xsl/fo/block.xsl:2:1 missing-id-in-stylesheet
 xsl/fo/block.xsl:2:1 too-many-templates
 xsl/fo/block.xsl:91:23 unabbreviated-axis fix ""
-xsl/fo/block.xsl:148:38 name-compared-to-string
-xsl/fo/block.xsl:149:40 name-compared-to-string
 xsl/fo/block.xsl:165:34 unabbreviated-axis fix ""
-xsl/fo/block.xsl:165:43 name-compared-to-string
 xsl/fo/block.xsl:248:19 text-outside-xsl-text suggestion "<xsl:text>0pt</xsl:text>"
 xsl/fo/block.xsl:351:13 text-outside-xsl-text suggestion "<xsl:text>0pt</xsl:text>"
 xsl/fo/block.xsl:353:13 text-outside-xsl-text suggestion "<xsl:text>0.5em</xsl:text>"
@@ -1608,11 +1540,6 @@ xsl/fo/fop1.xsl:189:37 select-starts-with-double-slash
 xsl/fo/fop1.xsl:206:27 select-starts-with-double-slash
 xsl/fo/formal.xsl:2:1 missing-id-in-stylesheet
 xsl/fo/formal.xsl:2:1 too-many-templates
-xsl/fo/formal.xsl:138:21 name-compared-to-string
-xsl/fo/formal.xsl:163:21 name-compared-to-string
-xsl/fo/formal.xsl:173:21 name-compared-to-string
-xsl/fo/formal.xsl:198:21 name-compared-to-string
-xsl/fo/formal.xsl:223:21 name-compared-to-string
 xsl/fo/formal.xsl:309:7 text-outside-xsl-text suggestion "<xsl:text>before</xsl:text>"
 xsl/fo/formal.xsl:360:7 text-outside-xsl-text suggestion "<xsl:text>before</xsl:text>"
 xsl/fo/formal.xsl:373:5 use-choose-without-otherwise
@@ -1635,7 +1562,6 @@ xsl/fo/glossary.xsl:738:11 text-outside-xsl-text suggestion "<xsl:text>1</xsl:te
 xsl/fo/glossary.xsl:801:3 text-outside-xsl-text suggestion "<xsl:text>, </xsl:text>"
 xsl/fo/glossary.xsl:806:3 text-outside-xsl-text suggestion "<xsl:text>, </xsl:text>"
 xsl/fo/glossary.xsl:811:3 text-outside-xsl-text suggestion "<xsl:text>, </xsl:text>"
-xsl/fo/glossary.xsl:865:34 name-compared-to-string
 xsl/fo/glossary.xsl:939:1 text-outside-xsl-text suggestion "<xsl:text>\n  &setup-language-variable;\n\n  </xsl:text>"
 xsl/fo/glossary.xsl:979:3 unused-variable
 xsl/fo/glossary.xsl:987:11 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
@@ -1643,7 +1569,6 @@ xsl/fo/glossary.xsl:989:11 text-outside-xsl-text suggestion "<xsl:text>1</xsl:te
 xsl/fo/glossary.xsl:1039:3 text-outside-xsl-text suggestion "<xsl:text>, </xsl:text>"
 xsl/fo/glossary.xsl:1044:3 text-outside-xsl-text suggestion "<xsl:text>, </xsl:text>"
 xsl/fo/glossary.xsl:1049:3 text-outside-xsl-text suggestion "<xsl:text>, </xsl:text>"
-xsl/fo/glossary.xsl:1098:34 name-compared-to-string
 xsl/fo/graphics.xsl:6:1 missing-id-in-stylesheet
 xsl/fo/graphics.xsl:6:1 too-many-templates
 xsl/fo/graphics.xsl:57:3 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
@@ -1658,8 +1583,6 @@ xsl/fo/graphics.xsl:124:5 text-outside-xsl-text suggestion "<xsl:text>0</xsl:tex
 xsl/fo/graphics.xsl:130:5 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
 xsl/fo/graphics.xsl:131:5 text-outside-xsl-text suggestion "<xsl:text>1.0</xsl:text>"
 xsl/fo/graphics.xsl:135:5 text-outside-xsl-text suggestion "<xsl:text>1.0</xsl:text>"
-xsl/fo/graphics.xsl:147:21 name-compared-to-string
-xsl/fo/graphics.xsl:148:24 name-compared-to-string
 xsl/fo/graphics.xsl:205:5 text-outside-xsl-text suggestion "<xsl:text>auto</xsl:text>"
 xsl/fo/graphics.xsl:221:5 text-outside-xsl-text suggestion "<xsl:text>auto</xsl:text>"
 xsl/fo/graphics.xsl:227:5 text-outside-xsl-text suggestion "<xsl:text>auto</xsl:text>"
@@ -1789,18 +1712,6 @@ xsl/fo/lists.xsl:204:5 text-outside-xsl-text suggestion "<xsl:text>•</xsl:text
 xsl/fo/lists.xsl:255:9 not-creating-attribute-correctly
 xsl/fo/lists.xsl:267:9 not-creating-attribute-correctly
 xsl/fo/lists.xsl:295:36 unabbreviated-axis fix ""
-xsl/fo/lists.xsl:326:38 name-compared-to-string
-xsl/fo/lists.xsl:327:36 name-compared-to-string
-xsl/fo/lists.xsl:328:36 name-compared-to-string
-xsl/fo/lists.xsl:329:39 name-compared-to-string
-xsl/fo/lists.xsl:330:36 name-compared-to-string
-xsl/fo/lists.xsl:331:36 name-compared-to-string
-xsl/fo/lists.xsl:332:35 name-compared-to-string
-xsl/fo/lists.xsl:333:36 name-compared-to-string
-xsl/fo/lists.xsl:334:36 name-compared-to-string
-xsl/fo/lists.xsl:335:38 name-compared-to-string
-xsl/fo/lists.xsl:336:36 name-compared-to-string
-xsl/fo/lists.xsl:337:36 name-compared-to-string
 xsl/fo/lists.xsl:385:9 setting-value-of-variable-incorrectly
 xsl/fo/lists.xsl:713:11 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 xsl/fo/lists.xsl:724:13 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
@@ -1956,27 +1867,15 @@ xsl/fo/publishers.xsl:2:1 missing-id-in-stylesheet
 xsl/fo/publishers.xsl:2:1 too-many-templates
 xsl/fo/qandaset.xsl:2:1 missing-id-in-stylesheet
 xsl/fo/qandaset.xsl:2:1 too-many-templates
-xsl/fo/qandaset.xsl:62:38 name-compared-to-string
-xsl/fo/qandaset.xsl:63:40 name-compared-to-string
-xsl/fo/qandaset.xsl:64:40 name-compared-to-string
-xsl/fo/qandaset.xsl:65:40 name-compared-to-string
 xsl/fo/qandaset.xsl:76:15 text-outside-xsl-text suggestion "<xsl:text>2.5em</xsl:text>"
 xsl/fo/qandaset.xsl:133:5 text-outside-xsl-text suggestion "<xsl:text>2.5em</xsl:text>"
-xsl/fo/qandaset.xsl:178:36 name-compared-to-string
-xsl/fo/qandaset.xsl:179:38 name-compared-to-string
-xsl/fo/qandaset.xsl:180:38 name-compared-to-string
-xsl/fo/qandaset.xsl:181:38 name-compared-to-string
 xsl/fo/qandaset.xsl:193:15 text-outside-xsl-text suggestion "<xsl:text>2.5em</xsl:text>"
 xsl/fo/qandaset.xsl:263:25 string-length-compared-to-zero suggestion "$label.content != ''"
 xsl/fo/qandaset.xsl:275:36 unabbreviated-axis fix ""
-xsl/fo/qandaset.xsl:281:44 name-compared-to-string
-xsl/fo/qandaset.xsl:286:42 name-compared-to-string
 xsl/fo/qandaset.xsl:298:3 unused-variable
 xsl/fo/qandaset.xsl:304:3 unused-variable
 xsl/fo/qandaset.xsl:315:25 string-length-compared-to-zero suggestion "$answer.label != ''"
 xsl/fo/qandaset.xsl:327:36 unabbreviated-axis fix ""
-xsl/fo/qandaset.xsl:330:38 name-compared-to-string
-xsl/fo/qandaset.xsl:330:65 name-compared-to-string
 xsl/fo/refentry.xsl:2:1 missing-id-in-stylesheet
 xsl/fo/refentry.xsl:2:1 too-many-templates
 xsl/fo/refentry.xsl:610:5 unused-variable
@@ -2012,24 +1911,9 @@ xsl/fo/synop.xsl:6:1 too-many-templates
 xsl/fo/synop.xsl:101:3 unused-variable
 xsl/fo/synop.xsl:102:3 unused-variable
 xsl/fo/synop.xsl:236:3 text-outside-xsl-text suggestion "<xsl:text>(</xsl:text>"
-xsl/fo/synop.xsl:497:80 name-compared-to-string
-xsl/fo/synop.xsl:498:41 name-compared-to-string
-xsl/fo/synop.xsl:499:78 name-compared-to-string
-xsl/fo/synop.xsl:526:51 name-compared-to-string
-xsl/fo/synop.xsl:658:80 name-compared-to-string
-xsl/fo/synop.xsl:659:41 name-compared-to-string
-xsl/fo/synop.xsl:660:78 name-compared-to-string
-xsl/fo/synop.xsl:682:51 name-compared-to-string
-xsl/fo/synop.xsl:815:80 name-compared-to-string
-xsl/fo/synop.xsl:816:41 name-compared-to-string
-xsl/fo/synop.xsl:817:78 name-compared-to-string
-xsl/fo/synop.xsl:840:51 name-compared-to-string
 xsl/fo/synop.xsl:961:3 unused-variable
-xsl/fo/synop.xsl:961:80 name-compared-to-string
 xsl/fo/synop.xsl:962:3 unused-variable
-xsl/fo/synop.xsl:962:41 name-compared-to-string
 xsl/fo/synop.xsl:963:3 unused-variable
-xsl/fo/synop.xsl:963:78 name-compared-to-string
 xsl/fo/table.xsl:2:1 missing-id-in-stylesheet
 xsl/fo/table.xsl:2:1 too-many-templates
 xsl/fo/table.xsl:6:17 redundant-namespace-declarations fix ""
@@ -2121,7 +2005,6 @@ xsl/fo/xref.xsl:73:29 count-compared-to-zero fix "not($etarget)"
 xsl/fo/xref.xsl:131:3 use-choose-without-otherwise
 xsl/fo/xref.xsl:195:27 count-compared-to-zero fix "not($etarget)"
 xsl/fo/xref.xsl:251:34 unabbreviated-axis fix ""
-xsl/fo/xref.xsl:268:25 name-compared-to-string
 xsl/fo/xref.xsl:283:3 unused-function-template-parameter
 xsl/fo/xref.xsl:284:3 unused-function-template-parameter
 xsl/fo/xref.xsl:285:3 unused-function-template-parameter
@@ -2204,21 +2087,15 @@ xsl/html/admon.xsl:38:5 text-outside-xsl-text suggestion "<xsl:text>tip</xsl:tex
 xsl/html/admon.xsl:39:5 text-outside-xsl-text suggestion "<xsl:text>important</xsl:text>"
 xsl/html/admon.xsl:40:5 text-outside-xsl-text suggestion "<xsl:text>note</xsl:text>"
 xsl/html/admon.xsl:48:7 text-outside-xsl-text suggestion "<xsl:text>Note</xsl:text>"
-xsl/html/admon.xsl:48:23 name-compared-to-string
 xsl/html/admon.xsl:49:7 text-outside-xsl-text suggestion "<xsl:text>Warning</xsl:text>"
-xsl/html/admon.xsl:49:23 name-compared-to-string
 xsl/html/admon.xsl:50:7 text-outside-xsl-text suggestion "<xsl:text>Caution</xsl:text>"
-xsl/html/admon.xsl:50:23 name-compared-to-string
 xsl/html/admon.xsl:51:7 text-outside-xsl-text suggestion "<xsl:text>Tip</xsl:text>"
-xsl/html/admon.xsl:51:23 name-compared-to-string
 xsl/html/admon.xsl:52:7 text-outside-xsl-text suggestion "<xsl:text>Important</xsl:text>"
-xsl/html/admon.xsl:52:23 name-compared-to-string
 xsl/html/admon.xsl:53:7 text-outside-xsl-text suggestion "<xsl:text>Note</xsl:text>"
 xsl/html/annotations.xsl:2:1 missing-id-in-stylesheet
 xsl/html/annotations.xsl:30:27 select-starts-with-double-slash
 xsl/html/annotations.xsl:60:7 short-names
 xsl/html/annotations.xsl:72:7 short-names
-xsl/html/annotations.xsl:147:38 name-compared-to-string
 xsl/html/autoidx-kimber.xsl:11:1 missing-id-in-stylesheet
 xsl/html/autoidx-kimber.xsl:11:1 not-using-output
 xsl/html/autoidx-kosek.xsl:6:1 missing-id-in-stylesheet
@@ -2247,26 +2124,15 @@ xsl/html/autotoc.xsl:25:5 text-outside-xsl-text suggestion "<xsl:text>dd</xsl:te
 xsl/html/autotoc.xsl:126:3 unused-function-template-parameter
 xsl/html/autotoc.xsl:127:3 unused-function-template-parameter
 xsl/html/autotoc.xsl:128:3 unused-function-template-parameter
-xsl/html/autotoc.xsl:278:23 name-compared-to-string
 xsl/html/autotoc.xsl:281:7 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
-xsl/html/autotoc.xsl:281:23 name-compared-to-string
 xsl/html/autotoc.xsl:282:7 text-outside-xsl-text suggestion "<xsl:text>2</xsl:text>"
-xsl/html/autotoc.xsl:282:23 name-compared-to-string
 xsl/html/autotoc.xsl:283:7 text-outside-xsl-text suggestion "<xsl:text>3</xsl:text>"
-xsl/html/autotoc.xsl:283:23 name-compared-to-string
 xsl/html/autotoc.xsl:284:7 text-outside-xsl-text suggestion "<xsl:text>4</xsl:text>"
-xsl/html/autotoc.xsl:284:23 name-compared-to-string
 xsl/html/autotoc.xsl:285:7 text-outside-xsl-text suggestion "<xsl:text>5</xsl:text>"
-xsl/html/autotoc.xsl:285:23 name-compared-to-string
 xsl/html/autotoc.xsl:286:7 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
-xsl/html/autotoc.xsl:286:23 name-compared-to-string
 xsl/html/autotoc.xsl:287:7 text-outside-xsl-text suggestion "<xsl:text>2</xsl:text>"
-xsl/html/autotoc.xsl:287:23 name-compared-to-string
 xsl/html/autotoc.xsl:288:7 text-outside-xsl-text suggestion "<xsl:text>3</xsl:text>"
-xsl/html/autotoc.xsl:288:23 name-compared-to-string
 xsl/html/autotoc.xsl:289:7 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
-xsl/html/autotoc.xsl:289:23 name-compared-to-string
-xsl/html/autotoc.xsl:290:23 name-compared-to-string
 xsl/html/autotoc.xsl:296:11 text-outside-xsl-text suggestion "<xsl:text>2</xsl:text>"
 xsl/html/autotoc.xsl:297:11 text-outside-xsl-text suggestion "<xsl:text>3</xsl:text>"
 xsl/html/autotoc.xsl:298:11 text-outside-xsl-text suggestion "<xsl:text>4</xsl:text>"
@@ -2321,9 +2187,7 @@ xsl/html/block.xsl:2:1 missing-id-in-stylesheet
 xsl/html/block.xsl:2:1 too-many-templates
 xsl/html/block.xsl:59:3 short-names
 xsl/html/block.xsl:186:44 unabbreviated-axis fix ""
-xsl/html/block.xsl:186:53 name-compared-to-string
 xsl/html/block.xsl:233:34 unabbreviated-axis fix ""
-xsl/html/block.xsl:233:43 name-compared-to-string
 xsl/html/block.xsl:516:23 count-compared-to-zero fix "not($revauthor)"
 xsl/html/callout.xsl:2:1 missing-id-in-stylesheet
 xsl/html/callout.xsl:124:7 blank-nested-if
@@ -2341,54 +2205,6 @@ xsl/html/callout.xsl:197:13 text-outside-xsl-text suggestion "<xsl:text>❾</xsl
 xsl/html/callout.xsl:198:13 text-outside-xsl-text suggestion "<xsl:text>❿</xsl:text>"
 xsl/html/changebars.xsl:2:1 missing-id-in-stylesheet
 xsl/html/changebars.xsl:21:1 unused-function-template-parameter
-xsl/html/changebars.xsl:50:21 name-compared-to-string
-xsl/html/changebars.xsl:51:10 name-compared-to-string
-xsl/html/changebars.xsl:52:10 name-compared-to-string
-xsl/html/changebars.xsl:53:10 name-compared-to-string
-xsl/html/changebars.xsl:54:10 name-compared-to-string
-xsl/html/changebars.xsl:55:10 name-compared-to-string
-xsl/html/changebars.xsl:56:10 name-compared-to-string
-xsl/html/changebars.xsl:57:10 name-compared-to-string
-xsl/html/changebars.xsl:58:10 name-compared-to-string
-xsl/html/changebars.xsl:59:10 name-compared-to-string
-xsl/html/changebars.xsl:60:10 name-compared-to-string
-xsl/html/changebars.xsl:61:10 name-compared-to-string
-xsl/html/changebars.xsl:62:10 name-compared-to-string
-xsl/html/changebars.xsl:63:10 name-compared-to-string
-xsl/html/changebars.xsl:64:10 name-compared-to-string
-xsl/html/changebars.xsl:65:10 name-compared-to-string
-xsl/html/changebars.xsl:66:10 name-compared-to-string
-xsl/html/changebars.xsl:67:10 name-compared-to-string
-xsl/html/changebars.xsl:68:10 name-compared-to-string
-xsl/html/changebars.xsl:69:10 name-compared-to-string
-xsl/html/changebars.xsl:70:10 name-compared-to-string
-xsl/html/changebars.xsl:71:10 name-compared-to-string
-xsl/html/changebars.xsl:72:10 name-compared-to-string
-xsl/html/changebars.xsl:73:10 name-compared-to-string
-xsl/html/changebars.xsl:74:10 name-compared-to-string
-xsl/html/changebars.xsl:75:10 name-compared-to-string
-xsl/html/changebars.xsl:76:10 name-compared-to-string
-xsl/html/changebars.xsl:77:10 name-compared-to-string
-xsl/html/changebars.xsl:82:21 name-compared-to-string
-xsl/html/changebars.xsl:83:10 name-compared-to-string
-xsl/html/changebars.xsl:84:10 name-compared-to-string
-xsl/html/changebars.xsl:85:10 name-compared-to-string
-xsl/html/changebars.xsl:86:10 name-compared-to-string
-xsl/html/changebars.xsl:87:10 name-compared-to-string
-xsl/html/changebars.xsl:88:10 name-compared-to-string
-xsl/html/changebars.xsl:89:10 name-compared-to-string
-xsl/html/changebars.xsl:90:10 name-compared-to-string
-xsl/html/changebars.xsl:91:10 name-compared-to-string
-xsl/html/changebars.xsl:92:10 name-compared-to-string
-xsl/html/changebars.xsl:93:10 name-compared-to-string
-xsl/html/changebars.xsl:94:10 name-compared-to-string
-xsl/html/changebars.xsl:95:10 name-compared-to-string
-xsl/html/changebars.xsl:96:10 name-compared-to-string
-xsl/html/changebars.xsl:97:10 name-compared-to-string
-xsl/html/changebars.xsl:98:10 name-compared-to-string
-xsl/html/changebars.xsl:103:21 name-compared-to-string
-xsl/html/changebars.xsl:104:24 name-compared-to-string
-xsl/html/changebars.xsl:105:24 name-compared-to-string
 xsl/html/chunk-changebars.xsl:1:1 missing-id-in-stylesheet
 xsl/html/chunk-code.xsl:2:1 missing-id-in-stylesheet
 xsl/html/chunk-code.xsl:2:1 too-many-templates
@@ -2473,7 +2289,6 @@ xsl/html/chunk.xsl:1:1 missing-id-in-stylesheet
 xsl/html/chunker.xsl:1:1 missing-id-in-stylesheet
 xsl/html/chunker.xsl:40:21 string-length-compared-to-zero suggestion "$base.dir = ''"
 xsl/html/chunker.xsl:68:25 count-compared-to-zero fix "not(parent::*)"
-xsl/html/chunker.xsl:117:21 name-compared-to-string
 xsl/html/chunkfast.xsl:1:1 missing-id-in-stylesheet
 xsl/html/chunktoc.xsl:1:1 missing-id-in-stylesheet
 xsl/html/chunktoc.xsl:1:1 too-many-templates
@@ -2538,9 +2353,6 @@ xsl/html/footnote.xsl:348:29 use-double-slash
 xsl/html/footnote.xsl:348:59 use-double-slash
 xsl/html/formal.xsl:2:1 missing-id-in-stylesheet
 xsl/html/formal.xsl:2:1 too-many-templates
-xsl/html/formal.xsl:43:25 name-compared-to-string
-xsl/html/formal.xsl:55:25 name-compared-to-string
-xsl/html/formal.xsl:129:21 name-compared-to-string
 xsl/html/formal.xsl:186:7 text-outside-xsl-text suggestion "<xsl:text>before</xsl:text>"
 xsl/html/formal.xsl:237:7 text-outside-xsl-text suggestion "<xsl:text>before</xsl:text>"
 xsl/html/formal.xsl:322:7 text-outside-xsl-text suggestion "<xsl:text>before</xsl:text>"
@@ -2567,7 +2379,6 @@ xsl/html/glossary.xsl:233:15 text-outside-xsl-text suggestion "<xsl:text>1</xsl:
 xsl/html/glossary.xsl:254:3 text-outside-xsl-text suggestion "<xsl:text>, </xsl:text>"
 xsl/html/glossary.xsl:259:3 text-outside-xsl-text suggestion "<xsl:text>, </xsl:text>"
 xsl/html/glossary.xsl:264:3 text-outside-xsl-text suggestion "<xsl:text>, </xsl:text>"
-xsl/html/glossary.xsl:332:36 name-compared-to-string
 xsl/html/glossary.xsl:406:1 text-outside-xsl-text suggestion "<xsl:text>\n  &setup-language-variable;\n  </xsl:text>"
 xsl/html/glossary.xsl:409:25 select-starts-with-double-slash
 xsl/html/glossary.xsl:494:1 text-outside-xsl-text suggestion "<xsl:text>\n\n  &setup-language-variable;\n\n  </xsl:text>"
@@ -2586,13 +2397,10 @@ xsl/html/graphics.xsl:222:7 text-outside-xsl-text suggestion "<xsl:text>0</xsl:t
 xsl/html/graphics.xsl:228:7 text-outside-xsl-text suggestion "<xsl:text>1.0</xsl:text>"
 xsl/html/graphics.xsl:229:7 text-outside-xsl-text suggestion "<xsl:text>1.0</xsl:text>"
 xsl/html/graphics.xsl:233:7 text-outside-xsl-text suggestion "<xsl:text>1.0</xsl:text>"
-xsl/html/graphics.xsl:239:23 name-compared-to-string
-xsl/html/graphics.xsl:240:26 name-compared-to-string
 xsl/html/graphics.xsl:264:7 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 xsl/html/graphics.xsl:269:7 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
 xsl/html/graphics.xsl:508:7 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
 xsl/html/graphics.xsl:509:7 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
-xsl/html/graphics.xsl:509:23 name-compared-to-string
 xsl/html/graphics.xsl:546:6 use-single-option-for-choose
 xsl/html/graphics.xsl:567:19 text-outside-xsl-text suggestion "<xsl:text>middle</xsl:text>"
 xsl/html/graphics.xsl:577:3 use-single-option-for-choose
@@ -2615,8 +2423,6 @@ xsl/html/html-rtf.xsl:2:1 missing-id-in-stylesheet
 xsl/html/html-rtf.xsl:2:1 too-many-templates
 xsl/html/html-rtf.xsl:60:3 unused-function-template-parameter
 xsl/html/html-rtf.xsl:97:3 unused-function-template-parameter
-xsl/html/html-rtf.xsl:180:44 name-compared-to-string
-xsl/html/html-rtf.xsl:203:44 name-compared-to-string
 xsl/html/html-rtf.xsl:299:1 unused-named-template
 xsl/html/html.xsl:2:1 missing-id-in-stylesheet
 xsl/html/html.xsl:2:1 too-many-templates
@@ -2750,8 +2556,6 @@ xsl/html/math.xsl:263:7 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>
 xsl/html/math.xsl:264:7 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 xsl/html/oldchunker.xsl:1:1 missing-id-in-stylesheet
 xsl/html/oldchunker.xsl:1:1 not-using-output
-xsl/html/oldchunker.xsl:86:19 name-compared-to-string
-xsl/html/oldchunker.xsl:150:19 name-compared-to-string
 xsl/html/onechunk.xsl:2:1 missing-id-in-stylesheet
 xsl/html/pi.xsl:2:1 missing-id-in-stylesheet
 xsl/html/pi.xsl:2:1 too-many-templates
@@ -2763,25 +2567,12 @@ xsl/html/publishers.xsl:2:1 missing-id-in-stylesheet
 xsl/html/publishers.xsl:2:1 too-many-templates
 xsl/html/qandaset.xsl:2:1 missing-id-in-stylesheet
 xsl/html/qandaset.xsl:2:1 too-many-templates
-xsl/html/qandaset.xsl:20:43 name-compared-to-string
-xsl/html/qandaset.xsl:21:47 name-compared-to-string
-xsl/html/qandaset.xsl:22:47 name-compared-to-string
-xsl/html/qandaset.xsl:23:47 name-compared-to-string
-xsl/html/qandaset.xsl:77:43 name-compared-to-string
-xsl/html/qandaset.xsl:78:47 name-compared-to-string
-xsl/html/qandaset.xsl:79:47 name-compared-to-string
-xsl/html/qandaset.xsl:80:47 name-compared-to-string
 xsl/html/qandaset.xsl:176:21 string-length-compared-to-zero suggestion "$label.content != ''"
-xsl/html/qandaset.xsl:185:45 name-compared-to-string
-xsl/html/qandaset.xsl:188:42 name-compared-to-string
 xsl/html/qandaset.xsl:218:3 unused-variable
 xsl/html/qandaset.xsl:230:21 string-length-compared-to-zero suggestion "$answer.label != ''"
-xsl/html/qandaset.xsl:237:38 name-compared-to-string
-xsl/html/qandaset.xsl:238:13 name-compared-to-string
 xsl/html/qandaset.xsl:275:3 unused-variable
 xsl/html/qandaset.xsl:278:3 unused-variable
 xsl/html/qandaset.xsl:287:17 string-length-compared-to-zero suggestion "$div.label != ''"
-xsl/html/qandaset.xsl:335:41 name-compared-to-string
 xsl/html/qandaset.xsl:384:3 unused-variable
 xsl/html/refentry.xsl:2:1 missing-id-in-stylesheet
 xsl/html/refentry.xsl:2:1 too-many-templates
@@ -2811,31 +2602,14 @@ xsl/html/synop.xsl:5:1 too-many-templates
 xsl/html/synop.xsl:125:3 unused-variable
 xsl/html/synop.xsl:126:3 unused-variable
 xsl/html/synop.xsl:468:5 use-choose-without-otherwise
-xsl/html/synop.xsl:978:80 name-compared-to-string
-xsl/html/synop.xsl:979:41 name-compared-to-string
-xsl/html/synop.xsl:980:78 name-compared-to-string
-xsl/html/synop.xsl:1009:51 name-compared-to-string
-xsl/html/synop.xsl:1192:80 name-compared-to-string
-xsl/html/synop.xsl:1193:41 name-compared-to-string
-xsl/html/synop.xsl:1194:78 name-compared-to-string
-xsl/html/synop.xsl:1218:51 name-compared-to-string
-xsl/html/synop.xsl:1402:80 name-compared-to-string
-xsl/html/synop.xsl:1403:41 name-compared-to-string
-xsl/html/synop.xsl:1404:78 name-compared-to-string
-xsl/html/synop.xsl:1428:51 name-compared-to-string
 xsl/html/synop.xsl:1599:3 unused-variable
-xsl/html/synop.xsl:1599:80 name-compared-to-string
 xsl/html/synop.xsl:1600:3 unused-variable
-xsl/html/synop.xsl:1600:41 name-compared-to-string
 xsl/html/synop.xsl:1601:3 unused-variable
-xsl/html/synop.xsl:1601:78 name-compared-to-string
 xsl/html/table.xsl:2:1 missing-id-in-stylesheet
 xsl/html/table.xsl:2:1 too-many-templates
 xsl/html/table.xsl:50:7 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
 xsl/html/table.xsl:85:3 unused-function-template-parameter
 xsl/html/table.xsl:142:1 oversized-template
-xsl/html/table.xsl:219:35 name-compared-to-string
-xsl/html/table.xsl:324:95 name-compared-to-string
 xsl/html/table.xsl:638:5 blank-nested-if
 xsl/html/table.xsl:674:3 blank-nested-if
 xsl/html/table.xsl:690:1 oversized-template
@@ -2893,10 +2667,6 @@ xsl/html/xref.xsl:150:3 unused-variable
 xsl/html/xref.xsl:166:21 count-compared-to-zero fix "not($target)"
 xsl/html/xref.xsl:184:25 count-compared-to-zero fix "not($etarget)"
 xsl/html/xref.xsl:262:34 unabbreviated-axis fix ""
-xsl/html/xref.xsl:278:21 name-compared-to-string
-xsl/html/xref.xsl:294:33 name-compared-to-string
-xsl/html/xref.xsl:294:61 name-compared-to-string
-xsl/html/xref.xsl:312:29 name-compared-to-string
 xsl/html/xref.xsl:330:3 unused-function-template-parameter
 xsl/html/xref.xsl:331:3 unused-function-template-parameter
 xsl/html/xref.xsl:332:3 unused-function-template-parameter
@@ -3006,21 +2776,14 @@ xsl/javahelp/javahelp.xsl:622:5 text-outside-xsl-text suggestion "<xsl:text>–<
 xsl/manpages/block.xsl:2:1 missing-id-in-stylesheet
 xsl/manpages/block.xsl:2:1 too-many-templates
 xsl/manpages/block.xsl:42:3 setting-value-of-variable-incorrectly
-xsl/manpages/block.xsl:76:46 name-compared-to-string
 xsl/manpages/block.xsl:89:5 blank-nested-if
-xsl/manpages/block.xsl:93:46 name-compared-to-string
-xsl/manpages/block.xsl:109:46 name-compared-to-string
-xsl/manpages/block.xsl:140:27 name-compared-to-string
-xsl/manpages/block.xsl:141:27 name-compared-to-string
 xsl/manpages/block.xsl:155:5 text-outside-xsl-text suggestion "<xsl:text>Yes</xsl:text>"
-xsl/manpages/block.xsl:223:31 name-compared-to-string
 xsl/manpages/block.xsl:329:7 text-outside-xsl-text suggestion "<xsl:text>before</xsl:text>"
 xsl/manpages/block.xsl:379:3 unused-function-template-parameter
 xsl/manpages/charmap.groff.xsl:2:1 missing-id-in-stylesheet
 xsl/manpages/docbook.xsl:2:1 missing-id-in-stylesheet
 xsl/manpages/docbook.xsl:5:17 redundant-namespace-declarations fix ""
 xsl/manpages/docbook.xsl:6:17 redundant-namespace-declarations fix ""
-xsl/manpages/docbook.xsl:92:25 name-compared-to-string
 xsl/manpages/docbook.xsl:101:36 select-starts-with-double-slash
 xsl/manpages/endnotes.xsl:2:1 missing-id-in-stylesheet
 xsl/manpages/endnotes.xsl:93:27 select-starts-with-double-slash
@@ -3029,9 +2792,6 @@ xsl/manpages/endnotes.xsl:151:13 not-creating-attribute-correctly
 xsl/manpages/endnotes.xsl:154:13 not-creating-attribute-correctly
 xsl/manpages/endnotes.xsl:177:1 oversized-template
 xsl/manpages/endnotes.xsl:245:82 redundant-whitespace fix " "
-xsl/manpages/endnotes.xsl:262:25 name-compared-to-string
-xsl/manpages/endnotes.xsl:263:25 name-compared-to-string
-xsl/manpages/endnotes.xsl:264:25 name-compared-to-string
 xsl/manpages/endnotes.xsl:348:5 setting-value-of-variable-incorrectly
 xsl/manpages/endnotes.xsl:419:3 setting-value-of-variable-incorrectly
 xsl/manpages/info.xsl:2:1 missing-id-in-stylesheet
@@ -3041,8 +2801,6 @@ xsl/manpages/info.xsl:314:9 setting-value-of-variable-incorrectly
 xsl/manpages/info.xsl:467:5 use-choose-without-otherwise
 xsl/manpages/info.xsl:515:27 unabbreviated-axis fix ""
 xsl/manpages/info.xsl:559:9 blank-nested-if
-xsl/manpages/info.xsl:681:40 name-compared-to-string
-xsl/manpages/info.xsl:760:29 name-compared-to-string
 xsl/manpages/inline.xsl:2:1 missing-id-in-stylesheet
 xsl/manpages/inline.xsl:2:1 too-many-templates
 xsl/manpages/inline.xsl:132:3 setting-value-of-variable-incorrectly
@@ -3075,15 +2833,11 @@ xsl/manpages/refentry.xsl:170:5 unused-variable
 xsl/manpages/refentry.xsl:176:5 unused-variable
 xsl/manpages/synop.xsl:2:1 missing-id-in-stylesheet
 xsl/manpages/synop.xsl:2:1 too-many-templates
-xsl/manpages/synop.xsl:102:21 name-compared-to-string
 xsl/manpages/synop.xsl:144:3 unused-variable
 xsl/manpages/synop.xsl:145:3 unused-variable
 xsl/manpages/synop.xsl:266:3 setting-value-of-variable-incorrectly
 xsl/manpages/synop.xsl:266:3 unused-variable
-xsl/manpages/synop.xsl:298:38 name-compared-to-string
-xsl/manpages/synop.xsl:301:38 name-compared-to-string
 xsl/manpages/table.xsl:2:1 missing-id-in-stylesheet
-xsl/manpages/table.xsl:49:21 name-compared-to-string
 xsl/manpages/tbl.xsl:2:1 missing-id-in-stylesheet
 xsl/manpages/tbl.xsl:2:1 too-many-templates
 xsl/manpages/tbl.xsl:4:3 leaking-result-namespace suggestion "exsl d"
@@ -3111,11 +2865,7 @@ xsl/profiling/profile.xsl:49:5 text-outside-xsl-text suggestion "<xsl:text>0</xs
 xsl/profiling/strip-attributes.xsl:2:1 missing-id-in-stylesheet
 xsl/profiling/xsl2profile.xsl:2:1 missing-id-in-stylesheet
 xsl/profiling/xsl2profile.xsl:2:1 too-many-templates
-xsl/profiling/xsl2profile.xsl:37:25 name-compared-to-string
-xsl/profiling/xsl2profile.xsl:40:25 name-compared-to-string
-xsl/profiling/xsl2profile.xsl:110:25 name-compared-to-string
 xsl/profiling/xsl2profile.xsl:110:65 redundant-whitespace fix " "
-xsl/profiling/xsl2profile.xsl:113:25 name-compared-to-string
 xsl/profiling/xsl2profile.xsl:148:29 use-double-slash
 xsl/roundtrip/blocks2dbk.xsl:13:1 missing-id-in-stylesheet
 xsl/roundtrip/blocks2dbk.xsl:13:1 too-many-templates
@@ -3285,9 +3035,6 @@ xsl/slides/fo/plain.xsl:517:7 setting-value-of-variable-incorrectly
 xsl/slides/fo/plain.xsl:522:7 setting-value-of-variable-incorrectly
 xsl/slides/tools/dbs3-upgrade.xsl:2:1 missing-id-in-stylesheet
 xsl/slides/tools/dbs3-upgrade.xsl:2:1 too-many-templates
-xsl/slides/tools/dbs3-upgrade.xsl:67:23 name-compared-to-string
-xsl/slides/tools/dbs3-upgrade.xsl:72:23 name-compared-to-string
-xsl/slides/tools/dbs3-upgrade.xsl:77:23 name-compared-to-string
 xsl/slides/xhtml/plain.xsl:2:1 missing-id-in-stylesheet
 xsl/slides/xhtml/plain.xsl:2:1 too-many-templates
 xsl/slides/xhtml/plain.xsl:222:5 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
@@ -3315,22 +3062,14 @@ xsl/template/titlepage.xsl:699:23 count-compared-to-zero fix "child::*"
 xsl/template/titlepage.xsl:699:29 unabbreviated-axis fix ""
 xsl/template/titlepage.xsl:872:7 text-outside-xsl-text suggestion "<xsl:text>docinfo</xsl:text>"
 xsl/template/titlepage.xsl:887:3 unused-variable
-xsl/template/titlepage.xsl:930:17 name-compared-to-string
-xsl/template/titlepage.xsl:931:20 name-compared-to-string
-xsl/template/titlepage.xsl:932:20 name-compared-to-string
 xsl/template/titlepage.xsl:965:1 oversized-template
 xsl/template/titlepage.xsl:988:7 text-outside-xsl-text suggestion "<xsl:text>docinfo</xsl:text>"
 xsl/template/titlepage.xsl:997:7 text-outside-xsl-text suggestion "<xsl:text>recto</xsl:text>"
-xsl/template/titlepage.xsl:1055:25 name-compared-to-string
-xsl/template/titlepage.xsl:1056:28 name-compared-to-string
-xsl/template/titlepage.xsl:1057:28 name-compared-to-string
 xsl/template/titlepage.xsl:1254:7 text-outside-xsl-text suggestion "<xsl:text>recto</xsl:text>"
 xsl/template/titlepage.xsl:1266:21 name-compared-to-string suggestion "self::t:or"
 xsl/template/titlepage.xsl:1306:7 text-outside-xsl-text suggestion "<xsl:text>recto</xsl:text>"
 xsl/template/titlepage.xsl:1343:7 text-outside-xsl-text suggestion "<xsl:text>recto</xsl:text>"
 xsl/template/titlepage.xsl:1411:11 text-outside-xsl-text suggestion "<xsl:text>|</xsl:text>"
-xsl/template/titlepage.xsl:1425:21 name-compared-to-string
-xsl/template/titlepage.xsl:1435:21 name-compared-to-string
 xsl/tools/xsl/build/addnewline.xsl:1:1 missing-id-in-stylesheet
 xsl/tools/xsl/build/burst.xsl:1:1 missing-id-in-stylesheet
 xsl/tools/xsl/build/burst.xsl:2:17 redundant-namespace-declarations fix ""
@@ -3342,24 +3081,13 @@ xsl/tools/xsl/build/db4-upgrade.xsl:670:18 name-compared-to-string suggestion "n
 xsl/tools/xsl/build/db4-upgrade.xsl:719:1 oversized-template
 xsl/tools/xsl/build/db4-upgrade.xsl:1053:48 redundant-whitespace fix " "
 xsl/tools/xsl/build/db4-upgrade.xsl:1071:2 text-outside-xsl-text suggestion "<xsl:text>significance</xsl:text>"
-xsl/tools/xsl/build/db4-upgrade.xsl:1291:23 name-compared-to-string
-xsl/tools/xsl/build/db4-upgrade.xsl:1299:23 name-compared-to-string
-xsl/tools/xsl/build/db4-upgrade.xsl:1304:23 name-compared-to-string
-xsl/tools/xsl/build/db4-upgrade.xsl:1311:23 name-compared-to-string
-xsl/tools/xsl/build/db4-upgrade.xsl:1363:23 name-compared-to-string
-xsl/tools/xsl/build/db4-upgrade.xsl:1370:20 name-compared-to-string
-xsl/tools/xsl/build/db4-upgrade.xsl:1376:20 name-compared-to-string
-xsl/tools/xsl/build/db4-upgrade.xsl:1382:20 name-compared-to-string
-xsl/tools/xsl/build/db4-upgrade.xsl:1390:27 name-compared-to-string
 xsl/tools/xsl/build/dblatex-release-notes.xsl:1:1 missing-id-in-stylesheet
 xsl/tools/xsl/build/doc-link-docbook.xsl:2:1 missing-id-in-stylesheet
 xsl/tools/xsl/build/docparam2txt.xsl:2:1 missing-id-in-stylesheet
 xsl/tools/xsl/build/entify.xsl:1:1 missing-id-in-stylesheet
 xsl/tools/xsl/build/entify.xsl:2:17 redundant-namespace-declarations fix ""
 xsl/tools/xsl/build/fix-params-ns.xsl:1:1 missing-id-in-stylesheet
-xsl/tools/xsl/build/fix-params-ns.xsl:27:26 name-compared-to-string
 xsl/tools/xsl/build/fix-params-ns.xsl:28:5 not-creating-element-correctly
-xsl/tools/xsl/build/fix-params-ns.xsl:33:26 name-compared-to-string
 xsl/tools/xsl/build/fix-params-ns.xsl:34:5 not-creating-element-correctly
 xsl/tools/xsl/build/html2roff.xsl:2:1 missing-id-in-stylesheet
 xsl/tools/xsl/build/html2roff.xsl:43:5 text-outside-xsl-text suggestion "<xsl:text>\n.\n</xsl:text>"
@@ -3373,12 +3101,8 @@ xsl/tools/xsl/build/jref2refsect1.xsl:2:1 too-many-templates
 xsl/tools/xsl/build/make-elements.xsl:2:1 missing-id-in-stylesheet
 xsl/tools/xsl/build/make-elements.xsl:3:17 leaking-result-namespace suggestion " exclude-result-prefixes=\"exsl\""
 xsl/tools/xsl/build/make-elements.xsl:41:23 select-starts-with-double-slash
-xsl/tools/xsl/build/make-elements.xsl:41:27 name-compared-to-string
-xsl/tools/xsl/build/make-elements.xsl:43:52 name-compared-to-string
 xsl/tools/xsl/build/make-xsl-params.xsl:2:1 missing-id-in-stylesheet
 xsl/tools/xsl/build/make-xsl-params.xsl:3:17 leaking-result-namespace suggestion " exclude-result-prefixes=\"exsl\""
-xsl/tools/xsl/build/make-xsl-params.xsl:98:57 name-compared-to-string
-xsl/tools/xsl/build/make-xsl-params.xsl:98:83 name-compared-to-string
 xsl/tools/xsl/build/make-xsl-pi.xsl:2:1 missing-id-in-stylesheet
 xsl/tools/xsl/build/make-xsl-pi.xsl:3:3 leaking-result-namespace
 xsl/tools/xsl/build/make-xsl-pi.xsl:5:3 leaking-result-namespace
@@ -3620,13 +3344,9 @@ xsl/xhtml-1_1/html2xhtml.xsl:2:1 too-many-templates
 xsl/xhtml-1_1/html2xhtml.xsl:25:3 short-names
 xsl/xhtml-1_1/html2xhtml.xsl:157:5 text-outside-xsl-text suggestion "<xsl:text>background-color: </xsl:text>"
 xsl/xhtml-1_1/html2xhtml.xsl:165:5 text-outside-xsl-text suggestion "<xsl:text>text-align: </xsl:text>"
-xsl/xhtml-1_1/html2xhtml.xsl:260:21 name-compared-to-string
-xsl/xhtml-1_1/html2xhtml.xsl:271:21 name-compared-to-string
-xsl/xhtml-1_1/html2xhtml.xsl:331:21 name-compared-to-string
 xsl/xhtml/html2xhtml.xsl:2:1 missing-id-in-stylesheet
 xsl/xhtml/html2xhtml.xsl:2:1 too-many-templates
 xsl/xhtml/html2xhtml.xsl:27:3 short-names
-xsl/xhtml/html2xhtml.xsl:200:21 name-compared-to-string
 xsl/xhtml5/chunk.xsl:2:1 missing-id-in-stylesheet
 xsl/xhtml5/chunkfast.xsl:4:1 missing-id-in-stylesheet
 xsl/xhtml5/docbook.xsl:4:1 missing-id-in-stylesheet
@@ -3637,32 +3357,12 @@ xsl/xhtml5/html5-element-mods.xsl:41:3 using-disable-output-escaping suggestion 
 xsl/xhtml5/html5-element-mods.xsl:54:1 oversized-template
 xsl/xhtml5/html5-element-mods.xsl:61:3 unused-variable
 xsl/xhtml5/html5-element-mods.xsl:198:23 string-length-compared-to-zero suggestion "$table.width != ''"
-xsl/xhtml5/html5-element-mods.xsl:203:39 name-compared-to-string
 xsl/xhtml5/html5-element-mods.xsl:297:19 string-length-compared-to-zero suggestion "$table.style != ''"
 xsl/xhtml5/html5-element-mods.xsl:345:7 use-choose-without-otherwise
-xsl/xhtml5/html5-element-mods.xsl:347:25 name-compared-to-string
-xsl/xhtml5/html5-element-mods.xsl:358:25 name-compared-to-string
-xsl/xhtml5/html5-element-mods.xsl:369:25 name-compared-to-string
-xsl/xhtml5/html5-element-mods.xsl:375:25 name-compared-to-string
-xsl/xhtml5/html5-element-mods.xsl:381:25 name-compared-to-string
-xsl/xhtml5/html5-element-mods.xsl:387:25 name-compared-to-string
-xsl/xhtml5/html5-element-mods.xsl:394:25 name-compared-to-string
-xsl/xhtml5/html5-element-mods.xsl:401:25 name-compared-to-string
 xsl/xhtml5/html5-element-mods.xsl:411:3 setting-value-of-variable-incorrectly
 xsl/xhtml5/html5-element-mods.xsl:416:3 setting-value-of-variable-incorrectly
 xsl/xhtml5/html5-element-mods.xsl:421:19 string-length-compared-to-zero suggestion "$style != ''"
-xsl/xhtml5/html5-element-mods.xsl:429:25 name-compared-to-string
-xsl/xhtml5/html5-element-mods.xsl:430:25 name-compared-to-string
-xsl/xhtml5/html5-element-mods.xsl:431:25 name-compared-to-string
-xsl/xhtml5/html5-element-mods.xsl:432:25 name-compared-to-string
-xsl/xhtml5/html5-element-mods.xsl:433:25 name-compared-to-string
-xsl/xhtml5/html5-element-mods.xsl:434:25 name-compared-to-string
-xsl/xhtml5/html5-element-mods.xsl:435:25 name-compared-to-string
-xsl/xhtml5/html5-element-mods.xsl:436:25 name-compared-to-string
-xsl/xhtml5/html5-element-mods.xsl:437:25 name-compared-to-string
-xsl/xhtml5/html5-element-mods.xsl:438:25 name-compared-to-string
 xsl/xhtml5/html5-element-mods.xsl:455:7 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
-xsl/xhtml5/html5-element-mods.xsl:594:41 name-compared-to-string
 xsl/xhtml5/onechunk.xsl:4:1 missing-id-in-stylesheet
 xsl/xhtml5/profile-chunk.xsl:2:1 missing-id-in-stylesheet
 xsl/xhtml5/profile-docbook.xsl:2:1 missing-id-in-stylesheet
