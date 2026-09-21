@@ -307,11 +307,11 @@ const scanning = function(found) {
 }
 
 /**
- * Lint the valid patterns a stylesheet carries for the `//` steps they hold,
- * reporting one that opens a branch as redundant, with the fix that drops it,
- * and every other one as broader than its author meant. Every attribute holding
- * a pattern is read (#586), and a `select` for the third check, whose record
- * `expressionsOf` yields is what a `//@select[...]/..` could not narrow (#788).
+ * Lint the valid expressions a stylesheet carries for the `//` steps they
+ * hold, reporting one that opens a branch of a pattern as redundant, with the
+ * fix that drops it, and every other one as broader than its author meant.
+ * Every attribute holding a pattern is read (#586), and every expression for
+ * the third check, whichever attribute carries it (#958).
  * @param {Array.<{source: object, found: object}>} expressions - The valid
  *  expressions the validator kept, each paired with the file it came from
  * @param {Array.<string>} suppressions - Array of suppressed checks
