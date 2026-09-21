@@ -113,14 +113,15 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-warning">warning</span>
-    <code class="xpath">//xsl:attribute[not(contains(@name, '{')) and not(@_name)][not(@namespace) and not(@_namespace)][parent::*[not(self::xsl:*)]][not(*) or (count(*) = 1 and xsl:value-of[not(@separator) and not(@_separator)])][not(preceding-sibling::*[not(self::xsl:variable) and not(self::xsl:attribute)])][not(preceding-sibling::xsl:attribute[@_name or not(@name) or contains(@name, '{')])][not(preceding-sibling::xsl:attribute/@name = @name)]</code>
+    <code class="xpath">//xsl:attribute[not(contains(@name, '{')) and not(@_name)][not(@namespace) and not(@_namespace)][parent::*[not(self::xsl:*)]][not(*) or (count(*) = 1 and (xsl:value-of[not(@separator) and not(@_separator)] or xsl:text[not(@disable-output-escaping) and not(@_disable-output-escaping)]))][not(preceding-sibling::*[not(self::xsl:variable) and not(self::xsl:attribute)])][not(preceding-sibling::xsl:attribute[@_name or not(@name) or contains(@name, '{')])][not(preceding-sibling::xsl:attribute/@name = @name)]</code>
   </div>
   <div class="check-content">
 <h1>Not creating attribute correctly</h1>
 <p>The attribute analog of <code>not-creating-element-correctly</code>. When an <code>xsl:attribute</code>
 with a static name sits on a literal result element and its value is simple — a
-single <code>xsl:value-of</code>, plain text, or empty — it can be written inline as a
-literal attribute, with an attribute value template for a computed value:</p>
+single <code>xsl:value-of</code>, a single <code>xsl:text</code>, plain text, or empty — it can be
+written inline as a literal attribute, with an attribute value template for a
+computed value:</p>
 <pre><code class="language-xsl">&lt;td&gt;
   &lt;xsl:attribute name=&quot;class&quot;&gt;&lt;xsl:value-of select=&quot;@c&quot;/&gt;&lt;/xsl:attribute&gt;
   &lt;xsl:attribute name=&quot;role&quot;&gt;cell&lt;/xsl:attribute&gt;
@@ -128,19 +129,29 @@ literal attribute, with an attribute value template for a computed value:</p>
 <p>becomes</p>
 <pre><code class="language-xsl">&lt;td class=&quot;{@c}&quot; role=&quot;cell&quot;&gt;
 </code></pre>
+<p>A brace is the one thing the move asks of the author. Inside a literal
+attribute a <code>{</code> opens an attribute value template, where inside an
+<code>xsl:attribute</code> it is just a character, so a literal brace is doubled on the
+way in: <code>&lt;xsl:attribute name=&quot;id&quot;&gt;&lt;xsl:text&gt;{7F}&lt;/xsl:text&gt;&lt;/xsl:attribute&gt;</code>
+is <code>id=&quot;{{7F}}&quot;</code> and not <code>id=&quot;{7F}&quot;</code>, which would evaluate <code>7F</code> as an
+expression.</p>
 <p>The inline form is shorter and keeps the attribute next to the element it
 belongs to. <code>xsl:attribute</code> earns its place when the name is computed (an AVT),
 the value needs instructions an AVT cannot hold (an <code>xsl:choose</code>), or the parent
 is itself an instruction such as <code>xsl:element</code> or <code>xsl:copy</code> — those are left
 alone.</p>
-<p>Two shapes cannot be written inline at all, whatever they look like. An
+<p>Three shapes cannot be written inline at all, whatever they look like. An
 <code>xsl:attribute</code> carrying <code>@namespace</code> puts the attribute in a namespace, and a
 literal attribute on a literal result element takes the one its own prefix
 binds — so inlining it moves the attribute. An <code>xsl:value-of</code> carrying
 <code>@separator</code> joins a sequence with the string it names, where the braces of an
 attribute value template join one with a single space, so the inline form
-writes something else whenever the value is more than one item.</p>
-<p>Position is the third. A literal attribute is written before the element&#39;s
+writes something else whenever the value is more than one item. An <code>xsl:text</code>
+carrying <code>@disable-output-escaping</code> asks the serializer for something a
+literal attribute has no way to say, and inside an attribute what it asks for
+is an error a processor may signal or ignore as it chooses, so rewriting it
+would pick one of those readings.</p>
+<p>Position is the fourth. A literal attribute is written before the element&#39;s
 content is instantiated, so anything standing in front of the <code>xsl:attribute</code>
 that can supply an attribute of its own — an <code>xsl:copy-of</code>, an
 <code>xsl:apply-templates</code> or an <code>xsl:call-template</code> over attributes, bare or inside
