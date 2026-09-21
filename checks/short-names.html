@@ -113,18 +113,44 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-warning">warning</span>
-    <code class="xpath">//(xsl:variable | xsl:template)[string-length(@name) = 1] | //xsl:function[string-length(substring-after(@name, ":")) = 1]</code>
+    <code class="xpath">//(xsl:variable | xsl:param | xsl:template | xsl:function)[string-length(substring-after(@name, ":")) = 1 or (string-length(@name) = 1 and not(contains(@name, ":")))]</code>
   </div>
   <div class="check-content">
 <h1>Short names</h1>
-<p>Single-character names for variables, functions, and templates reveal nothing
-about their purpose, making stylesheets hard to read and maintain.</p>
+<p>A single-character name tells a reader nothing about what it holds. At the use
+site a binding is just <code>$f</code>, and nothing there says which element bound it or
+what it was for, so every reader of the template has to go and look. The cost
+is paid once per reading and never by the author, which is why these names
+survive.</p>
+<p>A parameter is a binding like any other, and the one most often spelled this
+way: the declaration stands at the top of the template and the uses are spread
+through the body, which is exactly the distance a name is supposed to close.</p>
 <p>Incorrect:</p>
-<pre><code class="language-xsl">&lt;xsl:variable name=&quot;x&quot; select=&quot;&#39;hello&#39;&quot;/&gt;
+<pre><code class="language-xsl">&lt;xsl:template name=&quot;indent&quot;&gt;
+  &lt;xsl:param name=&quot;d&quot; as=&quot;xs:integer&quot;/&gt;
+  &lt;xsl:value-of select=&quot;string-join((for $i in 1 to $d return &#39;  &#39;), &#39;&#39;)&quot;/&gt;
+&lt;/xsl:template&gt;
 </code></pre>
 <p>Correct:</p>
-<pre><code class="language-xsl">&lt;xsl:variable name=&quot;greeting&quot; select=&quot;&#39;hello&#39;&quot;/&gt;
+<pre><code class="language-xsl">&lt;xsl:template name=&quot;indent&quot;&gt;
+  &lt;xsl:param name=&quot;depth&quot; as=&quot;xs:integer&quot;/&gt;
+  &lt;xsl:value-of select=&quot;string-join((for $i in 1 to $depth return &#39;  &#39;), &#39;&#39;)&quot;/&gt;
+&lt;/xsl:template&gt;
 </code></pre>
+<p>A prefix does not lengthen the name. <code>eo:k</code> and <code>k</code> read alike wherever they
+are used, since the prefix names the namespace the binding lives in and not the
+binding, so the local part is what carries the meaning and what has to earn its
+place. The same holds whichever element declares it — an <code>xsl:variable</code>, an
+<code>xsl:param</code>, an <code>xsl:template</code> or an <code>xsl:function</code>.</p>
+<p>Incorrect:</p>
+<pre><code class="language-xsl">&lt;xsl:variable name=&quot;eo:r&quot; select=&quot;&#39;r&#39;&quot;/&gt;
+</code></pre>
+<p>Correct:</p>
+<pre><code class="language-xsl">&lt;xsl:variable name=&quot;eo:raw-marker&quot; select=&quot;&#39;r&#39;&quot;/&gt;
+</code></pre>
+<p>An <code>xsl:with-param</code> is left alone. It passes a name the declaration already
+fixed, so renaming has to happen where the parameter is declared, and reporting
+both would report one author&#39;s choice twice.</p>
 
   </div>
 </body>
