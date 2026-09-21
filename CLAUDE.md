@@ -377,7 +377,11 @@ and a top-level `xsl:variable` or `xsl:param` is the one place that walk is paid
 once — its whole subtree with it, up to an instruction whose content runs per
 item, so the question is climbed rather than read off the element carrying the
 expression. It is named for the harm rather than for `@select` because both
-halves of the old name outgrew it.
+halves of the old name outgrew it. It reaches a pattern too since #970, at the
+one place one holds an expression: a `//` opening a path inside a predicate
+walks the document once for every candidate the pattern is tested against, so
+it answers here rather than to the pair beside it, whose subject is the breadth
+of the path the pattern itself walks.
 
 The two stages have a directory each, and everything else in `src/` is the core
 they consume. That is not filing: it is what makes the rule below expressible,

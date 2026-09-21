@@ -44,14 +44,6 @@ nobody would call it vague:
 </xsl:template>
 ```
 
-A `//` that *opens* a path inside a predicate is a different construct wearing
-the same two characters. It abandons the node in hand and walks the document
-from its root, once for every node the pattern is tested against:
-`match="item[//flag]"` asks whether the document holds a `flag` anywhere at all,
-which says nothing about the `item` being matched. Anchor it to the node you
-mean — `match="item[.//flag]"` — or name the path from the root that you really
-want.
-
 Characters that merely look like a step are none: the `//` of a URL inside a
 string literal, of a comment, or of the namespace an inline `Q{...}` spells is
 part of the thing it stands in and reaches no depth at all, so
