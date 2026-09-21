@@ -142,7 +142,11 @@ about the context node.</p>
 name sorts, which no node test expresses — and so is a comparison about another
 node, <code>name(@a) = &#39;x&#39;</code> speaking of the attribute rather than of the element a
 <code>self::</code> step would match. In a 1.0 stylesheet a <code>local-name()</code> comparison has no
-shorter equivalent at all, the <code>*:x</code> wildcard being XPath 2.0&#39;s.</p>
+shorter equivalent at all, the <code>*:x</code> wildcard being XPath 2.0&#39;s, so there it
+stands as written. Neither has a comparison with a string no name can be spelled
+with: <code>name() = &#39;&#39;</code> asks whether the node has a name at all, which is a question
+about text nodes and comments rather than about which element this is, and no
+node test puts it at any version.</p>
 <p>Where the comparison stands settles it as well, because a <code>self::</code> step asks
 about an element and the context need not be one. The <code>self</code> axis selects
 elements, so <code>self::as</code> is false for every attribute and every namespace node:
