@@ -403,6 +403,7 @@ contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:2977:5 text-outside-xsl-text sug
 contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:2978:5 text-outside-xsl-text suggestion "<xsl:text>tip</xsl:text>"
 contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:2979:5 text-outside-xsl-text suggestion "<xsl:text>important</xsl:text>"
 contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:2980:5 text-outside-xsl-text suggestion "<xsl:text>note</xsl:text>"
+contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:3646:7 not-creating-attribute-correctly
 contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:3653:15 text-outside-xsl-text suggestion "<xsl:text>ListofTables</xsl:text>"
 contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:3654:15 text-outside-xsl-text suggestion "<xsl:text>ListofFigures</xsl:text>"
 contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:3655:15 text-outside-xsl-text suggestion "<xsl:text>ListofEquations</xsl:text>"
@@ -2222,6 +2223,7 @@ xsl/html/chunk-code.xsl:672:3 unused-variable
 xsl/html/chunk-code.xsl:691:3 unused-variable
 xsl/html/chunk-common.xsl:1:1 missing-id-in-stylesheet
 xsl/html/chunk-common.xsl:1:1 too-many-templates
+xsl/html/chunk-common.xsl:706:7 not-creating-attribute-correctly
 xsl/html/chunk-common.xsl:713:15 text-outside-xsl-text suggestion "<xsl:text>ListofTables</xsl:text>"
 xsl/html/chunk-common.xsl:714:15 text-outside-xsl-text suggestion "<xsl:text>ListofFigures</xsl:text>"
 xsl/html/chunk-common.xsl:715:15 text-outside-xsl-text suggestion "<xsl:text>ListofEquations</xsl:text>"
@@ -2301,6 +2303,7 @@ xsl/html/chunktoc.xsl:35:5 text-outside-xsl-text suggestion "<xsl:text>0</xsl:te
 xsl/html/chunktoc.xsl:82:34 unabbreviated-axis fix ""
 xsl/html/chunktoc.xsl:207:17 count-compared-to-zero fix "boolean(*)"
 xsl/html/chunktoc.xsl:251:29 count-compared-to-zero fix "not(key('id',$rootid))"
+xsl/html/chunktoc.xsl:512:7 not-creating-attribute-correctly
 xsl/html/chunktoc.xsl:519:15 text-outside-xsl-text suggestion "<xsl:text>ListofTables</xsl:text>"
 xsl/html/chunktoc.xsl:520:15 text-outside-xsl-text suggestion "<xsl:text>ListofFigures</xsl:text>"
 xsl/html/chunktoc.xsl:521:15 text-outside-xsl-text suggestion "<xsl:text>ListofEquations</xsl:text>"
@@ -3352,9 +3355,11 @@ xsl/xhtml-1_1/html2xhtml.xsl:2:1 too-many-templates
 xsl/xhtml-1_1/html2xhtml.xsl:25:3 short-names
 xsl/xhtml-1_1/html2xhtml.xsl:157:5 text-outside-xsl-text suggestion "<xsl:text>background-color: </xsl:text>"
 xsl/xhtml-1_1/html2xhtml.xsl:165:5 text-outside-xsl-text suggestion "<xsl:text>text-align: </xsl:text>"
+xsl/xhtml-1_1/html2xhtml.xsl:215:5 not-creating-attribute-correctly
 xsl/xhtml/html2xhtml.xsl:2:1 missing-id-in-stylesheet
 xsl/xhtml/html2xhtml.xsl:2:1 too-many-templates
 xsl/xhtml/html2xhtml.xsl:27:3 short-names
+xsl/xhtml/html2xhtml.xsl:152:5 not-creating-attribute-correctly
 xsl/xhtml5/chunk.xsl:2:1 missing-id-in-stylesheet
 xsl/xhtml5/chunkfast.xsl:4:1 missing-id-in-stylesheet
 xsl/xhtml5/docbook.xsl:4:1 missing-id-in-stylesheet
