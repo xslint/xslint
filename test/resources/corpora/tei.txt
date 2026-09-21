@@ -3153,7 +3153,6 @@ odds/classatts.xsl:292:71 redundant-whitespace fix " "
 odds/classatts.xsl:292:75 redundant-whitespace fix " "
 odds/extract-isosch.xsl:2:1 missing-id-in-stylesheet
 odds/extract-isosch.xsl:2:1 too-many-templates
-odds/extract-isosch.xsl:135:61 scans-whole-document
 odds/extract-isosch.xsl:143:23 count-compared-to-zero fix "empty($distinct_constraint_languages)"
 odds/extract-isosch.xsl:186:33 use-double-slash
 odds/extract-isosch.xsl:189:70 use-double-slash
@@ -3534,7 +3533,6 @@ odds/teiodds.xsl:178:5 use-choose-without-otherwise
 odds/teiodds.xsl:179:23 string-length-compared-to-zero suggestion "$patternPrefix != ''"
 odds/teiodds.xsl:190:23 string-length-compared-to-zero suggestion "$lang != ''"
 odds/teiodds.xsl:205:7 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
-odds/teiodds.xsl:205:43 scans-whole-document
 odds/teiodds.xsl:212:23 name-compared-to-string suggestion "self::odds"
 odds/teiodds.xsl:213:9 use-single-option-for-choose
 odds/teiodds.xsl:214:11 text-outside-xsl-text
@@ -5303,7 +5301,6 @@ slides/teilatex-slides.xsl:356:7 use-single-option-for-choose
 tbx/teitotbx.xsl:2:1 missing-id-in-stylesheet
 tcp/tcp2tei.xsl:6:1 missing-id-in-stylesheet
 tcp/tcp2tei.xsl:6:1 too-many-templates
-tcp/tcp2tei.xsl:56:35 scans-whole-document
 tcp/tcp2tei.xsl:108:5 unused-variable
 tcp/tcp2tei.xsl:276:23 redundant-whitespace fix ""
 tcp/tcp2tei.xsl:276:51 redundant-whitespace fix " "
@@ -5438,7 +5435,6 @@ tools/processpb.xsl:2:1 missing-id-in-stylesheet
 tools/processpb.xsl:2:1 too-many-templates
 tools/tei-to-tree.xsl:2:1 missing-id-in-stylesheet
 tools/timing-profile.xsl:2:1 missing-id-in-stylesheet
-tools/timing-profile.xsl:12:33 scans-whole-document
 txt/tei-to-text.xsl:2:1 missing-id-in-stylesheet
 txt/tei-to-text.xsl:2:1 too-many-templates
 txt/tei-to-text.xsl:131:4 short-names

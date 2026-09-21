@@ -374,7 +374,10 @@ It read that one attribute, and the first token of it, until #958 asked what the
 expression costs instead: every `//` opening a path of its own is a walk of the
 document, wherever in the parse it stands and whichever attribute carries it,
 and a top-level `xsl:variable` or `xsl:param` is the one place that walk is paid
-once — which is why it is named for the harm rather than for `@select`.
+once — its whole subtree with it, up to an instruction whose content runs per
+item, so the question is climbed rather than read off the element carrying the
+expression. It is named for the harm rather than for `@select` because both
+halves of the old name outgrew it.
 
 The two stages have a directory each, and everything else in `src/` is the core
 they consume. That is not filing: it is what makes the rule below expressible,

@@ -630,9 +630,7 @@ releasetools/xslnsfiles/titlepage.xsl:6:17 leaking-result-namespace suggestion "
 releasetools/xslnsfiles/titlepage.xsl:7:17 redundant-namespace-declarations fix ""
 releasetools/xslnsfiles/titlepage.xsl:25:3 use-choose-without-otherwise
 releasetools/xslnsfiles/titlepage.xsl:26:5 text-outside-xsl-text suggestion "<xsl:text>http://www.w3.org/1999/XSL/Format</xsl:text>"
-releasetools/xslnsfiles/titlepage.xsl:26:21 scans-whole-document
 releasetools/xslnsfiles/titlepage.xsl:27:5 text-outside-xsl-text suggestion "<xsl:text>http://www.w3.org/1999/xhtml</xsl:text>"
-releasetools/xslnsfiles/titlepage.xsl:27:21 scans-whole-document
 releasetools/xslnsfiles/titlepage.xsl:192:1 oversized-template
 releasetools/xslnsfiles/titlepage.xsl:625:23 count-compared-to-zero fix "child::*"
 releasetools/xslnsfiles/titlepage.xsl:625:29 unabbreviated-axis fix ""
@@ -2935,7 +2933,6 @@ xsl/manpages/other.xsl:2:1 missing-id-in-stylesheet
 xsl/manpages/other.xsl:2:1 too-many-templates
 xsl/manpages/other.xsl:5:17 redundant-namespace-declarations fix ""
 xsl/manpages/other.xsl:6:17 redundant-namespace-declarations fix ""
-xsl/manpages/other.xsl:48:49 scans-whole-document
 xsl/manpages/other.xsl:80:3 unused-function-template-parameter
 xsl/manpages/other.xsl:115:22 starts-with-double-slash suggestion ""
 xsl/manpages/other.xsl:115:34 use-double-slash

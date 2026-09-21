@@ -64,8 +64,15 @@
  * the one place the scan is paid once, against the source root, for the whole
  * transformation, where naming a narrower path binds something else, an
  * `xsl:key` answers a lookup by value, and hoisting into a global binding is
- * what the stylesheet already did. That last one was 10 of the 147 reports
- * over the three pinned corpora and is `once`; the other two are the `path`
+ * what the stylesheet already did. Its *content* is bound with it, so `once`
+ * climbs rather than reads the carrying element: what a global binding holds
+ * is evaluated once as surely as what its `select` says, and only an
+ * instruction between the two whose content runs per item breaks that —
+ * which is why `REPEATING` is the five of those and not a rule about depth.
+ * eo's `restore-aliases.xsl` is the shape, four `xsl:sequence` children of
+ * one global binding, and reading the carrying element alone answered two of
+ * them and not the other two. That question was 16 of the 147 reports over
+ * the three pinned corpora; the other two directions are the `path`
  * nodes the grammar built, a `//` counting where one opens a path of its own
  * and nowhere else, which is the test `owned` already applies one language
  * over. So `items//item` descends from a step, `/objects//o` from an absolute
@@ -136,6 +143,16 @@ const META = {
  * @type {Array.<string>}
  */
 const BOUND = ['variable', 'param']
+
+/**
+ * The XSLT instructions that instantiate their content once for every item of
+ * something, so an expression standing under one is evaluated as many times
+ * however far above it the declaration holding it stands.
+ * @type {Array.<string>}
+ */
+const REPEATING = [
+  'for-each', 'for-each-group', 'iterate', 'analyze-string', 'merge',
+]
 
 /**
  * The one XSLT element whose patterns are ranked against one another, which is
@@ -230,19 +247,39 @@ const separators = function(found) {
 }
 
 /**
+ * The element carrying the expression and every ancestor of it below the
+ * stylesheet root, nearest first — what stands between an expression and the
+ * top-level declaration it belongs to.
+ * @param {Node} element - The element carrying the expression
+ * @return {Array.<Node>} - It and its ancestors, the root's own child last
+ */
+const climbed = function(element) {
+  const chain = []
+  let where = element
+  while (where !== null && where !== where.ownerDocument.documentElement) {
+    chain.push(where)
+    where = where.parentNode
+  }
+  return chain
+}
+
+/**
  * Whether the expression is evaluated once for the whole transformation. A
  * top-level `xsl:variable` or `xsl:param` is bound once, against the source
- * root, so `//item` there is one traversal and names every `item` in the
- * document — which is what hoisting an expression into a global binding is
- * for, and what the advice would otherwise be telling its author to do again.
+ * root, so `//item` under one is a single traversal naming every `item` in
+ * the document — which is what hoisting an expression into a global binding
+ * is for, and what the advice would otherwise tell its author to do again.
  * @param {{node: Node}} found - The expression, as `expressionsOf` yields it
  * @return {boolean} - True when nothing evaluates it twice
  */
 const once = function(found) {
-  const element = holding(found.node)
-  return element.namespaceURI === XSLT &&
-    BOUND.includes(element.localName) &&
-    element.parentNode === element.ownerDocument.documentElement
+  const chain = climbed(holding(found.node))
+  const declared = chain[chain.length - 1]
+  return declared !== undefined && declared.namespaceURI === XSLT &&
+    BOUND.includes(declared.localName) &&
+    !chain.slice(1).some(
+      (one) => one.namespaceURI === XSLT && REPEATING.includes(one.localName),
+    )
 }
 
 /**

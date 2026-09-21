@@ -702,8 +702,6 @@ src/main/plugins/org.dita.pdf2/xsl/fo/lists.xsl:37:1 not-using-output
 src/main/plugins/org.dita.pdf2/xsl/fo/lists.xsl:37:1 too-many-templates
 src/main/plugins/org.dita.pdf2/xsl/fo/lot-lof.xsl:12:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.pdf2/xsl/fo/lot-lof.xsl:12:1 not-using-output
-src/main/plugins/org.dita.pdf2/xsl/fo/lot-lof.xsl:23:27 scans-whole-document
-src/main/plugins/org.dita.pdf2/xsl/fo/lot-lof.xsl:38:27 scans-whole-document
 src/main/plugins/org.dita.pdf2/xsl/fo/lot-lof.xsl:56:19 scans-whole-document
 src/main/plugins/org.dita.pdf2/xsl/fo/lot-lof.xsl:64:42 scans-whole-document
 src/main/plugins/org.dita.pdf2/xsl/fo/lot-lof.xsl:65:46 unabbreviated-axis fix ""
@@ -760,7 +758,6 @@ src/main/plugins/org.dita.pdf2/xsl/fo/root-processing.xsl:53:9 text-outside-xsl-
 src/main/plugins/org.dita.pdf2/xsl/fo/root-processing.xsl:59:13 text-outside-xsl-text suggestion "<xsl:text>bookmap</xsl:text>"
 src/main/plugins/org.dita.pdf2/xsl/fo/root-processing.xsl:60:13 text-outside-xsl-text suggestion "<xsl:text>ditamap</xsl:text>"
 src/main/plugins/org.dita.pdf2/xsl/fo/root-processing.xsl:80:5 unused-variable
-src/main/plugins/org.dita.pdf2/xsl/fo/root-processing.xsl:81:31 scans-whole-document
 src/main/plugins/org.dita.pdf2/xsl/fo/root-processing.xsl:89:5 unused-variable
 src/main/plugins/org.dita.pdf2/xsl/fo/root-processing.xsl:96:38 scans-whole-document
 src/main/plugins/org.dita.pdf2/xsl/fo/root-processing.xsl:109:9 blank-nested-if
