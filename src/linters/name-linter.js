@@ -293,7 +293,7 @@ const test = function(local, operator, literal, modern) {
  * @param {{node: Node, expression: string, pattern: boolean}} found - The
  *  expression, whole, as `expressionsOf` yields it
  * @param {boolean} modern - Whether the stylesheet is 2.0 or 3.0
- * @return {Array.<{offset: number, value: string, replacement: ?string}>} -
+ * @return {Array.<{offset: number, value: string, replacement: string}>} -
  *  The comparisons found
  */
 const comparisons = function(found, modern) {
