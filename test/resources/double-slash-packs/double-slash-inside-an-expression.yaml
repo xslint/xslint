@@ -1,0 +1,24 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: scans-whole-document
+# A `//` opening a sub-expression walks the same tree as one opening the whole
+# of it, so where the slashes stand inside the parse decides nothing. What does
+# decide it is whether they open a path: `items//item` descends from a step the
+# context node supplies, `$root//node` from a binding, and `'//literal'` is a
+# string.
+found:
+  amount: 4
+  positions: [ [ 5, 57 ], [ 5, 68 ], [ 6, 39 ], [ 7, 33 ] ]
+  fixes: [ null, null, null, null ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="style1">
+    <xsl:output encoding="UTF-8" method="xml"/>
+    <xsl:template match="/objects/o">
+      <xsl:variable name="bound" select="distinct-values((//o/@name, //o/@local))"/>
+      <xsl:sequence select="for $arg in //o/@args return $arg"/>
+      <xsl:value-of select="count(//o) + count(items//item)"/>
+      <xsl:value-of select="concat('//literal', $bound//node)"/>
+    </xsl:template>
+  </xsl:stylesheet>

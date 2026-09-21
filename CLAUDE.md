@@ -363,13 +363,21 @@ selector reads the document, and the document holds the text a processor cannot
 run; the records the validator kept do not.
 
 The thirteenth arrived the same way at #788, and what it shows is the other half
-of what a selector reading the document costs. `select-starts-with-double-slash`
+of what a selector reading the document costs. `scans-whole-document`
 asked `//*[starts-with(normalize-space(@select), '//')]`, which is every element
 there is, so the `select` of a *literal result element* — text on its way to the
 result tree, that no processor evaluates — drew the warning and, under
 `--fix-suggestions`, was rewritten: a check about XPath quietly changing what a
 stylesheet emits. `expressionsOf` yields no record for such an attribute, so the
 staging answers that one too, without a namespace test anybody has to remember.
+It read that one attribute, and the first token of it, until #958 asked what the
+expression costs instead: every `//` opening a path of its own is a walk of the
+document, wherever in the parse it stands and whichever attribute carries it,
+and a top-level `xsl:variable` or `xsl:param` is the one place that walk is paid
+once — its whole subtree with it, up to an instruction whose content runs per
+item, so the question is climbed rather than read off the element carrying the
+expression. It is named for the harm rather than for `@select` because both
+halves of the old name outgrew it.
 
 The two stages have a directory each, and everything else in `src/` is the core
 they consume. That is not filing: it is what makes the rule below expressible,

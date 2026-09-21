@@ -1,0 +1,32 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: scans-whole-document
+# A top-level binding is evaluated once for the transformation, against the
+# source root, so the scan it carries is the one traversal there is no cheaper
+# way to ask for — and hoisting the expression into such a binding is the
+# remedy the motive teaches. Its content is bound once with it, so an
+# `xsl:sequence` under one is as quiet as a `select` on one, and what breaks
+# that is an instruction between them whose content runs per item. The same
+# expression inside a template is evaluated for every node it is applied to.
+found:
+  amount: 2
+  positions: [ [ 9, 29 ], [ 13, 40 ] ]
+  fixes: [ null, null ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="style1">
+    <xsl:output encoding="UTF-8" method="xml"/>
+    <xsl:param name="scope" select="//o[@root]"/>
+    <xsl:variable name="every" select="//o"/>
+    <xsl:variable name="refs">
+      <xsl:sequence select="//o/@base"/>
+      <xsl:for-each select="//o/@name">
+        <xsl:sequence select="//o[@alias]"/>
+      </xsl:for-each>
+    </xsl:variable>
+    <xsl:template match="/objects/o">
+      <xsl:variable name="local" select="//o[@inner]"/>
+      <xsl:value-of select="count($local) + count($every) + count($scope) + count($refs)"/>
+    </xsl:template>
+  </xsl:stylesheet>

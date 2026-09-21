@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
 # SPDX-License-Identifier: MIT
 ---
-pack: select-starts-with-double-slash
+pack: scans-whole-document
 # Every one of these is reported and none of them is fixed. A `.//` is rooted
 # at the context node where a `//` is rooted at the root of its tree, so the
 # two name the same nodes only where the context node is the document node —

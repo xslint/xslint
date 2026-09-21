@@ -1,5 +1,0 @@
-# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
-# SPDX-License-Identifier: MIT
----
-severity: warning
-message: The select attribute starts with //, which scans the whole document from the root every time it runs. Name the path you mean, or look the nodes up with an xsl:key.

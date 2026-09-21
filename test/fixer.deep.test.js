@@ -592,7 +592,7 @@ const UNCHANGED = [
   {
     name: 'cannot anchor a leading // select under any flag',
     flag: '--fix-suggestions',
-    sheet: 'select-starts-with-double-slash.xsl',
+    sheet: 'scans-whole-document.xsl',
   },
   {
     name: 'cannot prepend $ to a bare variable name with plain --fix',
