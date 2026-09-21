@@ -10,14 +10,14 @@ input: |-
   <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="2.0" id="style1">
     <xsl:output encoding="UTF-8" method="xml"/>
     <xsl:template name="render">
-      <xsl:param name="p" as="xs:string" select="'a'"/>
-      <xsl:param name="q" as="xs:string" select="'b'"/>
-      <xsl:value-of select="concat($p, $q)"/>
+      <xsl:param name="prefix" as="xs:string" select="'a'"/>
+      <xsl:param name="suffix" as="xs:string" select="'b'"/>
+      <xsl:value-of select="concat($prefix, $suffix)"/>
     </xsl:template>
     <xsl:template match="/objects/o">
       <xsl:call-template name="render">
-        <xsl:with-param name="p" select="'a'"/>
-        <xsl:with-param name="q" select="'b'"/>
+        <xsl:with-param name="prefix" select="'a'"/>
+        <xsl:with-param name="suffix" select="'b'"/>
       </xsl:call-template>
     </xsl:template>
   </xsl:stylesheet>

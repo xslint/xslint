@@ -29,6 +29,8 @@ src/main/plugins/org.dita.base/xsl/common/dita-utilities.xsl:306:3 unused-named-
 src/main/plugins/org.dita.base/xsl/common/dita-utilities.xsl:327:5 setting-value-of-variable-incorrectly
 src/main/plugins/org.dita.base/xsl/common/dita-utilities.xsl:327:5 short-names
 src/main/plugins/org.dita.base/xsl/common/dita-utilities.xsl:354:3 unused-function
+src/main/plugins/org.dita.base/xsl/common/dita-utilities.xsl:415:5 short-names
+src/main/plugins/org.dita.base/xsl/common/dita-utilities.xsl:431:5 short-names
 src/main/plugins/org.dita.base/xsl/common/functions.xsl:11:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.base/xsl/common/functions.xsl:109:19 string-length-compared-to-zero suggestion "$fragment ne ''"
 src/main/plugins/org.dita.base/xsl/common/map2textonly.xsl:9:1 missing-id-in-stylesheet
@@ -56,6 +58,8 @@ src/main/plugins/org.dita.base/xsl/common/uri-utils.xsl:15:3 unused-function
 src/main/plugins/org.dita.base/xsl/common/uri-utils.xsl:39:68 predicate-position-literal fix "last()"
 src/main/plugins/org.dita.base/xsl/common/uri-utils.xsl:65:9 short-names
 src/main/plugins/org.dita.base/xsl/common/uri-utils.xsl:66:9 short-names
+src/main/plugins/org.dita.base/xsl/common/uri-utils.xsl:73:5 short-names
+src/main/plugins/org.dita.base/xsl/common/uri-utils.xsl:74:5 short-names
 src/main/plugins/org.dita.base/xsl/common/uri-utils.xsl:81:11 text-outside-xsl-text suggestion "<xsl:text>../</xsl:text>"
 src/main/plugins/org.dita.base/xsl/common/uri-utils.xsl:89:3 unreachable-function
 src/main/plugins/org.dita.base/xsl/common/uri-utils.xsl:94:3 unused-function
@@ -1149,6 +1153,8 @@ src/test/resources/org/dita/dost/chunk/ChunkModuleTest/src/generate.xsl:2:1 miss
 src/test/resources/org/dita/dost/chunk/ChunkModuleTest/src/generate.xsl:2:1 not-using-output
 src/test/resources/org/dita/dost/chunk/ChunkModuleTest/src/generate.xsl:2:1 too-many-templates
 src/test/resources/org/dita/dost/chunk/ChunkModuleTest/src/generate.xsl:110:13 use-choose-without-otherwise
+src/test/resources/org/dita/dost/chunk/ChunkModuleTest/src/generate.xsl:209:5 short-names
+src/test/resources/org/dita/dost/chunk/ChunkModuleTest/src/generate.xsl:210:5 short-names
 src/test/resources/org/dita/dost/chunk/ChunkModuleTest/src/generate.xsl:217:11 text-outside-xsl-text suggestion "<xsl:text>../</xsl:text>"
 src/test/xsl/common/dita-utilities.xsl:2:1 missing-id-in-stylesheet
 src/test/xsl/plugins/org.dita.html5/xsl/simpletable.xsl:2:1 missing-id-in-stylesheet
