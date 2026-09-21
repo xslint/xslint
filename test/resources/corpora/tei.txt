@@ -1,4 +1,5 @@
 Documentation/param.xsl:1:1 missing-id-in-stylesheet
+Documentation/param.xsl:71:4 not-creating-attribute-correctly
 Documentation/param.xsl:118:3 short-names
 Documentation/param.xsl:124:19 count-compared-to-zero fix "exists(key('XDS',$I))"
 Documentation/param.xsl:157:3 short-names
@@ -1464,7 +1465,9 @@ docx/misc/checkword.xsl:54:10 setting-value-of-variable-incorrectly
 docx/misc/checkword.xsl:54:10 short-names
 docx/misc/checkword.xsl:59:23 count-compared-to-zero fix "empty(key('R',$i))"
 docx/to/application.xsl:2:1 missing-id-in-stylesheet
+docx/to/application.xsl:165:21 not-creating-attribute-correctly
 docx/to/application.xsl:173:29 not-creating-attribute-correctly
+docx/to/application.xsl:176:29 not-creating-attribute-correctly
 docx/to/comments.xsl:2:1 missing-id-in-stylesheet
 docx/to/comments.xsl:83:21 count-compared-to-zero fix "exists(key('COMMENTS',1))"
 docx/to/content-types.xsl:2:1 missing-id-in-stylesheet
@@ -2165,6 +2168,7 @@ docx/to/wordsections.xsl:2:1 missing-id-in-stylesheet
 docx/to/wordsections.xsl:89:17 count-compared-to-zero fix "exists(key('FOOTERS',$ref))"
 docx/to/wordsections.xsl:101:17 count-compared-to-zero fix "exists(key('HEADERS',$ref))"
 docx/tools/fixdocprop.xsl:2:1 missing-id-in-stylesheet
+docx/tools/fixdocprop.xsl:29:2 not-creating-attribute-correctly
 docx/tools/fixdotrels.xsl:2:1 missing-id-in-stylesheet
 docx/tools/fixgraphics.xsl:2:1 missing-id-in-stylesheet
 docx/tools/fixgraphics.xsl:2:57 redundant-namespace-declarations fix ""
@@ -3192,6 +3196,7 @@ odds/guidelines.xsl:602:5 setting-value-of-variable-incorrectly
 odds/guidelines.xsl:602:5 unused-variable
 odds/guidelines.xsl:616:7 setting-value-of-variable-incorrectly
 odds/guidelines.xsl:686:5 short-names
+odds/guidelines.xsl:692:11 not-creating-attribute-correctly
 odds/guidelines.xsl:718:9 use-choose-without-otherwise
 odds/guidelines.xsl:747:9 use-choose-without-otherwise
 odds/guidelines.xsl:798:7 use-choose-without-otherwise
@@ -3212,6 +3217,7 @@ odds/guidelines.xsl:961:17 text-outside-xsl-text suggestion "<xsl:text> — 中�
 odds/guidelines.xsl:978:19 count-compared-to-zero fix "exists(key('REFSTO-CLASS',$this))"
 odds/guidelines.xsl:1005:19 count-compared-to-zero fix "exists(key('REFSTO-ELEMENT',$this))"
 odds/guidelines.xsl:1041:23 string-length-compared-to-zero suggestion "$attName ne ''"
+odds/guidelines.xsl:1044:13 not-creating-attribute-correctly
 odds/odd2dtd.xsl:2:1 missing-id-in-stylesheet
 odds/odd2dtd.xsl:2:1 too-many-templates
 odds/odd2dtd.xsl:78:7 use-choose-without-otherwise
@@ -3967,6 +3973,8 @@ profiles/dhoxss/slides/to.xsl:22:3 text-outside-xsl-text suggestion "<xsl:text>\
 profiles/dhoxss/slides/to.xsl:32:1 text-outside-xsl-text
 profiles/enrich/docx/from.xsl:2:1 missing-id-in-stylesheet
 profiles/enrich/docx/from.xsl:2:1 too-many-templates
+profiles/enrich/docx/from.xsl:120:3 not-creating-attribute-correctly
+profiles/enrich/docx/from.xsl:123:3 not-creating-attribute-correctly
 profiles/enrich/docx/from.xsl:174:34 string-length-compared-to-zero suggestion ". = ''"
 profiles/enrich/docx/from.xsl:211:10 text-outside-xsl-text suggestion "<xsl:text>×</xsl:text>"
 profiles/enrich/docx/from.xsl:212:10 text-outside-xsl-text suggestion "<xsl:text>[</xsl:text>"
@@ -4307,8 +4315,17 @@ profiles/iso/docx/to.xsl:578:13 not-creating-attribute-correctly
 profiles/iso/docx/to.xsl:688:9 setting-value-of-variable-incorrectly
 profiles/iso/docx/to.xsl:754:43 select-starts-with-double-slash
 profiles/iso/docx/to.xsl:822:3 unused-named-template
+profiles/iso/docx/to.xsl:902:11 not-creating-attribute-correctly
+profiles/iso/docx/to.xsl:910:11 not-creating-attribute-correctly
+profiles/iso/docx/to.xsl:918:11 not-creating-attribute-correctly
+profiles/iso/docx/to.xsl:926:11 not-creating-attribute-correctly
+profiles/iso/docx/to.xsl:934:11 not-creating-attribute-correctly
 profiles/iso/docx/to.xsl:944:15 not-creating-attribute-correctly
+profiles/iso/docx/to.xsl:947:15 not-creating-attribute-correctly
+profiles/iso/docx/to.xsl:957:11 not-creating-attribute-correctly
+profiles/iso/docx/to.xsl:963:11 not-creating-attribute-correctly
 profiles/iso/docx/to.xsl:973:15 not-creating-attribute-correctly
+profiles/iso/docx/to.xsl:976:15 not-creating-attribute-correctly
 profiles/iso/docx/to.xsl:1034:24 redundant-whitespace fix ""
 profiles/iso/docx/to.xsl:1034:43 redundant-whitespace fix " "
 profiles/iso/docx/to.xsl:1034:64 redundant-whitespace fix " "

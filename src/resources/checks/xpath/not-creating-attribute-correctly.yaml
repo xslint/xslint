@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
 # SPDX-License-Identifier: MIT
 ---
-xpath: //xsl:attribute[not(contains(@name, '{')) and not(@_name)][not(@namespace) and not(@_namespace)][parent::*[not(self::xsl:*)]][not(*) or (count(*) = 1 and xsl:value-of[not(@separator) and not(@_separator)])][not(preceding-sibling::*[not(self::xsl:variable) and not(self::xsl:attribute)])][not(preceding-sibling::xsl:attribute[@_name or not(@name) or contains(@name, '{')])][not(preceding-sibling::xsl:attribute/@name = @name)]
+xpath: //xsl:attribute[not(contains(@name, '{')) and not(@_name)][not(@namespace) and not(@_namespace)][parent::*[not(self::xsl:*)]][not(*) or (count(*) = 1 and (xsl:value-of[not(@separator) and not(@_separator)] or xsl:text[not(@disable-output-escaping) and not(@_disable-output-escaping)]))][not(preceding-sibling::*[not(self::xsl:variable) and not(self::xsl:attribute)])][not(preceding-sibling::xsl:attribute[@_name or not(@name) or contains(@name, '{')])][not(preceding-sibling::xsl:attribute/@name = @name)]
 severity: warning
 message: xsl:attribute with a static name on a literal element can be a literal attribute (an AVT for a computed value). Write it inline.
