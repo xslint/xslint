@@ -87,11 +87,11 @@ const booleanConstant = function(node, content) {
 }
 
 /**
- * Fix for `text-outside-xsl-text`: wrap the literal text in `xsl:text`. The
- * check declares it a suggestion, the rewrite inserting an element. Only when
- * the instruction holds exactly one non-whitespace text node can a single edit
- * resolve the defect — with text on both sides of a child element there are
- * several nodes to wrap, so there is no fix.
+ * Fix for `text-outside-xsl-text`: wrap the literal text in `xsl:text`, under
+ * the prefix the document binds to XSLT and withheld where it binds none, the
+ * way `missingVersion` reads one (#976). Only when the instruction holds
+ * exactly one non-whitespace text node can a single edit resolve the defect —
+ * with text on both sides of a child element there are several to wrap.
  * @param {Element} node - The instruction element holding the loose text
  * @return {?object} - The fix, or null
  */
@@ -99,13 +99,15 @@ const textOutsideXslText = function(node) {
   const texts = Array.from(node.childNodes).filter(
     (child) => child.nodeType === 3 && child.nodeValue.trim() !== '',
   )
+  const prefix = node.lookupPrefix(XSLT)
   let fix = null
-  if (texts.length === 1) {
+  if (texts.length === 1 && prefix) {
     fix = {
       line: texts[0].lineNumber,
       col: texts[0].columnNumber,
       value: texts[0].nodeValue,
-      replacement: `<xsl:text>${texts[0].nodeValue}</xsl:text>`,
+      replacement:
+        `<${prefix}:text>${texts[0].nodeValue}</${prefix}:text>`,
     }
   }
   return fix

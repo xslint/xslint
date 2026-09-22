@@ -398,6 +398,12 @@ const APPLIED = [
     after: 'text-outside-xsl-text.fixed.xsl',
   },
   {
+    name: 'should wrap loose text under the prefix the document binds',
+    flag: '--fix-suggestions',
+    before: 'text-outside-xsl-text-under-another-prefix.xsl',
+    after: 'text-outside-xsl-text-under-another-prefix.fixed.xsl',
+  },
+  {
     name: 'should apply a suggestion with --fix-suggestions',
     flag: '--fix-suggestions',
     before: 'using-disable-output-escaping.xsl',
@@ -603,6 +609,11 @@ const UNCHANGED = [
     name: 'cannot wrap loose text in xsl:text with plain --fix',
     flag: '--fix',
     sheet: 'text-outside-xsl-text.xsl',
+  },
+  {
+    name: 'cannot wrap loose text where no prefix binds the XSLT namespace',
+    flag: '--fix-suggestions',
+    sheet: 'text-outside-xsl-text-under-no-prefix.xsl',
   },
   {
     name: 'cannot apply a suggestion with plain --fix',
