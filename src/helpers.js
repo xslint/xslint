@@ -3,11 +3,62 @@
  * SPDX-License-Identifier: MIT
  */
 
+/*
+ * `xmlFromString` reads a document the way a processor does where
+ * `@xmldom/xmldom` will not. It resolves no entity at all, leaving every
+ * `&name;` literal in the value it parsed, so `expand` puts what each one
+ * stands for where the reference stands — and until #984 it put the
+ * replacement text in as *characters*, whatever that text spelled. An entity
+ * whose replacement is markup is the elements it spells: DocBook-XSL declares
+ * `&lf;` as an `xsl:text` carrying a newline, and nine references to it were
+ * reported as literal text inside an instruction, each offered a fix that
+ * would have wrapped the ampersand in one more `xsl:text`. The other half of
+ * the same reading is what no check saw at all: the expression such an
+ * instruction carries reached no scanner, so a `//` standing inside one was a
+ * scan of the whole document that nothing reported.
+ *
+ * So a text node holding a reference is rebuilt as markup and read by a parse
+ * of its own — `markup`, then `grafted` — and what comes back is adopted into
+ * the document where the reference stood. The rebuild escapes what stood
+ * *around* the references, `nodeValue` being decoded already, so a `&lt;`
+ * beside an entity is read as text a second time rather than as a tag. That
+ * parse happens in the namespaces the reference point binds, `scoped`
+ * gathering them off the ancestors, a replacement text naming its prefixes as
+ * the document that holds it does. A replacement of characters alone comes
+ * back as one text node, and the node keeps its own place rather than being
+ * swapped for an equal.
+ *
+ * A reference this run reached no declaration for stands for content nobody
+ * read, so it is dropped rather than left to be reported as the characters
+ * spelling its own name: DocBook's `&setup-language-variable;` comes from a
+ * subset behind a parameter entity, and twelve references to it drew that
+ * same wrapping advice. Dropping one means telling `&name;` from the
+ * `&amp;name;` that is literal text, and a parsed value spells both the same
+ * way; `spelled` reads the raw source for the names a reference there really
+ * opens, XML's own five aside, `&lt;` written out being the spelling common
+ * enough to matter. An instruction whose whole content was such a reference
+ * now reads as empty rather than as loose text, which is one report traded
+ * for another — and the one it gives up carried a fix where
+ * `empty-content-in-instructions` carries none. No stylesheet of the three
+ * corpora holds that shape; twenty-one hold the two shapes this cures, and
+ * the reports over all three are otherwise identical.
+ *
+ * Nothing an entity brought is written anywhere in the file holding it, so
+ * `unwritten` says so and two things answer to it. A defect stands at the
+ * reference, rather than at an offset walked forward through raw text that
+ * spells something else entirely. And no fix is offered on such a node at
+ * all: a declarative fixer reads that raw source itself to find the attribute
+ * it deletes, and what it finds there is an ampersand —
+ * `using-disable-output-escaping` built a zero-width edit on a line belonging
+ * to another element.
+ */
+
 const fs = require('fs')
 const path = require('path')
 const {DOMParser} = require('@xmldom/xmldom')
 const {GAP} = require('./tokens')
 const {NAMED, parted, offsetAt, placeAt} = require('./source')
+const {delimited, escaped} = require('./fixes')
 
 /**
  * A reference to a general entity, `&name;`, as it survives in a parsed value.
@@ -49,35 +100,6 @@ const external = function(str) {
 }
 
 /**
- * Replace every reference to a declared entity in the subtree with its value,
- * in place. `@xmldom/xmldom` leaves the reference literal, so an expression or
- * text that uses one would otherwise read `&lowercase;` rather than its
- * replacement. Positions are untouched: the parser fixed line and column from
- * the original source, and only in-memory values change.
- * @param {Node} node - Node whose subtree to repair
- * @param {Map.<string, string>} entities - Declared entity values
- */
-const expand = function(node, entities) {
-  if ((node.nodeType === 2 || node.nodeType === 3) &&
-    node.nodeValue.includes('&')) {
-    const value = node.nodeValue.replace(REFERENCE,
-      (whole, name) => entities.get(name) ?? whole)
-    node.nodeValue = value
-    if (node.nodeType === 2) {
-      node.value = value
-    }
-  }
-  if (node.attributes) {
-    for (let index = 0; index < node.attributes.length; index++) {
-      expand(node.attributes.item(index), entities)
-    }
-  }
-  for (let child = node.firstChild; child; child = child.nextSibling) {
-    expand(child, entities)
-  }
-}
-
-/**
  * Every complaint `@xmldom/xmldom` raises about an entity reference, none of
  * which it repairs. Its pre-scan reads a name as `\w+`, narrower than XML's
  * `Name`, so a well declared `&sc.name;` earns the second of these — and it
@@ -108,6 +130,201 @@ const parserFor = function() {
       }
     },
   })
+}
+
+/**
+ * The entity names the source spells as a reference of its own, XML's five
+ * predefined ones aside. A `&name;` nobody declared and the `&amp;name;` that
+ * is literal text reach a parsed value as the same characters, so what tells
+ * them apart is whether the source spells that name bare anywhere (#984).
+ * @param {string} str - XML source
+ * @return {Set.<string>} - Names a reference in the source spells
+ */
+const spelled = function(str) {
+  return new Set(
+    [...str.matchAll(REFERENCE)]
+      .map((match) => match[1])
+      .filter((name) => !Object.hasOwn(NAMED, name)),
+  )
+}
+
+/**
+ * An attribute declaring a namespace, in either spelling XML gives it.
+ * @type {RegExp}
+ */
+const BINDS = /^xmlns(?::|$)/
+
+/**
+ * The element an entity's replacement text is read inside, whose name may
+ * stand nowhere in what comes out of it.
+ * @type {string}
+ */
+const HOST = 'xslint'
+
+/**
+ * The namespace declarations in force at a node, spelled as the attributes an
+ * element carries. An entity's replacement text names its prefixes as the
+ * point referencing it binds them, so markup read without those is markup in
+ * the wrong namespace or in none.
+ * @param {Node} node - Node the replacement text stands at
+ * @return {string} - Declarations, each ready to follow an element name
+ */
+const scoped = function(node) {
+  const seen = new Map()
+  for (let up = node; up; up = up.parentNode) {
+    for (let at = 0; up.attributes && at < up.attributes.length; at++) {
+      const one = up.attributes.item(at)
+      if (BINDS.test(one.name) && !seen.has(one.name)) {
+        seen.set(one.name, one.value)
+      }
+    }
+  }
+  return [...seen]
+    .map(([name, value]) => ` ${name}="${delimited(value, '"')}"`)
+    .join('')
+}
+
+/**
+ * The text a node holds as a parser must read it: a declared entity stands for
+ * its replacement text, which is markup where it spells one, a reference this
+ * run reached no declaration for stands for the content nobody read, and every
+ * character around them is escaped rather than parsed a second time.
+ * @param {string} value - The node's parsed value
+ * @param {Map.<string, string>} entities - Declared entity values
+ * @param {Set.<string>} bare - Names the source spells as a reference
+ * @return {string} - The value as markup
+ */
+const markup = function(value, entities, bare) {
+  let built = ''
+  let at = 0
+  for (const match of value.matchAll(REFERENCE)) {
+    built += escaped(value.slice(at, match.index))
+    if (entities.has(match[1])) {
+      built += entities.get(match[1])
+    } else if (!bare.has(match[1])) {
+      built += escaped(match[0])
+    }
+    at = match.index + match[0].length
+  }
+  return `${built}${escaped(value.slice(at))}`
+}
+
+/**
+ * Every node an entity reference brought, which is every node standing
+ * nowhere in the file that holds it: the reference is what the source spells
+ * there, so a walk over the raw text answers about the reference and a fix
+ * written at that place would put the replacement where the `&` stands (#984).
+ * @type {WeakSet.<Node>}
+ */
+const BROUGHT = new WeakSet()
+
+/**
+ * Whether a node is one no line of its file spells, an entity having brought
+ * it. Its place is where the reference stands, and that is the whole of what
+ * the source says about it.
+ * @param {Node} node - Node to weigh
+ * @return {boolean} - True when an entity brought it
+ */
+const unwritten = function(node) {
+  return BROUGHT.has(node)
+}
+
+/**
+ * The node, and everything under it, standing where the reference stood. An
+ * entity's markup has one place in the file whatever it spells, so the nodes
+ * it makes answer for that place rather than for an offset into a replacement
+ * text no line of the document holds.
+ * @param {Node} node - Node to place
+ * @param {Node} at - Node whose place it takes
+ * @return {Node} - The same node, placed
+ */
+const placed = function(node, at) {
+  BROUGHT.add(node)
+  node.lineNumber = at.lineNumber
+  node.columnNumber = at.columnNumber
+  for (let index = 0; node.attributes && index < node.attributes.length;
+    index++) {
+    placed(node.attributes.item(index), at)
+  }
+  for (let kid = node.firstChild; kid; kid = kid.nextSibling) {
+    placed(kid, at)
+  }
+  return node
+}
+
+/**
+ * The nodes a text node's markup spells, adopted into the document standing
+ * around it. Reading them is a parse of its own, so a replacement text that is
+ * not well-formed content faults here as it would have faulted in place.
+ * @param {string} text - The value as markup
+ * @param {Node} at - Text node the markup stands at
+ * @return {Array.<Node>} - What stands there once it is read
+ */
+const grafted = function(text, at) {
+  const nodes = []
+  const doc = parserFor().parseFromString(
+    `<${HOST}${scoped(at)}>${text}</${HOST}>`, 'text/xml')
+  for (let kid = doc.documentElement.firstChild; kid; kid = kid.nextSibling) {
+    nodes.push(placed(at.ownerDocument.importNode(kid, true), at))
+  }
+  return nodes
+}
+
+/**
+ * Put what a text node's references stand for where the text node stands. A
+ * replacement text of characters alone leaves one text node, which keeps its
+ * own place rather than being swapped for an equal; anything else is markup,
+ * and a node reading as nothing at all leaves no text behind to be reported as
+ * loose.
+ * @param {Node} text - Text node holding at least one reference
+ * @param {Map.<string, string>} entities - Declared entity values
+ * @param {Set.<string>} bare - Names the source spells as a reference
+ */
+const standing = function(text, entities, bare) {
+  const nodes = grafted(markup(text.nodeValue, entities, bare), text)
+  if (nodes.length === 1 && nodes[0].nodeType === 3) {
+    text.nodeValue = nodes[0].nodeValue
+  } else {
+    for (const node of nodes) {
+      text.parentNode.insertBefore(node, text)
+    }
+    text.parentNode.removeChild(text)
+  }
+}
+
+/**
+ * Replace every reference to a declared entity in the subtree with what it
+ * stands for, in place. `@xmldom/xmldom` leaves the reference literal, so an
+ * expression or text that uses one would otherwise read `&lowercase;` rather
+ * than its replacement, and what an entity brings takes the place of the
+ * reference that brought it.
+ * @param {Node} node - Node whose subtree to repair
+ * @param {Map.<string, string>} entities - Declared entity values
+ * @param {Set.<string>} bare - Names the source spells as a reference
+ */
+const expand = function(node, entities, bare) {
+  if (node.nodeType === 2 && node.nodeValue.includes('&')) {
+    const value = node.nodeValue.replace(REFERENCE,
+      (whole, name) => entities.get(name) ?? whole)
+    node.nodeValue = value
+    node.value = value
+  }
+  if (node.attributes) {
+    for (let index = 0; index < node.attributes.length; index++) {
+      expand(node.attributes.item(index), entities, bare)
+    }
+  }
+  const kids = []
+  for (let kid = node.firstChild; kid; kid = kid.nextSibling) {
+    kids.push(kid)
+  }
+  for (const kid of kids) {
+    if (kid.nodeType === 3 && kid.nodeValue.includes('&')) {
+      standing(kid, entities, bare)
+    } else if (kid.nodeType === 1) {
+      expand(kid, entities, bare)
+    }
+  }
 }
 
 /**
@@ -327,8 +544,8 @@ const xmlFromString = function(str) {
     if (refused) {
       throw new Error(refused)
     }
-    if (entities.size) {
-      expand(doc.documentElement, entities)
+    if (entities.size || loose) {
+      expand(doc.documentElement, entities, spelled(text))
     }
     return doc
   } catch (err) {
@@ -374,6 +591,7 @@ module.exports = {
   allFilesFrom,
   SEALED,
   slashed,
+  unwritten,
   xml: {
     parsedFromFile: fromFile('XML', xmlFromString),
     parsedFromString: xmlFromString,

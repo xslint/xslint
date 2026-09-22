@@ -4,6 +4,7 @@
  */
 
 const {validate} = require('../src/validators/xsl-validator')
+const {XMLSerializer} = require('@xmldom/xmldom')
 const assert = require('assert')
 
 /**
@@ -250,6 +251,78 @@ const EXPAND = [
   },
 ]
 
+/**
+ * Sources whose entities stand in a text node, paired with the document each
+ * expands into. A replacement text that spells an element is markup a parser
+ * reads, never the characters a check would report as loose text, and one no
+ * subset this run read declares stands for content we never saw rather than
+ * for the seven characters spelling its name (#984).
+ * @type {Array.<{name: string, content: string, expanded: string}>}
+ */
+const GRAFTED = [
+  {
+    name: 'should read an entity whose replacement is an element as markup',
+    content: '<!DOCTYPE a [<!ENTITY mk "<b/>">]>\n<a>&mk;</a>',
+    expanded: '<a><b/></a>',
+  },
+  {
+    name: 'should keep the text standing on either side of such a reference',
+    content: '<!DOCTYPE a [<!ENTITY mk "<b/>">]>\n<a>one &mk; two</a>',
+    expanded: '<a>one <b/> two</a>',
+  },
+  {
+    name: 'should place every reference one text node holds',
+    content: '<!DOCTYPE a [<!ENTITY mk "<b/>">]>\n<a>&mk;&mk;</a>',
+    expanded: '<a><b/><b/></a>',
+  },
+  {
+    name: 'should read the markup in the prefixes its reference point binds',
+    content: '<!DOCTYPE a [<!ENTITY mk "<x:b/>">]>\n' +
+      '<a xmlns:x="urn:x">&mk;</a>',
+    expanded: '<a xmlns:x="urn:x"><x:b/></a>',
+  },
+  {
+    name: 'should escape what stood beside the markup rather than parse it',
+    content: '<!DOCTYPE a [<!ENTITY mk "<b/>">]>\n<a>p &lt; q &mk;</a>',
+    expanded: '<a>p &lt; q <b/></a>',
+  },
+  {
+    name: 'should leave an entity whose replacement is characters as text',
+    content: '<!DOCTYPE a [<!ENTITY mk "plain">]>\n<a>&mk;</a>',
+    expanded: '<a>plain</a>',
+  },
+  {
+    name: 'should read a reference no subset it reached declares as nothing',
+    content: '<!DOCTYPE a SYSTEM "e.dtd">\n<a>&far;</a>',
+    expanded: '<a/>',
+  },
+  {
+    name: 'should leave the text standing around such a reference',
+    content: '<!DOCTYPE a SYSTEM "e.dtd">\n<a>one &far; two</a>',
+    expanded: '<a>one  two</a>',
+  },
+  {
+    name: 'should place an attribute the markup carries where it stood',
+    content: '<!DOCTYPE a [<!ENTITY mk "<b t=\'v\'/>">]>\n<a>&mk;</a>',
+    expanded: '<a><b t="v"/></a>',
+  },
+  {
+    name: 'should place what stands under what an entity brings',
+    content: '<!DOCTYPE a [<!ENTITY mk "<b><c/></b>">]>\n<a>&mk;</a>',
+    expanded: '<a><b><c/></b></a>',
+  },
+  {
+    name: 'should reach a reference standing under an element of its own',
+    content: '<!DOCTYPE a [<!ENTITY mk "deep">]>\n<a><b>&mk;</b></a>',
+    expanded: '<a><b>deep</b></a>',
+  },
+  {
+    name: 'should read an ampersand that was written out as itself',
+    content: '<!DOCTYPE a SYSTEM "e.dtd">\n<a>&amp;far;</a>',
+    expanded: '<a>&amp;far;</a>',
+  },
+]
+
 describe('xsl-validator', function() {
   KEPT.forEach(({name, file, content}) => {
     it(name, function() {
@@ -269,6 +342,16 @@ describe('xsl-validator', function() {
         validate([{file: 'e.xsl', content}])
           .corpus[0].xsl.documentElement.getAttribute('t'),
         expected,
+      )
+    })
+  })
+  GRAFTED.forEach(({name, content, expanded}) => {
+    it(name, function() {
+      assert.equal(
+        new XMLSerializer().serializeToString(
+          validate([{file: 'g.xsl', content}]).corpus[0].xsl.documentElement,
+        ),
+        expanded,
       )
     })
   })

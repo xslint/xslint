@@ -1,0 +1,24 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: scans-whole-document
+# An entity whose replacement text spells an instruction brings the expression
+# that instruction carries with it, and a processor evaluates that expression
+# wherever the reference stands. The reference is the one place in the file
+# the scan has, so it is where the report goes.
+found:
+  amount: 1
+  positions: [ [ 10, 40 ] ]
+  fixes: [ null ]
+input: |-
+  <?xml version="1.0"?>
+  <!DOCTYPE xsl:stylesheet [
+  <!ENTITY scan "<xsl:value-of xmlns:xsl='http://www.w3.org/1999/XSL/Transform' select='//alpha'/>">
+  ]>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" id="style1">
+    <xsl:output encoding="UTF-8" method="xml"/>
+    <xsl:template match="/objects/o">
+      <xsl:copy-of select="beta"/>
+    </xsl:template>
+    <xsl:template match="/objects/gamma">&scan;</xsl:template>
+  </xsl:stylesheet>

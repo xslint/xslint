@@ -300,6 +300,7 @@ const substitution = function(attribute, replacement, content) {
 
 module.exports = {
   deletion,
+  delimited,
   escaped,
   excision,
   standsAt,

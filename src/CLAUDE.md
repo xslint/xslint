@@ -602,7 +602,9 @@ engine would be answering two different questions.
 
 ## `src/helpers.js`
 
-XML parsing (expands internal-subset entities), YAML parsing, file recursion. `allFilesFrom` joins
+XML parsing (expands internal-subset entities), YAML parsing, file recursion. What a replacement
+text stands for once it spells markup, and why a reference is neither text nor a place a fix may
+be written, stands at the top of the module itself (#984). `allFilesFrom` joins
 each subtree on with `flatMap` rather than spreading it into a `push`, since a spread hands every
 path over as an argument and V8 caps those at roughly 125 per kilobyte of stack: this repository's
 own checkout grew to 768,731 files and every run over it died with a `RangeError` before a byte of

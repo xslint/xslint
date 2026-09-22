@@ -1,0 +1,36 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: text-outside-xsl-text
+# An entity reference is not text. One whose replacement text spells markup is
+# the elements it spells, and one no subset this run read declares stands for
+# content nobody saw, so neither is loose text to wrap — where the literal
+# standing beside them still is. An instruction whose whole content is the
+# second kind reads as empty instead, which is what an unread subset leaves
+# behind and carries no fix, where wrapping the reference carried one. What
+# the markup draws is reported at the reference, and never fixed there.
+found:
+  amount: 3
+  positions:
+    - [ 12, 5, empty-content-in-instructions ]
+    - [ 14, 5 ]
+    - [ 15, 26, using-disable-output-escaping ]
+  fixes: [ null, "<xsl:text>loose</xsl:text>", null ]
+input: |-
+  <?xml version="1.0"?>
+  <!DOCTYPE xsl:stylesheet [
+  <!ENTITY % ext SYSTEM "entities.ent">
+  %ext;
+  <!ENTITY lf "<xsl:text xmlns:xsl='http://www.w3.org/1999/XSL/Transform'>&#xA;</xsl:text>">
+  <!ENTITY esc "<xsl:text xmlns:xsl='http://www.w3.org/1999/XSL/Transform' disable-output-escaping='yes'>&#xA;</xsl:text>">
+  ]>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" id="style1">
+    <xsl:output encoding="UTF-8" method="xml"/>
+    <xsl:template match="/objects/o">
+      <xsl:if test="@name">&lf;</xsl:if>
+      <xsl:if test="@base">&absent;</xsl:if>
+      <xsl:if test="@alias">&lf;&absent;</xsl:if>
+      <xsl:if test="@kind">loose</xsl:if>
+      <xsl:if test="@mode">&esc;</xsl:if>
+    </xsl:template>
+  </xsl:stylesheet>
