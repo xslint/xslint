@@ -27,7 +27,6 @@ Documentation/verbatim.xsl:69:1 text-outside-xsl-text suggestion "<xsl:text>xsl:
 Documentation/xsltdoc.xsl:2:1 missing-id-in-stylesheet
 Documentation/xsltdoc.xsl:76:5 text-outside-xsl-text suggestion "<xsl:text>/</xsl:text>"
 Test/checklinks.xsl:2:1 missing-id-in-stylesheet
-Test/checklinks.xsl:9:27 scans-whole-document
 Test/formatexamples.xsl:2:1 missing-id-in-stylesheet
 Test/formatexamples.xsl:28:7 unused-function-template-parameter
 Test/poem.xsl:2:1 missing-id-in-stylesheet
@@ -3320,16 +3319,6 @@ odds/odd2html.xsl:142:3 unused-named-template
 odds/odd2html.xsl:163:11 not-creating-element-correctly
 odds/odd2json.xsl:2:1 missing-id-in-stylesheet
 odds/odd2json.xsl:91:9 short-names
-odds/odd2json.xsl:175:43 scans-whole-document
-odds/odd2json.xsl:200:43 scans-whole-document
-odds/odd2json.xsl:210:43 scans-whole-document
-odds/odd2json.xsl:219:47 scans-whole-document
-odds/odd2json.xsl:227:47 scans-whole-document
-odds/odd2json.xsl:236:43 scans-whole-document
-odds/odd2json.xsl:248:43 scans-whole-document
-odds/odd2json.xsl:260:43 scans-whole-document
-odds/odd2json.xsl:278:43 scans-whole-document
-odds/odd2json.xsl:286:43 scans-whole-document
 odds/odd2json.xsl:307:30 redundant-whitespace fix " "
 odds/odd2json.xsl:499:37 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 odds/odd2json.xsl:507:37 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
@@ -3533,7 +3522,6 @@ odds/odd2xslstripspace.xsl:152:7 unused-function-template-parameter
 odds/odd2xslstripspace.xsl:156:3 empty-variable
 odds/odd2xslstripspace.xsl:158:3 empty-variable
 odds/odd2xslstripspace.xsl:158:3 unused-variable
-odds/odd2xslstripspace.xsl:163:24 scans-whole-document
 odds/odd2xslstripspace.xsl:180:21 count-compared-to-zero fix "empty(Element)"
 odds/table2list.xsl:2:1 missing-id-in-stylesheet
 odds/table2list.xsl:54:60 redundant-whitespace fix " "
@@ -3952,7 +3940,6 @@ profiles/default/bibtex/to.xsl:2:1 missing-id-in-stylesheet
 profiles/default/cocoa/from.xsl:2:1 missing-id-in-stylesheet
 profiles/default/csv/from.xsl:3:1 missing-id-in-stylesheet
 profiles/default/csv/to.xsl:3:1 missing-id-in-stylesheet
-profiles/default/csv/to.xsl:67:28 scans-whole-document
 profiles/default/csv/to.xsl:78:7 text-outside-xsl-text suggestion "<xsl:text>,</xsl:text>"
 profiles/default/docbook/from.xsl:1:1 missing-id-in-stylesheet
 profiles/default/docbook/to.xsl:1:1 missing-id-in-stylesheet
@@ -5240,8 +5227,6 @@ rdf/make-acdc.xsl:1:1 missing-id-in-stylesheet
 rdf/make-acdc.xsl:23:3 unused-named-template
 rdf/make-acdc.xsl:25:23 string-length-compared-to-zero suggestion "$doclang != ''"
 rdf/make-acdc.xsl:34:5 unused-function-template-parameter
-rdf/make-acdc.xsl:48:43 scans-whole-document
-rdf/make-acdc.xsl:60:27 scans-whole-document
 rdf/make-acdc.xsl:62:2 short-names
 rdf/make-acdc.xsl:62:2 unused-variable
 rdf/make-acdc.xsl:63:2 not-creating-attribute-correctly
@@ -5455,7 +5440,6 @@ tools/odd-to-csv.xsl:78:7 unused-variable
 tools/odd-to-csv.xsl:90:7 unused-variable
 tools/odd-to-tree.xsl:2:1 missing-id-in-stylesheet
 tools/odd-to-tree.xsl:6:5 leaking-result-namespace suggestion " exclude-result-prefixes=\"tei\""
-tools/odd-to-tree.xsl:16:27 scans-whole-document
 tools/odd-to-tree.xsl:36:3 use-choose-without-otherwise
 tools/odd-to-tree.xsl:49:13 scans-whole-document
 tools/odd-to-tree.xsl:85:29 scans-whole-document

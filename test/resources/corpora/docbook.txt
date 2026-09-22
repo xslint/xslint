@@ -35,7 +35,6 @@ anttools/xspec/format-utils.xsl:161:13 text-outside-xsl-text suggestion "<xsl:te
 anttools/xspec/format-xspec-report-folding.xsl:11:1 missing-id-in-stylesheet
 anttools/xspec/format-xspec-report.xsl:11:1 missing-id-in-stylesheet
 anttools/xspec/format-xspec-report.xsl:11:1 too-many-templates
-anttools/xspec/format-xspec-report.xsl:115:44 scans-whole-document
 anttools/xspec/format-xspec-report.xsl:130:50 scans-whole-document
 anttools/xspec/format-xspec-report.xsl:142:20 redundant-whitespace fix ""
 anttools/xspec/format-xspec-report.xsl:142:39 redundant-whitespace fix ""
@@ -169,13 +168,9 @@ contrib/tools/emacs/docbook-menu/doc/html-common.xsl:1:1 missing-id-in-styleshee
 contrib/tools/emacs/docbook-menu/doc/make-help.xsl:1:1 missing-id-in-stylesheet
 contrib/tools/emacs/docbook-menu/doc/make-html.xsl:1:1 missing-id-in-stylesheet
 contrib/tools/emacs/docbook-menu/xsl/make-dbxsl-tcg.xsl:1:1 missing-id-in-stylesheet
-contrib/tools/emacs/docbook-menu/xsl/make-dbxsl-tcg.xsl:16:27 scans-whole-document
 contrib/tools/emacs/docbook-menu/xsl/make-docbook-elements-list.xsl:1:1 missing-id-in-stylesheet
-contrib/tools/emacs/docbook-menu/xsl/make-docbook-elements-list.xsl:20:28 scans-whole-document
 contrib/tools/emacs/docbook-menu/xsl/make-docbook-xsl-params-list.xsl:1:1 missing-id-in-stylesheet
-contrib/tools/emacs/docbook-menu/xsl/make-docbook-xsl-params-list.xsl:36:28 scans-whole-document
 contrib/tools/emacs/docbook-menu/xsl/make-tdg-menu.xsl:1:1 missing-id-in-stylesheet
-contrib/tools/emacs/docbook-menu/xsl/make-tdg-menu.xsl:20:28 scans-whole-document
 contrib/tools/fo-editor/src/schemas/convert.xsl:7:1 missing-id-in-stylesheet
 contrib/tools/fo-editor/src/schemas/convert.xsl:25:22 starts-with-double-slash suggestion ""
 contrib/tools/fo-editor/src/schemas/convert.xsl:25:30 starts-with-double-slash suggestion ""
@@ -200,7 +195,6 @@ contrib/xsl/applethelp/applethelp.xsl:5:1 missing-id-in-stylesheet
 contrib/xsl/applethelp/htmlhelp-common.xsl:2:1 missing-id-in-stylesheet
 contrib/xsl/applethelp/htmlhelp-common.xsl:2:1 too-many-templates
 contrib/xsl/applethelp/htmlhelp-common.xsl:26:27 count-compared-to-zero fix "not(key('id',$rootid))"
-contrib/xsl/applethelp/htmlhelp-common.xsl:47:35 scans-whole-document
 contrib/xsl/applethelp/htmlhelp-common.xsl:100:1 oversized-template
 contrib/xsl/applethelp/htmlhelp-common.xsl:323:33 scans-whole-document
 contrib/xsl/applethelp/htmlhelp-common.xsl:353:1 mode-or-priority-without-match suggestion ""
@@ -590,7 +584,6 @@ gentext/xsl/xsl.xsl:116:3 setting-value-of-variable-incorrectly
 litprog/.stylesheets/fo.xsl:2:1 missing-id-in-stylesheet
 litprog/.stylesheets/html.xsl:2:1 missing-id-in-stylesheet
 litprog/bootstrap-tangle.xsl:5:1 missing-id-in-stylesheet
-litprog/bootstrap-tangle.xsl:16:32 scans-whole-document
 litprog/bootstrap-tangle.xsl:46:3 using-disable-output-escaping suggestion ""
 litprog/bootstrap-tangle.xsl:57:29 name-compared-to-string suggestion "self::disable-output-escaping"
 litprog/bootstrap-tangle.xsl:66:45 scans-whole-document
@@ -672,7 +665,6 @@ xsl/.make-catalog.xsl:2:1 missing-id-in-stylesheet
 xsl/VERSION.xsl:2:1 missing-id-in-stylesheet
 xsl/VERSION.xsl:5:3 redundant-namespace-declarations fix ""
 xsl/VERSION.xsl:6:3 redundant-namespace-declarations fix ""
-xsl/VERSION.xsl:77:36 scans-whole-document
 xsl/assembly/assemble.xsl:2:1 missing-id-in-stylesheet
 xsl/assembly/assemble.xsl:2:1 not-using-output
 xsl/assembly/assemble.xsl:2:1 too-many-templates
@@ -2812,7 +2804,6 @@ xsl/html/xref.xsl:1338:3 unused-function-template-parameter
 xsl/htmlhelp/htmlhelp-common.xsl:5:1 missing-id-in-stylesheet
 xsl/htmlhelp/htmlhelp-common.xsl:5:1 too-many-templates
 xsl/htmlhelp/htmlhelp-common.xsl:91:31 count-compared-to-zero fix "not(key('id',$rootid))"
-xsl/htmlhelp/htmlhelp-common.xsl:120:41 scans-whole-document
 xsl/htmlhelp/htmlhelp-common.xsl:153:1 oversized-template
 xsl/htmlhelp/htmlhelp-common.xsl:406:33 scans-whole-document
 xsl/htmlhelp/htmlhelp-common.xsl:564:3 text-outside-xsl-text suggestion "<xsl:text><xsl:text xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">&#xA;</xsl:text>\n  </xsl:text>"
@@ -2900,8 +2891,6 @@ xsl/manpages/charmap.groff.xsl:2:1 missing-id-in-stylesheet
 xsl/manpages/docbook.xsl:2:1 missing-id-in-stylesheet
 xsl/manpages/docbook.xsl:5:17 redundant-namespace-declarations fix ""
 xsl/manpages/docbook.xsl:6:17 redundant-namespace-declarations fix ""
-xsl/manpages/docbook.xsl:92:21 scans-whole-document
-xsl/manpages/docbook.xsl:101:36 scans-whole-document
 xsl/manpages/endnotes.xsl:2:1 missing-id-in-stylesheet
 xsl/manpages/endnotes.xsl:93:27 scans-whole-document
 xsl/manpages/endnotes.xsl:95:9 not-creating-attribute-correctly
@@ -3229,7 +3218,6 @@ xsl/tools/xsl/build/jref2refsect1.xsl:2:1 missing-id-in-stylesheet
 xsl/tools/xsl/build/jref2refsect1.xsl:2:1 too-many-templates
 xsl/tools/xsl/build/make-elements.xsl:2:1 missing-id-in-stylesheet
 xsl/tools/xsl/build/make-elements.xsl:3:17 leaking-result-namespace suggestion " exclude-result-prefixes=\"exsl\""
-xsl/tools/xsl/build/make-elements.xsl:41:23 scans-whole-document
 xsl/tools/xsl/build/make-xsl-params.xsl:2:1 missing-id-in-stylesheet
 xsl/tools/xsl/build/make-xsl-params.xsl:3:17 leaking-result-namespace suggestion " exclude-result-prefixes=\"exsl\""
 xsl/tools/xsl/build/make-xsl-pi.xsl:2:1 missing-id-in-stylesheet
