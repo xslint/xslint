@@ -958,7 +958,7 @@ docx/from/omml2mml.xsl:1042:132 redundant-whitespace fix " "
 docx/from/omml2mml.xsl:1042:136 redundant-whitespace fix " "
 docx/from/omml2mml.xsl:1053:28 not-creating-attribute-correctly
 docx/from/omml2mml.xsl:1092:21 count-compared-to-zero fix "exists($ndCur/following-sibling::*)"
-docx/from/omml2mml.xsl:1110:26 string-length-compared-to-zero suggestion "substring-after($sAllMt, '&') != ''"
+docx/from/omml2mml.xsl:1110:26 string-length-compared-to-zero suggestion "substring-after($sAllMt, '&amp;') != ''"
 docx/from/omml2mml.xsl:1110:84 redundant-whitespace fix " "
 docx/from/omml2mml.xsl:1145:21 string-length-compared-to-zero suggestion "$sToParse != ''"
 docx/from/omml2mml.xsl:1148:16 use-choose-without-otherwise

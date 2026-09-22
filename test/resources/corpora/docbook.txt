@@ -3079,9 +3079,9 @@ xsl/roundtrip/dbk2wp.xsl:473:21 redundant-whitespace fix " "
 xsl/roundtrip/dbk2wp.xsl:479:23 redundant-whitespace fix " "
 xsl/roundtrip/dbk2wp.xsl:609:5 use-choose-without-otherwise
 xsl/roundtrip/dbk2wp.xsl:767:23 count-compared-to-zero fix "$node/preceding-sibling::*[self::d:entry|self::doc:entry]"
-xsl/roundtrip/dbk2wp.xsl:801:96 string-length-compared-to-zero suggestion "normalize-space(.) != ''"
-xsl/roundtrip/dbk2wp.xsl:806:211 string-length-compared-to-zero suggestion "normalize-space(.) != ''"
-xsl/roundtrip/dbk2wp.xsl:810:31 string-length-compared-to-zero suggestion "normalize-space(.) = ''"
+xsl/roundtrip/dbk2wp.xsl:801:96 string-length-compared-to-zero suggestion "normalize-space(.) != &apos;&apos;"
+xsl/roundtrip/dbk2wp.xsl:806:211 string-length-compared-to-zero suggestion "normalize-space(.) != &apos;&apos;"
+xsl/roundtrip/dbk2wp.xsl:810:31 string-length-compared-to-zero suggestion "normalize-space(.) = &apos;&apos;"
 xsl/roundtrip/dbk2wp.xsl:915:5 unused-function-template-parameter
 xsl/roundtrip/dbk2wp.xsl:1365:3 unused-named-template
 xsl/roundtrip/normalise-common.xsl:1:1 missing-id-in-stylesheet

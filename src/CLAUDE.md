@@ -567,6 +567,12 @@ reserved for a span an earlier edit had moved, on a file nothing had touched (#7
 literal or a concatenation under that key anywhere in `src/`: it is the text the source already
 holds, and #718's ban saw only the subtraction it was written for.
 
+`written(text, node, content)` asks that rule of the node a fix lands in: the delimiter for an
+attribute value, character data for a text node, nothing at all inside a CDATA section. `defect`
+spells every code-based replacement through it, so the twelve linters building one remember
+nothing — each handed the fixer its decoded expression instead, and `--fix` over the corpora left
+two stylesheets no parser reads (#957).
+
 ## `src/fixer.js`
 
 Applies a defect's `fix` to source (decode-walk, verify-before-apply, end-to-start). A line ending

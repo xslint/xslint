@@ -6,5 +6,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="3.0" expand-text="yes">
   <xsl:template match="/">
     <p>{empty(item)}</p>
+    <p>{empty(a[@z &lt; 3])}</p>
+    <q><![CDATA[{empty(b[@y < 4])}]]></q>
   </xsl:template>
 </xsl:stylesheet>
