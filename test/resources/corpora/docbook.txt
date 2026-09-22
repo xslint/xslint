@@ -1601,23 +1601,23 @@ xsl/fo/formal.xsl:538:7 text-outside-xsl-text suggestion "<xsl:text>before</xsl:
 xsl/fo/formal.xsl:607:5 use-choose-without-otherwise
 xsl/fo/glossary.xsl:6:1 missing-id-in-stylesheet
 xsl/fo/glossary.xsl:6:1 too-many-templates
-xsl/fo/glossary.xsl:33:1 text-outside-xsl-text suggestion "<xsl:text>\n\n  &setup-language-variable;\n\n  </xsl:text>"
+xsl/fo/glossary.xsl:33:1 text-outside-xsl-text suggestion "<xsl:text>\n\n  &amp;setup-language-variable;\n\n  </xsl:text>"
 xsl/fo/glossary.xsl:150:3 unused-variable
-xsl/fo/glossary.xsl:224:1 text-outside-xsl-text suggestion "<xsl:text>\n  &setup-language-variable;\n\n  </xsl:text>"
-xsl/fo/glossary.xsl:334:1 text-outside-xsl-text suggestion "<xsl:text>\n\n  &setup-language-variable;\n\n  </xsl:text>"
+xsl/fo/glossary.xsl:224:1 text-outside-xsl-text suggestion "<xsl:text>\n  &amp;setup-language-variable;\n\n  </xsl:text>"
+xsl/fo/glossary.xsl:334:1 text-outside-xsl-text suggestion "<xsl:text>\n\n  &amp;setup-language-variable;\n\n  </xsl:text>"
 xsl/fo/glossary.xsl:336:35 scans-whole-document
 xsl/fo/glossary.xsl:336:74 scans-whole-document
 xsl/fo/glossary.xsl:512:3 unused-variable
-xsl/fo/glossary.xsl:582:1 text-outside-xsl-text suggestion "<xsl:text>\n\n  &setup-language-variable;\n\n  </xsl:text>"
-xsl/fo/glossary.xsl:632:1 text-outside-xsl-text suggestion "<xsl:text>\n\n  &setup-language-variable;\n\n  </xsl:text>"
-xsl/fo/glossary.xsl:681:1 text-outside-xsl-text suggestion "<xsl:text>\n\n  &setup-language-variable;\n\n  </xsl:text>"
+xsl/fo/glossary.xsl:582:1 text-outside-xsl-text suggestion "<xsl:text>\n\n  &amp;setup-language-variable;\n\n  </xsl:text>"
+xsl/fo/glossary.xsl:632:1 text-outside-xsl-text suggestion "<xsl:text>\n\n  &amp;setup-language-variable;\n\n  </xsl:text>"
+xsl/fo/glossary.xsl:681:1 text-outside-xsl-text suggestion "<xsl:text>\n\n  &amp;setup-language-variable;\n\n  </xsl:text>"
 xsl/fo/glossary.xsl:728:3 unused-variable
 xsl/fo/glossary.xsl:736:11 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
 xsl/fo/glossary.xsl:738:11 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 xsl/fo/glossary.xsl:801:3 text-outside-xsl-text suggestion "<xsl:text>, </xsl:text>"
 xsl/fo/glossary.xsl:806:3 text-outside-xsl-text suggestion "<xsl:text>, </xsl:text>"
 xsl/fo/glossary.xsl:811:3 text-outside-xsl-text suggestion "<xsl:text>, </xsl:text>"
-xsl/fo/glossary.xsl:939:1 text-outside-xsl-text suggestion "<xsl:text>\n  &setup-language-variable;\n\n  </xsl:text>"
+xsl/fo/glossary.xsl:939:1 text-outside-xsl-text suggestion "<xsl:text>\n  &amp;setup-language-variable;\n\n  </xsl:text>"
 xsl/fo/glossary.xsl:979:3 unused-variable
 xsl/fo/glossary.xsl:987:11 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
 xsl/fo/glossary.xsl:989:11 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
@@ -2440,9 +2440,9 @@ xsl/html/formal.xsl:398:7 text-outside-xsl-text suggestion "<xsl:text>before</xs
 xsl/html/formal.xsl:459:3 unused-variable
 xsl/html/glossary.xsl:6:1 missing-id-in-stylesheet
 xsl/html/glossary.xsl:6:1 too-many-templates
-xsl/html/glossary.xsl:22:1 text-outside-xsl-text suggestion "<xsl:text>\n  &setup-language-variable;\n  </xsl:text>"
-xsl/html/glossary.xsl:85:1 text-outside-xsl-text suggestion "<xsl:text>\n  &setup-language-variable;\n  </xsl:text>"
-xsl/html/glossary.xsl:111:1 text-outside-xsl-text suggestion "<xsl:text>\n  &setup-language-variable;\n  </xsl:text>"
+xsl/html/glossary.xsl:22:1 text-outside-xsl-text suggestion "<xsl:text>\n  &amp;setup-language-variable;\n  </xsl:text>"
+xsl/html/glossary.xsl:85:1 text-outside-xsl-text suggestion "<xsl:text>\n  &amp;setup-language-variable;\n  </xsl:text>"
+xsl/html/glossary.xsl:111:1 text-outside-xsl-text suggestion "<xsl:text>\n  &amp;setup-language-variable;\n  </xsl:text>"
 xsl/html/glossary.xsl:163:15 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
 xsl/html/glossary.xsl:164:15 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 xsl/html/glossary.xsl:171:15 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
@@ -2458,10 +2458,10 @@ xsl/html/glossary.xsl:233:15 text-outside-xsl-text suggestion "<xsl:text>1</xsl:
 xsl/html/glossary.xsl:254:3 text-outside-xsl-text suggestion "<xsl:text>, </xsl:text>"
 xsl/html/glossary.xsl:259:3 text-outside-xsl-text suggestion "<xsl:text>, </xsl:text>"
 xsl/html/glossary.xsl:264:3 text-outside-xsl-text suggestion "<xsl:text>, </xsl:text>"
-xsl/html/glossary.xsl:406:1 text-outside-xsl-text suggestion "<xsl:text>\n  &setup-language-variable;\n  </xsl:text>"
+xsl/html/glossary.xsl:406:1 text-outside-xsl-text suggestion "<xsl:text>\n  &amp;setup-language-variable;\n  </xsl:text>"
 xsl/html/glossary.xsl:409:25 scans-whole-document
 xsl/html/glossary.xsl:409:64 scans-whole-document
-xsl/html/glossary.xsl:494:1 text-outside-xsl-text suggestion "<xsl:text>\n\n  &setup-language-variable;\n\n  </xsl:text>"
+xsl/html/glossary.xsl:494:1 text-outside-xsl-text suggestion "<xsl:text>\n\n  &amp;setup-language-variable;\n\n  </xsl:text>"
 xsl/html/graphics.xsl:2:1 missing-id-in-stylesheet
 xsl/html/graphics.xsl:2:1 too-many-templates
 xsl/html/graphics.xsl:33:3 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
@@ -2806,14 +2806,14 @@ xsl/htmlhelp/htmlhelp-common.xsl:5:1 too-many-templates
 xsl/htmlhelp/htmlhelp-common.xsl:91:31 count-compared-to-zero fix "not(key('id',$rootid))"
 xsl/htmlhelp/htmlhelp-common.xsl:153:1 oversized-template
 xsl/htmlhelp/htmlhelp-common.xsl:406:33 scans-whole-document
-xsl/htmlhelp/htmlhelp-common.xsl:564:3 text-outside-xsl-text suggestion "<xsl:text><xsl:text xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">&#xA;</xsl:text>\n  </xsl:text>"
-xsl/htmlhelp/htmlhelp-common.xsl:581:5 text-outside-xsl-text suggestion "<xsl:text><xsl:text xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">&#xA;</xsl:text>\n    </xsl:text>"
-xsl/htmlhelp/htmlhelp-common.xsl:595:1 text-outside-xsl-text suggestion "<xsl:text><xsl:text xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">&#xA;</xsl:text>\n</xsl:text>"
+xsl/htmlhelp/htmlhelp-common.xsl:564:3 text-outside-xsl-text suggestion "<xsl:text>&lt;xsl:text xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">&amp;#xA;&lt;/xsl:text>\n  </xsl:text>"
+xsl/htmlhelp/htmlhelp-common.xsl:581:5 text-outside-xsl-text suggestion "<xsl:text>&lt;xsl:text xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">&amp;#xA;&lt;/xsl:text>\n    </xsl:text>"
+xsl/htmlhelp/htmlhelp-common.xsl:595:1 text-outside-xsl-text suggestion "<xsl:text>&lt;xsl:text xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">&amp;#xA;&lt;/xsl:text>\n</xsl:text>"
 xsl/htmlhelp/htmlhelp-common.xsl:610:7 not-creating-attribute-correctly
-xsl/htmlhelp/htmlhelp-common.xsl:626:3 text-outside-xsl-text suggestion "<xsl:text><xsl:text xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">&#xA;</xsl:text>\n  </xsl:text>"
-xsl/htmlhelp/htmlhelp-common.xsl:633:7 text-outside-xsl-text suggestion "<xsl:text><xsl:text xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">&#xA;</xsl:text>\n      </xsl:text>"
-xsl/htmlhelp/htmlhelp-common.xsl:669:3 text-outside-xsl-text suggestion "<xsl:text><xsl:text xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">&#xA;</xsl:text>\n  </xsl:text>"
-xsl/htmlhelp/htmlhelp-common.xsl:676:7 text-outside-xsl-text suggestion "<xsl:text><xsl:text xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">&#xA;</xsl:text>\n      </xsl:text>"
+xsl/htmlhelp/htmlhelp-common.xsl:626:3 text-outside-xsl-text suggestion "<xsl:text>&lt;xsl:text xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">&amp;#xA;&lt;/xsl:text>\n  </xsl:text>"
+xsl/htmlhelp/htmlhelp-common.xsl:633:7 text-outside-xsl-text suggestion "<xsl:text>&lt;xsl:text xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">&amp;#xA;&lt;/xsl:text>\n      </xsl:text>"
+xsl/htmlhelp/htmlhelp-common.xsl:669:3 text-outside-xsl-text suggestion "<xsl:text>&lt;xsl:text xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">&amp;#xA;&lt;/xsl:text>\n  </xsl:text>"
+xsl/htmlhelp/htmlhelp-common.xsl:676:7 text-outside-xsl-text suggestion "<xsl:text>&lt;xsl:text xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">&amp;#xA;&lt;/xsl:text>\n      </xsl:text>"
 xsl/htmlhelp/htmlhelp-common.xsl:816:7 blank-nested-if
 xsl/htmlhelp/htmlhelp-common.xsl:817:27 scans-whole-document
 xsl/htmlhelp/htmlhelp-common.xsl:824:7 blank-nested-if
@@ -2825,7 +2825,7 @@ xsl/htmlhelp/htmlhelp-common.xsl:940:7 not-creating-attribute-correctly
 xsl/htmlhelp/htmlhelp-common.xsl:945:7 text-outside-xsl-text
 xsl/htmlhelp/htmlhelp-common.xsl:956:11 not-creating-attribute-correctly
 xsl/htmlhelp/htmlhelp-common.xsl:961:11 not-creating-attribute-correctly
-xsl/htmlhelp/htmlhelp-common.xsl:967:7 text-outside-xsl-text suggestion "<xsl:text><xsl:text xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">&#xA;</xsl:text>\n      </xsl:text>"
+xsl/htmlhelp/htmlhelp-common.xsl:967:7 text-outside-xsl-text suggestion "<xsl:text>&lt;xsl:text xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">&amp;#xA;&lt;/xsl:text>\n      </xsl:text>"
 xsl/htmlhelp/htmlhelp-common.xsl:969:11 not-creating-attribute-correctly
 xsl/htmlhelp/htmlhelp-common.xsl:1106:5 short-names
 xsl/htmlhelp/htmlhelp.xsl:2:1 missing-id-in-stylesheet

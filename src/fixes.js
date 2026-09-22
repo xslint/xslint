@@ -219,20 +219,30 @@ const excision = function(element, content) {
 }
 
 /**
- * The text as a value delimited by the given quote may hold it, the three
- * characters XML forbids there written as references: an `&`, which would open
- * a reference of its own, a `<`, and the delimiter. The `&` goes first or it
- * would escape the two behind it. A `>` is left bare, XML allowing one:
- * encoding cannot recover what the author wrote as a reference.
+ * The text as character data may spell it, the two characters XML forbids
+ * there written as references: an `&`, which would open a reference of its
+ * own, and a `<`, which would open a tag. The `&` goes first or it would
+ * escape the one behind it. A `>` is left bare, XML allowing one: encoding
+ * cannot recover what the author wrote as a reference (#982).
+ * @param {string} text - The decoded text to write
+ * @return {string} - The text as character data may spell it
+ */
+const escaped = function(text) {
+  return text
+    .split('&').join('&amp;')
+    .split('<').join('&lt;')
+}
+
+/**
+ * The text as a value delimited by the given quote may hold it, which is
+ * character data plus the one character the delimiter adds: a value is parsed
+ * as character data is, less the quote that would close it early.
  * @param {string} text - The decoded text to write
  * @param {string} quote - The delimiter the value stands in
  * @return {string} - The text as that value may spell it
  */
-const escaped = function(text, quote) {
-  return text
-    .split('&').join('&amp;')
-    .split('<').join('&lt;')
-    .split(quote).join(REFERENCES[quote])
+const delimited = function(text, quote) {
+  return escaped(text).split(quote).join(REFERENCES[quote])
 }
 
 /**
@@ -252,7 +262,7 @@ const substitution = function(attribute, replacement, content) {
     line: attribute.lineNumber,
     col: attribute.columnNumber + 1,
     value: attribute.value,
-    replacement: escaped(
+    replacement: delimited(
       replacement,
       content[offsetAt(content, attribute.lineNumber, attribute.columnNumber)],
     ),
@@ -261,6 +271,7 @@ const substitution = function(attribute, replacement, content) {
 
 module.exports = {
   deletion,
+  escaped,
   excision,
   standsAt,
   substitution,
