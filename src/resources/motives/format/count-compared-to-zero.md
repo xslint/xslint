@@ -27,14 +27,19 @@ Correct, on XSLT 1.0 (where `exists()`/`empty()` do not exist):
 ```
 
 A node-set in a boolean context is already true exactly when it is non-empty, so
-in an `xsl:if`/`xsl:when` `@test` the bare `$items` says it; in a `@select` (or
-any value context) write `boolean($items)`, and for the empty case `not($items)`
-either way.
+wherever nothing but a truth is taken the bare `$items` says it — a whole
+`@test` or `@use-when`, an operand of `and` or `or`, the argument of `not()`, an
+`if` condition, a `satisfies` body. Only where a value is taken rather than a
+truth, a `@select` or an attribute value template among them, does the wrapper
+earn its place:
 
-The `--fix` picks the form the stylesheet's version can run: `exists()`/`empty()`
-on 2.0/3.0, and `boolean()`/`not()` — or the bare node-set in a whole `@test` —
-on 1.0. The 1.0 forms are valid in every version, so an unversioned stylesheet
-gets them too.
+```xsl
+<xsl:if test="@heading and $items">
+<xsl:variable name="any" select="boolean($items)"/>
+```
+
+The empty case is `not($items)` either way. The 1.0 forms are valid in every
+version, so an unversioned stylesheet can use them too.
 
 The call is the standard `fn:count` however its namespace is spelled: bare, as
 the default function namespace; behind a prefix bound to that namespace, which is
