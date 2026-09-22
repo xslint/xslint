@@ -179,7 +179,18 @@ node being processed, a top-level binding pays for the walk once:</p>
 </code></pre>
 <p>That is why a <code>//</code> inside a top-level <code>xsl:variable</code> or <code>xsl:param</code> is left
 alone: it is bound once for the transformation, against the source root, and
-there is no cheaper way to name every <code>item</code> in a document.</p>
+there is no cheaper way to name every <code>item</code> in a document. The template the
+stylesheet is entered at — <code>match=&quot;/&quot;</code>, with neither <code>@name</code> nor <code>@mode</code> — is
+left alone for the same reason: it is applied to the one document node, so the
+walk is paid once there too. Give that template a <code>@name</code> and it becomes
+callable from anywhere, as often as its callers run. Give it a <code>@mode</code> and only
+an <code>xsl:apply-templates</code> naming that mode reaches it, as often as whatever
+holds that instruction runs, and over whatever tree it selects — which need not
+be the source document at all, a moded root template applied to a variable&#39;s
+temporary tree walking that tree instead. Match anything below the root, the
+document element included, and <code>xsl:apply-templates</code> may reach it more than
+once. An <code>xsl:for-each</code> inside the root template is the ordinary case again,
+its content instantiated once per item.</p>
 <p>A pattern carries the same construct between its brackets. A predicate holds an
 expression, so a <code>//</code> opening a path there abandons the node being tested and
 walks the document from its root, once for every candidate the pattern is
