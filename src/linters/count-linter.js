@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
+const {coerced, unwrapped} = require('../booleans')
 const {comparedToZero} = require('../comparisons')
 const {metaOf, suppressed, defect} = require('../checks')
 const {textOf} = require('../syntax')
@@ -55,13 +56,13 @@ const collapses = function(operator, zero) {
  * @param {{operator: string, zero: string}} comparison - The operator, in the
  *  forward direction and spelled with symbols, and the digit compared against
  * @param {Array.<object>} args - The call's arguments
- * @return {?{test: string, argument: string}} - The classification, or null
+ * @return {?{test: string, inner: object}} - The classification, or null
  */
 const decide = function(found, {operator, zero}, args) {
   const test = collapses(operator, zero)
   let carried = null
   if (test && args.length === 1) {
-    carried = {test: test, argument: textOf(found, args[0])}
+    carried = {test: test, inner: args[0]}
   }
   return carried
 }
@@ -70,20 +71,21 @@ const decide = function(found, {operator, zero}, args) {
  * The direct form a classified test rewrites to, version-appropriate and never
  * one another check re-flags. On XSLT 2.0/3.0 it is `exists(x)`/`empty(x)`; on
  * 1.0 — and unversioned, where `boolean`/`not` are valid too — an existence
- * test is a bare `x` in a whole `@test` (which already coerces to a boolean),
- * `boolean(x)` elsewhere, and an emptiness test is `not(x)`.
+ * test is the bare argument wherever nothing but a truth is taken, which is
+ * `bare`, `boolean(x)` where more is, and an emptiness test is `not(x)`.
  * @param {string} test - The classification, `exists` or `empty`
  * @param {string} argument - The call's argument
  * @param {boolean} modern - Whether the stylesheet is XSLT 2.0/3.0
- * @param {boolean} whole - Whether the comparison is the entire `@test`
+ * @param {?string} bare - What may stand where the comparison does once only
+ *  its truth carries over, or null where the place takes more than one
  * @return {string} - The replacement expression
  */
-const rewritten = function(test, argument, modern, whole) {
+const rewritten = function(test, argument, modern, bare) {
   let direct = `not(${argument})`
   if (modern) {
     direct = `${test}(${argument})`
-  } else if (test === 'exists' && whole) {
-    direct = argument
+  } else if (test === 'exists' && bare !== null) {
+    direct = bare
   } else if (test === 'exists') {
     direct = `boolean(${argument})`
   }
@@ -93,10 +95,10 @@ const rewritten = function(test, argument, modern, whole) {
 /**
  * The `count(...)`-versus-zero existence tests an expression holds, in either
  * operand order (`count(x) > 0` and `0 < count(x)` alike), each carrying its
- * classification and argument.
+ * classification, the node it stands at, and its argument's node.
  * @param {{node: Node, expression: string, pattern: boolean}} found - Record
- * @return {Array.<{offset: number, value: string, test: string,
- *  argument: string}>} - The comparisons found
+ * @return {Array.<{node: object, offset: number, value: string, test: string,
+ *  inner: object}>} - The comparisons found
  */
 const comparisons = function(found) {
   return comparedToZero(found, 'count', decide)
@@ -107,7 +109,7 @@ const comparisons = function(found) {
  * existence, reporting one defect per comparison with a safe fix —
  * `exists()`/`empty()` on XSLT 2.0/3.0, and the 1.0-and-later `boolean(x)`/bare
  * `x`/`not(x)` forms otherwise, so the fix is version-appropriate on every
- * stylesheet.
+ * stylesheet and no wrapper is written where its place computes one (#977).
  * @param {Array.<{source: object, found: object}>} expressions - The valid
  *  expressions the validator kept, each paired with the file it came from
  * @param {Array.<string>} suppressions - Array of suppressed checks
@@ -119,15 +121,16 @@ const lintByCount = function(expressions, suppressions = []) {
   const defects = []
   if (!suppressed(CHECK, suppressions)) {
     for (const {source, found} of expressions) {
-      const {node} = found
       const modern = since(found.version, MODERN)
-      for (const {offset, value, test, argument} of comparisons(found)) {
-        const whole = node.nodeName === 'test' &&
-          node.nodeValue.trim() === value
+      const places = coerced(found)
+      for (const {node, offset, value, test, inner} of comparisons(found)) {
         defects.push(
           defect(CHECK, META, source, found, offset, {
             value: value,
-            replacement: rewritten(test, argument, modern, whole),
+            replacement: rewritten(
+              test, textOf(found, inner), modern,
+              unwrapped(found, places, node, inner),
+            ),
           }),
         )
       }

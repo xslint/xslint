@@ -1,0 +1,27 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: count-compared-to-zero
+found:
+  amount: 7
+  positions: [ [ 4, 26 ], [ 7, 19 ], [ 7, 38 ], [ 7, 59 ], [ 10, 23 ], [ 13, 36 ], [ 14, 29 ] ]
+  fixes: [ "x", "x", "y|z", "not(w)", "x", "x", "boolean(x)" ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" id="s">
+    <xsl:template match="/">
+      <xsl:if test="@a and count(x) &gt; 0">
+        <hit/>
+      </xsl:if>
+      <xsl:if test="count(x) &gt; 0 or count(y|z) &gt; 0 or count(w) = 0">
+        <hit/>
+      </xsl:if>
+      <xsl:if test="not(count(x) &gt; 0)">
+        <hit/>
+      </xsl:if>
+      <xsl:variable name="a" select="count(x) &gt; 0 and @c"/>
+      <xsl:for-each select="p[count(x) &gt; 0]">
+        <hit/>
+      </xsl:for-each>
+    </xsl:template>
+  </xsl:stylesheet>

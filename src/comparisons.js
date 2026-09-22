@@ -38,8 +38,8 @@ const FLIP = {
  * @param {function({node: Node}, {operator: string, zero: string,
  *  worded: boolean}, Array.<object>): ?object} decide - The per-comparison
  *  classifier
- * @return {Array.<{offset: number, value: string}>} - The comparisons found,
- *  each carrying the fields `decide` returned
+ * @return {Array.<{node: object, offset: number, value: string}>} - The
+ *  comparisons found, each carrying the fields `decide` returned
  */
 const comparedToZero = function(found, name, decide) {
   const results = []
@@ -64,6 +64,7 @@ const comparedToZero = function(found, name, decide) {
     }
     if (carried) {
       results.push({
+        node: node,
         offset: offsetOf(found, node),
         value: textOf(found, node),
         ...carried,

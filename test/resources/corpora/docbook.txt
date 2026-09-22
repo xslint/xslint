@@ -414,12 +414,12 @@ contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:3656:15 text-outside-xsl-text su
 contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:3657:15 text-outside-xsl-text suggestion "<xsl:text>ListofProcedures</xsl:text>"
 contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:3658:15 text-outside-xsl-text suggestion "<xsl:text>ListofUnknown</xsl:text>"
 contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:3731:5 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
-contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:3743:29 count-compared-to-zero fix "boolean($node/preceding-sibling::sect1)"
-contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:3749:29 count-compared-to-zero fix "boolean($node/preceding-sibling::sect2)"
-contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:3757:29 count-compared-to-zero fix "boolean($node/preceding-sibling::sect3)"
-contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:3765:29 count-compared-to-zero fix "boolean($node/preceding-sibling::sect4)"
-contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:3773:29 count-compared-to-zero fix "boolean($node/preceding-sibling::sect5)"
-contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:3781:29 count-compared-to-zero fix "boolean($node/preceding-sibling::section)"
+contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:3743:29 count-compared-to-zero fix "$node/preceding-sibling::sect1"
+contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:3749:29 count-compared-to-zero fix "$node/preceding-sibling::sect2"
+contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:3757:29 count-compared-to-zero fix "$node/preceding-sibling::sect3"
+contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:3765:29 count-compared-to-zero fix "$node/preceding-sibling::sect4"
+contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:3773:29 count-compared-to-zero fix "$node/preceding-sibling::sect5"
+contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:3781:29 count-compared-to-zero fix "$node/preceding-sibling::section"
 contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:3787:5 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:3788:5 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:3789:5 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
@@ -825,7 +825,7 @@ xsl/common/common.xsl:1485:7 text-outside-xsl-text suggestion "<xsl:text>I.</xsl
 xsl/common/common.xsl:1517:5 text-outside-xsl-text suggestion "<xsl:text>circle</xsl:text>"
 xsl/common/common.xsl:1518:5 text-outside-xsl-text suggestion "<xsl:text>square</xsl:text>"
 xsl/common/common.xsl:1519:5 text-outside-xsl-text suggestion "<xsl:text>disc</xsl:text>"
-xsl/common/common.xsl:1634:43 count-compared-to-zero fix "boolean($years)"
+xsl/common/common.xsl:1634:43 count-compared-to-zero fix "$years"
 xsl/common/common.xsl:1652:21 count-compared-to-zero fix "not($years)"
 xsl/common/common.xsl:1681:21 count-compared-to-zero fix "$years"
 xsl/common/common.xsl:1778:3 use-choose-without-otherwise
@@ -1140,27 +1140,27 @@ xsl/epub/docbook.xsl:1419:7 text-outside-xsl-text suggestion "<xsl:text>1</xsl:t
 xsl/epub/docbook.xsl:1421:50 redundant-whitespace fix " "
 xsl/epub/docbook.xsl:1421:103 redundant-whitespace fix " "
 xsl/epub/docbook.xsl:1421:155 redundant-whitespace fix " "
-xsl/epub/docbook.xsl:1421:184 count-compared-to-zero fix "boolean($node/preceding-sibling::d:sect1)"
+xsl/epub/docbook.xsl:1421:184 count-compared-to-zero fix "$node/preceding-sibling::d:sect1"
 xsl/epub/docbook.xsl:1424:50 redundant-whitespace fix " "
 xsl/epub/docbook.xsl:1424:103 redundant-whitespace fix " "
 xsl/epub/docbook.xsl:1424:155 redundant-whitespace fix " "
-xsl/epub/docbook.xsl:1424:184 count-compared-to-zero fix "boolean($node/preceding-sibling::d:sect2)"
+xsl/epub/docbook.xsl:1424:184 count-compared-to-zero fix "$node/preceding-sibling::d:sect2"
 xsl/epub/docbook.xsl:1429:50 redundant-whitespace fix " "
 xsl/epub/docbook.xsl:1429:103 redundant-whitespace fix " "
 xsl/epub/docbook.xsl:1429:155 redundant-whitespace fix " "
-xsl/epub/docbook.xsl:1429:184 count-compared-to-zero fix "boolean($node/preceding-sibling::d:sect3)"
+xsl/epub/docbook.xsl:1429:184 count-compared-to-zero fix "$node/preceding-sibling::d:sect3"
 xsl/epub/docbook.xsl:1434:50 redundant-whitespace fix " "
 xsl/epub/docbook.xsl:1434:103 redundant-whitespace fix " "
 xsl/epub/docbook.xsl:1434:155 redundant-whitespace fix " "
-xsl/epub/docbook.xsl:1434:184 count-compared-to-zero fix "boolean($node/preceding-sibling::d:sect4)"
+xsl/epub/docbook.xsl:1434:184 count-compared-to-zero fix "$node/preceding-sibling::d:sect4"
 xsl/epub/docbook.xsl:1439:50 redundant-whitespace fix " "
 xsl/epub/docbook.xsl:1439:103 redundant-whitespace fix " "
 xsl/epub/docbook.xsl:1439:155 redundant-whitespace fix " "
-xsl/epub/docbook.xsl:1439:184 count-compared-to-zero fix "boolean($node/preceding-sibling::d:sect5)"
+xsl/epub/docbook.xsl:1439:184 count-compared-to-zero fix "$node/preceding-sibling::d:sect5"
 xsl/epub/docbook.xsl:1444:52 redundant-whitespace fix " "
 xsl/epub/docbook.xsl:1444:138 redundant-whitespace fix " "
 xsl/epub/docbook.xsl:1444:190 redundant-whitespace fix " "
-xsl/epub/docbook.xsl:1444:219 count-compared-to-zero fix "boolean($node/preceding-sibling::d:section)"
+xsl/epub/docbook.xsl:1444:219 count-compared-to-zero fix "$node/preceding-sibling::d:section"
 xsl/epub/docbook.xsl:1450:7 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 xsl/epub/docbook.xsl:1451:7 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 xsl/epub/docbook.xsl:1452:7 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
@@ -1169,7 +1169,7 @@ xsl/epub/docbook.xsl:1454:7 text-outside-xsl-text suggestion "<xsl:text>1</xsl:t
 xsl/epub/docbook.xsl:1455:7 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 xsl/epub/docbook.xsl:1456:7 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 xsl/epub/docbook.xsl:1457:7 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
-xsl/epub/docbook.xsl:1457:78 count-compared-to-zero fix "boolean($node/*)"
+xsl/epub/docbook.xsl:1457:78 count-compared-to-zero fix "$node/*"
 xsl/epub/docbook.xsl:1457:100 redundant-whitespace fix " "
 xsl/epub/docbook.xsl:1457:165 redundant-whitespace fix " "
 xsl/epub/docbook.xsl:1457:225 redundant-whitespace fix " "
@@ -1312,10 +1312,10 @@ xsl/epub3/epub3-element-mods.xsl:2388:11 text-outside-xsl-text suggestion "<xsl:
 xsl/epub3/epub3-element-mods.xsl:2389:11 text-outside-xsl-text suggestion "<xsl:text>4</xsl:text>"
 xsl/epub3/epub3-element-mods.xsl:2390:11 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 xsl/epub3/epub3-element-mods.xsl:2393:7 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
-xsl/epub3/epub3-element-mods.xsl:2404:44 count-compared-to-zero fix "boolean($nodes)"
-xsl/epub3/epub3-element-mods.xsl:2405:45 count-compared-to-zero fix "boolean($nodes.plus)"
-xsl/epub3/epub3-element-mods.xsl:2449:44 count-compared-to-zero fix "boolean($nodes)"
-xsl/epub3/epub3-element-mods.xsl:2450:45 count-compared-to-zero fix "boolean($nodes.plus)"
+xsl/epub3/epub3-element-mods.xsl:2404:44 count-compared-to-zero fix "$nodes"
+xsl/epub3/epub3-element-mods.xsl:2405:45 count-compared-to-zero fix "$nodes.plus"
+xsl/epub3/epub3-element-mods.xsl:2449:44 count-compared-to-zero fix "$nodes"
+xsl/epub3/epub3-element-mods.xsl:2450:45 count-compared-to-zero fix "$nodes.plus"
 xsl/epub3/epub3-element-mods.xsl:2450:71 redundant-whitespace fix ""
 xsl/epub3/epub3-element-mods.xsl:2462:3 unused-function-template-parameter
 xsl/epub3/epub3-element-mods.xsl:2463:3 unused-function-template-parameter
@@ -1534,7 +1534,7 @@ xsl/fo/division.xsl:2:1 too-many-templates
 xsl/fo/division.xsl:21:3 unused-variable
 xsl/fo/division.xsl:39:27 count-compared-to-zero fix "$node/ancestor::*"
 xsl/fo/division.xsl:42:11 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
-xsl/fo/division.xsl:409:17 count-compared-to-zero fix "boolean($nodes)"
+xsl/fo/division.xsl:409:17 count-compared-to-zero fix "$nodes"
 xsl/fo/docbook.xsl:2:1 missing-id-in-stylesheet
 xsl/fo/docbook.xsl:176:29 count-compared-to-zero fix "not($root.element)"
 xsl/fo/docbook.xsl:242:3 unused-variable
@@ -1986,7 +1986,7 @@ xsl/fo/table.xsl:133:7 text-outside-xsl-text suggestion "<xsl:text>before</xsl:t
 xsl/fo/table.xsl:251:7 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
 xsl/fo/table.xsl:288:1 oversized-template
 xsl/fo/table.xsl:297:7 text-outside-xsl-text suggestion "<xsl:text>all</xsl:text>"
-xsl/fo/table.xsl:507:17 count-compared-to-zero fix "boolean($prop-columns)"
+xsl/fo/table.xsl:507:17 count-compared-to-zero fix "$prop-columns"
 xsl/fo/table.xsl:591:17 text-outside-xsl-text suggestion "<xsl:text>NOWIDTH</xsl:text>"
 xsl/fo/table.xsl:592:17 text-outside-xsl-text suggestion "<xsl:text>NOWIDTH</xsl:text>"
 xsl/fo/table.xsl:609:15 text-outside-xsl-text suggestion "<xsl:text>NOWIDTH</xsl:text>"
@@ -2122,7 +2122,7 @@ xsl/fo/xref.xsl:887:27 count-compared-to-zero fix "not($etarget)"
 xsl/fo/xref.xsl:940:3 use-choose-without-otherwise
 xsl/fo/xref.xsl:974:23 count-compared-to-zero fix "not(child::node())"
 xsl/fo/xref.xsl:974:29 unabbreviated-axis fix ""
-xsl/fo/xref.xsl:1008:17 count-compared-to-zero fix "boolean(child::node())"
+xsl/fo/xref.xsl:1008:17 count-compared-to-zero fix "child::node()"
 xsl/fo/xref.xsl:1008:23 unabbreviated-axis fix ""
 xsl/fo/xref.xsl:1105:7 blank-nested-if
 xsl/fo/xref.xsl:1122:1 oversized-template
@@ -2215,10 +2215,10 @@ xsl/html/autotoc.xsl:303:11 text-outside-xsl-text suggestion "<xsl:text>3</xsl:t
 xsl/html/autotoc.xsl:304:11 text-outside-xsl-text suggestion "<xsl:text>4</xsl:text>"
 xsl/html/autotoc.xsl:305:11 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 xsl/html/autotoc.xsl:308:7 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
-xsl/html/autotoc.xsl:334:44 count-compared-to-zero fix "boolean($nodes)"
-xsl/html/autotoc.xsl:335:45 count-compared-to-zero fix "boolean($nodes.plus)"
-xsl/html/autotoc.xsl:343:42 count-compared-to-zero fix "boolean($nodes)"
-xsl/html/autotoc.xsl:344:43 count-compared-to-zero fix "boolean($nodes.plus)"
+xsl/html/autotoc.xsl:334:44 count-compared-to-zero fix "$nodes"
+xsl/html/autotoc.xsl:335:45 count-compared-to-zero fix "$nodes.plus"
+xsl/html/autotoc.xsl:343:42 count-compared-to-zero fix "$nodes"
+xsl/html/autotoc.xsl:344:43 count-compared-to-zero fix "$nodes.plus"
 xsl/html/autotoc.xsl:352:3 unused-function-template-parameter
 xsl/html/autotoc.xsl:353:3 unused-function-template-parameter
 xsl/html/autotoc.xsl:356:3 not-creating-attribute-correctly
@@ -2283,7 +2283,7 @@ xsl/html/chunk-code.xsl:22:3 unused-variable
 xsl/html/chunk-code.xsl:61:1 oversized-template
 xsl/html/chunk-code.xsl:119:25 count-compared-to-zero fix "parent::*"
 xsl/html/chunk-code.xsl:475:29 count-compared-to-zero fix "not(key('id',$rootid))"
-xsl/html/chunk-code.xsl:575:17 count-compared-to-zero fix "boolean(*)"
+xsl/html/chunk-code.xsl:575:17 count-compared-to-zero fix "*"
 xsl/html/chunk-code.xsl:655:3 unused-variable
 xsl/html/chunk-code.xsl:672:3 unused-variable
 xsl/html/chunk-code.xsl:691:3 unused-variable
@@ -2306,12 +2306,12 @@ xsl/html/chunk-common.xsl:923:46 scans-whole-document
 xsl/html/chunk-common.xsl:931:36 scans-whole-document
 xsl/html/chunk-common.xsl:995:4 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
 xsl/html/chunk-common.xsl:996:5 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
-xsl/html/chunk-common.xsl:1001:29 count-compared-to-zero fix "boolean($node/preceding-sibling::d:sect1)"
-xsl/html/chunk-common.xsl:1007:29 count-compared-to-zero fix "boolean($node/preceding-sibling::d:sect2)"
-xsl/html/chunk-common.xsl:1015:29 count-compared-to-zero fix "boolean($node/preceding-sibling::d:sect3)"
-xsl/html/chunk-common.xsl:1023:29 count-compared-to-zero fix "boolean($node/preceding-sibling::d:sect4)"
-xsl/html/chunk-common.xsl:1031:29 count-compared-to-zero fix "boolean($node/preceding-sibling::d:sect5)"
-xsl/html/chunk-common.xsl:1039:29 count-compared-to-zero fix "boolean($node/preceding-sibling::d:section)"
+xsl/html/chunk-common.xsl:1001:29 count-compared-to-zero fix "$node/preceding-sibling::d:sect1"
+xsl/html/chunk-common.xsl:1007:29 count-compared-to-zero fix "$node/preceding-sibling::d:sect2"
+xsl/html/chunk-common.xsl:1015:29 count-compared-to-zero fix "$node/preceding-sibling::d:sect3"
+xsl/html/chunk-common.xsl:1023:29 count-compared-to-zero fix "$node/preceding-sibling::d:sect4"
+xsl/html/chunk-common.xsl:1031:29 count-compared-to-zero fix "$node/preceding-sibling::d:sect5"
+xsl/html/chunk-common.xsl:1039:29 count-compared-to-zero fix "$node/preceding-sibling::d:section"
 xsl/html/chunk-common.xsl:1045:5 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 xsl/html/chunk-common.xsl:1046:5 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 xsl/html/chunk-common.xsl:1047:5 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
@@ -2321,7 +2321,7 @@ xsl/html/chunk-common.xsl:1050:5 text-outside-xsl-text suggestion "<xsl:text>1</
 xsl/html/chunk-common.xsl:1051:5 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 xsl/html/chunk-common.xsl:1052:5 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 xsl/html/chunk-common.xsl:1053:5 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
-xsl/html/chunk-common.xsl:1053:76 count-compared-to-zero fix "boolean($node/*)"
+xsl/html/chunk-common.xsl:1053:76 count-compared-to-zero fix "$node/*"
 xsl/html/chunk-common.xsl:1058:5 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 xsl/html/chunk-common.xsl:1063:5 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 xsl/html/chunk-common.xsl:1068:5 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
@@ -2350,18 +2350,18 @@ xsl/html/chunk-common.xsl:1487:30 scans-whole-document
 xsl/html/chunk-common.xsl:1488:30 scans-whole-document
 xsl/html/chunk-common.xsl:1546:19 scans-whole-document
 xsl/html/chunk-common.xsl:1561:3 unused-function-template-parameter
-xsl/html/chunk-common.xsl:1567:37 count-compared-to-zero fix "boolean($prev)"
-xsl/html/chunk-common.xsl:1568:41 count-compared-to-zero fix "boolean($up)"
-xsl/html/chunk-common.xsl:1571:40 count-compared-to-zero fix "boolean($next)"
+xsl/html/chunk-common.xsl:1567:37 count-compared-to-zero fix "$prev"
+xsl/html/chunk-common.xsl:1568:41 count-compared-to-zero fix "$up"
+xsl/html/chunk-common.xsl:1571:40 count-compared-to-zero fix "$next"
 xsl/html/chunk-common.xsl:1588:31 count-compared-to-zero fix "$prev"
-xsl/html/chunk-common.xsl:1604:35 count-compared-to-zero fix "boolean($up)"
+xsl/html/chunk-common.xsl:1604:35 count-compared-to-zero fix "$up"
 xsl/html/chunk-common.xsl:1609:19 text-outside-xsl-text
 xsl/html/chunk-common.xsl:1614:31 count-compared-to-zero fix "$next"
-xsl/html/chunk-common.xsl:1648:37 count-compared-to-zero fix "boolean($prev)"
-xsl/html/chunk-common.xsl:1649:40 count-compared-to-zero fix "boolean($up)"
-xsl/html/chunk-common.xsl:1650:40 count-compared-to-zero fix "boolean($next)"
+xsl/html/chunk-common.xsl:1648:37 count-compared-to-zero fix "$prev"
+xsl/html/chunk-common.xsl:1649:40 count-compared-to-zero fix "$up"
+xsl/html/chunk-common.xsl:1650:40 count-compared-to-zero fix "$next"
 xsl/html/chunk-common.xsl:1670:31 count-compared-to-zero fix "$prev"
-xsl/html/chunk-common.xsl:1686:35 count-compared-to-zero fix "boolean($up)"
+xsl/html/chunk-common.xsl:1686:35 count-compared-to-zero fix "$up"
 xsl/html/chunk-common.xsl:1699:19 text-outside-xsl-text
 xsl/html/chunk-common.xsl:1704:31 count-compared-to-zero fix "$next"
 xsl/html/chunk-common.xsl:1745:19 text-outside-xsl-text
@@ -2379,7 +2379,7 @@ xsl/html/chunktoc.xsl:1:1 too-many-templates
 xsl/html/chunktoc.xsl:34:5 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 xsl/html/chunktoc.xsl:35:5 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
 xsl/html/chunktoc.xsl:82:34 unabbreviated-axis fix ""
-xsl/html/chunktoc.xsl:207:17 count-compared-to-zero fix "boolean(*)"
+xsl/html/chunktoc.xsl:207:17 count-compared-to-zero fix "*"
 xsl/html/chunktoc.xsl:251:29 count-compared-to-zero fix "not(key('id',$rootid))"
 xsl/html/chunktoc.xsl:512:7 not-creating-attribute-correctly
 xsl/html/chunktoc.xsl:519:15 text-outside-xsl-text suggestion "<xsl:text>ListofTables</xsl:text>"
@@ -2570,10 +2570,10 @@ xsl/html/htmltbl.xsl:128:7 text-outside-xsl-text suggestion "<xsl:text>none</xsl
 xsl/html/htmltbl.xsl:129:7 text-outside-xsl-text suggestion "<xsl:text>none</xsl:text>"
 xsl/html/index.xsl:2:1 missing-id-in-stylesheet
 xsl/html/index.xsl:2:1 too-many-templates
-xsl/html/index.xsl:26:17 count-compared-to-zero fix "boolean(*)"
+xsl/html/index.xsl:26:17 count-compared-to-zero fix "*"
 xsl/html/index.xsl:57:21 count-compared-to-zero fix "not(d:indexentry)"
 xsl/html/index.xsl:57:49 count-compared-to-zero fix "not(d:indexdiv)"
-xsl/html/index.xsl:78:17 count-compared-to-zero fix "boolean(*)"
+xsl/html/index.xsl:78:17 count-compared-to-zero fix "*"
 xsl/html/index.xsl:88:21 count-compared-to-zero fix "not(d:indexentry)"
 xsl/html/index.xsl:88:49 count-compared-to-zero fix "not(d:indexdiv)"
 xsl/html/index.xsl:201:7 use-choose-without-otherwise
@@ -3371,14 +3371,14 @@ xsl/webhelp/xsl/webhelp-common.xsl:427:22 count-compared-to-zero fix "not(key('i
 xsl/webhelp/xsl/webhelp-common.xsl:435:51 redundant-whitespace fix " "
 xsl/webhelp/xsl/webhelp-common.xsl:448:50 redundant-whitespace fix " "
 xsl/webhelp/xsl/webhelp-common.xsl:551:9 unused-function-template-parameter
-xsl/webhelp/xsl/webhelp-common.xsl:564:10 count-compared-to-zero fix "boolean($up)"
+xsl/webhelp/xsl/webhelp-common.xsl:564:10 count-compared-to-zero fix "$up"
 xsl/webhelp/xsl/webhelp-common.xsl:570:21 text-outside-xsl-text
-xsl/webhelp/xsl/webhelp-common.xsl:590:39 count-compared-to-zero fix "boolean($prev)"
-xsl/webhelp/xsl/webhelp-common.xsl:591:33 count-compared-to-zero fix "boolean($up)"
-xsl/webhelp/xsl/webhelp-common.xsl:594:32 count-compared-to-zero fix "boolean($next)"
+xsl/webhelp/xsl/webhelp-common.xsl:590:39 count-compared-to-zero fix "$prev"
+xsl/webhelp/xsl/webhelp-common.xsl:591:33 count-compared-to-zero fix "$up"
+xsl/webhelp/xsl/webhelp-common.xsl:594:32 count-compared-to-zero fix "$next"
 xsl/webhelp/xsl/webhelp-common.xsl:596:47 count-compared-to-zero fix "$prev"
 xsl/webhelp/xsl/webhelp-common.xsl:611:37 text-outside-xsl-text suggestion "<xsl:text>\n                                        |\n                                        </xsl:text>"
-xsl/webhelp/xsl/webhelp-common.xsl:611:53 count-compared-to-zero fix "boolean($up)"
+xsl/webhelp/xsl/webhelp-common.xsl:611:53 count-compared-to-zero fix "$up"
 xsl/webhelp/xsl/webhelp-common.xsl:625:37 text-outside-xsl-text
 xsl/webhelp/xsl/webhelp-common.xsl:628:33 text-outside-xsl-text suggestion "<xsl:text>\n                                    |\n                                    </xsl:text>"
 xsl/webhelp/xsl/webhelp-common.xsl:628:47 count-compared-to-zero fix "$next"
