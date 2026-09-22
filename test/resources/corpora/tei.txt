@@ -3185,6 +3185,7 @@ odds/extract-isosch.xsl:259:11 text-outside-xsl-text suggestion "<xsl:text>tei:<
 odds/extract-isosch.xsl:260:11 text-outside-xsl-text suggestion "<xsl:text>teix:</xsl:text>"
 odds/extract-isosch.xsl:272:27 using-namespace-axis
 odds/extract-isosch.xsl:273:55 using-namespace-axis
+odds/extract-isosch.xsl:290:39 scans-whole-document
 odds/extract-isosch.xsl:320:7 unused-variable
 odds/extract-isosch.xsl:320:68 redundant-whitespace fix " "
 odds/extract-isosch.xsl:320:72 redundant-whitespace fix " "

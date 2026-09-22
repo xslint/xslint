@@ -3,19 +3,21 @@
 ---
 pack: scans-whole-document
 found:
-  # A template matching the root runs once for a transformation, so a `//` in it
-  # walks the document once and there is nothing cheaper to write. Three
-  # neighbours look alike and are none of them that: an expression under an
-  # `xsl:for-each` inside the very same template, evaluated once per item; a
-  # root template carrying a `@name`, callable from anywhere and as often as its
-  # callers run; and a template matching the document element rather than the
-  # root, which `xsl:apply-templates` may reach more than once. The other two
-  # spell the root the way XSLT lets a stylesheet spell it — a `match=" / "`
-  # whose gaps XML keeps and the pattern throws away, and the shadow `_match` a
-  # 3.0 stylesheet writes instead.
-  amount: 3
-  positions: [ [ 7, 29 ], [ 14, 27 ], [ 17, 27 ] ]
-  fixes: [ null, null, null ]
+  # The template a transformation is entered at runs once, so a `//` in it walks
+  # the document once and there is nothing cheaper to write. Three spellings of
+  # it are quiet: the plain one, a `match=" / "` whose gaps XML keeps and the
+  # pattern throws away, and the shadow `_match` a 3.0 stylesheet writes
+  # instead. Four neighbours look alike and are none of them that. An expression
+  # under an `xsl:for-each` inside the very same template is evaluated once per
+  # item. A root template carrying a `@name` is callable from anywhere and as
+  # often as its callers run, and one carrying a `@mode` — in either spelling —
+  # is reached only by an `xsl:apply-templates` naming that mode, which runs as
+  # often as whatever holds it and over whatever tree it selects. And a template
+  # matching the document element rather than the root is one
+  # `xsl:apply-templates` may reach more than once.
+  amount: 5
+  positions: [ [ 7, 29 ], [ 17, 27 ], [ 20, 27 ], [ 23, 27 ], [ 26, 27 ] ]
+  fixes: [ null, null, null, null, null ]
 input: |-
   <?xml version="1.0"?>
   <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="3.0" id="style1">
@@ -26,16 +28,22 @@ input: |-
         <xsl:value-of select="//o[@inner]"/>
       </xsl:for-each>
     </xsl:template>
-    <xsl:template match=" / " mode="spaced">
+    <xsl:template match=" / " priority="2">
       <xsl:value-of select="//o[@spaced]"/>
     </xsl:template>
-    <xsl:template match="/" mode="named" name="both">
+    <xsl:template _match="/" priority="3">
+      <xsl:value-of select="//o[@shadowed]"/>
+    </xsl:template>
+    <xsl:template match="/" name="both" priority="4">
       <xsl:value-of select="//o[@called]"/>
+    </xsl:template>
+    <xsl:template match="/" mode="second">
+      <xsl:value-of select="//o[@moded]"/>
+    </xsl:template>
+    <xsl:template match="/" _mode="third">
+      <xsl:value-of select="//o[@shadowmoded]"/>
     </xsl:template>
     <xsl:template match="/objects">
       <xsl:value-of select="//o[@each]"/>
-    </xsl:template>
-    <xsl:template _match="/" mode="shadow">
-      <xsl:value-of select="//o[@shadowed]"/>
     </xsl:template>
   </xsl:stylesheet>

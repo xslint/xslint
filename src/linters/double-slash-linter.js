@@ -90,26 +90,34 @@
  * out and a position it no longer asks about.
  *
  * A top-level binding is not the only place the scan is paid once, which is
- * #978's. The template a stylesheet is *entered* at — the root for a pattern
- * and no `@name` — is applied to the single document node, so its content runs
- * once for a transformation and a `//` standing there walks the tree the one
- * time, with nothing narrower to name and nothing to hoist it into that would
- * not be evaluated as often. That was 32 of the 306 reports over the three
- * pinned corpora, 12 in DocBook-XSL, 17 in TEI and 3 in DITA-OT. Three
- * neighbours are none of it and stay reported: a `@name` makes the template
- * callable from anywhere and as often as its callers run; a pattern naming
- * anything below the root, the document element included, may be reached more
- * than once by `xsl:apply-templates`; and `REPEATING` holds as it does under a
- * binding, an `xsl:for-each` inside the root template instantiating its
- * content per item. Both attributes are read in their shadow spelling at every
- * version rather than at 3.0 alone: a template spelling `_match` lower down
- * declares no pattern any processor honours, so what the reach costs there is
- * a report withheld on a file already broken and never one invented against
- * working code. Deeper than that lies the call graph — a template reached
- * from the root template alone is entered once as surely — and those 38
- * further reports stand, reachability being a question about the whole corpus
- * where this one is answered by climbing from an expression to the
- * declaration above it.
+ * #978's. The template a stylesheet is *entered* at — the root for a pattern,
+ * with nothing `CALLABLE` names on it — is applied to the single document
+ * node, so its content runs once for a transformation and a `//` standing
+ * there walks the tree the one time, with nothing narrower to name and nothing
+ * to hoist it into that would not be evaluated as often. That is 28 of the 306
+ * reports over the three pinned corpora, 12 in DocBook-XSL and 16 in TEI, none
+ * at all in DITA-OT. Four neighbours are none of it and stay reported.
+ * `CALLABLE` holds the two that put the template back within a caller's reach:
+ * a `@name` makes it callable from anywhere and as often as its callers run,
+ * and a `@mode` leaves it reachable only by an `xsl:apply-templates` naming
+ * that mode, which runs as often as whatever holds it and over whatever tree
+ * it selects — TEI's `odds/extract-isosch.xsl` applying one to a variable's
+ * temporary tree rather than to the source at all. A pattern naming anything
+ * below the root, the document element included, may be reached more than once
+ * the same way; and `REPEATING` holds as it does under a binding, an
+ * `xsl:for-each` inside the root template instantiating its content per item.
+ * What is left unguarded is an unmoded root template re-entered by a
+ * default-mode application of the document node, and the corpora say it is
+ * theory: every `apply-templates` selecting one there names a mode, so no
+ * withdrawal above rests on it. Each attribute is read in its shadow spelling
+ * at every version rather than at 3.0 alone: a template spelling `_match`
+ * lower down declares no pattern any processor honours, so what the reach
+ * costs there is a report withheld on a file already broken and never one
+ * invented against working code. Deeper than that lies the call graph — a
+ * template reached from the root template alone is entered once as surely —
+ * and those 38 further reports stand, reachability being a question about the
+ * whole corpus where this one is answered by climbing from an expression to
+ * the declaration above it.
  *
  * It offers no fix, and did from #457 until #949. `.//` names the same nodes
  * only where the context is the root, and there it walks the same tree the
@@ -203,17 +211,27 @@ const RANKED = 'template'
 const ROOT = '/'
 
 /**
+ * What puts a root template back within a caller's reach: a `@name` makes it
+ * callable from anywhere, and a `@mode` leaves it reachable only by an
+ * `xsl:apply-templates` naming that mode, which runs as often as whatever
+ * holds it and over whatever tree it selects (#978).
+ * @type {Array.<string>}
+ */
+const CALLABLE = ['name', 'mode']
+
+/**
  * Whether the declaration is the template a transformation enters once: the
- * element `RANKED` names, with the root for a pattern and no `@name`, a named
- * template being callable from anywhere and as often as its callers run. Both
- * attributes answer in the shadow spelling too, and the pattern is read after
- * the gaps XML keeps and XSLT throws away (#978).
+ * element `RANKED` names, with the root for a pattern and nothing `CALLABLE`
+ * standing on it. Every attribute answers in its shadow spelling too, and the
+ * pattern is read after the gaps XML keeps and XSLT throws away (#978).
  * @param {Node} declared - The top-level declaration holding the expression
  * @return {boolean} - True when the stylesheet enters it once
  */
 const entered = function(declared) {
   return declared.localName === RANKED &&
-    !declared.hasAttribute('name') && !declared.hasAttribute('_name') &&
+    !CALLABLE.some(
+      (one) => declared.hasAttribute(one) || declared.hasAttribute(`_${one}`),
+    ) &&
     [declared.getAttribute('match'), declared.getAttribute('_match')].some(
       (pattern) => pattern !== null && normalized(pattern) === ROOT,
     )
