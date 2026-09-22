@@ -180,6 +180,13 @@ const SPAWNED = {
     "Only src/gitignore.js starts a process, and once per repository: what it asks git for is the index, which outranks every rule a .gitignore holds and which no file on disk answers (#929). Asking git about a path instead spends a fork per entry and answers nothing at all where git is absent or the tree is no repository, so everything else here reads files"
 };
 
+const PREFIXED = {
+  selector:
+    "Literal[value=/<\\/?xsl:/], TemplateElement[value.cooked=/<\\/?xsl:/]",
+  message:
+    "Which prefix an XSLT element is written under is the document's to choose, so code spelling one reads it with lookupPrefix and writes nothing where the namespace is bound to none: textOutsideXslText put a literal <xsl:text> into TEI's simple/mapatts.xsl, which binds XSLT to XSL and binds nothing at all to xsl, and a file every processor loaded before the run was one no parser read after it (#976). missingVersion, sixty lines above it in the same module, had read the prefix since #608"
+};
+
 const SPRAWLING = ["src/grammar.js"];
 
 export default defineConfig([
@@ -251,13 +258,13 @@ export default defineConfig([
       "no-restricted-syntax":
         ["error", ...RESTRICTED, STAGED, OPAQUE, TRIVIA, PAIRED, CLASSED,
           VERSIONED, GRADED, QUOTED, WIDENED,
-          HOMED, SPAWNED]
+          HOMED, SPAWNED, PREFIXED]
     }
   },
   {
     files: ["src/xslint.js"],
     rules: {
-      "no-restricted-syntax": ["error", ...RESTRICTED, SPAWNED]
+      "no-restricted-syntax": ["error", ...RESTRICTED, SPAWNED, PREFIXED]
     }
   },
   {
@@ -266,7 +273,7 @@ export default defineConfig([
       "no-restricted-syntax":
         ["error", ...RESTRICTED, STAGED, OPAQUE, TRIVIA, PAIRED, CLASSED,
           VERSIONED, GRADED, QUOTED, WIDENED,
-          HOMED]
+          HOMED, PREFIXED]
     }
   },
   {
@@ -274,7 +281,7 @@ export default defineConfig([
     rules: {
       "no-restricted-syntax":
         ["error", ...RESTRICTED, STAGED, OPAQUE, TRIVIA, PAIRED, CLASSED,
-          VERSIONED, GRADED, QUOTED, WIDENED, SPAWNED]
+          VERSIONED, GRADED, QUOTED, WIDENED, SPAWNED, PREFIXED]
     }
   },
   {
@@ -283,7 +290,7 @@ export default defineConfig([
       "no-restricted-syntax":
         ["error", ...RESTRICTED, STAGED, OPAQUE, TRIVIA, PAIRED, CLASSED,
           VERSIONED, QUOTED, WIDENED,
-          HOMED, SPAWNED]
+          HOMED, SPAWNED, PREFIXED]
     }
   },
   {
@@ -292,7 +299,7 @@ export default defineConfig([
       "no-restricted-syntax":
         ["error", ...RESTRICTED, STAGED, OPAQUE, TRIVIA, PAIRED, CLASSED,
           GRADED, QUOTED, WIDENED,
-          HOMED, SPAWNED]
+          HOMED, SPAWNED, PREFIXED]
     }
   },
   {
@@ -300,7 +307,7 @@ export default defineConfig([
     rules: {
       "no-restricted-syntax":
         ["error", ...RESTRICTED, STAGED, CLASSED, VERSIONED, GRADED, WIDENED,
-          HOMED, SPAWNED]
+          HOMED, SPAWNED, PREFIXED]
     }
   },
   {
@@ -309,7 +316,7 @@ export default defineConfig([
       "no-restricted-syntax":
         ["error", ...RESTRICTED, STAGED, OPAQUE, TRIVIA, PAIRED, VERSIONED,
           GRADED, QUOTED, WIDENED,
-          HOMED, SPAWNED]
+          HOMED, SPAWNED, PREFIXED]
     }
   },
   {
