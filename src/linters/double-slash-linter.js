@@ -89,6 +89,28 @@
  * `select-starts-with-double-slash` named an attribute this no longer singles
  * out and a position it no longer asks about.
  *
+ * A top-level binding is not the only place the scan is paid once, which is
+ * #978's. The template a stylesheet is *entered* at — the root for a pattern
+ * and no `@name` — is applied to the single document node, so its content runs
+ * once for a transformation and a `//` standing there walks the tree the one
+ * time, with nothing narrower to name and nothing to hoist it into that would
+ * not be evaluated as often. That was 32 of the 306 reports over the three
+ * pinned corpora, 12 in DocBook-XSL, 17 in TEI and 3 in DITA-OT. Three
+ * neighbours are none of it and stay reported: a `@name` makes the template
+ * callable from anywhere and as often as its callers run; a pattern naming
+ * anything below the root, the document element included, may be reached more
+ * than once by `xsl:apply-templates`; and `REPEATING` holds as it does under a
+ * binding, an `xsl:for-each` inside the root template instantiating its
+ * content per item. Both attributes are read in their shadow spelling at every
+ * version rather than at 3.0 alone: a template spelling `_match` lower down
+ * declares no pattern any processor honours, so what the reach costs there is
+ * a report withheld on a file already broken and never one invented against
+ * working code. Deeper than that lies the call graph — a template reached
+ * from the root template alone is entered once as surely — and those 38
+ * further reports stand, reachability being a question about the whole corpus
+ * where this one is answered by climbing from an expression to the
+ * declaration above it.
+ *
  * It offers no fix, and did from #457 until #949. `.//` names the same nodes
  * only where the context is the root, and there it walks the same tree the
  * `//` walked — so the rewrite changes what is selected wherever it would save
@@ -102,7 +124,7 @@
 
 const {gathered, parseOf} = require('../syntax')
 const {metaOf, suppressed, defect} = require('../checks')
-const {TOKENS} = require('../tokens')
+const {TOKENS, normalized} = require('../tokens')
 const {XSLT} = require('../xsl-version')
 const {holding} = require('../tree')
 const {logger} = require('../logger')
@@ -172,6 +194,30 @@ const REPEATING = [
  * @type {string}
  */
 const RANKED = 'template'
+
+/**
+ * The pattern that matches the document node itself, which a stylesheet is
+ * entered at once however many nodes it goes on to process.
+ * @type {string}
+ */
+const ROOT = '/'
+
+/**
+ * Whether the declaration is the template a transformation enters once: the
+ * element `RANKED` names, with the root for a pattern and no `@name`, a named
+ * template being callable from anywhere and as often as its callers run. Both
+ * attributes answer in the shadow spelling too, and the pattern is read after
+ * the gaps XML keeps and XSLT throws away (#978).
+ * @param {Node} declared - The top-level declaration holding the expression
+ * @return {boolean} - True when the stylesheet enters it once
+ */
+const entered = function(declared) {
+  return declared.localName === RANKED &&
+    !declared.hasAttribute('name') && !declared.hasAttribute('_name') &&
+    [declared.getAttribute('match'), declared.getAttribute('_match')].some(
+      (pattern) => pattern !== null && normalized(pattern) === ROOT,
+    )
+}
 
 /**
  * Whether the `//` at that token index opens a branch of the pattern, which is
@@ -287,11 +333,11 @@ const climbed = function(element) {
 }
 
 /**
- * Whether the expression is evaluated once for the whole transformation. A
- * top-level `xsl:variable` or `xsl:param` is bound once, against the source
- * root, so `//item` under one is a single traversal naming every `item` in
- * the document — which is what hoisting an expression into a global binding
- * is for, and what the advice would otherwise tell its author to do again.
+ * Whether the expression is evaluated once for the whole transformation — a
+ * top-level binding, bound against the source root, or the template the
+ * stylesheet is entered at. Either way `//item` standing there is a single
+ * traversal naming every `item` in the document, which is what hoisting an
+ * expression into a global binding is for and what the advice would ask for.
  * @param {{node: Node}} found - The expression, as `expressionsOf` yields it
  * @return {boolean} - True when nothing evaluates it twice
  */
@@ -299,7 +345,7 @@ const once = function(found) {
   const chain = climbed(holding(found.node))
   const declared = chain[chain.length - 1]
   return declared !== undefined && declared.namespaceURI === XSLT &&
-    BOUND.includes(declared.localName) &&
+    (BOUND.includes(declared.localName) || entered(declared)) &&
     !chain.slice(1).some(
       (one) => one.namespaceURI === XSLT && REPEATING.includes(one.localName),
     )

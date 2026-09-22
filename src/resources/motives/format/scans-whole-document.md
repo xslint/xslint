@@ -85,7 +85,14 @@ Correct:
 
 That is why a `//` inside a top-level `xsl:variable` or `xsl:param` is left
 alone: it is bound once for the transformation, against the source root, and
-there is no cheaper way to name every `item` in a document.
+there is no cheaper way to name every `item` in a document. The template the
+stylesheet is entered at — `match="/"`, with no `@name` — is left alone for the
+same reason: it is applied to the one document node, so the walk is paid once
+there too. Give that template a `@name` and it becomes callable from anywhere,
+as often as its callers run; match anything below the root, the document
+element included, and `xsl:apply-templates` may reach it more than once. An
+`xsl:for-each` inside the root template is the ordinary case again, its content
+instantiated once per item.
 
 A pattern carries the same construct between its brackets. A predicate holds an
 expression, so a `//` opening a path there abandons the node being tested and

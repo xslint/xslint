@@ -667,7 +667,6 @@ src/main/plugins/org.dita.pdf2/xsl/fo/index.xsl:34:1 too-many-templates
 src/main/plugins/org.dita.pdf2/xsl/fo/index.xsl:56:5 unused-variable
 src/main/plugins/org.dita.pdf2/xsl/fo/index.xsl:57:5 unused-variable
 src/main/plugins/org.dita.pdf2/xsl/fo/index.xsl:59:5 unused-variable
-src/main/plugins/org.dita.pdf2/xsl/fo/index.xsl:213:34 scans-whole-document
 src/main/plugins/org.dita.pdf2/xsl/fo/index.xsl:237:51 redundant-whitespace fix ""
 src/main/plugins/org.dita.pdf2/xsl/fo/index.xsl:238:47 redundant-whitespace fix ""
 src/main/plugins/org.dita.pdf2/xsl/fo/index.xsl:238:106 redundant-whitespace fix ""
@@ -765,8 +764,6 @@ src/main/plugins/org.dita.pdf2/xsl/fo/root-processing.xsl:80:5 unused-variable
 src/main/plugins/org.dita.pdf2/xsl/fo/root-processing.xsl:89:5 unused-variable
 src/main/plugins/org.dita.pdf2/xsl/fo/root-processing.xsl:96:38 scans-whole-document
 src/main/plugins/org.dita.pdf2/xsl/fo/root-processing.xsl:109:9 blank-nested-if
-src/main/plugins/org.dita.pdf2/xsl/fo/root-processing.xsl:138:30 scans-whole-document
-src/main/plugins/org.dita.pdf2/xsl/fo/root-processing.xsl:139:31 scans-whole-document
 src/main/plugins/org.dita.pdf2/xsl/fo/root-processing.xsl:151:5 use-choose-without-otherwise
 src/main/plugins/org.dita.pdf2/xsl/fo/root-processing.xsl:185:5 use-choose-without-otherwise
 src/main/plugins/org.dita.pdf2/xsl/fo/static-content.xsl:34:1 missing-id-in-stylesheet

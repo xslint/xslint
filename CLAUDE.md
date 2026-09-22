@@ -373,10 +373,11 @@ staging answers that one too, without a namespace test anybody has to remember.
 It read that one attribute, and the first token of it, until #958 asked what the
 expression costs instead: every `//` opening a path of its own is a walk of the
 document, wherever in the parse it stands and whichever attribute carries it,
-and a top-level `xsl:variable` or `xsl:param` is the one place that walk is paid
-once — its whole subtree with it, up to an instruction whose content runs per
-item, so the question is climbed rather than read off the element carrying the
-expression. It is named for the harm rather than for `@select` because both
+and a top-level binding is one place that walk is paid once — its whole subtree
+with it, up to an instruction whose content runs per item, so the question is
+climbed rather than read off the element carrying the expression. The template a
+stylesheet is entered at is the other, 32 of 306 reports, and a `@name` on it
+takes it back out (#978). It is named for the harm rather than for `@select` because both
 halves of the old name outgrew it. It reaches a pattern too since #970, at the
 one place one holds an expression: a `//` opening a path inside a predicate
 walks the document once for every candidate the pattern is tested against, so

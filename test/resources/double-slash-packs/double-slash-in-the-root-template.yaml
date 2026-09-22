@@ -1,0 +1,41 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: scans-whole-document
+found:
+  # A template matching the root runs once for a transformation, so a `//` in it
+  # walks the document once and there is nothing cheaper to write. Three
+  # neighbours look alike and are none of them that: an expression under an
+  # `xsl:for-each` inside the very same template, evaluated once per item; a
+  # root template carrying a `@name`, callable from anywhere and as often as its
+  # callers run; and a template matching the document element rather than the
+  # root, which `xsl:apply-templates` may reach more than once. The other two
+  # spell the root the way XSLT lets a stylesheet spell it — a `match=" / "`
+  # whose gaps XML keeps and the pattern throws away, and the shadow `_match` a
+  # 3.0 stylesheet writes instead.
+  amount: 3
+  positions: [ [ 7, 29 ], [ 14, 27 ], [ 17, 27 ] ]
+  fixes: [ null, null, null ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="3.0" id="style1">
+    <xsl:output encoding="UTF-8" method="xml"/>
+    <xsl:template match="/">
+      <xsl:value-of select="//o[@root]"/>
+      <xsl:for-each select="o">
+        <xsl:value-of select="//o[@inner]"/>
+      </xsl:for-each>
+    </xsl:template>
+    <xsl:template match=" / " mode="spaced">
+      <xsl:value-of select="//o[@spaced]"/>
+    </xsl:template>
+    <xsl:template match="/" mode="named" name="both">
+      <xsl:value-of select="//o[@called]"/>
+    </xsl:template>
+    <xsl:template match="/objects">
+      <xsl:value-of select="//o[@each]"/>
+    </xsl:template>
+    <xsl:template _match="/" mode="shadow">
+      <xsl:value-of select="//o[@shadowed]"/>
+    </xsl:template>
+  </xsl:stylesheet>
