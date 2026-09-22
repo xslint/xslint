@@ -10,6 +10,24 @@
 const NAMED = {lt: '<', gt: '>', amp: '&', quot: '"', apos: '\''}
 
 /**
+ * The two spellings XML gives a numeric character reference, each beside the
+ * base its digits are read in. The `x` is lower case alone, so a `&#X41;` is a
+ * reference nothing places.
+ * @type {Array.<{spelling: RegExp, base: number}>}
+ */
+const NUMBERED = [
+  {spelling: /^#([0-9]+)$/, base: 10},
+  {spelling: /^#x([0-9a-fA-F]+)$/, base: 16},
+]
+
+/**
+ * The highest code point there is, past which a reference stands for no
+ * character at all and answers as one nothing places rather than throwing.
+ * @type {number}
+ */
+const HIGHEST = 0x10FFFF
+
+/**
  * The byte order mark, which `parted` holds aside.
  * @type {string}
  */
@@ -93,11 +111,33 @@ const placeAt = function(text, at) {
 }
 
 /**
- * The decoded character at a raw offset and the offset just past it. A named
- * XML entity reads as the single character it stands for, and a line ending as
- * the `\n` a parser turns it into, so a CRLF source is one character two
- * offsets wide. Anything else an `&` opens yields `undefined`, so a match over
- * it fails and the caller backs off.
+ * The character a reference between the `&` and the `;` stands for: one of the
+ * five names XML predefines, or the code point a numeric one numbers, decimal
+ * or hexadecimal. A reference this cannot place answers `undefined`, so a
+ * match over it fails rather than standing on a character nobody wrote (#983).
+ * @param {string} name - The text between the `&` and the `;`
+ * @return {(string|undefined)} - The character it stands for, or undefined
+ */
+const referenced = function(name) {
+  let read = NAMED[name]
+  for (const numbered of NUMBERED) {
+    const digits = name.match(numbered.spelling)
+    if (digits !== null) {
+      const code = parseInt(digits[1], numbered.base)
+      if (code <= HIGHEST) {
+        read = String.fromCodePoint(code)
+      }
+    }
+  }
+  return read
+}
+
+/**
+ * The decoded character at a raw offset and the offset just past it. A
+ * reference reads as the character `referenced` places it at, and a line
+ * ending as the `\n` a parser turns it into, so a CRLF source is one character
+ * two offsets wide. A reference nothing closes yields `undefined`, so a match
+ * over it fails and the caller backs off.
  * @param {string} content - Raw source text
  * @param {number} at - Zero-based offset to read from
  * @return {[(string|undefined), number]} - The decoded character (or undefined)
@@ -109,7 +149,7 @@ const character = function(content, at) {
     const closing = content.indexOf(';', at)
     read = [undefined, at + 1]
     if (closing >= 0) {
-      read = [NAMED[content.slice(at + 1, closing)], closing + 1]
+      read = [referenced(content.slice(at + 1, closing)), closing + 1]
     }
   } else if (content[at] === '\r') {
     read = ['\n', at + 1]
