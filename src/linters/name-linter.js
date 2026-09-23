@@ -69,13 +69,28 @@
  * `name()` of `@*[../child::zed[name() = 'gee']]` is asked of an element and
  * still reported, where the one in `@*[name() != 'as']` is asked of an
  * attribute.
+ *
+ * What stands outside every predicate is the context XSLT sets around the
+ * expression, which the walk began by assuming an element until #1000: under
+ * `xsl:for-each select="@*"` a `name(.) eq 'style'` drew `self::style`, 26
+ * such reports in TEI's `html_figures.xsl` alone, and DocBook's
+ * `xtangle.xsl` was told to copy the attribute it drops. So the walk begins
+ * unknown and `outer` climbs to the nearest instruction selecting a context
+ * or template matching one, answering with what that yields; the root counts,
+ * its name being empty exactly as no name test matches it, and a named
+ * template, a function or a top-level declaration says no. The same ticket
+ * moved an unprefixed `name()` onto the wildcard: an element in a default
+ * namespace answers its bare name, and a bare `self::pubdate` asks for no
+ * namespace, which xsltproc confirms over DocBook's `biblio-iso690.xsl`.
  */
 
-const {VALUED, calls, offsetOf, operatorOf, parseOf, stringOf,
+const {VALUED, calls, isValid, offsetOf, operatorOf, parseOf, stringOf,
   textOf, tokensOf} = require('../syntax')
+const {expressionsOf, whole} = require('../attributes')
+const {holding} = require('../tree')
 const {AXIS_KINDS, TOKENS, TRIVIA, qualified} = require('../tokens')
 const {metaOf, suppressed, defect} = require('../checks')
-const {MODERN, since} = require('../xsl-version')
+const {MODERN, XSLT, since} = require('../xsl-version')
 const {logger} = require('../logger')
 
 /**
@@ -135,6 +150,42 @@ const ELEMENTS = ['element', 'schema-element']
 const FILTERED = ['filter', 'parenthesized']
 
 /**
+ * The node kinds a path of steps is, an expression's and a pattern's.
+ * @type {Array.<string>}
+ */
+const PATHS = ['path', 'branch']
+
+/**
+ * The instructions whose `select` sets the context of what they hold, and the
+ * declarations whose `match` does (#1000).
+ * @type {Array.<string>}
+ */
+const SETTERS = ['for-each', 'for-each-group', 'iterate']
+
+/**
+ * The declarations whose `match` sets the context of what they hold.
+ * @type {Array.<string>}
+ */
+const MATCHERS = ['template', 'accumulator-rule']
+
+/**
+ * The XSLT elements past which nothing can say what the context is: a
+ * function has none, a top-level declaration is evaluated wherever a run
+ * starts, and the others set a string or a document as the context.
+ * @type {Array.<string>}
+ */
+const BOUNDS = ['function', 'stylesheet', 'transform', 'package',
+  'matching-substring', 'non-matching-substring', 'source-document',
+  'merge-action']
+
+/**
+ * Every expression of a document, keyed by the element holding it, indexed
+ * once per document rather than searched once per comparison.
+ * @type {WeakMap.<Document, Map.<Element, Array.<object>>>}
+ */
+const INDEXED = new WeakMap()
+
+/**
  * Whether a step selects elements alone, which its axis and its node test
  * answer together and neither answers alone: `processing-instruction()` stands
  * on the child axis, whose principal node kind is element, and selects no
@@ -179,10 +230,147 @@ const yields = function(found, node) {
     answer = yields(found, kids[0])
   } else if (node.kind === 'union') {
     answer = kids.every((arm) => yields(found, arm))
-  } else if (node.kind === 'path' && kids.length > 0) {
+  } else if (PATHS.includes(node.kind) && kids.length > 0) {
     answer = yields(found, kids[kids.length - 1])
   }
   return answer
+}
+
+/**
+ * Whether what an expression yields may stand as the context of a `self::`
+ * name test: elements alone, or the root, whose name is as empty as no name
+ * test matches it. A pattern answers off every one of its branches.
+ * @param {{node: Node, expression: string, pattern: boolean}} found - Record
+ * @param {object} node - A node of its tree
+ * @return {boolean} - Whether a name test there asks what the name does
+ */
+const settled = function(found, node) {
+  let answer = yields(found, node)
+  if (PATHS.includes(node.kind) && node.children.length === 0) {
+    answer = true
+  } else if (node.kind === 'pattern') {
+    answer = node.children.every((arm) => settled(found, arm))
+  }
+  return answer
+}
+
+/**
+ * Whether the expression an element holds in an attribute of a name yields a
+ * context a `self::` name test may stand in, which it does not where the
+ * element holds no such expression, or one that does not parse.
+ * @param {Element} element - The element holding the attribute
+ * @param {string} name - The attribute's name, `select` or `match`
+ * @return {boolean} - Whether its items are a settled context
+ */
+const chosen = function(element, name) {
+  const document = element.ownerDocument
+  if (!INDEXED.has(document)) {
+    const index = new Map()
+    for (const record of expressionsOf(document)) {
+      const held = holding(record.node)
+      if (!index.has(held)) {
+        index.set(held, [])
+      }
+      index.get(held).push(record)
+    }
+    INDEXED.set(document, index)
+  }
+  const record = (INDEXED.get(document).get(element) ?? []).find(
+    (one) => whole(one, name) || whole(one, `_${name}`),
+  )
+  return record !== undefined && isValid(record) &&
+    settled(record, parseOf(record).tree)
+}
+
+/**
+ * The context an expression's own element sets for it, or null where that
+ * element sets none: a sort key is asked of what its parent selects, a
+ * grouping key of what its own group selects, a key's `use` of what it matches.
+ * @param {{node: Node}} found - The record
+ * @return {?boolean} - Whether that context is settled, or null
+ */
+const own = function(found) {
+  const owner = found.node.ownerElement
+  let answer = null
+  if (owner?.namespaceURI === XSLT) {
+    const selected = whole(found, 'select') || whole(found, '_select')
+    if (owner.localName === 'sort') {
+      answer = chosen(owner.parentNode, 'select')
+    } else if (owner.localName === 'for-each-group' && !selected) {
+      answer = chosen(owner, 'select')
+    } else if (owner.localName === 'key' && !whole(found, 'match')) {
+      answer = chosen(owner, 'match')
+    }
+  }
+  return answer
+}
+
+/**
+ * The context an XSLT element sets for what it holds, or null where it sets
+ * none: an instruction's `select`, a template's `match`, or a bound past which
+ * nothing says what the context is.
+ * @param {Element} element - An XSLT element
+ * @return {?boolean} - Whether that context is settled, or null
+ */
+const setting = function(element) {
+  const local = element.localName
+  const selects = element.hasAttribute('select') ||
+    element.hasAttribute('_select')
+  let answer = null
+  if (SETTERS.includes(local) || (local === 'copy' && selects)) {
+    answer = chosen(element, 'select')
+  } else if (MATCHERS.includes(local)) {
+    answer = chosen(element, 'match')
+  } else if (BOUNDS.includes(local)) {
+    answer = false
+  }
+  return answer
+}
+
+/**
+ * Whether the context XSLT sets around an expression is known to be one a
+ * `self::` name test may stand in, climbed to from the node holding it. An
+ * element's own attributes are evaluated outside the context it sets, and a
+ * text node inside it; the document is reached only above a simplified
+ * stylesheet, whose one template matches the root (#1000).
+ * @param {{node: Node}} found - The record
+ * @return {boolean} - Whether the context is settled
+ */
+const outer = function(found) {
+  let answer = own(found)
+  let element = holding(found.node)
+  if (found.node.nodeType === 2) {
+    element = element.parentNode
+  }
+  while (answer === null) {
+    if (element.nodeType !== 1) {
+      answer = true
+    } else if (element.namespaceURI === XSLT) {
+      answer = setting(element)
+    }
+    element = element.parentNode
+  }
+  return answer
+}
+
+/**
+ * Whether an `xpath-default-namespace` puts an unprefixed name test in a
+ * namespace where the expression stands, the nearest declaration deciding and
+ * an empty one taking the test back out of any.
+ * @param {{node: Node}} found - The record
+ * @return {boolean} - Whether a bare name test names a namespace there
+ */
+const defaulted = function(found) {
+  let element = holding(found.node)
+  let declared = null
+  while (declared === null && element.nodeType === 1) {
+    declared = element.getAttributeNodeNS(XSLT, 'xpath-default-namespace')
+    if (element.namespaceURI === XSLT) {
+      declared = element.getAttributeNode('xpath-default-namespace')
+    }
+    element = element.parentNode
+  }
+  return declared !== null && declared.value !== ''
 }
 
 /**
@@ -192,7 +380,8 @@ const yields = function(found, node) {
  * yields: the `name()` of `@*[../child::zed[name() = 'gee']]` is asked of an
  * element where the one in `@*[name() != 'as']` is asked of an attribute.
  * @param {{node: Node, expression: string, pattern: boolean}} found - Record
- * @return {Array.<{node: object, names: boolean}>} - The comparisons found
+ * @return {Array.<{node: object, names: ?boolean}>} - The comparisons found,
+ *  null where the context is whatever stands outside the expression
  */
 const weighed = function(found) {
   const held = []
@@ -200,7 +389,8 @@ const weighed = function(found) {
    * Take the node where it is a comparison, then walk what it holds — its
    * predicates under what it yields, the rest under what reached it.
    * @param {object} node - A node of the tree
-   * @param {boolean} names - Whether an element is what stands in context
+   * @param {?boolean} names - Whether an element is what stands in context,
+   *  or null where that is what XSLT sets around the expression
    */
   const visit = function(node, names) {
     if (VALUED.includes(node.kind)) {
@@ -214,7 +404,7 @@ const weighed = function(found) {
       visit(kid, under)
     })
   }
-  visit(parseOf(found).tree, true)
+  visit(parseOf(found).tree, null)
   return held
 }
 
@@ -276,23 +466,24 @@ const bound = function(found, literal) {
 
 /**
  * The node test that replaces a comparison, or null when it cannot be built
- * with one edit — a string XML cannot spell a name with, or a `local-name()`
- * comparison in a 1.0 stylesheet where the `*:name` wildcard does not exist.
- * Whether the string is a name is XML's question and the lexer's answer, asked
- * as `qualified` rather than as an ASCII class refusing `name() = 'é'` (#731).
- * @param {string} local - The called function, `name` or `local-name`
+ * with one edit — a string XML cannot spell a name with, or one that takes the
+ * `*:name` wildcard in a 1.0 stylesheet, where it does not exist. An
+ * unprefixed `name()` takes it too: an element in a default namespace answers
+ * its bare local name, where a bare name test asks for no namespace (#1000).
+ * @param {{local: string, literal: string}} pair - The call and the string
  * @param {string} operator - The comparison operator, `=` or `!=`
- * @param {string} literal - The compared string
  * @param {boolean} modern - Whether the stylesheet is 2.0 or 3.0
+ * @param {boolean} spaced - Whether `xpath-default-namespace` is in force
  * @return {?string} - The replacement expression, or null
  */
-const test = function(local, operator, literal, modern) {
+const test = function(pair, operator, modern, spaced) {
+  const literal = pair.literal
   let node = `self::*:${literal}`
-  if (local === 'name') {
+  if (pair.local === 'name' && (literal.includes(':') || spaced)) {
     node = `self::${literal}`
   }
   let replacement = node
-  if (!qualified(literal) || (local === 'local-name' && !modern)) {
+  if (!qualified(literal) || (node.includes('*:') && !modern)) {
     replacement = null
   } else if (operator === '!=') {
     replacement = `not(${node})`
@@ -314,12 +505,18 @@ const test = function(local, operator, literal, modern) {
  */
 const comparisons = function(found, modern) {
   const results = []
+  let around = null
   for (const {node, names} of weighed(found)) {
     const pair = paired(found, node)
     const operator = operatorOf(found, node.children[0], node.children[1])
     let replacement = null
-    if (pair !== null && OPERATORS.includes(operator) && names) {
-      replacement = test(pair.local, operator, pair.literal, modern)
+    let settles = names
+    if (pair !== null && OPERATORS.includes(operator) && names === null) {
+      around = around ?? outer(found)
+      settles = around
+    }
+    if (pair !== null && OPERATORS.includes(operator) && settles) {
+      replacement = test(pair, operator, modern, modern && defaulted(found))
     }
     if (replacement !== null) {
       let offered = replacement

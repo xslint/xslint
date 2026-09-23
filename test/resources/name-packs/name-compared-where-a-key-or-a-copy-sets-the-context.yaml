@@ -1,0 +1,40 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+# A key's `use` is asked of what it matches and an `xsl:copy` with a
+# `select` sets the context of what it holds, while a literal result element
+# sets none and a text value template stands where its text does (#1000).
+pack: name-compared-to-string
+found:
+  amount: 4
+  positions: [ [ 4, 38 ], [ 15, 29 ], [ 18, 21 ], [ 19, 13 ] ]
+  fixes: [ "self::*:v", "self::*:b", "self::*:x", "self::*:y" ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="3.0" expand-text="yes" id="s">
+    <xsl:key name="kay" match="@*" use="name() = 'u'"/>
+    <xsl:key name="vee" match="*" use="name() = 'v'"/>
+    <xsl:template match="@*">
+      <xsl:copy>
+        <xsl:sequence select="name() = 'a'"/>
+      </xsl:copy>
+    </xsl:template>
+    <xsl:template match="*">
+      <xsl:copy select="@*">
+        <xsl:sequence select="name() = 'w'"/>
+      </xsl:copy>
+      <xsl:copy select="*">
+        <xsl:sequence select="name() = 'b'"/>
+      </xsl:copy>
+      <wrap>
+        <xsl:if test="name() = 'x'"/>
+        <out>{name() = 'y'}</out>
+      </wrap>
+      <xsl:for-each select="@*">
+        <out>{name() = 'c'}</out>
+      </xsl:for-each>
+      <xsl:for-each select="@*[">
+        <xsl:if test="name() = 'z'"/>
+      </xsl:for-each>
+    </xsl:template>
+  </xsl:stylesheet>
