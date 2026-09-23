@@ -298,9 +298,9 @@
         "message": "'xsl:sort' must come before any other content in its 'xsl:for-each' or 'xsl:apply-templates'. Move it to the front."
       },
       "stylesheet-has-no-templates": {
-        "xpath": "(/xsl:stylesheet | /xsl:transform)[not(xsl:*)]",
+        "xpath": "(/xsl:stylesheet | /xsl:transform | /xsl:package)[not(xsl:*)]",
         "severity": "warning",
-        "message": "The stylesheet declares nothing at all, so it contributes nothing to a transformation. Add a declaration, or delete the file."
+        "message": "The stylesheet declares nothing at all, so it contributes nothing to a transformation. Add a declaration to it."
       },
       "template-has-no-name-or-match": {
         "xpath": "//xsl:template[not(@name) and not(@_name) and not(@match) and not(@_match)]",

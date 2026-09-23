@@ -1,0 +1,16 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: stylesheet-has-no-templates
+found:
+  amount: 0
+  positions: [ ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:package xmlns:xsl="http://www.w3.org/1999/XSL/Transform" name="urn:lib" version="3.0" id="p">
+    <xsl:use-package name="urn:base" package-version="*">
+      <xsl:override>
+        <xsl:template name="entry"/>
+      </xsl:override>
+    </xsl:use-package>
+  </xsl:package>
