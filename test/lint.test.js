@@ -372,4 +372,32 @@ describe('lint (programmatic API)', function() {
       [103],
     )
   })
+  it('reads an expression a parameter entity brings from beside it', function() {
+    assert.deepEqual(
+      lint([{
+        ...source('entities/behind-a-parameter-entity.xsl'),
+        subsets: new Map([[
+          'shared.ent',
+          fs.readFileSync(
+            path.resolve(__dirname, 'resources', 'entities', 'shared.ent'),
+            'utf-8',
+          ),
+        ]]),
+      }])
+        .filter((defect) => defect.name === 'scans-whole-document')
+        .map((defect) => defect.line),
+      [15],
+      'cannot read the //alpha an external parameter entity declares, so ' +
+        'the expression holding it reaches no check at all (#1010)',
+    )
+  })
+  it('says which file holds the expressions it cannot read', function() {
+    assert.match(
+      noted(() => lint([source('entities/behind-a-parameter-entity.xsl')]))
+        .join(' '),
+      /1 expression.*entities\/behind-a-parameter-entity\.xsl/,
+      'dropped an expression holding an entity nobody declared without a ' +
+        'word at the default level, naming neither the count nor the file',
+    )
+  })
 })

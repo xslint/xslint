@@ -116,6 +116,61 @@ const declaredEntities = function(str) {
 }
 
 /**
+ * A parameter entity declared external, `<!ENTITY % name SYSTEM "file">` or
+ * its `PUBLIC` spelling, capturing the name and the system literal.
+ * @type {RegExp}
+ */
+const PARAMETER = new RegExp(
+  `<!ENTITY${GAP}+%${GAP}+([A-Za-z_][\\w.-]*)${GAP}+` +
+  `(?:SYSTEM|PUBLIC${GAP}+(?:"[^"]*"|'[^']*'))${GAP}+` +
+  `(?:"([^"]*)"|'([^']*)')`, 'g')
+
+/**
+ * The external parameter entities the source declares, by name, each mapped
+ * to the system literal naming the file its declarations stand in.
+ * @param {string} str - XML source
+ * @return {Map.<string, string>} - Parameter entity names to system literals
+ */
+const parametersOf = function(str) {
+  return new Map([...str.matchAll(PARAMETER)]
+    .map((match) => [match[1], match[2] ?? match[3]]))
+}
+
+/**
+ * The files the external parameter entities of a stylesheet name, read
+ * relative to it wherever one is there to read, by the system literal naming
+ * each. DocBook-XSL takes the entities of its index stylesheets from a
+ * `../common/entities.ent`, which a processor reads and the parser does not,
+ * so 211 of its expressions reached no check at all (#1010).
+ * @param {string} file - Path of the stylesheet
+ * @param {string} str - XML source
+ * @return {Map.<string, string>} - System literals to the text they name
+ */
+const subsetsOf = function(file, str) {
+  return new Map(
+    [...parametersOf(str).values()]
+      .map((literal) => [literal, path.resolve(path.dirname(file), literal)])
+      .filter(([, whole]) => fs.existsSync(whole) &&
+        fs.statSync(whole).isFile())
+      .map(([literal, whole]) => [literal, fs.readFileSync(whole, 'utf-8')]),
+  )
+}
+
+/**
+ * The source with every reference to an external parameter entity replaced by
+ * the declarations the file it names holds, where that file was read, so the
+ * entities it declares are the document's as much as the inline ones are.
+ * @param {string} str - XML source
+ * @param {Map.<string, string>} subsets - System literals to the text they name
+ * @return {string} - The source, its parameter entities read in
+ */
+const inlined = function(str, subsets) {
+  const parameters = parametersOf(str)
+  return str.replace(/%([A-Za-z_][\w.-]*);/g,
+    (whole, name) => subsets.get(parameters.get(name)) ?? whole)
+}
+
+/**
  * Whether the source reaches for an external DTD — a `SYSTEM` or `PUBLIC`
  * identifier, or a parameter entity — whose entity declarations we never read.
  * When it does, an unresolved entity is not evidence of a malformed document:
@@ -558,13 +613,16 @@ const forbidden = function(str, node, reaches) {
 
 /**
  * Parse XML from string. A byte order mark the text opens with is held aside
- * rather than parsed, `parted` saying why.
+ * rather than parsed, `parted` saying why. The entities it declares are the
+ * inline ones and those the files its external parameter entities name hold,
+ * wherever the caller read one (#1010).
  * @param {string} str - XML as string
+ * @param {Map.<string, string>} subsets - System literals to the text they name
  * @return {Document} - Parsed XML as Document
  */
-const xmlFromString = function(str) {
+const xmlFromString = function(str, subsets = new Map()) {
   const {text} = parted(str)
-  const entities = declaredEntities(text)
+  const entities = declaredEntities(inlined(text, subsets))
   const loose = external(text)
   try {
     const doc = parserFor().parseFromString(text, 'text/xml')
@@ -620,6 +678,7 @@ module.exports = {
   allFilesFrom,
   SEALED,
   slashed,
+  subsetsOf,
   unwritten,
   xml: {
     parsedFromFile: fromFile('XML', xmlFromString),

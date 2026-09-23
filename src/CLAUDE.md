@@ -608,11 +608,12 @@ engine would be answering two different questions.
 
 ## `src/helpers.js`
 
-XML parsing (expands internal-subset entities), YAML parsing, file recursion. What a replacement
-text stands for once it spells markup, why a reference is neither text nor a place a fix may be
-written, and which sequences a document may not hold where `@xmldom/xmldom` would repair one rather
-than refuse it, stand at the top of the module itself (#574, #691, #877, #984). `allFilesFrom` joins
-each subtree on with `flatMap` rather than spreading it into a `push`, since a spread hands every
+XML parsing (expands every entity it reads a declaration of, #1010), YAML parsing, file recursion.
+What a replacement text stands for once it spells markup, why a reference is neither text nor a
+place a fix may be written, and which sequences a document may not hold where `@xmldom/xmldom`
+would repair one rather than refuse it, stand at the top of the module itself
+(#574, #691, #877, #984). `allFilesFrom` joins each subtree on with `flatMap` rather than
+spreading it into a `push`, since a spread hands every
 path over as an argument and V8 caps those at roughly 125 per kilobyte of stack: this repository's
 own checkout grew to 768,731 files and every run over it died with a `RangeError` before a byte of
 XSL was read, the walk being asked before anything is filtered for `.xsl` (#758). It opens no

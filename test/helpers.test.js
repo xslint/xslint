@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {xml, yaml} = require('../src/helpers')
+const {subsetsOf, xml, yaml} = require('../src/helpers')
 const assert = require('assert')
 const fs = require('fs')
 const path = require('path')
@@ -54,4 +54,19 @@ describe('helpers', function() {
       assert.throws(() => xml.parsedFromString(content))
     })
   })
+  it('reads the subset a parameter entity names beside the stylesheet',
+    function() {
+      const file = path.resolve(
+        __dirname, 'resources', 'entities', 'behind-a-parameter-entity.xsl')
+      assert.deepEqual(
+        subsetsOf(file, fs.readFileSync(file, 'utf-8')),
+        new Map([[
+          'shared.ent',
+          fs.readFileSync(path.resolve(path.dirname(file), 'shared.ent'),
+            'utf-8'),
+        ]]),
+        'cannot read the file a SYSTEM identifier names relative to the ' +
+          'stylesheet declaring it (#1010)',
+      )
+    })
 })

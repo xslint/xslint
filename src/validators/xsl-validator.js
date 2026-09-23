@@ -30,7 +30,8 @@ const names = [CHECK]
  * well-formed XML. A source that does not parse is reported as a defect and
  * left out of the corpus, so the validators and linters that follow run only
  * over the stylesheets that parse.
- * @param {Array.<{file: string, content: string}>} sources - Raw stylesheets
+ * @param {Array.<{file: string, content: string, subsets: Map}>} sources -
+ *  Raw stylesheets, each with the external subsets its entities name
  * @param {Array.<string>} suppressions - Array of suppressed checks
  * @return {{corpus: Array.<{file: string, content: string, xsl: Document}>,
  *  defects:
@@ -41,10 +42,11 @@ const validate = function(sources, suppressions = []) {
   const corpus = []
   const defects = []
   const suppressed = suppressions.some((sup) => CHECK.includes(sup))
-  for (const {file, content} of sources) {
+  for (const {file, content, subsets} of sources) {
     try {
       corpus.push({
-        file: file, content: content, xsl: xml.parsedFromString(content),
+        file: file, content: content,
+        xsl: xml.parsedFromString(content, subsets),
       })
     } catch {
       if (!suppressed) {
