@@ -22,9 +22,9 @@ A template matching `item` handles that element, and one matching `//item` does
 not. XSLT 1.0 has no parentless trees, a result tree fragment always having a
 root node, so there the two spellings are one. The same holds for an `xsl:key`
 at any version, since `key()` answers only over a tree rooted at a document node.
-Everywhere else on 2.0+, check that no pattern is applied to a temporary tree
-before dropping the `//`, or keep the tree rooted by building it in a
-`xsl:document`.
+Everywhere else on 2.0+, check that no pattern is applied to a parentless tree,
+such as one bound with `as="element()"`, before dropping the `//`, or keep the
+tree rooted by building it in an `xsl:document`.
 
 What it does change is which rule wins. A pattern's default priority comes from
 its shape: a lone name test scores 0, while a pattern carrying a `/` step scores
