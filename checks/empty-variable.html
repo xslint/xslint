@@ -119,8 +119,11 @@
 <h1>Empty <code>xsl:variable</code></h1>
 <p>An <code>xsl:variable</code> gets its value either from a <code>@select</code> attribute or from the
 sequence constructor inside it. With neither, the variable binds to an empty
-string — almost always a mistake, and at best a confusing way to declare an
-empty value. State the value explicitly or drop the declaration.</p>
+string, and a reader cannot tell a value left out by accident from one meant
+to be empty. <code>select=&quot;&#39;&#39;&quot;</code> says which it is.</p>
+<p>Keep the declaration itself. An empty top-level variable is often a
+placeholder other code reads, or that an importing stylesheet overrides, and
+every <code>$name</code> referring to it is a static error once it is gone.</p>
 <p>A variable that declares a type with <code>@as</code> is a different case and is not
 flagged <strong>from XSLT 2.0 on</strong>: <code>&lt;xsl:variable name=&quot;acc&quot; as=&quot;node()*&quot;/&gt;</code> binds
 the empty <em>sequence</em> of that type on purpose — a deliberate empty accumulator,
@@ -132,6 +135,9 @@ still flagged — the <code>@as</code> does not do what its author expects.</p>
 <pre><code class="language-xsl">&lt;xsl:variable name=&quot;greeting&quot;/&gt;
 </code></pre>
 <p>Correct:</p>
+<pre><code class="language-xsl">&lt;xsl:variable name=&quot;greeting&quot; select=&quot;&#39;&#39;&quot;/&gt;
+</code></pre>
+<p>or, where a value was meant:</p>
 <pre><code class="language-xsl">&lt;xsl:variable name=&quot;greeting&quot; select=&quot;&#39;hello&#39;&quot;/&gt;
 </code></pre>
 <p>or:</p>
