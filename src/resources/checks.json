@@ -283,9 +283,9 @@
         "message": "'xsl:param' must be declared before any other content in its 'xsl:template' or 'xsl:function'. Move it above the content."
       },
       "setting-value-of-variable-incorrectly": {
-        "xpath": "//xsl:variable[not(@select) and not(@_select) and (count(*) = 1) and (count(xsl:value-of) = 1) and not(text()[xslint:normalize-space(.) or ancestor::*[@xml:space][1]/@xml:space = 'preserve'])]",
+        "xpath": "//(xsl:variable | xsl:param | xsl:with-param)[not(@select) and not(@_select) and (count(*) = 1) and (count(xsl:value-of[@select or @_select][not(@separator) and not(@_separator)]) = 1) and not(text()[xslint:normalize-space(.) or ancestor::*[@xml:space][1]/@xml:space = 'preserve'])]",
         "severity": "warning",
-        "message": "A variable is assigned via a nested xsl:value-of instead of the select attribute. Use select syntax instead."
+        "message": "A variable or parameter is assigned via a nested xsl:value-of instead of the select attribute. Use select syntax instead."
       },
       "short-names": {
         "xpath": "//(xsl:variable | xsl:param | xsl:template | xsl:function)[string-length(substring-after(@name, \":\")) = 1 or (string-length(@name) = 1 and not(contains(@name, \":\")))]",
