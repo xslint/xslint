@@ -97,7 +97,11 @@
  */
 
 const {chosen, valued} = require('../selectors')
-const {enclosed, staticOf} = require('../expressions')
+const {attributeOf, enclosed, staticOf} = require('../expressions')
+const {expressionsOf} = require('../attributes')
+const {FUNCTIONS, parseOf} = require('../syntax')
+const {holding} = require('../tree')
+const {XSLT} = require('../xsl-version')
 const {TOKENS, TRIVIA, tokenized} = require('../tokens')
 const {kinds} = require('../resources/checks.json')
 const {logger} = require('../logger')
@@ -127,6 +131,21 @@ const SELECTED = new WeakMap()
 const INDEXED = new WeakMap()
 
 /**
+ * The records `expressionsOf` yields for a document, by the node carrying
+ * them, so a usage asks for its own expressions rather than lexing a value it
+ * cannot tell an expression from (#1008).
+ * @type {WeakMap.<Document, Map.<Node, Array.<object>>>}
+ */
+const RECORDED = new WeakMap()
+
+/**
+ * The text value templates of a corpus: every text node a record stands in,
+ * which is the one kind of expression an attribute selector cannot reach.
+ * @type {WeakMap.<Array, Array.<Node>>}
+ */
+const TEMPLATED = new WeakMap()
+
+/**
  * Names of the checks this linter owns.
  * @type {Array.<string>}
  */
@@ -136,11 +155,11 @@ const names = CHECKS.map((check) => check.name)
  * Whether the attribute sits inside the declaration's own subtree, so a
  * function that only calls itself does not count as used.
  * @param {Node} declaration - Declaring node
- * @param {Node} attribute - Usage attribute
+ * @param {Node} attribute - Usage node, an attribute or a text node
  * @return {boolean} - True when the attribute is within the declaration
  */
 const within = function(declaration, attribute) {
-  let node = attribute.ownerElement
+  let node = holding(attribute)
   while (node && node !== declaration) {
     node = node.parentNode
   }
@@ -176,14 +195,14 @@ const byName = function(corpus, check) {
  * declaration — a function — is global, so every usage is in scope.
  * @param {object} check - The check to apply
  * @param {Node} declaration - Declaring node
- * @param {Node} usage - Usage attribute
+ * @param {Node} usage - Usage node
  * @return {boolean} - True when the usage can see the declaration
  */
 const inScope = function(check, declaration, usage) {
   return !check.scoped ||
     within(declaration.parentNode, usage) ||
     (declaration.parentNode === declaration.ownerDocument.documentElement &&
-      usage.ownerElement.ownerDocument !== declaration.ownerDocument)
+      usage.ownerDocument !== declaration.ownerDocument)
 }
 
 /**
@@ -237,33 +256,155 @@ const kinded = function(reference) {
 }
 
 /**
- * The expressions a usage value holds: the value itself, and every expression
- * its braces enclose where it holds one. An attribute the usage selector
- * chooses may be an XPath expression or an attribute value template, and a
- * selector giving `//@*` cannot tell which, so both readings are taken (#498).
- * @param {string} value - Usage value
+ * The records a document's expressions carry for one node, built once for the
+ * document: none for an attribute holding no expression at all, such as the
+ * output text of a literal result element (#1008).
+ * @param {Node} node - Usage node
+ * @return {Array.<object>} - Its records, as `expressionsOf` yields them
+ */
+const recordsOf = function(node) {
+  const xsl = node.ownerDocument
+  if (!RECORDED.has(xsl)) {
+    const held = new Map()
+    for (const found of expressionsOf(xsl)) {
+      held.set(found.node, (held.get(found.node) ?? []).concat([found]))
+    }
+    RECORDED.set(xsl, held)
+  }
+  return RECORDED.get(xsl).get(node) ?? []
+}
+
+/**
+ * The expressions a usage holds. A text node holds what its records say, the
+ * braces of a text value template. An attribute holds its value and every
+ * expression its braces enclose, since `//@*` cannot tell an expression from
+ * an attribute value template and both readings are taken (#498).
+ * @param {Node} usage - Usage node
  * @return {Array.<string>} - The expressions to read names off
  */
-const readings = function(value) {
-  let found = [value]
-  if (value.includes('{')) {
-    found = found.concat(enclosed(value).map((brace) => brace.value))
+const readings = function(usage) {
+  let found = recordsOf(usage).map((one) => one.expression)
+  if (usage.nodeType === 2) {
+    found = [usage.value]
+    if (usage.value.includes('{')) {
+      found = found.concat(enclosed(usage.value).map((brace) => brace.value))
+    }
   }
   return found
 }
 
 /**
- * Every name a usage value references, by the kind of reference it is: a name
- * a `$` stands in front of is a variable, one a bracket or a `#` stands behind
- * is a call, and the `$` is asked first. Read off the tokens and never off the
- * text, so a gap inside a call is read over and a name inside a string literal
- * or a comment is no reference at all, those being one token apiece (#498).
- * @param {string} value - Usage value
+ * A function's name as XPath compares it, the namespace its prefix is bound
+ * to at the node spelling it and the local name, so `g:twice` calls `f:twice`
+ * where both prefixes name one URI. An unprefixed name is a standard one, and
+ * a prefix bound nowhere stays itself rather than meeting any other (#1008).
+ * @param {Node} node - The node the name is spelled at
+ * @param {string} spelled - The name as written
+ * @return {string} - The expanded name, `{uri}local`
+ */
+const expanded = function(node, spelled) {
+  const colon = spelled.indexOf(':')
+  let uri = FUNCTIONS
+  if (colon > 0) {
+    const prefix = spelled.slice(0, colon)
+    uri = holding(node).lookupNamespaceURI(prefix) ?? `${prefix}:`
+  }
+  return `{${uri}}${spelled.slice(colon + 1)}`
+}
+
+/**
+ * What stands for an arity nobody could read, where the expression holding a
+ * call did not parse: such a call answers every declaration of its name.
+ * @type {string}
+ */
+const UNREAD = 'unread'
+
+/**
+ * The spellings that make a function's parameter optional, which XSLT 4.0
+ * allows and which lets one declaration answer calls of more than one arity.
+ * @type {Array.<string>}
+ */
+const OPTIONAL = ['no', 'false', '0']
+
+/**
+ * The kinds of node a parse spells a call of a named function with: a static
+ * call, and the named function reference XSLT 3.0 writes `f:x#2`.
+ * @type {Array.<string>}
+ */
+const CALLS = ['call', 'reference']
+
+/**
+ * The calls one parsed record makes, each keyed by its expanded name and its
+ * arity: a static call counts the arguments the parse separated, so a binding
+ * clause's commas are no separators, and a named reference `f:x#2` names its
+ * arity outright (#1008).
+ * @param {object} found - The record
+ * @param {{tokens: Array, tree: object}} parse - What its parse answered
+ * @return {Array.<string>} - Its calls, as `{uri}local#arity`
+ */
+const called = function(found, parse) {
+  const calls = []
+  /**
+   * Key this node when it calls a function, then the nodes below it.
+   * @param {object} node - A node of the tree
+   */
+  const visit = function(node) {
+    if (CALLS.includes(node.kind)) {
+      const spelled = parse.tokens.slice(node.from, node.to)
+        .filter(({type}) => !TRIVIA.includes(type))
+      let name = `{${spelled[0].value.slice(2, -1)}}${spelled[1].value}`
+      if (spelled[0].type !== TOKENS.URI) {
+        name = expanded(found.node, spelled[0].value)
+      }
+      let arity = node.children.length
+      if (node.kind === 'reference') {
+        arity = Number(spelled[spelled.length - 1].value)
+      }
+      calls.push(`${name}#${arity}`)
+    }
+    node.children.forEach(visit)
+  }
+  visit(parse.tree)
+  return calls
+}
+
+/**
+ * Whether a record may call a stylesheet function at all. XSLT refuses an
+ * unprefixed name on an `xsl:function` (XTSE0740), so a call reaching one is
+ * prefixed or braced, and an expression holding no colon is never walked.
+ * @param {object} found - The record
+ * @return {boolean} - True when a prefixed or braced name may stand in it
+ */
+const prefixed = function(found) {
+  return found.expression.includes(':')
+}
+
+/**
+ * Every name a usage references, by the kind of reference it is: a name a `$`
+ * stands in front of is a variable, one a bracket or a `#` stands behind is a
+ * call, and the `$` is asked first. Read off the tokens and never off the
+ * text, so a name inside a string literal or a comment is none (#498). A call
+ * is keyed by name and arity, off the parse wherever a record parsed (#1008).
+ * @param {Node} usage - Usage node
  * @return {Map.<string, Set.<string>>} - The names it references, by kind
  */
-const referencing = function(value) {
+const referencing = function(usage) {
   const names = new Map(REFERENCES.map((kind) => [kind, new Set()]))
-  for (const reading of readings(value)) {
+  const records = recordsOf(usage)
+  const read = readings(usage)
+  let unparsed = read
+  if (records.length > 0) {
+    unparsed = []
+    for (const found of records.filter(prefixed)) {
+      const parse = parseOf(found)
+      if (parse.fault === '') {
+        called(found, parse).forEach((call) => names.get('call').add(call))
+      } else {
+        unparsed.push(found.expression)
+      }
+    }
+  }
+  for (const reading of read) {
     const tokens = tokenized(reading)
       .filter(({type}) => !TRIVIA.includes(type))
     tokens.forEach((token, at) => {
@@ -271,8 +412,12 @@ const referencing = function(value) {
         tokens[at - 1].type === TOKENS.DOLLAR) {
         names.get('variable').add(token.value)
       } else if (NAMES.includes(token.type) && at + 1 < tokens.length &&
-        OPENS.includes(tokens[at + 1].type)) {
-        names.get('call').add(token.value)
+        OPENS.includes(tokens[at + 1].type) && unparsed.includes(reading)) {
+        let name = expanded(usage, token.value)
+        if (at > 0 && tokens[at - 1].type === TOKENS.URI) {
+          name = `{${tokens[at - 1].value.slice(2, -1)}}${token.value}`
+        }
+        names.get('call').add(`${name}#${UNREAD}`)
       }
     })
   }
@@ -284,14 +429,14 @@ const referencing = function(value) {
  * per usage set: a pass for each kind would lex DocBook-XSL's 72,077
  * attributes twice over, and a value holding none of the characters a
  * reference is spelled with is never lexed at all (#498).
- * @param {Array.<Node>} usages - Usage attributes across the corpus
+ * @param {Array.<Node>} usages - Usage nodes across the corpus
  * @return {Map.<string, Map.<string, Array.<Node>>>} - Usages by kind and name
  */
 const collected = function(usages) {
   const index = new Map(REFERENCES.map((kind) => [kind, new Map()]))
   for (const usage of usages) {
-    if (MARKS.some((mark) => usage.value.includes(mark))) {
-      for (const [kind, mentioned] of referencing(usage.value)) {
+    if (MARKS.some((mark) => usage.nodeValue.includes(mark))) {
+      for (const [kind, mentioned] of referencing(usage)) {
         const held = index.get(kind)
         for (const name of mentioned) {
           if (!held.has(name)) {
@@ -311,7 +456,7 @@ const collected = function(usages) {
  * asked its question once per distinct name, which over DocBook-XSL is
  * `unused-variable` alone taking 1207 names against 72,077 attributes — 87
  * million substring tests, and 98% of what this stage spent scanning (#783).
- * @param {Array.<Node>} usages - Usage attributes across the corpus
+ * @param {Array.<Node>} usages - Usage nodes across the corpus
  * @param {string} kind - Which kind of reference to look a name up under
  * @return {Map.<string, Array.<Node>>} - Usages against the names they hold
  */
@@ -344,19 +489,69 @@ const across = function(corpus, xpath) {
 }
 
 /**
+ * The usages a reference check reads: the attributes its selector chooses, and
+ * every text value template of the corpus — a 3.0 text node under an on
+ * `expand-text` holds expressions as surely as a `select` does, and `//@*`
+ * reaches none of them (#1008). Built once for a corpus and selector.
+ * @param {Array.<{file: string, xsl: Document}>} corpus - Parsed stylesheets
+ * @param {object} check - The check to apply, carrying a `usage` selector
+ * @return {Array.<Node>} - The usage nodes
+ */
+const usagesOf = function(corpus, check) {
+  if (!TEMPLATED.has(corpus)) {
+    TEMPLATED.set(corpus, new Map())
+  }
+  const remembered = TEMPLATED.get(corpus)
+  if (!remembered.has(check.usage)) {
+    remembered.set(check.usage, across(corpus, check.usage).concat(
+      corpus.flatMap(({xsl}) => [...new Set(expressionsOf(xsl)
+        .map((found) => found.node)
+        .filter((node) => node.nodeType !== 2))]),
+    ))
+  }
+  return remembered.get(check.usage)
+}
+
+/**
+ * The names a declaration answers to in the index. A variable answers to its
+ * name. A function answers to its expanded name at every arity its parameters
+ * allow, one XSLT 4.0 marks optional lowering the floor, and to a call whose
+ * arity went unread (#1008).
+ * @param {object} check - The check to apply, carrying a `reference` kind
+ * @param {Node} declaration - Declaring node
+ * @return {Array.<string>} - The keys to look it up under
+ */
+const keysOf = function(check, declaration) {
+  let keys = [declaration.getAttribute('name')]
+  if (kinded(check.reference) === 'call') {
+    const name = expanded(declaration, declaration.getAttribute('name'))
+    const params = Array.from(declaration.childNodes).filter((node) =>
+      node.namespaceURI === XSLT && node.localName === 'param')
+    const required = params.filter((node) =>
+      !OPTIONAL.includes(attributeOf(node, 'required').trim()))
+    keys = [UNREAD, required.length]
+      .concat(params.slice(required.length)
+        .map((node, at) => required.length + at + 1))
+      .map((arity) => `${name}#${arity}`)
+  }
+  return keys
+}
+
+/**
  * The usages referencing a declaration, looked up rather than scanned for.
  * Asking it is still how a caller asks the cheap question first: `within`
  * climbs to the document root for every pair it rejects, and almost every pair
  * is rejected, so a structural test placed ahead of this one spent a full
  * ancestor walk to learn what the index already says (#755).
- * @param {Array.<Node>} usages - Usage attributes across the corpus
+ * @param {Array.<Node>} usages - Usage nodes across the corpus
  * @param {object} check - The check to apply, carrying a `reference` kind
  * @param {Node} declaration - Declaring node
  * @return {Array.<Node>} - The usages referencing it
  */
 const mentioning = function(usages, check, declaration) {
-  return indexed(usages, kinded(check.reference))
-    .get(declaration.getAttribute('name')) ?? []
+  const index = indexed(usages, kinded(check.reference))
+  return [...new Set(keysOf(check, declaration)
+    .flatMap((key) => index.get(key) ?? []))]
 }
 
 /**
@@ -364,11 +559,11 @@ const mentioning = function(usages, check, declaration) {
  * usage sits outside every declaration — a call from a template is such a
  * root, a call from another function's body is not.
  * @param {Set.<Node>} declarations - The declaring nodes
- * @param {Node} usage - Usage attribute
+ * @param {Node} usage - Usage node
  * @return {?Node} - Enclosing declaration, or null
  */
 const enclosing = function(declarations, usage) {
-  let node = usage.ownerElement
+  let node = holding(usage)
   while (node && !declarations.has(node)) {
     node = node.parentNode
   }
@@ -383,7 +578,7 @@ const enclosing = function(declarations, usage) {
  * nothing else calls are reached by neither, so both stay unreachable.
  * @param {object} check - The check to apply, carrying a `reference` template
  * @param {Array.<{file: string, node: Node}>} declarations - Declaring nodes
- * @param {Array.<Node>} usages - Usage attributes across the corpus
+ * @param {Array.<Node>} usages - Usage nodes across the corpus
  * @return {Set.<Node>} - The used declarations
  */
 const reachable = function(check, declarations, usages) {
@@ -421,7 +616,7 @@ const reachable = function(check, declarations, usages) {
  * @return {Array.<object>} - Defects found
  */
 const byCall = function(corpus, check) {
-  const usages = across(corpus, check.usage)
+  const usages = usagesOf(corpus, check)
   return corpus.flatMap(({file, xsl}) => chosen(xsl, check.declaration)
     .filter((node) => mentioning(usages, check, node).length === 0)
     .map((node) => defect(check, file, node)))
@@ -436,7 +631,7 @@ const byCall = function(corpus, check) {
  * @return {Array.<object>} - Defects found
  */
 const byScope = function(corpus, check) {
-  const usages = across(corpus, check.usage)
+  const usages = usagesOf(corpus, check)
   return corpus.flatMap(({file, xsl}) => chosen(xsl, check.declaration)
     .filter((node) => !mentioning(usages, check, node).some((usage) =>
       !within(node, usage) && inScope(check, node, usage)))
@@ -454,7 +649,7 @@ const byScope = function(corpus, check) {
  * @return {Array.<object>} - Defects found
  */
 const byReachability = function(corpus, check) {
-  const usages = across(corpus, check.usage)
+  const usages = usagesOf(corpus, check)
   const declarations = corpus.flatMap(({file, xsl}) =>
     chosen(xsl, check.declaration).map((node) => ({file, node})))
   const used = reachable(check, declarations, usages)
