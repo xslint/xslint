@@ -24,6 +24,24 @@ Correct:
 </xsl:if>
 ```
 
+From XSLT 2.0 on, the collapse also holds only while the outer test guards
+nothing. XPath 2.0 lets a processor evaluate the operands of `and` in either
+order, so a test that keeps the inner one from raising an error stops keeping
+it once the two are joined:
+
+```xsl
+<xsl:if test="$date castable as xs:date">
+  <xsl:if test="xs:date($date) lt current-date()">
+    <xsl:value-of select="$date"/>
+  </xsl:if>
+</xsl:if>
+```
+
+Written as `$date castable as xs:date and xs:date($date) lt current-date()`,
+the cast may run first and fail on the very value the guard was there to turn
+away. The same goes for a `function-available(...)` test in front of a call to
+that function. Leave such a pair nested.
+
 The collapse holds only while the outer `xsl:if` holds nothing but the inner
 one. Anything else it holds is emitted whenever the outer test is true, and
 joining the conditions makes that content wait on the inner test as well:
