@@ -259,6 +259,22 @@ const paired = function(found, node) {
 }
 
 /**
+ * Whether the node test resolves where the comparison stands. `name()` answers
+ * the source node's lexical QName and is compared with no declaration at all,
+ * where a prefixed node test asks about the namespace the stylesheet binds
+ * that prefix to — so one naming a prefix nothing binds refuses to compile
+ * (#991).
+ * @param {{node: Node}} found - The record the expression came from
+ * @param {string} literal - The compared string
+ * @return {boolean} - True when the test the literal spells resolves
+ */
+const bound = function(found, literal) {
+  const prefix = literal.split(':')[0]
+  const element = found.node.ownerElement ?? found.node.parentNode
+  return prefix === literal || element.lookupNamespaceURI(prefix) !== null
+}
+
+/**
  * The node test that replaces a comparison, or null when it cannot be built
  * with one edit — a string XML cannot spell a name with, or a `local-name()`
  * comparison in a 1.0 stylesheet where the `*:name` wildcard does not exist.
@@ -286,14 +302,14 @@ const test = function(local, operator, literal, modern) {
 
 /**
  * The `name()`/`local-name()`-versus-string comparisons a node test replaces:
- * the offset each starts at, its verbatim text, and that test. One no test
- * replaces is not among them, the report being withheld whole there (#962).
- * Both classes are gathered (#763), and the string is what the literal holds
- * rather than how it is written (#598).
+ * the offset, the verbatim text, and that test — null where nothing binds its
+ * prefix (#991), and absent where no test replaces it, the report being
+ * withheld whole there (#962). Both classes are gathered (#763), and the
+ * string is what the literal holds rather than how it is written (#598).
  * @param {{node: Node, expression: string, pattern: boolean}} found - The
  *  expression, whole, as `expressionsOf` yields it
  * @param {boolean} modern - Whether the stylesheet is 2.0 or 3.0
- * @return {Array.<{offset: number, value: string, replacement: string}>} -
+ * @return {Array.<{offset: number, value: string, replacement: ?string}>} -
  *  The comparisons found
  */
 const comparisons = function(found, modern) {
@@ -306,10 +322,14 @@ const comparisons = function(found, modern) {
       replacement = test(pair.local, operator, pair.literal, modern)
     }
     if (replacement !== null) {
+      let offered = replacement
+      if (!bound(found, pair.literal)) {
+        offered = null
+      }
       results.push({
         offset: offsetOf(found, node),
         value: textOf(found, node),
-        replacement: replacement,
+        replacement: offered,
       })
     }
   }
@@ -333,9 +353,11 @@ const lintByName = function(expressions, suppressions = []) {
     for (const {source, found} of expressions) {
       const modern = since(found.version, MODERN)
       for (const {offset, value, replacement} of comparisons(found, modern)) {
-        defects.push(
-          defect(CHECK, META, source, found, offset, {value, replacement}),
-        )
+        let fix = undefined
+        if (replacement !== null) {
+          fix = {value, replacement}
+        }
+        defects.push(defect(CHECK, META, source, found, offset, fix))
       }
     }
   }
