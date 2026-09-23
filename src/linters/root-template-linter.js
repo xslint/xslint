@@ -33,8 +33,8 @@
  * of its own, which is what a `text()` step says too. The `xsl:output` the
  * second check reports is taken from the stylesheet's own children, XSLT
  * reading a declaration nowhere else and a named one being the format of a
- * secondary result rather than of the primary one (#1003), and its fix rewrites the value alone
- * through `substitution`. What makes the result HTML is the **outermost**
+ * secondary result, not the primary (#1003), and its fix rewrites the value
+ * alone through `substitution`. What makes the result HTML is the **outermost**
  * element the template builds and not an `html` anywhere under it, which is
  * #495: an XML document may embed an HTML fragment and stay XML — an Atom
  * entry's `content`, an XHTML island — so a check reading any descendant
