@@ -1,0 +1,24 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: leaking-result-namespace
+# Quiet where the only elements outside XSLT are top-level data, which no
+# processor instantiates, so nothing reaches the result to carry xs (#1006).
+found:
+  amount: 0
+  positions: [ ]
+  fixes: [ ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:doc="http://www.oxygenxml.com/ns/doc/xsl" version="2.0">
+    <doc:doc scope="stylesheet">
+      <doc:desc>
+        <doc:p>Counts the objects</doc:p>
+      </doc:desc>
+    </doc:doc>
+    <xsl:template match="/">
+      <xsl:element name="object">
+        <xsl:value-of select="count(*) cast as xs:integer"/>
+      </xsl:element>
+    </xsl:template>
+  </xsl:stylesheet>

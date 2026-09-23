@@ -1,0 +1,21 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: leaking-result-namespace
+# A prefix only top-level data names reaches the result nonetheless, every
+# literal result element carrying it in scope, so the data is no output that
+# would excuse it (#1006).
+found:
+  amount: 1
+  positions: [ [ 2, 86 ] ]
+  fixes: [ "doc xlink" ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:doc="urn:doc" xmlns:xlink="http://www.w3.org/1999/xlink" exclude-result-prefixes="doc" version="1.0">
+    <doc:template>
+      <doc:link xlink:href="x.html"/>
+    </doc:template>
+    <xsl:template match="/">
+      <p>out</p>
+    </xsl:template>
+  </xsl:stylesheet>
