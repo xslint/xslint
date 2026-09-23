@@ -9,5 +9,8 @@
     <xsl:if test="not(not(@enabled))">
       <xsl:value-of select="$flag"/>
     </xsl:if>
+    <xsl:if test="not(not(@title = 'p &amp; q'))">
+      <xsl:value-of select="$flag"/>
+    </xsl:if>
   </xsl:template>
 </xsl:stylesheet>

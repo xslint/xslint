@@ -8,6 +8,7 @@
     <xsl:if test="@a != ''">
       <xsl:variable name="blank" select="@b = ''"/>
       <xsl:value-of select="@c != ''"/>
+      <xsl:value-of select='@d != &apos;&apos;'/>
     </xsl:if>
   </xsl:template>
 </xsl:stylesheet>

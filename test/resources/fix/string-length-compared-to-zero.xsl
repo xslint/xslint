@@ -8,6 +8,7 @@
     <xsl:if test="string-length(@a) > 0">
       <xsl:variable name="blank" select="string-length(@b) = 0"/>
       <xsl:value-of select="0 != string-length(@c)"/>
+      <xsl:value-of select='string-length(@d) != 0'/>
     </xsl:if>
   </xsl:template>
 </xsl:stylesheet>

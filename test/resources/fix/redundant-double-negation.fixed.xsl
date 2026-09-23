@@ -9,5 +9,8 @@
     <xsl:if test="@enabled">
       <xsl:value-of select="$flag"/>
     </xsl:if>
+    <xsl:if test="@title = 'p &amp; q'">
+      <xsl:value-of select="$flag"/>
+    </xsl:if>
   </xsl:template>
 </xsl:stylesheet>

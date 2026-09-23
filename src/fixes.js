@@ -246,6 +246,38 @@ const delimited = function(text, quote) {
 }
 
 /**
+ * The two node kinds whose spelling a fix has to answer to, each beside what
+ * it forbids: an attribute value the `&`, the `<` and whichever quote
+ * delimits it, a text node the first two. A CDATA section is on neither list,
+ * every character inside one standing for itself.
+ * @type {{attribute: number, text: number}}
+ */
+const KINDS = {attribute: 2, text: 3}
+
+/**
+ * The text as the node holding it may spell it. A linter hands over the
+ * decoded expression, so writing that back where an entity stood leaves a
+ * file no parser reads — a `<` unescaped in an attribute value, or a quote
+ * closing the value it stands in (#957).
+ * @param {string} text - The decoded text to write
+ * @param {Node} node - The node whose value the text is written into
+ * @param {string} content - Raw source text of the file it stands in
+ * @return {string} - The text as that node may spell it
+ */
+const written = function(text, node, content) {
+  let spelled = text
+  if (node.nodeType === KINDS.attribute) {
+    spelled = delimited(
+      text,
+      content[offsetAt(content, node.lineNumber, node.columnNumber)],
+    )
+  } else if (node.nodeType === KINDS.text) {
+    spelled = escaped(text)
+  }
+  return spelled
+}
+
+/**
  * A fix that replaces an attribute's value alone, leaving the name, the gaps
  * round the `=` and the delimiter as they stand: the value opens one character
  * past the delimiter xmldom reports. Rebuilding the whole attribute as
@@ -262,10 +294,7 @@ const substitution = function(attribute, replacement, content) {
     line: attribute.lineNumber,
     col: attribute.columnNumber + 1,
     value: attribute.value,
-    replacement: delimited(
-      replacement,
-      content[offsetAt(content, attribute.lineNumber, attribute.columnNumber)],
-    ),
+    replacement: written(replacement, attribute, content),
   }
 }
 
@@ -275,4 +304,5 @@ module.exports = {
   excision,
   standsAt,
   substitution,
+  written,
 }

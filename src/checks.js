@@ -5,6 +5,7 @@
 
 const {kinds} = require('./resources/checks.json')
 const {offsetAt, placeAt, skip} = require('./source')
+const {written} = require('./fixes')
 
 /**
  * The tier a fix lands in when a plain `--fix` applies it: deterministic and
@@ -94,7 +95,8 @@ const rawly = function(source, found, offset) {
  *  that node's value, its own text, and whether it is a pattern
  * @param {number} offset - Offset of the defect within the expression
  * @param {?{value: string, replacement: string, suggestion?: boolean}} [fix] -
- *  The fix, or undefined for a report-only defect
+ *  The fix, or undefined for a report-only defect; its replacement is spelled
+ *  the way the node holding it spells text, by {@link written}
  * @return {object} - Defect
  */
 const defect = function(
@@ -104,7 +106,14 @@ const defect = function(
   const {line, pos} = placeAt(source.content, rawly(source, found, offset))
   let anchored = {}
   if (fix !== undefined) {
-    anchored = {fix: {line: line, col: pos, ...fix}}
+    anchored = {
+      fix: {
+        line: line,
+        col: pos,
+        ...fix,
+        replacement: written(fix.replacement, node, source.content),
+      },
+    }
   }
   return {
     name: check,
