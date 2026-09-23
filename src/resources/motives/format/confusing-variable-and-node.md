@@ -21,6 +21,29 @@ Correct:
 </xsl:template>
 ```
 
+Only a variable in scope can be confused, which is one declared in front of
+the instruction or in front of one of its ancestors. One declared inside an
+earlier sibling, such as an `xsl:if`, ends with that sibling, and `$heading`
+there names nothing:
+
+```xsl
+<xsl:if test="title">
+  <xsl:variable name="heading" select="string(title)"/>
+</xsl:if>
+<xsl:apply-templates select="heading"/>
+```
+
+Only the name opening a path is confused, too. A name inside a predicate is
+asked of another context node, so in
+`following-sibling::item[string(contrib) = $contrib]` the inner `contrib` is
+the child of each `item`, and no variable could stand in for it.
+
+A variable holding an atomic value is still worth the warning, but not the
+dollar sign. When its `select` is a string, a number or a call such as
+`string(contrib)`, or its `as` names an atomic type, `select="$contrib"` hands
+a string to an instruction that selects nodes, which is a type error. Rename
+the variable instead, or spell the child as `child::contrib`.
+
 A variable bound by *content* rather than by `select` is a different thing, and
 a bare name standing beside one is usually right. Its nodes form a tree of
 their own, parented by nothing in the source document, so they are members of
