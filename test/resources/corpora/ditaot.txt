@@ -862,7 +862,7 @@ src/main/plugins/org.dita.xhtml/xsl/map2htmtoc/map2htmtocImpl.xsl:9:1 too-many-t
 src/main/plugins/org.dita.xhtml/xsl/map2htmtoc/map2htmtocImpl.xsl:41:19 string-length-compared-to-zero suggestion "$contenttarget != ''"
 src/main/plugins/org.dita.xhtml/xsl/map2htmtoc/map2htmtocImpl.xsl:62:20 string-length-compared-to-zero suggestion "$OUTPUTCLASS != ''"
 src/main/plugins/org.dita.xhtml/xsl/map2htmtoc/map2htmtocImpl.xsl:77:21 scans-whole-document
-src/main/plugins/org.dita.xhtml/xsl/map2htmtoc/map2htmtocImpl.xsl:105:5 using-disable-output-escaping suggestion ""
+src/main/plugins/org.dita.xhtml/xsl/map2htmtoc/map2htmtocImpl.xsl:105:5 using-disable-output-escaping
 src/main/plugins/org.dita.xhtml/xsl/map2htmtoc/map2htmtocImpl.xsl:120:5 use-choose-without-otherwise
 src/main/plugins/org.dita.xhtml/xsl/map2htmtoc/map2htmtocImpl.xsl:146:5 text-outside-xsl-text suggestion "<xsl:text>url</xsl:text>"
 src/main/plugins/org.dita.xhtml/xsl/map2htmtoc/map2htmtocImpl.xsl:147:5 text-outside-xsl-text suggestion "<xsl:text>url</xsl:text>"
