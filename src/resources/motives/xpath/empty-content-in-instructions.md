@@ -20,9 +20,18 @@ Correct:
 </xsl:for-each>
 ```
 
-An instruction holding nothing but whitespace counts as empty, since XSLT
-strips a whitespace-only text node from the stylesheet before a processor looks
-at it. `xml:space` is the exception: where the nearest ancestor declaring it
+An instruction holding nothing but whitespace or comments counts as empty,
+since XSLT strips a whitespace-only text node and every comment from the
+stylesheet before a processor looks at it. A commented-out body writes
+nothing:
+
+```xsl
+<xsl:if test="substring($href, 1, 1) != '#'">
+  <!--xsl:text>/</xsl:text-->
+</xsl:if>
+```
+
+`xml:space` is the exception: where the nearest ancestor declaring it
 says `preserve`, that whitespace survives and the instruction writes it out, so
 removing the element changes the output and it is left alone.
 
