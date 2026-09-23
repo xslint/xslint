@@ -80,14 +80,15 @@ const listed = function(element) {
 
 /**
  * What finds a prefix qualifying a name in a text: the prefix and its colon,
- * with no name character in front, so `tei:y` is no use of `i`, and no second
- * colon behind, so an axis is no use of a prefix spelled like it (#999).
+ * with no name character in front unless an axis ends there, so `tei:y` is no
+ * use of `i` while `child::tei:y` is one of `tei`, and no second colon behind,
+ * so an axis is no use of a prefix spelled like it (#999).
  * @param {string} prefix - Prefix to look for
  * @return {RegExp} - The pattern of its use
  */
 const qualifying = function(prefix) {
   return new RegExp(
-    `(?<!${NAMED.source})${prefix.replaceAll('.', '\\.')}:(?!:)`, 'u',
+    `(?:(?<!${NAMED.source})|(?<=::))${prefix.replaceAll('.', '\\.')}:(?!:)`, 'u',
   )
 }
 

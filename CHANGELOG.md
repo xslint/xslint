@@ -16,7 +16,8 @@ publication date only; detailed notes begin with the Unreleased section.
   and one used only inside a text value template, each leaving a stylesheet
   no processor compiles; while `tei:y` read as a use of `i`, and `#all`
   hid some 450 dead declarations across TEI. A prefix now counts only with
-  no name character in front of it, text value templates are read off
+  no name character in front of it but an axis's `::`, so
+  `ancestor::tei:div` still uses `tei`, text value templates are read off
   `expressionsOf`, both alias attributes are prefix lists, and `#all`, which
   names no prefix, is no use of any (#999).
 
