@@ -1,0 +1,19 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+# A simplified stylesheet is one template matching the root, so what its
+# literal result element holds is asked of the document (#1000).
+pack: name-compared-to-string
+found:
+  amount: 1
+  positions: [ [ 3, 17 ] ]
+  fixes: [ "self::*:body" ]
+input: |-
+  <?xml version="1.0"?>
+  <html xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xsl:version="2.0">
+    <xsl:if test="name() = 'body'">
+      <xsl:for-each select="@*">
+        <xsl:value-of select="name() = 'lang'"/>
+      </xsl:for-each>
+    </xsl:if>
+  </html>
