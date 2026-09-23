@@ -32,7 +32,8 @@
  * it is blank — a CDATA section being one kind of text and not a construct
  * of its own, which is what a `text()` step says too. The `xsl:output` the
  * second check reports is taken from the stylesheet's own children, XSLT
- * reading a declaration nowhere else, and its fix rewrites the value alone
+ * reading a declaration nowhere else and a named one being the format of a
+ * secondary result rather than of the primary one (#1003), and its fix rewrites the value alone
  * through `substitution`. What makes the result HTML is the **outermost**
  * element the template builds and not an `html` anywhere under it, which is
  * #495: an XML document may embed an HTML fragment and stay XML — an Atom
@@ -122,6 +123,12 @@ const META = {[SILENT]: metaOf(SILENT), [MISLABELLED]: metaOf(MISLABELLED)}
  * @type {string}
  */
 const MATCH = 'match'
+
+/**
+ * The attribute naming an `xsl:output` a secondary result asks for.
+ * @type {string}
+ */
+const NAME = 'name'
 
 /**
  * The XSLT elements this linter reads: the one a pattern selects, the one whose
@@ -271,16 +278,18 @@ const html = function(template) {
 }
 
 /**
- * The `xsl:output` elements the stylesheet declares at its root, which is where
- * XSLT takes one from — an `xsl:output` deeper in the tree is not a declaration
- * at all.
+ * The unnamed `xsl:output` elements the stylesheet declares at its root, which
+ * is where XSLT takes one from. A named one, in either spelling, is a format an
+ * `xsl:result-document` asks for and says nothing of the primary result the
+ * root template builds (#1003).
  * @param {Document} xsl - XSL document parsed as {@link Document}
  * @return {Array.<Element>} - The output declarations found
  */
 const outputs = function(xsl) {
   return Array.from(xsl.documentElement.childNodes).filter(
     (node) => node.nodeType === 1 && node.namespaceURI === XSLT &&
-      node.localName === ELEMENTS.output,
+      node.localName === ELEMENTS.output &&
+      !node.hasAttribute(NAME) && !node.hasAttribute(`_${NAME}`),
   )
 }
 
