@@ -186,6 +186,17 @@
  * count at all: what a change did is a record, where what a tier reports
  * is a fact about the tree, and the second belongs to the documents a gate
  * reads (#895).
+ *
+ * The breach behind this restatement is the shared budget once more, and
+ * the plainest reading of it yet: #983 and #984 each measured themselves
+ * alone and each stood under the bar, 70 characters of headroom left
+ * against 175 the second of them wanted, so whichever landed after the
+ * other had to pay for both. The move answered it again, on the note of
+ * the module the change is about rather than the dearest that guide holds
+ * — `src/helpers.js` was already growing a file-header note for what #984
+ * reads there, so which sequences a document may not hold and why a
+ * diagnostic's level is not consulted went to stand beside it, 1,279
+ * characters out of every chain under `src/` (#984).
  */
 
 const {allFilesFrom} = require('../src/helpers')
