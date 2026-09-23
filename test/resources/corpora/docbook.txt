@@ -187,6 +187,7 @@ contrib/tools/pawson/checkparams.xsl:84:9 text-outside-xsl-text suggestion "<xsl
 contrib/tools/pawson/checkparams.xsl:91:50 redundant-whitespace fix ""
 contrib/tools/pawson/checkparams.xsl:95:9 text-outside-xsl-text suggestion "<xsl:text>'  \n          Missing .frag extension\n        </xsl:text>"
 contrib/tools/tennison/modify.xsl:8:1 missing-id-in-stylesheet
+contrib/tools/tennison/modify.xsl:9:3 redundant-namespace-declarations fix ""
 contrib/xsl/applethelp/applethelp.xsl:5:1 missing-id-in-stylesheet
 contrib/xsl/applethelp/htmlhelp-common.xsl:2:1 missing-id-in-stylesheet
 contrib/xsl/applethelp/htmlhelp-common.xsl:2:1 too-many-templates
@@ -620,6 +621,7 @@ releasetools/modified-markup.xsl:173:2 use-choose-without-otherwise
 releasetools/modified-markup.xsl:205:2 use-choose-without-otherwise
 releasetools/w2docbook.xsl:10:1 missing-id-in-stylesheet
 releasetools/xslnsfiles/addns.xsl:2:1 missing-id-in-stylesheet
+releasetools/xslnsfiles/addns.xsl:4:17 redundant-namespace-declarations fix ""
 releasetools/xslnsfiles/addns.xsl:5:17 redundant-namespace-declarations fix ""
 releasetools/xslnsfiles/manpages.table.xsl:2:1 missing-id-in-stylesheet
 releasetools/xslnsfiles/manpages.table.xsl:2:1 not-using-output
@@ -745,6 +747,7 @@ xsl/assembly/topic-maker-chunk.xsl:132:19 string-length-compared-to-zero suggest
 xsl/assembly/topic-maker-chunk.xsl:175:21 string-length-compared-to-zero suggestion "$title != ''"
 xsl/assembly/topic-maker.xsl:2:1 missing-id-in-stylesheet
 xsl/common/addns.xsl:2:1 missing-id-in-stylesheet
+xsl/common/addns.xsl:4:17 redundant-namespace-declarations fix ""
 xsl/common/addns.xsl:5:17 redundant-namespace-declarations fix ""
 xsl/common/autoidx-kimber.xsl:10:1 missing-id-in-stylesheet
 xsl/common/autoidx-kimber.xsl:33:5 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
@@ -2934,6 +2937,7 @@ xsl/manpages/other.xsl:2:1 missing-id-in-stylesheet
 xsl/manpages/other.xsl:2:1 too-many-templates
 xsl/manpages/other.xsl:5:17 redundant-namespace-declarations fix ""
 xsl/manpages/other.xsl:6:17 redundant-namespace-declarations fix ""
+xsl/manpages/other.xsl:7:17 redundant-namespace-declarations fix ""
 xsl/manpages/other.xsl:80:3 unused-function-template-parameter
 xsl/manpages/other.xsl:115:22 starts-with-double-slash suggestion ""
 xsl/manpages/other.xsl:115:34 use-double-slash

@@ -3,10 +3,11 @@
  * SPDX-License-Identifier: MIT
  */
 
+const {expressionsOf} = require('../attributes')
 const {metaOf, suppressed} = require('../checks')
 const {deletion, standsAt} = require('../fixes')
 const {logger} = require('../logger')
-const {GAPS} = require('../tokens')
+const {GAPS, NAMED} = require('../tokens')
 const {XSLT} = require('../xsl-version')
 
 /**
@@ -51,53 +52,73 @@ const declared = function(name) {
 const LISTS = ['exclude-result-prefixes', 'extension-element-prefixes']
 
 /**
- * The prefixes an element names in a prefix list. The spelling depends on what
- * the element is: on an XSLT element the attribute stands unprefixed, while on
- * a literal result element it is `xsl:exclude-result-prefixes`, an unprefixed
- * one there being text bound for the result tree. `#default` names the default
- * namespace, which binds no prefix and so matches nothing here.
+ * The two attributes of `xsl:namespace-alias`, each naming one bare prefix;
+ * deleting a declaration either names leaves XTSE0812 behind (#999).
+ * @type {Array.<string>}
+ */
+const ALIASES = ['stylesheet-prefix', 'result-prefix']
+
+/**
+ * The prefixes an element names bare. The spelling depends on what the element
+ * is: on an XSLT element a prefix list stands unprefixed, while on a literal
+ * result element it is `xsl:exclude-result-prefixes`, an unprefixed one there
+ * being text bound for the result tree. `#default` and `#all` bind no prefix,
+ * so they match nothing here.
  * @param {Element} element - The element to read
  * @return {Array.<string>} - The tokens its prefix lists hold
  */
 const listed = function(element) {
-  let prefixes = []
-  for (const name of LISTS) {
-    let value = element.getAttributeNS(XSLT, name)
-    if (element.namespaceURI === XSLT) {
-      value = element.getAttribute(name)
-    }
-    if (value) {
-      prefixes = prefixes.concat(value.split(GAPS))
+  let names = LISTS.map((name) => element.getAttributeNS(XSLT, name))
+  if (element.namespaceURI === XSLT) {
+    names = LISTS.map((name) => element.getAttribute(name))
+    if (element.localName === 'namespace-alias') {
+      names = ALIASES.map((name) => element.getAttribute(name))
     }
   }
-  return prefixes
+  return names.filter(Boolean).flatMap((value) => value.split(GAPS))
+}
+
+/**
+ * What finds a prefix qualifying a name in a text: the prefix and its colon,
+ * with no name character in front unless an axis ends there, so `tei:y` is no
+ * use of `i` while `child::tei:y` is one of `tei`, and no second colon behind,
+ * so an axis is no use of a prefix spelled like it (#999).
+ * @param {string} prefix - Prefix to look for
+ * @return {RegExp} - The pattern of its use
+ */
+const qualifying = function(prefix) {
+  return new RegExp(
+    `(?:(?<!${NAMED.source})|(?<=::))${prefix.replaceAll('.', '\\.')}:(?!:)`, 'u',
+  )
 }
 
 /**
  * Whether a prefix is used anywhere in the document — by an element name, an
- * attribute name, a qualified name inside an attribute value, or a prefix list
- * naming it; a namespace declaration itself is not usage. A prefix list is,
- * deleting a declaration it names leaving a reference bound to nothing that a
- * processor rejects (#553), and `#all` is usage of every prefix at once.
+ * attribute name, a qualified name inside an attribute value or a text value
+ * template, or a prefix list naming it; a namespace declaration itself is not
+ * usage. A value is read as text rather than as tokens, since a string literal
+ * such as `function-available('ext:name')` names a prefix as surely as a step.
+ * @param {Document} xsl - The document to read
  * @param {Array.<Element>} elements - Every element of the document
  * @param {string} prefix - Prefix to look for
  * @return {boolean} - True when the prefix is used
  */
-const used = function(elements, prefix) {
+const used = function(xsl, elements, prefix) {
   const qualifier = `${prefix}:`
-  return elements.some((element) => {
-    const prefixes = listed(element)
-    return element.nodeName.startsWith(qualifier) ||
-      prefixes.includes(prefix) ||
-      prefixes.includes('#all') ||
+  const pattern = qualifying(prefix)
+  return elements.some((element) =>
+    element.nodeName.startsWith(qualifier) ||
+      listed(element).includes(prefix) ||
       Array.from(element.attributes).some(
         (attribute) =>
           !declared(attribute.name) &&
           attribute.name !== 'xmlns' &&
           (attribute.name.startsWith(qualifier) ||
-            attribute.value.includes(qualifier)),
-      )
-  })
+            pattern.test(attribute.value)),
+      ),
+  ) || expressionsOf(xsl).some(
+    (found) => found.node.nodeType !== 2 && pattern.test(found.expression),
+  )
 }
 
 /**
@@ -120,7 +141,7 @@ const lintByNamespace = function(corpus, suppressions = []) {
       const elements = Array.from(xsl.getElementsByTagName('*'))
       for (const attribute of Array.from(xsl.documentElement.attributes)) {
         const prefix = declared(attribute.name)
-        if (prefix && prefix !== 'xml' && !used(elements, prefix)) {
+        if (prefix && prefix !== 'xml' && !used(xsl, elements, prefix)) {
           const where = standsAt(attribute, content)
           defects.push({
             name: CHECK,
