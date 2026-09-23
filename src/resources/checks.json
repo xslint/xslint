@@ -185,7 +185,7 @@
         "message": "'xsl:choose' has no 'xsl:when' branch. Add one, or drop the 'xsl:choose' and keep its content directly."
       },
       "empty-content-in-instructions": {
-        "xpath": "//(xsl:for-each | xsl:if)[count(node()) = count(text()) and xslint:normalize-space(.) = \"\" and not(text()[ancestor::*[@xml:space][1]/@xml:space = 'preserve'])]",
+        "xpath": "//(xsl:for-each | xsl:if)[not(* | processing-instruction()) and xslint:normalize-space(.) = \"\" and not(text()[ancestor::*[@xml:space][1]/@xml:space = 'preserve'])]",
         "severity": "warning",
         "message": "An instruction element such as xsl:for-each or xsl:if has no content. Add content or remove the empty element."
       },

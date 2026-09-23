@@ -402,6 +402,7 @@ src/main/plugins/org.dita.html5/xsl/topic.xsl:1870:24 string-length-compared-to-
 src/main/plugins/org.dita.html5/xsl/topic.xsl:1873:24 string-length-compared-to-zero suggestion "normalize-space($default) != ''"
 src/main/plugins/org.dita.html5/xsl/topic.xsl:1885:5 setting-value-of-variable-incorrectly
 src/main/plugins/org.dita.html5/xsl/topic.xsl:2001:13 use-choose-without-otherwise
+src/main/plugins/org.dita.html5/xsl/topic.xsl:2043:5 empty-content-in-instructions
 src/main/plugins/org.dita.html5/xsl/topic.xsl:2147:5 use-choose-without-otherwise
 src/main/plugins/org.dita.html5/xsl/topic.xsl:2223:34 scans-whole-document
 src/main/plugins/org.dita.html5/xsl/topic.xsl:2232:57 string-length-compared-to-zero suggestion "$callout != ''"
@@ -922,6 +923,7 @@ src/main/plugins/org.dita.xhtml/xsl/xslhtml/dita2htmlImpl.xsl:1927:3 unused-func
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/dita2htmlImpl.xsl:1980:5 use-choose-without-otherwise
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/dita2htmlImpl.xsl:1981:23 string-length-compared-to-zero suggestion "normalize-space($output-class) != ''"
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/dita2htmlImpl.xsl:1982:23 string-length-compared-to-zero suggestion "normalize-space($default) != ''"
+src/main/plugins/org.dita.xhtml/xsl/xslhtml/dita2htmlImpl.xsl:2070:3 empty-content-in-instructions
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/dita2htmlImpl.xsl:2111:1 unused-named-template
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/dita2htmlImpl.xsl:2162:1 unused-named-template
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/dita2htmlImpl.xsl:2183:1 unused-named-template

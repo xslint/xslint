@@ -1,0 +1,36 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: empty-content-in-instructions
+found:
+  amount: 4
+  positions: [ [ 5, 5 ], [ 9, 7 ], [ 15, 5 ], [ 22, 5, text-outside-xsl-text ] ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" id="style1">
+    <xsl:output encoding="UTF-8" method="xml"/>
+    <xsl:template match="/objects/o/o">
+      <xsl:if test="substring(@href, 1, 1) != '#'">
+        <!-- xsl:text>/</xsl:text -->
+      </xsl:if>
+      <xsl:for-each select="o">
+        <xsl:if test="@a">
+          <!-- one -->
+          <!-- two -->
+        </xsl:if>
+        <xsl:value-of select="@b"/>
+      </xsl:for-each>
+      <xsl:for-each select="p">
+        <!-- lone -->
+      </xsl:for-each>
+      <xsl:if test="@c">
+        <!-- kept -->
+        <xsl:value-of select="@c"/>
+      </xsl:if>
+      <xsl:if test="@d"><!-- kept -->text</xsl:if>
+      <xsl:if test="@e" xml:space="preserve"> <!-- kept --> </xsl:if>
+      <xsl:if test="@f">
+        <?kept here?>
+      </xsl:if>
+    </xsl:template>
+  </xsl:stylesheet>
