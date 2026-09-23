@@ -29,7 +29,7 @@
  * the top of `src/grammar.js` and `src/syntax.js` — 24,681 characters. A turn
  * touching `test/` ran it close ever since, until #811's wildcard phase moved
  * this guide's nightly-tier note into `test/budget.test.js`; the dearest
- * reads 139,930, which is 0.93, and is `src/linters/`'s once more. What
+ * reads 138,364, which is 0.92, and is `src/linters/`'s once more. What
  * answers a chain reaching the bar is that move again, a module's derivation
  * into the file-header note of the module itself, and never a bar widened to
  * fit what has grown past it: a docblock holds five lines of description
@@ -37,8 +37,8 @@
  * one instead. A `CEILING` of half the bar stood beside it until it was seen
  * to be a gate no tree could fail: the root stands in every chain, so the
  * chain holding it above weighs each other guide against the bar less what
- * stands over it — 21,285 for `src/linters/CLAUDE.md`, where half of the bar
- * is 75,000 — and holds the root itself to 85,181, a number derived from the
+ * stands over it — 22,851 for `src/linters/CLAUDE.md`, where half of the bar
+ * is 75,000 — and holds the root itself to 86,747, a number derived from the
  * dearest chain rather than chosen. A gate no tree can fail is removed and
  * not kept (#750, #660). All four of those figures — the chain, its ratio,
  * and the two allowances — follow from three file sizes, so one guide growing
@@ -99,7 +99,7 @@
  * cap allows and its note is 190 more, and `max-lines` counts comments, so a
  * section can outgrow the file it is about and relief has a floor — what
  * answers that one is the note being cut, not moved. What that leaves is
- * 70 characters of headroom, off a chain that is `src/linters/`'s own once
+ * 1,636 characters of headroom, off a chain that is `src/linters/`'s own once
  * more rather than `test/CLAUDE.md`'s: the merge behind #811's bracket phase
  * breached the bar by 844 with neither branch having crossed it alone, and
  * the root's `src/xslint.js` derivation moved into `src/CLAUDE.md` to answer
@@ -186,6 +186,17 @@
  * count at all: what a change did is a record, where what a tier reports
  * is a fact about the tree, and the second belongs to the documents a gate
  * reads (#895).
+ *
+ * The breach behind this restatement is the shared budget once more, and
+ * the plainest reading of it yet: #983 and #984 each measured themselves
+ * alone and each stood under the bar, 70 characters of headroom left
+ * against 175 the second of them wanted, so whichever landed after the
+ * other had to pay for both. The move answered it again, on the note of
+ * the module the change is about rather than the dearest that guide holds
+ * — `src/helpers.js` was already growing a file-header note for what #984
+ * reads there, so which sequences a document may not hold and why a
+ * diagnostic's level is not consulted went to stand beside it, 1,279
+ * characters out of every chain under `src/` (#984).
  */
 
 const {allFilesFrom} = require('../src/helpers')

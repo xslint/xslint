@@ -6,6 +6,7 @@
 const {kinds} = require('./resources/checks.json')
 const {offsetAt, placeAt, skip} = require('./source')
 const {written} = require('./fixes')
+const {unwritten} = require('./helpers')
 
 /**
  * The tier a fix lands in when a plain `--fix` applies it: deterministic and
@@ -58,11 +59,11 @@ const suppressed = function(check, suppressions) {
 const LEAD = {2: 1, 4: '<![CDATA['.length}
 
 /**
- * Where an offset inside an expression truly stands in the raw source. The
- * parsed value cannot answer it: a parser decodes the entities and normalises
- * the line endings of an attribute value, so the two texts drift apart. The
- * walk starts where the node opens, steps over the markup in front of its
- * value, and skips as many decoded characters as the offset counts (#628).
+ * Where an offset inside an expression truly stands in the raw source. A
+ * parser decodes entities and normalises line endings, so the parsed value
+ * cannot answer it: the walk starts where the node opens, steps over the
+ * markup before its value, and skips the offset in decoded characters —
+ * unless an entity brought it: its place is the reference's (#628, #984).
  * @param {{file: string, content: string}} source - The file the node sits in
  * @param {{node: Node, start: number}} found - The expression, as
  *  `src/attributes.js` yields it
@@ -70,13 +71,17 @@ const LEAD = {2: 1, 4: '<![CDATA['.length}
  * @return {number} - The raw offset into `source.content`
  */
 const rawly = function(source, found, offset) {
-  return skip(
-    source.content,
-    offsetAt(
-      source.content, found.node.lineNumber, found.node.columnNumber,
-    ) + (LEAD[found.node.nodeType] || 0),
-    found.start + offset,
+  let at = offsetAt(
+    source.content, found.node.lineNumber, found.node.columnNumber,
   )
+  if (!unwritten(found.node)) {
+    at = skip(
+      source.content,
+      at + (LEAD[found.node.nodeType] || 0),
+      found.start + offset,
+    )
+  }
+  return at
 }
 
 /**
@@ -105,7 +110,7 @@ const defect = function(
   const {node} = found
   const {line, pos} = placeAt(source.content, rawly(source, found, offset))
   let anchored = {}
-  if (fix !== undefined) {
+  if (fix !== undefined && !unwritten(node)) {
     anchored = {
       fix: {
         line: line,

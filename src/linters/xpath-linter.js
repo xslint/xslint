@@ -98,6 +98,7 @@ const {FIXERS} = require('../fixers')
 const {expressionsOf} = require('../attributes')
 const {kinds} = require('../resources/checks.json')
 const {logger} = require('../logger')
+const {unwritten} = require('../helpers')
 
 /**
  * Xpath packs: the name suppressions match against and the rule the linter
@@ -176,6 +177,7 @@ const lintByXpath = function(corpus, suppressions = []) {
           pos: node.columnNumber,
         }
         const fix = FIXERS[pack.name] && !refused(xsl).has(node) &&
+          !unwritten(node) &&
           FIXERS[pack.name](node, content)
         if (fix) {
           defect.fix = fix
