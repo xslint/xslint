@@ -185,14 +185,14 @@
         "message": "'xsl:choose' has no 'xsl:when' branch. Add one, or drop the 'xsl:choose' and keep its content directly."
       },
       "empty-content-in-instructions": {
-        "xpath": "//(xsl:for-each | xsl:if)[count(node()) = count(text()) and xslint:normalize-space(.) = \"\" and not(text()[ancestor::*[@xml:space][1]/@xml:space = 'preserve'])]",
+        "xpath": "//(xsl:for-each | xsl:if)[not(* | processing-instruction()) and xslint:normalize-space(.) = \"\" and not(text()[ancestor::*[@xml:space][1]/@xml:space = 'preserve'])]",
         "severity": "warning",
         "message": "An instruction element such as xsl:for-each or xsl:if has no content. Add content or remove the empty element."
       },
       "empty-variable": {
         "xpath": "//xsl:variable[not(@select) and not(@_select) and not(node()) and not((@as or @_as) and xslint:version(.) >= 2.0)]",
         "severity": "warning",
-        "message": "An empty xsl:variable binds the empty string for no reason. Give it a @select or some content, or remove it."
+        "message": "An empty xsl:variable binds the empty string without saying so. State the value with select=\"''\" or give it some content."
       },
       "function-complexity": {
         "xpath": "//xsl:function[count(.//xsl:*) > 50]",

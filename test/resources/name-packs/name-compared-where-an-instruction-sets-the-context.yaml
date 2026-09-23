@@ -1,0 +1,55 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+# The context an instruction sets around an expression decides it as much as a
+# predicate does: under an attribute or an instruction's select or match, and
+# in a named template called from who knows where, no `self::` name test asks
+# what the comparison asks (#1000).
+pack: name-compared-to-string
+found:
+  amount: 5
+  positions: [ [ 10, 22 ], [ 10, 38 ], [ 20, 19 ], [ 29, 19 ], [ 33, 30 ] ]
+  fixes: [ "self::*:q", "self::*:r", "self::*:e", "self::*:h", "not(self::*:k)" ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:f="urn:f" version="2.0" id="s">
+    <xsl:template match="*">
+      <xsl:for-each select="@*">
+        <xsl:if test="name(.) eq 'style'"/>
+        <xsl:if test="$flag and (name() = 'q' or name() = 'r')"/>
+        <xsl:if test="not(name() = 'id') and name() != 'class'"/>
+      </xsl:for-each>
+      <xsl:for-each select="*">
+        <xsl:if test="(name() = 'q' or name() = 'r')"/>
+      </xsl:for-each>
+    </xsl:template>
+    <xsl:template match="@*">
+      <xsl:if test="name() = 'a'"/>
+    </xsl:template>
+    <xsl:template match="processing-instruction()">
+      <xsl:value-of select="name() = 'b'"/>
+    </xsl:template>
+    <xsl:template match="/">
+      <xsl:if test="name() = 'e'"/>
+    </xsl:template>
+    <xsl:template name="named">
+      <xsl:if test="name() = 'c'"/>
+    </xsl:template>
+    <xsl:template match="ex | @why">
+      <xsl:if test="name() = 'd'"/>
+    </xsl:template>
+    <xsl:template match="ex">
+      <result aye="{name() = 'h'}"/>
+      <xsl:for-each select="@*">
+        <xsl:sort select="name() = 'f'"/>
+        <xsl:for-each select="parent::*">
+          <xsl:copy-of select="name() != 'k'"/>
+        </xsl:for-each>
+      </xsl:for-each>
+      <xsl:for-each-group select="@*" group-by="name() = 'g'"/>
+    </xsl:template>
+    <xsl:function name="f:fun">
+      <xsl:sequence select="name() = 'm'"/>
+    </xsl:function>
+    <xsl:variable name="top" select="name() = 'n'"/>
+  </xsl:stylesheet>

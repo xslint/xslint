@@ -11,7 +11,7 @@ pack: name-compared-to-string
 found:
   amount: 3
   positions: [ [ 4, 36 ], [ 5, 36 ], [ 6, 36 ] ]
-  fixes: [ "self::p", "not(self::*:q)", "self::r" ]
+  fixes: [ "self::*:p", "not(self::*:q)", "self::*:r" ]
 input: |-
   <?xml version="1.0"?>
   <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="s">

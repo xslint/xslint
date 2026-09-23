@@ -4,20 +4,36 @@ Testing an element's identity by string-comparing its name is slower and more
 fragile than a node test:
 
 ```xsl
-<xsl:if test="name() = 'div'">                    →  <xsl:if test="self::div">
+<xsl:if test="name() = 'xsl:message'">            →  <xsl:if test="self::xsl:message">
 <xsl:apply-templates select="*[local-name() = 'label']"/>
                                                   →  <xsl:apply-templates select="*[self::*:label]"/>
 ```
 
-`name() = 'div'` compares the lexical QName, so it silently depends on the
-prefix the source happens to use and breaks under a different but equivalent
-namespace binding; `self::div` matches by expanded name. `local-name() = 'x'`
-throws the namespace away, which XPath 2.0 writes as the wildcard `self::*:x`. A
-node test also lets the engine match without building and comparing strings.
+`name() = 'xsl:message'` compares the lexical QName, so it silently depends on
+the prefix the source happens to use and breaks under a different but
+equivalent namespace binding; `self::xsl:message` matches by expanded name.
+`local-name() = 'x'` throws the namespace away, which XPath 2.0 writes as the
+wildcard `self::*:x`. A node test also lets the engine match without building
+and comparing strings.
+
+An unprefixed name is the subtle case. For an element in a default namespace,
+`name()` answers the bare local name, while an unprefixed `self::pubdate` asks
+for the element in no namespace at all — so in a stylesheet processing DocBook 5,
+`name() != 'pubdate'` is false where `not(self::pubdate)` is true. The wildcard
+is the nearer reading, matching the bare name in any namespace, though it also
+matches a prefixed `d:pubdate` the string never did. An
+`xpath-default-namespace` puts the bare step in the namespace it names:
+
+```xsl
+<xsl:if test="name() = 'pubdate'">                →  <xsl:if test="self::*:pubdate">
+```
+
+XSLT 1.0 has no wildcard for it, so there an unprefixed comparison stands as
+written.
 
 Either quote spells the same string and both classes of equality comparison ask
 the same question, so `name() = 'div'`, `name() = "div"` and the value comparison
-`name() eq "div"` are one construct, and `name() != 'div'` is `not(self::div)`.
+`name() eq "div"` are one construct, and `name() != 'div'` is `not(self::*:div)`.
 The prefix in front of the call makes no difference either: `fn:name()` is the
 standard function under whatever prefix a stylesheet binds to the XPath functions
 namespace, while a `name()` of your own is another function and says nothing
@@ -66,3 +82,24 @@ be a step at all. In `(@one | @two)[name() = 'eff']` the context is an attribute
 exactly as it is under `@*`, and the string comparison is again the only way to
 ask. Where every arm selects elements — `(gee | aitch)[name() = 'jay']` — the
 node test stands.
+
+The context need not come from the expression at all. An `xsl:for-each`, an
+`xsl:for-each-group`, an `xsl:iterate` and an `xsl:copy` with a `select` set it
+for what they hold, a template's `match` sets it for its body, and a sort or a
+grouping key is asked of what its instruction selects. Under
+`xsl:for-each select="@*"` or `match="processing-instruction()"`, `name()` is
+the name of an attribute or the target of an instruction, and no `self::` name
+test stands in for it:
+
+```xsl
+<xsl:for-each select="@*">
+  <xsl:if test="name(.) != 'disable-output-escaping'">
+    <xsl:copy-of select="."/>
+  </xsl:if>
+</xsl:for-each>
+```
+
+Rewriting that test as `not(self::disable-output-escaping)` copies the very
+attribute it meant to drop. The same holds where nothing says what the context
+is — a named template, a function, a top-level variable — so the comparison
+stands as written there too.
