@@ -1,0 +1,25 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: output-method-xml
+found:
+  amount: 1
+  positions: [ [ 5, 3 ] ]
+  fixes: [ "html" ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="3.0">
+    <xsl:output name="feed" method="xml"/>
+    <xsl:output _name="{'atom'}" method="xml" indent="yes"/>
+    <xsl:output method="xml"/>
+    <xsl:template match="/">
+      <html>
+        <xsl:result-document href="feed.xml" format="feed">
+          <feed/>
+        </xsl:result-document>
+        <xsl:result-document href="atom.xml" format="atom">
+          <feed/>
+        </xsl:result-document>
+      </html>
+    </xsl:template>
+  </xsl:stylesheet>

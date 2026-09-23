@@ -2,8 +2,12 @@
 
 An `xsl:variable` gets its value either from a `@select` attribute or from the
 sequence constructor inside it. With neither, the variable binds to an empty
-string — almost always a mistake, and at best a confusing way to declare an
-empty value. State the value explicitly or drop the declaration.
+string, and a reader cannot tell a value left out by accident from one meant
+to be empty. `select="''"` says which it is.
+
+Keep the declaration itself. An empty top-level variable is often a
+placeholder other code reads, or that an importing stylesheet overrides, and
+every `$name` referring to it is a static error once it is gone.
 
 A variable that declares a type with `@as` is a different case and is not
 flagged **from XSLT 2.0 on**: `<xsl:variable name="acc" as="node()*"/>` binds
@@ -20,6 +24,12 @@ Incorrect:
 ```
 
 Correct:
+
+```xsl
+<xsl:variable name="greeting" select="''"/>
+```
+
+or, where a value was meant:
 
 ```xsl
 <xsl:variable name="greeting" select="'hello'"/>
