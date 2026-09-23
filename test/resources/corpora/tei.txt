@@ -24,7 +24,6 @@ Documentation/paramform.xsl:332:4 setting-value-of-variable-incorrectly
 Documentation/paramform.xsl:345:2 using-disable-output-escaping
 Documentation/paramform.xsl:352:2 using-disable-output-escaping
 Documentation/verbatim.xsl:1:1 missing-id-in-stylesheet
-Documentation/verbatim.xsl:1:1 not-using-output
 Documentation/verbatim.xsl:55:1 text-outside-xsl-text suggestion "<xsl:text>xsl:</xsl:text>"
 Documentation/verbatim.xsl:64:1 text-outside-xsl-text suggestion "<xsl:text>/</xsl:text>"
 Documentation/verbatim.xsl:69:1 text-outside-xsl-text suggestion "<xsl:text>xsl:</xsl:text>"
@@ -3165,7 +3164,6 @@ html/html_verse.xsl:10:17 redundant-namespace-declarations fix ""
 html/microdata.xsl:2:1 missing-id-in-stylesheet
 html/post-process-ids.xsl:2:1 missing-id-in-stylesheet
 icml/tei2icml.xsl:33:1 missing-id-in-stylesheet
-icml/tei2icml.xsl:33:1 not-using-output
 icml/tei2icml.xsl:33:1 too-many-templates
 icml/tei2icml.xsl:65:38 scans-whole-document
 icml/tei2icml.xsl:82:38 scans-whole-document
@@ -4090,7 +4088,6 @@ odds/translate-odd.xsl:10:4 missing-id-in-stylesheet
 odds/translate-odd.xsl:10:20 redundant-namespace-declarations fix ""
 odds/translate-odd.xsl:12:17 redundant-namespace-declarations fix ""
 odt/expandxsl.xsl:2:1 missing-id-in-stylesheet
-odt/expandxsl.xsl:2:1 not-using-output
 odt/fixgraphics.xsl:2:1 missing-id-in-stylesheet
 odt/fixgraphics.xsl:2:57 redundant-namespace-declarations fix ""
 odt/fixgraphics.xsl:3:17 leaking-result-namespace suggestion " exclude-result-prefixes=\"tiff\""
@@ -4525,7 +4522,6 @@ profiles/iso/check-docx.xsl:147:9 setting-value-of-variable-incorrectly
 profiles/iso/check-docx.xsl:166:17 text-outside-xsl-text suggestion "<xsl:text>-->\n                </xsl:text>"
 profiles/iso/check-docx.xsl:178:9 setting-value-of-variable-incorrectly
 profiles/iso/docx/addisometa.xsl:2:1 missing-id-in-stylesheet
-profiles/iso/docx/addisometa.xsl:2:1 not-using-output
 profiles/iso/docx/addisometa.xsl:2:1 too-many-templates
 profiles/iso/docx/fixdotrels.xsl:2:1 missing-id-in-stylesheet
 profiles/iso/docx/fixstyle.xsl:2:1 missing-id-in-stylesheet
@@ -4790,7 +4786,6 @@ profiles/iso/docx/makecoverpages.xsl:136:6 unused-function-template-parameter
 profiles/iso/docx/makecoverpages.xsl:137:6 unused-function-template-parameter
 profiles/iso/docx/makecoverpages.xsl:138:6 unused-function-template-parameter
 profiles/iso/docx/makecoverpages2.xsl:2:1 missing-id-in-stylesheet
-profiles/iso/docx/makecoverpages2.xsl:2:1 not-using-output
 profiles/iso/docx/makecoverpages2.xsl:108:9 use-single-option-for-choose
 profiles/iso/docx/makecoverpages2.xsl:172:18 not-creating-element-correctly
 profiles/iso/docx/makecoverpages2.xsl:208:32 unabbreviated-axis fix ""
@@ -4801,7 +4796,6 @@ profiles/iso/docx/makecoverpages2.xsl:242:32 name-compared-to-string suggestion 
 profiles/iso/docx/makecoverpages2.xsl:248:32 name-compared-to-string suggestion "self::w:p"
 profiles/iso/docx/makecoverpages2.xsl:254:32 name-compared-to-string suggestion "self::w:p"
 profiles/iso/docx/metadatamerge.xsl:2:1 missing-id-in-stylesheet
-profiles/iso/docx/metadatamerge.xsl:2:1 not-using-output
 profiles/iso/docx/metadatamerge.xsl:126:34 name-compared-to-string suggestion "self::q"
 profiles/iso/docx/tbx.xsl:2:1 missing-id-in-stylesheet
 profiles/iso/docx/tbx.xsl:71:7 text-outside-xsl-text suggestion "<xsl:text>abbreviatedForm</xsl:text>"
@@ -5400,7 +5394,6 @@ profiles/jtei/odt/odt.common.xsl:749:33 confusing-variable-and-node suggestion "
 profiles/jtei/odt/to.xsl:2:1 missing-id-in-stylesheet
 profiles/jtei/odt/to.xsl:4:3 redundant-namespace-declarations fix ""
 profiles/jtei/openedition/to.xsl:2:1 missing-id-in-stylesheet
-profiles/jtei/openedition/to.xsl:2:1 not-using-output
 profiles/jtei/openedition/to.xsl:2:1 too-many-templates
 profiles/jtei/openedition/to.xsl:8:3 redundant-namespace-declarations fix ""
 profiles/jtei/openedition/to.xsl:73:37 redundant-whitespace fix " "
@@ -5923,12 +5916,10 @@ simple/mapatts.xsl:78:13 text-outside-xsl-text suggestion "<XSL:text>simple:supe
 simple/mapatts.xsl:79:13 text-outside-xsl-text suggestion "<XSL:text>simple:underline</XSL:text>"
 simple/mapatts.xsl:95:13 text-outside-xsl-text suggestion "<XSL:text>label</XSL:text>"
 simple/teitosimple.xsl:2:1 missing-id-in-stylesheet
-simple/teitosimple.xsl:2:1 not-using-output
 simple/teitosimple.xsl:2:1 too-many-templates
 simple/teitosimple.xsl:145:9 not-creating-element-correctly
 simple/teitosimple.xsl:163:5 text-outside-xsl-text suggestion "<xsl:text>simple:</xsl:text>"
 slides/slides.xsl:2:1 missing-id-in-stylesheet
-slides/slides.xsl:2:1 not-using-output
 slides/slides.xsl:2:1 too-many-templates
 slides/slides.xsl:3:3 leaking-result-namespace
 slides/slides.xsl:4:17 leaking-result-namespace
@@ -6059,7 +6050,6 @@ tools/addlang.xsl:35:7 short-names
 tools/checki18n.xsl:2:1 missing-id-in-stylesheet
 tools/getfiles.xsl:9:1 missing-id-in-stylesheet
 tools/getnames.xsl:2:1 missing-id-in-stylesheet
-tools/getnames.xsl:2:1 not-using-output
 tools/iden.xsl:2:1 missing-id-in-stylesheet
 tools/makegraphicsanttask.xsl:2:1 missing-id-in-stylesheet
 tools/makegraphicsanttask.xsl:2:1 not-using-output
@@ -6120,7 +6110,6 @@ txt/tei-to-text.xsl:2:1 too-many-templates
 txt/tei-to-text.xsl:131:4 short-names
 txt/tei-to-text.xsl:131:4 unused-variable
 verbatimxml/teitoverbatim.xsl:2:1 missing-id-in-stylesheet
-verbatimxml/teitoverbatim.xsl:2:1 not-using-output
 wordpress/wordpress-to-tei.xsl:2:1 missing-id-in-stylesheet
 wordpress/wordpress-to-tei.xsl:2:1 too-many-templates
 wordpress/wordpress-to-tei.xsl:3:5 redundant-namespace-declarations fix ""

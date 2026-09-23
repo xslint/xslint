@@ -33,25 +33,19 @@ src/main/plugins/org.dita.base/xsl/common/dita-utilities.xsl:431:5 short-names
 src/main/plugins/org.dita.base/xsl/common/functions.xsl:11:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.base/xsl/common/functions.xsl:109:19 string-length-compared-to-zero suggestion "$fragment ne ''"
 src/main/plugins/org.dita.base/xsl/common/map2textonly.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.base/xsl/common/map2textonly.xsl:9:1 not-using-output
 src/main/plugins/org.dita.base/xsl/common/output-message.xsl:16:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.base/xsl/common/output-message.xsl:16:1 not-using-output
 src/main/plugins/org.dita.base/xsl/common/output-message.xsl:41:5 setting-value-of-variable-incorrectly
 src/main/plugins/org.dita.base/xsl/common/output-message.xsl:60:5 short-names
 src/main/plugins/org.dita.base/xsl/common/related-links.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.base/xsl/common/related-links.xsl:9:1 not-using-output
 src/main/plugins/org.dita.base/xsl/common/related-links.xsl:9:1 too-many-templates
 src/main/plugins/org.dita.base/xsl/common/related-links.xsl:299:9 use-single-option-for-choose
 src/main/plugins/org.dita.base/xsl/common/topic2textonly.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.base/xsl/common/topic2textonly.xsl:9:1 not-using-output
 src/main/plugins/org.dita.base/xsl/common/topic2textonly.xsl:9:1 too-many-templates
 src/main/plugins/org.dita.base/xsl/common/topic2textonly.xsl:49:5 use-choose-without-otherwise
 src/main/plugins/org.dita.base/xsl/common/topic2textonly.xsl:59:7 text-outside-xsl-text
 src/main/plugins/org.dita.base/xsl/common/topic2textonly.xsl:60:7 text-outside-xsl-text
 src/main/plugins/org.dita.base/xsl/common/ui-d2textonly.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.base/xsl/common/ui-d2textonly.xsl:9:1 not-using-output
 src/main/plugins/org.dita.base/xsl/common/uri-utils.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.base/xsl/common/uri-utils.xsl:9:1 not-using-output
 src/main/plugins/org.dita.base/xsl/common/uri-utils.xsl:15:3 unused-function
 src/main/plugins/org.dita.base/xsl/common/uri-utils.xsl:39:68 predicate-position-literal fix "last()"
 src/main/plugins/org.dita.base/xsl/common/uri-utils.xsl:65:9 short-names
@@ -145,9 +139,7 @@ src/main/plugins/org.dita.base/xsl/preprocess/maprefImpl.xsl:687:7 text-outside-
 src/main/plugins/org.dita.base/xsl/preprocess/maprefImpl.xsl:689:7 text-outside-xsl-text suggestion "<xsl:text>#none#</xsl:text>"
 src/main/plugins/org.dita.base/xsl/preprocess/mapref_template.xsl:9:5 missing-id-in-stylesheet
 src/main/plugins/org.dita.base/xsl/preprocess/topicpull-pr-d.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.base/xsl/preprocess/topicpull-pr-d.xsl:9:1 not-using-output
 src/main/plugins/org.dita.base/xsl/preprocess/topicpull-task.xsl:10:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.base/xsl/preprocess/topicpull-task.xsl:10:1 not-using-output
 src/main/plugins/org.dita.base/xsl/preprocess/topicpullImpl.xsl:49:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.base/xsl/preprocess/topicpullImpl.xsl:49:1 too-many-templates
 src/main/plugins/org.dita.base/xsl/preprocess/topicpullImpl.xsl:272:9 use-single-option-for-choose
@@ -156,35 +148,25 @@ src/main/plugins/org.dita.base/xsl/preprocess/topicpullImpl.xsl:1116:95 redundan
 src/main/plugins/org.dita.base/xsl/preprocess/topicpullImpl.xsl:1169:25 string-length-compared-to-zero suggestion "$callout != ''"
 src/main/plugins/org.dita.base/xsl/preprocess/topicpull_template.xsl:9:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.html5/xsl/abbrev-d.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.html5/xsl/abbrev-d.xsl:9:1 not-using-output
 src/main/plugins/org.dita.html5/xsl/choicetable.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.html5/xsl/choicetable.xsl:9:1 not-using-output
 src/main/plugins/org.dita.html5/xsl/concept.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.html5/xsl/concept.xsl:9:1 not-using-output
 src/main/plugins/org.dita.html5/xsl/cover.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.html5/xsl/cover.xsl:9:1 not-using-output
 src/main/plugins/org.dita.html5/xsl/cover.xsl:9:1 too-many-templates
 src/main/plugins/org.dita.html5/xsl/cover.xsl:55:80 redundant-whitespace fix ""
 src/main/plugins/org.dita.html5/xsl/cover.xsl:199:7 use-choose-without-otherwise
 src/main/plugins/org.dita.html5/xsl/css-class.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.html5/xsl/css-class.xsl:9:1 not-using-output
 src/main/plugins/org.dita.html5/xsl/dita2html5.xsl:9:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.html5/xsl/dita2html5Impl_template.xsl:9:1 missing-id-in-stylesheet
+src/main/plugins/org.dita.html5/xsl/dita2html5Impl_template.xsl:9:1 not-using-output
 src/main/plugins/org.dita.html5/xsl/emphasis-d.xsl:6:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.html5/xsl/emphasis-d.xsl:6:1 not-using-output
 src/main/plugins/org.dita.html5/xsl/functions.xsl:9:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.html5/xsl/get-meta.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.html5/xsl/get-meta.xsl:9:1 not-using-output
 src/main/plugins/org.dita.html5/xsl/get-meta.xsl:9:1 too-many-templates
 src/main/plugins/org.dita.html5/xsl/get-meta.xsl:309:5 unused-function-template-parameter
 src/main/plugins/org.dita.html5/xsl/glossdisplay.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.html5/xsl/glossdisplay.xsl:9:1 not-using-output
 src/main/plugins/org.dita.html5/xsl/hazard-d.xsl:6:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.html5/xsl/hazard-d.xsl:6:1 not-using-output
 src/main/plugins/org.dita.html5/xsl/hi-d.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.html5/xsl/hi-d.xsl:9:1 not-using-output
 src/main/plugins/org.dita.html5/xsl/htmlflag.xsl:16:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.html5/xsl/htmlflag.xsl:16:1 not-using-output
 src/main/plugins/org.dita.html5/xsl/htmlflag.xsl:16:1 too-many-templates
 src/main/plugins/org.dita.html5/xsl/htmlflag.xsl:25:3 text-outside-xsl-text suggestion "<xsl:text>yes</xsl:text>"
 src/main/plugins/org.dita.html5/xsl/htmlflag.xsl:27:3 text-outside-xsl-text suggestion "<xsl:text>no</xsl:text>"
@@ -203,7 +185,6 @@ src/main/plugins/org.dita.html5/xsl/htmlflag.xsl:64:3 text-outside-xsl-text sugg
 src/main/plugins/org.dita.html5/xsl/map2html5-cover.xsl:9:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.html5/xsl/map2html5-coverImpl_template.xsl:9:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.html5/xsl/map2html5Impl.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.html5/xsl/map2html5Impl.xsl:9:1 not-using-output
 src/main/plugins/org.dita.html5/xsl/map2html5Impl.xsl:54:94 redundant-whitespace fix ""
 src/main/plugins/org.dita.html5/xsl/mapwalker.xsl:11:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.html5/xsl/mapwalker.xsl:11:1 not-using-output
@@ -213,7 +194,6 @@ src/main/plugins/org.dita.html5/xsl/mapwalker.xsl:77:5 unused-function-template-
 src/main/plugins/org.dita.html5/xsl/mapwalker.xsl:78:5 unused-function-template-parameter
 src/main/plugins/org.dita.html5/xsl/mapwalker.xsl:79:5 unused-function-template-parameter
 src/main/plugins/org.dita.html5/xsl/markup-d.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.html5/xsl/markup-d.xsl:9:1 not-using-output
 src/main/plugins/org.dita.html5/xsl/nav.xsl:9:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.html5/xsl/nav.xsl:36:11 use-choose-without-otherwise
 src/main/plugins/org.dita.html5/xsl/nav.xsl:65:5 unused-function-template-parameter
@@ -225,7 +205,6 @@ src/main/plugins/org.dita.html5/xsl/nav.xsl:246:84 redundant-whitespace fix ""
 src/main/plugins/org.dita.html5/xsl/pr-d.xsl:9:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.html5/xsl/pr-d.xsl:9:1 too-many-templates
 src/main/plugins/org.dita.html5/xsl/properties.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.html5/xsl/properties.xsl:9:1 not-using-output
 src/main/plugins/org.dita.html5/xsl/reference.xsl:9:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.html5/xsl/reference.xsl:9:1 too-many-templates
 src/main/plugins/org.dita.html5/xsl/reference.xsl:33:13 text-outside-xsl-text suggestion "<xsl:text>simpletablenoborder</xsl:text>"
@@ -241,7 +220,6 @@ src/main/plugins/org.dita.html5/xsl/reference.xsl:249:9 text-outside-xsl-text su
 src/main/plugins/org.dita.html5/xsl/reference.xsl:250:9 text-outside-xsl-text suggestion "<xsl:text>td</xsl:text>"
 src/main/plugins/org.dita.html5/xsl/reference.xsl:280:9 text-outside-xsl-text
 src/main/plugins/org.dita.html5/xsl/rel-links.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.html5/xsl/rel-links.xsl:9:1 not-using-output
 src/main/plugins/org.dita.html5/xsl/rel-links.xsl:9:1 too-many-templates
 src/main/plugins/org.dita.html5/xsl/rel-links.xsl:109:9 blank-nested-if
 src/main/plugins/org.dita.html5/xsl/rel-links.xsl:116:9 blank-nested-if
@@ -252,19 +230,15 @@ src/main/plugins/org.dita.html5/xsl/rel-links.xsl:614:23 unabbreviated-axis fix 
 src/main/plugins/org.dita.html5/xsl/rel-links.xsl:684:7 blank-nested-if
 src/main/plugins/org.dita.html5/xsl/rel-links.xsl:698:5 short-names
 src/main/plugins/org.dita.html5/xsl/simpletable.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.html5/xsl/simpletable.xsl:9:1 not-using-output
 src/main/plugins/org.dita.html5/xsl/simpletable.xsl:9:1 too-many-templates
 src/main/plugins/org.dita.html5/xsl/simpletable.xsl:77:5 use-choose-without-otherwise
 src/main/plugins/org.dita.html5/xsl/simpletable.xsl:126:21 string-length-compared-to-zero suggestion "$header != ''"
 src/main/plugins/org.dita.html5/xsl/simpletable.xsl:126:51 string-length-compared-to-zero suggestion "$keycolhead != ''"
 src/main/plugins/org.dita.html5/xsl/simpletable.xsl:245:5 use-choose-without-otherwise
 src/main/plugins/org.dita.html5/xsl/svg-d.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.html5/xsl/svg-d.xsl:9:1 not-using-output
 src/main/plugins/org.dita.html5/xsl/svg-d.xsl:24:5 text-outside-xsl-text
 src/main/plugins/org.dita.html5/xsl/sw-d.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.html5/xsl/sw-d.xsl:9:1 not-using-output
 src/main/plugins/org.dita.html5/xsl/syntax-braces.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.html5/xsl/syntax-braces.xsl:9:1 not-using-output
 src/main/plugins/org.dita.html5/xsl/syntax-braces.xsl:9:1 too-many-templates
 src/main/plugins/org.dita.html5/xsl/syntax-braces.xsl:66:5 blank-nested-if
 src/main/plugins/org.dita.html5/xsl/syntax-braces.xsl:67:7 text-outside-xsl-text suggestion "<xsl:text> | </xsl:text>"
@@ -297,7 +271,6 @@ src/main/plugins/org.dita.html5/xsl/syntax-braces.xsl:233:21 count-compared-to-z
 src/main/plugins/org.dita.html5/xsl/syntax-braces.xsl:244:3 unused-named-template
 src/main/plugins/org.dita.html5/xsl/syntax-braces.xsl:246:27 scans-whole-document
 src/main/plugins/org.dita.html5/xsl/syntax-svg.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.html5/xsl/syntax-svg.xsl:9:1 not-using-output
 src/main/plugins/org.dita.html5/xsl/syntax-svg.xsl:11:17 redundant-namespace-declarations fix ""
 src/main/plugins/org.dita.html5/xsl/syntax-svg.xsl:53:5 blank-nested-if
 src/main/plugins/org.dita.html5/xsl/syntax-svg.xsl:53:70 text-outside-xsl-text suggestion "<xsl:text> | </xsl:text>"
@@ -305,7 +278,6 @@ src/main/plugins/org.dita.html5/xsl/syntax-svg.xsl:53:84 count-compared-to-zero 
 src/main/plugins/org.dita.html5/xsl/syntax-svg.xsl:54:5 text-outside-xsl-text suggestion "<xsl:text> [</xsl:text>"
 src/main/plugins/org.dita.html5/xsl/syntax-svg.xsl:59:5 text-outside-xsl-text suggestion "<xsl:text>] </xsl:text>"
 src/main/plugins/org.dita.html5/xsl/tables.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.html5/xsl/tables.xsl:9:1 not-using-output
 src/main/plugins/org.dita.html5/xsl/tables.xsl:9:1 too-many-templates
 src/main/plugins/org.dita.html5/xsl/tables.xsl:71:3 oversized-template
 src/main/plugins/org.dita.html5/xsl/tables.xsl:97:13 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
@@ -413,15 +385,12 @@ src/main/plugins/org.dita.html5/xsl/topic.xsl:2902:7 not-creating-attribute-corr
 src/main/plugins/org.dita.html5/xsl/topic.xsl:2951:5 unused-function-template-parameter
 src/main/plugins/org.dita.html5/xsl/topic.xsl:2957:5 use-choose-without-otherwise
 src/main/plugins/org.dita.html5/xsl/ui-d.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.html5/xsl/ui-d.xsl:9:1 not-using-output
 src/main/plugins/org.dita.html5/xsl/ut-d.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.html5/xsl/ut-d.xsl:9:1 not-using-output
 src/main/plugins/org.dita.html5/xsl/ut-d.xsl:59:13 setting-value-of-variable-incorrectly
 src/main/plugins/org.dita.html5/xsl/ut-d.xsl:72:13 setting-value-of-variable-incorrectly
 src/main/plugins/org.dita.html5/xsl/ut-d.xsl:74:31 string-length-compared-to-zero suggestion "$coordval != ''"
 src/main/plugins/org.dita.html5/xsl/ut-d.xsl:105:5 use-choose-without-otherwise
 src/main/plugins/org.dita.html5/xsl/xml-d.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.html5/xsl/xml-d.xsl:9:1 not-using-output
 src/main/plugins/org.dita.htmlhelp/xsl/map2hhc_template.xsl:10:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.htmlhelp/xsl/map2hhp_template.xsl:10:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.htmlhelp/xsl/map2htmlhelp/map2hhcImpl.xsl:23:1 missing-id-in-stylesheet
@@ -453,14 +422,10 @@ src/main/plugins/org.dita.pdf2.fop/cfg/fo/attrs/commons-attr_fop.xsl:10:17 redun
 src/main/plugins/org.dita.pdf2.fop/cfg/fo/attrs/tables-attr_fop.xsl:9:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.pdf2.fop/cfg/fo/attrs/tables-attr_fop.xsl:10:17 redundant-namespace-declarations fix ""
 src/main/plugins/org.dita.pdf2.fop/xsl/fo/index_fop.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2.fop/xsl/fo/index_fop.xsl:9:1 not-using-output
 src/main/plugins/org.dita.pdf2.fop/xsl/fo/root-processing_fop.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2.fop/xsl/fo/root-processing_fop.xsl:9:1 not-using-output
 src/main/plugins/org.dita.pdf2.fop/xsl/fo/tables_fop.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2.fop/xsl/fo/tables_fop.xsl:9:1 not-using-output
 src/main/plugins/org.dita.pdf2.fop/xsl/fo/topic2fo_shell_fop_template.xsl:9:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.pdf2.fop/xsl/fo/topic_fop.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2.fop/xsl/fo/topic_fop.xsl:9:1 not-using-output
 src/main/plugins/org.dita.pdf2.fop/xsl/fo/topic_fop.xsl:11:5 redundant-namespace-declarations fix ""
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/basic-settings.xsl:7:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/basic-settings.xsl:64:3 unused-variable
@@ -528,12 +493,10 @@ src/main/plugins/org.dita.pdf2/cfg/fo/attrs/ui-domain-attr.xsl:34:1 missing-id-i
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/xml-domain-attr.xsl:9:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/xml-domain-attr.xsl:10:17 redundant-namespace-declarations fix ""
 src/main/plugins/org.dita.pdf2/cfg/fo/layout-masters.xsl:34:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/cfg/fo/layout-masters.xsl:34:1 not-using-output
 src/main/plugins/org.dita.pdf2/cfg/fo/xsl/custom.xsl:34:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.pdf2/cfg/fo/xsl/custom.xsl:34:1 stylesheet-has-no-templates
 src/main/plugins/org.dita.pdf2/cfg/fo/xsl/custom.xsl:35:5 redundant-namespace-declarations fix ""
 src/main/plugins/org.dita.pdf2/xsl/common/attr-set-reflection.xsl:34:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/xsl/common/attr-set-reflection.xsl:34:1 not-using-output
 src/main/plugins/org.dita.pdf2/xsl/common/attr-set-reflection.xsl:59:5 oversized-template
 src/main/plugins/org.dita.pdf2/xsl/common/attr-set-reflection.xsl:59:5 unused-named-template
 src/main/plugins/org.dita.pdf2/xsl/common/attr-set-reflection.xsl:66:25 not-creating-element-correctly
@@ -581,16 +544,13 @@ src/main/plugins/org.dita.pdf2/xsl/common/topicmergeImpl.xsl:54:37 starts-with-d
 src/main/plugins/org.dita.pdf2/xsl/common/topicmergeImpl.xsl:189:23 use-choose-without-otherwise
 src/main/plugins/org.dita.pdf2/xsl/common/topicmerge_template.xsl:9:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.pdf2/xsl/common/vars.xsl:34:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/xsl/common/vars.xsl:34:1 not-using-output
 src/main/plugins/org.dita.pdf2/xsl/common/vars.xsl:45:3 unused-named-template
 src/main/plugins/org.dita.pdf2/xsl/fo/abbrev-domain.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/xsl/fo/abbrev-domain.xsl:9:1 not-using-output
 src/main/plugins/org.dita.pdf2/xsl/fo/abbrev-domain.xsl:11:17 redundant-namespace-declarations fix ""
 src/main/plugins/org.dita.pdf2/xsl/fo/abbrev-domain.xsl:62:63 use-double-slash
 src/main/plugins/org.dita.pdf2/xsl/fo/abbrev-domain.xsl:65:59 use-double-slash
 src/main/plugins/org.dita.pdf2/xsl/fo/abbrev-domain.xsl:76:78 predicate-position-literal fix "last()"
 src/main/plugins/org.dita.pdf2/xsl/fo/bookmarks.xsl:34:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/xsl/fo/bookmarks.xsl:34:1 not-using-output
 src/main/plugins/org.dita.pdf2/xsl/fo/bookmarks.xsl:34:1 too-many-templates
 src/main/plugins/org.dita.pdf2/xsl/fo/bookmarks.xsl:101:13 use-choose-without-otherwise
 src/main/plugins/org.dita.pdf2/xsl/fo/bookmarks.xsl:180:23 scans-whole-document
@@ -609,11 +569,8 @@ src/main/plugins/org.dita.pdf2/xsl/fo/commons.xsl:674:13 use-choose-without-othe
 src/main/plugins/org.dita.pdf2/xsl/fo/commons.xsl:857:9 text-outside-xsl-text suggestion "<xsl:text>topicSimple</xsl:text>"
 src/main/plugins/org.dita.pdf2/xsl/fo/commons.xsl:916:5 unused-function
 src/main/plugins/org.dita.pdf2/xsl/fo/concept.xsl:33:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/xsl/fo/concept.xsl:33:1 not-using-output
 src/main/plugins/org.dita.pdf2/xsl/fo/emphasis-domain.xsl:6:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/xsl/fo/emphasis-domain.xsl:6:1 not-using-output
 src/main/plugins/org.dita.pdf2/xsl/fo/flag-rules.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/xsl/fo/flag-rules.xsl:9:1 not-using-output
 src/main/plugins/org.dita.pdf2/xsl/fo/flag-rules.xsl:9:1 too-many-templates
 src/main/plugins/org.dita.pdf2/xsl/fo/flag-rules.xsl:87:5 unused-function-template-parameter
 src/main/plugins/org.dita.pdf2/xsl/fo/flag-rules.xsl:185:1 unused-named-template
@@ -628,13 +585,11 @@ src/main/plugins/org.dita.pdf2/xsl/fo/flag-rules.xsl:476:8 setting-value-of-vari
 src/main/plugins/org.dita.pdf2/xsl/fo/flag-rules.xsl:526:22 string-length-compared-to-zero suggestion "$morerevs != ''"
 src/main/plugins/org.dita.pdf2/xsl/fo/flag-rules.xsl:529:8 setting-value-of-variable-incorrectly
 src/main/plugins/org.dita.pdf2/xsl/fo/flagging-from-preprocess.xsl:8:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/xsl/fo/flagging-from-preprocess.xsl:8:1 not-using-output
 src/main/plugins/org.dita.pdf2/xsl/fo/flagging-from-preprocess.xsl:8:1 too-many-templates
 src/main/plugins/org.dita.pdf2/xsl/fo/flagging-from-preprocess.xsl:141:11 text-outside-xsl-text suggestion "<xsl:text>groove</xsl:text>"
 src/main/plugins/org.dita.pdf2/xsl/fo/flagging-from-preprocess.xsl:148:11 text-outside-xsl-text suggestion "<xsl:text>black</xsl:text>"
 src/main/plugins/org.dita.pdf2/xsl/fo/flagging-from-preprocess.xsl:166:13 use-choose-without-otherwise
 src/main/plugins/org.dita.pdf2/xsl/fo/flagging.xsl:32:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/xsl/fo/flagging.xsl:32:1 not-using-output
 src/main/plugins/org.dita.pdf2/xsl/fo/flagging.xsl:41:10 setting-value-of-variable-incorrectly
 src/main/plugins/org.dita.pdf2/xsl/fo/flagging.xsl:64:13 setting-value-of-variable-incorrectly
 src/main/plugins/org.dita.pdf2/xsl/fo/flagging.xsl:81:16 setting-value-of-variable-incorrectly
@@ -645,19 +600,14 @@ src/main/plugins/org.dita.pdf2/xsl/fo/flagging.xsl:171:16 setting-value-of-varia
 src/main/plugins/org.dita.pdf2/xsl/fo/flagging.xsl:200:13 setting-value-of-variable-incorrectly
 src/main/plugins/org.dita.pdf2/xsl/fo/flagging.xsl:211:13 setting-value-of-variable-incorrectly
 src/main/plugins/org.dita.pdf2/xsl/fo/front-matter.xsl:34:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/xsl/fo/front-matter.xsl:34:1 not-using-output
 src/main/plugins/org.dita.pdf2/xsl/fo/front-matter.xsl:34:1 too-many-templates
 src/main/plugins/org.dita.pdf2/xsl/fo/front-matter.xsl:101:25 scans-whole-document
 src/main/plugins/org.dita.pdf2/xsl/fo/front-matter.xsl:102:33 scans-whole-document
 src/main/plugins/org.dita.pdf2/xsl/fo/glossary.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/xsl/fo/glossary.xsl:9:1 not-using-output
 src/main/plugins/org.dita.pdf2/xsl/fo/glossary.xsl:36:51 use-double-slash
 src/main/plugins/org.dita.pdf2/xsl/fo/hazard-d.xsl:6:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/xsl/fo/hazard-d.xsl:6:1 not-using-output
 src/main/plugins/org.dita.pdf2/xsl/fo/hi-domain.xsl:34:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/xsl/fo/hi-domain.xsl:34:1 not-using-output
 src/main/plugins/org.dita.pdf2/xsl/fo/i18n-postprocessImpl.xsl:37:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/xsl/fo/i18n-postprocessImpl.xsl:37:1 not-using-output
 src/main/plugins/org.dita.pdf2/xsl/fo/i18n-postprocessImpl.xsl:37:1 too-many-templates
 src/main/plugins/org.dita.pdf2/xsl/fo/i18n-postprocessImpl.xsl:56:35 use-double-slash
 src/main/plugins/org.dita.pdf2/xsl/fo/i18n-postprocessImpl.xsl:116:52 use-double-slash
@@ -668,7 +618,6 @@ src/main/plugins/org.dita.pdf2/xsl/fo/i18n-postprocessImpl.xsl:189:13 not-creati
 src/main/plugins/org.dita.pdf2/xsl/fo/i18n-postprocess_template.xsl:34:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.pdf2/xsl/fo/i18n-postprocess_template.xsl:37:17 redundant-namespace-declarations fix ""
 src/main/plugins/org.dita.pdf2/xsl/fo/index.xsl:34:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/xsl/fo/index.xsl:34:1 not-using-output
 src/main/plugins/org.dita.pdf2/xsl/fo/index.xsl:34:1 too-many-templates
 src/main/plugins/org.dita.pdf2/xsl/fo/index.xsl:56:5 unused-variable
 src/main/plugins/org.dita.pdf2/xsl/fo/index.xsl:57:5 unused-variable
@@ -694,7 +643,6 @@ src/main/plugins/org.dita.pdf2/xsl/fo/index.xsl:539:90 count-compared-to-zero fi
 src/main/plugins/org.dita.pdf2/xsl/fo/index.xsl:541:17 use-choose-without-otherwise
 src/main/plugins/org.dita.pdf2/xsl/fo/index.xsl:551:27 count-compared-to-zero fix "exists($index/*)"
 src/main/plugins/org.dita.pdf2/xsl/fo/learning-elements.xsl:34:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/xsl/fo/learning-elements.xsl:34:1 not-using-output
 src/main/plugins/org.dita.pdf2/xsl/fo/links.xsl:34:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.pdf2/xsl/fo/links.xsl:34:1 too-many-templates
 src/main/plugins/org.dita.pdf2/xsl/fo/links.xsl:52:5 unused-function-template-parameter
@@ -707,10 +655,8 @@ src/main/plugins/org.dita.pdf2/xsl/fo/links.xsl:317:69 redundant-whitespace fix 
 src/main/plugins/org.dita.pdf2/xsl/fo/links.xsl:591:87 redundant-whitespace fix " "
 src/main/plugins/org.dita.pdf2/xsl/fo/links.xsl:709:3 unused-named-template
 src/main/plugins/org.dita.pdf2/xsl/fo/lists.xsl:37:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/xsl/fo/lists.xsl:37:1 not-using-output
 src/main/plugins/org.dita.pdf2/xsl/fo/lists.xsl:37:1 too-many-templates
 src/main/plugins/org.dita.pdf2/xsl/fo/lot-lof.xsl:12:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/xsl/fo/lot-lof.xsl:12:1 not-using-output
 src/main/plugins/org.dita.pdf2/xsl/fo/lot-lof.xsl:56:19 scans-whole-document
 src/main/plugins/org.dita.pdf2/xsl/fo/lot-lof.xsl:64:42 scans-whole-document
 src/main/plugins/org.dita.pdf2/xsl/fo/lot-lof.xsl:65:46 unabbreviated-axis fix ""
@@ -720,11 +666,8 @@ src/main/plugins/org.dita.pdf2/xsl/fo/lot-lof.xsl:153:44 scans-whole-document
 src/main/plugins/org.dita.pdf2/xsl/fo/lot-lof.xsl:154:48 unabbreviated-axis fix ""
 src/main/plugins/org.dita.pdf2/xsl/fo/lot-lof.xsl:179:60 unabbreviated-axis fix ""
 src/main/plugins/org.dita.pdf2/xsl/fo/map-elements.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/xsl/fo/map-elements.xsl:9:1 not-using-output
 src/main/plugins/org.dita.pdf2/xsl/fo/markup-domain.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/xsl/fo/markup-domain.xsl:9:1 not-using-output
 src/main/plugins/org.dita.pdf2/xsl/fo/pr-domain.xsl:34:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/xsl/fo/pr-domain.xsl:34:1 not-using-output
 src/main/plugins/org.dita.pdf2/xsl/fo/pr-domain.xsl:34:1 too-many-templates
 src/main/plugins/org.dita.pdf2/xsl/fo/pr-domain.xsl:62:7 text-outside-xsl-text
 src/main/plugins/org.dita.pdf2/xsl/fo/pr-domain.xsl:383:13 blank-nested-if
@@ -742,10 +685,8 @@ src/main/plugins/org.dita.pdf2/xsl/fo/pr-domain.xsl:454:9 text-outside-xsl-text 
 src/main/plugins/org.dita.pdf2/xsl/fo/pr-domain.xsl:454:23 name-compared-to-string suggestion "self::groupchoice"
 src/main/plugins/org.dita.pdf2/xsl/fo/pr-domain.xsl:455:9 text-outside-xsl-text suggestion "<xsl:text>]</xsl:text>"
 src/main/plugins/org.dita.pdf2/xsl/fo/preface.xsl:34:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/xsl/fo/preface.xsl:34:1 not-using-output
 src/main/plugins/org.dita.pdf2/xsl/fo/preface.xsl:77:40 unabbreviated-axis fix ""
 src/main/plugins/org.dita.pdf2/xsl/fo/reference-elements.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/xsl/fo/reference-elements.xsl:9:1 not-using-output
 src/main/plugins/org.dita.pdf2/xsl/fo/reference-elements.xsl:9:1 too-many-templates
 src/main/plugins/org.dita.pdf2/xsl/fo/reference-elements.xsl:116:7 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 src/main/plugins/org.dita.pdf2/xsl/fo/reference-elements.xsl:133:7 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
@@ -760,7 +701,6 @@ src/main/plugins/org.dita.pdf2/xsl/fo/reference-elements.xsl:328:9 use-choose-wi
 src/main/plugins/org.dita.pdf2/xsl/fo/reference-elements.xsl:343:9 use-choose-without-otherwise
 src/main/plugins/org.dita.pdf2/xsl/fo/reference-elements.xsl:402:9 short-names
 src/main/plugins/org.dita.pdf2/xsl/fo/root-processing.xsl:34:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/xsl/fo/root-processing.xsl:34:1 not-using-output
 src/main/plugins/org.dita.pdf2/xsl/fo/root-processing.xsl:34:1 too-many-templates
 src/main/plugins/org.dita.pdf2/xsl/fo/root-processing.xsl:52:9 text-outside-xsl-text suggestion "<xsl:text>rl</xsl:text>"
 src/main/plugins/org.dita.pdf2/xsl/fo/root-processing.xsl:53:9 text-outside-xsl-text suggestion "<xsl:text>lr</xsl:text>"
@@ -775,19 +715,15 @@ src/main/plugins/org.dita.pdf2/xsl/fo/root-processing.xsl:139:31 scans-whole-doc
 src/main/plugins/org.dita.pdf2/xsl/fo/root-processing.xsl:151:5 use-choose-without-otherwise
 src/main/plugins/org.dita.pdf2/xsl/fo/root-processing.xsl:185:5 use-choose-without-otherwise
 src/main/plugins/org.dita.pdf2/xsl/fo/static-content.xsl:34:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/xsl/fo/static-content.xsl:34:1 not-using-output
 src/main/plugins/org.dita.pdf2/xsl/fo/static-content.xsl:34:1 too-many-templates
 src/main/plugins/org.dita.pdf2/xsl/fo/static-content.xsl:552:5 unused-named-template
 src/main/plugins/org.dita.pdf2/xsl/fo/static-content.xsl:559:5 unused-named-template
 src/main/plugins/org.dita.pdf2/xsl/fo/static-content.xsl:668:5 unused-named-template
 src/main/plugins/org.dita.pdf2/xsl/fo/static-content.xsl:693:5 unused-named-template
 src/main/plugins/org.dita.pdf2/xsl/fo/svg-domain.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/xsl/fo/svg-domain.xsl:9:1 not-using-output
 src/main/plugins/org.dita.pdf2/xsl/fo/svg-domain.xsl:15:17 leaking-result-namespace suggestion "xs opentopic dita-ot ditamsg svg"
 src/main/plugins/org.dita.pdf2/xsl/fo/sw-domain.xsl:34:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/xsl/fo/sw-domain.xsl:34:1 not-using-output
 src/main/plugins/org.dita.pdf2/xsl/fo/tables.xsl:8:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/xsl/fo/tables.xsl:8:1 not-using-output
 src/main/plugins/org.dita.pdf2/xsl/fo/tables.xsl:8:1 too-many-templates
 src/main/plugins/org.dita.pdf2/xsl/fo/tables.xsl:10:3 leaking-result-namespace suggestion "opentopic-func xs dita2xslfo dita-ot opentopic-index"
 src/main/plugins/org.dita.pdf2/xsl/fo/tables.xsl:18:5 unused-variable
@@ -814,11 +750,9 @@ src/main/plugins/org.dita.pdf2/xsl/fo/tables.xsl:1085:9 unused-function-template
 src/main/plugins/org.dita.pdf2/xsl/fo/tables.xsl:1247:9 use-single-option-for-choose
 src/main/plugins/org.dita.pdf2/xsl/fo/tables.xsl:1260:9 use-single-option-for-choose
 src/main/plugins/org.dita.pdf2/xsl/fo/task-elements.xsl:34:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/xsl/fo/task-elements.xsl:34:1 not-using-output
 src/main/plugins/org.dita.pdf2/xsl/fo/task-elements.xsl:34:1 too-many-templates
 src/main/plugins/org.dita.pdf2/xsl/fo/task-elements.xsl:46:13 text-outside-xsl-text suggestion "<xsl:text>NO</xsl:text>"
 src/main/plugins/org.dita.pdf2/xsl/fo/toc.xsl:34:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/xsl/fo/toc.xsl:34:1 not-using-output
 src/main/plugins/org.dita.pdf2/xsl/fo/toc.xsl:34:1 too-many-templates
 src/main/plugins/org.dita.pdf2/xsl/fo/toc.xsl:256:13 use-choose-without-otherwise
 src/main/plugins/org.dita.pdf2/xsl/fo/toc.xsl:267:23 count-compared-to-zero fix "exists($toc/*)"
@@ -826,7 +760,6 @@ src/main/plugins/org.dita.pdf2/xsl/fo/toc.xsl:304:20 scans-whole-document
 src/main/plugins/org.dita.pdf2/xsl/fo/toc.xsl:342:23 scans-whole-document
 src/main/plugins/org.dita.pdf2/xsl/fo/toc.xsl:362:23 scans-whole-document
 src/main/plugins/org.dita.pdf2/xsl/fo/topic.xsl:33:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/xsl/fo/topic.xsl:33:1 not-using-output
 src/main/plugins/org.dita.pdf2/xsl/fo/topic.xsl:33:1 too-many-templates
 src/main/plugins/org.dita.pdf2/xsl/fo/topic.xsl:144:34 unabbreviated-axis fix ".."
 src/main/plugins/org.dita.pdf2/xsl/fo/topic.xsl:246:13 use-choose-without-otherwise
@@ -842,27 +775,20 @@ src/main/plugins/org.dita.pdf2/xsl/fo/topic2fo.xsl:35:5 redundant-namespace-decl
 src/main/plugins/org.dita.pdf2/xsl/fo/topic2fo.xsl:40:5 redundant-namespace-declarations fix ""
 src/main/plugins/org.dita.pdf2/xsl/fo/topic2fo_shell_template.xsl:34:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.pdf2/xsl/fo/ui-domain.xsl:34:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/xsl/fo/ui-domain.xsl:34:1 not-using-output
 src/main/plugins/org.dita.pdf2/xsl/fo/ut-domain.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/xsl/fo/ut-domain.xsl:9:1 not-using-output
 src/main/plugins/org.dita.pdf2/xsl/fo/xml-domain.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/xsl/fo/xml-domain.xsl:9:1 not-using-output
 src/main/plugins/org.dita.xhtml/xsl/dita2html-base_template.xsl:10:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.xhtml/xsl/dita2html.xsl:15:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.xhtml/xsl/dita2xhtml-util.xsl:13:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.xhtml/xsl/dita2xhtml-util.xsl:13:1 not-using-output
 src/main/plugins/org.dita.xhtml/xsl/dita2xhtml.xsl:9:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.xhtml/xsl/map2html-cover.xsl:9:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.xhtml/xsl/map2html-coverImpl_template.xsl:9:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.xhtml/xsl/map2htmltoc_template.xsl:10:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.xhtml/xsl/map2htmtoc/map2htmlImpl.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.xhtml/xsl/map2htmtoc/map2htmlImpl.xsl:9:1 not-using-output
 src/main/plugins/org.dita.xhtml/xsl/map2htmtoc/map2htmlImpl.xsl:54:94 redundant-whitespace fix ""
 src/main/plugins/org.dita.xhtml/xsl/map2htmtoc/map2htmlcoverImpl.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.xhtml/xsl/map2htmtoc/map2htmlcoverImpl.xsl:9:1 not-using-output
 src/main/plugins/org.dita.xhtml/xsl/map2htmtoc/map2htmlcoverImpl.xsl:87:7 use-choose-without-otherwise
 src/main/plugins/org.dita.xhtml/xsl/map2htmtoc/map2htmtocImpl.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.xhtml/xsl/map2htmtoc/map2htmtocImpl.xsl:9:1 not-using-output
 src/main/plugins/org.dita.xhtml/xsl/map2htmtoc/map2htmtocImpl.xsl:9:1 too-many-templates
 src/main/plugins/org.dita.xhtml/xsl/map2htmtoc/map2htmtocImpl.xsl:41:19 string-length-compared-to-zero suggestion "$contenttarget != ''"
 src/main/plugins/org.dita.xhtml/xsl/map2htmtoc/map2htmtocImpl.xsl:62:20 string-length-compared-to-zero suggestion "$OUTPUTCLASS != ''"
@@ -878,9 +804,7 @@ src/main/plugins/org.dita.xhtml/xsl/map2htmtoc/map2htmtocImpl.xsl:235:3 use-choo
 src/main/plugins/org.dita.xhtml/xsl/map2xhtml-cover.xsl:9:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.xhtml/xsl/map2xhtmltoc.xsl:12:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/abbrev-d.xsl:10:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.xhtml/xsl/xslhtml/abbrev-d.xsl:10:1 not-using-output
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/conceptdisplay.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.xhtml/xsl/xslhtml/conceptdisplay.xsl:9:1 not-using-output
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/dita2htmlImpl.xsl:9:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/dita2htmlImpl.xsl:9:1 too-many-templates
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/dita2htmlImpl.xsl:115:3 unused-variable
@@ -955,7 +879,6 @@ src/main/plugins/org.dita.xhtml/xsl/xslhtml/dita2htmlImpl.xsl:2922:5 unused-func
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/dita2htmlImpl.xsl:2926:9 text-outside-xsl-text suggestion "<xsl:text>cite</xsl:text>"
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/dita2htmlImpl.xsl:2927:9 text-outside-xsl-text suggestion "<xsl:text>span</xsl:text>"
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/get-meta.xsl:10:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.xhtml/xsl/xslhtml/get-meta.xsl:10:1 not-using-output
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/get-meta.xsl:10:1 too-many-templates
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/get-meta.xsl:175:5 not-creating-attribute-correctly
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/get-meta.xsl:186:5 not-creating-attribute-correctly
@@ -972,13 +895,9 @@ src/main/plugins/org.dita.xhtml/xsl/xslhtml/get-meta.xsl:459:5 not-creating-attr
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/get-meta.xsl:469:5 not-creating-attribute-correctly
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/get-meta.xsl:479:5 not-creating-attribute-correctly
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/glossdisplay.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.xhtml/xsl/xslhtml/glossdisplay.xsl:9:1 not-using-output
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/hazard-d.xsl:6:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.xhtml/xsl/xslhtml/hazard-d.xsl:6:1 not-using-output
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/hi-d.xsl:10:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.xhtml/xsl/xslhtml/hi-d.xsl:10:1 not-using-output
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/htmlflag.xsl:16:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.xhtml/xsl/xslhtml/htmlflag.xsl:16:1 not-using-output
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/htmlflag.xsl:16:1 too-many-templates
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/htmlflag.xsl:25:3 text-outside-xsl-text suggestion "<xsl:text>yes</xsl:text>"
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/htmlflag.xsl:27:3 text-outside-xsl-text suggestion "<xsl:text>no</xsl:text>"
@@ -1007,18 +926,15 @@ src/main/plugins/org.dita.xhtml/xsl/xslhtml/map2TOC.xsl:72:3 unused-function-tem
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/map2TOC.xsl:73:3 unused-function-template-parameter
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/map2TOC.xsl:74:3 unused-function-template-parameter
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/mapwalker.xsl:13:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.xhtml/xsl/xslhtml/mapwalker.xsl:13:1 not-using-output
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/mapwalker.xsl:79:3 unused-function-template-parameter
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/mapwalker.xsl:80:3 unused-function-template-parameter
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/mapwalker.xsl:81:3 unused-function-template-parameter
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/mapwalker.xsl:82:3 unused-function-template-parameter
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/mapwalker.xsl:83:3 unused-function-template-parameter
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/markup-d.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.xhtml/xsl/xslhtml/markup-d.xsl:9:1 not-using-output
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/pr-d.xsl:10:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/pr-d.xsl:10:1 too-many-templates
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/refdisplay.xsl:10:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.xhtml/xsl/xslhtml/refdisplay.xsl:10:1 not-using-output
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/refdisplay.xsl:10:1 too-many-templates
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/refdisplay.xsl:29:13 text-outside-xsl-text suggestion "<xsl:text>simpletablenoborder</xsl:text>"
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/refdisplay.xsl:30:13 text-outside-xsl-text suggestion "<xsl:text>simpletableborder</xsl:text>"
@@ -1036,7 +952,6 @@ src/main/plugins/org.dita.xhtml/xsl/xslhtml/refdisplay.xsl:313:7 text-outside-xs
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/refdisplay.xsl:314:7 text-outside-xsl-text suggestion "<xsl:text>td</xsl:text>"
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/refdisplay.xsl:346:7 text-outside-xsl-text
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/rel-links.xsl:10:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.xhtml/xsl/xslhtml/rel-links.xsl:10:1 not-using-output
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/rel-links.xsl:10:1 too-many-templates
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/rel-links.xsl:111:9 blank-nested-if
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/rel-links.xsl:118:9 blank-nested-if
@@ -1047,12 +962,9 @@ src/main/plugins/org.dita.xhtml/xsl/xslhtml/rel-links.xsl:634:23 unabbreviated-a
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/rel-links.xsl:711:7 blank-nested-if
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/rel-links.xsl:725:5 short-names
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/svg-d.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.xhtml/xsl/xslhtml/svg-d.xsl:9:1 not-using-output
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/svg-d.xsl:24:5 text-outside-xsl-text
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/sw-d.xsl:10:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.xhtml/xsl/xslhtml/sw-d.xsl:10:1 not-using-output
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/syntax-braces.xsl:10:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.xhtml/xsl/xslhtml/syntax-braces.xsl:10:1 not-using-output
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/syntax-braces.xsl:10:1 too-many-templates
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/syntax-braces.xsl:67:3 blank-nested-if
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/syntax-braces.xsl:67:67 text-outside-xsl-text suggestion "<xsl:text> | </xsl:text>"
@@ -1085,7 +997,6 @@ src/main/plugins/org.dita.xhtml/xsl/xslhtml/syntax-braces.xsl:194:81 count-compa
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/syntax-braces.xsl:204:1 unused-named-template
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/syntax-braces.xsl:206:25 scans-whole-document
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/syntax-svg.xsl:10:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.xhtml/xsl/xslhtml/syntax-svg.xsl:10:1 not-using-output
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/syntax-svg.xsl:11:31 redundant-namespace-declarations fix ""
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/syntax-svg.xsl:64:3 blank-nested-if
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/syntax-svg.xsl:64:68 text-outside-xsl-text suggestion "<xsl:text> | </xsl:text>"
@@ -1128,7 +1039,6 @@ src/main/plugins/org.dita.xhtml/xsl/xslhtml/tables.xsl:959:3 unused-function-tem
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/tables.xsl:968:3 use-choose-without-otherwise
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/tables.xsl:1029:1 text-outside-xsl-text suggestion "<xsl:text>tabledesc</xsl:text>"
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/taskdisplay.xsl:12:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.xhtml/xsl/xslhtml/taskdisplay.xsl:12:1 not-using-output
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/taskdisplay.xsl:12:1 too-many-templates
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/taskdisplay.xsl:50:1 text-outside-xsl-text suggestion "<xsl:text>p</xsl:text>"
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/taskdisplay.xsl:90:5 text-outside-xsl-text suggestion "<xsl:text>yes</xsl:text>"
@@ -1149,16 +1059,13 @@ src/main/plugins/org.dita.xhtml/xsl/xslhtml/taskdisplay.xsl:411:1 text-outside-x
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/taskdisplay.xsl:533:7 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/taskdisplay.xsl:585:7 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/ui-d.xsl:10:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.xhtml/xsl/xslhtml/ui-d.xsl:10:1 not-using-output
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/ui-d.xsl:31:1 blank-nested-if
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/ut-d.xsl:10:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.xhtml/xsl/xslhtml/ut-d.xsl:10:1 not-using-output
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/ut-d.xsl:65:11 setting-value-of-variable-incorrectly
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/ut-d.xsl:78:11 setting-value-of-variable-incorrectly
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/ut-d.xsl:80:29 string-length-compared-to-zero suggestion "$coordval != ''"
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/ut-d.xsl:115:3 use-choose-without-otherwise
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/xml-d.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.xhtml/xsl/xslhtml/xml-d.xsl:9:1 not-using-output
 src/test/resources/BranchFilterModuleTest/src/input.xsl:2:1 missing-id-in-stylesheet
 src/test/resources/BranchFilterModuleTest/src/input.xsl:40:5 unused-function-template-parameter
 src/test/resources/IntegratorTest/exp/plugins/dummy/xsl/shell.xsl:2:1 missing-id-in-stylesheet
