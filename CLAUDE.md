@@ -949,6 +949,8 @@ the 22 and could only ever ask whether the string appeared.
 
 - **Suppress**: `xslint --suppress=<rule-substring>` matches names across every
   validator and linter.
+- **Only**: `--only=<rule-substring>` (or `only:`, which the flag replaces)
+  reports only the checks it names; a suppression outranks it (#1030).
 - **Stable tier**: `--stable` (or `stable: true` in the config) withholds the
   **nursery**, the checks an open issue reports wrong about code a processor
   accepts. The nursery holds no checks since #851, so `--stable` reports

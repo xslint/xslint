@@ -48,6 +48,10 @@ program
     '--suppress <check>', 'Suppress some checks',
     (check, suppressions) => [...suppressions, check], [],
   )
+  .option(
+    '--only <check>', 'Report only the checks whose names hold this substring',
+    (check, choices) => [...choices, check], [],
+  )
   .argument('[paths...]', 'paths to file or directory to process', ['.'])
   .action(async (path) => {
     const {default: xslint} = await import('./xslint.js')

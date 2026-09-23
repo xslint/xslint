@@ -162,6 +162,21 @@ If you want to suppress many checks, use `--suppress` as many times as you need:
 xslint --suppress=oversized-template --suppress=short-names
 ```
 
+To ask one question of a whole tree, run only the checks you name with
+`--only`. It matches by substring the way `--suppress` does, and it may be
+given as many times as you need:
+
+```bash
+xslint --only=short-names --only=unused
+```
+
+The two combine, and a suppression always wins: a check both of them name stays
+quiet, so this runs every `unused-*` check but `unused-variable`:
+
+```bash
+xslint --only=unused --suppress=unused-variable
+```
+
 Use `--stable` when every defect in the report has to be worth acting on:
 
 ```bash
@@ -195,6 +210,8 @@ rules:
   "unused-*": error      # or a family, by glob
 exclude:
   - "test/**"                           # globs to skip, relative to this file
+only:
+  - "unused"                            # default for --only
 max-warnings: 10                        # default for --max-warnings
 log-level: info                         # default for --log-level
 quiet: false                            # default for --quiet
@@ -210,6 +227,9 @@ stable: false                           # default for --stable
   costs nothing rather than the walk it then throws away. A wildcard here reads
   a name opening with a dot like any other, so `dir/**` covers a
   `dir/.hidden/sheet.xsl` as much as the rest of what stands under `dir`.
+- **`only`** lists the substrings `--only` would take, narrowing every run to
+  the checks they name. Passing `--only` replaces this list rather than adding
+  to it, and a check `rules` turns `off` stays off whichever of the two chose it.
 - **`max-warnings`**, **`log-level`**, **`quiet`**, and **`stable`** set the
   defaults for the matching command-line flags. A check named **verbatim** under
   `rules` outranks `stable`, so grading a nursery check `warning` or `error`
@@ -218,9 +238,9 @@ stable: false                           # default for --stable
   withheld check is named on standard error.
 
 Unknown top-level keys, rule names that match no check, and values of the wrong
-type (a non-numeric `max-warnings`, a non-list `exclude`, a non-boolean
-`quiet`, a non-string `log-level`) are reported and ignored, so typos do not
-pass silently. An `exclude` glob is named the same way when a run walks a
+type (a non-numeric `max-warnings`, a non-list `exclude` or `only`, a
+non-boolean `quiet`, a non-string `log-level`) are reported and ignored, so
+typos do not pass silently. An `exclude` glob is named the same way when a run walks a
 directory and the glob excludes nothing anywhere under it.
 
 ## Inline suppression

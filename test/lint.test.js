@@ -79,6 +79,48 @@ const REFUSALS = [
   [20, 'invalid-xpath-expression', 'a pattern axis no version admits'],
 ]
 
+/**
+ * What a run narrowed to some checks reports: the fixture, the substrings
+ * `only` names, the ones `suppress` names, and the checks left in the report.
+ * A suppression outranks a choice, so a check both name stays quiet, and a
+ * chosen check whose name holds an unchosen one is reported still (#1030).
+ * @type {Array.<Array>}
+ */
+const NARROWED = [
+  [
+    'stylesheets/xsl-with-some-violations.xsl', ['short-names'], [],
+    ['short-names'], 'one check named whole',
+  ],
+  [
+    'stylesheets/xsl-with-some-violations.xsl', ['short', 'unused'], [],
+    ['short-names', 'unused-named-template'], 'two checks named by substring',
+  ],
+  [
+    'stylesheets/xsl-with-some-violations.xsl', ['short', 'unused'],
+    ['short-names'], ['unused-named-template'],
+    'a chosen check the run also suppresses',
+  ],
+  [
+    'stylesheets/xsl-with-some-violations.xsl', ['short-names'],
+    ['short-names'], [], 'the one chosen check suppressed',
+  ],
+  [
+    'stylesheets/xsl-with-some-violations.xsl', ['short-names'],
+    ['unused'], ['short-names'], 'a suppression outside the choice',
+  ],
+  [
+    'chosen/a-dead-function.xsl',
+    ['unused-function-template-parameter'], [],
+    ['unused-function-template-parameter'],
+    'a chosen name holding an unchosen one',
+  ],
+  [
+    'chosen/a-dead-function.xsl', ['unused-function'],
+    ['template-parameter'], ['unused-function'],
+    'a suppression parting two names one substring chose',
+  ],
+]
+
 describe('lint (programmatic API)', function() {
   it('returns defects for in-memory sources', function() {
     const defects = lint([source('stylesheets/xsl-with-some-violations.xsl')])
@@ -96,6 +138,28 @@ describe('lint (programmatic API)', function() {
         [source('stylesheets/xsl-with-some-violations.xsl')],
         {suppress: ['short-names']},
       ).some((defect) => defect.name === 'short-names'),
+    )
+  })
+  NARROWED.forEach(([sheet, only, suppress, expected, what]) => {
+    it(`reports only what is chosen for ${what}`, function() {
+      assert.deepEqual(
+        lint([source(sheet)], {only: only, suppress: suppress})
+          .map((defect) => defect.name),
+        expected,
+        `cannot report anything but ${expected.join(', ') || 'nothing'} ` +
+          `for ${what}, a narrowed run leaving out every check it names not`,
+      )
+    })
+  })
+  it('warns about a chosen substring naming no check', function() {
+    assert.match(
+      noted(() => lint(
+        [source('stylesheets/xsl-with-some-violations.xsl')],
+        {only: ['qwerty']},
+      )).join(' '),
+      /qwerty/,
+      'cannot keep quiet about a choice naming no check, where a typo would ' +
+        'otherwise narrow the run to nothing and read as a clean report',
     )
   })
   it('re-grades a severity through overrides', function() {

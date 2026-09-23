@@ -160,6 +160,29 @@ const REACHING = [
   },
 ]
 
+/**
+ * What a run narrowed by `--only` and the `only:` of its configuration
+ * reports: the flags, the configuration, and the checks left in the report.
+ * A suppression outranks a choice however either is spelled, and a flag
+ * replaces the choice a configuration makes rather than adding to it (#1030).
+ * @type {Array.<Array>}
+ */
+const CHOICES = [
+  [['--only=short', '--only=unused'], '',
+    ['short-names', 'unused-named-template'], 'two flags'],
+  [['--only=short', '--only=unused', '--suppress=short-names'], '',
+    ['unused-named-template'], 'a flag the run also suppresses'],
+  [['--only=short-names', '--suppress=short-names'], '',
+    [], 'the one chosen check suppressed'],
+  [[], 'only:\n  - short-names\n', ['short-names'], 'the config'],
+  [['--only=unused'], 'only:\n  - short-names\n',
+    ['unused-named-template'], 'a flag replacing the config'],
+  [['--suppress=short-names'], 'only:\n  - short\n  - unused\n',
+    ['unused-named-template'], 'the config beside a suppressing flag'],
+  [['--only=short-names'], 'rules:\n  short-names: off\n',
+    [], 'a flag choosing a check the config turns off'],
+]
+
 describe('xslint', function() {
   it('should print its own version', function() {
     const stdout = runXslint(['--version'])
@@ -407,6 +430,24 @@ describe('xslint', function() {
       '--quiet',
     ])
     assert.ok(!streams.stderr.includes('Processed files'))
+  })
+  CHOICES.forEach(([flags, content, expected, what]) => {
+    it(`should report only the chosen checks for ${what}`, function() {
+      const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-'))
+      const cfg = path.join(dir, '.xslint.yml')
+      fs.writeFileSync(cfg, content)
+      const {stdout} = xslintStreams([
+        'test/resources/stylesheets/xsl-with-some-violations.xsl',
+        '--format=json', `--config=${cfg}`, ...flags,
+      ])
+      fs.rmSync(dir, {recursive: true, force: true})
+      assert.deepEqual(
+        JSON.parse(stdout).map((defect) => defect.rule),
+        expected,
+        `cannot report anything but ${expected.join(', ') || 'nothing'} ` +
+          `for ${what}, a narrowed run leaving out every check it names not`,
+      )
+    })
   })
   it('should disable a rule named off in the config file', function() {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-'))
