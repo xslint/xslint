@@ -1,0 +1,37 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: name-compared-to-string
+# `name()` answers the source node's lexical QName and is compared with no
+# declaration at all, where the node test replacing it asks about the
+# namespace a prefix resolves to. So a test naming a prefix the stylesheet
+# binds nowhere refuses to compile — `XPST0081` from Saxon, `Undefined
+# namespace prefix` from xsltproc — against a comparison that ran. The report
+# stands either way, the comparison being the wrong question however the
+# document spells its prefixes. A text value template is here because the
+# binding is read off the element the expression hangs under, which a text
+# node answers as a parent and an attribute as an owner (#991).
+found:
+  amount: 9
+  positions:
+    [ [ 4, 36 ], [ 5, 36 ], [ 6, 36 ], [ 6, 65 ], [ 7, 36 ], [ 9, 45 ],
+      [ 10, 36 ], [ 13, 11 ], [ 13, 32 ] ]
+  fixes:
+    [ "self::ns:alpha", null, null, "self::ns:delta", "self::*:echo", null,
+      "self::near:golf", "self::ns:india", null ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ns="urn:x" version="3.0" id="s">
+    <xsl:template match="/">
+      <xsl:variable name="a" select="name() = 'ns:alpha'"/>
+      <xsl:variable name="b" select="name() = 'gone:bravo'"/>
+      <xsl:variable name="c" select="name() != 'gone:charlie' and name() = 'ns:delta'"/>
+      <xsl:variable name="d" select="local-name() = 'echo'"/>
+    </xsl:template>
+    <xsl:template xmlns:near="urn:y" match="*[name() = 'gone:foxtrot']">
+      <xsl:variable name="e" select="name() = 'near:golf'"/>
+    </xsl:template>
+    <xsl:template match="hotel" expand-text="yes">
+      <out>{name() = 'ns:india'}{name() = 'gone:juliet'}</out>
+    </xsl:template>
+  </xsl:stylesheet>
