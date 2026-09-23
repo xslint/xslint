@@ -113,32 +113,50 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-warning">warning</span>
-    <code class="xpath">//xsl:variable[not(@select) and not(@_select) and (count(*) = 1) and (count(xsl:value-of) = 1) and not(text()[xslint:normalize-space(.) or ancestor::*[@xml:space][1]/@xml:space = 'preserve'])]</code>
+    <code class="xpath">//(xsl:variable | xsl:param | xsl:with-param)[not(@select) and not(@_select) and (count(*) = 1) and (count(xsl:value-of[@select or @_select][not(@separator) and not(@_separator)]) = 1) and not(text()[xslint:normalize-space(.) or ancestor::*[@xml:space][1]/@xml:space = 'preserve'])]</code>
   </div>
   <div class="check-content">
 <h1>Setting value of variable incorrectly</h1>
-<p>A variable whose body is one <code>xsl:value-of</code> builds a result tree fragment to
-hold a value it has already computed: the instruction evaluates its <code>select</code>,
-turns the result into a string, and writes that string into a fragment the
-variable then names. The <code>select</code> attribute binds the value itself, without the
-fragment. It is shorter to read and cheaper to run.</p>
+<p>A variable or a parameter whose body is one <code>xsl:value-of</code> builds a result
+tree fragment to hold a value it has already computed: the instruction
+evaluates its <code>select</code>, turns the result into a string, and writes that string
+into a fragment the variable then names. The <code>select</code> attribute binds the value
+itself, without the fragment. It is shorter to read and cheaper to run, and it
+reads the same on an <code>xsl:param</code> default and on an <code>xsl:with-param</code> as on an
+<code>xsl:variable</code>.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:variable name=&quot;title&quot;&gt;
   &lt;xsl:value-of select=&quot;heading&quot;/&gt;
 &lt;/xsl:variable&gt;
 </code></pre>
-<p>Correct:</p>
-<pre><code class="language-xsl">&lt;xsl:variable name=&quot;title&quot; select=&quot;heading&quot;/&gt;
+<p>Correct, in XSLT 1.0:</p>
+<pre><code class="language-xsl">&lt;xsl:variable name=&quot;title&quot; select=&quot;string(heading)&quot;/&gt;
 </code></pre>
-<p>The two forms are close in intent and not equal in type, so the change is one to
-make deliberately. The body binds a fragment whose string value is the first
-<code>heading</code>; <code>select</code> binds the <code>heading</code> nodes themselves. Where the variable is
-only ever read as a string the two agree, and where it is not they part:
-<code>count($title)</code> counts one fragment against however many headings there are,
-<code>$title/@lang</code> reaches an attribute the fragment does not carry, and node
-identity is the fragment&#39;s rather than the document&#39;s. Read how the variable is
-used before rewriting it, and where the string is what is wanted, say so —
-<code>select=&quot;string(heading)&quot;</code> states the conversion the body was doing silently.</p>
+<p>Correct, in XSLT 2.0 and later:</p>
+<pre><code class="language-xsl">&lt;xsl:variable name=&quot;title&quot; select=&quot;string-join(heading, &#39; &#39;)&quot;/&gt;
+</code></pre>
+<p>The string is what the body was binding, so the <code>select</code> says so, and which
+string it was depends on the version. In 1.0 <code>xsl:value-of</code> takes the string
+value of the first <code>heading</code> alone, which is what <code>string(heading)</code> takes too.
+From 2.0 on it takes every item and joins them with a space, and <code>string()</code> of
+two headings is an error there, <code>XPTY0004</code>, so <code>string-join</code> is the spelling
+that agrees.</p>
+<p>Moving the expression over bare, as <code>select=&quot;heading&quot;</code>, binds something else
+on every version: the <code>heading</code> nodes themselves rather than one string made
+of them. There <code>count($title)</code> counts the headings rather than one value,
+<code>$title/@lang</code> reaches an attribute a string does not carry, and node identity
+is the document&#39;s. Under an <code>as=&quot;xs:string&quot;</code> it is worse: the first time two
+headings arrive, the processor raises <code>XTTE0570</code>. Where the variable is only
+ever read as a string of one item the forms agree, and nowhere else.</p>
+<p>An <code>xsl:value-of</code> whose <code>separator</code> joins the items some other way names a
+value one plain <code>select</code> has no way to say, and so does one that computes its
+value from a body of its own rather than from a <code>select</code>:</p>
+<pre><code class="language-xsl">&lt;xsl:variable name=&quot;joined&quot;&gt;
+  &lt;xsl:value-of select=&quot;item&quot; separator=&quot;,&quot;/&gt;
+&lt;/xsl:variable&gt;
+</code></pre>
+<p>Neither is the shorthand this advice is about. On 2.0 and later the first can
+still drop its fragment, as <code>select=&quot;string-join(item, &#39;,&#39;)&quot;</code>.</p>
 <p>The shorthand needs the <code>xsl:value-of</code> to be the whole of the body. Text beside
 it belongs to the fragment too, and <code>select</code> has nowhere to put it:</p>
 <pre><code class="language-xsl">&lt;xsl:variable name=&quot;title&quot;&gt;Chapter: &lt;xsl:value-of select=&quot;heading&quot;/&gt;&lt;/xsl:variable&gt;
