@@ -9,6 +9,19 @@ publication date only; detailed notes begin with the Unreleased section.
 
 ## Unreleased
 
+- Ask what XSLT sets as the context before advising a `self::` node test.
+  `name-compared-to-string` read only the predicates inside an expression, so
+  under `xsl:for-each select="@*"`, `match="@*"` or a processing-instruction
+  match it offered `self::style` where `name()` is an attribute's name — the
+  suggested rewrite copying the very attribute DocBook's `xtangle.xsl` drops.
+  The check now climbs to the instruction or template setting the context and
+  withholds the report where that is not an element or the root, or cannot be
+  read at all. An unprefixed `name()` takes the `*:name` wildcard too, since
+  an element in a default namespace answers its bare name where a bare
+  `self::` step asks for no namespace; `xpath-default-namespace` keeps the
+  bare step, and 1.0, which has no wildcard, leaves the comparison as it is
+  (#1000).
+
 - Read a namespace prefix where it qualifies a name, and where
   `xsl:namespace-alias` names it bare. `redundant-namespace-declarations`
   looked for the substring `prefix:` and counted `#all` as a use of every

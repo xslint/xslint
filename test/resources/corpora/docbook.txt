@@ -597,7 +597,6 @@ litprog/.stylesheets/fo.xsl:2:1 missing-id-in-stylesheet
 litprog/.stylesheets/html.xsl:2:1 missing-id-in-stylesheet
 litprog/bootstrap-tangle.xsl:5:1 missing-id-in-stylesheet
 litprog/bootstrap-tangle.xsl:46:3 using-disable-output-escaping
-litprog/bootstrap-tangle.xsl:57:29 name-compared-to-string suggestion "self::disable-output-escaping"
 litprog/bootstrap-tangle.xsl:66:45 scans-whole-document
 litprog/example/doc.xsl:2:1 missing-id-in-stylesheet
 litprog/example/doc.xsl:3:17 leaking-result-namespace suggestion "h src"
@@ -661,7 +660,6 @@ releasetools/xslnsfiles/titlepage.xsl:1249:7 text-outside-xsl-text suggestion "<
 releasetools/xslnsfiles/titlepage.xsl:1317:11 text-outside-xsl-text suggestion "<xsl:text>|</xsl:text>"
 releasetools/xtangle.xsl:10:1 missing-id-in-stylesheet
 releasetools/xtangle.xsl:67:3 using-disable-output-escaping
-releasetools/xtangle.xsl:80:29 name-compared-to-string suggestion "self::disable-output-escaping"
 releasetools/xtangle.xsl:117:63 redundant-whitespace fix " "
 releasetools/xtangle.xsl:117:111 redundant-whitespace fix " "
 releasetools/xtangle.xsl:117:158 redundant-whitespace fix ""
@@ -1459,8 +1457,6 @@ xsl/fo/biblio-iso690.xsl:668:3 unused-function-template-parameter
 xsl/fo/biblio-iso690.xsl:733:3 use-choose-without-otherwise
 xsl/fo/biblio-iso690.xsl:801:3 use-choose-without-otherwise
 xsl/fo/biblio-iso690.xsl:819:3 unused-function-template-parameter
-xsl/fo/biblio-iso690.xsl:834:17 name-compared-to-string suggestion "not(self::pubdate)"
-xsl/fo/biblio-iso690.xsl:843:23 name-compared-to-string suggestion "self::pubdate"
 xsl/fo/biblio-iso690.xsl:1018:3 use-choose-without-otherwise
 xsl/fo/biblio-iso690.xsl:1180:3 use-choose-without-otherwise
 xsl/fo/biblio-iso690.xsl:1204:3 use-choose-without-otherwise
@@ -2258,8 +2254,6 @@ xsl/html/biblio-iso690.xsl:668:3 unused-function-template-parameter
 xsl/html/biblio-iso690.xsl:733:3 use-choose-without-otherwise
 xsl/html/biblio-iso690.xsl:801:3 use-choose-without-otherwise
 xsl/html/biblio-iso690.xsl:819:3 unused-function-template-parameter
-xsl/html/biblio-iso690.xsl:834:17 name-compared-to-string suggestion "not(self::pubdate)"
-xsl/html/biblio-iso690.xsl:843:23 name-compared-to-string suggestion "self::pubdate"
 xsl/html/biblio-iso690.xsl:1018:3 use-choose-without-otherwise
 xsl/html/biblio-iso690.xsl:1180:3 use-choose-without-otherwise
 xsl/html/biblio-iso690.xsl:1204:3 use-choose-without-otherwise
@@ -3214,9 +3208,6 @@ xsl/tools/xsl/build/burst.xsl:1:1 missing-id-in-stylesheet
 xsl/tools/xsl/build/burst.xsl:2:17 redundant-namespace-declarations fix ""
 xsl/tools/xsl/build/db4-upgrade.xsl:2:1 missing-id-in-stylesheet
 xsl/tools/xsl/build/db4-upgrade.xsl:2:1 too-many-templates
-xsl/tools/xsl/build/db4-upgrade.xsl:659:18 name-compared-to-string suggestion "not(self::targetdocent)"
-xsl/tools/xsl/build/db4-upgrade.xsl:660:22 name-compared-to-string suggestion "not(self::linkmode)"
-xsl/tools/xsl/build/db4-upgrade.xsl:670:18 name-compared-to-string suggestion "not(self::linkmode)"
 xsl/tools/xsl/build/db4-upgrade.xsl:719:1 oversized-template
 xsl/tools/xsl/build/db4-upgrade.xsl:1053:48 redundant-whitespace fix " "
 xsl/tools/xsl/build/db4-upgrade.xsl:1071:2 text-outside-xsl-text suggestion "<xsl:text>significance</xsl:text>"
@@ -3269,18 +3260,6 @@ xsl/tools/xsl/build/xsl2jref.xsl:22:5 text-outside-xsl-text suggestion "<xsl:tex
 xsl/tools/xsl/build/xsl2jref.xsl:28:5 text-outside-xsl-text suggestion "<xsl:text>right</xsl:text>"
 xsl/tools/xsl/build/xsl2jref.xsl:29:5 text-outside-xsl-text suggestion "<xsl:text>left</xsl:text>"
 xsl/tools/xsl/build/xsl2jref.xsl:30:5 text-outside-xsl-text suggestion "<xsl:text>right</xsl:text>"
-xsl/tools/xsl/build/xsl2jref.xsl:83:46 name-compared-to-string suggestion "self::para"
-xsl/tools/xsl/build/xsl2jref.xsl:84:49 name-compared-to-string suggestion "self::sidebar"
-xsl/tools/xsl/build/xsl2jref.xsl:85:49 name-compared-to-string suggestion "self::variablelist"
-xsl/tools/xsl/build/xsl2jref.xsl:86:49 name-compared-to-string suggestion "self::itemizedlist"
-xsl/tools/xsl/build/xsl2jref.xsl:203:36 name-compared-to-string suggestion "not(self::refpurpose)"
-xsl/tools/xsl/build/xsl2jref.xsl:231:36 name-compared-to-string suggestion "not(self::refpurpose)"
-xsl/tools/xsl/build/xsl2jref.xsl:259:36 name-compared-to-string suggestion "not(self::refpurpose)"
-xsl/tools/xsl/build/xsl2jref.xsl:304:36 name-compared-to-string suggestion "not(self::refpurpose)"
-xsl/tools/xsl/build/xsl2jref.xsl:329:36 name-compared-to-string suggestion "not(self::refpurpose)"
-xsl/tools/xsl/build/xsl2jref.xsl:329:62 name-compared-to-string suggestion "not(self::refsynopsisdiv)"
-xsl/tools/xsl/build/xsl2jref.xsl:342:36 name-compared-to-string suggestion "not(self::refpurpose)"
-xsl/tools/xsl/build/xsl2jref.xsl:354:36 name-compared-to-string suggestion "not(self::refpurpose)"
 xsl/webhelp/xsl/titlepage.templates.xsl:3:1 missing-id-in-stylesheet
 xsl/webhelp/xsl/titlepage.templates.xsl:3:1 too-many-templates
 xsl/webhelp/xsl/titlepage.templates.xsl:13:3 use-choose-without-otherwise
