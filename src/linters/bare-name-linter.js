@@ -3,9 +3,9 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {gathered, tokensOf} = require('../syntax')
+const {calls, gathered, isValid, parseOf, tokensOf} = require('../syntax')
 const {metaOf, suppressed, defect} = require('../checks')
-const {whole} = require('../attributes')
+const {expressionsOf, whole} = require('../attributes')
 const {TOKENS} = require('../tokens')
 const {holding} = require('../tree')
 const {XSLT} = require('../xsl-version')
@@ -36,11 +36,10 @@ const META = metaOf(CHECK)
 const SELECT = 'select'
 
 /**
- * The XSLT elements it reads around: the declaration a name may collide with,
- * and the scope a declaration inside one reaches no further than.
- * @type {{[role: string]: string}}
+ * The XSLT element a name may collide with.
+ * @type {string}
  */
-const ELEMENTS = {declares: 'variable', scope: 'template'}
+const DECLARES = 'variable'
 
 /**
  * The XSLT instructions whose `@select` chooses nodes, every one of which a
@@ -66,25 +65,6 @@ const NAME = 'name'
 const BINDS = [SELECT, `_${SELECT}`]
 
 /**
- * The nearest ancestor template of the element, which is as far as a variable
- * declared inside one reaches.
- * @param {Element} element - The element to climb from
- * @return {?Element} - The template holding it, or nothing where none does
- */
-const scoped = function(element) {
-  let node = element.parentNode
-  while (node && node.nodeType === 1 &&
-    !(node.namespaceURI === XSLT && node.localName === ELEMENTS.scope)) {
-    node = node.parentNode
-  }
-  let template = null
-  if (node && node.nodeType === 1) {
-    template = node
-  }
-  return template
-}
-
-/**
  * Whether the node is an `xsl:variable` binding a name to an expression, which
  * is the only declaration a bare name can be confused with. A variable bound
  * by content holds a parentless tree instead, whose nodes belong to no
@@ -95,39 +75,92 @@ const scoped = function(element) {
  */
 const binding = function(node) {
   return node.nodeType === 1 && node.namespaceURI === XSLT &&
-    node.localName === ELEMENTS.declares && node.hasAttribute(NAME) &&
+    node.localName === DECLARES && node.hasAttribute(NAME) &&
     BINDS.some((one) => node.hasAttribute(one))
 }
 
 /**
- * The names of the variables the template declares in front of the element,
- * which are the ones a bare name standing there can be confused with. A
- * variable declared behind it is out of scope for it, so the walk stops where
- * the element does rather than reading the whole template.
- * @param {Element} template - The template holding the element
- * @param {Element} element - The element the walk stops at
- * @return {Set.<string>} - The names declared in front of it
+ * The standard functions answering an atomic value, whichever nodes they are
+ * handed: a variable bound to one of them holds no node to select (#1001).
+ * @type {Array.<string>}
  */
-const declared = function(template, element) {
-  const taken = new Set()
-  let reached = false
-  /**
-   * Take the name this node declares, then walk the nodes below it, until the
-   * element the scan stops at is met.
-   * @param {Node} node - A node of the template
-   */
-  const visit = function(node) {
-    if (node === element) {
-      reached = true
-    }
-    if (!reached) {
-      if (binding(node)) {
-        taken.add(node.getAttribute(NAME))
+const ATOMIC = ['string', 'number', 'boolean', 'concat', 'normalize-space',
+  'string-length', 'count', 'sum', 'data', 'string-join', 'name',
+  'local-name']
+
+/**
+ * The namespace of XML Schema, whose types an `as` names an atomic value by.
+ * @type {string}
+ */
+const SCHEMA = 'http://www.w3.org/2001/XMLSchema'
+
+/**
+ * Every expression of a document, keyed by the element holding it, indexed
+ * once per document rather than searched once per variable.
+ * @type {WeakMap.<Document, Map.<Element, Array.<object>>>}
+ */
+const INDEXED = new WeakMap()
+
+/**
+ * Whether a variable holds an atomic value rather than nodes: an `as` naming
+ * a type of XML Schema's, or a `select` that is a literal or a call answering
+ * an atomic value whatever it is handed. Spelling such a variable where a
+ * node is selected is a type error, so no fix offers it (#1001).
+ * @param {Element} variable - The `xsl:variable` a bare name collides with
+ * @return {boolean} - Whether it is bound to an atomic value
+ */
+const atomised = function(variable) {
+  const document = variable.ownerDocument
+  if (!INDEXED.has(document)) {
+    const index = new Map()
+    for (const record of expressionsOf(document)) {
+      const held = holding(record.node)
+      if (!index.has(held)) {
+        index.set(held, [])
       }
-      Array.from(node.childNodes).forEach(visit)
+      index.get(held).push(record)
     }
+    INDEXED.set(document, index)
   }
-  visit(template)
+  const record = INDEXED.get(document).get(variable).find(
+    (one) => BINDS.some((name) => whole(one, name)),
+  )
+  const type = (variable.getAttribute('as') || variable.getAttribute('_as') ||
+    '').trim().split(':')
+  const typed = type.length > 1 &&
+    variable.lookupNamespaceURI(type[0]) === SCHEMA
+  let valued = false
+  if (record !== undefined && isValid(record)) {
+    const tree = parseOf(record).tree
+    valued = tree.kind === 'literal' ||
+      ATOMIC.some((name) => calls(record, tree, name))
+  }
+  return typed || valued
+}
+
+/**
+ * The variables in scope at the element, each under the name it takes, the
+ * nearest one taking it: a local variable reaches the siblings behind it and
+ * what they hold, so the walk climbs from the element and reads the siblings
+ * in front of it and of each ancestor below the stylesheet's own children,
+ * where a variable declared inside an earlier sibling reaches nothing (#1001).
+ * @param {Element} element - The element the bare name stands in
+ * @return {Map.<string, Element>} - The variables in scope there
+ */
+const declared = function(element) {
+  const taken = new Map()
+  let node = element
+  while (node.parentNode.nodeType === 1 &&
+    node.parentNode !== element.ownerDocument.documentElement) {
+    let sibling = node.previousSibling
+    while (sibling !== null) {
+      if (binding(sibling) && !taken.has(sibling.getAttribute(NAME))) {
+        taken.set(sibling.getAttribute(NAME), sibling)
+      }
+      sibling = sibling.previousSibling
+    }
+    node = node.parentNode
+  }
   return taken
 }
 
@@ -139,17 +172,18 @@ const declared = function(template, element) {
 const GLOBALS = new WeakMap()
 
 /**
- * The names the stylesheet's own top-level `xsl:variable` declarations take,
- * in scope in every template it holds however the two are ordered (#560).
+ * The stylesheet's own top-level `xsl:variable` declarations under the names
+ * they take, in scope in every template it holds however the two are ordered
+ * (#560).
  * @param {Document} xsl - The stylesheet the element stands in
- * @return {Set.<string>} - The names its globals have taken
+ * @return {Map.<string, Element>} - Its globals by name
  */
 const globals = function(xsl) {
   if (!GLOBALS.has(xsl)) {
-    GLOBALS.set(xsl, new Set(
+    GLOBALS.set(xsl, new Map(
       Array.from(xsl.documentElement.childNodes)
         .filter(binding)
-        .map((node) => node.getAttribute(NAME)),
+        .map((node) => [node.getAttribute(NAME), node]),
     ))
   }
   return GLOBALS.get(xsl)
@@ -160,64 +194,64 @@ const globals = function(xsl) {
  * confused at: a name deeper in a path is a child of whatever stands in front
  * of it. A union has as many heads as it has branches, so `x | title/y` holds
  * one where the text this replaces read the front of the value and saw none.
+ * A predicate is asked of another context node, so nothing in one is (#1001).
  * @param {{node: Node, expression: string, pattern: boolean}} found - The
  *  expression, whole, as `expressionsOf` yields it
  * @return {Array.<object>} - The head steps found
  */
 const heads = function(found) {
+  const below = (node) => node.children.flatMap(
+    (kid) => [kid].concat(below(kid)),
+  )
   const inner = new Set(
-    gathered(found, ['path']).flatMap((path) => path.children.slice(1)),
+    gathered(found, ['path']).flatMap((path) => path.children.slice(1))
+      .concat(gathered(found, ['predicate']).flatMap(below)),
   )
   return gathered(found, ['step']).filter((step) => !inner.has(step))
 }
 
 /**
  * The bare names the expression opens a path with that a variable in scope has
- * already taken, each paired with the fix that spells the variable. A step is
+ * taken, each with the fix spelling the variable unless it is atomic. A step is
  * read for the name it *tests* rather than for the text it begins with, so
  * `@title`, `child::title` and `*` are none of them this construct, where a
  * `title[1]`, a gapped ` title/x` and every union branch but the first are.
  * @param {{node: Node, expression: string, pattern: boolean}} found - The
  *  expression, whole, as `expressionsOf` yields it
- * @param {Set.<string>} taken - The names variables in scope have taken
- * @return {Array.<{at: number, fix: object}>} - The names found
+ * @param {Map.<string, Element>} taken - The variables in scope, by name
+ * @return {Array.<{at: number, fix: ?object}>} - The names found
  */
 const confused = function(found, taken) {
   const results = []
   for (const step of heads(found)) {
     const first = tokensOf(found, step)[0]
     if (first.type === TOKENS.NAME && taken.has(first.value)) {
-      results.push({
-        at: first.start,
-        fix: {
-          value: first.value,
-          replacement: `$${first.value}`,
-        },
-      })
+      let fix = {value: first.value, replacement: `$${first.value}`}
+      if (atomised(taken.get(first.value))) {
+        fix = undefined
+      }
+      results.push({at: first.start, fix})
     }
   }
   return results
 }
 
 /**
- * The names in scope where the record stands, or nothing where it is not one
- * this check reads: it wants the whole `@select` of a selecting instruction.
- * Those names are the stylesheet's globals, and the declarations standing in
- * front of it in the template holding it (#560, #788).
+ * The variables in scope where the record stands, or nothing where it is not
+ * one this check reads: it wants the whole `@select` of a selecting
+ * instruction. Those are the declarations in scope there, and behind them the
+ * stylesheet's globals (#560, #788, #1001).
  * @param {{node: Node, start: number, pattern: boolean}} found - The record
- * @return {?Set.<string>} - The names taken there, or nothing where it is not
- *  the attribute this check reads
+ * @return {?Map.<string, Element>} - The variables in scope there, or nothing
+ *  where it is not the attribute this check reads
  */
 const selecting = function(found) {
   let taken = null
   const element = holding(found.node)
   if (whole(found, SELECT) && element.namespaceURI === XSLT &&
     SELECTING.includes(element.localName)) {
-    const template = scoped(element)
-    taken = new Set(globals(element.ownerDocument))
-    if (template) {
-      declared(template, element).forEach((one) => taken.add(one))
-    }
+    taken = new Map([...globals(element.ownerDocument),
+      ...declared(element)])
   }
   return taken
 }

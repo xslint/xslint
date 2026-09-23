@@ -4,12 +4,13 @@
 pack: unused-function
 found:
   amount: 1
-  positions: [ [ 0, 6, 3 ] ]
+  positions: [ [ 0, 7, 3 ] ]
 inputs:
   - |-
     <?xml version="1.0"?>
     <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:my="urn:my" version="2.0">
       <xsl:function name="my:used">
+        <xsl:param name="context"/>
         <xsl:sequence select="1"/>
       </xsl:function>
       <xsl:function name="my:dead">
