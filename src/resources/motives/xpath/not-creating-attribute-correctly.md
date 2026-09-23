@@ -31,7 +31,7 @@ the value needs instructions an AVT cannot hold (an `xsl:choose`), or the parent
 is itself an instruction such as `xsl:element` or `xsl:copy` — those are left
 alone.
 
-Three shapes cannot be written inline at all, whatever they look like. An
+Several shapes cannot be written inline at all, whatever they look like. An
 `xsl:attribute` carrying `@namespace` puts the attribute in a namespace, and a
 literal attribute on a literal result element takes the one its own prefix
 binds — so inlining it moves the attribute. An `xsl:value-of` carrying
@@ -41,9 +41,30 @@ writes something else whenever the value is more than one item. An `xsl:text`
 carrying `@disable-output-escaping` asks the serializer for something a
 literal attribute has no way to say, and inside an attribute what it asks for
 is an error a processor may signal or ignore as it chooses, so rewriting it
-would pick one of those readings.
+would pick one of those readings. An `xsl:attribute` carrying `@separator`,
+`@type` or `@validation` asks for something no literal attribute can carry:
+its own separator, where an attribute value template joins with a space, or a
+type annotation and validation a literal attribute has no attribute to say.
+And an attribute the start tag already writes cannot be written there twice,
+since a second `class` on one element is not well-formed XML.
 
-Position is the fourth. A literal attribute is written before the element's
+Scope is another. A variable declared in the element's content is in scope
+for what follows it and not for the element's own start tag, so a value
+reading it cannot move there:
+
+```xsl
+<fo:table-column>
+  <xsl:variable name="width" select="@w"/>
+  <xsl:attribute name="column-width">
+    <xsl:value-of select="$width"/>
+  </xsl:attribute>
+</fo:table-column>
+```
+
+is left alone, since `<fo:table-column column-width="{$width}">` reads a
+variable nothing has declared there.
+
+Position is the last. A literal attribute is written before the element's
 content is instantiated, so anything standing in front of the `xsl:attribute`
 that can supply an attribute of its own — an `xsl:copy-of`, an
 `xsl:apply-templates` or an `xsl:call-template` over attributes, bare or inside
