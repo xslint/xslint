@@ -200,82 +200,82 @@ contrib/xsl/applethelp/htmlhelp-common.xsl:323:33 scans-whole-document
 contrib/xsl/applethelp/htmlhelp-common.xsl:353:1 mode-or-priority-without-match suggestion ""
 contrib/xsl/applethelp/htmlhelp-common.xsl:415:1 mode-or-priority-without-match suggestion ""
 contrib/xsl/applethelp/htmlhelp-common.xsl:442:1 mode-or-priority-without-match suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:478:3 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:484:5 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:488:4 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:490:2 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:493:1 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:507:3 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:510:3 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:532:5 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:535:7 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:538:7 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:547:5 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:549:9 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:554:11 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:557:11 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:561:5 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:583:5 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:586:7 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:589:7 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:598:5 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:600:9 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:605:11 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:608:11 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:613:5 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:636:5 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:639:7 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:642:7 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:646:5 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:650:5 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:672:5 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:675:7 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:678:7 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:682:5 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:684:5 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:706:5 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:709:7 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:712:7 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:716:5 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:719:5 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:741:5 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:744:7 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:747:7 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:751:5 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:754:5 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:776:5 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:779:7 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:782:7 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:786:5 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:789:5 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:811:5 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:814:7 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:817:7 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:821:5 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:824:5 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:846:5 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:849:7 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:852:7 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:856:5 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:859:5 using-disable-output-escaping suggestion ""
+contrib/xsl/applethelp/htmlhelp-common.xsl:478:3 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:484:5 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:488:4 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:490:2 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:493:1 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:507:3 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:510:3 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:532:5 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:535:7 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:538:7 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:547:5 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:549:9 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:554:11 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:557:11 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:561:5 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:583:5 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:586:7 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:589:7 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:598:5 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:600:9 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:605:11 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:608:11 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:613:5 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:636:5 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:639:7 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:642:7 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:646:5 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:650:5 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:672:5 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:675:7 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:678:7 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:682:5 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:684:5 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:706:5 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:709:7 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:712:7 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:716:5 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:719:5 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:741:5 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:744:7 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:747:7 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:751:5 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:754:5 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:776:5 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:779:7 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:782:7 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:786:5 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:789:5 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:811:5 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:814:7 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:817:7 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:821:5 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:824:5 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:846:5 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:849:7 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:852:7 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:856:5 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:859:5 using-disable-output-escaping
 contrib/xsl/applethelp/htmlhelp-common.xsl:891:7 blank-nested-if
 contrib/xsl/applethelp/htmlhelp-common.xsl:892:27 scans-whole-document
-contrib/xsl/applethelp/htmlhelp-common.xsl:934:36 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:956:1 using-disable-output-escaping suggestion ""
+contrib/xsl/applethelp/htmlhelp-common.xsl:934:36 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:956:1 using-disable-output-escaping
 contrib/xsl/applethelp/htmlhelp-common.xsl:976:23 scans-whole-document
-contrib/xsl/applethelp/htmlhelp-common.xsl:983:5 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:989:7 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:994:7 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:996:5 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:1010:3 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:1011:83 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:1025:9 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:1027:9 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:1028:9 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:1030:9 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:1033:9 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:1035:9 using-disable-output-escaping suggestion ""
-contrib/xsl/applethelp/htmlhelp-common.xsl:1037:7 using-disable-output-escaping suggestion ""
+contrib/xsl/applethelp/htmlhelp-common.xsl:983:5 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:989:7 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:994:7 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:996:5 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:1010:3 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:1011:83 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:1025:9 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:1027:9 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:1028:9 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:1030:9 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:1033:9 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:1035:9 using-disable-output-escaping
+contrib/xsl/applethelp/htmlhelp-common.xsl:1037:7 using-disable-output-escaping
 contrib/xsl/applethelp/htmlhelp-common.xsl:1167:5 short-names
 contrib/xsl/cldr2dbk/cldr2dbk.xsl:2:1 missing-id-in-stylesheet
 contrib/xsl/cldr2dbk/cldr2dbk.xsl:95:27 scans-whole-document
@@ -556,11 +556,11 @@ contrib/xsl/xsd2db/xsd2db.xsl:8602:10 text-outside-xsl-text suggestion "<xsl:tex
 contrib/xsl/xsd2db/xsd2db.xsl:8609:10 text-outside-xsl-text suggestion "<xsl:text>\n            Whitespace policy: \n            </xsl:text>"
 contrib/xsl/xsd2db/xsd2db.xsl:8629:7 use-choose-without-otherwise
 contrib/xsl/xsd2db/xsd2db.xsl:8688:4 unused-named-template
-contrib/xsl/xsd2db/xsd2db.xsl:8699:10 using-disable-output-escaping suggestion ""
-contrib/xsl/xsd2db/xsd2db.xsl:8703:10 using-disable-output-escaping suggestion ""
-contrib/xsl/xsd2db/xsd2db.xsl:8706:10 using-disable-output-escaping suggestion ""
+contrib/xsl/xsd2db/xsd2db.xsl:8699:10 using-disable-output-escaping
+contrib/xsl/xsd2db/xsd2db.xsl:8703:10 using-disable-output-escaping
+contrib/xsl/xsd2db/xsd2db.xsl:8706:10 using-disable-output-escaping
 gentext/xsl/dsssl.xsl:2:1 missing-id-in-stylesheet
-gentext/xsl/dsssl.xsl:32:5 using-disable-output-escaping suggestion ""
+gentext/xsl/dsssl.xsl:32:5 using-disable-output-escaping
 gentext/xsl/dsssl.xsl:42:43 redundant-whitespace fix " "
 gentext/xsl/dsssl.xsl:43:43 redundant-whitespace fix " "
 gentext/xsl/dsssl.xsl:44:43 redundant-whitespace fix " "
@@ -573,7 +573,7 @@ gentext/xsl/dsssl.xsl:50:19 string-length-compared-to-zero suggestion "@key = ''
 gentext/xsl/dsssl.xsl:50:43 redundant-whitespace fix " "
 gentext/xsl/dsssl.xsl:52:5 using-disable-output-escaping suggestion ""
 gentext/xsl/dsssl.xsl:54:5 using-disable-output-escaping suggestion ""
-gentext/xsl/dsssl.xsl:55:5 using-disable-output-escaping suggestion ""
+gentext/xsl/dsssl.xsl:55:5 using-disable-output-escaping
 gentext/xsl/xsl-primary-is-locale.xsl:2:1 missing-id-in-stylesheet
 gentext/xsl/xsl-primary-is-locale.xsl:4:17 redundant-namespace-declarations fix ""
 gentext/xsl/xsl.xsl:2:1 missing-id-in-stylesheet
@@ -584,7 +584,7 @@ gentext/xsl/xsl.xsl:116:3 setting-value-of-variable-incorrectly
 litprog/.stylesheets/fo.xsl:2:1 missing-id-in-stylesheet
 litprog/.stylesheets/html.xsl:2:1 missing-id-in-stylesheet
 litprog/bootstrap-tangle.xsl:5:1 missing-id-in-stylesheet
-litprog/bootstrap-tangle.xsl:46:3 using-disable-output-escaping suggestion ""
+litprog/bootstrap-tangle.xsl:46:3 using-disable-output-escaping
 litprog/bootstrap-tangle.xsl:57:29 name-compared-to-string suggestion "self::disable-output-escaping"
 litprog/bootstrap-tangle.xsl:66:45 scans-whole-document
 litprog/example/doc.xsl:2:1 missing-id-in-stylesheet
@@ -643,7 +643,7 @@ releasetools/xslnsfiles/titlepage.xsl:1211:7 text-outside-xsl-text suggestion "<
 releasetools/xslnsfiles/titlepage.xsl:1249:7 text-outside-xsl-text suggestion "<xsl:text>recto</xsl:text>"
 releasetools/xslnsfiles/titlepage.xsl:1317:11 text-outside-xsl-text suggestion "<xsl:text>|</xsl:text>"
 releasetools/xtangle.xsl:10:1 missing-id-in-stylesheet
-releasetools/xtangle.xsl:67:3 using-disable-output-escaping suggestion ""
+releasetools/xtangle.xsl:67:3 using-disable-output-escaping
 releasetools/xtangle.xsl:80:29 name-compared-to-string suggestion "self::disable-output-escaping"
 releasetools/xtangle.xsl:117:63 redundant-whitespace fix " "
 releasetools/xtangle.xsl:117:111 redundant-whitespace fix " "
@@ -2799,8 +2799,8 @@ xsl/htmlhelp/htmlhelp-common.xsl:816:7 blank-nested-if
 xsl/htmlhelp/htmlhelp-common.xsl:817:27 scans-whole-document
 xsl/htmlhelp/htmlhelp-common.xsl:824:7 blank-nested-if
 xsl/htmlhelp/htmlhelp-common.xsl:825:27 scans-whole-document
-xsl/htmlhelp/htmlhelp-common.xsl:868:36 using-disable-output-escaping suggestion ""
-xsl/htmlhelp/htmlhelp-common.xsl:888:1 using-disable-output-escaping suggestion ""
+xsl/htmlhelp/htmlhelp-common.xsl:868:36 using-disable-output-escaping
+xsl/htmlhelp/htmlhelp-common.xsl:888:1 using-disable-output-escaping
 xsl/htmlhelp/htmlhelp-common.xsl:909:23 scans-whole-document
 xsl/htmlhelp/htmlhelp-common.xsl:940:7 not-creating-attribute-correctly
 xsl/htmlhelp/htmlhelp-common.xsl:956:11 not-creating-attribute-correctly
@@ -3353,7 +3353,7 @@ xsl/webhelp/xsl/webhelp-common.xsl:662:17 unused-variable
 xsl/webhelp/xsl/webhelp-common.xsl:673:17 unused-variable
 xsl/webhelp/xsl/webhelp-common.xsl:690:17 unused-variable
 xsl/webhelp/xsl/webhelp-common.xsl:701:17 unused-variable
-xsl/webhelp/xsl/webhelp-common.xsl:771:53 using-disable-output-escaping suggestion ""
+xsl/webhelp/xsl/webhelp-common.xsl:771:53 using-disable-output-escaping
 xsl/webhelp/xsl/webhelp-common.xsl:863:5 unused-named-template
 xsl/webhelp/xsl/webhelp-common.xsl:913:38 scans-whole-document
 xsl/webhelp/xsl/webhelp.xsl:2:1 missing-id-in-stylesheet
@@ -3451,7 +3451,7 @@ xsl/xhtml5/docbook.xsl:4:1 missing-id-in-stylesheet
 xsl/xhtml5/html5-chunk-mods.xsl:2:1 missing-id-in-stylesheet
 xsl/xhtml5/html5-element-mods.xsl:6:1 missing-id-in-stylesheet
 xsl/xhtml5/html5-element-mods.xsl:6:1 too-many-templates
-xsl/xhtml5/html5-element-mods.xsl:41:3 using-disable-output-escaping suggestion ""
+xsl/xhtml5/html5-element-mods.xsl:41:3 using-disable-output-escaping
 xsl/xhtml5/html5-element-mods.xsl:54:1 oversized-template
 xsl/xhtml5/html5-element-mods.xsl:61:3 unused-variable
 xsl/xhtml5/html5-element-mods.xsl:198:23 string-length-compared-to-zero suggestion "$table.width != ''"
