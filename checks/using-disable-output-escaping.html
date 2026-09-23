@@ -113,7 +113,7 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-warning">warning</span> <span class="fix-suggestion">suggested fix</span>
-    <code class="xpath">//(xsl:value-of | xsl:text)[@disable-output-escaping = "yes"]</code>
+    <code class="xpath">//(xsl:value-of | xsl:text)[xslint:attribute(., 'disable-output-escaping') = 'yes']</code>
   </div>
   <p class="fix-note"><code>--fix-suggestions</code> rewrites this one, and a plain
   <code>--fix</code> leaves it alone: the correction changes what the
@@ -128,6 +128,11 @@ two instructions that carry it. An element of the result vocabulary spelling
 the same name is not using the feature at all: there the attribute is output
 data, copied into the result tree like any other, and no processor reads it as
 an instruction.</p>
+<p>XSLT 3.0 spells the attribute <code>_disable-output-escaping</code> as readily as
+<code>disable-output-escaping</code>, the underscore form holding an attribute value
+template a processor evaluates before it transforms anything. So
+<code>_disable-output-escaping=&quot;{&#39;yes&#39;}&quot;</code> is the same instruction written the modern
+way, and a processor honours it exactly as it honours the plain spelling.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:value-of select=&quot;raw-html&quot; disable-output-escaping=&quot;yes&quot;/&gt;
 </code></pre>
