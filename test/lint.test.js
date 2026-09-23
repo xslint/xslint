@@ -291,7 +291,7 @@ describe('lint (programmatic API)', function() {
       ['9:45', '11:43', '14:45'],
     )
   })
-  it('suggests dropping a match, but safely fixes any other pattern', function() {
+  it('suggests dropping a match, and safely fixes only a key on 2.0+', function() {
     assert.deepEqual(
       [
         'fix/starts-with-double-slash.xsl',
@@ -299,7 +299,15 @@ describe('lint (programmatic API)', function() {
       ].flatMap((sheet) => lint([source(sheet)])
         .filter((defect) => defect.name === 'starts-with-double-slash')
         .map((defect) => Boolean(defect.fix.suggestion))),
-      [true, true, false, false, false, false, false, false],
+      [true, true, false, true, true, true, true, true],
+    )
+  })
+  it('safely fixes every pattern but a match in an XSLT 1.0 sheet', function() {
+    assert.deepEqual(
+      lint([source('fix/starts-with-double-slash-in-xslt-1.xsl')])
+        .filter((defect) => defect.name === 'starts-with-double-slash')
+        .map((defect) => Boolean(defect.fix.suggestion)),
+      [false, true, false, false],
     )
   })
   it('offers no fix on a pattern that is only a valid expression', function() {
