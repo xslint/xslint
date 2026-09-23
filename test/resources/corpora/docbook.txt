@@ -3,9 +3,7 @@ anttools/xspec/coverage-report.xsl:11:1 not-using-output
 anttools/xspec/coverage-report.xsl:14:3 leaking-result-namespace suggestion "xs saxon test"
 anttools/xspec/coverage-report.xsl:42:3 unused-variable
 anttools/xspec/coverage-report.xsl:80:3 unused-variable
-anttools/xspec/coverage-report.xsl:123:1 setting-value-of-variable-incorrectly
 anttools/xspec/coverage-report.xsl:124:3 text-outside-xsl-text
-anttools/xspec/coverage-report.xsl:138:1 setting-value-of-variable-incorrectly
 anttools/xspec/coverage-report.xsl:139:3 text-outside-xsl-text
 anttools/xspec/coverage-report.xsl:239:53 unabbreviated-axis fix ".."
 anttools/xspec/coverage-report.xsl:278:1 text-outside-xsl-text suggestion "<xsl:text>ignored</xsl:text>"
@@ -20,7 +18,6 @@ anttools/xspec/coverage-report.xsl:310:5 text-outside-xsl-text suggestion "<xsl:
 anttools/xspec/coverage-report.xsl:314:5 text-outside-xsl-text suggestion "<xsl:text>missed</xsl:text>"
 anttools/xspec/coverage-report.xsl:318:1 text-outside-xsl-text suggestion "<xsl:text>ignored</xsl:text>"
 anttools/xspec/format-utils.xsl:11:1 missing-id-in-stylesheet
-anttools/xspec/format-utils.xsl:43:3 setting-value-of-variable-incorrectly
 anttools/xspec/format-utils.xsl:51:13 using-namespace-axis
 anttools/xspec/format-utils.xsl:51:90 using-namespace-axis
 anttools/xspec/format-utils.xsl:52:21 using-namespace-axis
@@ -88,7 +85,6 @@ anttools/xspec/generate-tests-utils.xsl:28:4 short-names
 anttools/xspec/generate-tests-utils.xsl:33:1 unreachable-function
 anttools/xspec/generate-tests-utils.xsl:34:4 short-names
 anttools/xspec/generate-tests-utils.xsl:69:1 unreachable-function
-anttools/xspec/generate-tests-utils.xsl:169:12 setting-value-of-variable-incorrectly
 anttools/xspec/generate-tests-utils.xsl:477:19 unabbreviated-axis fix ""
 anttools/xspec/generate-tests-utils.xsl:547:1 unused-named-template
 anttools/xspec/generate-tests-utils.xsl:560:9 use-choose-without-otherwise
@@ -286,12 +282,22 @@ contrib/xsl/cldr2dbk/cldr2dbk.xsl:119:6 not-creating-attribute-correctly
 contrib/xsl/db2wiki/DocBook2Wiki.xsl:2:1 missing-id-in-stylesheet
 contrib/xsl/db2wiki/DocBook2Wiki.xsl:2:1 too-many-templates
 contrib/xsl/db2wiki/DocBook2Wiki.xsl:17:3 unused-variable
+contrib/xsl/db2wiki/DocBook2Wiki.xsl:28:5 setting-value-of-variable-incorrectly
+contrib/xsl/db2wiki/DocBook2Wiki.xsl:34:5 setting-value-of-variable-incorrectly
+contrib/xsl/db2wiki/DocBook2Wiki.xsl:49:5 setting-value-of-variable-incorrectly
+contrib/xsl/db2wiki/DocBook2Wiki.xsl:55:5 setting-value-of-variable-incorrectly
+contrib/xsl/db2wiki/DocBook2Wiki.xsl:68:5 setting-value-of-variable-incorrectly
+contrib/xsl/db2wiki/DocBook2Wiki.xsl:74:5 setting-value-of-variable-incorrectly
 contrib/xsl/db2wiki/DocBook2Wiki.xsl:213:1 text-outside-xsl-text suggestion "<xsl:text>Tip: </xsl:text>"
 contrib/xsl/db2wiki/DocBook2Wiki.xsl:222:1 text-outside-xsl-text suggestion "<xsl:text>Výstraha: </xsl:text>"
 contrib/xsl/db2wiki/DocBook2Wiki.xsl:231:1 text-outside-xsl-text suggestion "<xsl:text>Poznámka: </xsl:text>"
 contrib/xsl/db2wiki/DocBook2Wiki.xsl:240:1 text-outside-xsl-text suggestion "<xsl:text>Důležité: </xsl:text>"
 contrib/xsl/db2wiki/DocBook2Wiki.xsl:287:21 unabbreviated-axis fix ""
+contrib/xsl/db2wiki/DocBook2Wiki.xsl:293:9 setting-value-of-variable-incorrectly
+contrib/xsl/db2wiki/DocBook2Wiki.xsl:315:9 setting-value-of-variable-incorrectly
 contrib/xsl/db2wiki/DocBook2Wiki.xsl:334:21 unabbreviated-axis fix ""
+contrib/xsl/db2wiki/DocBook2Wiki.xsl:377:9 setting-value-of-variable-incorrectly
+contrib/xsl/db2wiki/DocBook2Wiki.xsl:384:9 setting-value-of-variable-incorrectly
 contrib/xsl/resume/fo/resume.xsl:2:1 missing-id-in-stylesheet
 contrib/xsl/resume/fo/resume.xsl:2:1 too-many-templates
 contrib/xsl/resume/fo/resume.xsl:50:3 unused-variable
@@ -448,6 +454,7 @@ contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:4491:3 unused-variable
 contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:4719:3 unused-function-template-parameter
 contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:4720:3 unused-function-template-parameter
 contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:4721:3 unused-function-template-parameter
+contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:4761:3 setting-value-of-variable-incorrectly
 contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:4772:5 setting-value-of-variable-incorrectly
 contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:4779:9 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:4780:9 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
@@ -520,6 +527,7 @@ contrib/xsl/xsd2db/xsd2db.xsl:5753:7 use-choose-without-otherwise
 contrib/xsl/xsd2db/xsd2db.xsl:5835:7 use-choose-without-otherwise
 contrib/xsl/xsd2db/xsd2db.xsl:5858:13 unused-variable
 contrib/xsl/xsd2db/xsd2db.xsl:5863:13 unused-variable
+contrib/xsl/xsd2db/xsd2db.xsl:6229:22 setting-value-of-variable-incorrectly
 contrib/xsl/xsd2db/xsd2db.xsl:6409:7 unused-function-template-parameter
 contrib/xsl/xsd2db/xsd2db.xsl:6560:40 unabbreviated-axis fix "@"
 contrib/xsl/xsd2db/xsd2db.xsl:6743:16 unused-variable
@@ -543,6 +551,7 @@ contrib/xsl/xsd2db/xsd2db.xsl:7598:7 unused-function-template-parameter
 contrib/xsl/xsd2db/xsd2db.xsl:7599:7 unused-function-template-parameter
 contrib/xsl/xsd2db/xsd2db.xsl:7601:7 unused-variable
 contrib/xsl/xsd2db/xsd2db.xsl:7622:13 not-creating-attribute-correctly
+contrib/xsl/xsd2db/xsd2db.xsl:7626:13 setting-value-of-variable-incorrectly
 contrib/xsl/xsd2db/xsd2db.xsl:7648:7 use-choose-without-otherwise
 contrib/xsl/xsd2db/xsd2db.xsl:7797:7 use-single-option-for-choose
 contrib/xsl/xsd2db/xsd2db.xsl:8147:7 use-choose-without-otherwise
@@ -602,6 +611,8 @@ releasetools/gitlog2docbook.xsl:2:1 missing-id-in-stylesheet
 releasetools/gitlog2docbook.xsl:2:1 too-many-templates
 releasetools/gitlog2docbook.xsl:160:9 not-creating-attribute-correctly
 releasetools/make-catalog.xsl:2:1 missing-id-in-stylesheet
+releasetools/make-catalog.xsl:12:1 setting-value-of-variable-incorrectly
+releasetools/make-catalog.xsl:15:1 setting-value-of-variable-incorrectly
 releasetools/modified-markup.xsl:36:1 missing-id-in-stylesheet
 releasetools/modified-markup.xsl:52:97 redundant-whitespace fix " "
 releasetools/modified-markup.xsl:52:174 redundant-whitespace fix " "
@@ -616,7 +627,9 @@ releasetools/xslnsfiles/manpages.table.xsl:2:1 missing-id-in-stylesheet
 releasetools/xslnsfiles/manpages.table.xsl:2:1 not-using-output
 releasetools/xslnsfiles/manpages.table.xsl:2:1 too-many-templates
 releasetools/xslnsfiles/manpages.table.xsl:3:17 leaking-result-namespace suggestion "exsl d"
+releasetools/xslnsfiles/manpages.table.xsl:289:13 setting-value-of-variable-incorrectly
 releasetools/xslnsfiles/manpages.table.xsl:340:5 setting-value-of-variable-incorrectly
+releasetools/xslnsfiles/manpages.table.xsl:358:5 setting-value-of-variable-incorrectly
 releasetools/xslnsfiles/manpages.table.xsl:414:7 setting-value-of-variable-incorrectly
 releasetools/xslnsfiles/manpages.table.xsl:437:5 use-single-option-for-choose
 releasetools/xslnsfiles/manpages.table.xsl:569:5 unused-variable
@@ -664,6 +677,8 @@ testdocs/i18n/translators.xsl:2:1 missing-id-in-stylesheet
 testdocs/i18n/translators.xsl:25:31 scans-whole-document
 testdocs/xrefstyle.xsl:2:1 missing-id-in-stylesheet
 xsl/.make-catalog.xsl:2:1 missing-id-in-stylesheet
+xsl/.make-catalog.xsl:12:1 setting-value-of-variable-incorrectly
+xsl/.make-catalog.xsl:15:1 setting-value-of-variable-incorrectly
 xsl/VERSION.xsl:2:1 missing-id-in-stylesheet
 xsl/VERSION.xsl:5:3 redundant-namespace-declarations fix ""
 xsl/VERSION.xsl:6:3 redundant-namespace-declarations fix ""
@@ -1071,6 +1086,7 @@ xsl/epub/docbook.xsl:305:5 setting-value-of-variable-incorrectly
 xsl/epub/docbook.xsl:327:13 not-creating-element-correctly
 xsl/epub/docbook.xsl:332:13 not-creating-element-correctly
 xsl/epub/docbook.xsl:338:13 not-creating-element-correctly
+xsl/epub/docbook.xsl:365:7 setting-value-of-variable-incorrectly
 xsl/epub/docbook.xsl:448:15 unused-variable
 xsl/epub/docbook.xsl:472:15 unused-variable
 xsl/epub/docbook.xsl:542:5 setting-value-of-variable-incorrectly
@@ -1184,6 +1200,7 @@ xsl/epub/docbook.xsl:1466:54 redundant-whitespace fix " "
 xsl/epub/docbook.xsl:1467:7 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
 xsl/epub/docbook.xsl:1520:49 redundant-whitespace fix " "
 xsl/epub/docbook.xsl:1554:66 use-double-slash
+xsl/epub/docbook.xsl:1556:7 setting-value-of-variable-incorrectly
 xsl/epub/docbook.xsl:1566:13 text-outside-xsl-text suggestion "<xsl:text>Cover</xsl:text>"
 xsl/epub/docbook.xsl:1598:3 unused-named-template
 xsl/epub/docbook.xsl:1599:5 unused-function-template-parameter
@@ -1248,6 +1265,7 @@ xsl/epub3/epub3-chunk-mods.xsl:9:3 redundant-namespace-declarations fix ""
 xsl/epub3/epub3-element-mods.xsl:7:1 missing-id-in-stylesheet
 xsl/epub3/epub3-element-mods.xsl:7:1 too-many-templates
 xsl/epub3/epub3-element-mods.xsl:58:21 string-length-compared-to-zero suggestion "$base.dir = ''"
+xsl/epub3/epub3-element-mods.xsl:306:5 setting-value-of-variable-incorrectly
 xsl/epub3/epub3-element-mods.xsl:345:7 not-creating-attribute-correctly
 xsl/epub3/epub3-element-mods.xsl:376:7 not-creating-attribute-correctly
 xsl/epub3/epub3-element-mods.xsl:436:21 string-length-compared-to-zero suggestion "$utc.datetime != ''"
@@ -1271,11 +1289,14 @@ xsl/epub3/epub3-element-mods.xsl:1475:21 string-length-compared-to-zero suggesti
 xsl/epub3/epub3-element-mods.xsl:1588:17 count-compared-to-zero fix "$intersection"
 xsl/epub3/epub3-element-mods.xsl:1593:1 unused-named-template
 xsl/epub3/epub3-element-mods.xsl:1614:23 string-length-compared-to-zero suggestion "tmp-href != ''"
+xsl/epub3/epub3-element-mods.xsl:1844:5 setting-value-of-variable-incorrectly
 xsl/epub3/epub3-element-mods.xsl:1894:13 unused-variable
 xsl/epub3/epub3-element-mods.xsl:1918:13 unused-variable
 xsl/epub3/epub3-element-mods.xsl:1990:3 setting-value-of-variable-incorrectly
 xsl/epub3/epub3-element-mods.xsl:1993:3 setting-value-of-variable-incorrectly
 xsl/epub3/epub3-element-mods.xsl:2109:9 text-outside-xsl-text suggestion "<xsl:text>no</xsl:text>"
+xsl/epub3/epub3-element-mods.xsl:2145:5 setting-value-of-variable-incorrectly
+xsl/epub3/epub3-element-mods.xsl:2183:5 setting-value-of-variable-incorrectly
 xsl/epub3/epub3-element-mods.xsl:2193:11 text-outside-xsl-text suggestion "<xsl:text>Cover</xsl:text>"
 xsl/epub3/epub3-element-mods.xsl:2319:7 text-outside-xsl-text suggestion "<xsl:text>lot</xsl:text>"
 xsl/epub3/epub3-element-mods.xsl:2320:7 text-outside-xsl-text suggestion "<xsl:text>loi</xsl:text>"
@@ -1366,6 +1387,7 @@ xsl/fo/annotations.xsl:2:1 missing-id-in-stylesheet
 xsl/fo/annotations.xsl:5:3 redundant-namespace-declarations fix ""
 xsl/fo/autoidx-kimber.xsl:11:1 missing-id-in-stylesheet
 xsl/fo/autoidx-kimber.xsl:11:1 not-using-output
+xsl/fo/autoidx-kimber.xsl:152:9 setting-value-of-variable-incorrectly
 xsl/fo/autoidx-kosek.xsl:6:1 missing-id-in-stylesheet
 xsl/fo/autoidx-kosek.xsl:6:1 not-using-output
 xsl/fo/autoidx-kosek.xsl:9:17 redundant-namespace-declarations fix ""
@@ -1376,6 +1398,7 @@ xsl/fo/autoidx.xsl:6:1 too-many-templates
 xsl/fo/autoidx.xsl:10:17 leaking-result-namespace suggestion "exslt d xlink"
 xsl/fo/autoidx.xsl:188:3 unused-function-template-parameter
 xsl/fo/autoidx.xsl:220:3 unused-function-template-parameter
+xsl/fo/autoidx.xsl:254:11 setting-value-of-variable-incorrectly
 xsl/fo/autoidx.xsl:326:57 scans-whole-document
 xsl/fo/autoidx.xsl:326:67 scans-whole-document
 xsl/fo/autoidx.xsl:783:3 unused-function-template-parameter
@@ -2009,6 +2032,7 @@ xsl/fo/table.xsl:1429:11 text-outside-xsl-text suggestion "<xsl:text>1*</xsl:tex
 xsl/fo/table.xsl:1436:13 not-creating-attribute-correctly
 xsl/fo/table.xsl:1476:11 not-creating-attribute-correctly
 xsl/fo/table.xsl:1500:11 text-outside-xsl-text suggestion "<xsl:text>1*</xsl:text>"
+xsl/fo/table.xsl:1509:17 setting-value-of-variable-incorrectly
 xsl/fo/table.xsl:1514:15 not-creating-attribute-correctly
 xsl/fo/table.xsl:1674:5 text-outside-xsl-text suggestion "<xsl:text>pc</xsl:text>"
 xsl/fo/table.xsl:1675:5 text-outside-xsl-text suggestion "<xsl:text>pt</xsl:text>"
@@ -2917,13 +2941,20 @@ xsl/manpages/other.xsl:7:17 redundant-namespace-declarations fix ""
 xsl/manpages/other.xsl:80:3 unused-function-template-parameter
 xsl/manpages/other.xsl:115:22 starts-with-double-slash suggestion ""
 xsl/manpages/other.xsl:115:34 use-double-slash
+xsl/manpages/other.xsl:117:5 setting-value-of-variable-incorrectly
 xsl/manpages/other.xsl:123:22 starts-with-double-slash suggestion ""
 xsl/manpages/other.xsl:123:34 use-double-slash
+xsl/manpages/other.xsl:125:5 setting-value-of-variable-incorrectly
 xsl/manpages/other.xsl:616:29 scans-whole-document
+xsl/manpages/other.xsl:642:7 setting-value-of-variable-incorrectly
+xsl/manpages/other.xsl:648:7 setting-value-of-variable-incorrectly
+xsl/manpages/other.xsl:875:7 setting-value-of-variable-incorrectly
+xsl/manpages/other.xsl:878:7 setting-value-of-variable-incorrectly
 xsl/manpages/pi.xsl:2:1 missing-id-in-stylesheet
 xsl/manpages/pi.xsl:5:17 redundant-namespace-declarations fix ""
 xsl/manpages/refentry.xsl:2:1 missing-id-in-stylesheet
 xsl/manpages/refentry.xsl:2:1 too-many-templates
+xsl/manpages/refentry.xsl:88:7 setting-value-of-variable-incorrectly
 xsl/manpages/refentry.xsl:130:5 setting-value-of-variable-incorrectly
 xsl/manpages/refentry.xsl:130:5 unused-variable
 xsl/manpages/refentry.xsl:170:5 setting-value-of-variable-incorrectly
@@ -2939,7 +2970,9 @@ xsl/manpages/table.xsl:2:1 missing-id-in-stylesheet
 xsl/manpages/tbl.xsl:2:1 missing-id-in-stylesheet
 xsl/manpages/tbl.xsl:2:1 too-many-templates
 xsl/manpages/tbl.xsl:4:3 leaking-result-namespace suggestion "exsl d"
+xsl/manpages/tbl.xsl:210:13 setting-value-of-variable-incorrectly
 xsl/manpages/tbl.xsl:261:5 setting-value-of-variable-incorrectly
+xsl/manpages/tbl.xsl:279:5 setting-value-of-variable-incorrectly
 xsl/manpages/tbl.xsl:335:7 setting-value-of-variable-incorrectly
 xsl/manpages/tbl.xsl:358:5 use-single-option-for-choose
 xsl/manpages/tbl.xsl:490:5 unused-variable
@@ -3065,6 +3098,8 @@ xsl/roundtrip/dbk2wp.xsl:767:23 count-compared-to-zero fix "$node/preceding-sibl
 xsl/roundtrip/dbk2wp.xsl:801:96 string-length-compared-to-zero suggestion "normalize-space(.) != &apos;&apos;"
 xsl/roundtrip/dbk2wp.xsl:806:211 string-length-compared-to-zero suggestion "normalize-space(.) != &apos;&apos;"
 xsl/roundtrip/dbk2wp.xsl:810:31 string-length-compared-to-zero suggestion "normalize-space(.) = &apos;&apos;"
+xsl/roundtrip/dbk2wp.xsl:881:7 setting-value-of-variable-incorrectly
+xsl/roundtrip/dbk2wp.xsl:891:7 setting-value-of-variable-incorrectly
 xsl/roundtrip/dbk2wp.xsl:915:5 unused-function-template-parameter
 xsl/roundtrip/dbk2wp.xsl:1365:3 unused-named-template
 xsl/roundtrip/normalise-common.xsl:1:1 missing-id-in-stylesheet
@@ -3203,10 +3238,14 @@ xsl/tools/xsl/build/make-elements.xsl:2:1 missing-id-in-stylesheet
 xsl/tools/xsl/build/make-elements.xsl:3:17 leaking-result-namespace suggestion " exclude-result-prefixes=\"exsl\""
 xsl/tools/xsl/build/make-xsl-params.xsl:2:1 missing-id-in-stylesheet
 xsl/tools/xsl/build/make-xsl-params.xsl:3:17 leaking-result-namespace suggestion " exclude-result-prefixes=\"exsl\""
+xsl/tools/xsl/build/make-xsl-params.xsl:155:5 setting-value-of-variable-incorrectly
+xsl/tools/xsl/build/make-xsl-params.xsl:158:5 setting-value-of-variable-incorrectly
 xsl/tools/xsl/build/make-xsl-pi.xsl:2:1 missing-id-in-stylesheet
 xsl/tools/xsl/build/make-xsl-pi.xsl:3:3 leaking-result-namespace
 xsl/tools/xsl/build/make-xsl-pi.xsl:5:3 leaking-result-namespace
 xsl/tools/xsl/build/make-xsl-pi.xsl:84:5 unused-function-template-parameter
+xsl/tools/xsl/build/make-xsl-pi.xsl:115:5 setting-value-of-variable-incorrectly
+xsl/tools/xsl/build/make-xsl-pi.xsl:118:5 setting-value-of-variable-incorrectly
 xsl/tools/xsl/build/pirefentry.xsl:2:1 missing-id-in-stylesheet
 xsl/tools/xsl/build/reference-fo.xsl:2:1 missing-id-in-stylesheet
 xsl/tools/xsl/build/reference-fo.xsl:4:3 leaking-result-namespace suggestion " exclude-result-prefixes=\"xlink\""
@@ -3360,6 +3399,7 @@ xsl/webhelp/xsl/webhelp-common.xsl:701:17 unused-variable
 xsl/webhelp/xsl/webhelp-common.xsl:771:53 using-disable-output-escaping
 xsl/webhelp/xsl/webhelp-common.xsl:863:5 unused-named-template
 xsl/webhelp/xsl/webhelp-common.xsl:913:38 scans-whole-document
+xsl/webhelp/xsl/webhelp-common.xsl:925:13 setting-value-of-variable-incorrectly
 xsl/webhelp/xsl/webhelp.xsl:2:1 missing-id-in-stylesheet
 xsl/website/autolayout.xsl:2:1 missing-id-in-stylesheet
 xsl/website/autolayout.xsl:2:1 too-many-templates

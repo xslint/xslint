@@ -16,7 +16,11 @@ Documentation/paramform.xsl:268:6 using-disable-output-escaping
 Documentation/paramform.xsl:270:6 using-disable-output-escaping
 Documentation/paramform.xsl:273:6 using-disable-output-escaping
 Documentation/paramform.xsl:280:3 short-names
+Documentation/paramform.xsl:297:4 setting-value-of-variable-incorrectly
+Documentation/paramform.xsl:300:4 setting-value-of-variable-incorrectly
 Documentation/paramform.xsl:313:3 short-names
+Documentation/paramform.xsl:329:4 setting-value-of-variable-incorrectly
+Documentation/paramform.xsl:332:4 setting-value-of-variable-incorrectly
 Documentation/paramform.xsl:345:2 using-disable-output-escaping
 Documentation/paramform.xsl:352:2 using-disable-output-escaping
 Documentation/verbatim.xsl:1:1 missing-id-in-stylesheet
@@ -29,6 +33,7 @@ Documentation/xsltdoc.xsl:76:5 text-outside-xsl-text suggestion "<xsl:text>/</xs
 Test/checklinks.xsl:2:1 missing-id-in-stylesheet
 Test/formatexamples.xsl:2:1 missing-id-in-stylesheet
 Test/formatexamples.xsl:28:7 unused-function-template-parameter
+Test/formatexamples.xsl:32:4 setting-value-of-variable-incorrectly
 Test/poem.xsl:2:1 missing-id-in-stylesheet
 Test2/cleanForDiff.xsl:2:1 missing-id-in-stylesheet
 Test2/cleanForDiff.xsl:3:5 redundant-namespace-declarations fix ""
@@ -84,6 +89,7 @@ common/common_core.xsl:2:1 too-many-templates
 common/common_core.xsl:53:3 text-outside-xsl-text suggestion "<xsl:text>99</xsl:text>"
 common/common_core.xsl:218:5 text-outside-xsl-text suggestion "<xsl:text>, </xsl:text>"
 common/common_core.xsl:219:5 text-outside-xsl-text suggestion "<xsl:text>\n      and </xsl:text>"
+common/common_core.xsl:272:5 setting-value-of-variable-incorrectly
 common/common_core.xsl:287:4 oversized-template
 common/common_core.xsl:316:6 use-choose-without-otherwise
 common/common_core.xsl:396:3 use-choose-without-otherwise
@@ -121,15 +127,22 @@ common/common_figures.xsl:282:46 redundant-whitespace fix " "
 common/common_gaiji.xsl:2:1 missing-id-in-stylesheet
 common/common_gaiji.xsl:55:2 text-outside-xsl-text suggestion "<xsl:text>­</xsl:text>"
 common/common_header.xsl:2:1 missing-id-in-stylesheet
+common/common_header.xsl:80:7 setting-value-of-variable-incorrectly
+common/common_header.xsl:101:7 setting-value-of-variable-incorrectly
 common/common_linking.xsl:2:1 missing-id-in-stylesheet
 common/common_linking.xsl:2:1 too-many-templates
 common/common_linking.xsl:167:7 use-choose-without-otherwise
 common/common_linking.xsl:179:7 use-choose-without-otherwise
 common/common_linking.xsl:248:8 short-names
+common/common_linking.xsl:258:6 setting-value-of-variable-incorrectly
+common/common_linking.xsl:272:6 setting-value-of-variable-incorrectly
+common/common_linking.xsl:321:4 setting-value-of-variable-incorrectly
 common/common_linking.xsl:325:6 use-choose-without-otherwise
 common/common_linking.xsl:326:24 name-compared-to-string suggestion "self::*:TEI"
+common/common_linking.xsl:349:7 setting-value-of-variable-incorrectly
 common/common_linking.xsl:374:2 use-choose-without-otherwise
 common/common_linking.xsl:375:20 name-compared-to-string suggestion "self::*:TEI"
+common/common_linking.xsl:380:8 setting-value-of-variable-incorrectly
 common/common_linking.xsl:413:5 text-outside-xsl-text suggestion "<xsl:text>Title page</xsl:text>"
 common/common_linking.xsl:414:5 text-outside-xsl-text suggestion "<xsl:text>Index</xsl:text>"
 common/common_linking.xsl:415:5 text-outside-xsl-text suggestion "<xsl:text>§</xsl:text>"
@@ -166,39 +179,87 @@ common/common_param.xsl:351:5 unused-function-template-parameter
 common/common_tagdocs.xsl:2:1 missing-id-in-stylesheet
 common/common_tagdocs.xsl:2:1 too-many-templates
 common/common_tagdocs.xsl:53:13 setting-value-of-variable-incorrectly
+common/common_tagdocs.xsl:71:23 setting-value-of-variable-incorrectly
+common/common_tagdocs.xsl:188:21 setting-value-of-variable-incorrectly
+common/common_tagdocs.xsl:191:21 setting-value-of-variable-incorrectly
+common/common_tagdocs.xsl:239:11 setting-value-of-variable-incorrectly
+common/common_tagdocs.xsl:281:19 setting-value-of-variable-incorrectly
 common/common_tagdocs.xsl:438:7 text-outside-xsl-text suggestion "<xsl:text>: </xsl:text>"
+common/common_tagdocs.xsl:469:9 setting-value-of-variable-incorrectly
+common/common_tagdocs.xsl:472:9 setting-value-of-variable-incorrectly
+common/common_tagdocs.xsl:496:15 setting-value-of-variable-incorrectly
 common/common_tagdocs.xsl:645:3 oversized-template
+common/common_tagdocs.xsl:649:9 setting-value-of-variable-incorrectly
+common/common_tagdocs.xsl:657:17 setting-value-of-variable-incorrectly
+common/common_tagdocs.xsl:670:9 setting-value-of-variable-incorrectly
+common/common_tagdocs.xsl:695:21 setting-value-of-variable-incorrectly
 common/common_tagdocs.xsl:728:23 count-compared-to-zero fix "exists($myatts/a/*)"
 common/common_tagdocs.xsl:777:23 count-compared-to-zero fix "exists($memberclasses/*/*)"
 common/common_tagdocs.xsl:849:27 string-length-compared-to-zero suggestion "$remarks = ''"
+common/common_tagdocs.xsl:1078:19 setting-value-of-variable-incorrectly
+common/common_tagdocs.xsl:1081:19 setting-value-of-variable-incorrectly
 common/common_tagdocs.xsl:1142:23 string-length-compared-to-zero suggestion "$atts != ''"
 common/common_tagdocs.xsl:1278:5 use-choose-without-otherwise
+common/common_tagdocs.xsl:1377:9 setting-value-of-variable-incorrectly
+common/common_tagdocs.xsl:1380:9 setting-value-of-variable-incorrectly
+common/common_tagdocs.xsl:1385:9 setting-value-of-variable-incorrectly
+common/common_tagdocs.xsl:1451:9 setting-value-of-variable-incorrectly
+common/common_tagdocs.xsl:1454:9 setting-value-of-variable-incorrectly
+common/common_tagdocs.xsl:1459:9 setting-value-of-variable-incorrectly
+common/common_tagdocs.xsl:1676:25 setting-value-of-variable-incorrectly
+common/common_tagdocs.xsl:1708:25 setting-value-of-variable-incorrectly
+common/common_tagdocs.xsl:1740:25 setting-value-of-variable-incorrectly
 common/common_tagdocs.xsl:1764:19 string-length-compared-to-zero suggestion ". != ''"
 common/common_tagdocs.xsl:1798:7 setting-value-of-variable-incorrectly
 common/common_tagdocs.xsl:1803:11 text-outside-xsl-text suggestion "<xsl:text>-</xsl:text>"
 common/common_tagdocs.xsl:1951:13 text-outside-xsl-text suggestion "<xsl:text>Sample values include</xsl:text>"
 common/common_tagdocs.xsl:2091:5 unused-function-template-parameter
+common/common_tagdocs.xsl:2097:11 setting-value-of-variable-incorrectly
 common/common_tagdocs.xsl:2195:21 count-compared-to-zero fix "exists($Parents/*)"
 common/common_tagdocs.xsl:2248:7 use-choose-without-otherwise
 common/common_tagdocs.xsl:2265:7 use-choose-without-otherwise
 common/common_tagdocs.xsl:2293:9 text-outside-xsl-text suggestion "<xsl:text> [</xsl:text>"
+common/common_tagdocs.xsl:2300:19 setting-value-of-variable-incorrectly
+common/common_tagdocs.xsl:2309:19 setting-value-of-variable-incorrectly
 common/common_tagdocs.xsl:2325:9 text-outside-xsl-text suggestion "<xsl:text>] </xsl:text>"
+common/common_tagdocs.xsl:2340:19 setting-value-of-variable-incorrectly
 common/common_tagdocs.xsl:2355:19 count-compared-to-zero fix "exists($list/PattList/Item)"
+common/common_tagdocs.xsl:2378:19 setting-value-of-variable-incorrectly
+common/common_tagdocs.xsl:2381:19 setting-value-of-variable-incorrectly
 common/common_tagdocs.xsl:2398:19 count-compared-to-zero fix "exists($list2/PattList/Item)"
+common/common_tagdocs.xsl:2449:15 setting-value-of-variable-incorrectly
+common/common_tagdocs.xsl:2468:21 setting-value-of-variable-incorrectly
+common/common_tagdocs.xsl:2471:21 setting-value-of-variable-incorrectly
+common/common_tagdocs.xsl:2485:21 setting-value-of-variable-incorrectly
+common/common_tagdocs.xsl:2488:21 setting-value-of-variable-incorrectly
 common/common_tagdocs.xsl:2512:29 scans-whole-document
 common/common_tagdocs.xsl:2514:9 text-outside-xsl-text suggestion "<xsl:text>.\n        </xsl:text>"
 common/common_tagdocs.xsl:2537:5 setting-value-of-variable-incorrectly
 common/common_tagdocs.xsl:2542:5 setting-value-of-variable-incorrectly
 common/common_tagdocs.xsl:2637:46 redundant-whitespace fix ""
+common/common_tagdocs.xsl:2646:7 setting-value-of-variable-incorrectly
+common/common_tagdocs.xsl:2656:7 setting-value-of-variable-incorrectly
+common/common_tagdocs.xsl:2666:7 setting-value-of-variable-incorrectly
+common/common_tagdocs.xsl:2676:7 setting-value-of-variable-incorrectly
+common/common_tagdocs.xsl:2689:7 setting-value-of-variable-incorrectly
+common/common_tagdocs.xsl:2701:11 setting-value-of-variable-incorrectly
+common/common_tagdocs.xsl:2716:7 setting-value-of-variable-incorrectly
+common/common_tagdocs.xsl:2726:7 setting-value-of-variable-incorrectly
+common/common_tagdocs.xsl:2736:7 setting-value-of-variable-incorrectly
+common/common_tagdocs.xsl:2746:7 setting-value-of-variable-incorrectly
 common/common_tagdocs.xsl:2773:15 text-outside-xsl-text suggestion "<xsl:text>In addition to global attributes and those inherited from</xsl:text>"
 common/common_tagdocs.xsl:2774:15 text-outside-xsl-text suggestion "<xsl:text>Global attributes and those inherited from</xsl:text>"
 common/common_tagdocs.xsl:2793:13 text-outside-xsl-text suggestion "<xsl:text>In addition to global attributes</xsl:text>"
 common/common_tagdocs.xsl:2794:13 text-outside-xsl-text suggestion "<xsl:text>Global attributes only</xsl:text>"
 common/common_tagdocs.xsl:2813:50 scans-whole-document
 common/common_tagdocs.xsl:2814:7 use-single-option-for-choose
+common/common_tagdocs.xsl:2830:25 setting-value-of-variable-incorrectly
+common/common_tagdocs.xsl:2888:19 setting-value-of-variable-incorrectly
+common/common_tagdocs.xsl:2891:19 setting-value-of-variable-incorrectly
 common/common_tagdocs.xsl:2921:3 unused-named-template
 common/common_tagdocs.xsl:2925:7 short-names
 common/common_tagdocs.xsl:2925:7 unused-variable
+common/common_tagdocs.xsl:2947:11 setting-value-of-variable-incorrectly
 common/common_tagdocs.xsl:2955:5 unused-variable
 common/common_tagdocs.xsl:3018:50 count-compared-to-zero fix "empty(Element)"
 common/common_tagdocs.xsl:3029:25 count-compared-to-zero fix "empty(Element)"
@@ -228,15 +289,12 @@ common/functions.xsl:8:5 redundant-namespace-declarations fix ""
 common/functions.xsl:10:5 redundant-namespace-declarations fix ""
 common/functions.xsl:11:5 redundant-namespace-declarations fix ""
 common/functions.xsl:12:5 redundant-namespace-declarations fix ""
-common/functions.xsl:13:5 redundant-namespace-declarations fix ""
 common/functions.xsl:14:5 redundant-namespace-declarations fix ""
 common/functions.xsl:15:5 redundant-namespace-declarations fix ""
 common/functions.xsl:16:5 redundant-namespace-declarations fix ""
 common/functions.xsl:17:5 redundant-namespace-declarations fix ""
 common/functions.xsl:18:5 redundant-namespace-declarations fix ""
 common/functions.xsl:20:5 redundant-namespace-declarations fix ""
-common/functions.xsl:21:5 redundant-namespace-declarations fix ""
-common/functions.xsl:22:5 redundant-namespace-declarations fix ""
 common/functions.xsl:23:5 redundant-namespace-declarations fix ""
 common/functions.xsl:24:5 redundant-namespace-declarations fix ""
 common/functions.xsl:112:9 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
@@ -456,6 +514,7 @@ common/functions.xsl:527:40 string-length-compared-to-zero suggestion ". != ''"
 common/functions.xsl:527:62 redundant-whitespace fix " "
 common/functions.xsl:551:5 unused-function-template-parameter
 common/functions.xsl:601:5 setting-value-of-variable-incorrectly
+common/functions.xsl:606:9 setting-value-of-variable-incorrectly
 common/functions.xsl:612:23 string-length-compared-to-zero suggestion "$local != ''"
 common/functions.xsl:643:5 unused-function-template-parameter
 common/functions.xsl:648:3 unused-named-template
@@ -528,7 +587,6 @@ common/functions.xsl:1401:7 text-outside-xsl-text suggestion "<xsl:text>0</xsl:t
 common/functions.xsl:1417:7 short-names
 common/functions.xsl:1438:7 text-outside-xsl-text suggestion "<xsl:text>, </xsl:text>"
 common/functions.xsl:1482:7 use-choose-without-otherwise
-common/functions.xsl:1572:8 setting-value-of-variable-incorrectly
 common/functions.xsl:1593:11 text-outside-xsl-text suggestion "<xsl:text>application/vnd.openxmlformats-officedocument.oleObject</xsl:text>"
 common/functions.xsl:1594:11 text-outside-xsl-text suggestion "<xsl:text>image/x-emf</xsl:text>"
 common/functions.xsl:1595:11 text-outside-xsl-text suggestion "<xsl:text>image/gif</xsl:text>"
@@ -560,9 +618,7 @@ common/i18n.xsl:12:5 redundant-namespace-declarations fix ""
 common/identity.xsl:2:1 missing-id-in-stylesheet
 common/identity.xsl:2:17 redundant-namespace-declarations fix ""
 common/jsonlib.xsl:2:1 missing-id-in-stylesheet
-common/jsonlib.xsl:82:5 setting-value-of-variable-incorrectly
 common/jsonlib.xsl:82:5 short-names
-common/jsonlib.xsl:105:5 setting-value-of-variable-incorrectly
 common/jsonlib.xsl:105:5 short-names
 common/jsonlib.xsl:108:48 redundant-whitespace fix " "
 common/jsonlib.xsl:114:3 unused-function
@@ -588,25 +644,53 @@ common/verbatim.xsl:100:7 text-outside-xsl-text suggestion "<xsl:text>atom</xsl:
 common/verbatim.xsl:101:7 text-outside-xsl-text suggestion "<xsl:text>xml</xsl:text>"
 common/verbatim.xsl:102:7 text-outside-xsl-text suggestion "<xsl:text>ge</xsl:text>"
 common/verbatim.xsl:114:5 unused-function-template-parameter
+common/verbatim.xsl:141:5 setting-value-of-variable-incorrectly
+common/verbatim.xsl:148:5 setting-value-of-variable-incorrectly
+common/verbatim.xsl:170:11 setting-value-of-variable-incorrectly
+common/verbatim.xsl:178:11 setting-value-of-variable-incorrectly
+common/verbatim.xsl:195:11 setting-value-of-variable-incorrectly
+common/verbatim.xsl:198:11 setting-value-of-variable-incorrectly
 common/verbatim.xsl:207:55 redundant-whitespace fix " "
+common/verbatim.xsl:212:11 setting-value-of-variable-incorrectly
 common/verbatim.xsl:238:61 redundant-whitespace fix " "
+common/verbatim.xsl:264:11 setting-value-of-variable-incorrectly
+common/verbatim.xsl:270:11 setting-value-of-variable-incorrectly
+common/verbatim.xsl:277:11 setting-value-of-variable-incorrectly
 common/verbatim.xsl:283:9 setting-value-of-variable-incorrectly
+common/verbatim.xsl:293:11 setting-value-of-variable-incorrectly
+common/verbatim.xsl:296:11 setting-value-of-variable-incorrectly
+common/verbatim.xsl:299:11 setting-value-of-variable-incorrectly
+common/verbatim.xsl:338:11 setting-value-of-variable-incorrectly
+common/verbatim.xsl:348:11 setting-value-of-variable-incorrectly
+common/verbatim.xsl:355:11 setting-value-of-variable-incorrectly
 common/verbatim.xsl:385:5 unused-function-template-parameter
+common/verbatim.xsl:458:9 setting-value-of-variable-incorrectly
 common/verbatim.xsl:464:16 name-compared-to-string suggestion "self::*:TEI"
 common/verbatim.xsl:464:87 name-compared-to-string suggestion "self::*:teiCorpus"
 common/verbatim.xsl:467:21 name-compared-to-string suggestion "self::*:egXML"
 common/verbatim.xsl:471:9 use-choose-without-otherwise
 common/verbatim.xsl:482:23 unabbreviated-axis fix ""
+common/verbatim.xsl:497:8 setting-value-of-variable-incorrectly
+common/verbatim.xsl:504:8 setting-value-of-variable-incorrectly
 common/verbatim.xsl:510:9 use-choose-without-otherwise
 common/verbatim.xsl:512:27 unabbreviated-axis fix ""
 common/verbatim.xsl:519:27 unabbreviated-axis fix ""
 common/verbatim.xsl:519:66 unabbreviated-axis fix ""
 common/verbatim.xsl:525:27 unabbreviated-axis fix ""
 common/verbatim.xsl:531:27 unabbreviated-axis fix ""
+common/verbatim.xsl:543:15 setting-value-of-variable-incorrectly
+common/verbatim.xsl:567:4 setting-value-of-variable-incorrectly
 common/verbatim.xsl:586:9 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 common/verbatim.xsl:587:9 text-outside-xsl-text suggestion "<xsl:text>false</xsl:text>"
+common/verbatim.xsl:594:11 setting-value-of-variable-incorrectly
+common/verbatim.xsl:602:11 setting-value-of-variable-incorrectly
 common/verbatim.xsl:607:49 string-length-compared-to-zero suggestion "$ns-prefix != ''"
+common/verbatim.xsl:610:11 setting-value-of-variable-incorrectly
+common/verbatim.xsl:618:11 setting-value-of-variable-incorrectly
+common/verbatim.xsl:641:8 setting-value-of-variable-incorrectly
 common/verbatim.xsl:660:5 setting-value-of-variable-incorrectly
+common/verbatim.xsl:776:11 setting-value-of-variable-incorrectly
+common/verbatim.xsl:783:11 setting-value-of-variable-incorrectly
 common/verbatim.xsl:792:27 using-namespace-axis
 common/verbatim.xsl:793:7 unused-variable
 common/verbatim.xsl:886:3 unused-named-template
@@ -620,6 +704,8 @@ docbook/docbooktotei.xsl:434:23 name-compared-to-string suggestion "self::*:sect
 docbook/teitodocbook.xsl:1:1 missing-id-in-stylesheet
 docbook/teitodocbook.xsl:1:1 too-many-templates
 docbook/teitodocbook.xsl:268:23 name-compared-to-string suggestion "self::*:div"
+docbook/teitodocbook.xsl:485:13 setting-value-of-variable-incorrectly
+docbook/teitodocbook.xsl:492:13 setting-value-of-variable-incorrectly
 docbook/teitodocbook.xsl:557:3 unused-named-template
 docx/from/docxtotei.xsl:2:1 missing-id-in-stylesheet
 docx/from/docxtotei.xsl:2:1 too-many-templates
@@ -1083,7 +1169,6 @@ docx/from/paragraphs.xsl:2:1 missing-id-in-stylesheet
 docx/from/paragraphs.xsl:157:19 count-compared-to-zero fix "exists($styleprop/w:pPr[w:jc])"
 docx/from/paragraphs.xsl:172:5 not-creating-element-correctly
 docx/from/paragraphs.xsl:199:11 text-outside-xsl-text suggestion "<xsl:text>>\n            </xsl:text>"
-docx/from/paragraphs.xsl:232:5 setting-value-of-variable-incorrectly
 docx/from/paragraphs.xsl:238:5 use-choose-without-otherwise
 docx/from/paragraphs.xsl:322:4 setting-value-of-variable-incorrectly
 docx/from/pass0.xsl:2:1 missing-id-in-stylesheet
@@ -1614,6 +1699,7 @@ docx/from/wordsections.xsl:2:1 missing-id-in-stylesheet
 docx/misc/check-docx-and-annotate.xsl:2:1 missing-id-in-stylesheet
 docx/misc/check-docx-and-annotate.xsl:2:1 too-many-templates
 docx/misc/check-docx-and-annotate.xsl:26:17 redundant-namespace-declarations fix ""
+docx/misc/check-docx-and-annotate.xsl:33:5 setting-value-of-variable-incorrectly
 docx/misc/check-docx-and-annotate.xsl:47:9 unused-variable
 docx/misc/check-docx-and-annotate.xsl:175:46 unabbreviated-axis fix ""
 docx/misc/check-docx-and-annotate.xsl:195:50 unabbreviated-axis fix ""
@@ -1695,6 +1781,8 @@ docx/to/functions.xsl:133:9 unused-function-template-parameter
 docx/to/graphics.xsl:2:1 missing-id-in-stylesheet
 docx/to/graphics.xsl:143:3 text-outside-xsl-text suggestion "<xsl:text>Figuretitleannex</xsl:text>"
 docx/to/graphics.xsl:144:3 text-outside-xsl-text suggestion "<xsl:text>Figuretitle</xsl:text>"
+docx/to/graphics.xsl:147:6 setting-value-of-variable-incorrectly
+docx/to/graphics.xsl:150:6 setting-value-of-variable-incorrectly
 docx/to/graphics.xsl:159:3 text-outside-xsl-text suggestion "<xsl:text>Figuretitleannex</xsl:text>"
 docx/to/graphics.xsl:160:3 text-outside-xsl-text suggestion "<xsl:text>Figuretitle</xsl:text>"
 docx/to/graphics.xsl:181:2 short-names
@@ -2060,9 +2148,11 @@ docx/to/mml2omml.xsl:1691:16 text-outside-xsl-text suggestion "<xsl:text>1</xsl:
 docx/to/mml2omml.xsl:1692:16 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
 docx/to/mml2omml.xsl:1696:10 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
 docx/to/mml2omml.xsl:1706:50 unabbreviated-axis fix ""
+docx/to/mml2omml.xsl:1713:19 setting-value-of-variable-incorrectly
 docx/to/mml2omml.xsl:1714:60 unabbreviated-axis fix ""
 docx/to/mml2omml.xsl:1720:59 unabbreviated-axis fix ""
 docx/to/mml2omml.xsl:1748:65 unabbreviated-axis fix ""
+docx/to/mml2omml.xsl:1763:31 setting-value-of-variable-incorrectly
 docx/to/mml2omml.xsl:1768:37 text-outside-xsl-text suggestion "<xsl:text>bot</xsl:text>"
 docx/to/mml2omml.xsl:1768:53 unabbreviated-axis fix ""
 docx/to/mml2omml.xsl:1769:37 text-outside-xsl-text suggestion "<xsl:text>top</xsl:text>"
@@ -2072,18 +2162,21 @@ docx/to/mml2omml.xsl:1808:13 not-creating-attribute-correctly
 docx/to/mml2omml.xsl:1813:13 not-creating-attribute-correctly
 docx/to/mml2omml.xsl:1818:13 not-creating-attribute-correctly
 docx/to/mml2omml.xsl:1831:50 unabbreviated-axis fix ""
+docx/to/mml2omml.xsl:1838:19 setting-value-of-variable-incorrectly
 docx/to/mml2omml.xsl:1839:60 unabbreviated-axis fix ""
 docx/to/mml2omml.xsl:1848:59 unabbreviated-axis fix ""
 docx/to/mml2omml.xsl:1875:65 unabbreviated-axis fix ""
 docx/to/mml2omml.xsl:1891:34 not-creating-attribute-correctly
 docx/to/mml2omml.xsl:1892:59 unabbreviated-axis fix ""
 docx/to/mml2omml.xsl:1898:71 unabbreviated-axis fix ""
+docx/to/mml2omml.xsl:1914:37 setting-value-of-variable-incorrectly
 docx/to/mml2omml.xsl:1919:43 text-outside-xsl-text suggestion "<xsl:text>top</xsl:text>"
 docx/to/mml2omml.xsl:1919:59 unabbreviated-axis fix ""
 docx/to/mml2omml.xsl:1920:43 text-outside-xsl-text suggestion "<xsl:text>bot</xsl:text>"
 docx/to/mml2omml.xsl:1935:77 unabbreviated-axis fix ""
 docx/to/mml2omml.xsl:1939:77 unabbreviated-axis fix ""
 docx/to/mml2omml.xsl:1958:50 unabbreviated-axis fix ""
+docx/to/mml2omml.xsl:1965:19 setting-value-of-variable-incorrectly
 docx/to/mml2omml.xsl:1966:60 unabbreviated-axis fix ""
 docx/to/mml2omml.xsl:1972:59 unabbreviated-axis fix ""
 docx/to/mml2omml.xsl:1976:59 unabbreviated-axis fix ""
@@ -2098,16 +2191,19 @@ docx/to/mml2omml.xsl:2148:19 not-creating-attribute-correctly
 docx/to/mml2omml.xsl:2162:68 redundant-whitespace fix " "
 docx/to/mml2omml.xsl:2178:68 redundant-whitespace fix " "
 docx/to/mml2omml.xsl:2199:50 unabbreviated-axis fix ""
+docx/to/mml2omml.xsl:2206:19 setting-value-of-variable-incorrectly
 docx/to/mml2omml.xsl:2207:60 unabbreviated-axis fix ""
 docx/to/mml2omml.xsl:2213:59 unabbreviated-axis fix ""
 docx/to/mml2omml.xsl:2230:59 unabbreviated-axis fix ""
 docx/to/mml2omml.xsl:2234:59 unabbreviated-axis fix ""
 docx/to/mml2omml.xsl:2246:50 unabbreviated-axis fix ""
+docx/to/mml2omml.xsl:2253:19 setting-value-of-variable-incorrectly
 docx/to/mml2omml.xsl:2254:60 unabbreviated-axis fix ""
 docx/to/mml2omml.xsl:2263:59 unabbreviated-axis fix ""
 docx/to/mml2omml.xsl:2277:59 unabbreviated-axis fix ""
 docx/to/mml2omml.xsl:2281:59 unabbreviated-axis fix ""
 docx/to/mml2omml.xsl:2293:50 unabbreviated-axis fix ""
+docx/to/mml2omml.xsl:2300:19 setting-value-of-variable-incorrectly
 docx/to/mml2omml.xsl:2301:60 unabbreviated-axis fix ""
 docx/to/mml2omml.xsl:2307:59 unabbreviated-axis fix ""
 docx/to/mml2omml.xsl:2311:59 unabbreviated-axis fix ""
@@ -2261,7 +2357,6 @@ docx/to/teitodocx.xsl:2:506 redundant-namespace-declarations fix ""
 docx/to/teitodocx.xsl:2:575 redundant-namespace-declarations fix ""
 docx/to/teitodocx.xsl:2:622 redundant-namespace-declarations fix ""
 docx/to/teitodocx.xsl:2:672 redundant-namespace-declarations fix ""
-docx/to/teitodocx.xsl:2:819 redundant-namespace-declarations fix ""
 docx/to/teitodocx.xsl:2:1017 redundant-namespace-declarations fix ""
 docx/to/teitodocx.xsl:2:1057 redundant-namespace-declarations fix ""
 docx/to/teitodocx.xsl:2:1110 redundant-namespace-declarations fix ""
@@ -2325,12 +2420,16 @@ docx/to/teitodocx.xsl:961:2 not-creating-attribute-correctly
 docx/to/teitodocx.xsl:977:2 not-creating-attribute-correctly
 docx/to/teitodocx.xsl:1021:7 short-names
 docx/to/teitodocx.xsl:1051:5 setting-value-of-variable-incorrectly
+docx/to/teitodocx.xsl:1061:7 setting-value-of-variable-incorrectly
 docx/to/teitodocx.xsl:1096:27 string-length-compared-to-zero suggestion "$getstyle != ''"
 docx/to/teitodocx.xsl:1177:5 unused-function-template-parameter
 docx/to/teitodocx.xsl:1178:5 unused-function-template-parameter
 docx/to/teitodocx.xsl:1362:71 redundant-whitespace fix " "
+docx/to/teitodocx.xsl:1382:15 setting-value-of-variable-incorrectly
+docx/to/teitodocx.xsl:1385:15 setting-value-of-variable-incorrectly
 docx/to/teitodocx.xsl:1460:65 redundant-whitespace fix " "
 docx/to/teitodocx.xsl:1498:11 setting-value-of-variable-incorrectly
+docx/to/teitodocx.xsl:1582:15 setting-value-of-variable-incorrectly
 docx/to/teitodocx.xsl:1587:11 use-choose-without-otherwise
 docx/to/teitodocx.xsl:1747:71 redundant-whitespace fix " "
 docx/to/teitodocx.xsl:1762:15 not-creating-attribute-correctly
@@ -2350,6 +2449,8 @@ docx/to/teitodocx.xsl:1910:13 text-outside-xsl-text suggestion "<xsl:text>true</
 docx/to/teitodocx.xsl:1911:13 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 docx/to/teitodocx.xsl:1915:11 use-single-option-for-choose
 docx/to/teitodocx.xsl:1916:13 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
+docx/to/teitodocx.xsl:1953:9 setting-value-of-variable-incorrectly
+docx/to/teitodocx.xsl:1960:9 setting-value-of-variable-incorrectly
 docx/to/teitodocx.xsl:2006:11 use-choose-without-otherwise
 docx/to/teitodocx.xsl:2024:11 use-choose-without-otherwise
 docx/to/teitodocx.xsl:2035:11 use-choose-without-otherwise
@@ -2376,14 +2477,18 @@ docx/to/teitodocx.xsl:2535:7 use-choose-without-otherwise
 docx/to/teitodocx.xsl:2548:9 not-creating-attribute-correctly
 docx/to/teitodocx.xsl:2549:9 use-choose-without-otherwise
 docx/to/teitodocx.xsl:2561:9 use-choose-without-otherwise
+docx/to/teitodocx.xsl:2582:13 setting-value-of-variable-incorrectly
+docx/to/teitodocx.xsl:2585:13 setting-value-of-variable-incorrectly
 docx/to/teitodocx.xsl:2602:9 not-creating-attribute-correctly
 docx/to/teitodocx.xsl:2637:5 use-choose-without-otherwise
 docx/to/teitodocx.xsl:2685:5 unused-function-template-parameter
 docx/to/teitodocx.xsl:2687:5 unused-function-template-parameter
+docx/to/teitodocx.xsl:2698:9 setting-value-of-variable-incorrectly
 docx/to/teitodocx.xsl:2725:5 unused-function-template-parameter
 docx/to/teitodocx.xsl:2726:5 unused-function-template-parameter
 docx/to/teitodocx.xsl:2765:2 use-choose-without-otherwise
 docx/to/teitodocx.xsl:2787:9 not-creating-attribute-correctly
+docx/to/teitodocx.xsl:2800:7 setting-value-of-variable-incorrectly
 docx/to/teitodocx.xsl:2818:9 not-creating-attribute-correctly
 docx/to/teitodocx.xsl:3000:5 unused-named-template
 docx/to/teitodocx.xsl:3009:6 not-creating-attribute-correctly
@@ -2433,7 +2538,6 @@ docx/tools/listgraphics.xsl:4:17 redundant-namespace-declarations fix ""
 docx/tools/listgraphics.xsl:5:17 redundant-namespace-declarations fix ""
 docx/tools/listgraphics.xsl:6:17 redundant-namespace-declarations fix ""
 docx/tools/listgraphics.xsl:7:3 leaking-result-namespace
-docx/tools/listgraphics.xsl:7:3 redundant-namespace-declarations fix ""
 docx/tools/listgraphics.xsl:64:5 short-names
 docx/variables.xsl:2:1 missing-id-in-stylesheet
 docx/variables.xsl:49:4 unused-variable
@@ -2561,6 +2665,7 @@ fo/fo_core.xsl:2:1 too-many-templates
 fo/fo_core.xsl:81:32 use-double-slash
 fo/fo_core.xsl:83:10 text-outside-xsl-text
 fo/fo_core.xsl:140:7 unused-function-template-parameter
+fo/fo_core.xsl:161:5 setting-value-of-variable-incorrectly
 fo/fo_core.xsl:326:10 use-choose-without-otherwise
 fo/fo_core.xsl:359:10 use-choose-without-otherwise
 fo/fo_core.xsl:392:7 text-outside-xsl-text
@@ -2598,6 +2703,7 @@ fo/fo_header.xsl:71:7 short-names
 fo/fo_header.xsl:71:7 unused-function-template-parameter
 fo/fo_linking.xsl:2:1 missing-id-in-stylesheet
 fo/fo_linking.xsl:73:7 unused-function-template-parameter
+fo/fo_linking.xsl:78:19 setting-value-of-variable-incorrectly
 fo/fo_linking.xsl:98:7 unused-function-template-parameter
 fo/fo_linking.xsl:103:7 short-names
 fo/fo_linking.xsl:142:26 string-length-compared-to-zero suggestion "normalize-space($W) ne ''"
@@ -2616,10 +2722,20 @@ fo/fo_textcrit.xsl:64:3 not-creating-attribute-correctly
 fo/fo_textcrit.xsl:67:3 not-creating-attribute-correctly
 fo/fo_textstructure.xsl:2:1 missing-id-in-stylesheet
 fo/fo_textstructure.xsl:2:1 too-many-templates
+fo/fo_textstructure.xsl:104:19 setting-value-of-variable-incorrectly
+fo/fo_textstructure.xsl:155:7 setting-value-of-variable-incorrectly
 fo/fo_textstructure.xsl:232:16 not-creating-attribute-correctly
 fo/fo_textstructure.xsl:240:16 not-creating-attribute-correctly
+fo/fo_textstructure.xsl:250:16 setting-value-of-variable-incorrectly
 fo/fo_textstructure.xsl:266:7 setting-value-of-variable-incorrectly
+fo/fo_textstructure.xsl:270:10 setting-value-of-variable-incorrectly
+fo/fo_textstructure.xsl:290:7 setting-value-of-variable-incorrectly
+fo/fo_textstructure.xsl:302:10 setting-value-of-variable-incorrectly
+fo/fo_textstructure.xsl:312:10 setting-value-of-variable-incorrectly
+fo/fo_textstructure.xsl:323:10 setting-value-of-variable-incorrectly
 fo/fo_textstructure.xsl:336:7 use-choose-without-otherwise
+fo/fo_textstructure.xsl:369:4 setting-value-of-variable-incorrectly
+fo/fo_textstructure.xsl:388:4 setting-value-of-variable-incorrectly
 fo/fo_textstructure.xsl:423:7 short-names
 fo/fo_textstructure.xsl:431:16 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 fo/fo_textstructure.xsl:432:16 text-outside-xsl-text suggestion "<xsl:text>auto-odd</xsl:text>"
@@ -2640,6 +2756,9 @@ fo/fo_textstructure.xsl:770:19 text-outside-xsl-text suggestion "<xsl:text>twosi
 fo/fo_textstructure.xsl:771:19 text-outside-xsl-text suggestion "<xsl:text>oneside2</xsl:text>"
 fo/fo_textstructure.xsl:776:19 text-outside-xsl-text suggestion "<xsl:text>twoside1</xsl:text>"
 fo/fo_textstructure.xsl:777:19 text-outside-xsl-text suggestion "<xsl:text>oneside1</xsl:text>"
+fo/fo_textstructure.xsl:870:10 setting-value-of-variable-incorrectly
+fo/fo_textstructure.xsl:961:10 setting-value-of-variable-incorrectly
+fo/fo_textstructure.xsl:964:10 setting-value-of-variable-incorrectly
 fo/fo_textstructure.xsl:1264:13 use-choose-without-otherwise
 fo/fo_textstructure.xsl:1371:13 not-creating-attribute-correctly
 fo/fo_textstructure.xsl:1372:13 use-choose-without-otherwise
@@ -2655,6 +2774,9 @@ html/html.xsl:5:17 redundant-namespace-declarations fix ""
 html/html.xsl:6:17 redundant-namespace-declarations fix ""
 html/html.xsl:7:17 redundant-namespace-declarations fix ""
 html/html.xsl:10:17 redundant-namespace-declarations fix ""
+html/html.xsl:101:16 setting-value-of-variable-incorrectly
+html/html.xsl:108:16 setting-value-of-variable-incorrectly
+html/html.xsl:130:16 setting-value-of-variable-incorrectly
 html/html.xsl:191:60 redundant-whitespace fix ""
 html/html.xsl:303:62 redundant-whitespace fix " "
 html/html.xsl:351:9 text-outside-xsl-text suggestion "<xsl:text>div</xsl:text>"
@@ -2746,6 +2868,7 @@ html/html_core.xsl:701:60 redundant-whitespace fix " "
 html/html_core.xsl:778:75 redundant-whitespace fix ""
 html/html_core.xsl:803:15 text-outside-xsl-text suggestion "<xsl:text>Print.\n</xsl:text>"
 html/html_core.xsl:805:13 text-outside-xsl-text suggestion "<xsl:text>. </xsl:text>"
+html/html_core.xsl:871:9 setting-value-of-variable-incorrectly
 html/html_core.xsl:919:68 redundant-whitespace fix ""
 html/html_core.xsl:1082:5 use-choose-without-otherwise
 html/html_core.xsl:1103:5 use-choose-without-otherwise
@@ -2762,6 +2885,7 @@ html/html_core.xsl:1502:7 text-outside-xsl-text suggestion "<xsl:text>See: </xsl
 html/html_core.xsl:1502:21 unabbreviated-axis fix ""
 html/html_core.xsl:1502:77 unabbreviated-axis fix ""
 html/html_core.xsl:1523:27 count-compared-to-zero fix "exists(id($currentID))"
+html/html_core.xsl:1554:15 setting-value-of-variable-incorrectly
 html/html_core.xsl:1630:19 use-choose-without-otherwise
 html/html_core.xsl:1746:11 not-creating-attribute-correctly
 html/html_core.xsl:1800:5 setting-value-of-variable-incorrectly
@@ -2780,6 +2904,7 @@ html/html_core.xsl:1926:9 text-outside-xsl-text
 html/html_core.xsl:1927:9 text-outside-xsl-text suggestion "<xsl:text>: </xsl:text>"
 html/html_corpus.xsl:2:1 missing-id-in-stylesheet
 html/html_corpus.xsl:5:17 redundant-namespace-declarations fix ""
+html/html_corpus.xsl:105:13 setting-value-of-variable-incorrectly
 html/html_dictionaries.xsl:2:1 missing-id-in-stylesheet
 html/html_dictionaries.xsl:2:1 stylesheet-has-no-templates
 html/html_dictionaries.xsl:5:17 redundant-namespace-declarations fix ""
@@ -2873,25 +2998,34 @@ html/html_oddprocessing.xsl:98:75 redundant-whitespace fix " "
 html/html_oddprocessing.xsl:98:84 count-compared-to-zero fix "empty(key('CLASSMEMBERS',@ident))"
 html/html_oddprocessing.xsl:108:9 unused-variable
 html/html_oddprocessing.xsl:135:9 setting-value-of-variable-incorrectly
+html/html_oddprocessing.xsl:158:17 setting-value-of-variable-incorrectly
 html/html_oddprocessing.xsl:176:3 unused-named-template
+html/html_oddprocessing.xsl:208:13 setting-value-of-variable-incorrectly
 html/html_oddprocessing.xsl:231:5 unused-function-template-parameter
 html/html_oddprocessing.xsl:288:5 unused-function-template-parameter
 html/html_oddprocessing.xsl:347:40 redundant-whitespace fix " "
 html/html_oddprocessing.xsl:348:41 redundant-whitespace fix " "
+html/html_oddprocessing.xsl:469:9 setting-value-of-variable-incorrectly
 html/html_oddprocessing.xsl:474:7 text-outside-xsl-text
 html/html_oddprocessing.xsl:480:5 unused-function-template-parameter
 html/html_oddprocessing.xsl:484:41 redundant-whitespace fix " "
 html/html_oddprocessing.xsl:486:41 redundant-whitespace fix " "
 html/html_oddprocessing.xsl:486:64 redundant-whitespace fix " "
 html/html_oddprocessing.xsl:488:64 redundant-whitespace fix " "
+html/html_oddprocessing.xsl:491:11 setting-value-of-variable-incorrectly
+html/html_oddprocessing.xsl:494:11 setting-value-of-variable-incorrectly
 html/html_oddprocessing.xsl:514:62 string-length-compared-to-zero suggestion "@scheme != ''"
+html/html_oddprocessing.xsl:525:13 setting-value-of-variable-incorrectly
 html/html_oddprocessing.xsl:553:5 unused-function-template-parameter
 html/html_oddprocessing.xsl:653:5 unused-function-template-parameter
 html/html_oddprocessing.xsl:673:5 short-names
+html/html_oddprocessing.xsl:687:13 setting-value-of-variable-incorrectly
+html/html_oddprocessing.xsl:690:13 setting-value-of-variable-incorrectly
 html/html_oddprocessing.xsl:762:9 setting-value-of-variable-incorrectly
 html/html_oddprocessing.xsl:843:9 setting-value-of-variable-incorrectly
 html/html_oddprocessing.xsl:896:9 setting-value-of-variable-incorrectly
 html/html_oddprocessing.xsl:947:9 using-disable-output-escaping
+html/html_oddprocessing.xsl:1032:9 setting-value-of-variable-incorrectly
 html/html_oddprocessing.xsl:1046:23 count-compared-to-zero fix "exists(key($Key,'a'))"
 html/html_oddprocessing.xsl:1051:23 count-compared-to-zero fix "exists(key($Key,'b'))"
 html/html_oddprocessing.xsl:1056:23 count-compared-to-zero fix "exists(key($Key,'c'))"
@@ -2926,6 +3060,7 @@ html/html_param.xsl:343:6 not-creating-attribute-correctly
 html/html_param.xsl:454:7 unused-function-template-parameter
 html/html_param.xsl:504:3 text-outside-xsl-text suggestion "<xsl:text>For Printing</xsl:text>"
 html/html_param.xsl:504:3 unused-named-template
+html/html_param.xsl:559:3 setting-value-of-variable-incorrectly
 html/html_param.xsl:663:10 text-outside-xsl-text suggestion "<xsl:text>.html</xsl:text>"
 html/html_param.xsl:806:2 use-choose-without-otherwise
 html/html_param.xsl:854:7 not-creating-attribute-correctly
@@ -2951,20 +3086,27 @@ html/html_param.xsl:900:4 text-outside-xsl-text suggestion "<xsl:text>list-item<
 html/html_param.xsl:900:20 name-compared-to-string suggestion "self::*:li"
 html/html_param.xsl:968:3 unused-named-template
 html/html_param.xsl:1004:7 use-choose-without-otherwise
+html/html_param.xsl:1010:6 setting-value-of-variable-incorrectly
 html/html_tagdocs.xsl:2:1 missing-id-in-stylesheet
 html/html_tagdocs.xsl:2:1 too-many-templates
 html/html_tagdocs.xsl:151:7 not-creating-attribute-correctly
 html/html_tagdocs.xsl:270:1 text-outside-xsl-text
 html/html_tagdocs.xsl:278:2 short-names
+html/html_tagdocs.xsl:363:4 setting-value-of-variable-incorrectly
+html/html_tagdocs.xsl:371:4 setting-value-of-variable-incorrectly
 html/html_textcrit.xsl:2:1 missing-id-in-stylesheet
 html/html_textcrit.xsl:10:17 redundant-namespace-declarations fix ""
 html/html_textstructure.xsl:2:1 missing-id-in-stylesheet
 html/html_textstructure.xsl:2:1 too-many-templates
 html/html_textstructure.xsl:132:32 count-compared-to-zero fix "exists(id($requestedID))"
+html/html_textstructure.xsl:179:25 setting-value-of-variable-incorrectly
 html/html_textstructure.xsl:548:13 not-creating-attribute-correctly
 html/html_textstructure.xsl:665:7 unused-function-template-parameter
 html/html_textstructure.xsl:777:29 string-length-compared-to-zero suggestion "$doclang != ''"
 html/html_textstructure.xsl:781:38 scans-whole-document
+html/html_textstructure.xsl:839:16 setting-value-of-variable-incorrectly
+html/html_textstructure.xsl:842:16 setting-value-of-variable-incorrectly
+html/html_textstructure.xsl:845:16 setting-value-of-variable-incorrectly
 html/html_textstructure.xsl:894:7 unused-variable
 html/html_textstructure.xsl:920:48 name-compared-to-string suggestion "self::*:div"
 html/html_textstructure.xsl:1052:7 setting-value-of-variable-incorrectly
@@ -2985,23 +3127,31 @@ html/html_textstructure.xsl:1772:19 use-choose-without-otherwise
 html/html_textstructure.xsl:1933:7 setting-value-of-variable-incorrectly
 html/html_textstructure.xsl:1936:7 use-choose-without-otherwise
 html/html_textstructure.xsl:2024:38 count-compared-to-zero fix "exists(id($currentID))"
+html/html_textstructure.xsl:2049:16 setting-value-of-variable-incorrectly
 html/html_textstructure.xsl:2083:7 use-choose-without-otherwise
 html/html_textstructure.xsl:2224:19 unused-variable
 html/html_textstructure.xsl:2242:7 setting-value-of-variable-incorrectly
 html/html_textstructure.xsl:2245:7 use-choose-without-otherwise
+html/html_textstructure.xsl:2374:13 setting-value-of-variable-incorrectly
 html/html_textstructure.xsl:2442:7 unused-function-template-parameter
 html/html_textstructure.xsl:2484:13 text-outside-xsl-text suggestion "<xsl:text>. </xsl:text>"
 html/html_textstructure.xsl:2503:6 text-outside-xsl-text suggestion "<xsl:text>.\n\t\t   </xsl:text>"
 html/html_textstructure.xsl:2506:6 text-outside-xsl-text suggestion "<xsl:text>.\n\t\t   </xsl:text>"
+html/html_textstructure.xsl:2567:16 setting-value-of-variable-incorrectly
 html/html_textstructure.xsl:2598:16 unabbreviated-axis fix ""
 html/html_textstructure.xsl:2599:10 unused-variable
 html/html_textstructure.xsl:2609:10 unused-variable
+html/html_textstructure.xsl:2626:25 setting-value-of-variable-incorrectly
+html/html_textstructure.xsl:2629:25 setting-value-of-variable-incorrectly
 html/html_textstructure.xsl:2659:38 scans-whole-document
 html/html_textstructure.xsl:2773:19 not-creating-attribute-correctly
 html/html_textstructure.xsl:2790:16 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 html/html_textstructure.xsl:2862:13 setting-value-of-variable-incorrectly
 html/html_textstructure.xsl:2865:13 setting-value-of-variable-incorrectly
+html/html_textstructure.xsl:2888:16 setting-value-of-variable-incorrectly
+html/html_textstructure.xsl:2891:16 setting-value-of-variable-incorrectly
 html/html_textstructure.xsl:2903:13 use-choose-without-otherwise
+html/html_textstructure.xsl:2906:22 setting-value-of-variable-incorrectly
 html/html_textstructure.xsl:2950:16 text-outside-xsl-text
 html/html_textstructure.xsl:3030:7 unused-function-template-parameter
 html/html_textstructure.xsl:3031:7 unused-function-template-parameter
@@ -3040,9 +3190,7 @@ icml/tei2icml.xsl:680:7 not-creating-attribute-correctly
 icml/tei2icml.xsl:687:7 not-creating-attribute-correctly
 icml/tei2icml.xsl:688:7 not-creating-attribute-correctly
 json/jsonlib.xsl:1:1 missing-id-in-stylesheet
-json/jsonlib.xsl:42:3 setting-value-of-variable-incorrectly
 json/jsonlib.xsl:42:3 short-names
-json/jsonlib.xsl:63:3 setting-value-of-variable-incorrectly
 json/jsonlib.xsl:63:3 short-names
 json/jsonlib.xsl:71:1 unused-function
 json/jsonlib.xsl:74:5 short-names
@@ -3222,6 +3370,9 @@ latex/latex_param.xsl:746:7 text-outside-xsl-text
 latex/latex_tagdocs.xsl:2:1 missing-id-in-stylesheet
 latex/latex_tagdocs.xsl:2:1 too-many-templates
 latex/latex_tagdocs.xsl:84:7 unused-function-template-parameter
+latex/latex_tagdocs.xsl:91:16 setting-value-of-variable-incorrectly
+latex/latex_tagdocs.xsl:103:16 setting-value-of-variable-incorrectly
+latex/latex_tagdocs.xsl:117:16 setting-value-of-variable-incorrectly
 latex/latex_tagdocs.xsl:124:13 text-outside-xsl-text suggestion "<xsl:text>\\noindent </xsl:text>"
 latex/latex_tagdocs.xsl:187:4 text-outside-xsl-text
 latex/latex_tagdocs.xsl:234:61 redundant-whitespace fix " "
@@ -3421,6 +3572,8 @@ odds/RngToRnc.xsl:1441:82 redundant-whitespace fix " "
 odds/RngToRnc.xsl:1441:129 redundant-whitespace fix " "
 odds/RngToRnc.xsl:1448:57 redundant-whitespace fix " "
 odds/RngToRnc.xsl:1480:5 short-names
+odds/RngToRnc.xsl:1491:19 setting-value-of-variable-incorrectly
+odds/RngToRnc.xsl:1494:19 setting-value-of-variable-incorrectly
 odds/classatts.xsl:2:1 missing-id-in-stylesheet
 odds/classatts.xsl:2:17 redundant-namespace-declarations fix ""
 odds/classatts.xsl:3:3 redundant-namespace-declarations fix ""
@@ -3445,7 +3598,6 @@ odds/classatts.xsl:292:71 redundant-whitespace fix " "
 odds/classatts.xsl:292:75 redundant-whitespace fix " "
 odds/extract-isosch.xsl:2:1 missing-id-in-stylesheet
 odds/extract-isosch.xsl:2:1 too-many-templates
-odds/extract-isosch.xsl:2:17 redundant-namespace-declarations fix ""
 odds/extract-isosch.xsl:3:17 redundant-namespace-declarations fix ""
 odds/extract-isosch.xsl:143:23 count-compared-to-zero fix "empty($distinct_constraint_languages)"
 odds/extract-isosch.xsl:186:33 use-double-slash
@@ -3468,7 +3620,6 @@ odds/extract-isosch.xsl:337:21 count-compared-to-zero fix "exists($not_declared_
 odds/extract-isosch.xsl:361:9 short-names
 odds/extract-isosch.xsl:384:9 use-choose-without-otherwise
 odds/extract-isosch.xsl:401:17 text-outside-xsl-text suggestion "<xsl:text>tei:*</xsl:text>"
-odds/extract-isosch.xsl:407:13 setting-value-of-variable-incorrectly
 odds/extract-isosch.xsl:481:19 scans-whole-document
 odds/extract-isosch.xsl:535:7 use-choose-without-otherwise
 odds/extract-isosch.xsl:601:5 short-names
@@ -3485,6 +3636,7 @@ odds/guidelines.xsl:349:33 count-compared-to-zero fix "exists(key('EXAMPLES',con
 odds/guidelines.xsl:358:29 count-compared-to-zero fix "exists($items/html:li)"
 odds/guidelines.xsl:364:31 count-compared-to-zero fix "exists(key('EXAMPLES',concat(@xml:id,$me)))"
 odds/guidelines.xsl:372:69 redundant-whitespace fix " "
+odds/guidelines.xsl:402:25 setting-value-of-variable-incorrectly
 odds/guidelines.xsl:459:52 unabbreviated-axis fix ""
 odds/guidelines.xsl:484:13 use-choose-without-otherwise
 odds/guidelines.xsl:571:5 unused-function-template-parameter
@@ -3512,7 +3664,9 @@ odds/guidelines.xsl:959:17 text-outside-xsl-text suggestion "<xsl:text> — 日�
 odds/guidelines.xsl:960:17 text-outside-xsl-text suggestion "<xsl:text> — 한국어</xsl:text>"
 odds/guidelines.xsl:961:17 text-outside-xsl-text suggestion "<xsl:text> — 中文</xsl:text>"
 odds/guidelines.xsl:978:19 count-compared-to-zero fix "exists(key('REFSTO-CLASS',$this))"
+odds/guidelines.xsl:989:19 setting-value-of-variable-incorrectly
 odds/guidelines.xsl:1005:19 count-compared-to-zero fix "exists(key('REFSTO-ELEMENT',$this))"
+odds/guidelines.xsl:1016:19 setting-value-of-variable-incorrectly
 odds/guidelines.xsl:1041:23 string-length-compared-to-zero suggestion "$attName ne ''"
 odds/guidelines.xsl:1044:13 not-creating-attribute-correctly
 odds/odd2dtd.xsl:2:1 missing-id-in-stylesheet
@@ -3609,6 +3763,7 @@ odds/odd2lite.xsl:306:5 unused-function-template-parameter
 odds/odd2lite.xsl:308:5 unused-function-template-parameter
 odds/odd2lite.xsl:315:5 unused-function-template-parameter
 odds/odd2lite.xsl:350:7 unused-function-template-parameter
+odds/odd2lite.xsl:375:28 setting-value-of-variable-incorrectly
 odds/odd2lite.xsl:420:10 use-choose-without-otherwise
 odds/odd2lite.xsl:421:29 name-compared-to-string suggestion "self::*:macroSpec"
 odds/odd2lite.xsl:427:29 name-compared-to-string suggestion "self::*:classSpec"
@@ -3862,6 +4017,7 @@ odds/teiodds.xsl:995:5 text-outside-xsl-text suggestion "<xsl:text>x</xsl:text>"
 odds/teiodds.xsl:996:5 text-outside-xsl-text suggestion "<xsl:text>x</xsl:text>"
 odds/teiodds.xsl:999:9 text-outside-xsl-text suggestion "<xsl:text>x</xsl:text>"
 odds/teiodds.xsl:1005:5 unused-variable
+odds/teiodds.xsl:1047:7 setting-value-of-variable-incorrectly
 odds/teiodds.xsl:1059:9 use-choose-without-otherwise
 odds/teiodds.xsl:1076:23 count-compared-to-zero fix "empty($Contents/TEMPTREE/*)"
 odds/teiodds.xsl:1128:5 unused-function-template-parameter
@@ -3879,6 +4035,8 @@ odds/teiodds.xsl:1650:3 unused-named-template
 odds/teiodds.xsl:1652:7 text-outside-xsl-text suggestion "<xsl:text> (none) </xsl:text>"
 odds/teiodds.xsl:1682:5 use-choose-without-otherwise
 odds/teiodds.xsl:1709:5 setting-value-of-variable-incorrectly
+odds/teiodds.xsl:1754:17 setting-value-of-variable-incorrectly
+odds/teiodds.xsl:1757:17 setting-value-of-variable-incorrectly
 odds/teiodds.xsl:1795:5 unused-function-template-parameter
 odds/teiodds.xsl:1796:5 unused-variable
 odds/teiodds.xsl:1804:5 unused-function-template-parameter
@@ -3980,6 +4138,7 @@ odt/odttotei.xsl:912:19 unabbreviated-axis fix ""
 odt/odttotei.xsl:915:31 unabbreviated-axis fix ""
 odt/odttotei.xsl:1043:3 text-outside-xsl-text
 odt/odttotei.xsl:1109:4 short-names
+odt/odttotei.xsl:1113:8 setting-value-of-variable-incorrectly
 odt/odttotei.xsl:1165:5 unused-variable
 odt/odttotei.xsl:1190:4 use-choose-without-otherwise
 odt/odttotei.xsl:1255:40 redundant-whitespace fix ""
@@ -4057,13 +4216,17 @@ odt/teitoodt.xsl:690:107 redundant-whitespace fix " "
 odt/teitoodt.xsl:690:132 redundant-whitespace fix " "
 odt/teitoodt.xsl:690:146 redundant-whitespace fix " "
 odt/teitoodt.xsl:690:160 redundant-whitespace fix ""
+odt/teitoodt.xsl:789:7 setting-value-of-variable-incorrectly
+odt/teitoodt.xsl:850:11 setting-value-of-variable-incorrectly
 odt/teitoodt.xsl:919:9 text-outside-xsl-text suggestion "<xsl:text>table</xsl:text>"
 odt/teitoodt.xsl:991:96 redundant-whitespace fix " "
 odt/teitoodt.xsl:991:171 redundant-whitespace fix " "
 odt/teitoodt.xsl:991:185 redundant-whitespace fix " "
 odt/teitoodt.xsl:1015:3 unused-named-template
 odt/teitoodt.xsl:1017:3 unused-named-template
+odt/teitoodt.xsl:1020:7 setting-value-of-variable-incorrectly
 odt/teitoodt.xsl:1026:5 short-names
+odt/teitoodt.xsl:1030:9 setting-value-of-variable-incorrectly
 odt/teitoodt.xsl:1040:29 using-namespace-axis
 odt/teitoodt.xsl:1096:7 text-outside-xsl-text suggestion "<xsl:text>\n\t-1\n      </xsl:text>"
 odt/teitoodt.xsl:1104:5 unused-function-template-parameter
@@ -4094,6 +4257,7 @@ profiles/acm/latex/to.xsl:176:7 use-choose-without-otherwise
 profiles/acm/latex/to.xsl:186:3 text-outside-xsl-text suggestion "<xsl:text>\n    \\balancecolumns\n  </xsl:text>"
 profiles/acm/latex/to.xsl:208:4 text-outside-xsl-text suggestion "<xsl:text>\n     \\bibliographystyle{abbrv}\n     \\bibliography{foracmbib}\n\n   </xsl:text>"
 profiles/acm/latex/to.xsl:235:7 unused-function-template-parameter
+profiles/acm/latex/to.xsl:242:2 setting-value-of-variable-incorrectly
 profiles/acm/latex/to.xsl:249:7 text-outside-xsl-text suggestion "<xsl:text>\\noindent </xsl:text>"
 profiles/acm/pdf/to.xsl:2:1 missing-id-in-stylesheet
 profiles/acm/pdf/to.xsl:3:3 redundant-namespace-declarations fix ""
@@ -4356,6 +4520,7 @@ profiles/enrich/latex/to.xsl:69:4 text-outside-xsl-text suggestion "<xsl:text>\n
 profiles/enrich/latex/to.xsl:214:7 text-outside-xsl-text suggestion "<xsl:text>\\mbox{}\\\\[-10pt] </xsl:text>"
 profiles/iso/check-docx.xsl:2:1 missing-id-in-stylesheet
 profiles/iso/check-docx.xsl:20:17 redundant-namespace-declarations fix ""
+profiles/iso/check-docx.xsl:68:5 setting-value-of-variable-incorrectly
 profiles/iso/check-docx.xsl:147:9 setting-value-of-variable-incorrectly
 profiles/iso/check-docx.xsl:166:17 text-outside-xsl-text suggestion "<xsl:text>-->\n                </xsl:text>"
 profiles/iso/check-docx.xsl:178:9 setting-value-of-variable-incorrectly
@@ -4658,6 +4823,7 @@ profiles/iso/docx/to.xsl:139:9 not-creating-attribute-correctly
 profiles/iso/docx/to.xsl:206:5 unused-function-template-parameter
 profiles/iso/docx/to.xsl:209:9 use-choose-without-otherwise
 profiles/iso/docx/to.xsl:219:27 string-length-compared-to-zero suggestion "$style != ''"
+profiles/iso/docx/to.xsl:225:13 setting-value-of-variable-incorrectly
 profiles/iso/docx/to.xsl:241:119 redundant-whitespace fix " "
 profiles/iso/docx/to.xsl:252:15 setting-value-of-variable-incorrectly
 profiles/iso/docx/to.xsl:258:15 setting-value-of-variable-incorrectly
@@ -4682,6 +4848,7 @@ profiles/iso/docx/to.xsl:456:21 text-outside-xsl-text suggestion "<xsl:text>Note
 profiles/iso/docx/to.xsl:470:49 redundant-whitespace fix " "
 profiles/iso/docx/to.xsl:490:38 redundant-whitespace fix " "
 profiles/iso/docx/to.xsl:508:13 unused-variable
+profiles/iso/docx/to.xsl:510:17 setting-value-of-variable-incorrectly
 profiles/iso/docx/to.xsl:578:13 not-creating-attribute-correctly
 profiles/iso/docx/to.xsl:688:9 setting-value-of-variable-incorrectly
 profiles/iso/docx/to.xsl:754:43 scans-whole-document
@@ -4770,6 +4937,8 @@ profiles/iso/iso2changes.xsl:10:17 leaking-result-namespace suggestion "tei cals
 profiles/iso/iso2changes.xsl:62:7 unused-variable
 profiles/iso/iso2changes.xsl:132:16 use-choose-without-otherwise
 profiles/iso/iso2changes.xsl:162:7 setting-value-of-variable-incorrectly
+profiles/iso/iso2changes.xsl:168:6 setting-value-of-variable-incorrectly
+profiles/iso/iso2changes.xsl:176:6 setting-value-of-variable-incorrectly
 profiles/iso/iso2changes.xsl:207:7 use-choose-without-otherwise
 profiles/iso/iso2changes.xsl:214:10 text-outside-xsl-text suggestion "<xsl:text>\n\t   Annex </xsl:text>"
 profiles/iso/iso2changes.xsl:263:6 unused-function-template-parameter
@@ -4889,8 +5058,11 @@ profiles/iso/isoutils.xsl:176:4 text-outside-xsl-text suggestion "<xsl:text>(E)<
 profiles/iso/isoutils.xsl:177:4 text-outside-xsl-text suggestion "<xsl:text>(F)</xsl:text>"
 profiles/iso/isoutils.xsl:216:4 text-outside-xsl-text suggestion "<xsl:text>Clause title</xsl:text>"
 profiles/iso/isoutils.xsl:218:4 text-outside-xsl-text suggestion "<xsl:text>Clause subtitle</xsl:text>"
+profiles/iso/isoutils.xsl:250:4 setting-value-of-variable-incorrectly
+profiles/iso/isoutils.xsl:269:4 setting-value-of-variable-incorrectly
 profiles/iso/isoutils.xsl:279:5 short-names
 profiles/iso/isoutils.xsl:309:5 unused-function-template-parameter
+profiles/iso/isoutils.xsl:322:7 setting-value-of-variable-incorrectly
 profiles/iso/isoutils.xsl:447:2 setting-value-of-variable-incorrectly
 profiles/iso/isoutils.xsl:452:6 text-outside-xsl-text suggestion "<xsl:text>termPreferred</xsl:text>"
 profiles/iso/isoutils.xsl:453:6 text-outside-xsl-text suggestion "<xsl:text>termDeprecated</xsl:text>"
@@ -5098,6 +5270,7 @@ profiles/iso/validate.xsl:2:1 missing-id-in-stylesheet
 profiles/iso/validate.xsl:2:1 too-many-templates
 profiles/iso/validate.xsl:62:8 use-choose-without-otherwise
 profiles/iso/validate.xsl:69:3 text-outside-xsl-text suggestion "<xsl:text>\n\t   Annex </xsl:text>"
+profiles/iso/validate.xsl:93:8 setting-value-of-variable-incorrectly
 profiles/iso/validate.xsl:114:13 text-outside-xsl-text suggestion "<xsl:text>:\n            </xsl:text>"
 profiles/iso/validate.xsl:154:6 unused-function-template-parameter
 profiles/iso/validate.xsl:155:6 unused-function-template-parameter
@@ -5513,6 +5686,8 @@ profiles/oxford/p4/from.xsl:4:5 leaking-result-namespace suggestion " exclude-re
 profiles/oxford/p4/from.xsl:60:3 setting-value-of-variable-incorrectly
 profiles/oxford/p4/from.xsl:60:3 unused-variable
 profiles/oxford/p4/from.xsl:64:3 setting-value-of-variable-incorrectly
+profiles/oxford/p4/from.xsl:298:2 setting-value-of-variable-incorrectly
+profiles/oxford/p4/from.xsl:314:4 setting-value-of-variable-incorrectly
 profiles/oxford/p4/from.xsl:422:37 string-length-compared-to-zero suggestion ". = ''"
 profiles/oxford/p4/from.xsl:658:7 use-choose-without-otherwise
 profiles/oxford/p4/from.xsl:659:2 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
@@ -5537,6 +5712,7 @@ profiles/saxonce/html/to.xsl:6:3 redundant-namespace-declarations fix ""
 profiles/saxonce/html/to.xsl:11:3 redundant-namespace-declarations fix ""
 profiles/saxonce/html/to.xsl:95:22 count-compared-to-zero fix "exists(id($currentID))"
 profiles/saxonce/html/to.xsl:144:5 unused-variable
+profiles/saxonce/html/to.xsl:178:4 setting-value-of-variable-incorrectly
 profiles/saxonce/html/to.xsl:197:20 count-compared-to-zero fix "exists(id($target))"
 profiles/sciencejournal/docx/from.xsl:2:1 missing-id-in-stylesheet
 profiles/sciencejournal/docx/from.xsl:5:17 redundant-namespace-declarations fix ""
@@ -5758,26 +5934,34 @@ slides/slides.xsl:3:3 leaking-result-namespace
 slides/slides.xsl:4:17 leaking-result-namespace
 slides/slides.xsl:5:17 leaking-result-namespace
 slides/slides.xsl:78:5 use-choose-without-otherwise
+slides/slides.xsl:111:4 setting-value-of-variable-incorrectly
 slides/slides.xsl:140:7 unused-function-template-parameter
 slides/slides.xsl:141:7 unused-function-template-parameter
 slides/slides.xsl:145:10 use-choose-without-otherwise
 slides/slides.xsl:167:10 use-choose-without-otherwise
 slides/slides.xsl:212:25 short-names
+slides/slides.xsl:343:13 setting-value-of-variable-incorrectly
+slides/slides.xsl:394:19 setting-value-of-variable-incorrectly
 slides/slides.xsl:473:7 short-names
 slides/slides.xsl:495:7 unused-function-template-parameter
+slides/slides.xsl:500:13 setting-value-of-variable-incorrectly
 slides/teihtml-slides.xsl:2:1 missing-id-in-stylesheet
 slides/teihtml-slides.xsl:2:1 too-many-templates
 slides/teihtml-slides.xsl:3:3 leaking-result-namespace
 slides/teihtml-slides.xsl:4:17 leaking-result-namespace
 slides/teihtml-slides.xsl:5:17 leaking-result-namespace
 slides/teihtml-slides.xsl:74:5 use-choose-without-otherwise
+slides/teihtml-slides.xsl:107:4 setting-value-of-variable-incorrectly
 slides/teihtml-slides.xsl:136:7 unused-function-template-parameter
 slides/teihtml-slides.xsl:137:7 unused-function-template-parameter
 slides/teihtml-slides.xsl:141:10 use-choose-without-otherwise
 slides/teihtml-slides.xsl:163:10 use-choose-without-otherwise
 slides/teihtml-slides.xsl:208:25 short-names
+slides/teihtml-slides.xsl:339:13 setting-value-of-variable-incorrectly
+slides/teihtml-slides.xsl:391:19 setting-value-of-variable-incorrectly
 slides/teihtml-slides.xsl:470:7 short-names
 slides/teihtml-slides.xsl:492:7 unused-function-template-parameter
+slides/teihtml-slides.xsl:497:13 setting-value-of-variable-incorrectly
 slides/teilatex-slides.xsl:42:4 missing-id-in-stylesheet
 slides/teilatex-slides.xsl:42:4 too-many-templates
 slides/teilatex-slides.xsl:62:7 unused-function-template-parameter
@@ -5793,6 +5977,7 @@ slides/teilatex-slides.xsl:129:4 text-outside-xsl-text suggestion "<xsl:text>\n 
 slides/teilatex-slides.xsl:191:7 use-choose-without-otherwise
 slides/teilatex-slides.xsl:295:3 text-outside-xsl-text
 slides/teilatex-slides.xsl:296:7 unused-function-template-parameter
+slides/teilatex-slides.xsl:327:10 setting-value-of-variable-incorrectly
 slides/teilatex-slides.xsl:351:3 text-outside-xsl-text suggestion "<xsl:text>\n    \\noindent\n  </xsl:text>"
 slides/teilatex-slides.xsl:356:7 use-single-option-for-choose
 tbx/teitotbx.xsl:2:1 missing-id-in-stylesheet
@@ -5880,7 +6065,6 @@ tools/makegraphicsanttask.xsl:2:1 missing-id-in-stylesheet
 tools/makegraphicsanttask.xsl:2:1 not-using-output
 tools/makegraphicsanttask.xsl:2:17 leaking-result-namespace
 tools/makegraphicsanttask.xsl:3:3 leaking-result-namespace
-tools/makegraphicsanttask.xsl:3:3 redundant-namespace-declarations fix ""
 tools/makegraphicsanttask.xsl:4:3 redundant-namespace-declarations fix ""
 tools/makegraphicsanttask.xsl:95:9 short-names
 tools/makegraphicsanttask.xsl:139:5 setting-value-of-variable-incorrectly
@@ -5912,7 +6096,6 @@ tools/oddbyexample.xsl:432:19 text-outside-xsl-text suggestion "<xsl:text>TEI</x
 tools/oddbyexample.xsl:436:19 text-outside-xsl-text suggestion "<xsl:text>teiCorpus</xsl:text>"
 tools/oddbyexample.xsl:447:19 short-names
 tools/oddbyexample.xsl:450:37 count-compared-to-zero fix "empty(current-group()/*)"
-tools/oddbyexample.xsl:468:23 setting-value-of-variable-incorrectly
 tools/oddbyexample.xsl:476:21 short-names
 tools/oddbyexample.xsl:479:21 short-names
 tools/oddbyexample.xsl:486:29 use-choose-without-otherwise
@@ -5956,8 +6139,12 @@ wordpress/wordpress-to-tei.xsl:276:88 redundant-whitespace fix " "
 wordpress/wordpress-to-tei.xsl:276:123 redundant-whitespace fix " "
 wordpress/wordpress-to-tei.xsl:309:5 unused-function-template-parameter
 wordpress/wordpress-to-tei.xsl:361:8 use-choose-without-otherwise
+wordpress/wordpress-to-tei.xsl:364:21 setting-value-of-variable-incorrectly
 wordpress/wordpress-to-tei.xsl:369:19 string-length-compared-to-zero suggestion "$afterall = ''"
+wordpress/wordpress-to-tei.xsl:371:21 setting-value-of-variable-incorrectly
+wordpress/wordpress-to-tei.xsl:380:17 setting-value-of-variable-incorrectly
 wordpress/wordpress-to-tei.xsl:390:23 string-length-compared-to-zero suggestion "$afterall != ''"
+wordpress/wordpress-to-tei.xsl:392:13 setting-value-of-variable-incorrectly
 wordpress/wordpress-to-tei.xsl:418:6 use-choose-without-otherwise
 wordpress/wordpress-to-tei.xsl:419:6 text-outside-xsl-text suggestion "<xsl:text>January</xsl:text>"
 wordpress/wordpress-to-tei.xsl:420:6 text-outside-xsl-text suggestion "<xsl:text>February</xsl:text>"
