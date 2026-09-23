@@ -8,5 +8,11 @@
     <xsl:if test="exists(item)">
       <hit/>
     </xsl:if>
+    <xsl:if test="exists(item)">
+      <hit/>
+    </xsl:if>
+    <xsl:if test="exists(other)">
+      <hit/>
+    </xsl:if>
   </xsl:template>
 </xsl:stylesheet>

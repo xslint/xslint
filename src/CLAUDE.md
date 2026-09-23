@@ -62,6 +62,12 @@ lines from the start of the text, so a mark left in shifts the columns of **line
 what moves there is a fix's `col` and not the reported `pos`, xmldom's own line and column being
 right either way (#877).
 
+`character(content, at)` places a **numeric** reference as well as the five names XML predefines,
+in both spellings and neither more, so a `&#X41;` and a code point past the last one there is
+answer `undefined` as an unknown name does. Reading the names alone refused 484 fixes over the
+three corpora, 482 of them `text-outside-xsl-text`, each announced and then declined with "the
+source no longer matches" on a file nothing had touched; 462 apply now (#983).
+
 ## `src/selectors.js`
 
 `splitOf(xpath)` — a declarative selector parted into the **names** a shared walk can serve as its

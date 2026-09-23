@@ -379,6 +379,13 @@ const APPLIED = [
     after: 'spaced-attribute.fixed.xsl',
   },
   {
+    name: 'should delete a select whose value holds a numeric entity with ' +
+      '--fix-suggestions',
+    flag: '--fix-suggestions',
+    before: 'variable-with-select-holding-a-numeric-entity.xsl',
+    after: 'variable-with-select-holding-a-numeric-entity.fixed.xsl',
+  },
+  {
     name: 'should keep every entity a rewritten value carries with --fix',
     flag: '--fix',
     before: 'entity-in-a-rewritten-value.xsl',
@@ -630,12 +637,6 @@ const UNCHANGED = [
       '--fix-suggestions',
     flag: '--fix-suggestions',
     sheet: 'a-select-written-in-both-spellings.xsl',
-  },
-  {
-    name: 'cannot delete a select whose value holds a numeric entity with ' +
-      '--fix-suggestions',
-    flag: '--fix-suggestions',
-    sheet: 'variable-with-select-holding-a-numeric-entity.xsl',
   },
   {
     name: 'cannot delete a declaration exclude-result-prefixes names with ' +
