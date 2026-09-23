@@ -125,7 +125,12 @@ the result tree, unless the prefix is excluded. So a prefix declared only for
 the stylesheet&#39;s own logic — <code>xs</code> for a sequence type in <code>as=&quot;xs:integer&quot;</code>, a
 helper <code>my</code>/<code>eo</code> called from a <code>select</code> — is serialized onto output elements it
 never names. <code>xsl:element</code> does not do this, so the leak appears precisely when
-a static <code>xsl:element</code> is rewritten as a literal result element.</p>
+a static <code>xsl:element</code> is rewritten as a literal result element. Top-level data
+is not one either: an element outside the XSLT namespace standing directly in
+the stylesheet, such as a <code>doc:doc</code> documentation block, is never instantiated,
+so a stylesheet holding nothing else emits no namespace at all — and a prefix
+that only such a block names still leaks onto every result element a template
+builds.</p>
 <p>List such a prefix in <code>exclude-result-prefixes</code> on the stylesheet root: the
 prefix stays available to expressions and to name declarations, but is dropped
 from the serialized output. This differs from a redundant declaration (a prefix
