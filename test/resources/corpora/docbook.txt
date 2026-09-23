@@ -458,6 +458,7 @@ contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:4761:3 setting-value-of-variable
 contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:4772:5 setting-value-of-variable-incorrectly
 contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:4779:9 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:4780:9 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
+contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:4858:7 empty-content-in-instructions
 contrib/xsl/xmldepend/xmldepend.xsl:2:1 missing-id-in-stylesheet
 contrib/xsl/xsd2db/xsd2db.xsl:94:1 missing-id-in-stylesheet
 contrib/xsl/xsd2db/xsd2db.xsl:94:1 too-many-templates
@@ -501,6 +502,7 @@ contrib/xsl/xsd2db/xsd2db.xsl:2814:7 unused-function-template-parameter
 contrib/xsl/xsd2db/xsd2db.xsl:2844:16 use-choose-without-otherwise
 contrib/xsl/xsd2db/xsd2db.xsl:3810:7 unused-function-template-parameter
 contrib/xsl/xsd2db/xsd2db.xsl:3841:19 unused-variable
+contrib/xsl/xsd2db/xsd2db.xsl:3888:7 empty-content-in-instructions
 contrib/xsl/xsd2db/xsd2db.xsl:3928:4 unused-named-template
 contrib/xsl/xsd2db/xsd2db.xsl:4092:10 use-choose-without-otherwise
 contrib/xsl/xsd2db/xsd2db.xsl:4195:10 use-choose-without-otherwise
@@ -967,6 +969,7 @@ xsl/common/olink.xsl:600:13 text-outside-xsl-text suggestion "<xsl:text>1</xsl:t
 xsl/common/olink.xsl:601:13 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 xsl/common/olink.xsl:602:13 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
 xsl/common/olink.xsl:605:9 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
+xsl/common/olink.xsl:613:9 empty-content-in-instructions
 xsl/common/olink.xsl:680:1 oversized-template
 xsl/common/olink.xsl:694:21 unabbreviated-axis fix ""
 xsl/common/olink.xsl:694:38 unabbreviated-axis fix ""
@@ -2350,6 +2353,7 @@ xsl/html/chunk-common.xsl:1361:13 text-outside-xsl-text suggestion "<xsl:text>1<
 xsl/html/chunk-common.xsl:1362:13 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 xsl/html/chunk-common.xsl:1363:13 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
 xsl/html/chunk-common.xsl:1366:9 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
+xsl/html/chunk-common.xsl:1379:9 empty-content-in-instructions
 xsl/html/chunk-common.xsl:1397:3 use-choose-without-otherwise
 xsl/html/chunk-common.xsl:1480:29 scans-whole-document
 xsl/html/chunk-common.xsl:1481:30 scans-whole-document
@@ -3431,6 +3435,7 @@ xsl/website/olink.xsl:156:5 setting-value-of-variable-incorrectly
 xsl/website/olink.xsl:160:5 setting-value-of-variable-incorrectly
 xsl/website/olink.xsl:185:9 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 xsl/website/olink.xsl:186:9 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
+xsl/website/olink.xsl:277:7 empty-content-in-instructions
 xsl/website/rss.xsl:2:1 missing-id-in-stylesheet
 xsl/website/rss.xsl:36:38 scans-whole-document
 xsl/website/rss.xsl:112:41 scans-whole-document
