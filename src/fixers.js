@@ -7,6 +7,16 @@ const {deletion, escaped, substitution} = require('./fixes')
 const {XSLT} = require('./xsl-version')
 
 /**
+ * The node kinds character data is written in: a text node, and the CDATA
+ * section that is a text node spelled another way. A census of what an element
+ * holds counts both, and an edit wraps only the first — `nodeValue` for a
+ * CDATA section omits its delimiters, so a substitution written by value would
+ * land inside them (#993).
+ * @type {{[kind: string]: number}}
+ */
+const CHARACTERS = {text: 3, cdata: 4}
+
+/**
  * Text a deletion emits unchanged: no character a serializer escapes — both
  * xsltproc and Saxon write `&`, `<` and `>` as references where the attribute
  * is gone, under the xml method and the html one alike, and Saxon's html one
@@ -104,25 +114,26 @@ const booleanConstant = function(node, content) {
 /**
  * Fix for `text-outside-xsl-text`: wrap the literal text in `xsl:text`, under
  * the prefix the document binds to XSLT and withheld where it binds none, the
- * way `missingVersion` reads one (#976). Only when the instruction holds
- * exactly one non-whitespace text node can a single edit resolve the defect —
- * with text on both sides of a child element there are several to wrap.
+ * way `missingVersion` reads one (#976). One edit resolves the defect only
+ * where it holds one text node and no CDATA section, even a blank one, which
+ * left outside the wrap is stripped rather than merged into the text (#993).
  * @param {Element} node - The instruction element holding the loose text
  * @return {?object} - The fix, or null
  */
 const textOutsideXslText = function(node) {
-  const texts = Array.from(node.childNodes).filter(
-    (child) => child.nodeType === 3 && child.nodeValue.trim() !== '',
+  const held = Array.from(node.childNodes).filter(
+    (child) => child.nodeType === CHARACTERS.cdata ||
+      child.nodeType === CHARACTERS.text && child.nodeValue.trim() !== '',
   )
   const prefix = node.lookupPrefix(XSLT)
   let fix = null
-  if (texts.length === 1 && prefix) {
+  if (held.length === 1 && held[0].nodeType === CHARACTERS.text && prefix) {
     fix = {
-      line: texts[0].lineNumber,
-      col: texts[0].columnNumber,
-      value: texts[0].nodeValue,
+      line: held[0].lineNumber,
+      col: held[0].columnNumber,
+      value: held[0].nodeValue,
       replacement:
-        `<${prefix}:text>${escaped(texts[0].nodeValue)}` +
+        `<${prefix}:text>${escaped(held[0].nodeValue)}` +
         `</${prefix}:text>`,
     }
   }
