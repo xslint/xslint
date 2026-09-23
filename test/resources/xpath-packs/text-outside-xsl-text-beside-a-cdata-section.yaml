@@ -1,0 +1,22 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: text-outside-xsl-text
+found:
+  amount: 6
+  positions: [ [ 4, 5 ], [ 5, 5 ], [ 6, 5 ], [ 7, 5 ], [ 8, 5 ], [ 9, 5 ] ]
+  fixes:
+    [ "<xsl:text>plain</xsl:text>", null, null, null, null,
+      "<xsl:text>kilo</xsl:text>" ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="s">
+    <xsl:template match="/">
+      <xsl:if test="alpha">plain</xsl:if>
+      <xsl:if test="bravo">loose<![CDATA[charlie]]></xsl:if>
+      <xsl:if test="delta"><![CDATA[echo]]></xsl:if>
+      <xsl:if test="foxtrot"><![CDATA[golf]]>hotel</xsl:if>
+      <xsl:if test="india">left<xsl:value-of select="x"/>right</xsl:if>
+      <xsl:if test="juliet">kilo<![CDATA[   ]]></xsl:if>
+    </xsl:template>
+  </xsl:stylesheet>
