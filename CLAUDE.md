@@ -491,8 +491,9 @@ which every selector of ours spells because the engine's own collapses
 JavaScript's whitespace rather than XML's `S`, `xslint:version`, the version in
 force at a node, and `xslint:attribute`, what an attribute of an XSLT element
 says in either of the two spellings XSLT gives one — each a function for the
-same reason, that no selector over the document answers it (#881, #851, #992). The note atop that module
-says which six of the seven selectors the first cost, and how.
+same reason, that no selector over the document answers it
+(#881, #851, #992). The note atop that module says which six of the seven
+selectors the first cost, and how.
 
 ## Check formats
 
