@@ -34,6 +34,16 @@ publication date only; detailed notes begin with the Unreleased section.
   `expressionsOf`, both alias attributes are prefix lists, and `#all`, which
   names no prefix, is no use of any (#999).
 
+- Offer a variable only where it is in scope and holds nodes.
+  `confusing-variable-and-node` took every variable met earlier in the
+  template, one declared inside an earlier `xsl:if` among them, read a bare
+  name inside a predicate as if it stood where the variable was bound, and
+  offered `$contrib` for a variable bound to `string(contrib)`, a type error
+  under `xsl:apply-templates`. Scope is now the siblings in front of the
+  instruction and of each of its ancestors, a name inside a predicate is
+  left alone, and a variable bound to a literal, an atomising call or an
+  atomic `as` is still reported but offered no fix (#1001).
+
 ## 0.2.0 - 2026-09-17
 
 - Walk no tree the project itself ignores. `allFilesFrom` opened every

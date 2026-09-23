@@ -668,8 +668,7 @@ releasetools/xtangle.xsl:117:111 redundant-whitespace fix " "
 releasetools/xtangle.xsl:117:158 redundant-whitespace fix ""
 testdocs/fo-debug.xsl:2:1 missing-id-in-stylesheet
 testdocs/i18n/i18n-fo.xsl:2:1 missing-id-in-stylesheet
-testdocs/i18n/i18n-fo.xsl:22:62 confusing-variable-and-node suggestion "$contrib"
-testdocs/i18n/i18n-fo.xsl:30:78 confusing-variable-and-node suggestion "$contrib"
+testdocs/i18n/i18n-fo.xsl:22:62 confusing-variable-and-node
 testdocs/i18n/identity.xsl:2:1 missing-id-in-stylesheet
 testdocs/i18n/identity.xsl:3:17 redundant-namespace-declarations fix ""
 testdocs/i18n/localize.xsl:2:1 missing-id-in-stylesheet
