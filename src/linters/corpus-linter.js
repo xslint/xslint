@@ -334,10 +334,49 @@ const OPTIONAL = ['no', 'false', '0']
 const CALLS = ['call', 'reference']
 
 /**
+ * The significant tokens a node of a parse spans.
+ * @param {{tokens: Array}} parse - What a parse answered
+ * @param {object} node - A node of its tree
+ * @return {Array.<object>} - The tokens, trivia left out
+ */
+const spelledOf = function(parse, node) {
+  return parse.tokens.slice(node.from, node.to)
+    .filter(({type}) => !TRIVIA.includes(type))
+}
+
+/**
+ * The expanded name a run of tokens opens with, braced or prefixed.
+ * @param {object} found - The record the tokens are read from
+ * @param {Array.<object>} spelled - The significant tokens
+ * @return {string} - The expanded name, `{uri}local`
+ */
+const nameOf = function(found, spelled) {
+  let name = expanded(found.node, spelled[0].value)
+  if (spelled[0].type === TOKENS.URI) {
+    name = `{${spelled[0].value.slice(2, -1)}}${spelled[1].value}`
+  }
+  return name
+}
+
+/**
+ * Whether an arrow applies a function named in the stylesheet, rather than
+ * one a variable holds or an expression in brackets yields: the token behind
+ * the arrow is then the name itself and no `$`.
+ * @param {{tokens: Array}} parse - What a parse answered
+ * @param {object} arrow - An arrow node of its tree
+ * @return {boolean} - True when a static name stands on its right
+ */
+const statically = function(parse, arrow) {
+  const behind = spelledOf(parse, arrow.children[0]).length + 1
+  return arrow.children[1].kind === 'name' &&
+    spelledOf(parse, arrow)[behind].type !== TOKENS.DOLLAR
+}
+
+/**
  * The calls one parsed record makes, each keyed by its expanded name and its
  * arity: a static call counts the arguments the parse separated, so a binding
- * clause's commas are no separators, and a named reference `f:x#2` names its
- * arity outright (#1008).
+ * clause's commas are no separators, a named reference `f:x#2` names its
+ * arity outright, and an arrow counts what stands on its left as one (#1008).
  * @param {object} found - The record
  * @param {{tokens: Array, tree: object}} parse - What its parse answered
  * @return {Array.<string>} - Its calls, as `{uri}local#arity`
@@ -350,17 +389,15 @@ const called = function(found, parse) {
    */
   const visit = function(node) {
     if (CALLS.includes(node.kind)) {
-      const spelled = parse.tokens.slice(node.from, node.to)
-        .filter(({type}) => !TRIVIA.includes(type))
-      let name = `{${spelled[0].value.slice(2, -1)}}${spelled[1].value}`
-      if (spelled[0].type !== TOKENS.URI) {
-        name = expanded(found.node, spelled[0].value)
-      }
+      const spelled = spelledOf(parse, node)
       let arity = node.children.length
       if (node.kind === 'reference') {
         arity = Number(spelled[spelled.length - 1].value)
       }
-      calls.push(`${name}#${arity}`)
+      calls.push(`${nameOf(found, spelled)}#${arity}`)
+    } else if (node.kind === 'arrow' && statically(parse, node)) {
+      calls.push(`${nameOf(found, spelledOf(parse, node.children[1]))}` +
+        `#${node.children.length - 1}`)
     }
     node.children.forEach(visit)
   }
