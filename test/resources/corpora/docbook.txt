@@ -638,7 +638,6 @@ releasetools/xslnsfiles/manpages.table.xsl:588:5 unused-variable
 releasetools/xslnsfiles/titlepage.xsl:2:1 missing-id-in-stylesheet
 releasetools/xslnsfiles/titlepage.xsl:2:1 not-using-output
 releasetools/xslnsfiles/titlepage.xsl:2:1 too-many-templates
-releasetools/xslnsfiles/titlepage.xsl:6:17 leaking-result-namespace suggestion "doc t param exsl d"
 releasetools/xslnsfiles/titlepage.xsl:7:17 redundant-namespace-declarations fix ""
 releasetools/xslnsfiles/titlepage.xsl:25:3 use-choose-without-otherwise
 releasetools/xslnsfiles/titlepage.xsl:26:5 text-outside-xsl-text suggestion "<xsl:text>http://www.w3.org/1999/XSL/Format</xsl:text>"
@@ -663,8 +662,7 @@ releasetools/xtangle.xsl:117:111 redundant-whitespace fix " "
 releasetools/xtangle.xsl:117:158 redundant-whitespace fix ""
 testdocs/fo-debug.xsl:2:1 missing-id-in-stylesheet
 testdocs/i18n/i18n-fo.xsl:2:1 missing-id-in-stylesheet
-testdocs/i18n/i18n-fo.xsl:22:62 confusing-variable-and-node suggestion "$contrib"
-testdocs/i18n/i18n-fo.xsl:30:78 confusing-variable-and-node suggestion "$contrib"
+testdocs/i18n/i18n-fo.xsl:22:62 confusing-variable-and-node
 testdocs/i18n/identity.xsl:2:1 missing-id-in-stylesheet
 testdocs/i18n/identity.xsl:3:17 redundant-namespace-declarations fix ""
 testdocs/i18n/localize.xsl:2:1 missing-id-in-stylesheet
@@ -1043,7 +1041,6 @@ xsl/common/targets.xsl:310:35 scans-whole-document
 xsl/common/targets.xsl:310:74 scans-whole-document
 xsl/common/titles.xsl:2:1 missing-id-in-stylesheet
 xsl/common/titles.xsl:2:1 too-many-templates
-xsl/common/titles.xsl:5:17 leaking-result-namespace suggestion "doc d xlink"
 xsl/common/titles.xsl:222:3 unused-function-template-parameter
 xsl/common/titles.xsl:240:7 text-outside-xsl-text suggestion "<xsl:text>REFENTRY WITHOUT TITLE???</xsl:text>"
 xsl/common/titles.xsl:471:11 use-choose-without-otherwise
@@ -2641,6 +2638,7 @@ xsl/html/oldchunker.xsl:1:1 missing-id-in-stylesheet
 xsl/html/onechunk.xsl:2:1 missing-id-in-stylesheet
 xsl/html/pi.xsl:2:1 missing-id-in-stylesheet
 xsl/html/pi.xsl:2:1 too-many-templates
+xsl/html/pi.xsl:5:17 leaking-result-namespace suggestion "doc d xlink"
 xsl/html/pi.xsl:971:17 count-compared-to-zero fix "not($cmdsynopses)"
 xsl/html/pi.xsl:1001:17 count-compared-to-zero fix "not($funcsynopses)"
 xsl/html/profile-chunk.xsl:1:1 missing-id-in-stylesheet
@@ -3064,7 +3062,6 @@ xsl/roundtrip/dbk2wordml.xsl:68:13 text-outside-xsl-text suggestion "<xsl:text>U
 xsl/roundtrip/dbk2wordml.xsl:80:15 text-outside-xsl-text suggestion "<xsl:text>Unknown</xsl:text>"
 xsl/roundtrip/dbk2wp.xsl:1:1 missing-id-in-stylesheet
 xsl/roundtrip/dbk2wp.xsl:1:1 too-many-templates
-xsl/roundtrip/dbk2wp.xsl:3:3 leaking-result-namespace suggestion "doc d"
 xsl/roundtrip/dbk2wp.xsl:245:11 use-choose-without-otherwise
 xsl/roundtrip/dbk2wp.xsl:319:15 text-outside-xsl-text suggestion "<xsl:text>para</xsl:text>"
 xsl/roundtrip/dbk2wp.xsl:335:3 text-outside-xsl-text suggestion "<xsl:text>Normal</xsl:text>"

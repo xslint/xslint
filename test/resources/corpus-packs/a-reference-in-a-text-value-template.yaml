@@ -1,0 +1,20 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: unused-variable
+found:
+  amount: 0
+  positions: [ ]
+inputs:
+  - |-
+    <?xml version="1.0"?>
+    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:f="urn:f" version="3.0" expand-text="yes">
+      <xsl:variable name="limit" select="3"/>
+      <xsl:function name="f:twice">
+        <xsl:param name="number"/>
+        <xsl:sequence select="$number * 2"/>
+      </xsl:function>
+      <xsl:template match="/">
+        <result>{count(//item) + f:twice($limit)}</result>
+      </xsl:template>
+    </xsl:stylesheet>

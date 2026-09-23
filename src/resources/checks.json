@@ -167,7 +167,7 @@
       "blank-nested-if": {
         "xpath": "//xsl:if[(count(*) = 1) and (count(xsl:if) = 1) and not(text()[xslint:normalize-space(.) or ancestor::*[@xml:space][1]/@xml:space = 'preserve'])]",
         "severity": "warning",
-        "message": "A nested xsl:if inside another xsl:if is prohibited. Combine conditions with 'and' into a single xsl:if."
+        "message": "An xsl:if holds nothing but another xsl:if, which states one condition in two places. Combine the conditions with 'and' into a single xsl:if, unless the outer test guards the inner one against an error."
       },
       "duplicate-param-name": {
         "xpath": "//xsl:param[@name = preceding-sibling::xsl:param/@name]",
