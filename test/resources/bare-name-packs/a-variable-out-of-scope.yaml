@@ -1,0 +1,32 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+# A variable is in scope in the siblings behind it and what they hold, so one
+# declared inside an earlier `xsl:if` names nothing after it, while one in
+# front of an ancestor reaches in. A name inside a predicate is asked of
+# another context node, which no variable bound outside it stands in for (#1001).
+pack: confusing-variable-and-node
+found:
+  amount: 3
+  positions: [ [ 11, 38 ], [ 15, 34 ], [ 15, 64 ] ]
+  fixes: [ "$chapter", "$chapter", "$chapter" ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="s">
+    <xsl:template match="book">
+      <xsl:if test="title">
+        <xsl:variable name="heading" select="string(title)"/>
+      </xsl:if>
+      <xsl:apply-templates select="heading"/>
+      <xsl:variable name="chapter" select="chapter"/>
+      <xsl:if test="part">
+        <xsl:for-each select="part">
+          <xsl:apply-templates select="chapter"/>
+          <xsl:variable name="later" select="later"/>
+        </xsl:for-each>
+      </xsl:if>
+      <xsl:apply-templates select="chapter | $chapter[chapter] | chapter/x"/>
+      <xsl:apply-templates select="following-sibling::book[chapter = $chapter]"/>
+      <xsl:apply-templates select="later"/>
+    </xsl:template>
+  </xsl:stylesheet>
