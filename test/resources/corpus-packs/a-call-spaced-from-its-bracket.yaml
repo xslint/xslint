@@ -4,21 +4,25 @@
 pack: unused-function
 found:
   amount: 1
-  positions: [ [ 0, 15, 3 ] ]
+  positions: [ [ 0, 19, 3 ] ]
 inputs:
   - |-
     <?xml version="1.0"?>
     <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:my="urn:my" version="2.0">
       <xsl:function name="my:spaced">
+        <xsl:param name="number"/>
         <xsl:sequence select="1"/>
       </xsl:function>
       <xsl:function name="my:buried">
+        <xsl:param name="number"/>
         <xsl:sequence select="2"/>
       </xsl:function>
       <xsl:function name="my:thrice">
+        <xsl:param name="number"/>
         <xsl:sequence select="3"/>
       </xsl:function>
       <xsl:function name="my:tight">
+        <xsl:param name="number"/>
         <xsl:sequence select="4"/>
       </xsl:function>
       <xsl:function name="my:dead">

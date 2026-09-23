@@ -5,6 +5,13 @@ A stylesheet function that is called from no expression anywhere in the corpus
 should be removed. A function that *is* called, but only from functions that
 are themselves never reached, is caught by `unreachable-function` instead.
 
+A function is its namespace, its local name and its arity, as XPath resolves a
+call. So `g:format(title)` calls `my:format` wherever both prefixes are bound
+to one URI, and so does `Q{urn:my}format(title)`. A declaration of the same
+name with two parameters is a different function, left dead by a call passing
+one. A call in a text value template, `<p>{my:format(title)}</p>` under an on
+`expand-text`, is a call like any other.
+
 Incorrect:
 
 ```xsl

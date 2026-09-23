@@ -1,0 +1,27 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: unused-function
+found:
+  amount: 0
+  positions: [ ]
+inputs:
+  - |-
+    <?xml version="1.0"?>
+    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:f="urn:f" version="3.0">
+      <xsl:function name="f:twice">
+        <xsl:param name="number"/>
+        <xsl:sequence select="$number * 2"/>
+      </xsl:function>
+      <xsl:function name="f:thrice">
+        <xsl:param name="number"/>
+        <xsl:sequence select="$number * 3"/>
+      </xsl:function>
+    </xsl:stylesheet>
+  - |-
+    <?xml version="1.0"?>
+    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:g="urn:f" version="3.0">
+      <xsl:template match="/">
+        <xsl:value-of select="g:twice(1), Q{urn:f}thrice(1)"/>
+      </xsl:template>
+    </xsl:stylesheet>

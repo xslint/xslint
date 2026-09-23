@@ -1,0 +1,19 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: unused-variable
+found:
+  amount: 1
+  positions: [ [ 0, 4, 3 ] ]
+inputs:
+  - |-
+    <?xml version="1.0"?>
+    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="3.0">
+      <xsl:variable name="shown" select="1"/>
+      <xsl:variable name="limit" select="3"/>
+      <xsl:template match="/">
+        <result>{$limit}</result>
+        <result expand-text="yes">{$shown}</result>
+        <xsl:text expand-text="yes">{$shown}</xsl:text>
+      </xsl:template>
+    </xsl:stylesheet>
