@@ -167,7 +167,7 @@ common/common_msdescription.xsl:2:1 missing-id-in-stylesheet
 common/common_msdescription.xsl:2:1 too-many-templates
 common/common_msdescription.xsl:256:5 use-choose-without-otherwise
 common/common_msdescription.xsl:271:5 use-single-option-for-choose
-common/common_msdescription.xsl:329:29 string-length-compared-to-zero suggestion ". = ''"
+common/common_msdescription.xsl:329:29 string-length-compared-to-zero suggestion "string(.) = ''"
 common/common_param.xsl:2:1 missing-id-in-stylesheet
 common/common_param.xsl:2:17 redundant-namespace-declarations fix ""
 common/common_param.xsl:3:3 redundant-namespace-declarations fix ""
@@ -193,7 +193,7 @@ common/common_tagdocs.xsl:670:9 setting-value-of-variable-incorrectly
 common/common_tagdocs.xsl:695:21 setting-value-of-variable-incorrectly
 common/common_tagdocs.xsl:728:23 count-compared-to-zero fix "exists($myatts/a/*)"
 common/common_tagdocs.xsl:777:23 count-compared-to-zero fix "exists($memberclasses/*/*)"
-common/common_tagdocs.xsl:849:27 string-length-compared-to-zero suggestion "$remarks = ''"
+common/common_tagdocs.xsl:849:27 string-length-compared-to-zero suggestion "string($remarks) = ''"
 common/common_tagdocs.xsl:1078:19 setting-value-of-variable-incorrectly
 common/common_tagdocs.xsl:1081:19 setting-value-of-variable-incorrectly
 common/common_tagdocs.xsl:1142:23 string-length-compared-to-zero suggestion "$atts != ''"
@@ -573,7 +573,7 @@ common/functions.xsl:1257:29 redundant-whitespace fix " "
 common/functions.xsl:1261:76 redundant-whitespace fix " "
 common/functions.xsl:1262:29 redundant-whitespace fix " "
 common/functions.xsl:1279:25 string-length-compared-to-zero suggestion "$doclang != ''"
-common/functions.xsl:1303:25 string-length-compared-to-zero suggestion "tei:gloss[1] = ''"
+common/functions.xsl:1303:25 string-length-compared-to-zero suggestion "string(tei:gloss[1]) = ''"
 common/functions.xsl:1317:11 short-names
 common/functions.xsl:1348:5 short-names
 common/functions.xsl:1358:35 redundant-whitespace fix " "
@@ -853,7 +853,7 @@ docx/from/lists.xsl:132:33 string-length-compared-to-zero suggestion "$style.typ
 docx/from/lists.xsl:168:21 setting-value-of-variable-incorrectly
 docx/from/lists.xsl:175:11 text-outside-xsl-text suggestion "<xsl:text>gloss</xsl:text>"
 docx/from/lists.xsl:176:25 text-outside-xsl-text suggestion "<xsl:text>simple</xsl:text>"
-docx/from/lists.xsl:176:41 string-length-compared-to-zero suggestion "$numfmt = ''"
+docx/from/lists.xsl:176:41 string-length-compared-to-zero suggestion "string($numfmt) = ''"
 docx/from/lists.xsl:177:25 text-outside-xsl-text suggestion "<xsl:text>bulleted</xsl:text>"
 docx/from/lists.xsl:178:25 text-outside-xsl-text suggestion "<xsl:text>numbered</xsl:text>"
 docx/from/marginals.xsl:2:1 missing-id-in-stylesheet
@@ -1063,7 +1063,7 @@ docx/from/omml2mml.xsl:623:156 redundant-whitespace fix " "
 docx/from/omml2mml.xsl:626:29 translate-for-case suggestion "lower-case($ndLastGroupChrPr/m:vertJc/@m:val)"
 docx/from/omml2mml.xsl:626:73 redundant-whitespace fix " "
 docx/from/omml2mml.xsl:626:159 redundant-whitespace fix " "
-docx/from/omml2mml.xsl:631:71 string-length-compared-to-zero suggestion "$ndLastChr/@m:val = ''"
+docx/from/omml2mml.xsl:631:71 string-length-compared-to-zero suggestion "string($ndLastChr/@m:val) = ''"
 docx/from/omml2mml.xsl:632:29 string-length-compared-to-zero suggestion "$ndLastChr/@m:val != ''"
 docx/from/omml2mml.xsl:649:25 using-disable-output-escaping
 docx/from/omml2mml.xsl:656:25 using-disable-output-escaping
@@ -1141,7 +1141,7 @@ docx/from/omml2mml.xsl:1323:127 redundant-whitespace fix " "
 docx/from/omml2mml.xsl:1323:218 redundant-whitespace fix " "
 docx/from/omml2mml.xsl:1334:22 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 docx/from/omml2mml.xsl:1540:2 oversized-template
-docx/from/omml2mml.xsl:1552:26 string-length-compared-to-zero suggestion "$sAttribute = ''"
+docx/from/omml2mml.xsl:1552:26 string-length-compared-to-zero suggestion "string($sAttribute) = ''"
 docx/from/omml2mml.xsl:1553:13 use-single-option-for-choose
 docx/from/omml2mml.xsl:1554:32 string-length-compared-to-zero suggestion "$fHideTop != ''"
 docx/from/omml2mml.xsl:1554:63 redundant-whitespace fix " "
@@ -1199,11 +1199,11 @@ docx/from/pass2.xsl:2:1489 redundant-namespace-declarations fix ""
 docx/from/pass2.xsl:2:1554 redundant-namespace-declarations fix ""
 docx/from/pass2.xsl:62:2 use-choose-without-otherwise
 docx/from/pass2.xsl:65:35 redundant-whitespace fix " "
-docx/from/pass2.xsl:128:34 string-length-compared-to-zero suggestion ". = ''"
+docx/from/pass2.xsl:128:34 string-length-compared-to-zero suggestion "string(.) = ''"
 docx/from/pass2.xsl:201:36 scans-whole-document
 docx/from/pass2.xsl:203:50 name-compared-to-string suggestion "self::*:front"
 docx/from/pass2.xsl:267:33 use-double-slash
-docx/from/pass2.xsl:326:10 string-length-compared-to-zero suggestion ". = ''"
+docx/from/pass2.xsl:326:10 string-length-compared-to-zero suggestion "string(.) = ''"
 docx/from/pass2.xsl:338:5 short-names
 docx/from/pass2.xsl:341:61 redundant-whitespace fix " "
 docx/from/pass2.xsl:345:71 redundant-whitespace fix " "
@@ -1278,7 +1278,7 @@ docx/from/tables.xsl:364:8 short-names
 docx/from/tables.xsl:379:14 use-choose-without-otherwise
 docx/from/tables.xsl:393:18 use-choose-without-otherwise
 docx/from/tables.xsl:432:18 setting-value-of-variable-incorrectly
-docx/from/tables.xsl:440:36 string-length-compared-to-zero suggestion "$val = ''"
+docx/from/tables.xsl:440:36 string-length-compared-to-zero suggestion "string($val) = ''"
 docx/from/tables.xsl:525:31 text-outside-xsl-text suggestion "<xsl:text>middle</xsl:text>"
 docx/from/tables.xsl:559:45 redundant-whitespace fix " "
 docx/from/tables.xsl:615:86 redundant-whitespace fix " "
@@ -2031,7 +2031,7 @@ docx/to/mml2omml.xsl:1063:16 not-creating-attribute-correctly
 docx/to/mml2omml.xsl:1070:16 not-creating-attribute-correctly
 docx/to/mml2omml.xsl:1075:16 not-creating-attribute-correctly
 docx/to/mml2omml.xsl:1086:10 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
-docx/to/mml2omml.xsl:1086:26 string-length-compared-to-zero suggestion "$sLowerLineThickness = ''"
+docx/to/mml2omml.xsl:1086:26 string-length-compared-to-zero suggestion "string($sLowerLineThickness) = ''"
 docx/to/mml2omml.xsl:1086:63 redundant-whitespace fix " "
 docx/to/mml2omml.xsl:1086:116 redundant-whitespace fix " "
 docx/to/mml2omml.xsl:1086:172 redundant-whitespace fix " "
@@ -3393,7 +3393,7 @@ latex/latex_transcr.xsl:2:1 missing-id-in-stylesheet
 latex/latex_transcr.xsl:7:17 redundant-namespace-declarations fix ""
 latex/latex_verse.xsl:2:1 missing-id-in-stylesheet
 markdown/markdown-to-tei.xsl:1:1 missing-id-in-stylesheet
-markdown/markdown-to-tei.xsl:48:23 string-length-compared-to-zero suggestion "$nLine = ''"
+markdown/markdown-to-tei.xsl:48:23 string-length-compared-to-zero suggestion "string($nLine) = ''"
 markdown/markdown-to-tei.xsl:122:5 use-choose-without-otherwise
 markdown/markdown-to-tei.xsl:125:21 text-outside-xsl-text suggestion "<xsl:text>bold</xsl:text>"
 markdown/markdown-to-tei.xsl:125:90 text-outside-xsl-text suggestion "<xsl:text>italic</xsl:text>"
@@ -3423,7 +3423,7 @@ markdown/tei-to-markdown.xsl:306:13 text-outside-xsl-text suggestion "<xsl:text>
 markdown/tei-to-markdown.xsl:307:13 text-outside-xsl-text suggestion "<xsl:text>* </xsl:text>"
 mediawiki/mediawiki-to-tei.xsl:1:1 missing-id-in-stylesheet
 mediawiki/mediawiki-to-tei.xsl:14:2 unused-named-template
-mediawiki/mediawiki-to-tei.xsl:53:23 string-length-compared-to-zero suggestion "$nLine = ''"
+mediawiki/mediawiki-to-tei.xsl:53:23 string-length-compared-to-zero suggestion "string($nLine) = ''"
 mediawiki/mediawiki-to-tei.xsl:127:5 use-choose-without-otherwise
 mediawiki/mediawiki-to-tei.xsl:130:21 text-outside-xsl-text suggestion "<xsl:text>bold</xsl:text>"
 mediawiki/mediawiki-to-tei.xsl:130:90 text-outside-xsl-text suggestion "<xsl:text>italic</xsl:text>"
@@ -3962,7 +3962,7 @@ odds/teiodds.xsl:450:39 redundant-whitespace fix " "
 odds/teiodds.xsl:476:5 short-names
 odds/teiodds.xsl:492:5 use-choose-without-otherwise
 odds/teiodds.xsl:608:5 setting-value-of-variable-incorrectly
-odds/teiodds.xsl:612:23 string-length-compared-to-zero suggestion "$Type = ''"
+odds/teiodds.xsl:612:23 string-length-compared-to-zero suggestion "string($Type) = ''"
 odds/teiodds.xsl:651:5 setting-value-of-variable-incorrectly
 odds/teiodds.xsl:687:9 unused-variable
 odds/teiodds.xsl:702:27 count-compared-to-zero fix "exists(key('CLASSMEMBERS',$thisClass))"
@@ -4082,7 +4082,7 @@ odt/odttotei.xsl:356:46 name-compared-to-string suggestion "self::*:frame"
 odt/odttotei.xsl:500:5 setting-value-of-variable-incorrectly
 odt/odttotei.xsl:571:5 setting-value-of-variable-incorrectly
 odt/odttotei.xsl:574:5 setting-value-of-variable-incorrectly
-odt/odttotei.xsl:578:23 string-length-compared-to-zero suggestion ". = ''"
+odt/odttotei.xsl:578:23 string-length-compared-to-zero suggestion "string(.) = ''"
 odt/odttotei.xsl:643:5 setting-value-of-variable-incorrectly
 odt/odttotei.xsl:644:63 redundant-whitespace fix ""
 odt/odttotei.xsl:646:5 setting-value-of-variable-incorrectly
@@ -4467,7 +4467,7 @@ profiles/enrich/docx/from.xsl:2:1 missing-id-in-stylesheet
 profiles/enrich/docx/from.xsl:2:1 too-many-templates
 profiles/enrich/docx/from.xsl:120:3 not-creating-attribute-correctly
 profiles/enrich/docx/from.xsl:123:3 not-creating-attribute-correctly
-profiles/enrich/docx/from.xsl:174:34 string-length-compared-to-zero suggestion ". = ''"
+profiles/enrich/docx/from.xsl:174:34 string-length-compared-to-zero suggestion "string(.) = ''"
 profiles/enrich/docx/from.xsl:211:10 text-outside-xsl-text suggestion "<xsl:text>×</xsl:text>"
 profiles/enrich/docx/from.xsl:212:10 text-outside-xsl-text suggestion "<xsl:text>[</xsl:text>"
 profiles/enrich/docx/from.xsl:213:10 text-outside-xsl-text suggestion "<xsl:text>]</xsl:text>"
@@ -4570,7 +4570,7 @@ profiles/iso/docx/from.xsl:1470:56 redundant-whitespace fix " "
 profiles/iso/docx/from.xsl:1616:13 not-creating-attribute-correctly
 profiles/iso/docx/from.xsl:1633:6 not-creating-attribute-correctly
 profiles/iso/docx/from.xsl:1669:7 unused-function-template-parameter
-profiles/iso/docx/from.xsl:1708:33 string-length-compared-to-zero suggestion "$result1 = ''"
+profiles/iso/docx/from.xsl:1708:33 string-length-compared-to-zero suggestion "string($result1) = ''"
 profiles/iso/docx/from.xsl:1737:101 redundant-whitespace fix " "
 profiles/iso/docx/from.xsl:1763:4 not-creating-attribute-correctly
 profiles/iso/docx/from.xsl:1780:4 not-creating-attribute-correctly
@@ -5267,11 +5267,11 @@ profiles/jsi/docx/from.xsl:311:3 text-outside-xsl-text suggestion "<xsl:text>_ou
 profiles/jsi/docx/from.xsl:427:8 use-choose-without-otherwise
 profiles/jsi/docx/from.xsl:504:18 string-length-compared-to-zero suggestion ". != ''"
 profiles/jsi/docx/from.xsl:514:23 string-length-compared-to-zero suggestion ". != ''"
-profiles/jsi/docx/from.xsl:529:80 string-length-compared-to-zero suggestion ". = ''"
+profiles/jsi/docx/from.xsl:529:80 string-length-compared-to-zero suggestion "string(.) = ''"
 profiles/jsi/docx/from.xsl:532:20 string-length-compared-to-zero suggestion ". != ''"
-profiles/jsi/docx/from.xsl:549:80 string-length-compared-to-zero suggestion ". = ''"
-profiles/jsi/docx/from.xsl:553:24 string-length-compared-to-zero suggestion ". = ''"
-profiles/jsi/docx/from.xsl:555:52 string-length-compared-to-zero suggestion ". = ''"
+profiles/jsi/docx/from.xsl:549:80 string-length-compared-to-zero suggestion "string(.) = ''"
+profiles/jsi/docx/from.xsl:553:24 string-length-compared-to-zero suggestion "string(.) = ''"
+profiles/jsi/docx/from.xsl:555:52 string-length-compared-to-zero suggestion "string(.) = ''"
 profiles/jsi/docx/from.xsl:688:52 name-compared-to-string suggestion "self::del"
 profiles/jsi/docx/from.xsl:688:68 name-compared-to-string suggestion "self::add"
 profiles/jsi/docx/from.xsl:689:38 name-compared-to-string suggestion "self::del"
@@ -5648,7 +5648,7 @@ profiles/oxford/p4/from.xsl:60:3 unused-variable
 profiles/oxford/p4/from.xsl:64:3 setting-value-of-variable-incorrectly
 profiles/oxford/p4/from.xsl:298:2 setting-value-of-variable-incorrectly
 profiles/oxford/p4/from.xsl:314:4 setting-value-of-variable-incorrectly
-profiles/oxford/p4/from.xsl:422:37 string-length-compared-to-zero suggestion ". = ''"
+profiles/oxford/p4/from.xsl:422:37 string-length-compared-to-zero suggestion "string(.) = ''"
 profiles/oxford/p4/from.xsl:658:7 use-choose-without-otherwise
 profiles/oxford/p4/from.xsl:659:2 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 profiles/oxford/p4/from.xsl:660:2 text-outside-xsl-text suggestion "<xsl:text>false</xsl:text>"
@@ -5700,7 +5700,7 @@ profiles/sciencejournal/docx/from.xsl:101:2 text-outside-xsl-text suggestion "<x
 profiles/sciencejournal/docx/from.xsl:106:7 short-names
 profiles/sciencejournal/docx/from.xsl:113:6 text-outside-xsl-text suggestion "<xsl:text>2</xsl:text>"
 profiles/sciencejournal/docx/from.xsl:114:6 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
-profiles/sciencejournal/docx/from.xsl:141:23 string-length-compared-to-zero suggestion ". = ''"
+profiles/sciencejournal/docx/from.xsl:141:23 string-length-compared-to-zero suggestion "string(.) = ''"
 profiles/sciencejournal/docx/from.xsl:158:49 redundant-whitespace fix " "
 profiles/sciencejournal/docx/to.xsl:2:1 missing-id-in-stylesheet
 profiles/sciencejournal/docx/to.xsl:75:9 unused-function-template-parameter
@@ -5983,7 +5983,7 @@ tcp/tcp2tei.xsl:1697:5 use-choose-without-otherwise
 tcp/tcp2tei.xsl:1861:52 redundant-whitespace fix " "
 tcp/tcp2tei.xsl:1964:9 use-choose-without-otherwise
 tcp/tcp2tei.xsl:2066:7 use-choose-without-otherwise
-tcp/tcp2tei.xsl:2130:37 string-length-compared-to-zero suggestion ". = ''"
+tcp/tcp2tei.xsl:2130:37 string-length-compared-to-zero suggestion "string(.) = ''"
 tcp/tcp2tei.xsl:2217:7 short-names
 tcp/tcp2tei.xsl:2232:13 use-choose-without-otherwise
 tcp/tcp2tei.xsl:2233:15 text-outside-xsl-text suggestion "<xsl:text>01</xsl:text>"
@@ -6100,7 +6100,7 @@ wordpress/wordpress-to-tei.xsl:276:123 redundant-whitespace fix " "
 wordpress/wordpress-to-tei.xsl:309:5 unused-function-template-parameter
 wordpress/wordpress-to-tei.xsl:361:8 use-choose-without-otherwise
 wordpress/wordpress-to-tei.xsl:364:21 setting-value-of-variable-incorrectly
-wordpress/wordpress-to-tei.xsl:369:19 string-length-compared-to-zero suggestion "$afterall = ''"
+wordpress/wordpress-to-tei.xsl:369:19 string-length-compared-to-zero suggestion "string($afterall) = ''"
 wordpress/wordpress-to-tei.xsl:371:21 setting-value-of-variable-incorrectly
 wordpress/wordpress-to-tei.xsl:380:17 setting-value-of-variable-incorrectly
 wordpress/wordpress-to-tei.xsl:390:23 string-length-compared-to-zero suggestion "$afterall != ''"

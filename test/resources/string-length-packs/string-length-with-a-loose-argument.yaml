@@ -4,9 +4,9 @@
 pack: string-length-compared-to-zero
 # Each argument binds at least as loosely as the comparison it would be
 # substituted into, so the rewrite would regroup the expression or fail to parse
-# at all — `@a or @b = ''` reads as `@a or (@b = '')` and `@a = @b = ''` chains
-# two comparisons no version admits. The comparison is reported and carries no
-# fix.
+# at all — `@a or @b != ''` reads as `@a or (@b != '')` and `@a = @b != ''`
+# chains two comparisons no version admits. The comparison is reported and
+# carries no fix.
 found:
   amount: 4
   positions: [ [ 4, 36 ], [ 5, 36 ], [ 6, 36 ], [ 7, 36 ] ]
