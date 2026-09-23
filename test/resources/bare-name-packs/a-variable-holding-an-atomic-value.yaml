@@ -1,0 +1,27 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+# A variable bound to a string, a number or any atomic type holds no node, so
+# spelling it where a node is selected is a type error rather than the node
+# meant, and only the report stands (#1001).
+pack: confusing-variable-and-node
+found:
+  amount: 5
+  positions: [ [ 9, 34 ], [ 10, 27 ], [ 11, 26 ], [ 12, 26 ], [ 13, 26 ] ]
+  fixes: [ null, null, null, null, "$kids" ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="2.0" id="s">
+    <xsl:template match="othercredit">
+      <xsl:variable name="contrib" select="string(contrib)"/>
+      <xsl:variable name="total" select="number(total)"/>
+      <xsl:variable name="label" as="xs:string" select="label"/>
+      <xsl:variable name="mark" select="'mark'"/>
+      <xsl:variable name="kids" select="contrib/*"/>
+      <xsl:apply-templates select="contrib"/>
+      <xsl:value-of select="total"/>
+      <xsl:copy-of select="label"/>
+      <xsl:copy-of select="mark"/>
+      <xsl:copy-of select="kids"/>
+    </xsl:template>
+  </xsl:stylesheet>
