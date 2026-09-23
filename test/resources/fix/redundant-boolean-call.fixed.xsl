@@ -8,5 +8,14 @@
     <xsl:if test="@enabled and normalize-space(title)">
       <p>on</p>
     </xsl:if>
+    <xsl:if test="@width &lt; 1">
+      <p>narrow</p>
+    </xsl:if>
+    <xsl:if test="@kind = &quot;wide&quot;">
+      <p>wide</p>
+    </xsl:if>
+    <xsl:if test='@mode = &apos;draft&apos;'>
+      <p>draft</p>
+    </xsl:if>
   </xsl:template>
 </xsl:stylesheet>

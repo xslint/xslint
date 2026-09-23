@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {deletion, substitution} = require('./fixes')
+const {deletion, escaped, substitution} = require('./fixes')
 const {XSLT} = require('./xsl-version')
 
 /**
@@ -107,7 +107,8 @@ const textOutsideXslText = function(node) {
       col: texts[0].columnNumber,
       value: texts[0].nodeValue,
       replacement:
-        `<${prefix}:text>${texts[0].nodeValue}</${prefix}:text>`,
+        `<${prefix}:text>${escaped(texts[0].nodeValue)}` +
+        `</${prefix}:text>`,
     }
   }
   return fix

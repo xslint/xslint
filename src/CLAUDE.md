@@ -541,33 +541,43 @@ text standing nowhere in the file, so it was announced and then declined as no l
 (#718). The arithmetic behind it is banned outright now by a `no-restricted-syntax` selector, since
 nothing in `src/` needs to guess where an attribute begins. It does read the delimiter, though,
 because what a fix carries is the *decoded* value: an expression the source spelled `//a[@x &lt; 1]`
-arrives holding a bare `<`, and writing it back as it stands closes the element early. So `escaped`
-re-encodes the `&`, the `<` and whichever quote the value stands in — the delimiter being the one
-position the parser reports exactly, which is why `deletion` reads it too. A `>` is left bare, legal
-in an attribute value: re-encoding cannot recover which characters the author chose to write as
-references, so the line is drawn at what XML forbids. Rewriting the whole value swept every entity
-in it before that, which master does today on the plain spelling and this change would otherwise
-have carried to the spaced one. `excision(element, content)` is the fourth, and it cuts a whole
-*element*: the tag closes at the first `>` standing outside an attribute value, so a `>` written
-inside one is stepped over rather than mistaken for the end of the tag, and an element spelled the
-long way ends at the `>` of its end tag instead — found only where the source between the two tags
-is gap, since a comment holding a `</` of its own puts that search inside itself, and no fix at all
-beats a span cut through the middle of something. Such a comment is legal XSLT rather than a broken
-file, xsltproc and SaxonJ-HE 12.5 both honouring an `xsl:import` that holds one, so what is withheld
-is a fix and not a report. What the cut takes beyond the element is `lined`'s question and one rule:
-the whole line where the element owns it, indentation and line ending together, and the element
-alone where anything else stands on that line, the indentation of a shared line belonging to the
-line rather than to whichever element is cut out of it. `redundant-import`'s fix rebuilt the element
-instead, as an indentation repeated `columnNumber` times and a tag spelled out of the name and the
-href, which assumed a gap, a delimiter and an empty-tag spelling all at once. Of the eight spellings
-one fixture now holds — a gap around the `=`, single quotes with a trailing gap behind them, a space
-in front of the `/>`, the long form, a wider gap after the element name, an element wrapped across
-two lines, one sharing its line with a sibling that survives, and one ending a line it does not own
-— master applies **none**, each announced and then refused with "the source no longer matches", the
-wording reserved for a span an earlier edit had moved, on a file nothing had touched (#793). A fix's
+arrives holding a bare `<`, and writing it back as it stands closes the element early. So
+`delimited` re-encodes the `&`, the `<` and whichever quote the value stands in — the delimiter
+being the one position the parser reports exactly, which is why `deletion` reads it too. A `>` is
+left bare, legal in an attribute value: re-encoding cannot recover which characters the author
+chose to write as references, so the line is drawn at what XML forbids. Only the delimiter is that
+rule's own, so `escaped` is the two characters character data forbids and `delimited` is it plus
+the quote (#982): a fix writing markup rather than a value would otherwise have the `<` of its own
+tag re-encoded, `text-outside-xsl-text` wrapping its text as `&lt;xsl:text&gt;`. Rewriting the
+whole value swept every entity in it before that, which master does today on the plain spelling
+and this change would otherwise have carried to the spaced one. `excision(element, content)` is
+the fourth, and it cuts a whole *element*: the tag closes at the first `>` standing outside an
+attribute value, so a `>` written inside one is stepped over rather than mistaken for the end of
+the tag, and an element spelled the long way ends at the `>` of its end tag instead — found only
+where the source between the two tags is gap, since a comment holding a `</` of its own puts that
+search inside itself, and no fix at all beats a span cut through the middle of something. Such a
+comment is legal XSLT rather than a broken file, xsltproc and SaxonJ-HE 12.5 both honouring an
+`xsl:import` that holds one, so what is withheld is a fix and not a report. What the cut takes
+beyond the element is `lined`'s question and one rule: the whole line where the element owns it,
+indentation and line ending together, and the element alone where anything else stands on that
+line, the indentation of a shared line belonging to the line rather than to whichever element is
+cut out of it. `redundant-import`'s fix rebuilt the element instead, as an indentation repeated
+`columnNumber` times and a tag spelled out of the name and the href, which assumed a gap, a
+delimiter and an empty-tag spelling all at once. Of the eight spellings one fixture now holds — a
+gap around the `=`, single quotes with a trailing gap behind them, a space in front of the `/>`,
+the long form, a wider gap after the element name, an element wrapped across two lines, one
+sharing its line with a sibling that survives, and one ending a line it does not own — master
+applies **none**, each announced and then refused with "the source no longer matches", the wording
+reserved for a span an earlier edit had moved, on a file nothing had touched (#793). A fix's
 `value` cannot be spelled out at all now, a `no-restricted-syntax` selector refusing a template
 literal or a concatenation under that key anywhere in `src/`: it is the text the source already
 holds, and #718's ban saw only the subtraction it was written for.
+
+`written(text, node, content)` asks that rule of the node a fix lands in: the delimiter for an
+attribute value, character data for a text node, nothing at all inside a CDATA section. `defect`
+spells every code-based replacement through it, so the twelve linters building one remember
+nothing — each handed the fixer its decoded expression instead, and `--fix` over the corpora left
+two stylesheets no parser reads (#957).
 
 ## `src/fixer.js`
 

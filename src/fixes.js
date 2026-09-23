@@ -219,20 +219,62 @@ const excision = function(element, content) {
 }
 
 /**
- * The text as a value delimited by the given quote may hold it, the three
- * characters XML forbids there written as references: an `&`, which would open
- * a reference of its own, a `<`, and the delimiter. The `&` goes first or it
- * would escape the two behind it. A `>` is left bare, XML allowing one:
- * encoding cannot recover what the author wrote as a reference.
+ * The text as character data may spell it, the two characters XML forbids
+ * there written as references: an `&`, which would open a reference of its
+ * own, and a `<`, which would open a tag. The `&` goes first or it would
+ * escape the one behind it. A `>` is left bare, XML allowing one: encoding
+ * cannot recover what the author wrote as a reference (#982).
+ * @param {string} text - The decoded text to write
+ * @return {string} - The text as character data may spell it
+ */
+const escaped = function(text) {
+  return text
+    .split('&').join('&amp;')
+    .split('<').join('&lt;')
+}
+
+/**
+ * The text as a value delimited by the given quote may hold it, which is
+ * character data plus the one character the delimiter adds: a value is parsed
+ * as character data is, less the quote that would close it early.
  * @param {string} text - The decoded text to write
  * @param {string} quote - The delimiter the value stands in
  * @return {string} - The text as that value may spell it
  */
-const escaped = function(text, quote) {
-  return text
-    .split('&').join('&amp;')
-    .split('<').join('&lt;')
-    .split(quote).join(REFERENCES[quote])
+const delimited = function(text, quote) {
+  return escaped(text).split(quote).join(REFERENCES[quote])
+}
+
+/**
+ * The two node kinds whose spelling a fix has to answer to, each beside what
+ * it forbids: an attribute value the `&`, the `<` and whichever quote
+ * delimits it, a text node the first two. A CDATA section is on neither list,
+ * every character inside one standing for itself.
+ * @type {{attribute: number, text: number}}
+ */
+const KINDS = {attribute: 2, text: 3}
+
+/**
+ * The text as the node holding it may spell it. A linter hands over the
+ * decoded expression, so writing that back where an entity stood leaves a
+ * file no parser reads — a `<` unescaped in an attribute value, or a quote
+ * closing the value it stands in (#957).
+ * @param {string} text - The decoded text to write
+ * @param {Node} node - The node whose value the text is written into
+ * @param {string} content - Raw source text of the file it stands in
+ * @return {string} - The text as that node may spell it
+ */
+const written = function(text, node, content) {
+  let spelled = text
+  if (node.nodeType === KINDS.attribute) {
+    spelled = delimited(
+      text,
+      content[offsetAt(content, node.lineNumber, node.columnNumber)],
+    )
+  } else if (node.nodeType === KINDS.text) {
+    spelled = escaped(text)
+  }
+  return spelled
 }
 
 /**
@@ -252,16 +294,15 @@ const substitution = function(attribute, replacement, content) {
     line: attribute.lineNumber,
     col: attribute.columnNumber + 1,
     value: attribute.value,
-    replacement: escaped(
-      replacement,
-      content[offsetAt(content, attribute.lineNumber, attribute.columnNumber)],
-    ),
+    replacement: written(replacement, attribute, content),
   }
 }
 
 module.exports = {
   deletion,
+  escaped,
   excision,
   standsAt,
   substitution,
+  written,
 }
