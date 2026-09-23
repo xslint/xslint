@@ -19,9 +19,10 @@ and comparing strings.
 An unprefixed name is the subtle case. For an element in a default namespace,
 `name()` answers the bare local name, while an unprefixed `self::pubdate` asks
 for the element in no namespace at all — so in a stylesheet processing DocBook 5,
-`name() != 'pubdate'` is true where `not(self::pubdate)` is false. The wildcard
-asks what the comparison asks, and an `xpath-default-namespace` puts the bare
-step in the namespace it names:
+`name() != 'pubdate'` is false where `not(self::pubdate)` is true. The wildcard
+is the nearer reading, matching the bare name in any namespace, though it also
+matches a prefixed `d:pubdate` the string never did. An
+`xpath-default-namespace` puts the bare step in the namespace it names:
 
 ```xsl
 <xsl:if test="name() = 'pubdate'">                →  <xsl:if test="self::*:pubdate">
