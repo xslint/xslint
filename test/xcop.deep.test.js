@@ -33,11 +33,11 @@ const PACKS = fs.readdirSync(RESOURCES)
 const available = cmdAvailable('xcop', ['--version'], false)
 
 /**
- * Packs whose fixture must carry what xcop rejects, so it cannot also be
- * canonical XML: an unused namespace declaration, a prefix list naming one,
- * the no-break space of #643, the wider gaps of #881, the indentation a
- * nearer `xml:space` frees, the internal subset an entity is declared in.
- * Each is the path a pack stands at, and each is asserted (#553, #693, #984).
+ * Packs whose fixture must carry what xcop rejects: an unused namespace, a
+ * prefix named only by a list, an alias or a text value template, the
+ * no-break space of #643, the wider gaps of #881, the indentation a nearer
+ * `xml:space` frees, an entity's internal subset. Each is the path a pack
+ * stands at, and each is asserted (#553, #693, #984, #999).
  * @type {Array.<string>}
  */
 const UNFORMATTED = [
@@ -47,6 +47,9 @@ const UNFORMATTED = [
   'name-packs/no-break-space-before-the-bracket.yaml',
   'namespace-packs/all-prefixes-excluded-at-once.yaml',
   'namespace-packs/excluded-result-prefixes.yaml',
+  'namespace-packs/prefix-ending-another-prefix.yaml',
+  'namespace-packs/prefix-in-a-text-value-template.yaml',
+  'namespace-packs/prefixes-an-alias-names.yaml',
   'namespace-packs/redundant-namespace-declarations.yaml',
   'namespace-packs/spaced-namespace-declarations.yaml',
   'redundant-boolean-call-packs/no-break-space-before-the-bracket.yaml',

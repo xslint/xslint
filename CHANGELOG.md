@@ -22,6 +22,18 @@ publication date only; detailed notes begin with the Unreleased section.
   bare step, and 1.0, which has no wildcard, leaves the comparison as it is
   (#1000).
 
+- Read a namespace prefix where it qualifies a name, and where
+  `xsl:namespace-alias` names it bare. `redundant-namespace-declarations`
+  looked for the substring `prefix:` and counted `#all` as a use of every
+  prefix, so its safe fix deleted the prefix a `stylesheet-prefix` names,
+  and one used only inside a text value template, each leaving a stylesheet
+  no processor compiles; while `tei:y` read as a use of `i`, and `#all`
+  hid some 450 dead declarations across TEI. A prefix now counts only with
+  no name character in front of it but an axis's `::`, so
+  `ancestor::tei:div` still uses `tei`, text value templates are read off
+  `expressionsOf`, both alias attributes are prefix lists, and `#all`, which
+  names no prefix, is no use of any (#999).
+
 ## 0.2.0 - 2026-09-17
 
 - Walk no tree the project itself ignores. `allFilesFrom` opened every
