@@ -574,8 +574,8 @@ const enclosing = function(declarations, usage) {
  * The declarations reached from a root reference — one outside every
  * declaration's body — by following the call graph: a declaration is used
  * when an in-scope reference to it sits outside all declarations, or inside
- * another declaration that is itself used. Mutually recursive functions that
- * nothing else calls are reached by neither, so both stay unreachable.
+ * another declaration that is itself used, so callers never reached, unused
+ * or a cycle nothing enters, reach nothing.
  * @param {object} check - The check to apply, carrying a `reference` template
  * @param {Array.<{file: string, node: Node}>} declarations - Declaring nodes
  * @param {Array.<Node>} usages - Usage nodes across the corpus
@@ -641,9 +641,9 @@ const byScope = function(corpus, check) {
 /**
  * Defects of a reachability check that flags a declaration referenced
  * somewhere yet reached by no call from outside a function body — a function
- * called only from within a recursion cycle (self or mutual) that nothing
- * enters, so it never runs. A function nothing references at all is left to
- * the by-call check, not double-reported here.
+ * called only from functions that are themselves never reached, so it never
+ * runs. A function nothing references at all is left to the by-call check,
+ * not double-reported here.
  * @param {Array.<{file: string, xsl: Document}>} corpus - Parsed stylesheets
  * @param {object} check - The check to apply, carrying a `reference` template
  * @return {Array.<object>} - Defects found
@@ -662,8 +662,8 @@ const byReachability = function(corpus, check) {
 /**
  * Defects of one check, dispatched by how it defines use: a named template by
  * the exact identity of a called name, a function by whether it is called at
- * all, a function unreachable when called only from within a dead recursion
- * cycle, and a variable by an in-scope reference.
+ * all, a function unreachable when called only from functions never reached,
+ * and a variable by an in-scope reference.
  * @param {Array.<{file: string, xsl: Document}>} corpus - Parsed stylesheets
  * @param {object} check - The check to apply
  * @return {Array.<object>} - Defects found
@@ -702,7 +702,7 @@ const defect = function(check, file, node) {
  * Lint the whole corpus of stylesheets by cross-file checks. A declaration is
  * a defect only when it is used by no stylesheet in the corpus — matched by
  * name for a named template, by call for a function, by reachability for a
- * function trapped in a dead recursion cycle, or by in-scope reference for a
+ * function called only from dead callers, or by in-scope reference for a
  * variable — so one defined in one file but used from another is not flagged.
  * @param {Array.<{file: string, xsl: Document}>} corpus - Parsed stylesheets
  * @param {Array.<string>} suppressions - Array of suppressed checks
