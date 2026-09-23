@@ -1,0 +1,37 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: unused-function
+found:
+  amount: 2
+  positions: [ [ 0, 7, 3 ], [ 0, 12, 3 ] ]
+inputs:
+  - |-
+    <?xml version="1.0"?>
+    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:f="urn:f" version="3.0">
+      <xsl:function name="f:x">
+        <xsl:param name="one"/>
+        <xsl:sequence select="$one"/>
+      </xsl:function>
+      <xsl:function name="f:x">
+        <xsl:param name="one"/>
+        <xsl:param name="two"/>
+        <xsl:sequence select="$one, $two"/>
+      </xsl:function>
+      <xsl:function name="f:y">
+        <xsl:param name="one"/>
+        <xsl:sequence select="$one"/>
+      </xsl:function>
+      <xsl:function name="f:y">
+        <xsl:param name="one"/>
+        <xsl:param name="two"/>
+        <xsl:sequence select="$two"/>
+      </xsl:function>
+      <xsl:function name="f:z">
+        <xsl:param name="one"/>
+        <xsl:sequence select="$one"/>
+      </xsl:function>
+      <xsl:template match="/">
+        <xsl:value-of select="f:x(1), f:y#2(1, 2), f:z(for $a in 1, $b in 2 return $a)"/>
+      </xsl:template>
+    </xsl:stylesheet>
