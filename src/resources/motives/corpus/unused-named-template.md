@@ -8,6 +8,12 @@ a template invoked from another file (via `xsl:import` or `xsl:include`) is
 not reported. The template is flagged only when no file calls it. Lint the
 whole project at once so the check can see every caller.
 
+A call only counts where something runs it. A template calling itself, or
+two calling each other and nothing else, never starts, and neither does one
+called only from a template that is itself dead — so each of them is reported,
+the way an unreachable function is. What a run enters is a template with a
+`match`, or a named one a caller outside every named template reaches.
+
 A caller may spell the name as a shadow attribute — `_name="{'footer'}"`,
 the form XSLT 3.0 allows for any attribute of its own elements — and that
 counts as a call. Where one of them names a template only a run can work out,

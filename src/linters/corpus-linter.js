@@ -85,7 +85,7 @@
  * left standing was the traversal itself, this being the one stage that
  * reached the engine directly: three of its four checks give `//@*` and
  * the fourth `//xsl:call-template/@name`, and neither is an axis a bucket
- * of elements can hold. It goes through `chosen` and `valued` in
+ * of elements can hold. It goes through `chosen` in
  * `src/selectors.js` since #811, which serves both of those and its three
  * element declarations besides, so the stage falls from 2.26 s to 0.11 s
  * over DocBook-XSL, 1.23 to 0.09 over TEI and 0.60 to 0.06 over DITA-OT —
@@ -96,7 +96,7 @@
  * derived.
  */
 
-const {chosen, valued} = require('../selectors')
+const {chosen} = require('../selectors')
 const {enclosed, staticOf} = require('../expressions')
 const {TOKENS, TRIVIA, tokenized} = require('../tokens')
 const {kinds} = require('../resources/checks.json')
@@ -148,23 +148,53 @@ const within = function(declaration, attribute) {
 }
 
 /**
+ * Usages against the name each one calls by exact identity, per usage set, for
+ * a check reading names rather than a kind of reference: the attribute value
+ * of an `xsl:call-template`, read statically where it is a shadow (#1009).
+ * @type {WeakMap.<Array, Map.<string, Array.<Node>>>}
+ */
+const IDENTIFIED = new WeakMap()
+
+/**
+ * The usages naming each name by exact identity, built once for a usage set.
+ * @param {Array.<Node>} usages - Usage attributes across the corpus
+ * @return {Map.<string, Array.<Node>>} - Usages against the names they hold
+ */
+const identified = function(usages) {
+  if (!IDENTIFIED.has(usages)) {
+    const index = new Map()
+    for (const usage of usages) {
+      const name = staticOf(usage.value)
+      if (!index.has(name)) {
+        index.set(name, [])
+      }
+      index.get(name).push(usage)
+    }
+    IDENTIFIED.set(usages, index)
+  }
+  return IDENTIFIED.get(usages)
+}
+
+/**
  * Defects of a check matching a declaration's name against the usage values by
- * exact identity, so a template invoked from another file is not flagged. A
- * shadow usage is an attribute value template and read through `staticOf`; one
- * no static reading places names any declaration there is, so it silences the
- * check rather than calling every one of them dead (#851).
+ * exact identity, followed through the call graph: a named template called only
+ * from its own body, or from templates nothing reaches, never runs (#1009). A
+ * shadow usage no static reading places may name any declaration there is, so
+ * it silences the check rather than calling every one of them dead (#851).
  * @param {Array.<{file: string, xsl: Document}>} corpus - Parsed stylesheets
  * @param {object} check - The check to apply
  * @return {Array.<object>} - Defects found
  */
 const byName = function(corpus, check) {
-  const used = new Set(corpus.flatMap(({xsl}) => valued(xsl, check.usage))
-    .map((value) => staticOf(value)))
+  const usages = across(corpus, check.usage)
   let defects = []
-  if (!used.has('')) {
-    defects = corpus.flatMap(({file, xsl}) => chosen(xsl, check.declaration)
-      .filter((node) => !used.has(node.getAttribute('name')))
-      .map((node) => defect(check, file, node)))
+  if (!identified(usages).has('')) {
+    const declarations = corpus.flatMap(({file, xsl}) =>
+      chosen(xsl, check.declaration).map((node) => ({file, node})))
+    const used = reachable(check, declarations, usages)
+    defects = declarations
+      .filter(({node}) => !used.has(node))
+      .map(({file, node}) => defect(check, file, node))
   }
   return defects
 }
@@ -355,8 +385,13 @@ const across = function(corpus, xpath) {
  * @return {Array.<Node>} - The usages referencing it
  */
 const mentioning = function(usages, check, declaration) {
-  return indexed(usages, kinded(check.reference))
-    .get(declaration.getAttribute('name')) ?? []
+  let index
+  if (check.reference === undefined) {
+    index = identified(usages)
+  } else {
+    index = indexed(usages, kinded(check.reference))
+  }
+  return index.get(declaration.getAttribute('name')) ?? []
 }
 
 /**
