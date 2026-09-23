@@ -4,7 +4,7 @@
  */
 
 const path = require('path')
-const {staticOf} = require('./expressions')
+const {attributeOf} = require('./expressions')
 
 /**
  * The XSLT namespace, whose `import`/`include` elements pull in other modules.
@@ -33,8 +33,7 @@ const target = function(file, href) {
  * @return {string} - The href it names, or empty
  */
 const referenced = function(element) {
-  return element.getAttribute('href') ||
-    staticOf(element.getAttribute('_href') || '')
+  return attributeOf(element, 'href')
 }
 
 /**

@@ -10,6 +10,12 @@ the same name is not using the feature at all: there the attribute is output
 data, copied into the result tree like any other, and no processor reads it as
 an instruction.
 
+XSLT 3.0 spells the attribute `_disable-output-escaping` as readily as
+`disable-output-escaping`, the underscore form holding an attribute value
+template a processor evaluates before it transforms anything. So
+`_disable-output-escaping="{'yes'}"` is the same instruction written the modern
+way, and a processor honours it exactly as it honours the plain spelling.
+
 Incorrect:
 
 ```xsl

@@ -7,15 +7,26 @@ const {deletion, escaped, substitution} = require('./fixes')
 const {XSLT} = require('./xsl-version')
 
 /**
- * Fix for `using-disable-output-escaping`: delete the attribute. Removing it
- * changes how the output is escaped, which is why the check declares it a
- * suggestion.
+ * The attribute `using-disable-output-escaping` reports on, in the plain
+ * spelling a document may also write `_disable-output-escaping` (#992).
+ * @type {string}
+ */
+const ESCAPING = 'disable-output-escaping'
+
+/**
+ * Fix for `using-disable-output-escaping`: delete the attribute, in whichever
+ * of its two spellings the author wrote. Removing it changes how the output is
+ * escaped, which is why the check declares it a suggestion.
  * @param {Element} node - The element carrying the attribute
  * @param {string} content - Raw source text of the file it stands in
  * @return {object} - The fix
  */
 const disableOutputEscaping = function(node, content) {
-  return deletion(node.getAttributeNode('disable-output-escaping'), content)
+  return deletion(
+    node.getAttributeNode(ESCAPING) ??
+      node.getAttributeNode(`_${ESCAPING}`),
+    content,
+  )
 }
 
 /**

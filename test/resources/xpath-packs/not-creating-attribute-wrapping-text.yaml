@@ -3,8 +3,10 @@
 ---
 pack: not-creating-attribute-correctly
 found:
-  amount: 3
-  positions: [ [ 6, 7 ], [ 11, 7 ], [ 15, 9, using-disable-output-escaping ] ]
+  amount: 4
+  positions:
+    [ [ 6, 7 ], [ 11, 7 ], [ 15, 9, using-disable-output-escaping ],
+      [ 20, 9, using-disable-output-escaping ] ]
 input: |-
   <?xml version="1.0"?>
   <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="3.0" id="style1">
