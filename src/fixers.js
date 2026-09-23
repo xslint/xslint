@@ -9,11 +9,12 @@ const {XSLT} = require('./xsl-version')
 /**
  * Text a deletion emits unchanged: no character a serializer escapes — both
  * xsltproc and Saxon write `&`, `<` and `>` as references where the attribute
- * is gone, under the xml method and the html one alike — and no brace, which
- * in a 3.0 stylesheet stands for a value the run supplies (#990).
+ * is gone, under the xml method and the html one alike, and Saxon's html one
+ * writes a no-break space as `&nbsp;` — and no brace, which in a 3.0
+ * stylesheet stands for a value the run supplies (#990).
  * @type {RegExp}
  */
-const PLAIN = /^[^&<>{]*$/
+const PLAIN = /^[^&<>{\u00A0]*$/
 
 /**
  * Fix for `using-disable-output-escaping`: delete the attribute where the

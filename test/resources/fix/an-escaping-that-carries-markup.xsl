@@ -10,6 +10,7 @@
     <xsl:text disable-output-escaping="yes">alpha &amp; bravo</xsl:text>
     <xsl:text disable-output-escaping="yes">charlie &gt; delta</xsl:text>
     <xsl:text disable-output-escaping="yes">{$echo}</xsl:text>
+    <xsl:text disable-output-escaping="yes">golf&#160;hotel</xsl:text>
     <xsl:value-of select="foxtrot" disable-output-escaping="yes"/>
   </xsl:template>
 </xsl:stylesheet>
