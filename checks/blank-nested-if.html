@@ -134,6 +134,20 @@ them with <code>and</code> says the same thing in one place.</p>
   &lt;xsl:value-of select=&quot;.&quot;/&gt;
 &lt;/xsl:if&gt;
 </code></pre>
+<p>From XSLT 2.0 on, the collapse also holds only while the outer test guards
+nothing. XPath 2.0 lets a processor evaluate the operands of <code>and</code> in either
+order, so a test that keeps the inner one from raising an error stops keeping
+it once the two are joined:</p>
+<pre><code class="language-xsl">&lt;xsl:if test=&quot;$date castable as xs:date&quot;&gt;
+  &lt;xsl:if test=&quot;xs:date($date) lt current-date()&quot;&gt;
+    &lt;xsl:value-of select=&quot;$date&quot;/&gt;
+  &lt;/xsl:if&gt;
+&lt;/xsl:if&gt;
+</code></pre>
+<p>Written as <code>$date castable as xs:date and xs:date($date) lt current-date()</code>,
+the cast may run first and fail on the very value the guard was there to turn
+away. The same goes for a <code>function-available(...)</code> test in front of a call to
+that function. Leave such a pair nested.</p>
 <p>The collapse holds only while the outer <code>xsl:if</code> holds nothing but the inner
 one. Anything else it holds is emitted whenever the outer test is true, and
 joining the conditions makes that content wait on the inner test as well:</p>

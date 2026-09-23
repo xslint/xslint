@@ -154,7 +154,7 @@
     <td><a href="checks/blank-nested-if.html">blank-nested-if</a></td>
     <td>xpath</td>
     <td><span class="severity-warning">warning</span></td>
-    <td>A nested xsl:if inside another xsl:if is prohibited. Combine conditions with 'and' into a single xsl:if.</td>
+    <td>An xsl:if holds nothing but another xsl:if, which states one condition in two places. Combine the conditions with 'and' into a single xsl:if, unless the outer test guards the inner one against an error.</td>
   </tr>
   <tr>
     <td><a href="checks/duplicate-param-name.html">duplicate-param-name</a></td>
