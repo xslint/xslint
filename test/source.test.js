@@ -38,8 +38,28 @@ const CHARACTERS = [
     content: 'a&gt', at: 1, decoded: undefined, next: 2,
   },
   {
+    name: 'reads a decimal character reference as the character it numbers',
+    content: 'a&#65;b', at: 1, decoded: 'A', next: 6,
+  },
+  {
+    name: 'reads a hexadecimal one as the character it numbers too',
+    content: 'a&#x41;b', at: 1, decoded: 'A', next: 7,
+  },
+  {
+    name: 'reads one above the basic plane as the pair it is held in',
+    content: 'a&#128512;b', at: 1, decoded: '\u{1F600}', next: 10,
+  },
+  {
+    name: 'refuses a reference spelling its x in capitals, as XML does',
+    content: 'a&#X41;b', at: 1, decoded: undefined, next: 7,
+  },
+  {
+    name: 'refuses a code point standing past the last one there is',
+    content: 'a&#1114112;b', at: 1, decoded: undefined, next: 11,
+  },
+  {
     name: 'refuses an entity it does not know',
-    content: 'a&#65;b', at: 1, decoded: undefined, next: 6,
+    content: 'a&nbsp;b', at: 1, decoded: undefined, next: 7,
   },
 ]
 

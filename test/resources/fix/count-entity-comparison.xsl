@@ -8,5 +8,11 @@
     <xsl:if test="count(item) &gt; 0">
       <hit/>
     </xsl:if>
+    <xsl:if test="count(&#105;tem) &gt; 0">
+      <hit/>
+    </xsl:if>
+    <xsl:if test="count(o&#x74;her) &gt; 0">
+      <hit/>
+    </xsl:if>
   </xsl:template>
 </xsl:stylesheet>
