@@ -179,7 +179,7 @@ describe('xslint', function() {
     const stdout = runXslint(['test/resources/stylesheets/xsl-with-some-violations.xsl'])
     const expected = [
       'Processed files: 1',
-      '(16:3) A variable is assigned via a nested xsl:value-of instead of the select attribute. Use select syntax instead. (setting-value-of-variable-incorrectly)',
+      '(16:3) A variable or parameter is assigned via a nested xsl:value-of instead of the select attribute. Use select syntax instead. (setting-value-of-variable-incorrectly)',
       '(16:3) A variable, parameter, function, or template has a single-character name. Use a descriptive name that reveals intent. (short-names)',
       '(31:24) A pattern alternative starts with //, which is redundant since every XSLT pattern already matches at any depth, and it lowers the rule\'s default priority from 0.5 to that of the step alone. Remove the leading // and give the rule an explicit priority if it must keep ranking as it does. (starts-with-double-slash)',
       '(45:3) A named template is never invoked via xsl:call-template. Remove it or call it. (unused-named-template)',
@@ -255,7 +255,7 @@ describe('xslint', function() {
     ])
     const expected = [
       'Processed files: 1',
-      '(16:3) A variable is assigned via a nested xsl:value-of instead of the select attribute. Use select syntax instead. (setting-value-of-variable-incorrectly)',
+      '(16:3) A variable or parameter is assigned via a nested xsl:value-of instead of the select attribute. Use select syntax instead. (setting-value-of-variable-incorrectly)',
       '(16:3) A variable, parameter, function, or template has a single-character name. Use a descriptive name that reveals intent. (short-names)',
       '(31:24) A pattern alternative starts with //, which is redundant since every XSLT pattern already matches at any depth, and it lowers the rule\'s default priority from 0.5 to that of the step alone. Remove the leading // and give the rule an explicit priority if it must keep ranking as it does. (starts-with-double-slash)',
       '(45:3) A named template is never invoked via xsl:call-template. Remove it or call it. (unused-named-template)',
