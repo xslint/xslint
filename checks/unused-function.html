@@ -120,9 +120,8 @@
 <h1>Unused function</h1>
 <p>A stylesheet function that is called from no expression anywhere in the corpus
 — neither in its own stylesheet nor in one that imports it — is dead code and
-should be removed. A function that <em>is</em> called, but only from within a
-recursion cycle that nothing enters, is caught by <code>unreachable-function</code>
-instead.</p>
+should be removed. A function that <em>is</em> called, but only from functions that
+are themselves never reached, is caught by <code>unreachable-function</code> instead.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:function name=&quot;my:format&quot;&gt;
   &lt;xsl:param name=&quot;value&quot;/&gt;

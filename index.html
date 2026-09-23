@@ -382,7 +382,7 @@
     <td><a href="checks/unreachable-function.html">unreachable-function</a></td>
     <td>corpus</td>
     <td><span class="severity-warning">warning</span></td>
-    <td>A stylesheet function is called only from within a recursion cycle that nothing else enters, so it can never run. Remove it, or call it from a template.</td>
+    <td>A stylesheet function is called only from functions that are themselves never reached, so it can never run. Remove it, or call it from a template.</td>
   </tr>
   <tr>
     <td><a href="checks/unused-function.html">unused-function</a></td>
