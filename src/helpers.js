@@ -51,6 +51,35 @@
  * it deletes, and what it finds there is an ampersand —
  * `using-disable-output-escaping` built a zero-width edit on a line belonging
  * to another element.
+ *
+ * That same reading refuses what `@xmldom/xmldom` would repair rather than
+ * reject: the level of a diagnostic is not consulted, since an attribute
+ * written without quotes arrives a mere `warning` and is then invented into a
+ * value (#574). Which sequences a document may not hold is `forbidden`'s
+ * question rather than the parser's, `ENTITIES` naming the three complaints
+ * it lets stand: xmldom resolves no entity for us either way, and its
+ * pre-scan reads a name as `\w+` where XML's `Name` admits a dot, so a
+ * DocBook module declaring `&sc.name;` in its internal subset and using it
+ * correctly earned `entity not found`, six of that corpus's stylesheets
+ * reported as malformed on it (#877). What stands in their place is
+ * `entitled`: a name resolves when it is one of XML's five, one the internal
+ * subset declares, or anything at all where an external subset nobody read is
+ * in play.
+ *
+ * Beside it are the two sequences the parser accepts in silence, at no level
+ * — an `&` that opens no reference, which it rewrites to `&amp;`, and a `]]>`
+ * that closes no section, which it keeps as it stands (#691). The runs come
+ * from the tree and not from a scan of the source, because both are legal in
+ * a comment and a processing instruction, and inside a CDATA section an `&`
+ * is text while a `]]>` is the close — a text node cannot be any of the
+ * three, so those are excluded by construction rather than by finding them.
+ * An attribute value is a run too since #877, `strayed` taking the `]]>` rule
+ * from its caller: such a value is not character data, so it holds a `]]>`
+ * legally and a bare `&` no more legally than text does. That pass is
+ * `forbidden`'s own and not `walked`'s XPath-shaped one, well-formedness
+ * being a lexical question about every attribute the source spells:
+ * borrowing that sequence kept an `xmlns:q="urn:x&y"` out of the report and a
+ * namespace URI no conformant parser produces in the tree.
  */
 
 const fs = require('fs')

@@ -609,38 +609,18 @@ engine would be answering two different questions.
 ## `src/helpers.js`
 
 XML parsing (expands internal-subset entities), YAML parsing, file recursion. What a replacement
-text stands for once it spells markup, and why a reference is neither text nor a place a fix may
-be written, stands at the top of the module itself (#984). `allFilesFrom` joins
+text stands for once it spells markup, why a reference is neither text nor a place a fix may be
+written, and which sequences a document may not hold where `@xmldom/xmldom` would repair one rather
+than refuse it, stand at the top of the module itself (#574, #691, #877, #984). `allFilesFrom` joins
 each subtree on with `flatMap` rather than spreading it into a `push`, since a spread hands every
 path over as an argument and V8 caps those at roughly 125 per kilobyte of stack: this repository's
 own checkout grew to 768,731 files and every run over it died with a `RangeError` before a byte of
 XSL was read, the walk being asked before anything is filtered for `.xsl` (#758). It opens no
 directory named `.git` or `node_modules` either, `SEALED` being the floor it keeps whatever a caller
 asked and 92% of this checkout's own entries standing inside one; what a caller turns down beside
-that floor, and the measurement under both, stands at the top of `src/xslint.js` (#923). It refuses
-what
-`@xmldom/xmldom` would repair rather than reject: the level of a diagnostic is not consulted, since
-an attribute written without quotes arrives a mere `warning` and is then invented into a value
-(#574). Which sequences a document may not hold is `forbidden`'s question rather than the parser's,
-`ENTITIES` naming the three complaints it lets stand: xmldom resolves no entity for us either way,
-and its pre-scan reads a name as `\w+` where XML's `Name` admits a dot, so a DocBook module
-declaring `&sc.name;` in its internal subset and using it correctly earned `entity not found`, six
-of that corpus's stylesheets reported as malformed on it (#877). What stands in their place is
-`entitled`: a name resolves when it is one of XML's five, one the internal subset declares, or
-anything at all where an external subset nobody read is in play. Beside it are the two sequences the
-parser accepts in silence, at no level — an `&` that opens no reference, which it rewrites to
-`&amp;`, and a `]]>` that closes no section, which it keeps as it stands (#691). The runs come from
-the tree and not from a scan of the source, because both are legal in a comment and a processing
-instruction, and inside a CDATA section an `&` is text while a `]]>` is the close — a text node
-cannot be any of the three, so those are excluded by construction rather than by finding them. An
-attribute value is a run too since #877, `strayed` taking the `]]>` rule from its caller: such a
-value is not character data, so it holds a `]]>` legally and a bare `&` no more legally than text
-does. That pass is `forbidden`'s own and not `walked`'s XPath-shaped one, well-formedness being a
-lexical question about every attribute the source spells: borrowing that sequence kept an
-`xmlns:q="urn:x&y"` out of the report and a namespace URI no conformant parser produces in the
-tree. The YAML parser is required
-inside the function, not at the top: nothing on the linting path reads YAML any more, so a run that
-has no `.xslint.yml` never loads it.
+that floor, and the measurement under both, stands at the top of `src/xslint.js` (#923). The YAML
+parser is required inside the function, not at the top: nothing on the linting path reads YAML any
+more, so a run that has no `.xslint.yml` never loads it.
 
 ## `src/resources/checks.json`
 
