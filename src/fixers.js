@@ -100,15 +100,15 @@ const booleanConstant = function(node, content) {
  * Fix for `text-outside-xsl-text`: wrap the literal text in `xsl:text`, under
  * the prefix the document binds to XSLT and withheld where it binds none, the
  * way `missingVersion` reads one (#976). One edit resolves the defect only
- * where the instruction holds a single piece of character data and that piece
- * is a text node, a CDATA section beside one leaving a second to wrap (#993).
+ * where it holds one text node and no CDATA section, even a blank one, which
+ * left outside the wrap is stripped rather than merged into the text (#993).
  * @param {Element} node - The instruction element holding the loose text
  * @return {?object} - The fix, or null
  */
 const textOutsideXslText = function(node) {
   const held = Array.from(node.childNodes).filter(
-    (child) => Object.values(CHARACTERS).includes(child.nodeType) &&
-      child.nodeValue.trim() !== '',
+    (child) => child.nodeType === CHARACTERS.cdata ||
+      child.nodeType === CHARACTERS.text && child.nodeValue.trim() !== '',
   )
   const prefix = node.lookupPrefix(XSLT)
   let fix = null

@@ -7,7 +7,7 @@ found:
   positions: [ [ 4, 5 ], [ 5, 5 ], [ 6, 5 ], [ 7, 5 ], [ 8, 5 ], [ 9, 5 ] ]
   fixes:
     [ "<xsl:text>plain</xsl:text>", null, null, null, null,
-      "<xsl:text>kilo</xsl:text>" ]
+      null ]
 input: |-
   <?xml version="1.0"?>
   <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="s">
