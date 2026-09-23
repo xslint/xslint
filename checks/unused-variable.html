@@ -120,7 +120,9 @@
 <h1>Unused variable</h1>
 <p>A variable whose <code>$name</code> is referenced nowhere it is in scope — within its own
 parent for a local one, or anywhere in the corpus (including a stylesheet that
-imports it) for a top-level one — is dead code and should be removed.</p>
+imports it) for a top-level one — is dead code and should be removed. A
+reference in a text value template, <code>&lt;p&gt;{$greeting}&lt;/p&gt;</code> under an on
+<code>expand-text</code>, reads the variable as surely as a <code>select</code> does.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:variable name=&quot;greeting&quot; select=&quot;&#39;Hello&#39;&quot;/&gt;
 &lt;!-- $greeting is never referenced --&gt;

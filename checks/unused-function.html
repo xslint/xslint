@@ -122,6 +122,12 @@
 — neither in its own stylesheet nor in one that imports it — is dead code and
 should be removed. A function that <em>is</em> called, but only from functions that
 are themselves never reached, is caught by <code>unreachable-function</code> instead.</p>
+<p>A function is its namespace, its local name and its arity, as XPath resolves a
+call. So <code>g:format(title)</code> calls <code>my:format</code> wherever both prefixes are bound
+to one URI, and so does <code>Q{urn:my}format(title)</code>. A declaration of the same
+name with two parameters is a different function, left dead by a call passing
+one. A call in a text value template, <code>&lt;p&gt;{my:format(title)}&lt;/p&gt;</code> under an on
+<code>expand-text</code>, is a call like any other.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:function name=&quot;my:format&quot;&gt;
   &lt;xsl:param name=&quot;value&quot;/&gt;
