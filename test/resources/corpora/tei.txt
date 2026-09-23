@@ -138,10 +138,8 @@ common/common_linking.xsl:258:6 setting-value-of-variable-incorrectly
 common/common_linking.xsl:272:6 setting-value-of-variable-incorrectly
 common/common_linking.xsl:321:4 setting-value-of-variable-incorrectly
 common/common_linking.xsl:325:6 use-choose-without-otherwise
-common/common_linking.xsl:326:24 name-compared-to-string suggestion "self::*:TEI"
 common/common_linking.xsl:349:7 setting-value-of-variable-incorrectly
 common/common_linking.xsl:374:2 use-choose-without-otherwise
-common/common_linking.xsl:375:20 name-compared-to-string suggestion "self::*:TEI"
 common/common_linking.xsl:380:8 setting-value-of-variable-incorrectly
 common/common_linking.xsl:413:5 text-outside-xsl-text suggestion "<xsl:text>Title page</xsl:text>"
 common/common_linking.xsl:414:5 text-outside-xsl-text suggestion "<xsl:text>Index</xsl:text>"
@@ -2921,39 +2919,13 @@ html/html_figures.xsl:84:9 text-outside-xsl-text suggestion "<xsl:text>th</xsl:t
 html/html_figures.xsl:85:9 text-outside-xsl-text suggestion "<xsl:text>th</xsl:text>"
 html/html_figures.xsl:86:9 text-outside-xsl-text suggestion "<xsl:text>td</xsl:text>"
 html/html_figures.xsl:91:9 use-choose-without-otherwise
-html/html_figures.xsl:92:27 name-compared-to-string suggestion "self::style"
-html/html_figures.xsl:95:27 name-compared-to-string suggestion "self::width"
-html/html_figures.xsl:95:48 name-compared-to-string suggestion "self::border"
-html/html_figures.xsl:96:39 name-compared-to-string suggestion "self::cellspacing"
-html/html_figures.xsl:97:30 name-compared-to-string suggestion "self::cellpadding"
-html/html_figures.xsl:100:27 name-compared-to-string suggestion "self::rend"
-html/html_figures.xsl:105:27 name-compared-to-string suggestion "self::rend"
-html/html_figures.xsl:110:27 name-compared-to-string suggestion "self::rend"
-html/html_figures.xsl:115:27 name-compared-to-string suggestion "self::rend"
-html/html_figures.xsl:120:27 name-compared-to-string suggestion "self::cols"
-html/html_figures.xsl:125:27 name-compared-to-string suggestion "self::rows"
-html/html_figures.xsl:130:27 name-compared-to-string suggestion "self::*:align"
 html/html_figures.xsl:137:7 use-choose-without-otherwise
-html/html_figures.xsl:320:25 name-compared-to-string suggestion "self::summary"
-html/html_figures.xsl:320:46 name-compared-to-string suggestion "self::width"
-html/html_figures.xsl:320:67 name-compared-to-string suggestion "self::border"
-html/html_figures.xsl:320:89 name-compared-to-string suggestion "self::frame"
-html/html_figures.xsl:320:110 name-compared-to-string suggestion "self::rules"
-html/html_figures.xsl:320:131 name-compared-to-string suggestion "self::cellspacing"
-html/html_figures.xsl:320:158 name-compared-to-string suggestion "self::cellpadding"
-html/html_figures.xsl:367:23 name-compared-to-string suggestion "self::summary"
 html/html_figures.xsl:367:40 redundant-whitespace fix " "
-html/html_figures.xsl:367:47 name-compared-to-string suggestion "self::width"
 html/html_figures.xsl:367:64 redundant-whitespace fix " "
-html/html_figures.xsl:367:71 name-compared-to-string suggestion "self::border"
 html/html_figures.xsl:367:89 redundant-whitespace fix " "
-html/html_figures.xsl:367:96 name-compared-to-string suggestion "self::frame"
 html/html_figures.xsl:367:113 redundant-whitespace fix " "
-html/html_figures.xsl:367:120 name-compared-to-string suggestion "self::rules"
 html/html_figures.xsl:367:137 redundant-whitespace fix " "
-html/html_figures.xsl:367:144 name-compared-to-string suggestion "self::cellspacing"
 html/html_figures.xsl:367:167 redundant-whitespace fix " "
-html/html_figures.xsl:367:174 name-compared-to-string suggestion "self::cellpadding"
 html/html_figures.xsl:397:7 use-choose-without-otherwise
 html/html_figures.xsl:448:13 short-names
 html/html_figures.xsl:463:17 not-creating-attribute-correctly
@@ -3208,7 +3180,6 @@ latex/latex.xsl:80:7 unused-function-template-parameter
 latex/latex.xsl:87:7 unused-function-template-parameter
 latex/latex.xsl:179:5 unused-function-template-parameter
 latex/latex.xsl:243:3 unused-named-template
-latex/latex.xsl:318:18 name-compared-to-string suggestion "self::*:label"
 latex/latex.xsl:365:7 use-choose-without-otherwise
 latex/latex.xsl:366:2 text-outside-xsl-text suggestion "<xsl:text>\\section</xsl:text>"
 latex/latex.xsl:367:2 text-outside-xsl-text suggestion "<xsl:text>\\subsection</xsl:text>"
@@ -3768,12 +3739,8 @@ odds/odd2lite.xsl:315:5 unused-function-template-parameter
 odds/odd2lite.xsl:350:7 unused-function-template-parameter
 odds/odd2lite.xsl:375:28 setting-value-of-variable-incorrectly
 odds/odd2lite.xsl:420:10 use-choose-without-otherwise
-odds/odd2lite.xsl:421:29 name-compared-to-string suggestion "self::*:macroSpec"
-odds/odd2lite.xsl:427:29 name-compared-to-string suggestion "self::*:classSpec"
 odds/odd2lite.xsl:427:57 redundant-whitespace fix " "
-odds/odd2lite.xsl:433:29 name-compared-to-string suggestion "self::*:classSpec"
 odds/odd2lite.xsl:433:57 redundant-whitespace fix " "
-odds/odd2lite.xsl:447:29 name-compared-to-string suggestion "self::*:elementSpec"
 odds/odd2lite.xsl:502:43 redundant-whitespace fix " "
 odds/odd2lite.xsl:503:42 redundant-whitespace fix " "
 odds/odd2lite.xsl:508:19 not-creating-attribute-correctly
@@ -3871,9 +3838,6 @@ odds/odd2odd.xsl:1874:9 use-choose-without-otherwise
 odds/odd2odd.xsl:1882:9 use-choose-without-otherwise
 odds/odd2odd.xsl:1890:9 use-choose-without-otherwise
 odds/odd2odd.xsl:2008:23 scans-whole-document
-odds/odd2odd.xsl:2067:25 name-compared-to-string suggestion "self::*:classSpec"
-odds/odd2odd.xsl:2073:25 name-compared-to-string suggestion "self::*:macroSpec"
-odds/odd2odd.xsl:2076:25 name-compared-to-string suggestion "self::*:dataSpec"
 odds/odd2odd.xsl:2116:5 unused-function-template-parameter
 odds/odd2odd.xsl:2127:9 setting-value-of-variable-incorrectly
 odds/odd2odd.xsl:2148:5 setting-value-of-variable-incorrectly
@@ -3919,7 +3883,6 @@ odds/odd2relax.xsl:515:7 unused-function-template-parameter
 odds/odd2relax.xsl:608:48 redundant-whitespace fix " "
 odds/odd2relax.xsl:608:53 redundant-whitespace fix " "
 odds/odd2relax.xsl:697:5 use-single-option-for-choose
-odds/odd2relax.xsl:698:23 name-compared-to-string suggestion "self::NameList"
 odds/odd2relax.xsl:771:5 use-choose-without-otherwise
 odds/odd2relax.xsl:774:11 use-choose-without-otherwise
 odds/odd2xslstripspace.xsl:2:1 missing-id-in-stylesheet
@@ -3987,7 +3950,6 @@ odds/teiodds.xsl:178:5 use-choose-without-otherwise
 odds/teiodds.xsl:179:23 string-length-compared-to-zero suggestion "$patternPrefix != ''"
 odds/teiodds.xsl:190:23 string-length-compared-to-zero suggestion "$lang != ''"
 odds/teiodds.xsl:205:7 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
-odds/teiodds.xsl:212:23 name-compared-to-string suggestion "self::odds"
 odds/teiodds.xsl:213:9 use-single-option-for-choose
 odds/teiodds.xsl:214:11 text-outside-xsl-text
 odds/teiodds.xsl:231:5 text-outside-xsl-text
@@ -4808,7 +4770,7 @@ profiles/iso/docx/makecoverpages2.xsl:248:32 name-compared-to-string suggestion 
 profiles/iso/docx/makecoverpages2.xsl:254:32 name-compared-to-string suggestion "self::w:p"
 profiles/iso/docx/metadatamerge.xsl:2:1 missing-id-in-stylesheet
 profiles/iso/docx/metadatamerge.xsl:2:1 not-using-output
-profiles/iso/docx/metadatamerge.xsl:126:34 name-compared-to-string suggestion "self::q"
+profiles/iso/docx/metadatamerge.xsl:126:34 name-compared-to-string suggestion "self::*:q"
 profiles/iso/docx/tbx.xsl:2:1 missing-id-in-stylesheet
 profiles/iso/docx/tbx.xsl:71:7 text-outside-xsl-text suggestion "<xsl:text>abbreviatedForm</xsl:text>"
 profiles/iso/docx/tbx.xsl:75:5 text-outside-xsl-text suggestion "<xsl:text>source</xsl:text>"
@@ -5489,7 +5451,6 @@ profiles/oepack/html/from.xsl:91:35 not-creating-attribute-correctly
 profiles/oepack/html/from.xsl:195:83 redundant-whitespace fix ""
 profiles/oepack/html/from.xsl:260:23 string-length-compared-to-zero suggestion "normalize-space(.) = ''"
 profiles/oepack/html/to.xsl:2:1 missing-id-in-stylesheet
-profiles/oepack/html/to.xsl:126:20 name-compared-to-string suggestion "self::*:div"
 profiles/ota/docx/to.xsl:2:1 missing-id-in-stylesheet
 profiles/ota/epub/to.xsl:2:1 missing-id-in-stylesheet
 profiles/ota/epub/to.xsl:4:3 redundant-namespace-declarations fix ""
@@ -5520,7 +5481,6 @@ profiles/ota/html/from.xsl:91:35 not-creating-attribute-correctly
 profiles/ota/html/from.xsl:195:83 redundant-whitespace fix ""
 profiles/ota/html/from.xsl:260:23 string-length-compared-to-zero suggestion "normalize-space(.) = ''"
 profiles/ota/html/to.xsl:2:1 missing-id-in-stylesheet
-profiles/ota/html/to.xsl:122:20 name-compared-to-string suggestion "self::*:div"
 profiles/ota/html/to.xsl:214:5 unused-function-template-parameter
 profiles/ota/tcp/from.xsl:2:1 missing-id-in-stylesheet
 profiles/ota/tcp/from.xsl:89:29 scans-whole-document

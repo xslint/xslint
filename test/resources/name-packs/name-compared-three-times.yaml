@@ -8,7 +8,7 @@ pack: name-compared-to-string
 found:
   amount: 3
   positions: [ [ 4, 36 ], [ 4, 52 ], [ 4, 78 ] ]
-  fixes: [ "self::p", "self::q", "self::*:r" ]
+  fixes: [ "self::*:p", "self::*:q", "self::*:r" ]
 input: |-
   <?xml version="1.0"?>
   <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="s">

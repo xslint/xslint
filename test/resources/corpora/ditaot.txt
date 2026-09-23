@@ -79,7 +79,6 @@ src/main/plugins/org.dita.base/xsl/preprocess/conrefImpl.xsl:228:9 text-outside-
 src/main/plugins/org.dita.base/xsl/preprocess/conrefImpl.xsl:229:9 text-outside-xsl-text suggestion "<xsl:text>firstinfile</xsl:text>"
 src/main/plugins/org.dita.base/xsl/preprocess/conrefImpl.xsl:242:11 use-choose-without-otherwise
 src/main/plugins/org.dita.base/xsl/preprocess/conrefImpl.xsl:279:43 scans-whole-document
-src/main/plugins/org.dita.base/xsl/preprocess/conrefImpl.xsl:380:33 name-compared-to-string suggestion "self::href"
 src/main/plugins/org.dita.base/xsl/preprocess/conrefImpl.xsl:486:5 unused-function-template-parameter
 src/main/plugins/org.dita.base/xsl/preprocess/conrefImpl.xsl:487:5 unused-function-template-parameter
 src/main/plugins/org.dita.base/xsl/preprocess/conrefImpl.xsl:503:5 unused-function-template-parameter
@@ -388,12 +387,12 @@ src/main/plugins/org.dita.html5/xsl/topic.xsl:1419:15 text-outside-xsl-text sugg
 src/main/plugins/org.dita.html5/xsl/topic.xsl:1436:7 use-choose-without-otherwise
 src/main/plugins/org.dita.html5/xsl/topic.xsl:1675:57 string-length-compared-to-zero suggestion "$callout != ''"
 src/main/plugins/org.dita.html5/xsl/topic.xsl:1712:9 text-outside-xsl-text
-src/main/plugins/org.dita.html5/xsl/topic.xsl:1742:19 name-compared-to-string suggestion "self::dita-comment"
 src/main/plugins/org.dita.html5/xsl/topic.xsl:1825:5 unused-function-template-parameter
 src/main/plugins/org.dita.html5/xsl/topic.xsl:1869:6 use-choose-without-otherwise
 src/main/plugins/org.dita.html5/xsl/topic.xsl:1870:24 string-length-compared-to-zero suggestion "normalize-space($output-class) != ''"
 src/main/plugins/org.dita.html5/xsl/topic.xsl:1873:24 string-length-compared-to-zero suggestion "normalize-space($default) != ''"
 src/main/plugins/org.dita.html5/xsl/topic.xsl:2001:13 use-choose-without-otherwise
+src/main/plugins/org.dita.html5/xsl/topic.xsl:2043:5 empty-content-in-instructions
 src/main/plugins/org.dita.html5/xsl/topic.xsl:2147:5 use-choose-without-otherwise
 src/main/plugins/org.dita.html5/xsl/topic.xsl:2223:34 scans-whole-document
 src/main/plugins/org.dita.html5/xsl/topic.xsl:2232:57 string-length-compared-to-zero suggestion "$callout != ''"
@@ -748,9 +747,7 @@ src/main/plugins/org.dita.pdf2/xsl/fo/pr-domain.xsl:446:13 text-outside-xsl-text
 src/main/plugins/org.dita.pdf2/xsl/fo/pr-domain.xsl:446:27 count-compared-to-zero fix "exists(preceding-sibling::*)"
 src/main/plugins/org.dita.pdf2/xsl/fo/pr-domain.xsl:448:9 text-outside-xsl-text suggestion "<xsl:text>[</xsl:text>"
 src/main/plugins/org.dita.pdf2/xsl/fo/pr-domain.xsl:449:9 text-outside-xsl-text suggestion "<xsl:text>{</xsl:text>"
-src/main/plugins/org.dita.pdf2/xsl/fo/pr-domain.xsl:449:23 name-compared-to-string suggestion "self::groupchoice"
 src/main/plugins/org.dita.pdf2/xsl/fo/pr-domain.xsl:454:9 text-outside-xsl-text suggestion "<xsl:text>}</xsl:text>"
-src/main/plugins/org.dita.pdf2/xsl/fo/pr-domain.xsl:454:23 name-compared-to-string suggestion "self::groupchoice"
 src/main/plugins/org.dita.pdf2/xsl/fo/pr-domain.xsl:455:9 text-outside-xsl-text suggestion "<xsl:text>]</xsl:text>"
 src/main/plugins/org.dita.pdf2/xsl/fo/preface.xsl:34:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.pdf2/xsl/fo/preface.xsl:34:1 not-using-output
@@ -819,7 +816,6 @@ src/main/plugins/org.dita.pdf2/xsl/fo/tables.xsl:703:44 unabbreviated-axis fix "
 src/main/plugins/org.dita.pdf2/xsl/fo/tables.xsl:729:51 unabbreviated-axis fix ".."
 src/main/plugins/org.dita.pdf2/xsl/fo/tables.xsl:736:114 unabbreviated-axis fix ".."
 src/main/plugins/org.dita.pdf2/xsl/fo/tables.xsl:862:9 use-choose-without-otherwise
-src/main/plugins/org.dita.pdf2/xsl/fo/tables.xsl:907:29 name-compared-to-string suggestion "self::font-size"
 src/main/plugins/org.dita.pdf2/xsl/fo/tables.xsl:1060:7 unused-function-template-parameter
 src/main/plugins/org.dita.pdf2/xsl/fo/tables.xsl:1085:9 unused-function-template-parameter
 src/main/plugins/org.dita.pdf2/xsl/fo/tables.xsl:1247:9 use-single-option-for-choose
@@ -936,11 +932,11 @@ src/main/plugins/org.dita.xhtml/xsl/xslhtml/dita2htmlImpl.xsl:1585:13 text-outsi
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/dita2htmlImpl.xsl:1601:5 use-choose-without-otherwise
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/dita2htmlImpl.xsl:1754:55 string-length-compared-to-zero suggestion "$callout != ''"
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/dita2htmlImpl.xsl:1791:7 text-outside-xsl-text
-src/main/plugins/org.dita.xhtml/xsl/xslhtml/dita2htmlImpl.xsl:1821:17 name-compared-to-string suggestion "self::dita-comment"
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/dita2htmlImpl.xsl:1927:3 unused-function-template-parameter
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/dita2htmlImpl.xsl:1980:5 use-choose-without-otherwise
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/dita2htmlImpl.xsl:1981:23 string-length-compared-to-zero suggestion "normalize-space($output-class) != ''"
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/dita2htmlImpl.xsl:1982:23 string-length-compared-to-zero suggestion "normalize-space($default) != ''"
+src/main/plugins/org.dita.xhtml/xsl/xslhtml/dita2htmlImpl.xsl:2070:3 empty-content-in-instructions
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/dita2htmlImpl.xsl:2111:1 unused-named-template
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/dita2htmlImpl.xsl:2162:1 unused-named-template
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/dita2htmlImpl.xsl:2183:1 unused-named-template
