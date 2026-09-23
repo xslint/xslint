@@ -134,6 +134,24 @@
   &lt;xsl:apply-templates select=&quot;$title&quot;/&gt;
 &lt;/xsl:template&gt;
 </code></pre>
+<p>Only a variable in scope can be confused, which is one declared in front of
+the instruction or in front of one of its ancestors. One declared inside an
+earlier sibling, such as an <code>xsl:if</code>, ends with that sibling, and <code>$heading</code>
+there names nothing:</p>
+<pre><code class="language-xsl">&lt;xsl:if test=&quot;title&quot;&gt;
+  &lt;xsl:variable name=&quot;heading&quot; select=&quot;string(title)&quot;/&gt;
+&lt;/xsl:if&gt;
+&lt;xsl:apply-templates select=&quot;heading&quot;/&gt;
+</code></pre>
+<p>Only the name opening a path is confused, too. A name inside a predicate is
+asked of another context node, so in
+<code>following-sibling::item[string(contrib) = $contrib]</code> the inner <code>contrib</code> is
+the child of each <code>item</code>, and no variable could stand in for it.</p>
+<p>A variable holding an atomic value is still worth the warning, but not the
+dollar sign. When its <code>select</code> is a string, a number or a call such as
+<code>string(contrib)</code>, or its <code>as</code> names an atomic type, <code>select=&quot;$contrib&quot;</code> hands
+a string to an instruction that selects nodes, which is a type error. Rename
+the variable instead, or spell the child as <code>child::contrib</code>.</p>
 <p>A variable bound by <em>content</em> rather than by <code>select</code> is a different thing, and
 a bare name standing beside one is usually right. Its nodes form a tree of
 their own, parented by nothing in the source document, so they are members of
