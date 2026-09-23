@@ -5,7 +5,7 @@ pack: using-disable-output-escaping
 found:
   amount: 4
   positions: [ [ 7, 7 ], [ 8, 7 ], [ 10, 7 ], [ 12, 7 ] ]
-  fixes: [ "", "", "", "" ]
+  fixes: [ "", null, null, "" ]
 input: |-
   <?xml version="1.0"?>
   <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="3.0" id="shadow">
@@ -13,12 +13,12 @@ input: |-
     <xsl:param name="dyn" select="'yes'" static="yes"/>
     <xsl:template match="/alpha">
       <bravo _disable-output-escaping="{'yes'}">
-        <xsl:text _disable-output-escaping="{'yes'}">&lt;</xsl:text>
+        <xsl:text _disable-output-escaping="{'yes'}">echo</xsl:text>
         <xsl:text _disable-output-escaping="yes">&gt;</xsl:text>
         <xsl:text _disable-output-escaping="{'no'}">&amp;</xsl:text>
         <xsl:value-of select="charlie" _disable-output-escaping="{'yes'}"/>
         <xsl:value-of select="delta" _disable-output-escaping="{$dyn}"/>
-        <xsl:text disable-output-escaping="yes">&lt;</xsl:text>
+        <xsl:text disable-output-escaping="yes">foxtrot</xsl:text>
       </bravo>
     </xsl:template>
   </xsl:stylesheet>

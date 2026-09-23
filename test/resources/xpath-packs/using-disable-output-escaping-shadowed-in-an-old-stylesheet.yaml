@@ -4,13 +4,14 @@
 pack: using-disable-output-escaping
 found:
   amount: 1
-  positions: [ [ 5, 5 ] ]
+  positions: [ [ 5, 7 ] ]
   fixes: [ "" ]
 input: |-
   <?xml version="1.0"?>
   <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0" id="old">
-    <xsl:output encoding="UTF-8" method="xml"/>
     <xsl:template match="/alpha">
-      <xsl:text _disable-output-escaping="{'yes'}">&lt;</xsl:text>
+      <alpha>
+        <xsl:text _disable-output-escaping="{'yes'}">golf</xsl:text>
+      </alpha>
     </xsl:template>
   </xsl:stylesheet>

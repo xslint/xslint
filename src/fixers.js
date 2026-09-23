@@ -14,19 +14,34 @@ const {XSLT} = require('./xsl-version')
 const ESCAPING = 'disable-output-escaping'
 
 /**
+ * Text a deletion emits unchanged: no character a serializer escapes — both
+ * xsltproc and Saxon write `&`, `<` and `>` as references where the attribute
+ * is gone, under the xml method and the html one alike, and Saxon's html one
+ * writes a no-break space as `&nbsp;` — and no brace, which in a 3.0
+ * stylesheet stands for a value the run supplies (#990).
+ * @type {RegExp}
+ */
+const PLAIN = /^[^&<>{\u00A0]*$/
+
+/**
  * Fix for `using-disable-output-escaping`: delete the attribute, in whichever
- * of its two spellings the author wrote. Removing it changes how the output is
- * escaped, which is why the check declares it a suggestion.
+ * of its two spellings the author wrote (#992), where the deletion emits what
+ * the stylesheet emitted with it. That is an `xsl:text` spelling its own
+ * output, and never an `xsl:value-of`, whose value the run supplies and whose
+ * escaping therefore always matters (#990).
  * @param {Element} node - The element carrying the attribute
  * @param {string} content - Raw source text of the file it stands in
- * @return {object} - The fix
+ * @return {?object} - The fix, or nothing where the output would change
  */
 const disableOutputEscaping = function(node, content) {
-  return deletion(
-    node.getAttributeNode(ESCAPING) ??
-      node.getAttributeNode(`_${ESCAPING}`),
-    content,
-  )
+  let fix = undefined
+  if (node.localName === 'text' && PLAIN.test(node.textContent)) {
+    fix = deletion(
+      node.getAttributeNode(ESCAPING) ?? node.getAttributeNode(`_${ESCAPING}`),
+      content,
+    )
+  }
+  return fix
 }
 
 /**
