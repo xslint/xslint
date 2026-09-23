@@ -224,7 +224,7 @@ before: 268 descriptions in 65 files stood past that bar, the dearest of them
 142 lines, so a derivation grew wherever one was written the way the cross-file
 linter's cost grew before #755 (#832). The bar is not a licence to respell what
 a block cannot hold as a `/* */` beside it either — such prose is cut and not
-moved, the dearest chain of guides standing at 0.92 of `LOADED` and reddening
+moved, the dearest chain of guides standing at 0.93 of `LOADED` and reddening
 well under it, so a guide is no place to put it either and the ticket number
 left standing in the surviving sentence is what keeps a derivation
 recoverable.
@@ -486,12 +486,14 @@ refused, an `xsl:select` or an `xsl:match` being an attribute no version allows
 there, and never a defect invented against working code.
 
 XPath binds prefix `xsl:` to the XSLT namespace; `xslint:` is where our own
-functions live, and `src/xpath.js` registers two: `xslint:normalize-space`,
+functions live, and `src/xpath.js` registers three: `xslint:normalize-space`,
 which every selector of ours spells because the engine's own collapses
-JavaScript's whitespace rather than XML's `S`, and `xslint:version`, the
-version in force at a node, which is a function for the same reason — no
-selector over the document answers it (#881, #851). The note atop that module
-says which six of the seven selectors the first cost, and how.
+JavaScript's whitespace rather than XML's `S`, `xslint:version`, the version in
+force at a node, and `xslint:attribute`, what an attribute of an XSLT element
+says in either of the two spellings XSLT gives one — each a function for the
+same reason, that no selector over the document answers it
+(#881, #851, #992). The note atop that module says which six of the seven
+selectors the first cost, and how.
 
 ## Check formats
 
@@ -700,7 +702,12 @@ Then run `npx grunt checks`, `npm test`, `npm run coverage`, and
   `conformance.test.js` holds both, exempting on a ratcheted table the
   attributes that have no shadow spelling, and structurally a cross-file
   `declaration`'s `@name`, which the format reads for its value and never for
-  who wrote it (#849, #851).
+  who wrote it (#849, #851). Nor may it compare an attribute's **value** in
+  one spelling: a shadow value is an attribute value template rather than the
+  value, so `@x = 'y'` reads past `_x="{'y'}"` and a second clause beside it
+  would compare the wrong text. Ask `xslint:attribute(., 'x')`, whose answer
+  is what either spelling says; `test/shadows.test.js` holds the six selectors
+  still asking one (#992, #997).
   And a selector that opens `//name` or `//(name | name)` is served from the
   shared walk rather than by a descendant step of its own, so how a selector
   opens decides what it costs: the axis comes off `named` in `src/tree.js` and
@@ -1031,7 +1038,7 @@ one of them.
 | `src/tree.js` | One pass over a document, remembered against it: `walked`, `named`, `attributed`, `ranked`, `holding` |
 | `src/comparisons.js` | `comparedToZero` — the shared scan for a call compared with `0`/`1` (count, string-length) |
 | `src/booleans.js` | `coerced` and `unwrapped` — where nothing but an effective boolean value is taken, and what may stand there instead |
-| `src/expressions.js` | `enclosed` — the expressions an attribute value template holds in its braces; `staticOf`, what one names before a processor runs |
+| `src/expressions.js` | `enclosed` — the expressions an attribute value template holds in its braces; `staticOf`, what one names before a processor runs; `attributeOf`, what an attribute says in either spelling |
 | `src/tokens.js` | Positioned XPath lexer (`tokenized`, `TOKENS`), preserving whitespace; owns `GAP`, `TRIVIA`, `OPAQUE`, `NAMED`, `unquoted`, and `normalized`, the gap-collapsing XPath defines and the engine widens |
 | `src/grammar.js` | `parsed` and `matched` — the XPath 3.1 expression grammar and the pattern grammar, as recursive descent, at the version in force |
 | `src/syntax.js` | The one door between a record and its parse: `parseOf`, `isValid`, `gathered`, `textOf`, `calls`, `filters` |
@@ -1039,7 +1046,7 @@ one of them.
 | `src/fixers.js` | Maps a declarative check name to a `node => fix` builder |
 | `src/fixes.js` | Shared fix builders reading the raw source: `deletion`, `substitution`, `excision`, `standsAt` |
 | `src/fixer.js` | Applies a defect's `fix` to source (decode-walk, verify-before-apply, end-to-start) |
-| `src/xpath.js` | The fontoxpath environment, and what we add to it: `PREFIXES`, the two evaluators, `satisfies`, `compiles`, and the two functions a selector of ours reaches for, `xslint:normalize-space` and `xslint:version` |
+| `src/xpath.js` | The fontoxpath environment, and what we add to it: `PREFIXES`, the two evaluators, `satisfies`, `compiles`, and the three functions a selector of ours reaches for, `xslint:normalize-space`, `xslint:version` and `xslint:attribute` |
 | `src/helpers.js` | XML parsing (expands internal-subset entities), YAML parsing, `slashed`, and file recursion that opens no `.git` and no `node_modules` |
 | `src/resources/checks.json` | Every check as a run reads it, built from the YAML; never edited by hand |
 | `src/logger.js` | 4-level logger |
@@ -1052,6 +1059,7 @@ one of them.
 | `scripts/snapshot.js` | Judges what a corpus drew against the report committed beside it, and rewrites that report on `--write` |
 | `scripts/readme.js` | The figures `README.md` states of the tree, off the corpus reports and `checks.json`, written by `npx grunt readme` |
 | `test/conformance.test.js` | Enforces naming, motives, selector hygiene, the retirement of the `mature` flag, the suite's own shape, and the length a guide states of the file the line cap is lifted off |
+| `test/shadows.test.js` | Every attribute a declarative selector compares the value of, held to asking both spellings XSLT gives one |
 | `test/guides.js` | The guides as data: the chain a turn loads on its way to one file, what that chain may cost, and how a claim standing in one is read |
 | `test/guides.test.js` | The guides themselves: a bar on what a chain of them costs a turn, the index held to the tree from both sides, and the counts a guide states of a list in the code |
 | `test/grammar-corpus.test.js` | Round trip and acceptance diff over every expression the repository carries |

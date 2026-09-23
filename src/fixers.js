@@ -17,6 +17,13 @@ const {XSLT} = require('./xsl-version')
 const CHARACTERS = {text: 3, cdata: 4}
 
 /**
+ * The attribute `using-disable-output-escaping` reports on, in the plain
+ * spelling a document may also write `_disable-output-escaping` (#992).
+ * @type {string}
+ */
+const ESCAPING = 'disable-output-escaping'
+
+/**
  * Text a deletion emits unchanged: no character a serializer escapes — both
  * xsltproc and Saxon write `&`, `<` and `>` as references where the attribute
  * is gone, under the xml method and the html one alike, and Saxon's html one
@@ -27,10 +34,11 @@ const CHARACTERS = {text: 3, cdata: 4}
 const PLAIN = /^[^&<>{\u00A0]*$/
 
 /**
- * Fix for `using-disable-output-escaping`: delete the attribute where the
- * deletion emits what the stylesheet emitted with it. That is an `xsl:text`
- * spelling its own output, and never an `xsl:value-of`, whose value the run
- * supplies and whose escaping therefore always matters (#990).
+ * Fix for `using-disable-output-escaping`: delete the attribute, in whichever
+ * of its two spellings the author wrote (#992), where the deletion emits what
+ * the stylesheet emitted with it. That is an `xsl:text` spelling its own
+ * output, and never an `xsl:value-of`, whose value the run supplies and whose
+ * escaping therefore always matters (#990).
  * @param {Element} node - The element carrying the attribute
  * @param {string} content - Raw source text of the file it stands in
  * @return {?object} - The fix, or nothing where the output would change
@@ -38,7 +46,10 @@ const PLAIN = /^[^&<>{\u00A0]*$/
 const disableOutputEscaping = function(node, content) {
   let fix = undefined
   if (node.localName === 'text' && PLAIN.test(node.textContent)) {
-    fix = deletion(node.getAttributeNode('disable-output-escaping'), content)
+    fix = deletion(
+      node.getAttributeNode(ESCAPING) ?? node.getAttributeNode(`_${ESCAPING}`),
+      content,
+    )
   }
   return fix
 }

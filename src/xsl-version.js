@@ -4,7 +4,7 @@
  */
 
 const {holding} = require('./tree')
-const {staticOf} = require('./expressions')
+const {attributeOf} = require('./expressions')
 
 /**
  * The XSLT namespace, which distinguishes a stylesheet root from a literal
@@ -91,8 +91,7 @@ const declaring = function(element) {
   if (xslt && element.localName === SERIALIZING) {
     declared = ''
   } else if (xslt) {
-    declared = element.getAttribute('version') ||
-      staticOf(element.getAttribute('_version') || '')
+    declared = attributeOf(element, 'version')
   }
   return declared
 }
