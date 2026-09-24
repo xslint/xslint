@@ -65,8 +65,10 @@ describe('helpers', function() {
           fs.readFileSync(path.resolve(path.dirname(file), 'shared.ent'),
             'utf-8'),
         ]]),
-        'cannot read the file a SYSTEM identifier names relative to the ' +
+        [
+          'cannot read the file a SYSTEM identifier names relative to the',
           'stylesheet declaring it (#1010)',
+        ].join(' '),
       )
     })
   it('binds the first of two declarations of one entity', function() {
@@ -77,8 +79,10 @@ describe('helpers', function() {
       xml.parsedFromString(content, subsetsOf(file, content))
         .getElementsByTagName('xsl:value-of')[0].getAttribute('select'),
       'count(//alpha)',
-      'bound the declaration standing after the one a parameter entity ' +
+      [
+        'bound the declaration standing after the one a parameter entity',
         'brought, where XML binds the first a document gives',
+      ].join(' '),
     )
   })
 })

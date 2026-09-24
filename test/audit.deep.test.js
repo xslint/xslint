@@ -19,8 +19,10 @@ const RUNS = [
   {
     name: 'reddens the night over a report that names an advisory',
     reading: 'findings', code: 1,
-    said: '::error::npm audit found 4 advisories: minimist critical, ' +
+    said: [
+      '::error::npm audit found 4 advisories: minimist critical,',
       'qs high, semver high, cookie low\n',
+    ].join(' '),
   },
   {
     name: 'passes a report that names none in silence',
@@ -29,16 +31,20 @@ const RUNS = [
   {
     name: 'warns rather than reddens where the registry answered nothing',
     reading: 'unanswered', code: UNANSWERED,
-    said: '::warning::npm audit read no report from the registry, so ' +
-      'nothing was audited: 503 Service Unavailable - POST ' +
-      'https://registry.npmjs.org/-/npm/v1/security/advisories/bulk - ' +
+    said: [
+      '::warning::npm audit read no report from the registry, so',
+      'nothing was audited: 503 Service Unavailable - POST',
+      'https://registry.npmjs.org/-/npm/v1/security/advisories/bulk -',
       'Service Unavailable\n',
+    ].join(' '),
   },
   {
     name: 'reddens the night where npm itself refused to audit the tree',
     reading: 'unusable', code: 1,
-    said: '::error::npm audit could not run over this tree, so nothing was ' +
+    said: [
+      '::error::npm audit could not run over this tree, so nothing was',
       'audited: ENOLOCK, This command requires an existing lockfile\n',
+    ].join(' '),
   },
 ]
 
@@ -49,8 +55,10 @@ describe('audit', function() {
         ranScript('scripts/audit.js', [`test/resources/audit/${
           row.reading}.json`]),
         {code: row.code, said: row.said},
-        'the nightly step cannot read off scripts/audit.js what npm audit ' +
+        [
+          'the nightly step cannot read off scripts/audit.js what npm audit',
           'found and whether to fail the night for it',
+        ].join(' '),
       )
     })
   })

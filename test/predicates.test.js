@@ -332,13 +332,17 @@ const REFUSED = [
   },
   {
     text: 'xslint:version(.) < 2.0',
-    why: 'the other function of ours, whose answer is an ancestor climb ' +
+    why: [
+      'the other function of ours, whose answer is an ancestor climb',
       'rather than anything a bucket keeps beside a candidate',
+    ].join(' '),
   },
   {
     text: 'xslint:attribute(., \'disable-output-escaping\') = \'yes\'',
-    why: 'the third, whose answer is an attribute in either of the two ' +
+    why: [
+      'the third, whose answer is an attribute in either of the two',
       'spellings XSLT gives one, where a bucket keeps the written one',
+    ].join(' '),
   },
 ]
 
@@ -358,10 +362,12 @@ describe('predicates', function() {
           return wrong
         }),
         [],
-        'a document states a reach the checks do not: ' +
-          `${found.whole.compiled} of ${found.whole.every} distinct ` +
-          'predicates compile here, and no guide gate reads a file-header ' +
+        [
+          'a document states a reach the checks do not:',
+          `${found.whole.compiled} of ${found.whole.every} distinct`,
+          'predicates compile here, and no guide gate reads a file-header',
           'note, so a count relocated into one answers to this alone',
+        ].join(' '),
       )
     })
   COMPILED.forEach((one) => {
@@ -369,9 +375,11 @@ describe('predicates', function() {
       assert.notStrictEqual(
         predicateOf(one),
         undefined,
-        `the vocabulary does not reach [${one}], so every candidate of every ` +
-          'selector spelling it still costs one fontoxpath call for a ' +
+        [
+          `the vocabulary does not reach [${one}], so every candidate of every`,
+          'selector spelling it still costs one fontoxpath call for a',
           'question the walk holds the answer to',
+        ].join(' '),
       )
     })
   })
@@ -380,9 +388,11 @@ describe('predicates', function() {
       assert.strictEqual(
         predicateOf(one.text),
         undefined,
-        `[${one.text}] is compiled although it holds ${one.why}, and an ` +
-          'answer this vocabulary cannot give correctly is worse than the ' +
+        [
+          `[${one.text}] is compiled although it holds ${one.why}, and an`,
+          'answer this vocabulary cannot give correctly is worse than the',
           'engine call it saves',
+        ].join(' '),
       )
     })
   })

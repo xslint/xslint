@@ -100,7 +100,7 @@ const NEARBY = 80
  * than one of ours: Claude Code warns past 150,000 characters of them. What
  * arrives against it is a chain and not a pair — the root guide, and the
  * guide of every directory down to the file a turn touches, each injected
- * once — and the dearest reads 139,799, which is 0.93 (#750, #660, #825).
+ * once — and the dearest reads 139,937, which is 0.93 (#750, #660, #825).
  * @type {number}
  */
 const LOADED = 150000
@@ -207,8 +207,10 @@ const CARRIED = 139947
 const DERIVED = [
   {
     claim: new RegExp(
-      `the dearest (?:chain is that same one at|reads) ([\\d,]*\\d),${GAP}` +
+      [
+        `the dearest (?:chain is that same one at|reads) ([\\d,]*\\d),${GAP}`,
         '+which is (0[.]\\d\\d)',
+      ].join(''),
       'g',
     ),
     carriers: ['test/guides.test.js', 'test/guides.js'],
@@ -240,8 +242,10 @@ const DERIVED = [
   },
   {
     claim: new RegExp(
-      `([\\d,]*\\d)${GAP}+characters out of every chain through${GAP}+` +
+      [
+        `([\\d,]*\\d)${GAP}+characters out of every chain through${GAP}+`,
         '`test/`',
+      ].join(''),
       'g',
     ),
     carriers: ['test/guides.test.js'],

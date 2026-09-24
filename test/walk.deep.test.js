@@ -89,8 +89,10 @@ describe('walk', function() {
     assert.deepEqual(
       [answer.found, answer.ceiling < wide],
       [wide, true],
-      'the walk dropped a wide directory, or the stack carried it after all ' +
+      [
+        'the walk dropped a wide directory, or the stack carried it after all',
         'and the test proved nothing',
+      ].join(' '),
     )
   })
   it('keeps a subtree standing where its directory stands', function() {
@@ -115,9 +117,11 @@ describe('walk', function() {
       assert.deepEqual(
         allFilesFrom(yard).map((file) => path.basename(file)),
         ['kept.xsl'],
-        `the walk opened a ${name}, which holds no stylesheet anybody ` +
-          'wrote and 445,643 of the 482,562 entries a walk over this ' +
+        [
+          `the walk opened a ${name}, which holds no stylesheet anybody`,
+          'wrote and 445,643 of the 482,562 entries a walk over this',
           'very checkout visits (#923)',
+        ].join(' '),
       )
     })
   })
@@ -129,9 +133,11 @@ describe('walk', function() {
     assert.deepEqual(
       allFilesFrom(yard, () => false).map((file) => path.basename(file)),
       ['kept.xsl'],
-      'a caller putting a question of its own to the walk took the floor ' +
-        'away with it, so configuring one exclusion started reading the ' +
+      [
+        'a caller putting a question of its own to the walk took the floor',
+        'away with it, so configuring one exclusion started reading the',
         'history of the repository being linted (#923)',
+      ].join(' '),
     )
   })
   it('cannot open a directory the caller refuses', function() {
@@ -148,9 +154,11 @@ describe('walk', function() {
     assert.deepEqual(
       [found.map((file) => path.basename(file)), asked],
       [['kept.xsl'], ['shut']],
-      'the walk read a refused subtree and dropped its files afterwards, ' +
-        'which is the whole of what an exclusion cost while it was a filter: ' +
+      [
+        'the walk read a refused subtree and dropped its files afterwards,',
+        'which is the whole of what an exclusion cost while it was a filter:',
         'the question was put again below what had already answered it (#923)',
+      ].join(' '),
     )
   })
   it('cannot let a second walk stand beside it', function() {
@@ -161,20 +169,24 @@ describe('walk', function() {
         .filter((file) => READDIR.test(fs.readFileSync(file, 'utf-8')))
         .map((file) => path.basename(file)),
       [],
-      'a module reading a directory of its own walks around this floor, ' +
-        'which is the whole of what stops a run descending a .git or a ' +
-        'node_modules, and around the question a caller puts beside it, ' +
-        'which is the whole of what stops one descending an excluded ' +
+      [
+        'a module reading a directory of its own walks around this floor,',
+        'which is the whole of what stops a run descending a .git or a',
+        'node_modules, and around the question a caller puts beside it,',
+        'which is the whole of what stops one descending an excluded',
         'directory (#923)',
+      ].join(' '),
     )
   })
   it('cannot keep a floor no row here names', function() {
     assert.deepEqual(
       SEALED,
       UNOPENED,
-      'the walk leaves shut a directory these rows do not name, or has ' +
-        'stopped leaving one they do, so the rows asserting a directory is ' +
+      [
+        'the walk leaves shut a directory these rows do not name, or has',
+        'stopped leaving one they do, so the rows asserting a directory is',
         'never opened judge a list the code no longer holds (#923)',
+      ].join(' '),
     )
   })
 })

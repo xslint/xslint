@@ -71,9 +71,11 @@ const RUNS = [
     name: 'fails the run drawing a defect its snapshot does not hold',
     held: `${DREW[0]}\n`,
     code: 1,
-    said: '::error::linting docbook no longer draws what its snapshot holds, ' +
-      '2 defects against 1, so regenerate it once the change is meant: ' +
+    said: [
+      '::error::linting docbook no longer draws what its snapshot holds,',
+      '2 defects against 1, so regenerate it once the change is meant:',
       `+${DREW[1]}\n`,
+    ].join(' '),
   },
   {
     name: 'passes the run drawing exactly what its snapshot holds, in silence',
@@ -92,8 +94,10 @@ describe('snapshot', function() {
           'scripts/snapshot.js', [seed.root, seed.report, seed.snapshot],
         ),
         {code: row.code, said: row.said},
-        'the nightly tier cannot read off scripts/snapshot.js what a corpus ' +
+        [
+          'the nightly tier cannot read off scripts/snapshot.js what a corpus',
           'has stopped drawing, or whether to fail on it',
+        ].join(' '),
       )
     })
   })
@@ -106,8 +110,10 @@ describe('snapshot', function() {
     assert.equal(
       fs.readFileSync(seed.snapshot, 'utf-8'),
       `${DREW.join('\n')}\n`,
-      'a snapshot cannot be regenerated from a report, so a change that is ' +
+      [
+        'a snapshot cannot be regenerated from a report, so a change that is',
         'meant leaves the gate red with nothing to commit',
+      ].join(' '),
     )
   })
 })

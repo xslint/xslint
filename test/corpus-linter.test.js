@@ -23,9 +23,11 @@ describe('corpus-linter', function() {
       assert.throws(
         () => kinded(reference),
         /is none of call, variable/,
-        `the reference "${reference}" was taken as a kind, where this ` +
-          'linter reads no such kind, so the index built for it holds no ' +
+        [
+          `the reference "${reference}" was taken as a kind, where this`,
+          'linter reads no such kind, so the index built for it holds no',
           'name and every declaration in the corpus is reported as dead',
+        ].join(' '),
       )
     })
   })

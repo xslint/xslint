@@ -329,9 +329,11 @@ describe('xslint', function() {
       assert.deepEqual(
         drawn(printed),
         SPELLED.drawn,
-        `xslint drew nothing over a stylesheet named ${suffix}, so the same ` +
-          'bytes read as four defects under one name and as a clean file ' +
+        [
+          `xslint drew nothing over a stylesheet named ${suffix}, so the same`,
+          'bytes read as four defects under one name and as a clean file',
           'under the other (#924)',
+        ].join(' '),
       )
     })
   })
@@ -339,9 +341,11 @@ describe('xslint', function() {
     assert.deepEqual(
       SUFFIXES,
       SPELLINGS,
-      'discovery reads a suffix no row above names, or has stopped reading ' +
-        'one they do, so the rows asserting a stylesheet is found under its ' +
+      [
+        'discovery reads a suffix no row above names, or has stopped reading',
+        'one they do, so the rows asserting a stylesheet is found under its',
         'own name are judging a list the code no longer holds (#924)',
+      ].join(' '),
     )
   })
   it('should warn about a named file no suffix admits', function() {
@@ -352,9 +356,11 @@ describe('xslint', function() {
     fs.rmSync(dir, {recursive: true, force: true})
     assert.ok(
       printed.includes(`File ${file} was not read`),
-      'a stylesheet named on the command line under a suffix nothing reads ' +
-        'is skipped without a word, so the run says "No defects found" and ' +
+      [
+        'a stylesheet named on the command line under a suffix nothing reads',
+        'is skipped without a word, so the run says "No defects found" and',
         'leaves with a zero (#924)',
+      ].join(' '),
     )
   })
   it('should stay quiet about a file a walk stepped over', function() {
@@ -364,9 +370,11 @@ describe('xslint', function() {
     fs.rmSync(dir, {recursive: true, force: true})
     assert.ok(
       !printed.includes('was not read'),
-      'a directory walk complains about every file that is not a ' +
-        'stylesheet, so a run over a repository buries its report under one ' +
+      [
+        'a directory walk complains about every file that is not a',
+        'stylesheet, so a run over a repository buries its report under one',
         'warning per file nobody asked it to read (#924)',
+      ].join(' '),
     )
   })
   it('should lint the parseable stylesheets and report the malformed ones', function() {
@@ -444,8 +452,10 @@ describe('xslint', function() {
       assert.deepEqual(
         JSON.parse(stdout).map((defect) => defect.rule),
         expected,
-        `cannot report anything but ${expected.join(', ') || 'nothing'} ` +
+        [
+          `cannot report anything but ${expected.join(', ') || 'nothing'}`,
           `for ${what}, a narrowed run leaving out every check it names not`,
+        ].join(' '),
       )
     })
   })
@@ -485,9 +495,11 @@ describe('xslint', function() {
         assert.equal(
           pruned(path.join(base, dir), [pattern], base),
           prunes,
-          `the walk reads ${pattern} as covering ${dir} or as leaving it ` +
-            'open, against what the row says, and which of the two decides ' +
+          [
+            `the walk reads ${pattern} as covering ${dir} or as leaving it`,
+            'open, against what the row says, and which of the two decides',
             'whether an exclusion costs the whole walk or nothing (#923)',
+          ].join(' '),
         )
       })
   })
@@ -504,9 +516,11 @@ describe('xslint', function() {
           )))
           .map(({pattern, dir}) => `${pattern} over ${dir}`),
         [],
-        'a pattern the walk skips a directory on leaves a stylesheet under ' +
-          'it in the report, so the run would answer with fewer defects than ' +
+        [
+          'a pattern the walk skips a directory on leaves a stylesheet under',
+          'it in the report, so the run would answer with fewer defects than',
           'the same configuration read as a filter (#923)',
+        ].join(' '),
       )
     })
   it('should never open a directory the config excludes', function() {
@@ -534,9 +548,11 @@ describe('xslint', function() {
     fs.rmSync(dir, {recursive: true, force: true})
     assert.ok(
       streams.stderr.includes('Processed files: 1'),
-      'the run opened a directory every pattern of its configuration ' +
-        'covers, which is the whole of what an exclusion used to cost: this ' +
+      [
+        'the run opened a directory every pattern of its configuration',
+        'covers, which is the whole of what an exclusion used to cost: this',
         'one cannot be read at all, so reaching it is the failure (#923)',
+      ].join(' '),
     )
   })
   REACHING.forEach(({name, pattern, subject, buried, warned}) => {
@@ -560,9 +576,11 @@ describe('xslint', function() {
           `Exclusion '${pattern}' in configuration excluded nothing`,
         ),
         warned,
-        'an exclusion that met neither the walk nor the filter goes ' +
-          'unnamed, or one that met either is named anyway, so a glob ' +
+        [
+          'an exclusion that met neither the walk nor the filter goes',
+          'unnamed, or one that met either is named anyway, so a glob',
           'gone stale reads as a run honouring it (#951)',
+        ].join(' '),
       )
     })
   })
@@ -590,9 +608,11 @@ describe('xslint', function() {
     fs.rmSync(dir, {recursive: true, force: true})
     assert.ok(
       streams.stderr.includes('Processed files: 1'),
-      'the run opened a directory the project itself does not track, which ' +
-        'is what reported a checkout of 123 stylesheets as 5031: this one ' +
+      [
+        'the run opened a directory the project itself does not track, which',
+        'is what reported a checkout of 123 stylesheets as 5031: this one',
         'cannot be read at all, so reaching it is the failure (#929)',
+      ].join(' '),
     )
   })
   it('should leave out a stylesheet the project ignores by name', function() {
@@ -604,9 +624,11 @@ describe('xslint', function() {
     fs.rmSync(dir, {recursive: true, force: true})
     assert.ok(
       streams.stderr.includes('Processed files: 1'),
-      'a stylesheet the project ignores by name stands under no ignored ' +
-        'directory, so nothing the walk leaves unopened answers for it and ' +
+      [
+        'a stylesheet the project ignores by name stands under no ignored',
+        'directory, so nothing the walk leaves unopened answers for it and',
         'the run reports a generated file as source (#929)',
+      ].join(' '),
     )
   })
   it('should read a directory named outright though the project ignores it',
@@ -627,9 +649,11 @@ describe('xslint', function() {
       }
       assert.ok(
         streams.stderr.includes('Processed files: 1'),
-        'a path named on the command line is what the run was asked for, ' +
-          'so reading the ignore files above it into a refusal answers a ' +
+        [
+          'a path named on the command line is what the run was asked for,',
+          'so reading the ignore files above it into a refusal answers a',
           'question nobody put (#929)',
+        ].join(' '),
       )
     })
   it('should read a stylesheet the index holds though a rule names it',
@@ -651,9 +675,11 @@ describe('xslint', function() {
       }
       assert.ok(
         streams.stderr.includes('Processed files: 2'),
-        'git keeps a stylesheet its index holds whatever a rule says of it, ' +
-          'and this repository tracks two under a `reports/` line: reading ' +
+        [
+          'git keeps a stylesheet its index holds whatever a rule says of it,',
+          'and this repository tracks two under a `reports/` line: reading',
           'the rules alone reported 159 files where 161 stand (#929)',
+        ].join(' '),
       )
     })
   it('should read what a repository met on the way down tracks itself',
@@ -675,9 +701,11 @@ describe('xslint', function() {
       }
       assert.ok(
         streams.stderr.includes('Processed files: 1'),
-        'a repository standing below the directory a walk starts at answers ' +
-          'for its own subtree, so reading its rules without its index drops ' +
+        [
+          'a repository standing below the directory a walk starts at answers',
+          'for its own subtree, so reading its rules without its index drops',
           'the stylesheet it tracks and reports nothing at all (#929)',
+        ].join(' '),
       )
     })
   it('should apply max-warnings from the config file', function() {

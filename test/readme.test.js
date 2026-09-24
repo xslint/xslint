@@ -92,10 +92,12 @@ describe('readme', function() {
     assert.equal(
       verdict(document()),
       '',
-      'the README states a figure of this repository that nothing in the ' +
-        'tree reads, which is how four numbers in one sentence came to be ' +
-        'understated between two-fold and twelve-fold under eighteen green ' +
+      [
+        'the README states a figure of this repository that nothing in the',
+        'tree reads, which is how four numbers in one sentence came to be',
+        'understated between two-fold and twelve-fold under eighteen green',
         'jobs (#896)',
+      ].join(' '),
     )
   })
   it('finds every figure in the README exactly once', function() {
@@ -104,34 +106,42 @@ describe('readme', function() {
         .filter((figure) => times(figure.pattern, document()) !== 1)
         .map((figure) => figure.what),
       [],
-      'a figure is anchored on prose the README no longer holds, or holds ' +
-        'twice, so the gate beside this one is judging nothing where it ' +
+      [
+        'a figure is anchored on prose the README no longer holds, or holds',
+        'twice, so the gate beside this one is judging nothing where it',
         'reads nothing and cannot say which of two it kept',
+      ].join(' '),
     )
   })
   it('names only checks the tree still holds', function() {
     assert.deepEqual(
       Object.keys(NAMED).filter((name) => !held().includes(name)),
       [],
-      'a figure names a check this tree does not hold, so it counts the ' +
+      [
+        'a figure names a check this tree does not hold, so it counts the',
         'defects of a renamed check and reads as one that has stopped firing',
+      ].join(' '),
     )
   })
   it('restates a figure a hand has moved', function() {
     assert.equal(
       rendered(document().replace(spelled(FIGURES[0].reads), MOVED)),
       document(),
-      'a figure moved by hand is not written back from the tree, so the ' +
+      [
+        'a figure moved by hand is not written back from the tree, so the',
         'task that is meant to end this drift cannot correct it',
+      ].join(' '),
     )
   })
   it('says which figure the README has stopped stating', function() {
     assert.match(
       verdict(document().replace(/\*\*[0-9,]+ findings/, '**many findings')),
       /no longer holds the sentence stating it/,
-      'a figure whose prose is gone reads as a number somebody mistyped, ' +
-        'where the two want different hands: one is a reflow and the other ' +
+      [
+        'a figure whose prose is gone reads as a number somebody mistyped,',
+        'where the two want different hands: one is a reflow and the other',
         'is the task',
+      ].join(' '),
     )
   })
   it('writes the figures into the file it is handed', function() {
@@ -145,17 +155,21 @@ describe('readme', function() {
     assert.equal(
       fs.readFileSync(copy, 'utf-8'),
       document(),
-      'the task rewrites something other than the figures the tree reads, ' +
-        'so running it either leaves the drift or writes a document nobody ' +
+      [
+        'the task rewrites something other than the figures the tree reads,',
+        'so running it either leaves the drift or writes a document nobody',
         'asked for',
+      ].join(' '),
     )
   })
   it('groups a number the way the README writes one', function() {
     assert.deepEqual(
       [0, 43, 867, 1000, 10488, 1234567].map(spelled),
       ['0', '43', '867', '1,000', '10,488', '1,234,567'],
-      'a figure is written in a grouping the README does not use, so the ' +
+      [
+        'a figure is written in a grouping the README does not use, so the',
         'task rewrites a number that was already right',
+      ].join(' '),
     )
   })
 })

@@ -45,8 +45,10 @@ const KEPT = [
   {
     name: 'should keep a stylesheet whose dotted entity comes from a DTD',
     file: 'inherited.xsl',
-    content: '<!DOCTYPE a [<!ENTITY % ent SYSTEM "e.ent"> %ent;]>\n' +
+    content: [
+      '<!DOCTYPE a [<!ENTITY % ent SYSTEM "e.ent"> %ent;]>\n',
       '<a>&comment.block.parents;</a>',
+    ].join(''),
   },
   {
     name: 'should keep a stylesheet whose dotted entity stands in an attribute',
@@ -239,14 +241,18 @@ const EXPAND = [
   },
   {
     name: 'should expand an entity whose name holds a dot',
-    content: '<!DOCTYPE a [<!ENTITY lc.set "\'abc\'">]>\n' +
+    content: [
+      '<!DOCTYPE a [<!ENTITY lc.set "\'abc\'">]>\n',
       '<a t="translate(.,&lc.set;,X)"/>',
+    ].join(''),
     expected: 'translate(.,\'abc\',X)',
   },
   {
     name: 'should expand a declared entity and leave an unresolvable one alone',
-    content: '<!DOCTYPE a [<!ENTITY lc \'abc\'> <!ENTITY % x SYSTEM "x.ent">]>\n' +
+    content: [
+      '<!DOCTYPE a [<!ENTITY lc \'abc\'> <!ENTITY % x SYSTEM "x.ent">]>\n',
       '<a t="&lc;-&primary;"/>',
+    ].join(''),
     expected: 'abc-&primary;',
   },
 ]
@@ -277,8 +283,10 @@ const GRAFTED = [
   },
   {
     name: 'should read the markup in the prefixes its reference point binds',
-    content: '<!DOCTYPE a [<!ENTITY mk "<x:b/>">]>\n' +
+    content: [
+      '<!DOCTYPE a [<!ENTITY mk "<x:b/>">]>\n',
       '<a xmlns:x="urn:x">&mk;</a>',
+    ].join(''),
     expanded: '<a xmlns:x="urn:x"><x:b/></a>',
   },
   {

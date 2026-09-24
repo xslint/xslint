@@ -54,8 +54,10 @@ const disjoint = function(edits) {
   )) {
     if (edit.start < border) {
       logger.warn(
-        `Skipped fixing ${edit.defect.name} at ` +
-        `${edit.defect.file}:${edit.defect.fix.line}, it overlaps another fix`,
+        [
+          `Skipped fixing ${edit.defect.name} at`,
+          `${edit.defect.file}:${edit.defect.fix.line}, it overlaps another fix`,
+        ].join(' '),
       )
     } else {
       kept.push(edit)
@@ -104,8 +106,10 @@ const fixed = function(sources, defects, suggestions = false) {
         .filter(({defect, end}) => {
           if (end < 0) {
             logger.warn(
-              `Skipped fixing ${defect.name} at ${file}:${defect.fix.line}, ` +
-              `the source no longer matches`,
+              [
+                `Skipped fixing ${defect.name} at ${file}:${defect.fix.line},`,
+                `the source no longer matches`,
+              ].join(' '),
             )
           }
           return end >= 0

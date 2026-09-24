@@ -512,9 +512,11 @@ describe('workflows', function() {
         (action) => action in WRITES && job.granted(WRITES[action]) !== 'write',
       )).map((job) => job.where),
       [],
-      'a job runs an action that writes to this repository and is granted ' +
-        'no scope to write with, so the step dies where it tries and ' +
+      [
+        'a job runs an action that writes to this repository and is granted',
+        'no scope to write with, so the step dies where it tries and',
         'whatever it stood there to report goes unreported',
+      ].join(' '),
     )
   })
   it('leaves every job the scope its own steps read with', function() {
@@ -523,9 +525,11 @@ describe('workflows', function() {
         (action) => action in READS && job.granted(READS[action]) === 'none',
       )).map((job) => job.where),
       [],
-      'a job narrows itself to a block naming nothing about a scope one of ' +
-        'its own steps reads with, so a step that asked for nothing loses ' +
+      [
+        'a job narrows itself to a block naming nothing about a scope one of',
+        'its own steps reads with, so a step that asked for nothing loses',
         'what a job declaring no block at all would have been granted',
+      ].join(' '),
     )
   })
   it('names the label every reporting job files its own issue under',
@@ -533,10 +537,12 @@ describe('workflows', function() {
       assert.deepEqual(
         JOBS.filter((job) => job.labels.includes('')).map((job) => job.where),
         [],
-        'a job reports its own failure under whatever label the action ' +
-          'defaults to, and the action comments on the newest open issue ' +
-          'carrying that label rather than opening one, so this schedule ' +
+        [
+          'a job reports its own failure under whatever label the action',
+          'defaults to, and the action comments on the newest open issue',
+          'carrying that label rather than opening one, so this schedule',
           'files under whatever else took the default first',
+        ].join(' '),
       )
     })
   it('leaves no two reporting jobs filing under one label', function() {
@@ -545,10 +551,12 @@ describe('workflows', function() {
         (label) => LABELS.indexOf(label) !== LABELS.lastIndexOf(label),
       )).map((job) => job.where),
       [],
-      'two jobs report their failures under one label, so the second to ' +
-        'fail comments on the first one\'s issue and two schedules keep one ' +
-        'thread between them — which cannot be closed for either without ' +
+      [
+        'two jobs report their failures under one label, so the second to',
+        'fail comments on the first one\'s issue and two schedules keep one',
+        'thread between them — which cannot be closed for either without',
         'losing the other',
+      ].join(' '),
     )
   })
   it('holds no action the tree has stopped running', function() {
@@ -557,8 +565,10 @@ describe('workflows', function() {
         (action) => !JOBS.some((job) => job.uses.includes(action)),
       ),
       [],
-      'an action named here is run by no job, so the scope it is held to ' +
+      [
+        'an action named here is run by no job, so the scope it is held to',
         'stands for nothing and this list reads like a rule in force',
+      ].join(' '),
     )
   })
 
@@ -568,8 +578,10 @@ describe('workflows', function() {
         PINNED.filter((one) => one.version !== PINNED[0].version)
           .map((one) => `README.md:${one.where}`),
         [],
-        'cannot pin two versions of one repository in one README, a ' +
+        [
+          'cannot pin two versions of one repository in one README, a',
           'reader copying whichever block they land on (#897)',
+        ].join(' '),
       )
     })
 
@@ -578,8 +590,10 @@ describe('workflows', function() {
       PINNED.filter((one) => !REWRITES.some((rule) => rule.test(one.line)))
         .map((one) => `README.md:${one.where}`),
       [],
-      'cannot leave a version pin outside every pattern the up job ' +
+      [
+        'cannot leave a version pin outside every pattern the up job',
         'rewrites with, a pin nothing reaches going stale in silence (#897)',
+      ].join(' '),
     )
   })
 
@@ -589,8 +603,10 @@ describe('workflows', function() {
         .filter((one) => REWRITES.some((rule) => rule.test(one.line)))
         .map((one) => `README.md:${one.where}`),
       [],
-      'cannot rewrite a version this repository does not release to a tag ' +
+      [
+        'cannot rewrite a version this repository does not release to a tag',
         'of ours (#897)',
+      ].join(' '),
     )
   })
 
@@ -599,9 +615,11 @@ describe('workflows', function() {
       REWRITES.filter((rule) => !README.some((line) => rule.test(line)))
         .map((rule) => rule.source),
       [],
-      'cannot keep a pattern no line of the README answers, a rewrite ' +
-        'matching nothing being the failure it was written to prevent ' +
+      [
+        'cannot keep a pattern no line of the README answers, a rewrite',
+        'matching nothing being the failure it was written to prevent',
         '(#897)',
+      ].join(' '),
     )
   })
 
@@ -626,11 +644,13 @@ describe('workflows', function() {
           ).length !== 1,
         ),
         [],
-        `cannot leave a placeholder ${STAMPED} carries to no stamp of the ` +
-          'release\'s, the two gates below weighing the substitutions they ' +
-          'find and neither asking that any was found, so a stamp deleted ' +
-          'or retooled ships the placeholder to npm and reads exactly as a ' +
+        [
+          `cannot leave a placeholder ${STAMPED} carries to no stamp of the`,
+          'release\'s, the two gates below weighing the substitutions they',
+          'find and neither asking that any was found, so a stamp deleted',
+          'or retooled ships the placeholder to npm and reads exactly as a',
           'stamp that works (#917)',
+        ].join(' '),
       )
     })
   it('reaches one place with every substitution the release stamp spends',
@@ -640,9 +660,11 @@ describe('workflows', function() {
           (one) => reaching(sourced(one.rewrites), one.looks) !== 1,
         ).map((one) => `${one.rewrites}: ${one.looks}`),
         [],
-        'cannot stamp the version with a pattern reaching more of a file ' +
-          'than the field it means, a placeholder standing inside a ' +
+        [
+          'cannot stamp the version with a pattern reaching more of a file',
+          'than the field it means, a placeholder standing inside a',
           'dependency of its own being rewritten along with it (#917)',
+        ].join(' '),
       )
     })
 
@@ -652,9 +674,11 @@ describe('workflows', function() {
         STAMPS.filter((one) => !PLAIN.test(one.looks))
           .map((one) => `${one.rewrites}: ${one.looks}`),
         [],
-        'cannot weigh a stamp written as anything but ordinary characters ' +
-          'and escaped dots, what one reaches being read here as the ' +
+        [
+          'cannot weigh a stamp written as anything but ordinary characters',
+          'and escaped dots, what one reaches being read here as the',
           'literal it is (#917)',
+        ].join(' '),
       )
     })
 
@@ -666,11 +690,13 @@ describe('workflows', function() {
             RELEASED.slice(0, index).some((earlier) => earlier.stamps),
         ).map((step) => step.where),
         [],
-        'cannot run the suite over a tree the release has already stamped, ' +
-          'the two gates above reading the stamped module off the working ' +
-          'tree, so a placeholder rewritten in front of them reaches nothing ' +
-          'and the release dies at a test that is green everywhere else ' +
+        [
+          'cannot run the suite over a tree the release has already stamped,',
+          'the two gates above reading the stamped module off the working',
+          'tree, so a placeholder rewritten in front of them reaches nothing',
+          'and the release dies at a test that is green everywhere else',
           '(#946)',
+        ].join(' '),
       )
     })
 
@@ -682,9 +708,11 @@ describe('workflows', function() {
             .map((command) => `${one.where}: ${command}`),
         ),
         [],
-        'cannot write release notes without naming the title beside them, ' +
-          'a release left unnamed keeping the name of whatever issue rultor ' +
+        [
+          'cannot write release notes without naming the title beside them,',
+          'a release left unnamed keeping the name of whatever issue rultor',
           'was asked in (#919)',
+        ].join(' '),
       )
     })
 
@@ -695,9 +723,11 @@ describe('workflows', function() {
           (one) => one.notes.length > 0 &&
             (one.on.release?.types ?? []).includes('edited'),
         ),
-        'cannot leave the release notes to a step bound to the tag push, ' +
-          'rultor writing its own body over the release a minute after ' +
+        [
+          'cannot leave the release notes to a step bound to the tag push,',
+          'rultor writing its own body over the release a minute after',
           'publishing it, so nothing but the edited event lands last (#919)',
+        ].join(' '),
       )
     })
 })
