@@ -12,6 +12,8 @@
 extend-exclude = ["test/resources/corpora/*.txt"]
 
 # DITA-OT is the DITA Open Toolkit; its "-OT" tokenises to "OT", which typos
-# would otherwise flag.
+# would otherwise flag. "fo" is the prefix XSL-FO is conventionally bound to,
+# so a motive writing a formatting object spells it the way stylesheets do.
 [default.extend-words]
 OT = "OT"
+fo = "fo"

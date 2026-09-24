@@ -1,0 +1,33 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: not-creating-attribute-correctly
+# Quiet where the parent already carries the attribute, inlining writing it
+# twice onto one start tag (#1005); an attribute it does not carry is reported,
+# and so is one whose local name only an XSLT attribute of the parent shares.
+found:
+  amount: 2
+  positions: [ [ 12, 7 ], [ 17, 7 ] ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xlink="http://www.w3.org/1999/xlink" version="2.0" id="style1">
+    <xsl:output encoding="UTF-8" method="xml"/>
+    <xsl:template match="/objects/o">
+      <span class="{local-name()}" xlink:href="#top">
+        <xsl:attribute name="class">
+          <xsl:value-of select="@rend"/>
+        </xsl:attribute>
+        <xsl:attribute name="xlink:href">
+          <xsl:value-of select="@target"/>
+        </xsl:attribute>
+        <xsl:attribute name="title">
+          <xsl:value-of select="@n"/>
+        </xsl:attribute>
+      </span>
+      <p xsl:exclude-result-prefixes="#all">
+        <xsl:attribute name="exclude-result-prefixes">
+          <xsl:value-of select="@n"/>
+        </xsl:attribute>
+      </p>
+    </xsl:template>
+  </xsl:stylesheet>

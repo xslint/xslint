@@ -2026,10 +2026,8 @@ xsl/fo/table.xsl:1337:13 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text
 xsl/fo/table.xsl:1425:11 text-outside-xsl-text suggestion "<xsl:text>1*</xsl:text>"
 xsl/fo/table.xsl:1429:11 text-outside-xsl-text suggestion "<xsl:text>1*</xsl:text>"
 xsl/fo/table.xsl:1436:13 not-creating-attribute-correctly
-xsl/fo/table.xsl:1476:11 not-creating-attribute-correctly
 xsl/fo/table.xsl:1500:11 text-outside-xsl-text suggestion "<xsl:text>1*</xsl:text>"
 xsl/fo/table.xsl:1509:17 setting-value-of-variable-incorrectly
-xsl/fo/table.xsl:1514:15 not-creating-attribute-correctly
 xsl/fo/table.xsl:1674:5 text-outside-xsl-text suggestion "<xsl:text>pc</xsl:text>"
 xsl/fo/table.xsl:1675:5 text-outside-xsl-text suggestion "<xsl:text>pt</xsl:text>"
 xsl/fo/task.xsl:2:1 missing-id-in-stylesheet

@@ -2383,9 +2383,7 @@ docx/to/teitodocx.xsl:598:11 not-creating-attribute-correctly
 docx/to/teitodocx.xsl:616:21 string-length-compared-to-zero suggestion "$character-style != ''"
 docx/to/teitodocx.xsl:618:25 string-length-compared-to-zero suggestion "$character-style != ''"
 docx/to/teitodocx.xsl:649:11 short-names
-docx/to/teitodocx.xsl:654:11 not-creating-attribute-correctly
 docx/to/teitodocx.xsl:670:11 short-names
-docx/to/teitodocx.xsl:675:11 not-creating-attribute-correctly
 docx/to/teitodocx.xsl:698:5 use-choose-without-otherwise
 docx/to/teitodocx.xsl:705:11 short-names
 docx/to/teitodocx.xsl:713:11 short-names
@@ -2736,7 +2734,6 @@ fo/fo_textstructure.xsl:423:7 short-names
 fo/fo_textstructure.xsl:431:16 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 fo/fo_textstructure.xsl:432:16 text-outside-xsl-text suggestion "<xsl:text>auto-odd</xsl:text>"
 fo/fo_textstructure.xsl:546:10 not-creating-attribute-correctly
-fo/fo_textstructure.xsl:630:10 not-creating-attribute-correctly
 fo/fo_textstructure.xsl:633:10 not-creating-attribute-correctly
 fo/fo_textstructure.xsl:634:10 not-creating-attribute-correctly
 fo/fo_textstructure.xsl:637:10 use-choose-without-otherwise
@@ -3035,7 +3032,6 @@ html/html_param.xsl:663:10 text-outside-xsl-text suggestion "<xsl:text>.html</xs
 html/html_param.xsl:806:2 use-choose-without-otherwise
 html/html_param.xsl:854:7 not-creating-attribute-correctly
 html/html_param.xsl:864:7 not-creating-attribute-correctly
-html/html_param.xsl:877:7 not-creating-attribute-correctly
 html/html_param.xsl:887:7 not-creating-attribute-correctly
 html/html_param.xsl:892:2 use-choose-without-otherwise
 html/html_param.xsl:893:4 text-outside-xsl-text suggestion "<xsl:text>table</xsl:text>"
