@@ -124,6 +124,12 @@ and should be removed.</p>
 a template invoked from another file (via <code>xsl:import</code> or <code>xsl:include</code>) is
 not reported. The template is flagged only when no file calls it. Lint the
 whole project at once so the check can see every caller.</p>
+<p>A call only counts where something could run it. A template calling itself,
+or two calling each other and nothing else, never starts, and neither does a
+template only such a loop calls, so each of them is reported. A template
+nothing calls at all is reported alone: what it calls is left unreported, since
+a run may enter it directly, and one suppressed entry point keeps its whole
+tree quiet.</p>
 <p>A caller may spell the name as a shadow attribute — <code>_name=&quot;{&#39;footer&#39;}&quot;</code>,
 the form XSLT 3.0 allows for any attribute of its own elements — and that
 counts as a call. Where one of them names a template only a run can work out,
@@ -135,8 +141,8 @@ XSLT 3.0 defines, invoked by the processor rather than by any
 <code>xsl:call-template</code>, so no stylesheet ever names it and it is left alone. The
 same holds of any template a run enters directly, such as one Saxon is given
 with <code>-it:</code>, but a name chosen on a command line is not something a stylesheet
-records, so those are reported and there is nothing here that could know
-otherwise. It is the local part of the name that settles the exemption, so a
+records, so that one template is reported while the templates it calls count
+as called. It is the local part of the name that settles the exemption, so a
 template called <code>initial-template</code> under any prefix is left alone — one of
 your own, in a namespace of your own and never called, goes unreported. Name
 your own templates something else and the check answers for them.</p>
