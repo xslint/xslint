@@ -196,10 +196,10 @@ const identified = function(usages) {
 
 /**
  * Defects of a check matching a declaration's name against the usage values by
- * exact identity, followed through the call graph: a named template called only
- * from its own body, or from templates nothing reaches, never runs (#1009). A
- * shadow usage no static reading places may name any declaration there is, so
- * it silences the check rather than calling every one of them dead (#851).
+ * exact identity, followed through the call graph: a template only a loop of
+ * its own calls never runs (#1009), while one nothing calls may be what a run
+ * enters, so it is reported alone and what it calls is not. A shadow usage no
+ * static reading places silences the check (#851).
  * @param {Array.<{file: string, xsl: Document}>} corpus - Parsed stylesheets
  * @param {object} check - The check to apply
  * @return {Array.<object>} - Defects found
@@ -210,7 +210,9 @@ const byName = function(corpus, check) {
   if (!identified(usages).has('')) {
     const declarations = corpus.flatMap(({file, xsl}) =>
       chosen(xsl, check.declaration).map((node) => ({file, node})))
-    const used = reachable(check, declarations, usages)
+    const used = reachable(check, declarations, usages, new Set(declarations
+      .filter(({node}) => mentioning(usages, check, node).length === 0)
+      .map(({node}) => node)))
     defects = declarations
       .filter(({node}) => !used.has(node))
       .map(({file, node}) => defect(check, file, node))
@@ -611,7 +613,7 @@ const keysOf = function(check, declaration) {
  * is rejected, so a structural test placed ahead of this one spent a full
  * ancestor walk to learn what the index already says (#755).
  * @param {Array.<Node>} usages - Usage nodes across the corpus
- * @param {object} check - The check to apply, carrying a `reference` kind
+ * @param {object} check - The check to apply, with or without a `reference`
  * @param {Node} declaration - Declaring node
  * @return {Array.<Node>} - The usages referencing it
  */
@@ -644,17 +646,18 @@ const enclosing = function(declarations, usage) {
 }
 
 /**
- * The declarations reached from a root reference — one outside every
- * declaration's body — by following the call graph: a declaration is used
- * when an in-scope reference to it sits outside all declarations, or inside
- * another declaration that is itself used, so callers never reached, unused
- * or a cycle nothing enters, reach nothing.
- * @param {object} check - The check to apply, carrying a `reference` template
+ * The declarations reached from a root — a reference outside every
+ * declaration's body, or inside one of the `entered` — by following the call
+ * graph: a declaration is used when an in-scope reference to it sits in a root
+ * or in another declaration itself used, so a cycle nothing enters reaches
+ * nothing.
+ * @param {object} check - The check to apply, with or without a `reference`
  * @param {Array.<{file: string, node: Node}>} declarations - Declaring nodes
  * @param {Array.<Node>} usages - Usage nodes across the corpus
+ * @param {Set.<Node>} entered - Declarations whose calls count as roots
  * @return {Set.<Node>} - The used declarations
  */
-const reachable = function(check, declarations, usages) {
+const reachable = function(check, declarations, usages, entered) {
   const subtrees = new Set(declarations.map(({node}) => node))
   const references = declarations.map(({node}) => ({
     node,
@@ -670,7 +673,8 @@ const reachable = function(check, declarations, usages) {
     references
       .filter((reference) => !used.has(reference.node))
       .filter((reference) =>
-        reference.hosts.some((host) => host === null || used.has(host)))
+        reference.hosts.some((host) =>
+          host === null || entered.has(host) || used.has(host)))
       .forEach((reference) => {
         used.add(reference.node)
         growing = true
@@ -725,7 +729,7 @@ const byReachability = function(corpus, check) {
   const usages = usagesOf(corpus, check)
   const declarations = corpus.flatMap(({file, xsl}) =>
     chosen(xsl, check.declaration).map((node) => ({file, node})))
-  const used = reachable(check, declarations, usages)
+  const used = reachable(check, declarations, usages, new Set())
   return declarations
     .filter(({node}) => !used.has(node))
     .filter(({node}) => mentioning(usages, check, node).length > 0)

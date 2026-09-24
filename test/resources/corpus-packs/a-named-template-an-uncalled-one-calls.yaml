@@ -3,8 +3,8 @@
 ---
 pack: unused-named-template
 found:
-  amount: 2
-  positions: [ [ 0, 3, 3 ], [ 1, 3, 3 ] ]
+  amount: 1
+  positions: [ [ 0, 3, 3 ] ]
 inputs:
   - |-
     <?xml version="1.0"?>
@@ -23,7 +23,10 @@ inputs:
     <?xml version="1.0"?>
     <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
       <xsl:template name="inner">
-        <xsl:text>never</xsl:text>
+        <xsl:call-template name="leaf"/>
+      </xsl:template>
+      <xsl:template name="leaf">
+        <xsl:text>entered with -it</xsl:text>
       </xsl:template>
       <xsl:template name="looped">
         <xsl:if test="false()">

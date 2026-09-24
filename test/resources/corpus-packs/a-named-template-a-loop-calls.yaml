@@ -1,0 +1,30 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: unused-named-template
+found:
+  amount: 3
+  positions: [ [ 0, 3, 3 ], [ 0, 9, 3 ], [ 0, 12, 3 ] ]
+inputs:
+  - |-
+    <?xml version="1.0"?>
+    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
+      <xsl:template name="spin">
+        <xsl:if test="false()">
+          <xsl:call-template name="spin"/>
+        </xsl:if>
+        <xsl:call-template name="helper"/>
+      </xsl:template>
+      <xsl:template name="helper">
+        <xsl:text>never</xsl:text>
+      </xsl:template>
+      <xsl:template name="head">
+        <xsl:call-template name="even"/>
+      </xsl:template>
+      <xsl:template name="even">
+        <xsl:call-template name="odd"/>
+      </xsl:template>
+      <xsl:template name="odd">
+        <xsl:call-template name="even"/>
+      </xsl:template>
+    </xsl:stylesheet>
