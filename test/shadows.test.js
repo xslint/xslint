@@ -95,10 +95,12 @@ describe('shadows', function() {
         }
         assert.deepStrictEqual(
           asked, [],
-          `${kind}/${name} compares the value of an attribute in its ${key} ` +
-            'and reads one of the two spellings XSLT gives it, so a ' +
-            'stylesheet writing the shadow form draws nothing. Ask ' +
+          [
+            `${kind}/${name} compares the value of an attribute in its ${key}`,
+            'and reads one of the two spellings XSLT gives it, so a',
+            'stylesheet writing the shadow form draws nothing. Ask',
             'xslint:attribute, whose answer is either spelling',
+          ].join(' '),
         )
       }
     })
@@ -110,10 +112,12 @@ describe('shadows', function() {
       assert.deepStrictEqual(
         Object.keys(COMPARING).filter((name) => !asked.includes(name)),
         [],
-        'a check in the COMPARING table of test/shadows.test.js compares no ' +
-          'attribute value any more, so its entry is asserting nothing and ' +
-          'reads like a limit still in force: delete the row with the ' +
+        [
+          'a check in the COMPARING table of test/shadows.test.js compares no',
+          'attribute value any more, so its entry is asserting nothing and',
+          'reads like a limit still in force: delete the row with the',
           'selector that earned it',
+        ].join(' '),
       )
     })
 })

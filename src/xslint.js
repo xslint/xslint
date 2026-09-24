@@ -419,15 +419,19 @@ const validatedSuppressions = function(suppressions) {
   for (const sup of suppressions) {
     if (!CHECKS.some((check) => check.includes(sup))) {
       logger.warn(
-        `Check with substring '${sup}' does not exist. ` +
-        `Delete this '--suppress' or use another one.`,
+        [
+          `Check with substring '${sup}' does not exist.`,
+          `Delete this '--suppress' or use another one.`,
+        ].join(' '),
       )
     }
   }
   if (suppressions.some((sup) => sup === '')) {
     logger.warn(
-      'Empty suppress is incorrect. ' +
-      'Delete this "--suppress" or use another one.',
+      [
+        'Empty suppress is incorrect.',
+        'Delete this "--suppress" or use another one.',
+      ].join(' '),
     )
     suppressions = suppressions.filter((sup) => (sup) !== '')
   }
@@ -445,8 +449,10 @@ const chosenOf = function(only) {
   for (const choice of only) {
     if (!CHECKS.some((check) => check.includes(choice))) {
       logger.warn(
-        `Check with substring '${choice}' does not exist. ` +
-        `Delete this '--only' or use another one.`,
+        [
+          `Check with substring '${choice}' does not exist.`,
+          `Delete this '--only' or use another one.`,
+        ].join(' '),
       )
     }
   }
@@ -729,8 +735,10 @@ const lint = function(
         gated.add(name)
         if (overrides[name]) {
           logger.warn(
-            `Rule '${name}' stays withheld under the stable tier, ` +
+            [
+              `Rule '${name}' stays withheld under the stable tier,`,
               `a pattern grading it having named no check: ${issue}`,
+            ].join(' '),
           )
         }
       }
@@ -784,8 +792,10 @@ const xslint = function(pths, options) {
       logger.warn(`File or directory ${pth} does not exist`)
     } else if (!fs.statSync(pth).isDirectory() && !suffixed(pth)) {
       logger.warn(
-        `File ${pth} was not read, ` +
+        [
+          `File ${pth} was not read,`,
           `a stylesheet being named ${SUFFIXES.join(' or ')}`,
+        ].join(' '),
       )
     } else {
       stylesheets = [...stylesheets, ...sheets(pth, reach)]

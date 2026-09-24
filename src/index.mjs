@@ -26,8 +26,10 @@ program
   .option('--config <path>', 'Path to a configuration file')
   .option(
     '--stable',
-    'Report only the checks no open issue reports wrong, withholding the ' +
-    'nursery',
+    [
+      'Report only the checks no open issue reports wrong, withholding the',
+      'nursery',
+    ].join(' '),
   )
   .option('--fix', 'Rewrite the fixable defects in place')
   .option(
@@ -40,8 +42,10 @@ program
   )
   .option(
     '--max-warnings <n>',
-    'Number of warnings to allow before the exit code becomes non-zero ' +
-    '(-1 allows any number)',
+    [
+      'Number of warnings to allow before the exit code becomes non-zero',
+      '(-1 allows any number)',
+    ].join(' '),
     (value) => parseInt(value, 10),
   )
   .option(

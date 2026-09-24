@@ -150,11 +150,13 @@ describe('tiers', function() {
   it('declares the tiers every check offers, and only those', function() {
     assert.deepStrictEqual(
       declared(), offered(),
-      'the tiers the checks declare under `fix:` are not the tiers a run ' +
-        'offers over test/resources/fix. A check that grows a fix and ' +
-        'declares none is graded by nobody, and one declaring a fix it no ' +
-        'longer offers tells the docs site and README that a defect can be ' +
+      [
+        'the tiers the checks declare under `fix:` are not the tiers a run',
+        'offers over test/resources/fix. A check that grows a fix and',
+        'declares none is graded by nobody, and one declaring a fix it no',
+        'longer offers tells the docs site and README that a defect can be',
         'fixed when nothing fixes it (#899)',
+      ].join(' '),
     )
   })
   it('spells one tier as a name and two as a list', function() {
@@ -162,19 +164,23 @@ describe('tiers', function() {
       fixable().filter(([, check]) => !spelled(check.fix))
         .map(([name]) => name),
       [],
-      `a check spells its tier as something other than ${TIERS.join(' or ')}, ` +
-        'or lists one tier where the name alone says it, so what a run reads ' +
+      [
+        `a check spells its tier as something other than ${TIERS.join(' or ')},`,
+        'or lists one tier where the name alone says it, so what a run reads',
         'and what the docs site renders come off two shapes of one key',
+      ].join(' '),
     )
   })
   it('names no fixable check where the catalog teaches them', function() {
     assert.deepStrictEqual(
       fixable().map(([name]) => name).filter((name) => fixing().includes(name)),
       [],
-      'the README `Fixing` section names a check whose page already teaches ' +
-        'the construct, so one reader is told the same thing twice and the ' +
-        'two spellings drift apart. That section owns the flags and the ' +
+      [
+        'the README `Fixing` section names a check whose page already teaches',
+        'the construct, so one reader is told the same thing twice and the',
+        'two spellings drift apart. That section owns the flags and the',
         'guarantees; which check fixes itself is the catalog\'s (#898)',
+      ].join(' '),
     )
   })
 })

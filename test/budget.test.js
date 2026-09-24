@@ -207,9 +207,11 @@ const CASES = [
   {
     name: 'reports a budget standing further than SLACK above its run',
     spent: 9000, budget: 40000,
-    said: 'linting docbook took 9000ms where its budget allows 40000ms, ' +
-      'which is over 4 times the run: the budget has stopped being a bar ' +
+    said: [
+      'linting docbook took 9000ms where its budget allows 40000ms,',
+      'which is over 4 times the run: the budget has stopped being a bar',
       'and wants re-cutting from a measurement',
+    ].join(' '),
   },
   {
     name: 'says nothing about a budget standing exactly SLACK above it',
@@ -255,8 +257,10 @@ describe('budget', function() {
         assert.equal(
           verdict(one.name, RUNS[one.name], one.budget),
           '',
-          'a nightly budget no longer stands between what the runner spends ' +
+          [
+            'a nightly budget no longer stands between what the runner spends',
             'on a corpus and a regression in it',
+          ].join(' '),
         )
       })
   })
@@ -265,8 +269,10 @@ describe('budget', function() {
       assert.equal(
         verdict('docbook', row.spent, row.budget),
         row.said,
-        'a budget verdict does not say what it measured and which way the ' +
+        [
+          'a budget verdict does not say what it measured and which way the',
           'reading went wrong',
+        ].join(' '),
       )
     })
   })
@@ -276,8 +282,10 @@ describe('budget', function() {
         (one) => one.name,
       ),
       [],
-      'a corpus the nightly tier lints carries no budget, so the run it ' +
+      [
+        'a corpus the nightly tier lints carries no budget, so the run it',
         'times is timed against nothing',
+      ].join(' '),
     )
   })
   CORPORA.forEach((one) => {
@@ -285,9 +293,11 @@ describe('budget', function() {
       assert.equal(
         verdict(one.name, CHEAPEST[one.name] / MARGIN, one.budget),
         '',
-        'a nightly budget fires its own ratchet a margin under a reading its ' +
-          'corpus has already given, so a fast night reddens a build on a ' +
+        [
+          'a nightly budget fires its own ratchet a margin under a reading its',
+          'corpus has already given, so a fast night reddens a build on a',
           'tree nobody has touched',
+        ].join(' '),
       )
     })
   })
@@ -297,32 +307,40 @@ describe('budget', function() {
         (name) => !(name in RUNS) || !(name in CHEAPEST),
       ),
       [],
-      'a budget stands over a corpus this suite holds no runner reading ' +
+      [
+        'a budget stands over a corpus this suite holds no runner reading',
         'for, so nothing says the budget is still a bar',
+      ].join(' '),
     )
   })
   CORPORA.forEach((one) => {
     it(`resolves ${one.name} finely enough to measure it`, function() {
       assert.ok(
         TICK / CHEAPEST[one.name] <= RESOLUTION,
-        'the tier times a corpus with a clock too coarse to resolve it, so a ' +
+        [
+          'the tier times a corpus with a clock too coarse to resolve it, so a',
           'reading of it is quantisation before it is a measurement',
+        ].join(' '),
       )
     })
   })
   it('times each corpus with the clock a tick is written in', function() {
     assert.ok(
       fs.readFileSync(WORKFLOW, 'utf-8').includes(`date +${CLOCK}`),
-      'the nightly step times its run with a clock other than the one ' +
-        'scripts/budget.js states a tick of, so every bar written in ticks ' +
+      [
+        'the nightly step times its run with a clock other than the one',
+        'scripts/budget.js states a tick of, so every bar written in ticks',
         'stands on a unit nothing holds it to',
+      ].join(' '),
     )
   })
   it('judges each budget through the script the workflow calls', function() {
     assert.ok(
       fs.readFileSync(WORKFLOW, 'utf-8').includes('node scripts/budget.js'),
-      'the nightly step judges what it measured on its own rather than ' +
+      [
+        'the nightly step judges what it measured on its own rather than',
         'through scripts/budget.js, so the ratchet it holds is bypassed',
+      ].join(' '),
     )
   })
 })

@@ -29,7 +29,7 @@
  * the top of `src/grammar.js` and `src/syntax.js` — 24,681 characters. A turn
  * touching `test/` ran it close ever since, until #811's wildcard phase moved
  * this guide's nightly-tier note into `test/budget.test.js`; the dearest
- * reads 139,750, which is 0.93, and is `src/linters/`'s once more. What
+ * reads 139,888, which is 0.93, and is `src/linters/`'s once more. What
  * answers a chain reaching the bar is that move again, a module's derivation
  * into the file-header note of the module itself, and never a bar widened to
  * fit what has grown past it: a docblock holds five lines of description
@@ -37,7 +37,7 @@
  * one instead. A `CEILING` of half the bar stood beside it until it was seen
  * to be a gate no tree could fail: the root stands in every chain, so the
  * chain holding it above weighs each other guide against the bar less what
- * stands over it — 21,465 for `src/linters/CLAUDE.md`, where half of the bar
+ * stands over it — 21,327 for `src/linters/CLAUDE.md`, where half of the bar
  * is 75,000 — and holds the root itself to 86,746, a number derived from the
  * dearest chain rather than chosen. A gate no tree can fail is removed and
  * not kept (#750, #660). All four of those figures — the chain, its ratio,
@@ -95,11 +95,10 @@
  * `helpers.js`, `grammar-corpus.test.js`, `grammar-shapes.test.js` and
  * `workflows.test.js` out of `test/CLAUDE.md`, and `src/xslint.js` and this
  * very note behind them. One was refused by the valve rather than chosen
- * against: `test/conformance.test.js` stands at 998 of the 1000 lines its own
- * cap allows and its note is 190 more, and `max-lines` counts comments, so a
- * section can outgrow the file it is about and relief has a floor — what
- * answers that one is the note being cut, not moved. What that leaves is
- * 250 characters of headroom, off a chain that is `src/linters/`'s own once
+ * against: `test/conformance.test.js` stood at 998 of the 1000 lines its cap
+ * then allowed, and its note was 190 more — a cap nothing under `test/`
+ * answers to since #1047, so that refusal no longer holds. What that leaves is
+ * 112 characters of headroom, off a chain that is `src/linters/`'s own once
  * more rather than `test/CLAUDE.md`'s: the merge behind #811's bracket phase
  * breached the bar by 844 with neither branch having crossed it alone, and
  * the root's `src/xslint.js` derivation moved into `src/CLAUDE.md` to answer
@@ -112,7 +111,7 @@
  * again, on the dearest note that guide holds rather than on the newest, or a
  * change's own note where that change fires it: the nightly tier's derivation
  * stands at the top of `test/budget.test.js` since, and this one at the top
- * of this file behind it, 2,141 characters out of every chain through `test/`
+ * of this file behind it, 2,003 characters out of every chain through `test/`
  * to date and none out of the dearest without them. The relief that bought
  * lasted one ticket again, and the third breach is the plainest of the three:
  * #884 gave `scripts/` a third script and so the root a third index row, and
@@ -345,11 +344,13 @@ describe('guides', function() {
   it('walks the tree for the guides standing beside the code', function() {
     assert.ok(
       GUIDES.length > 1,
-      'cannot find a guide beside the code it is about, this walk having ' +
-        `found ${GUIDES.join(', ')} and nothing else — the derivation behind ` +
-        'a module lives in the CLAUDE.md of its own directory since #821, so ' +
-        'a walk reaching only the root one leaves every claim in the others ' +
+      [
+        'cannot find a guide beside the code it is about, this walk having',
+        `found ${GUIDES.join(', ')} and nothing else — the derivation behind`,
+        'a module lives in the CLAUDE.md of its own directory since #821, so',
+        'a walk reaching only the root one leaves every claim in the others',
         'judged by nobody',
+      ].join(' '),
     )
   })
   it('cannot come within reach of what a turn may load', function() {
@@ -359,23 +360,27 @@ describe('guides', function() {
           chained(one).map((each) => `${each} at ${sized(each)}`).join(' + ')}`,
       ),
       [],
-      `cannot load a chain of guides within ${ROOM} characters of the ` +
-        `${LOADED} the harness warns at, a turn touching a file loading the ` +
-        'root guide and the guide of every directory over it — the bar ' +
-        `stands at ${LOADED - ROOM} so that a derivation still has somewhere ` +
-        'to go when it fires, what answers it being that derivation moving ' +
-        'one directory further down, into the file-header note of the module ' +
+      [
+        `cannot load a chain of guides within ${ROOM} characters of the`,
+        `${LOADED} the harness warns at, a turn touching a file loading the`,
+        'root guide and the guide of every directory over it — the bar',
+        `stands at ${LOADED - ROOM} so that a derivation still has somewhere`,
+        'to go when it fires, what answers it being that derivation moving',
+        'one directory further down, into the file-header note of the module',
         'it is about, and never a bar widened to fit what has grown past it',
+      ].join(' '),
     )
   })
   it('keeps room enough to answer a chain that has reached the bar', function() {
     assert.ok(
       ROOM >= GROWN * 1.5 && ROOM <= GROWN * 2,
-      `cannot keep ${ROOM} characters under the bar against a dearest day ` +
-        `of ${GROWN}: a margin under half again of it is one a single day of ` +
-        'work crosses without warning, and one past twice it reddens a tree ' +
-        'that has room to spare, both of which are a bar that has stopped ' +
+      [
+        `cannot keep ${ROOM} characters under the bar against a dearest day`,
+        `of ${GROWN}: a margin under half again of it is one a single day of`,
+        'work crosses without warning, and one past twice it reddens a tree',
+        'that has room to spare, both of which are a bar that has stopped',
         'being one',
+      ].join(' '),
     )
   })
   it('names in its index only files the tree holds', function() {
@@ -383,9 +388,11 @@ describe('guides', function() {
       assert.ok(
         allFilesFrom(path.join(ROOT, path.dirname(row)))
           .map(slashed).some((one) => globbed(row).test(one)),
-        `the index names ${row}, which the tree holds nothing of — a path ` +
-          'that has moved or gone takes its reader nowhere, and the index is ' +
+        [
+          `the index names ${row}, which the tree holds nothing of — a path`,
+          'that has moved or gone takes its reader nowhere, and the index is',
           'the whole of what the root guide keeps in place of the notes',
+        ].join(' '),
       )
     }
   })
@@ -396,9 +403,11 @@ describe('guides', function() {
         .filter((one) => /\.m?js$/.test(one))
         .filter((one) => !rows.some((row) => globbed(row).test(one))),
       [],
-      'cannot leave a module out of the index, one line naming what it is ' +
-        'being the whole of what the root guide says about it — a module ' +
+      [
+        'cannot leave a module out of the index, one line naming what it is',
+        'being the whole of what the root guide says about it — a module',
         'named nowhere is one a reader meets first in the code',
+      ].join(' '),
     )
   })
   it('holds every note a guide carries to a row of the index', function() {
@@ -408,9 +417,11 @@ describe('guides', function() {
         noted(guide)
           .filter((one) => !rows.some((row) => globbed(row).test(one))),
         [],
-        `${guide} notes a file the index does not name — the two are one map, ` +
-          'so a note reachable only by opening the guide it sits in is a ' +
+        [
+          `${guide} notes a file the index does not name — the two are one map,`,
+          'so a note reachable only by opening the guide it sits in is a',
           'derivation the root has stopped pointing at',
+        ].join(' '),
       )
     }
   })
@@ -420,16 +431,20 @@ describe('guides', function() {
         noted(guide)
           .filter((one) => !one.startsWith(`${path.dirname(guide)}/`)),
         [],
-        `${guide} notes a file outside its own directory, where a reader ` +
-          'opening that file loads some other guide — a note arrives with ' +
+        [
+          `${guide} notes a file outside its own directory, where a reader`,
+          'opening that file loads some other guide — a note arrives with',
           'the directory it sits in, so it goes where its own code goes',
+        ].join(' '),
       )
     }
   })
   it('counts the attribute lists as long as they are, where it counts them', function() {
     const claimed = new RegExp(
-      `(?:the|those|these|its|of)${GAP}+([a-z-]+)${GAP}+` +
-      `(?:names|attributes|descendant scans)`, 'g',
+      [
+        `(?:the|those|these|its|of)${GAP}+([a-z-]+)${GAP}+`,
+        `(?:names|attributes|descendant scans)`,
+      ].join(''), 'g',
     )
     const lengths = new Set(LENGTHS.values())
     for (const file of PROSE) {
@@ -437,9 +452,11 @@ describe('guides', function() {
         if (NUMBERS.has(word)) {
           assert.ok(
             lengths.has(NUMBERS.get(word)),
-            `${file} says "${claim}", and neither ATTRIBUTES nor PATTERNS ` +
-              `holds ${NUMBERS.get(word)} — say what the list holds, or make ` +
+            [
+              `${file} says "${claim}", and neither ATTRIBUTES nor PATTERNS`,
+              `holds ${NUMBERS.get(word)} — say what the list holds, or make`,
               'the claim about something a reader can count',
+            ].join(' '),
           )
         }
       }
@@ -456,10 +473,12 @@ describe('guides', function() {
             (said) => said.split(': ')[1] !== one.truth().join(' and '),
           ),
           [],
-          `a figure derived from what the guides weigh says something the ` +
-            `tree does not: ${one.truth().join(' and ')} is what the chain ` +
-            'reads here, and the bar stays quiet until ' + LOADED +
+          [
+            `a figure derived from what the guides weigh says something the `,
+            `tree does not: ${one.truth().join(' and ')} is what the chain `,
+            'reads here, and the bar stays quiet until ' + LOADED,
             ', so nothing else catches this',
+          ].join(''),
         )
       })
   })
@@ -469,11 +488,13 @@ describe('guides', function() {
         assert.deepEqual(
           MEASURED.filter((file) => carries(one.claim, worded(file))).sort(),
           one.carriers.slice().sort(),
-          'the files carrying this figure are not the files it is watched ' +
-            'in: a sentence reworded past the phrase drops out of the gate ' +
-            'above while its figure stays wrong, and one written into a new ' +
-            'document is watched nowhere — asking whether *some* file still ' +
+          [
+            'the files carrying this figure are not the files it is watched',
+            'in: a sentence reworded past the phrase drops out of the gate',
+            'above while its figure stays wrong, and one written into a new',
+            'document is watched nowhere — asking whether *some* file still',
             'matches would answer yes to both',
+          ].join(' '),
         )
       })
   })
@@ -482,8 +503,10 @@ describe('guides', function() {
       `(${[...LENGTHS.keys()].join('|')})(?=(.{0,${NEARBY}}))`, 'g',
     )
     const counted = new RegExp(
-      `([a-z-]+)${GAP}+` +
+      [
+        `([a-z-]+)${GAP}+`,
         '(?:names|attributes|descendant scans|selectors|XSLT elements|checks)',
+      ].join(''),
     )
     for (const file of DOCUMENTS) {
       for (const [, list, after] of worded(file).matchAll(near)) {
@@ -491,9 +514,11 @@ describe('guides', function() {
         if (claim && NUMBERS.has(claim[1])) {
           assert.equal(
             NUMBERS.get(claim[1]), LENGTHS.get(list),
-            `${file} names ${list} and calls it "${claim[0]}", where it holds ` +
-              `${LENGTHS.get(list)} — the count beside a list is the one thing ` +
+            [
+              `${file} names ${list} and calls it "${claim[0]}", where it holds`,
+              `${LENGTHS.get(list)} — the count beside a list is the one thing`,
               'a reader takes on trust, so it answers to the list',
+            ].join(' '),
           )
         }
       }

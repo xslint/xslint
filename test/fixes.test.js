@@ -90,8 +90,10 @@ describe('fixes', function() {
           SELECTS[QUOTED[row.quote]], row.value, CONTENT,
         ).replacement,
         row.spelt,
-        'a value written back into an attribute cannot spell a character ' +
+        [
+          'a value written back into an attribute cannot spell a character',
           'XML forbids there as itself',
+        ].join(' '),
       )
     })
   })

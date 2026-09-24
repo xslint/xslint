@@ -114,8 +114,10 @@ const declaredEntities = function(str) {
   const entities = new Map()
   for (const match of str.matchAll(
     new RegExp(
-      `<!ENTITY${GAP}+([A-Za-z_][\\w.-]*)${GAP}+` +
-      `(?:"([^"]*)"|'([^']*)')`, 'g'))) {
+      [
+        `<!ENTITY${GAP}+([A-Za-z_][\\w.-]*)${GAP}+`,
+        `(?:"([^"]*)"|'([^']*)')`,
+      ].join(''), 'g'))) {
     if (!entities.has(match[1])) {
       entities.set(match[1], match[2] ?? match[3])
     }
@@ -129,9 +131,11 @@ const declaredEntities = function(str) {
  * @type {RegExp}
  */
 const PARAMETER = new RegExp(
-  `<!ENTITY${GAP}+%${GAP}+([A-Za-z_][\\w.-]*)${GAP}+` +
-  `(?:SYSTEM|PUBLIC${GAP}+(?:"[^"]*"|'[^']*'))${GAP}+` +
-  `(?:"([^"]*)"|'([^']*)')`, 'g')
+  [
+    `<!ENTITY${GAP}+%${GAP}+([A-Za-z_][\\w.-]*)${GAP}+`,
+    `(?:SYSTEM|PUBLIC${GAP}+(?:"[^"]*"|'[^']*'))${GAP}+`,
+    `(?:"([^"]*)"|'([^']*)')`,
+  ].join(''), 'g')
 
 /**
  * The external parameter entities the source declares, by name, each mapped

@@ -193,9 +193,11 @@ describe('import-linter', function() {
     assert.deepEqual(
       [capped(136600, 70100), capped(46200, 46300)],
       [70100, 46200],
-      'a window whose processor clock summed the threads Windows charges a ' +
-        'whole tick apiece is no longer charged the wall it spanned, or one ' +
+      [
+        'a window whose processor clock summed the threads Windows charges a',
+        'whole tick apiece is no longer charged the wall it spanned, or one',
         'a single thread could have spent is no longer charged what it read',
+      ].join(' '),
     )
   })
   it('cannot cost the square of the chain it is handed', function() {
@@ -207,9 +209,11 @@ describe('import-linter', function() {
     const grew = readings[1] / readings[0]
     assert.ok(
       grew < GROWTH,
-      `growing ${grew.toFixed(2)} times over a chain ${STEP} times longer ` +
-      `is not under ${GROWTH}, at ${(readings[0] / 1000).toFixed(2)} and ` +
-      `${(readings[1] / 1000).toFixed(2)} milliseconds a pass`,
+      [
+        `growing ${grew.toFixed(2)} times over a chain ${STEP} times longer`,
+        `is not under ${GROWTH}, at ${(readings[0] / 1000).toFixed(2)} and`,
+        `${(readings[1] / 1000).toFixed(2)} milliseconds a pass`,
+      ].join(' '),
     )
   })
 })

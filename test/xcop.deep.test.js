@@ -177,10 +177,12 @@ describe('xcop', function() {
     const held = mixed()
     assert.ok(
       xcopped(held.dir, held.files).get(held.files[2]).good,
-      'xcop stopped at the stylesheet it refuses and never reached the sound ' +
-        'one behind it, so that one failed for a neighbour fault and with a ' +
-        'message naming neither — 204 tests at once, and the one real ' +
+      [
+        'xcop stopped at the stylesheet it refuses and never reached the sound',
+        'one behind it, so that one failed for a neighbour fault and with a',
+        'message naming neither — 204 tests at once, and the one real',
         'complaint printed by nobody (#694)',
+      ].join(' '),
     )
   })
   it('says what xcop said of a stylesheet it refuses', function() {
@@ -192,8 +194,10 @@ describe('xcop', function() {
       xcopped(held.dir, held.files).get(held.files[1]).said.includes(
         held.files[1],
       ),
-      'the verdict on a refused stylesheet does not name it, so a run reports ' +
+      [
+        'the verdict on a refused stylesheet does not name it, so a run reports',
         'that something is wrong without saying what or where (#694)',
+      ].join(' '),
     )
   })
   it('names a pack that is there in every unformatted entry', function() {
@@ -202,18 +206,22 @@ describe('xcop', function() {
         (entry) => !PACKS.some((pack) => stands(pack) === entry),
       ),
       [],
-      'an entry naming no pack excludes nothing, and stands ready to exclude ' +
-        'whatever takes the name next: a pack renamed or deleted leaves one ' +
+      [
+        'an entry naming no pack excludes nothing, and stands ready to exclude',
+        'whatever takes the name next: a pack renamed or deleted leaves one',
         'behind and nothing else says so',
+      ].join(' '),
     )
   })
   it('writes each fixture to a file of its own', function() {
     assert.equal(
       new Set(FIXTURES.map((fixture) => fixture.file)).size,
       FIXTURES.length,
-      'two fixtures share a path, so one overwrote the other and two ' +
-        'assertions read one verdict while the fixture that lost is checked ' +
+      [
+        'two fixtures share a path, so one overwrote the other and two',
+        'assertions read one verdict while the fixture that lost is checked',
         'by nobody (#693)',
+      ].join(' '),
     )
   })
   FIXTURES.filter((fixture) => fixture.formatted).forEach((fixture) => {
@@ -223,8 +231,10 @@ describe('xcop', function() {
       }
       assert.ok(
         verdicts.get(fixture.file).good,
-        `xcop refused xsl #${fixture.index} of ${fixture.pack}, and said:\n` +
+        [
+          `xcop refused xsl #${fixture.index} of ${fixture.pack}, and said:\n`,
           verdicts.get(fixture.file).said,
+        ].join(''),
       )
     })
   })
@@ -235,9 +245,11 @@ describe('xcop', function() {
       }
       assert.ok(
         !verdicts.get(fixture.file).good,
-        `xcop accepts xsl #${fixture.index} of ${fixture.pack}, so its entry ` +
-          'in UNFORMATTED exempts a fixture that needs no exemption and hides ' +
+        [
+          `xcop accepts xsl #${fixture.index} of ${fixture.pack}, so its entry`,
+          'in UNFORMATTED exempts a fixture that needs no exemption and hides',
           'whatever it may come to hold: drop the entry',
+        ].join(' '),
       )
     })
   })

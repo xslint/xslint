@@ -411,10 +411,12 @@ describe('conformance', function() {
   it('keeps the generated checks abreast of the YAML that authors them', function() {
     assert.equal(
       fs.readFileSync(PLACE.to, 'utf-8'), rendered(authored()),
-      `${path.basename(PLACE.to)} is not what the YAML under ` +
-        `${path.basename(PLACE.from)}/ says any more, and it is what a run ` +
-        'reads, so the check you edited is not the check that fires; run ' +
+      [
+        `${path.basename(PLACE.to)} is not what the YAML under`,
+        `${path.basename(PLACE.from)}/ says any more, and it is what a run`,
+        'reads, so the check you edited is not the check that fires; run',
         '`npx grunt checks`',
+      ].join(' '),
     )
   })
   it('names every check in kebab-case without the banned prefix', function() {
@@ -454,13 +456,15 @@ describe('conformance', function() {
   it('stands every nursery check on an open issue of its own', function() {
     assert.deepStrictEqual(
       nursed(), {},
-      'a check carries a `nursery:` mark where the tier holds none: every ' +
-        'issue reporting one of the sixty-eight wrong about code a processor ' +
-        'accepts is closed, which is the release bar rather than a claim any ' +
-        'check is finished. A mark returning is a check reported wrong again: ' +
-        'it stands in the literal above beside the issue its own YAML names, ' +
-        'so an edited mark reddens as loudly as a stale one and the tier ' +
+      [
+        'a check carries a `nursery:` mark where the tier holds none: every',
+        'issue reporting one of the sixty-eight wrong about code a processor',
+        'accepts is closed, which is the release bar rather than a claim any',
+        'check is finished. A mark returning is a check reported wrong again:',
+        'it stands in the literal above beside the issue its own YAML names,',
+        'so an edited mark reddens as loudly as a stale one and the tier',
         'empties again as the ticket closes (#581, #637, #851)',
+      ].join(' '),
     )
   })
   it('gives every rule check at least one test pack', function() {
@@ -497,9 +501,11 @@ describe('conformance', function() {
           (pack.yml.found.positions ?? []).length !== pack.yml.found.amount)
         .map((pack) => pack.name),
       [],
-      'a pack expecting more defects than it gives positions for asserts ' +
-        'nothing about where they stand, since every harness walks the ' +
+      [
+        'a pack expecting more defects than it gives positions for asserts',
+        'nothing about where they stand, since every harness walks the',
         'positions rather than the count',
+      ].join(' '),
     )
   })
   it('pins the fix of every format pack against its positions', function() {
@@ -532,15 +538,17 @@ describe('conformance', function() {
           .map((file) => path.basename(path.dirname(file)))
           .filter((dir) => dir.endsWith('-packs')),
       )].sort(),
-      'a pack directory no harness call names goes unread, and every ' +
-        'assertion over its packs goes with it, which nothing else here can ' +
-        'notice: the harness being one function, the call handing it a ' +
-        'directory is the whole of what runs that directory. Deleting the ' +
-        'call for xpath-packs took all thirty-eight declarative checks out ' +
-        'of the suite and left eslint, npm test and a 100% coverage run ' +
-        'green (#660). A name matched twice is the same hole the other way, ' +
-        'a directory read under one call and a second name spelled for ' +
+      [
+        'a pack directory no harness call names goes unread, and every',
+        'assertion over its packs goes with it, which nothing else here can',
+        'notice: the harness being one function, the call handing it a',
+        'directory is the whole of what runs that directory. Deleting the',
+        'call for xpath-packs took all thirty-eight declarative checks out',
+        'of the suite and left eslint, npm test and a 100% coverage run',
+        'green (#660). A name matched twice is the same hole the other way,',
+        'a directory read under one call and a second name spelled for',
         'nothing',
+      ].join(' '),
     )
   })
   it('reads what a pack expects in the one harness and nowhere else',
@@ -552,13 +560,15 @@ describe('conformance', function() {
           .filter((file) => EXPECTS.test(fs.readFileSync(file, 'utf-8')))
           .map((file) => path.basename(file)),
         [],
-        'a test file reading what a pack expects is a second copy of the ' +
-          'harness, and an assertion written into every copy but one fails ' +
-          'nowhere: that is how import-packs came to assert no fix while ' +
-          'redundant-import attached a real deletion (#660). Read the ' +
-          'directory through the harness in test/packs.js, which asserts ' +
-          'the amount, the positions, the name, the severity, the message, ' +
+        [
+          'a test file reading what a pack expects is a second copy of the',
+          'harness, and an assertion written into every copy but one fails',
+          'nowhere: that is how import-packs came to assert no fix while',
+          'redundant-import attached a real deletion (#660). Read the',
+          'directory through the harness in test/packs.js, which asserts',
+          'the amount, the positions, the name, the severity, the message,',
           'the fixes and the values of every pack it is given',
+        ].join(' '),
       )
     })
   it('names every test file after the resources it takes', function() {
@@ -569,8 +579,10 @@ describe('conformance', function() {
           file.endsWith(DEEP))
         .map((file) => path.basename(file)),
       [],
-      `a test file that starts a child process is not named '${DEEP}', or one ` +
+      [
+        `a test file that starts a child process is not named '${DEEP}', or one`,
         'that starts none is, so the fast half of the suite runs the wrong files',
+      ].join(' '),
     )
   })
   it('writes every scratch file of a test into a temporary directory', function() {
@@ -584,17 +596,21 @@ describe('conformance', function() {
         })
         .map((file) => path.basename(file)),
       [],
-      'a test that writes a file without asking for a temporary directory ' +
-        'leaves it in the working tree, where the run that lints the ' +
+      [
+        'a test that writes a file without asking for a temporary directory',
+        'leaves it in the working tree, where the run that lints the',
         'repository walks over it and loses its count (#687)',
+      ].join(' '),
     )
   })
   it('caps how far a source file may grow', async function() {
     assert.ok(
       (await import('../eslint.config.mjs')).default
         .some((entry) => Array.isArray(entry.rules?.['max-lines'])),
-      'nothing in eslint.config.mjs caps the length of a source file, so the ' +
+      [
+        'nothing in eslint.config.mjs caps the length of a source file, so the',
         'next one to sprawl past what a reader can hold passes lint',
+      ].join(' '),
     )
   })
   it('lifts that cap off no file standing under it', async function() {
@@ -609,9 +625,11 @@ describe('conformance', function() {
         .flatMap((entry) => entry.files)
         .filter((named) => !sprawls(named, cap)),
       [],
-      'a file the line cap is switched off for stands under it now, or names ' +
-        'nothing at all, so the exemption in eslint.config.mjs claims a ' +
+      [
+        'a file the line cap is switched off for stands under it now, or names',
+        'nothing at all, so the exemption in eslint.config.mjs claims a',
         'length the tree no longer holds',
+      ].join(' '),
     )
   })
   it('states the length of every file the cap is lifted off', async function() {
@@ -630,9 +648,11 @@ describe('conformance', function() {
             lengths.some((length) => !measures(named, cap, length))
         }),
       [],
-      'a file the line cap is lifted off is stated at a length it does not ' +
-        'stand at, or at no length at all, so the one number bounding a ' +
+      [
+        'a file the line cap is lifted off is stated at a length it does not',
+        'stand at, or at no length at all, so the one number bounding a',
         'file nothing else bounds answers to nothing (#825)',
+      ].join(' '),
     )
   })
   it('tests every validation check by name in a test file', function() {
@@ -653,8 +673,10 @@ describe('conformance', function() {
         for (const key of keys) {
           assert.ok(
             !check[key] || !COUNTED.test(check[key]),
-            `${kind}/${name} compares count(...) with 0 in its ${key}; ` +
+            [
+              `${kind}/${name} compares count(...) with 0 in its ${key};`,
               'write the node test itself, as count-compared-to-zero asks',
+            ].join(' '),
           )
         }
       }
@@ -671,12 +693,14 @@ describe('conformance', function() {
             assert.ok(
               !check[key] || !CHILDREN.test(check[key]) ||
                 TEXTED.test(check[key]) || COUNTING[name] !== undefined,
-              `${kind}/${name} counts the elements a node holds in its ` +
-                `${key} and asks nothing about its text, which answers the ` +
-                'same question: a construct holding one instruction and a ' +
-                'string of text holds more than the instruction, and the ' +
-                'check reports it as though it did not. Weigh the text ' +
+              [
+                `${kind}/${name} counts the elements a node holds in its`,
+                `${key} and asks nothing about its text, which answers the`,
+                'same question: a construct holding one instruction and a',
+                'string of text holds more than the instruction, and the',
+                'check reports it as though it did not. Weigh the text',
                 'beside the count, as not(text()[xslint:normalize-space(.)]) does',
+              ].join(' '),
             )
           }
         }
@@ -693,11 +717,13 @@ describe('conformance', function() {
             assert.ok(
               !check[key] || !TEXTED.test(check[key]) ||
                 PRESERVED.test(check[key]) || EMITTED[name] !== undefined,
-              `${kind}/${name} reads text() in its ${key} to decide whether ` +
-                'a node holds content and never asks about xml:space, so it ' +
-                'reads past a whitespace-only node the nearest preserve in ' +
-                'scope keeps. Weigh that node too, the way ' +
+              [
+                `${kind}/${name} reads text() in its ${key} to decide whether`,
+                'a node holds content and never asks about xml:space, so it',
+                'reads past a whitespace-only node the nearest preserve in',
+                'scope keeps. Weigh that node too, the way',
                 'ancestor::*[@xml:space][1] answers it',
+              ].join(' '),
             )
           }
         }
@@ -717,10 +743,12 @@ describe('conformance', function() {
                   !(key === 'declaration' && named === 'name'),
               ),
               [],
-              `${kind}/${name} asks its ${key} whether an attribute is ` +
-                'there and reads one of the two spellings XSLT gives it, so ' +
-                'a stylesheet writing the shadow form draws a defect no ' +
+              [
+                `${kind}/${name} asks its ${key} whether an attribute is`,
+                'there and reads one of the two spellings XSLT gives it, so',
+                'a stylesheet writing the shadow form draws a defect no',
                 'processor agrees with. Ask the shadow spelling beside it',
+              ].join(' '),
             )
           }
         }
@@ -729,11 +757,13 @@ describe('conformance', function() {
   it('marks the local name of an attribute and never its prefix', function() {
     assert.strictEqual(
       shadowed('xsl:version'), 'xsl:_version',
-      'the shadow spelling of a prefixed attribute keeps the prefix and ' +
-        'underscores the local name, where _xsl:version names a prefix no ' +
-        'document binds and so reaches no attribute at all. Nothing else ' +
-        'asks: both prefixed presence tests in the tree are exempt on ' +
+      [
+        'the shadow spelling of a prefixed attribute keeps the prefix and',
+        'underscores the local name, where _xsl:version names a prefix no',
+        'document binds and so reaches no attribute at all. Nothing else',
+        'asks: both prefixed presence tests in the tree are exempt on',
         'SHADOWLESS, so the gates around this one read the same either way',
+      ].join(' '),
     )
   })
   it('exempts an attribute from its shadow spelling only while it has none',
@@ -750,10 +780,12 @@ describe('conformance', function() {
       assert.deepStrictEqual(
         Object.keys(SHADOWLESS).filter((named) => !asked.includes(named)),
         [],
-        'an attribute in the SHADOWLESS table of test/conformance.test.js is ' +
-          'asked about in both spellings now, or asked about by nobody, so ' +
-          'its entry is asserting nothing: a selector that gains the guard ' +
+        [
+          'an attribute in the SHADOWLESS table of test/conformance.test.js is',
+          'asked about in both spellings now, or asked about by nobody, so',
+          'its entry is asserting nothing: a selector that gains the guard',
           'takes its own exemption with it',
+        ].join(' '),
       )
     })
   it('exempts a selector only while it still needs the exemption', function() {
@@ -764,9 +796,11 @@ describe('conformance', function() {
         )
         assert.ok(
           still(check.xpath),
-          `xpath/${name} is exempt on the grounds that ${table[name]}, and ` +
-            'no longer needs it: the selector either stopped spelling the ' +
+          [
+            `xpath/${name} is exempt on the grounds that ${table[name]}, and`,
+            'no longer needs it: the selector either stopped spelling the',
             'shape the bar is about, or answers the bar already. Drop it',
+          ].join(' '),
         )
       }
     }
@@ -781,13 +815,15 @@ describe('conformance', function() {
           for (const key of keys) {
             assert.ok(
               !check[key] || !NAMED.test(check[key]),
-              `${kind}/${name} calls name() in its ${key}, which answers the ` +
-                'prefix a document happens to spell a node with, so the check ' +
-                'is blind to every stylesheet binding the XSLT namespace to ' +
-                'another one. Write a namespace-bound node test instead, such ' +
-                'as //(xsl:variable | xsl:template); where the set is negated ' +
-                'and no union can spell it, local-name() reads no prefix and ' +
+              [
+                `${kind}/${name} calls name() in its ${key}, which answers the`,
+                'prefix a document happens to spell a node with, so the check',
+                'is blind to every stylesheet binding the XSLT namespace to',
+                'another one. Write a namespace-bound node test instead, such',
+                'as //(xsl:variable | xsl:template); where the set is negated',
+                'and no union can spell it, local-name() reads no prefix and',
                 'is allowed',
+              ].join(' '),
             )
           }
         }
@@ -797,10 +833,12 @@ describe('conformance', function() {
     assert.deepStrictEqual(
       Object.keys(UNINDEXED).filter((name) => !names('xpath').includes(name)),
       [],
-      'a name in the UNINDEXED table of test/conformance.test.js is not an ' +
-        'xpath check any more, so its entry is asserting nothing: a check that ' +
-        'has moved to code, or been renamed, or been deleted takes its ' +
+      [
+        'a name in the UNINDEXED table of test/conformance.test.js is not an',
+        'xpath check any more, so its entry is asserting nothing: a check that',
+        'has moved to code, or been renamed, or been deleted takes its',
         'exemption with it',
+      ].join(' '),
     )
   })
   it('serves every selector a cross-file check is written in', function() {
@@ -813,14 +851,16 @@ describe('conformance', function() {
         .filter((one) => one.xpath !== undefined && !serves(one.xpath))
         .map((one) => one.name),
       [],
-      'a cross-file selector is no longer served from the walk in ' +
-        'src/tree.js. Both sides of such a check grow with the project and the ' +
-        'work is their product, so a descendant traversal here is the dearest ' +
-        'one there is: the every-attribute usage three of the four are written in cost ' +
-        'fontoxpath 1.613 s over DocBook-XSL, 18% of the whole run, against 8 ' +
-        'ms off the walk. Unlike the per-file kind there is no table of ' +
-        'exemptions, four selectors of one shape each being few enough that a ' +
+      [
+        'a cross-file selector is no longer served from the walk in',
+        'src/tree.js. Both sides of such a check grow with the project and the',
+        'work is their product, so a descendant traversal here is the dearest',
+        'one there is: the every-attribute usage three of the four are written in cost',
+        'fontoxpath 1.613 s over DocBook-XSL, 18% of the whole run, against 8',
+        'ms off the walk. Unlike the per-file kind there is no table of',
+        'exemptions, four selectors of one shape each being few enough that a',
         'fifth belongs in that shape too (#811)',
+      ].join(' '),
     )
   })
   it('serves every xpath selector it can from the shared walk', function() {
@@ -835,14 +875,16 @@ describe('conformance', function() {
     assert.deepStrictEqual(
       drifted,
       [],
-      'a selector and the UNINDEXED table in test/conformance.test.js no ' +
-        'longer agree. A selector that cannot be served from the walk in ' +
-        'src/tree.js costs fontoxpath a descendant traversal of its own, which ' +
-        'it performs quadratically over an xmldom tree, so a new one belongs ' +
-        'in that table with the shape that puts it there — or, better, gets ' +
-        'written as a descendant sweep of named elements. A selector listed ' +
-        'there and served anyway has outgrown its entry, and the entry goes: ' +
+      [
+        'a selector and the UNINDEXED table in test/conformance.test.js no',
+        'longer agree. A selector that cannot be served from the walk in',
+        'src/tree.js costs fontoxpath a descendant traversal of its own, which',
+        'it performs quadratically over an xmldom tree, so a new one belongs',
+        'in that table with the shape that puts it there — or, better, gets',
+        'written as a descendant sweep of named elements. A selector listed',
+        'there and served anyway has outgrown its entry, and the entry goes:',
         `${drifted.join(', ')}`,
+      ].join(' '),
     )
   })
   it('names a kind of reference the corpus linter reads', function() {
@@ -858,11 +900,13 @@ describe('conformance', function() {
       .map((check) => check.name)
     assert.deepStrictEqual(
       foreign, [],
-      `${foreign.join(', ')} names a reference that is none of ` +
-        `${REFERENCES.join(', ')}, the kinds the token scan in ` +
-        'src/linters/corpus-linter.js reads off a usage value. An index ' +
-        'built for a word no scan answers holds no name at all, so every ' +
+      [
+        `${foreign.join(', ')} names a reference that is none of`,
+        `${REFERENCES.join(', ')}, the kinds the token scan in`,
+        'src/linters/corpus-linter.js reads off a usage value. An index',
+        'built for a word no scan answers holds no name at all, so every',
         'declaration in the corpus is reported as dead',
+      ].join(' '),
     )
   })
   it('names both quotes of a literal it compares text with', function() {
@@ -880,9 +924,11 @@ describe('conformance', function() {
             }
             assert.ok(
               check[key].includes(twin),
-              `${kind}/${name} compares its ${key} with ${match[0]} and not ` +
-                `with ${twin}, so a stylesheet spelling that string the other ` +
+              [
+                `${kind}/${name} compares its ${key} with ${match[0]} and not`,
+                `with ${twin}, so a stylesheet spelling that string the other`,
                 'way round goes unreported (#549)',
+              ].join(' '),
             )
           }
         }
@@ -913,9 +959,11 @@ describe('conformance', function() {
       yaml.parsedFromFile(
         path.join(CHECKS, 'xpath', 'malformed-version-in-stylesheet.yaml'),
       ).xpath.includes(DECIMAL.source),
-      'malformed-version-in-stylesheet writes its own xs:decimal pattern rather ' +
-        'than the DECIMAL of src/xsl-version.js, so the check and the reader ' +
+      [
+        'malformed-version-in-stylesheet writes its own xs:decimal pattern rather',
+        'than the DECIMAL of src/xsl-version.js, so the check and the reader',
         'it reports for can disagree on what a version is',
+      ].join(' '),
     )
   })
   it('reads a version attribute only where the attribute is the subject',
@@ -929,17 +977,19 @@ describe('conformance', function() {
             assert.ok(
               !DECLARED.test(check[key] ?? '') ||
                 Object.hasOwn(VERSIONED, name),
-              `${kind}/${name} reads a version attribute in its ${key}, ` +
-                'where what a gate means is the version in force: XSLT sets ' +
-                'one on any element and a shadow `_version` spells it as ' +
-                'readily, so an answer read off the root misjudges every ' +
-                'subtree raised or lowered against it, and a list of the ' +
-                'spellings that clear a floor is a second opinion about ' +
-                'XSLT. Ask xslint:version(.), which hands back what ' +
-                'versionOf answers and NaN where nothing declares a version, ' +
-                'clearing no floor and so leaving the report unmade. Only a ' +
-                'check reporting on the attribute itself reads one, and it ' +
+              [
+                `${kind}/${name} reads a version attribute in its ${key},`,
+                'where what a gate means is the version in force: XSLT sets',
+                'one on any element and a shadow `_version` spells it as',
+                'readily, so an answer read off the root misjudges every',
+                'subtree raised or lowered against it, and a list of the',
+                'spellings that clear a floor is a second opinion about',
+                'XSLT. Ask xslint:version(.), which hands back what',
+                'versionOf answers and NaN where nothing declares a version,',
+                'clearing no floor and so leaving the report unmade. Only a',
+                'check reporting on the attribute itself reads one, and it',
                 'says so in the VERSIONED table here (#618, #851)',
+              ].join(' '),
             )
           }
         }
@@ -954,9 +1004,11 @@ describe('conformance', function() {
         for (const input of yml.inputs || [yml.input]) {
           assert.ok(
             stylish(xml.parsedFromString(input)),
-            `pack ${dir}/${path.basename(pack)} holds a document with ` +
-              'nothing in the XSLT namespace, so no check can see a single ' +
+            [
+              `pack ${dir}/${path.basename(pack)} holds a document with`,
+              'nothing in the XSLT namespace, so no check can see a single',
               'node of it and any amount it claims would pass',
+            ].join(' '),
           )
         }
       }

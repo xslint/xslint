@@ -95,8 +95,10 @@ const normalized = function(raw) {
       rules[name] = severity
     } else {
       logger.warn(
-        `Invalid severity '${severity}' for rule '${name}' in ${NAME}, ` +
-        `use one of ${SEVERITIES.join(', ')}`,
+        [
+          `Invalid severity '${severity}' for rule '${name}' in ${NAME},`,
+          `use one of ${SEVERITIES.join(', ')}`,
+        ].join(' '),
       )
     }
   }

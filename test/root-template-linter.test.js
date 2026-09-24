@@ -83,10 +83,12 @@ describe('root-template-linter', function() {
     assert.deepStrictEqual(
       DIVERTED.filter((one) => !pinned.has(one)),
       [],
-      'a name on DIVERTED that no pack isolates is asserted by nothing: drop ' +
-        'it from the list and every test still passes, because the zero those ' +
-        'packs assert comes from a literal result element or another diverted ' +
+      [
+        'a name on DIVERTED that no pack isolates is asserted by nothing: drop',
+        'it from the list and every test still passes, because the zero those',
+        'packs assert comes from a literal result element or another diverted',
         'name standing in the way rather than from the name under test',
+      ].join(' '),
     )
   })
 })

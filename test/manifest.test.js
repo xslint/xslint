@@ -162,9 +162,11 @@ const COORDINATES = [
  * @type {RegExp}
  */
 const NAMED = new RegExp(
-  `(?:require|import)${GAP}*\\(${GAP}*['"]([^'"]+)['"]|` +
-  `^${GAP}*(?:import|export)[^'"]*from${GAP}*['"]([^'"]+)['"]|` +
-  `^${GAP}*import${GAP}+['"]([^'"]+)['"]`,
+  [
+    `(?:require|import)${GAP}*\\(${GAP}*['"]([^'"]+)['"]|`,
+    `^${GAP}*(?:import|export)[^'"]*from${GAP}*['"]([^'"]+)['"]|`,
+    `^${GAP}*import${GAP}+['"]([^'"]+)['"]`,
+  ].join(''),
   'gm',
 )
 
@@ -290,12 +292,14 @@ describe('manifest', function() {
       assert.deepEqual(
         spelled(pinned()),
         spelled(wrapped()),
-        'a grunt wrapper depends on a tool this repository declares too and ' +
-          'is held to no version of it, so npm nests the wrapper a copy of ' +
-          'its own and the target runs a tool nobody chose: grunt mochacli ' +
-          'ran mocha 8 against a declared 11 (#841) and grunt eslint ran ' +
-          'eslint 9 against a declared 10 (#855). Pin it in overrides as ' +
+        [
+          'a grunt wrapper depends on a tool this repository declares too and',
+          'is held to no version of it, so npm nests the wrapper a copy of',
+          'its own and the target runs a tool nobody chose: grunt mochacli',
+          'ran mocha 8 against a declared 11 (#841) and grunt eslint ran',
+          'eslint 9 against a declared 10 (#855). Pin it in overrides as',
           '$<tool>, or drop a pin the wrapper has stopped needing',
+        ].join(' '),
       )
     })
   it('runs every grunt target on the tool the suite declares', function() {
@@ -308,21 +312,25 @@ describe('manifest', function() {
         }) !== require.resolve(pair.tool))
         .map((pair) => `${pair.wrapper} -> ${pair.tool}`),
       [],
-      'a grunt target runs a tool of its own and not the one the suite ' +
-        'declares, so every rule and every timeout this repository sets is ' +
+      [
+        'a grunt target runs a tool of its own and not the one the suite',
+        'declares, so every rule and every timeout this repository sets is',
         'read by a major nobody chose',
+      ].join(' '),
     )
   })
   it('declares every package its own JavaScript names', function() {
     assert.deepEqual(
       imported().filter((name) => !(name in DECLARED)),
       [],
-      'this repository imports a package it declares nowhere, so what ' +
-        'supplies it is some dependency of a dependency that happens to be ' +
-        'hoisted, and the day that one dedupes away the import fails: ' +
-        'eslint.config.mjs named @eslint/js and @eslint/eslintrc, both of ' +
-        'them the nested eslint 9 grunt-eslint pinned, and every rule in ' +
+      [
+        'this repository imports a package it declares nowhere, so what',
+        'supplies it is some dependency of a dependency that happens to be',
+        'hoisted, and the day that one dedupes away the import fails:',
+        'eslint.config.mjs named @eslint/js and @eslint/eslintrc, both of',
+        'them the nested eslint 9 grunt-eslint pinned, and every rule in',
         'this project stood on the accident (#855)',
+      ].join(' '),
     )
   })
   COORDINATES.forEach(function(coordinate) {
@@ -334,12 +342,14 @@ describe('manifest', function() {
             texts().map((file) => fs.readFileSync(file, 'utf-8')),
           ),
           matched(coordinate.pattern, [coordinate.declares]),
-          'this repository states a coordinate of itself that its manifest ' +
-            'declares nowhere, so a reader copies an install line or a link ' +
-            'that leads somewhere else: the URI binding our own XPath ' +
-            'prefix named the owner the organisation move left behind, and ' +
-            'nothing but a reader ever compared the two — while a sweep ' +
+          [
+            'this repository states a coordinate of itself that its manifest',
+            'declares nowhere, so a reader copies an install line or a link',
+            'that leads somewhere else: the URI binding our own XPath',
+            'prefix named the owner the organisation move left behind, and',
+            'nothing but a reader ever compared the two — while a sweep',
             'gone blind reads as a tree stating no coordinate at all (#337)',
+          ].join(' '),
         )
       })
   })
@@ -350,10 +360,12 @@ describe('manifest', function() {
           .filter((name) => !imported().includes(name))
           .sort(),
         Object.keys(UNIMPORTED).sort(),
-        'a declared package is imported by none of this repository\'s own ' +
-          'JavaScript and stands on no list saying what runs it, so it is ' +
-          'either dead weight or a tool nobody has written down — and a ' +
+        [
+          'a declared package is imported by none of this repository\'s own',
+          'JavaScript and stands on no list saying what runs it, so it is',
+          'either dead weight or a tool nobody has written down — and a',
           'sweep for imports that has gone blind reads exactly the same way',
+        ].join(' '),
       )
     })
 })

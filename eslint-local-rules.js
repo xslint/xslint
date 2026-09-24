@@ -204,6 +204,24 @@ const parted = function (comment) {
 // the identifier the following return uses, nor weigh a call's argument count
 // against the parameter list of the callee, nor tell which function a return
 // belongs to, nor count the lines of a comment, which is no node at all.
+// The operands a chain of `+` adds up, left to right, which JavaScript nests
+// on the left: a parenthesised sum on the right stays one operand.
+const summed = function (node) {
+  let operands = [node];
+  if (node.type === "BinaryExpression" && node.operator === "+") {
+    operands = [...summed(node.left), node.right];
+  }
+  return operands;
+};
+
+// Whether an operand is text written out in the source.
+const textual = function (node) {
+  return (
+    node.type === "TemplateLiteral" ||
+    (node.type === "Literal" && typeof node.value === "string")
+  );
+};
+
 module.exports = {
   rules: {
     "no-redundant-return-variable": {
@@ -215,8 +233,10 @@ module.exports = {
         },
         messages: {
           redundant:
-            "Return the expression directly instead of binding it to a " +
-            "variable first"
+            [
+              "Return the expression directly instead of binding it to a",
+              "variable first",
+            ].join(' ')
         }
       },
       create(context) {
@@ -253,8 +273,10 @@ module.exports = {
         },
         messages: {
           missing:
-            "Pass every argument of '{{name}}': {{expected}} expected, " +
-            "{{given}} given"
+            [
+              "Pass every argument of '{{name}}': {{expected}} expected,",
+              "{{given}} given",
+            ].join(' ')
         }
       },
       create(context) {
@@ -307,9 +329,11 @@ module.exports = {
         },
         messages: {
           orphan:
-            "This block documents nothing: another JSDoc block stands where " +
-            "the declaration it describes should be, so whatever it " +
-            "documented has gone and the block outlived it"
+            [
+              "This block documents nothing: another JSDoc block stands where",
+              "the declaration it describes should be, so whatever it",
+              "documented has gone and the block outlived it",
+            ].join(' ')
         }
       },
       create(context) {
@@ -340,9 +364,11 @@ module.exports = {
         },
         messages: {
           sprawling:
-            "Cut this description to {{max}} lines or fewer: it spends " +
-            "{{spent}}, and the derivation behind a module belongs in the " +
-            "CLAUDE.md of the directory it sits in",
+            [
+              "Cut this description to {{max}} lines or fewer: it spends",
+              "{{spent}}, and the derivation behind a module belongs in the",
+              "CLAUDE.md of the directory it sits in",
+            ].join(' '),
           wordy:
             "Cut '{{tag}}' to {{max}} lines or fewer: it spends {{spent}}"
         },
@@ -384,6 +410,44 @@ module.exports = {
         };
       }
     },
+    "no-wrapped-concatenation": {
+      meta: {
+        type: "suggestion",
+        docs: {
+          description: "disallow a string chained with '+' across lines"
+        },
+        messages: {
+          wrapped: [
+            "Join the pieces of this string from an array rather than",
+            "chaining them with '+' across lines"
+          ].join(" ")
+        }
+      },
+      create(context) {
+        return {
+          "BinaryExpression[operator='+']"(node) {
+            const parent = node.parent;
+            const operands = summed(node);
+            if (
+              !(
+                parent.type === "BinaryExpression" &&
+                parent.operator === "+" &&
+                parent.left === node
+              ) &&
+              operands.some(textual) &&
+              operands
+                .slice(1)
+                .some(
+                  (operand, idx) =>
+                    operand.loc.start.line !== operands[idx].loc.end.line
+                )
+            ) {
+              context.report({ node, messageId: "wrapped" });
+            }
+          }
+        };
+      }
+    },
     "no-multiple-returns": {
       meta: {
         type: "suggestion",
@@ -392,8 +456,10 @@ module.exports = {
         },
         messages: {
           multiple:
-            "Return once from a function; let the branching decide the " +
-            "value, not the exit"
+            [
+              "Return once from a function; let the branching decide the",
+              "value, not the exit",
+            ].join(' ')
         }
       },
       create(context) {

@@ -56,8 +56,10 @@ const CASES = [
   {
     name: 'names every package a report found an advisory against',
     reading: 'findings', report: true, silent: false,
-    said: 'npm audit found 4 advisories: minimist critical, qs high, ' +
+    said: [
+      'npm audit found 4 advisories: minimist critical, qs high,',
       'semver high, cookie low',
+    ].join(' '),
   },
   {
     name: 'counts one advisory as the one it is',
@@ -67,10 +69,12 @@ const CASES = [
   {
     name: 'counts the advisories it has no room to name',
     reading: 'many', report: true, silent: false,
-    said: 'npm audit found 18 advisories: lodash critical, braces high, ' +
-      'gaze high, glob high, glob-stream high, glob-watcher high, ' +
-      'globule high, gulp high, gulp-util high, lodash.template high, ' +
+    said: [
+      'npm audit found 18 advisories: lodash critical, braces high,',
+      'gaze high, glob high, glob-stream high, glob-watcher high,',
+      'globule high, gulp high, gulp-util high, lodash.template high,',
       'micromatch high, minimatch high, and 6 more',
+    ].join(' '),
   },
   {
     name: 'says nothing about a report that found no advisory at all',
@@ -79,24 +83,30 @@ const CASES = [
   {
     name: 'reads a registry answering 503 as nothing having been audited',
     reading: 'unanswered', report: false, silent: true,
-    said: 'npm audit read no report from the registry, so nothing was ' +
-      'audited: 503 Service Unavailable - POST ' +
-      'https://registry.npmjs.org/-/npm/v1/security/advisories/bulk - ' +
+    said: [
+      'npm audit read no report from the registry, so nothing was',
+      'audited: 503 Service Unavailable - POST',
+      'https://registry.npmjs.org/-/npm/v1/security/advisories/bulk -',
       'Service Unavailable',
+    ].join(' '),
   },
   {
     name: 'reads a registry whose name does not resolve the same way',
     reading: 'refused', report: false, silent: true,
-    said: 'npm audit read no report from the registry, so nothing was ' +
-      'audited: request to ' +
-      'https://registry.npmjs.invalid/-/npm/v1/security/advisories/bulk ' +
+    said: [
+      'npm audit read no report from the registry, so nothing was',
+      'audited: request to',
+      'https://registry.npmjs.invalid/-/npm/v1/security/advisories/bulk',
       'failed, reason: getaddrinfo ENOTFOUND registry.npmjs.invalid',
+    ].join(' '),
   },
   {
     name: 'blames npm rather than the registry where npm names the fault',
     reading: 'unusable', report: false, silent: false,
-    said: 'npm audit could not run over this tree, so nothing was audited: ' +
+    said: [
+      'npm audit could not run over this tree, so nothing was audited:',
       'ENOLOCK, This command requires an existing lockfile',
+    ].join(' '),
   },
 ]
 
@@ -111,8 +121,10 @@ const CRASHES = [
   {
     name: 'reads whatever npm printed in place of JSON as its cause',
     text: 'npm error code EPERM\nnpm error syscall open',
-    said: 'npm audit read no report from the registry, so nothing was ' +
+    said: [
+      'npm audit read no report from the registry, so nothing was',
       'audited: npm error code EPERM',
+    ].join(' '),
   },
   {
     name: 'reads a run that printed nothing at all as nothing audited',
@@ -126,8 +138,10 @@ describe('audit', function() {
     it(row.name, function() {
       assert.equal(
         verdict(reading(row.reading)), row.said,
-        'an audit verdict does not say what npm read, so a night that ' +
+        [
+          'an audit verdict does not say what npm read, so a night that',
           'reddens names nothing to act on',
+        ].join(' '),
       )
     })
   })
@@ -135,8 +149,10 @@ describe('audit', function() {
     it(row.name, function() {
       assert.equal(
         verdict(read(row.text)), row.said,
-        'a run that printed no report at all is judged against a key it ' +
+        [
+          'a run that printed no report at all is judged against a key it',
           'never wrote, so the verdict says nothing of what happened',
+        ].join(' '),
       )
     })
   })
@@ -144,9 +160,11 @@ describe('audit', function() {
     it(`reads ${row.reading} as a report or as none of one`, function() {
       assert.equal(
         reported(reading(row.reading)), row.report,
-        'a reading npm printed in place of a report is judged as one, or a ' +
-          'report is not read as one, so a tally nobody has stands for the ' +
+        [
+          'a reading npm printed in place of a report is judged as one, or a',
+          'report is not read as one, so a tally nobody has stands for the',
           'whole verdict',
+        ].join(' '),
       )
     })
   })
@@ -154,9 +172,11 @@ describe('audit', function() {
     it(`tells whether ${row.reading} left the registry to blame`, function() {
       assert.equal(
         unanswered(reading(row.reading)), row.silent,
-        'a verdict cannot tell a finding the nightly must redden on from an ' +
-          'outage it must ask again about, so one of the two is answered as ' +
+        [
+          'a verdict cannot tell a finding the nightly must redden on from an',
+          'outage it must ask again about, so one of the two is answered as',
           'the other',
+        ].join(' '),
       )
     })
   })
@@ -164,27 +184,33 @@ describe('audit', function() {
     assert.deepEqual(
       allFilesFrom(READINGS).map((one) => path.basename(one, '.json')).sort(),
       CASES.map((row) => row.reading).sort(),
-      'a reading stands beside this table with no row asking anything of it, ' +
-        'or a row names one the tree has stopped holding, so what npm can ' +
+      [
+        'a reading stands beside this table with no row asking anything of it,',
+        'or a row names one the tree has stopped holding, so what npm can',
         'print and what this suite judges are two lists',
+      ].join(' '),
     )
   })
   it('judges the audit through the script the workflow calls', function() {
     assert.ok(
       AUDITING.includes('node scripts/audit.js'),
-      'the nightly step reads a bare npm audit exit code rather than going ' +
-        'through scripts/audit.js, so a registry outage and an advisory are ' +
+      [
+        'the nightly step reads a bare npm audit exit code rather than going',
+        'through scripts/audit.js, so a registry outage and an advisory are',
         'one status to it again',
+      ].join(' '),
     )
   })
   it('tests the status this script leaves for an unanswered registry',
     function() {
       assert.ok(
         new RegExp(`-(?:eq|ne) ${UNANSWERED}\\b`).test(AUDITING),
-        'the nightly step weighs the audit status against a number other ' +
-          'than the one this script leaves for a registry that did not ' +
-          'answer, so either an outage reddens the night or an unaudited ' +
+        [
+          'the nightly step weighs the audit status against a number other',
+          'than the one this script leaves for a registry that did not',
+          'answer, so either an outage reddens the night or an unaudited',
           'tree passes for an audited one',
+        ].join(' '),
       )
     })
   it('leaves no step judging npm audit by its own exit code', function() {
@@ -192,9 +218,11 @@ describe('audit', function() {
       yaml.parsedFromFile(WORKFLOW).jobs.audit.steps
         .filter((step) => step.run === 'npm audit'),
       [],
-      'the audit job runs npm audit as the whole of its own judgement, and ' +
-        'that exits 1 on a registry 503 as readily as on an advisory, which ' +
+      [
+        'the audit job runs npm audit as the whole of its own judgement, and',
+        'that exits 1 on a registry 503 as readily as on an advisory, which',
         'is what left a nightly failure saying nothing actionable',
+      ].join(' '),
     )
   })
 })

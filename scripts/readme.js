@@ -146,11 +146,15 @@ const wrong = function(readme) {
  * @return {string} - What to say of it
  */
 const said = function(one) {
-  let sentence = `${one.figure.what} reads ${spelled(one.figure.reads)} ` +
-    `where the README says ${one.stated}`
+  let sentence = [
+    `${one.figure.what} reads ${spelled(one.figure.reads)}`,
+    `where the README says ${one.stated}`,
+  ].join(' ')
   if (one.stated === undefined) {
-    sentence = `${one.figure.what} reads ${spelled(one.figure.reads)} and ` +
-      'the README no longer holds the sentence stating it'
+    sentence = [
+      `${one.figure.what} reads ${spelled(one.figure.reads)} and`,
+      'the README no longer holds the sentence stating it',
+    ].join(' ')
   }
   return sentence
 }
@@ -164,8 +168,10 @@ const said = function(one) {
 const verdict = function(readme) {
   let sentence = ''
   if (wrong(readme).length > 0) {
-    sentence = 'the README states a figure the tree does not read, so run ' +
-      `npx grunt readme and commit it: ${wrong(readme).map(said).join('; ')}`
+    sentence = [
+      'the README states a figure the tree does not read, so run',
+      `npx grunt readme and commit it: ${wrong(readme).map(said).join('; ')}`,
+    ].join(' ')
   }
   return sentence
 }
@@ -197,8 +203,10 @@ const rendered = function(readme) {
 const generate = function(file) {
   const before = fs.readFileSync(file, 'utf-8')
   fs.writeFileSync(file, rendered(before))
-  return `${path.basename(file)}: ${FIGURES.length} figures read off the ` +
-    `tree, ${wrong(before).length} of them restated`
+  return [
+    `${path.basename(file)}: ${FIGURES.length} figures read off the`,
+    `tree, ${wrong(before).length} of them restated`,
+  ].join(' ')
 }
 
 module.exports = {FIGURES, NAMED, README, generate, rendered, spelled, verdict}

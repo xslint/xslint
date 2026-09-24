@@ -49,9 +49,11 @@ const verdict = function(name, spent, budget) {
   if (spent > budget) {
     said = `linting ${name} took ${spent}ms, past its ${budget}ms budget`
   } else if (spent >= FLOOR && budget > SLACK * spent) {
-    said = `linting ${name} took ${spent}ms where its budget allows ` +
-      `${budget}ms, which is over ${SLACK} times the run: the budget has ` +
-      `stopped being a bar and wants re-cutting from a measurement`
+    said = [
+      `linting ${name} took ${spent}ms where its budget allows`,
+      `${budget}ms, which is over ${SLACK} times the run: the budget has`,
+      `stopped being a bar and wants re-cutting from a measurement`,
+    ].join(' ')
   }
   return said
 }

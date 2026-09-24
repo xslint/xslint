@@ -71,9 +71,11 @@ describe('eslint-config', function() {
   it('bans starting a process anywhere in the sources', async function() {
     assert.ok(
       spawning(await configured()),
-      'nothing in eslint.config.mjs bans starting a child process, so the ' +
-        'next one to ask git about a path spends a fork per entry and says ' +
+      [
+        'nothing in eslint.config.mjs bans starting a child process, so the',
+        'next one to ask git about a path spends a fork per entry and says',
         'nothing at all where git is absent (#929)',
+      ].join(' '),
     )
   })
   it('holds every source file to that ban but the one that starts one',
@@ -96,10 +98,12 @@ describe('eslint-config', function() {
       assert.deepEqual(
         loose,
         [],
-        'a source file falls outside the spawn ban, so the next git call ' +
-          'written there is reported by nothing — which is what a whole ' +
-          'block ignoring one file does to every selector that block ' +
+        [
+          'a source file falls outside the spawn ban, so the next git call',
+          'written there is reported by nothing — which is what a whole',
+          'block ignoring one file does to every selector that block',
           'carries (#929)',
+        ].join(' '),
       )
     })
   it('exempts from it no file that starts no process', async function() {
@@ -107,9 +111,11 @@ describe('eslint-config', function() {
     assert.deepEqual(
       SPAWNING.filter((named) => !restricts(named, ban)),
       [],
-      'a file exempted from the spawn ban starts no process, so the ' +
-        'exemption in eslint.config.mjs stands over nothing and the next ' +
+      [
+        'a file exempted from the spawn ban starts no process, so the',
+        'exemption in eslint.config.mjs stands over nothing and the next',
         'file to take that name inherits it (#929)',
+      ].join(' '),
     )
   })
 })

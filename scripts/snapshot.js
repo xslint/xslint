@@ -40,8 +40,10 @@ const within = function(root, file) {
  */
 const lined = function(root, reported) {
   return reported.map((defect) => {
-    let said = `${within(root, defect.file)}:${defect.line}:` +
-      `${defect.column} ${defect.rule}`
+    let said = [
+      `${within(root, defect.file)}:${defect.line}:`,
+      `${defect.column} ${defect.rule}`,
+    ].join('')
     if (defect.fix) {
       let tier = 'fix'
       if (defect.fix.suggestion) {
@@ -120,9 +122,11 @@ const counted = function(amount) {
 const verdict = function(name, expected, reading) {
   let said = ''
   if (reading.join('\n') !== expected.join('\n')) {
-    said = `linting ${name} no longer draws what its snapshot holds, ` +
-      `${counted(reading.length)} against ${expected.length}, so regenerate ` +
-      `it once the change is meant: ${some(parted(expected, reading))}`
+    said = [
+      `linting ${name} no longer draws what its snapshot holds,`,
+      `${counted(reading.length)} against ${expected.length}, so regenerate`,
+      `it once the change is meant: ${some(parted(expected, reading))}`,
+    ].join(' ')
   }
   return said
 }

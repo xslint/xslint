@@ -37,9 +37,11 @@ describe('tree', function() {
       Array.from(SHEET.getElementsByTagNameNS(XSLT, '*')).map(
         (one) => one.localName,
       ),
-      'the walk writes the every-element bucket of a namespace under a key ' +
-        'EVERY does not spell, so the two have to agree by hand and the ' +
+      [
+        'the walk writes the every-element bucket of a namespace under a key',
+        'EVERY does not spell, so the two have to agree by hand and the',
         'wildcard a split reads back finds nothing (#893)',
+      ].join(' '),
     )
   })
 })

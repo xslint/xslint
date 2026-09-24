@@ -212,6 +212,7 @@ export default defineConfig([
       "local/no-missing-arguments": "error",
       "local/no-multiple-returns": "error",
       "local/no-orphan-docblock": "error",
+      "local/no-wrapped-concatenation": "error",
       "local/no-sprawling-docblock":
         ["error", { description: 5, tag: 3 }],
       "valid-jsdoc": "off",
@@ -226,11 +227,6 @@ export default defineConfig([
         ignoreStrings: true,
         ignoreTemplateLiterals: true,
         ignoreRegExpLiterals: true
-      }],
-      "max-lines": ["error", {
-        max: 1000,
-        skipBlankLines: false,
-        skipComments: false
       }],
       "jsdoc/no-undefined-types": [
         "error",
@@ -322,6 +318,17 @@ export default defineConfig([
   {
     files: ["**/*.mjs"],
     languageOptions: { sourceType: "module" }
+  },
+  {
+    files: ["**/*.js", "**/*.mjs"],
+    ignores: ["test/**"],
+    rules: {
+      "max-lines": ["error", {
+        max: 1000,
+        skipBlankLines: false,
+        skipComments: false
+      }]
+    }
   },
   {
     files: SPRAWLING,

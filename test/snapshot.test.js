@@ -113,42 +113,52 @@ const CASES = [
     name: 'reports a defect the run draws and the snapshot does not',
     expected: ['a.xsl:1:1 short-names'],
     reading: ['a.xsl:1:1 short-names', 'b.xsl:2:2 long-names'],
-    said: 'linting docbook no longer draws what its snapshot holds, 2 ' +
-      'defects against 1, so regenerate it once the change is meant: ' +
+    said: [
+      'linting docbook no longer draws what its snapshot holds, 2',
+      'defects against 1, so regenerate it once the change is meant:',
       '+b.xsl:2:2 long-names',
+    ].join(' '),
   },
   {
     name: 'reports a defect the snapshot holds and the run no longer draws',
     expected: ['a.xsl:1:1 short-names', 'b.xsl:2:2 long-names'],
     reading: ['a.xsl:1:1 short-names'],
-    said: 'linting docbook no longer draws what its snapshot holds, 1 ' +
-      'defect against 2, so regenerate it once the change is meant: ' +
+    said: [
+      'linting docbook no longer draws what its snapshot holds, 1',
+      'defect against 2, so regenerate it once the change is meant:',
       '-b.xsl:2:2 long-names',
+    ].join(' '),
   },
   {
     name: 'reports a fix whose replacement has changed under it',
     expected: ['a.xsl:1:1 count-compared-to-zero fix "not(a)"'],
     reading: ['a.xsl:1:1 count-compared-to-zero fix "empty(a)"'],
-    said: 'linting docbook no longer draws what its snapshot holds, 1 ' +
-      'defect against 1, so regenerate it once the change is meant: ' +
-      '+a.xsl:1:1 count-compared-to-zero fix "empty(a)", ' +
+    said: [
+      'linting docbook no longer draws what its snapshot holds, 1',
+      'defect against 1, so regenerate it once the change is meant:',
+      '+a.xsl:1:1 count-compared-to-zero fix "empty(a)",',
       '-a.xsl:1:1 count-compared-to-zero fix "not(a)"',
+    ].join(' '),
   },
   {
     name: 'reports a run repeating a line its snapshot holds once',
     expected: ['a.xsl:1:1 short-names'],
     reading: ['a.xsl:1:1 short-names', 'a.xsl:1:1 short-names'],
-    said: 'linting docbook no longer draws what its snapshot holds, 2 ' +
-      'defects against 1, so regenerate it once the change is meant: ' +
+    said: [
+      'linting docbook no longer draws what its snapshot holds, 2',
+      'defects against 1, so regenerate it once the change is meant:',
       'nothing but the order the lines stand in, or how often one repeats',
+    ].join(' '),
   },
   {
     name: 'reports a run drawing the same lines in another order',
     expected: ['a.xsl:1:1 short-names', 'b.xsl:2:2 long-names'],
     reading: ['b.xsl:2:2 long-names', 'a.xsl:1:1 short-names'],
-    said: 'linting docbook no longer draws what its snapshot holds, 2 ' +
-      'defects against 2, so regenerate it once the change is meant: ' +
+    said: [
+      'linting docbook no longer draws what its snapshot holds, 2',
+      'defects against 2, so regenerate it once the change is meant:',
       'nothing but the order the lines stand in, or how often one repeats',
+    ].join(' '),
   },
 ]
 
@@ -180,8 +190,10 @@ const REFUSED = {
   'duplicate-param-name':
     'XTSE0580, two parameters of one template sharing a name',
   'function-use-in-xslt-1':
-    'an xsl:function in a sheet whose declared version has none, which a ' +
+    [
+      'an xsl:function in a sheet whose declared version has none, which a',
       'conformant processor of that version rejects',
+    ].join(' '),
 }
 
 /**
@@ -209,8 +221,10 @@ describe('snapshot', function() {
       assert.deepEqual(
         lined(row.root, [row.reported]),
         [row.said],
-        'a snapshot line does not say where a defect stands, what found it, ' +
+        [
+          'a snapshot line does not say where a defect stands, what found it,',
           'or what its fix would write',
+        ].join(' '),
       )
     })
   })
@@ -219,8 +233,10 @@ describe('snapshot', function() {
       assert.equal(
         verdict('docbook', row.expected, row.reading),
         row.said,
-        'a snapshot verdict does not say what a corpus has stopped drawing, ' +
+        [
+          'a snapshot verdict does not say what a corpus has stopped drawing,',
           'or says it of a run that drew exactly what was committed',
+        ].join(' '),
       )
     })
   })
@@ -231,16 +247,20 @@ describe('snapshot', function() {
           {length: SHOWN + 2}, (whole, at) => `a.xsl:${at}:1 short-names`,
         ),
       ).endsWith(`a.xsl:${SHOWN - 1}:1 short-names, and 2 more`),
-      'a verdict names every difference it found, so a check whose scope ' +
+      [
+        'a verdict names every difference it found, so a check whose scope',
         'widened writes an annotation nobody can read',
+      ].join(' '),
     )
   })
   CORPORA.forEach((one) => {
     it(`holds a committed snapshot of what ${one.name} draws`, function() {
       assert.ok(
         fs.existsSync(path.join(SNAPSHOTS, `${one.name}.txt`)),
-        'a corpus the nightly tier lints has no committed snapshot, so ' +
+        [
+          'a corpus the nightly tier lints has no committed snapshot, so',
           'nothing notices when a check changes what it reports over it',
+        ].join(' '),
       )
     })
   })
@@ -250,8 +270,10 @@ describe('snapshot', function() {
         (name) => !CORPORA.some((one) => `${one.name}.txt` === name),
       ),
       [],
-      'a snapshot stands under test/resources/corpora that no corpus of the ' +
+      [
+        'a snapshot stands under test/resources/corpora that no corpus of the',
         'nightly tier is read against, so nothing regenerates it',
+      ].join(' '),
     )
   })
   it('grades an error only where a processor refuses the file too', function() {
@@ -260,16 +282,20 @@ describe('snapshot', function() {
         new Set(CORPORA.flatMap((one) => erring(one.name))),
       ).sort(),
       Object.keys(REFUSED).sort(),
-      'the error-graded checks the corpora draw are not the ones REFUSED ' +
-        'names, so either a build stops over a stylesheet no processor ' +
+      [
+        'the error-graded checks the corpora draw are not the ones REFUSED',
+        'names, so either a build stops over a stylesheet no processor',
         'faults or an entry has outlived what justified it',
+      ].join(' '),
     )
   })
   it('diffs each corpus through the script the workflow calls', function() {
     assert.ok(
       fs.readFileSync(WORKFLOW, 'utf-8').includes('node scripts/snapshot.js'),
-      'the nightly step judges what a corpus drew on its own rather than ' +
+      [
+        'the nightly step judges what a corpus drew on its own rather than',
         'through scripts/snapshot.js, so the diff it holds is bypassed',
+      ].join(' '),
     )
   })
 })

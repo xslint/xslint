@@ -157,11 +157,13 @@ const escapedProperty = function(data) {
 const github = function(defects) {
   for (const defect of defects) {
     console.log(
-      `::${LEVEL[defect.severity]} ` +
-      `file=${escapedProperty(located(defect.file))},` +
-      `line=${defect.line},col=${defect.pos},` +
-      `title=${escapedProperty(defect.name)}` +
-      `::${escapedData(defect.message)}`,
+      [
+        `::${LEVEL[defect.severity]} `,
+        `file=${escapedProperty(located(defect.file))},`,
+        `line=${defect.line},col=${defect.pos},`,
+        `title=${escapedProperty(defect.name)}`,
+        `::${escapedData(defect.message)}`,
+      ].join(''),
     )
   }
 }
