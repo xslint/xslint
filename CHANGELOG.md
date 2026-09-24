@@ -16,6 +16,19 @@ publication date only; detailed notes begin with the Unreleased section.
   now judged only when the run ran every check it names, or every check there
   is for one naming none (#1049).
 
+- Leave out what `use-when="false()"` removes. Every check judged the
+  stylesheet as written, so an element a processor never compiles drew
+  defects of its own, as `empty-choose` did on an excluded `xsl:choose`, and
+  a parent missing it was judged as if it held it, so a `choose` whose only
+  `when` is excluded went unreported though Saxon refuses it. Such an element
+  is now dropped with everything under it before any check runs, in the plain,
+  namespaced and shadow spellings, wherever the version in force reads the
+  attribute: 2.0 and later for the plain one, 3.0 and later for a shadow, so
+  a 1.0 sheet is still judged whole. A condition other than the literal is left
+  to the processor. Two reports follow from it: a disable directive inside a
+  dropped element is now unused, and a declaration only dropped code refers to
+  is now unused too (#1048).
+
 - Read the entities an external parameter entity brings in. A stylesheet
   that takes its entity declarations from a file named by
   `<!ENTITY % name SYSTEM "file">`, as DocBook-XSL's index stylesheets take
