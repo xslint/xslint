@@ -1,0 +1,60 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: empty-choose
+found:
+  amount: 2
+  positions: [ [ 41, 5 ], [ 46, 5 ] ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="3.0" id="style1">
+    <xsl:output encoding="UTF-8" method="xml"/>
+    <xsl:template match="/objects">
+      <xsl:choose use-when="false()">
+        <xsl:otherwise>
+          <p>a</p>
+        </xsl:otherwise>
+      </xsl:choose>
+      <xsl:choose _use-when="{'false()'}">
+        <xsl:otherwise>
+          <p>b</p>
+        </xsl:otherwise>
+      </xsl:choose>
+      <xsl:choose use-when=" false ( ) ">
+        <xsl:otherwise>
+          <p>c</p>
+        </xsl:otherwise>
+      </xsl:choose>
+      <box xsl:use-when="false()">
+        <xsl:choose>
+          <xsl:otherwise>
+            <p>d</p>
+          </xsl:otherwise>
+        </xsl:choose>
+      </box>
+      <box xsl:_use-when="{'false()'}">
+        <xsl:choose>
+          <xsl:otherwise>
+            <p>dd</p>
+          </xsl:otherwise>
+        </xsl:choose>
+      </box>
+      <xsl:if test="@b" use-when="false()">
+        <xsl:choose>
+          <xsl:otherwise>
+            <p>e</p>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:if>
+      <xsl:choose use-when="true()">
+        <xsl:otherwise>
+          <p>f</p>
+        </xsl:otherwise>
+      </xsl:choose>
+      <xsl:choose use-when="false() or system-property('xsl:version') = '3.0'">
+        <xsl:otherwise>
+          <p>g</p>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:template>
+  </xsl:stylesheet>

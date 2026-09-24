@@ -290,7 +290,8 @@ export default defineConfig([
     }
   },
   {
-    files: ["src/attributes.js", "src/xsl-version.js"],
+    files: ["src/attributes.js", "src/xsl-version.js",
+      "src/validators/xsl-validator.js"],
     rules: {
       "no-restricted-syntax":
         ["error", ...RESTRICTED, STAGED, OPAQUE, TRIVIA, PAIRED, CLASSED,

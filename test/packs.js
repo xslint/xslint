@@ -22,7 +22,8 @@
  * asks nothing reads exactly like one where everything is covered.
  */
 
-const {allFilesFrom, xml, yaml} = require('../src/helpers')
+const {allFilesFrom, yaml} = require('../src/helpers')
+const {validate} = require('../src/validators/xsl-validator')
 const {kinds} = require('../src/resources/checks.json')
 const path = require('path')
 const assert = require('assert')
@@ -44,7 +45,8 @@ const graded = function(name) {
 /**
  * The corpus a pack stands for: one `test.xsl` where it gives an `input`, or a
  * `file<index>.xsl` for each entry where it gives `inputs` and the check it is
- * about reads across files.
+ * about reads across files — built by the validator a run builds one with, so
+ * a pack reads each stylesheet as a processor compiles it (#1048).
  * @param {object} yml - The parsed pack
  * @return {Array.<{file: string, content: string, xsl: Document}>} - The corpus
  */
@@ -53,11 +55,10 @@ const corpusOf = function(yml) {
   if (yml.inputs) {
     held = yml.inputs.map((input) => ({content: input}))
   }
-  return held.map((one, index) => ({
+  return validate(held.map((one, index) => ({
     file: `file${index}.xsl`,
     content: one.content,
-    xsl: xml.parsedFromString(one.content),
-  }))
+  }))).corpus
 }
 
 /**
