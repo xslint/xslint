@@ -70,8 +70,8 @@ const STRINGS = [
  * Classify a `string-length(...)`-versus-`0`/`1` comparison for
  * `comparedToZero`, rewritten where the argument can stand as an operand and
  * report-only otherwise (#578), in the class it was handed (#763). An
- * emptiness test compares `string(argument)`, which an absent node answers
- * with `''` where a bare `@x = ''` answers false (#1002).
+ * emptiness test compares `string(argument)`, bracketing any argument, which
+ * an absent node answers with `''` where `@x = ''` answers false (#1002).
  * @param {{node: Node, expression: string, pattern: boolean}} found - Record
  * @param {{operator: string, zero: string, worded: boolean}} comparison - The
  *  operator, in the forward direction and spelled with symbols, the digit
@@ -101,6 +101,7 @@ const decide = function(found, {operator, zero, worded}, args) {
       !STRINGS.some((name) => calls(found, args[0], name))
     ) {
       argument = `string(${argument})`
+      carries = true
     }
     let replacement = null
     if (carries) {

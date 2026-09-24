@@ -53,8 +53,9 @@ left alone. So is a call spelling two arguments, since no such function takes
 any.
 
 Where the argument binds at least as loosely as the comparison it would move
-into, the rewrite cannot be written without brackets and the comparison is
-reported on its own: `string-length(@a or @b) > 0` would become
+into, a non-emptiness rewrite cannot be written without brackets and the
+comparison is reported on its own — an emptiness rewrite already brackets it in
+`string(...)`: `string-length(@a or @b) > 0` would become
 `@a or @b != ''`, which XPath reads as `@a or (@b != '')`, and
 `string-length(@a = @b) > 0` would chain two comparisons, which no version
 admits. Everything binding tighter carries over as it stands, a union

@@ -6,7 +6,8 @@ pack: string-length-compared-to-zero
 # reading only the general comparison never saw (#763). The rewrite keeps the
 # family it was given — an author who compares values gets `eq`/`ne` back, not
 # the general `=` they did not write — and the argument that binds too loosely
-# to stand there is reported without one, exactly as in the symbol spelling.
+# to stand there is reported without one when the test is for a non-empty
+# value, exactly as in the symbol spelling.
 found:
   amount: 6
   positions:
@@ -25,7 +26,7 @@ input: |-
         <xsl:value-of select="row[0 lt string-length(@b)]"/>
         <xsl:value-of select="string-length(@c) ne 0 or string-length(@d) le 0 or 1 le string-length(@e)"/>
         <xsl:value-of select="string-length(@f) gt 1"/>
-        <xsl:value-of select="string-length(@g or @h) eq 0"/>
+        <xsl:value-of select="string-length(@g or @h) ne 0"/>
       </xsl:if>
     </xsl:template>
   </xsl:stylesheet>
