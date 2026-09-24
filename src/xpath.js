@@ -50,7 +50,6 @@
 
 const {
   evaluateXPath, evaluateXPathToBoolean, evaluateXPathToNodes,
-  evaluateXPathToStrings,
   compileXPathToJavaScript, registerCustomXPathFunction,
 } = require('fontoxpath')
 const {attributeOf} = require('./expressions')
@@ -152,18 +151,6 @@ const nodes = function(xsl, xpath) {
 }
 
 /**
- * String values matching given Xpath on given XSL.
- * @param {Document} xsl - XSL document parsed as {@link Document}
- * @param {string} xpath - Xpath
- * @return {Array.<string>} - Matching string values
- */
-const strings = function(xsl, xpath) {
-  return evaluateXPathToStrings(
-    xpath, xsl, null, {}, {namespaceResolver: resolvePrefix},
-  )
-}
-
-/**
  * A thrown compile failure that carries a W3C error code, as opposed to a
  * parse failure. The engine reports a syntax error as "<position>: <source>",
  * but a static or type error as a QName-shaped code such as XPTY0004 or
@@ -218,6 +205,5 @@ module.exports = {
   PREFIXES,
   nodes,
   satisfies,
-  strings,
   compiles,
 }

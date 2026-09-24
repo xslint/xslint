@@ -1035,7 +1035,7 @@ one of them.
 | `src/linters/*-linter.js` | Code-based `checks/format/*.yaml`, one construct each (axis, namespace, count, name, ...); see the flow diagram |
 | `src/checks.js` | Shared for code-based linters: `metaOf`, `suppressed`, `defect`, `rawly` |
 | `src/source.js` | Raw-text walking shared by `checks` and `fixer`: `parted`, `offsetAt`, `placeAt`, `character`, `skip` |
-| `src/selectors.js` | `splitOf` — a declarative selector parted into the names a shared walk can serve as its axis and the tail the engine must answer; `chosen`, `valued` |
+| `src/selectors.js` | `splitOf` — a declarative selector parted into the names a shared walk can serve as its axis and the tail the engine must answer; `chosen` |
 | `src/predicates.js` | `predicateOf` — what one predicate of a served selector answers of a candidate, off the walk rather than the engine, or nothing where the engine must answer it |
 | `src/attributes.js` | `expressionsOf` — every expression a stylesheet carries; `PATTERNS`, and `whole` for a linter that narrows to one attribute |
 | `src/xsl-version.js` | `versionOf`, `numbered` and `since` — the version in force at a node, as text and as the number a declarative floor compares, and a lower-bound gate over it |
@@ -1051,7 +1051,7 @@ one of them.
 | `src/fixers.js` | Maps a declarative check name to a `node => fix` builder |
 | `src/fixes.js` | Shared fix builders reading the raw source: `deletion`, `substitution`, `excision`, `standsAt` |
 | `src/fixer.js` | Applies a defect's `fix` to source (decode-walk, verify-before-apply, end-to-start) |
-| `src/xpath.js` | The fontoxpath environment, and what we add to it: `PREFIXES`, the two evaluators, `satisfies`, `compiles`, and the three functions a selector of ours reaches for, `xslint:normalize-space`, `xslint:version` and `xslint:attribute` |
+| `src/xpath.js` | The fontoxpath environment, and what we add to it: `PREFIXES`, the evaluator, `satisfies`, `compiles`, and the three functions a selector of ours reaches for, `xslint:normalize-space`, `xslint:version` and `xslint:attribute` |
 | `src/helpers.js` | XML parsing (expands internal-subset entities), YAML parsing, `slashed`, and file recursion that opens no `.git` and no `node_modules` |
 | `src/resources/checks.json` | Every check as a run reads it, built from the YAML; never edited by hand |
 | `src/logger.js` | 4-level logger |

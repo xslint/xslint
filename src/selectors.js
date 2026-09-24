@@ -4,7 +4,7 @@
  */
 
 const {GAP, WHITESPACE} = require('./tokens')
-const {PREFIXES, nodes, satisfies, strings} = require('./xpath')
+const {PREFIXES, nodes, satisfies} = require('./xpath')
 const {EVERY, attributed, named, ranked} = require('./tree')
 const {parsed} = require('./grammar')
 const {ASSUMED, filters} = require('./syntax')
@@ -787,32 +787,9 @@ const chosen = function(xsl, xpath) {
   return found
 }
 
-/**
- * The string values a selector chooses, served the way `chosen` is wherever
- * every axis it opens with carries an **attribute**, whose string value is the
- * value it holds. An element's is the text of everything below it, which no
- * usage selector asks for, so the engine keeps that question; a union of
- * attribute axes is served arm by arm and merged by rank (#811, #851).
- * @param {Document} xsl - Parsed stylesheet
- * @param {string} xpath - The selector a declarative check is written in
- * @return {Array.<string>} - The values it selects, in document order
- */
-const valued = function(xsl, xpath) {
-  const branches = splitOf(xpath)
-  let found
-  if (branches.length > 0 &&
-    branches.every((one) => one.attributes.length > 0)) {
-    found = chosen(xsl, xpath).map((node) => node.value)
-  } else {
-    found = strings(xsl, xpath)
-  }
-  return found
-}
-
 module.exports = {
   answered,
   chosen,
   weighed,
-  valued,
   splitOf,
 }
