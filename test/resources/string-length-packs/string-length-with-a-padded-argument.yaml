@@ -7,7 +7,7 @@ pack: string-length-compared-to-zero
 found:
   amount: 4
   positions: [ [ 4, 36 ], [ 5, 36 ], [ 6, 36 ], [ 7, 36 ] ]
-  fixes: [ "@x = ''", "$v != ''", "@y = ''", "x[@y] != ''" ]
+  fixes: [ "string(@x) = ''", "$v != ''", "string(@y) = ''", "x[@y] != ''" ]
 input: |-
   <?xml version="1.0"?>
   <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="s">

@@ -84,12 +84,11 @@
  * which wants a check of its own rather than the wrong half of this one.
  */
 
-const {expressionsOf, whole} = require('../attributes')
-const {gathered, isValid} = require('../syntax')
 const {metaOf, suppressed} = require('../checks')
 const {substitution} = require('../fixes')
 const {WHITESPACE} = require('../tokens')
-const {holding, named} = require('../tree')
+const {named} = require('../tree')
+const {roots} = require('../roots')
 const {XSLT} = require('../xsl-version')
 const {logger} = require('../logger')
 
@@ -117,12 +116,6 @@ const names = [SILENT, MISLABELLED]
  * @type {{[check: string]: {severity: string, message: string}}}
  */
 const META = {[SILENT]: metaOf(SILENT), [MISLABELLED]: metaOf(MISLABELLED)}
-
-/**
- * The attribute holding the pattern a template is selected by.
- * @type {string}
- */
-const MATCH = 'match'
 
 /**
  * The attribute naming an `xsl:output` a secondary result asks for.
@@ -165,40 +158,6 @@ const DIVERTED = [
   'param', 'processing-instruction', 'result-document', 'variable',
   'with-param',
 ]
-
-/**
- * Whether the pattern matches the root of the document. A pattern is a union
- * of branches and the root is the branch holding no step at all — the whole of
- * `match="/"`, and one arm of `match="/ | alpha"`. A `starts-with(@match,
- * '/')` was the question before, and every absolute pattern begins that way,
- * so `match="/alpha"` was read as the root template.
- * @param {{node: Node, expression: string, pattern: boolean}} found - The
- *  pattern, whole, as `expressionsOf` yields it
- * @return {boolean} - True when the root is one of the nodes it matches
- */
-const rooted = function(found) {
-  return gathered(found, ['branch']).some(
-    (branch) => branch.children.length === 0,
-  )
-}
-
-/**
- * Every template of the stylesheet whose pattern matches the root. A pattern
- * the grammar refuses is passed over: what it would match cannot be read, and
- * the same run already reports it as invalid.
- * @param {Document} xsl - XSL document parsed as {@link Document}
- * @return {Array.<Element>} - The root templates found
- */
-const roots = function(xsl) {
-  return expressionsOf(xsl)
-    .filter(
-      (found) => whole(found, MATCH) &&
-        holding(found.node).localName === ELEMENTS.template &&
-        holding(found.node).namespaceURI === XSLT &&
-        isValid(found) && rooted(found),
-    )
-    .map((found) => holding(found.node))
-}
 
 /**
  * Every `xsl:template` of the stylesheet, off the shared walk, since the

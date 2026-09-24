@@ -1,0 +1,45 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: not-creating-attribute-correctly
+# Quiet on every value reading a variable, a sibling in front of it being out
+# of scope on the start tag the inline form writes (#1005), a text value
+# template and a nested sequence constructor among them; the one reading no
+# variable and the one reading a global are still reported.
+found:
+  amount: 2
+  positions: [ [ 25, 7 ], [ 28, 7 ] ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="3.0" id="style1">
+    <xsl:output encoding="UTF-8" method="xml"/>
+    <xsl:param name="font" select="'Times'"/>
+    <xsl:template match="/objects/o">
+      <column>
+        <xsl:variable name="width" select="@w"/>
+        <xsl:attribute name="column-width">
+          <xsl:value-of select="$width"/>
+        </xsl:attribute>
+        <xsl:attribute name="padding">
+          <xsl:value-of select="concat('0 ', string($width * 2), 'pt')"/>
+        </xsl:attribute>
+        <xsl:attribute name="border" select="if ($width) then 'thin' else 'none'"/>
+        <xsl:attribute name="margin" _select="{'$width'}"/>
+        <xsl:attribute name="height" expand-text="yes">{$width}</xsl:attribute>
+        <xsl:attribute name="depth" expand-text="yes">
+          <xsl:text>{$width}</xsl:text>
+        </xsl:attribute>
+        <xsl:attribute name="indent">
+          <xsl:value-of>
+            <xsl:sequence select="$width"/>
+          </xsl:value-of>
+        </xsl:attribute>
+        <xsl:attribute name="align">
+          <xsl:value-of select="@align"/>
+        </xsl:attribute>
+        <xsl:attribute name="font-family">
+          <xsl:value-of select="$font"/>
+        </xsl:attribute>
+      </column>
+    </xsl:template>
+  </xsl:stylesheet>

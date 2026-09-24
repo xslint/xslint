@@ -5,7 +5,7 @@
 -->
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
   <xsl:template match="/">
-    <xsl:if test="@name eq ''">
+    <xsl:if test="string(@name) eq ''">
       <xsl:value-of select="@title ne ''"/>
       <xsl:value-of select="@note ne ''"/>
     </xsl:if>

@@ -1,0 +1,25 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: not-using-output
+found:
+  amount: 1
+  positions: [ [ 0, 2, 1 ] ]
+  fixes: [ null ]
+inputs:
+  - |-
+    <?xml version="1.0"?>
+    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="3.0" id="style1">
+      <xsl:import href="file1.xsl"/>
+      <xsl:output name="feed" method="xml"/>
+      <xsl:template match="/">
+        <xsl:result-document href="feed.xml" format="feed">
+          <feed/>
+        </xsl:result-document>
+      </xsl:template>
+    </xsl:stylesheet>
+  - |-
+    <?xml version="1.0"?>
+    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="3.0" id="style2">
+      <xsl:output _name="{'atom'}" method="xml"/>
+    </xsl:stylesheet>

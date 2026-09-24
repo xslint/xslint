@@ -1,0 +1,18 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: leaking-result-namespace
+# A simplified stylesheet has no top-level data: the root is itself a literal
+# result element, so the child naming my is output, while xs and ex, named only
+# in logic, leak onto both (#1006).
+found:
+  amount: 2
+  positions: [ [ 2, 73 ], [ 2, 117 ] ]
+  fixes: [ null, null ]
+input: |-
+  <?xml version="1.0"?>
+  <out xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:my="urn:my" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ex="urn:ex" xsl:version="2.0">
+    <my:item>
+      <xsl:value-of select="ex:total(/objects/o) cast as xs:integer"/>
+    </my:item>
+  </out>

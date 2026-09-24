@@ -9,6 +9,19 @@ publication date only; detailed notes begin with the Unreleased section.
 
 ## Unreleased
 
+- Run only the checks named by `--only`, or by an `only:` list in
+  `.xslint.yml`, matched by substring as `--suppress` is. A check the run
+  suppresses or the config turns `off` stays off, and a name that also stands
+  inside a longer one no longer lets the longer check through (#1030).
+
+- Keep an absent node empty when advising the direct emptiness test.
+  `string-length-compared-to-zero` rewrote `string-length(@x) = 0` as
+  `@x = ''`, which is false where `@x` is missing while the original is true
+  there, so the suggested fix silently inverted every template guarding a
+  missing attribute. The empty direction now reads `string(@x) = ''` (or
+  `eq ''` for a value comparison), exact on an absent node and on the first
+  node XPath 1.0 measures; the non-empty `@x != ''` is unchanged (#1002).
+
 - Ask what XSLT sets as the context before advising a `self::` node test.
   `name-compared-to-string` read only the predicates inside an expression, so
   under `xsl:for-each select="@*"`, `match="@*"` or a processing-instruction

@@ -3,15 +3,15 @@
 ---
 pack: not-using-output
 found:
-  amount: 2
-  positions: [ [ 0, 2, 1 ], [ 1, 2, 1 ] ]
-  fixes: [ null, null ]
+  amount: 1
+  positions: [ [ 0, 2, 1 ] ]
+  fixes: [ null ]
 inputs:
   - |-
     <?xml version="1.0"?>
     <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="style1">
       <xsl:import href="file1.xsl"/>
-      <xsl:template match="/objects/o">
+      <xsl:template match="/">
         <lobachevsky/>
       </xsl:template>
     </xsl:stylesheet>
