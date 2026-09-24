@@ -1029,7 +1029,7 @@ one of them.
 | `src/linters/parameter-linter.js` | `unused-function-template-parameter`, over the walk rather than a substring |
 | `src/linters/element-linter.js` | `not-creating-element-correctly` |
 | `src/linters/root-template-linter.js` | `template-writes-nothing`, over every template, and `output-method-xml`, which still asks which one is the root |
-| `src/linters/output-linter.js` | `not-using-output`, asked of the import tree rather than the file, an `xsl:output` merging into whatever imports it |
+| `src/linters/output-linter.js` | `not-using-output`, asked of the import tree rather than the file and reported on the entry point alone, an `xsl:output` merging into whatever imports it |
 | `src/linters/corpus-linter.js` | Loads `checks/corpus/*.yaml`, the cross-file declarative kind |
 | `src/linters/bare-name-linter.js` | `confusing-variable-and-node` |
 | `src/linters/*-linter.js` | Code-based `checks/format/*.yaml`, one construct each (axis, namespace, count, name, ...); see the flow diagram |
@@ -1042,11 +1042,12 @@ one of them.
 | `src/tree.js` | One pass over a document, remembered against it: `walked`, `named`, `attributed`, `ranked`, `holding` |
 | `src/comparisons.js` | `comparedToZero` — the shared scan for a call compared with `0`/`1` (count, string-length) |
 | `src/booleans.js` | `coerced` and `unwrapped` — where nothing but an effective boolean value is taken, and what may stand there instead |
+| `src/roots.js` | `roots` and `entered` — the templates matching the root of the document, and whether a transformation can start at a module |
 | `src/expressions.js` | `enclosed` — the expressions an attribute value template holds in its braces; `staticOf`, what one names before a processor runs; `attributeOf`, what an attribute says in either spelling |
 | `src/tokens.js` | Positioned XPath lexer (`tokenized`, `TOKENS`), preserving whitespace; owns `GAP`, `TRIVIA`, `OPAQUE`, `NAMED`, `unquoted`, and `normalized`, the gap-collapsing XPath defines and the engine widens |
 | `src/grammar.js` | `parsed` and `matched` — the XPath 3.1 expression grammar and the pattern grammar, as recursive descent, at the version in force |
 | `src/syntax.js` | The one door between a record and its parse: `parseOf`, `isValid`, `gathered`, `textOf`, `calls`, `filters` |
-| `src/import-graph.js` | Resolves `xsl:import`/`xsl:include` hrefs: `importsOf`, `graphOf` |
+| `src/import-graph.js` | Resolves `xsl:import`/`xsl:include` hrefs, a DITA-OT `plugin:` URI among them: `importsOf`, `graphOf` |
 | `src/fixers.js` | Maps a declarative check name to a `node => fix` builder |
 | `src/fixes.js` | Shared fix builders reading the raw source: `deletion`, `substitution`, `excision`, `standsAt` |
 | `src/fixer.js` | Applies a defect's `fix` to source (decode-walk, verify-before-apply, end-to-start) |

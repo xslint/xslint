@@ -130,7 +130,6 @@ anttools/xspec/generate-xspec-tests.xsl:349:45 redundant-whitespace fix ""
 anttools/xspec/generate-xspec-tests.xsl:349:59 redundant-whitespace fix ""
 anttools/xspec/generate-xspec-tests.xsl:349:68 redundant-whitespace fix ""
 contrib/samples/assembly/assemble.xsl:2:1 missing-id-in-stylesheet
-contrib/samples/assembly/assemble.xsl:2:1 not-using-output
 contrib/samples/assembly/assemble.xsl:2:1 too-many-templates
 contrib/samples/assembly/assemble.xsl:79:25 count-compared-to-zero fix "not($id.structure)"
 contrib/samples/assembly/assemble.xsl:135:4 unused-function-template-parameter
@@ -625,7 +624,6 @@ releasetools/xslnsfiles/addns.xsl:2:1 missing-id-in-stylesheet
 releasetools/xslnsfiles/addns.xsl:4:17 redundant-namespace-declarations fix ""
 releasetools/xslnsfiles/addns.xsl:5:17 redundant-namespace-declarations fix ""
 releasetools/xslnsfiles/manpages.table.xsl:2:1 missing-id-in-stylesheet
-releasetools/xslnsfiles/manpages.table.xsl:2:1 not-using-output
 releasetools/xslnsfiles/manpages.table.xsl:2:1 too-many-templates
 releasetools/xslnsfiles/manpages.table.xsl:3:17 leaking-result-namespace suggestion "exsl d"
 releasetools/xslnsfiles/manpages.table.xsl:289:13 setting-value-of-variable-incorrectly
@@ -681,7 +679,6 @@ xsl/VERSION.xsl:2:1 missing-id-in-stylesheet
 xsl/VERSION.xsl:5:3 redundant-namespace-declarations fix ""
 xsl/VERSION.xsl:6:3 redundant-namespace-declarations fix ""
 xsl/assembly/assemble.xsl:2:1 missing-id-in-stylesheet
-xsl/assembly/assemble.xsl:2:1 not-using-output
 xsl/assembly/assemble.xsl:2:1 too-many-templates
 xsl/assembly/assemble.xsl:91:25 count-compared-to-zero fix "not($id.structure)"
 xsl/assembly/assemble.xsl:157:4 unused-function-template-parameter
@@ -709,7 +706,6 @@ xsl/assembly/assemble.xsl:530:13 use-choose-without-otherwise
 xsl/assembly/assemble.xsl:589:7 use-choose-without-otherwise
 xsl/assembly/assemble.xsl:621:21 string-length-compared-to-zero suggestion "$fileref != ''"
 xsl/assembly/effectivity.xsl:2:1 missing-id-in-stylesheet
-xsl/assembly/effectivity.xsl:2:1 not-using-output
 xsl/assembly/effectivity.xsl:55:3 oversized-template
 xsl/assembly/effectivity.xsl:58:31 string-length-compared-to-zero suggestion "$effectivity.arch != ''"
 xsl/assembly/effectivity.xsl:67:35 string-length-compared-to-zero suggestion "$effectivity.audience != ''"
@@ -884,7 +880,6 @@ xsl/common/gentext.xsl:785:5 use-single-option-for-choose
 xsl/common/gentext.xsl:805:5 use-choose-without-otherwise
 xsl/common/gentext.xsl:834:5 use-choose-without-otherwise
 xsl/common/insertfile.xsl:2:1 missing-id-in-stylesheet
-xsl/common/insertfile.xsl:2:1 not-using-output
 xsl/common/insertfile.xsl:50:35 unabbreviated-axis fix ""
 xsl/common/insertfile.xsl:75:13 unabbreviated-axis fix ""
 xsl/common/insertfile.xsl:76:13 unabbreviated-axis fix ""
@@ -1384,10 +1379,8 @@ xsl/fo/admon.xsl:86:42 unabbreviated-axis fix ""
 xsl/fo/annotations.xsl:2:1 missing-id-in-stylesheet
 xsl/fo/annotations.xsl:5:3 redundant-namespace-declarations fix ""
 xsl/fo/autoidx-kimber.xsl:11:1 missing-id-in-stylesheet
-xsl/fo/autoidx-kimber.xsl:11:1 not-using-output
 xsl/fo/autoidx-kimber.xsl:152:9 setting-value-of-variable-incorrectly
 xsl/fo/autoidx-kosek.xsl:6:1 missing-id-in-stylesheet
-xsl/fo/autoidx-kosek.xsl:6:1 not-using-output
 xsl/fo/autoidx-kosek.xsl:9:17 redundant-namespace-declarations fix ""
 xsl/fo/autoidx-kosek.xsl:10:17 redundant-namespace-declarations fix ""
 xsl/fo/autoidx-ng.xsl:2:1 missing-id-in-stylesheet
@@ -1675,7 +1668,6 @@ xsl/fo/graphics.xsl:420:7 use-choose-without-otherwise
 xsl/fo/graphics.xsl:589:3 setting-value-of-variable-incorrectly
 xsl/fo/graphics.xsl:598:31 redundant-whitespace fix ""
 xsl/fo/highlight.xsl:2:1 missing-id-in-stylesheet
-xsl/fo/highlight.xsl:2:1 not-using-output
 xsl/fo/highlight.xsl:2:1 too-many-templates
 xsl/fo/htmltbl.xsl:2:1 missing-id-in-stylesheet
 xsl/fo/htmltbl.xsl:2:1 too-many-templates
@@ -1929,7 +1921,6 @@ xsl/fo/pagesetup.xsl:3532:3 unused-function-template-parameter
 xsl/fo/pagesetup.xsl:3541:9 not-creating-attribute-correctly
 xsl/fo/pagesetup.xsl:3552:9 not-creating-attribute-correctly
 xsl/fo/passivetex.xsl:2:1 missing-id-in-stylesheet
-xsl/fo/passivetex.xsl:2:1 not-using-output
 xsl/fo/passivetex.xsl:5:3 redundant-namespace-declarations fix ""
 xsl/fo/pi.xsl:2:1 missing-id-in-stylesheet
 xsl/fo/pi.xsl:2:1 too-many-templates
@@ -2151,7 +2142,6 @@ xsl/fo/xref.xsl:1509:3 unused-function-template-parameter
 xsl/fo/xref.xsl:1516:3 unused-function-template-parameter
 xsl/fo/xref.xsl:1517:3 unused-function-template-parameter
 xsl/highlighting/common.xsl:2:1 missing-id-in-stylesheet
-xsl/highlighting/common.xsl:2:1 not-using-output
 xsl/highlighting/common.xsl:7:3 redundant-namespace-declarations fix ""
 xsl/highlighting/common.xsl:37:3 use-choose-without-otherwise
 xsl/html/admon.xsl:2:1 missing-id-in-stylesheet
@@ -2174,9 +2164,7 @@ xsl/html/annotations.xsl:30:27 scans-whole-document
 xsl/html/annotations.xsl:60:7 short-names
 xsl/html/annotations.xsl:72:7 short-names
 xsl/html/autoidx-kimber.xsl:11:1 missing-id-in-stylesheet
-xsl/html/autoidx-kimber.xsl:11:1 not-using-output
 xsl/html/autoidx-kosek.xsl:6:1 missing-id-in-stylesheet
-xsl/html/autoidx-kosek.xsl:6:1 not-using-output
 xsl/html/autoidx-ng.xsl:2:1 missing-id-in-stylesheet
 xsl/html/autoidx.xsl:6:1 missing-id-in-stylesheet
 xsl/html/autoidx.xsl:6:1 too-many-templates
@@ -2505,7 +2493,6 @@ xsl/html/graphics.xsl:1167:3 setting-value-of-variable-incorrectly
 xsl/html/graphics.xsl:1173:31 redundant-whitespace fix ""
 xsl/html/graphics.xsl:1327:3 blank-nested-if
 xsl/html/highlight.xsl:2:1 missing-id-in-stylesheet
-xsl/html/highlight.xsl:2:1 not-using-output
 xsl/html/highlight.xsl:2:1 too-many-templates
 xsl/html/html-rtf.xsl:2:1 missing-id-in-stylesheet
 xsl/html/html-rtf.xsl:2:1 too-many-templates
@@ -2646,7 +2633,6 @@ xsl/html/math.xsl:262:7 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>
 xsl/html/math.xsl:263:7 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
 xsl/html/math.xsl:264:7 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 xsl/html/oldchunker.xsl:1:1 missing-id-in-stylesheet
-xsl/html/oldchunker.xsl:1:1 not-using-output
 xsl/html/onechunk.xsl:2:1 missing-id-in-stylesheet
 xsl/html/pi.xsl:2:1 missing-id-in-stylesheet
 xsl/html/pi.xsl:2:1 too-many-templates
