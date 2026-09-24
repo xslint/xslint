@@ -1380,92 +1380,81 @@ xsl/fo/annotations.xsl:2:1 missing-id-in-stylesheet
 xsl/fo/annotations.xsl:5:3 redundant-namespace-declarations fix ""
 xsl/fo/autoidx-kimber.xsl:11:1 missing-id-in-stylesheet
 xsl/fo/autoidx-kimber.xsl:84:25 scans-whole-document
-xsl/fo/autoidx-kimber.xsl:91:34 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx-kimber.xsl:92:21 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/fo/autoidx-kimber.xsl:95:5 redundant-whitespace fix " "
-xsl/fo/autoidx-kimber.xsl:96:5 redundant-whitespace fix " "
-xsl/fo/autoidx-kimber.xsl:103:22 redundant-whitespace fix " "
-xsl/fo/autoidx-kimber.xsl:151:23 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx-kimber.xsl:152:4 string-length-compared-to-zero suggestion "string($type) = ''"
+xsl/fo/autoidx-kimber.xsl:86:21 string-length-compared-to-zero
+xsl/fo/autoidx-kimber.xsl:86:21 string-length-compared-to-zero
+xsl/fo/autoidx-kimber.xsl:148:38 string-length-compared-to-zero
+xsl/fo/autoidx-kimber.xsl:148:38 string-length-compared-to-zero
+xsl/fo/autoidx-kimber.xsl:149:52 string-length-compared-to-zero
+xsl/fo/autoidx-kimber.xsl:149:52 string-length-compared-to-zero
 xsl/fo/autoidx-kimber.xsl:152:9 setting-value-of-variable-incorrectly
-xsl/fo/autoidx-kimber.xsl:158:11 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx-kimber.xsl:158:40 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/fo/autoidx-kimber.xsl:159:37 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx-kimber.xsl:160:29 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/fo/autoidx-kimber.xsl:161:5 redundant-whitespace fix " "
-xsl/fo/autoidx-kimber.xsl:164:50 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx-kimber.xsl:165:24 string-length-compared-to-zero suggestion "string($type) = ''"
+xsl/fo/autoidx-kimber.xsl:157:59 string-length-compared-to-zero
+xsl/fo/autoidx-kimber.xsl:157:59 string-length-compared-to-zero
+xsl/fo/autoidx-kimber.xsl:158:64 string-length-compared-to-zero
+xsl/fo/autoidx-kimber.xsl:158:64 string-length-compared-to-zero
 xsl/fo/autoidx-kosek.xsl:6:1 missing-id-in-stylesheet
 xsl/fo/autoidx-kosek.xsl:9:17 redundant-namespace-declarations fix ""
 xsl/fo/autoidx-kosek.xsl:10:17 redundant-namespace-declarations fix ""
 xsl/fo/autoidx-kosek.xsl:80:25 scans-whole-document
-xsl/fo/autoidx-kosek.xsl:83:3 redundant-whitespace fix " "
-xsl/fo/autoidx-kosek.xsl:85:64 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx-kosek.xsl:86:28 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/fo/autoidx-kosek.xsl:87:10 redundant-whitespace fix " "
-xsl/fo/autoidx-kosek.xsl:109:23 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx-kosek.xsl:110:4 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/fo/autoidx-kosek.xsl:115:3 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx-kosek.xsl:115:32 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/fo/autoidx-kosek.xsl:126:31 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx-kosek.xsl:127:11 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/fo/autoidx-kosek.xsl:130:3 redundant-whitespace fix " "
-xsl/fo/autoidx-kosek.xsl:132:29 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx-kosek.xsl:134:9 string-length-compared-to-zero suggestion "string($type) = ''"
+xsl/fo/autoidx-kosek.xsl:82:44 string-length-compared-to-zero
+xsl/fo/autoidx-kosek.xsl:82:44 string-length-compared-to-zero
+xsl/fo/autoidx-kosek.xsl:106:41 string-length-compared-to-zero
+xsl/fo/autoidx-kosek.xsl:106:41 string-length-compared-to-zero
+xsl/fo/autoidx-kosek.xsl:107:52 string-length-compared-to-zero
+xsl/fo/autoidx-kosek.xsl:107:52 string-length-compared-to-zero
+xsl/fo/autoidx-kosek.xsl:124:62 string-length-compared-to-zero
+xsl/fo/autoidx-kosek.xsl:124:62 string-length-compared-to-zero
+xsl/fo/autoidx-kosek.xsl:126:39 string-length-compared-to-zero
+xsl/fo/autoidx-kosek.xsl:126:39 string-length-compared-to-zero
 xsl/fo/autoidx-ng.xsl:2:1 missing-id-in-stylesheet
 xsl/fo/autoidx.xsl:6:1 missing-id-in-stylesheet
 xsl/fo/autoidx.xsl:6:1 too-many-templates
 xsl/fo/autoidx.xsl:10:17 leaking-result-namespace suggestion "exslt d xlink"
-xsl/fo/autoidx.xsl:73:45 redundant-whitespace fix " "
 xsl/fo/autoidx.xsl:129:25 scans-whole-document
-xsl/fo/autoidx.xsl:162:20 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx.xsl:162:49 string-length-compared-to-zero suggestion "string($type) = ''"
+xsl/fo/autoidx.xsl:134:28 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:134:28 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:157:92 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:157:92 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:174:70 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:174:70 string-length-compared-to-zero
 xsl/fo/autoidx.xsl:188:3 unused-function-template-parameter
 xsl/fo/autoidx.xsl:220:3 unused-function-template-parameter
-xsl/fo/autoidx.xsl:253:49 string-length-compared-to-zero suggestion "string($role) = ''"
+xsl/fo/autoidx.xsl:250:73 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:250:73 string-length-compared-to-zero
 xsl/fo/autoidx.xsl:254:11 setting-value-of-variable-incorrectly
-xsl/fo/autoidx.xsl:254:28 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/fo/autoidx.xsl:254:32 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx.xsl:255:9 redundant-whitespace fix " "
-xsl/fo/autoidx.xsl:255:14 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/fo/autoidx.xsl:261:8 redundant-whitespace fix " "
-xsl/fo/autoidx.xsl:265:9 redundant-whitespace fix " "
-xsl/fo/autoidx.xsl:267:36 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx.xsl:268:15 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/fo/autoidx.xsl:290:49 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx.xsl:291:27 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/fo/autoidx.xsl:297:12 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx.xsl:297:41 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/fo/autoidx.xsl:307:5 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx.xsl:307:34 string-length-compared-to-zero suggestion "string($type) = ''"
+xsl/fo/autoidx.xsl:263:32 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:263:32 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:287:88 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:287:88 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:303:58 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:303:58 string-length-compared-to-zero
 xsl/fo/autoidx.xsl:326:57 scans-whole-document
 xsl/fo/autoidx.xsl:326:67 scans-whole-document
-xsl/fo/autoidx.xsl:390:51 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx.xsl:391:26 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/fo/autoidx.xsl:403:47 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx.xsl:404:22 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/fo/autoidx.xsl:410:43 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx.xsl:411:20 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/fo/autoidx.xsl:428:5 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx.xsl:428:34 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/fo/autoidx.xsl:510:7 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx.xsl:510:36 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/fo/autoidx.xsl:522:52 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx.xsl:523:26 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/fo/autoidx.xsl:528:39 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx.xsl:529:13 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/fo/autoidx.xsl:545:5 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx.xsl:545:34 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/fo/autoidx.xsl:632:14 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx.xsl:633:14 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/fo/autoidx.xsl:645:6 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx.xsl:646:6 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/fo/autoidx.xsl:715:21 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx.xsl:716:3 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/fo/autoidx.xsl:716:39 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx.xsl:717:11 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/fo/autoidx.xsl:796:21 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx.xsl:796:50 string-length-compared-to-zero suggestion "string($type) = ''"
+xsl/fo/autoidx.xsl:387:128 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:387:128 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:400:137 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:400:137 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:407:117 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:407:117 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:424:60 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:424:60 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:505:141 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:505:141 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:518:150 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:518:150 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:525:114 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:525:114 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:541:59 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:541:59 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:626:153 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:626:153 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:639:162 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:639:162 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:713:44 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:713:44 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:714:61 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:714:61 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:792:142 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:792:142 string-length-compared-to-zero
 xsl/fo/autoidx.xsl:796:53 predicate-position-literal fix "last()"
 xsl/fo/autoidx.xsl:807:3 unused-function-template-parameter
 xsl/fo/autoidx.xsl:808:3 unused-function-template-parameter
@@ -1477,50 +1466,49 @@ xsl/fo/autoidx.xsl:873:3 unused-function-template-parameter
 xsl/fo/autoidx.xsl:874:3 unused-function-template-parameter
 xsl/fo/autoidx.xsl:922:57 scans-whole-document
 xsl/fo/autoidx.xsl:922:67 scans-whole-document
-xsl/fo/autoidx.xsl:970:32 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx.xsl:971:10 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/fo/autoidx.xsl:1015:4 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx.xsl:1015:33 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/fo/autoidx.xsl:1020:26 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx.xsl:1021:16 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/fo/autoidx.xsl:1031:4 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx.xsl:1031:33 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/fo/autoidx.xsl:1038:6 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx.xsl:1038:35 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/fo/autoidx.xsl:1046:18 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx.xsl:1047:5 string-length-compared-to-zero suggestion "string($type) = ''"
+xsl/fo/autoidx.xsl:950:101 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:950:101 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:967:45 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:967:45 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:978:95 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:978:95 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:1013:52 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:1013:52 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:1013:95 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:1013:95 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:1029:52 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:1029:52 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:1029:95 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:1029:95 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:1043:58 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:1043:58 string-length-compared-to-zero
 xsl/fo/autoidx.xsl:1053:3 text-outside-xsl-text suggestion "<xsl:text>,</xsl:text>"
-xsl/fo/autoidx.xsl:1064:9 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx.xsl:1065:1 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/fo/autoidx.xsl:1067:9 redundant-whitespace fix " "
-xsl/fo/autoidx.xsl:1070:49 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx.xsl:1071:27 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/fo/autoidx.xsl:1078:45 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx.xsl:1079:23 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/fo/autoidx.xsl:1086:39 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx.xsl:1087:17 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/fo/autoidx.xsl:1087:21 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx.xsl:1087:50 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/fo/autoidx.xsl:1102:17 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx.xsl:1103:6 string-length-compared-to-zero suggestion "string($type) = ''"
+xsl/fo/autoidx.xsl:1067:126 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:1067:126 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:1075:135 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:1075:135 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:1083:115 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:1083:115 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:1099:60 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:1099:60 string-length-compared-to-zero
 xsl/fo/autoidx.xsl:1108:3 text-outside-xsl-text suggestion "<xsl:text>,</xsl:text>"
-xsl/fo/autoidx.xsl:1127:8 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx.xsl:1127:37 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/fo/autoidx.xsl:1134:4 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx.xsl:1134:33 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/fo/autoidx.xsl:1139:38 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx.xsl:1140:16 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/fo/autoidx.xsl:1154:17 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx.xsl:1155:7 string-length-compared-to-zero suggestion "string($type) = ''"
+xsl/fo/autoidx.xsl:1122:139 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:1122:139 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:1129:148 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:1129:148 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:1136:112 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:1136:112 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:1151:59 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:1151:59 string-length-compared-to-zero
 xsl/fo/autoidx.xsl:1160:3 text-outside-xsl-text suggestion "<xsl:text>,</xsl:text>"
-xsl/fo/autoidx.xsl:1181:17 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx.xsl:1182:19 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/fo/autoidx.xsl:1188:9 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx.xsl:1189:11 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/fo/autoidx.xsl:1260:15 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx.xsl:1260:44 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/fo/autoidx.xsl:1292:15 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/fo/autoidx.xsl:1292:44 string-length-compared-to-zero suggestion "string($type) = ''"
+xsl/fo/autoidx.xsl:1175:151 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:1175:151 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:1182:160 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:1182:160 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:1256:60 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:1256:60 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:1288:60 string-length-compared-to-zero
+xsl/fo/autoidx.xsl:1288:60 string-length-compared-to-zero
 xsl/fo/autoidx.xsl:1315:3 unused-function-template-parameter
 xsl/fo/autoidx.xsl:1316:3 unused-function-template-parameter
 xsl/fo/autoidx.xsl:1317:3 unused-function-template-parameter
@@ -2277,106 +2265,100 @@ xsl/html/annotations.xsl:60:7 short-names
 xsl/html/annotations.xsl:72:7 short-names
 xsl/html/autoidx-kimber.xsl:11:1 missing-id-in-stylesheet
 xsl/html/autoidx-kimber.xsl:84:25 scans-whole-document
-xsl/html/autoidx-kimber.xsl:89:11 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/html/autoidx-kimber.xsl:90:13 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/html/autoidx-kimber.xsl:93:5 redundant-whitespace fix " "
-xsl/html/autoidx-kimber.xsl:147:17 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/html/autoidx-kimber.xsl:148:6 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/html/autoidx-kimber.xsl:152:37 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/html/autoidx-kimber.xsl:153:29 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/html/autoidx-kimber.xsl:153:35 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/html/autoidx-kimber.xsl:154:5 redundant-whitespace fix " "
-xsl/html/autoidx-kimber.xsl:154:13 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/html/autoidx-kimber.xsl:157:50 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/html/autoidx-kimber.xsl:158:24 string-length-compared-to-zero suggestion "string($type) = ''"
+xsl/html/autoidx-kimber.xsl:84:101 string-length-compared-to-zero
+xsl/html/autoidx-kimber.xsl:84:101 string-length-compared-to-zero
+xsl/html/autoidx-kimber.xsl:144:40 string-length-compared-to-zero
+xsl/html/autoidx-kimber.xsl:144:40 string-length-compared-to-zero
+xsl/html/autoidx-kimber.xsl:144:83 string-length-compared-to-zero
+xsl/html/autoidx-kimber.xsl:144:83 string-length-compared-to-zero
+xsl/html/autoidx-kimber.xsl:150:59 string-length-compared-to-zero
+xsl/html/autoidx-kimber.xsl:150:59 string-length-compared-to-zero
+xsl/html/autoidx-kimber.xsl:151:64 string-length-compared-to-zero
+xsl/html/autoidx-kimber.xsl:151:64 string-length-compared-to-zero
 xsl/html/autoidx-kosek.xsl:6:1 missing-id-in-stylesheet
 xsl/html/autoidx-kosek.xsl:77:25 scans-whole-document
-xsl/html/autoidx-kosek.xsl:81:21 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/html/autoidx-kosek.xsl:81:50 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/html/autoidx-kosek.xsl:104:17 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/html/autoidx-kosek.xsl:104:46 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/html/autoidx-kosek.xsl:109:7 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/html/autoidx-kosek.xsl:109:25 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/html/autoidx-kosek.xsl:109:44 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/html/autoidx-kosek.xsl:110:6 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/html/autoidx-kosek.xsl:113:29 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/html/autoidx-kosek.xsl:116:4 string-length-compared-to-zero suggestion "string($type) = ''"
+xsl/html/autoidx-kosek.xsl:77:91 string-length-compared-to-zero
+xsl/html/autoidx-kosek.xsl:77:91 string-length-compared-to-zero
+xsl/html/autoidx-kosek.xsl:101:41 string-length-compared-to-zero
+xsl/html/autoidx-kosek.xsl:101:41 string-length-compared-to-zero
+xsl/html/autoidx-kosek.xsl:101:84 string-length-compared-to-zero
+xsl/html/autoidx-kosek.xsl:101:84 string-length-compared-to-zero
+xsl/html/autoidx-kosek.xsl:107:62 string-length-compared-to-zero
+xsl/html/autoidx-kosek.xsl:107:62 string-length-compared-to-zero
+xsl/html/autoidx-kosek.xsl:107:105 string-length-compared-to-zero
+xsl/html/autoidx-kosek.xsl:107:105 string-length-compared-to-zero
 xsl/html/autoidx-ng.xsl:2:1 missing-id-in-stylesheet
 xsl/html/autoidx.xsl:6:1 missing-id-in-stylesheet
 xsl/html/autoidx.xsl:6:1 too-many-templates
 xsl/html/autoidx.xsl:9:17 leaking-result-namespace suggestion "exslt d xlink"
 xsl/html/autoidx.xsl:135:25 scans-whole-document
-xsl/html/autoidx.xsl:160:60 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/html/autoidx.xsl:161:23 string-length-compared-to-zero suggestion "string($type) = ''"
+xsl/html/autoidx.xsl:140:28 string-length-compared-to-zero
+xsl/html/autoidx.xsl:140:28 string-length-compared-to-zero
+xsl/html/autoidx.xsl:156:92 string-length-compared-to-zero
+xsl/html/autoidx.xsl:156:92 string-length-compared-to-zero
+xsl/html/autoidx.xsl:179:70 string-length-compared-to-zero
+xsl/html/autoidx.xsl:179:70 string-length-compared-to-zero
 xsl/html/autoidx.xsl:194:3 unused-function-template-parameter
 xsl/html/autoidx.xsl:225:3 unused-function-template-parameter
-xsl/html/autoidx.xsl:230:6 redundant-whitespace fix " "
-xsl/html/autoidx.xsl:252:38 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/html/autoidx.xsl:254:23 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/html/autoidx.xsl:255:15 redundant-whitespace fix " "
-xsl/html/autoidx.xsl:259:77 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/html/autoidx.xsl:261:15 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/html/autoidx.xsl:268:9 redundant-whitespace fix " "
-xsl/html/autoidx.xsl:270:36 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/html/autoidx.xsl:271:1 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/html/autoidx.xsl:289:3 redundant-whitespace fix " "
-xsl/html/autoidx.xsl:293:46 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/html/autoidx.xsl:294:24 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/html/autoidx.xsl:301:13 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/html/autoidx.xsl:302:3 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/html/autoidx.xsl:309:40 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/html/autoidx.xsl:309:69 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/html/autoidx.xsl:345:33 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/html/autoidx.xsl:345:62 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/html/autoidx.xsl:358:45 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/html/autoidx.xsl:359:19 string-length-compared-to-zero suggestion "string($type) = ''"
+xsl/html/autoidx.xsl:255:73 string-length-compared-to-zero
+xsl/html/autoidx.xsl:255:73 string-length-compared-to-zero
+xsl/html/autoidx.xsl:266:32 string-length-compared-to-zero
+xsl/html/autoidx.xsl:266:32 string-length-compared-to-zero
+xsl/html/autoidx.xsl:290:88 string-length-compared-to-zero
+xsl/html/autoidx.xsl:290:88 string-length-compared-to-zero
+xsl/html/autoidx.xsl:306:58 string-length-compared-to-zero
+xsl/html/autoidx.xsl:306:58 string-length-compared-to-zero
+xsl/html/autoidx.xsl:343:53 string-length-compared-to-zero
+xsl/html/autoidx.xsl:343:53 string-length-compared-to-zero
+xsl/html/autoidx.xsl:355:128 string-length-compared-to-zero
+xsl/html/autoidx.xsl:355:128 string-length-compared-to-zero
 xsl/html/autoidx.xsl:365:3 use-choose-without-otherwise
-xsl/html/autoidx.xsl:372:33 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/html/autoidx.xsl:373:3 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/html/autoidx.xsl:382:45 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/html/autoidx.xsl:383:8 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/html/autoidx.xsl:408:2 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/html/autoidx.xsl:409:10 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/html/autoidx.xsl:436:33 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/html/autoidx.xsl:436:62 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/html/autoidx.xsl:451:1 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/html/autoidx.xsl:451:30 string-length-compared-to-zero suggestion "string($type) = ''"
+xsl/html/autoidx.xsl:369:141 string-length-compared-to-zero
+xsl/html/autoidx.xsl:369:141 string-length-compared-to-zero
+xsl/html/autoidx.xsl:379:104 string-length-compared-to-zero
+xsl/html/autoidx.xsl:379:104 string-length-compared-to-zero
+xsl/html/autoidx.xsl:404:60 string-length-compared-to-zero
+xsl/html/autoidx.xsl:404:60 string-length-compared-to-zero
+xsl/html/autoidx.xsl:434:54 string-length-compared-to-zero
+xsl/html/autoidx.xsl:434:54 string-length-compared-to-zero
+xsl/html/autoidx.xsl:446:141 string-length-compared-to-zero
+xsl/html/autoidx.xsl:446:141 string-length-compared-to-zero
 xsl/html/autoidx.xsl:456:3 use-choose-without-otherwise
-xsl/html/autoidx.xsl:464:38 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/html/autoidx.xsl:465:10 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/html/autoidx.xsl:475:44 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/html/autoidx.xsl:476:7 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/html/autoidx.xsl:501:3 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/html/autoidx.xsl:502:11 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/html/autoidx.xsl:528:33 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/html/autoidx.xsl:528:62 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/html/autoidx.xsl:544:7 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/html/autoidx.xsl:544:36 string-length-compared-to-zero suggestion "string($type) = ''"
+xsl/html/autoidx.xsl:460:154 string-length-compared-to-zero
+xsl/html/autoidx.xsl:460:154 string-length-compared-to-zero
+xsl/html/autoidx.xsl:471:103 string-length-compared-to-zero
+xsl/html/autoidx.xsl:471:103 string-length-compared-to-zero
+xsl/html/autoidx.xsl:497:59 string-length-compared-to-zero
+xsl/html/autoidx.xsl:497:59 string-length-compared-to-zero
+xsl/html/autoidx.xsl:526:49 string-length-compared-to-zero
+xsl/html/autoidx.xsl:526:49 string-length-compared-to-zero
+xsl/html/autoidx.xsl:538:153 string-length-compared-to-zero
+xsl/html/autoidx.xsl:538:153 string-length-compared-to-zero
 xsl/html/autoidx.xsl:548:3 use-choose-without-otherwise
-xsl/html/autoidx.xsl:557:40 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/html/autoidx.xsl:558:12 string-length-compared-to-zero suggestion "string($type) = ''"
+xsl/html/autoidx.xsl:552:166 string-length-compared-to-zero
+xsl/html/autoidx.xsl:552:166 string-length-compared-to-zero
 xsl/html/autoidx.xsl:637:42 scans-whole-document
-xsl/html/autoidx.xsl:640:11 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/html/autoidx.xsl:641:12 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/html/autoidx.xsl:641:42 scans-whole-document
-xsl/html/autoidx.xsl:643:40 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/html/autoidx.xsl:644:21 string-length-compared-to-zero suggestion "string($type) = ''"
+xsl/html/autoidx.xsl:637:52 string-length-compared-to-zero
+xsl/html/autoidx.xsl:637:52 string-length-compared-to-zero
+xsl/html/autoidx.xsl:637:63 scans-whole-document
+xsl/html/autoidx.xsl:637:76 string-length-compared-to-zero
+xsl/html/autoidx.xsl:637:76 string-length-compared-to-zero
 xsl/html/autoidx.xsl:644:42 scans-whole-document
-xsl/html/autoidx.xsl:647:6 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/html/autoidx.xsl:649:10 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/html/autoidx.xsl:651:14 scans-whole-document
-xsl/html/autoidx.xsl:654:53 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/html/autoidx.xsl:655:24 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/html/autoidx.xsl:657:21 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/html/autoidx.xsl:658:3 string-length-compared-to-zero suggestion "string($type) = ''"
-xsl/html/autoidx.xsl:658:39 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/html/autoidx.xsl:659:4 string-length-compared-to-zero suggestion "string($type) = ''"
+xsl/html/autoidx.xsl:644:52 string-length-compared-to-zero
+xsl/html/autoidx.xsl:644:52 string-length-compared-to-zero
+xsl/html/autoidx.xsl:644:63 scans-whole-document
+xsl/html/autoidx.xsl:644:76 string-length-compared-to-zero
+xsl/html/autoidx.xsl:644:76 string-length-compared-to-zero
+xsl/html/autoidx.xsl:655:44 string-length-compared-to-zero
+xsl/html/autoidx.xsl:655:44 string-length-compared-to-zero
+xsl/html/autoidx.xsl:656:61 string-length-compared-to-zero
+xsl/html/autoidx.xsl:656:61 string-length-compared-to-zero
 xsl/html/autoidx.xsl:686:52 scans-whole-document
-xsl/html/autoidx.xsl:689:33 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/html/autoidx.xsl:689:62 string-length-compared-to-zero suggestion "string($type) = ''"
+xsl/html/autoidx.xsl:686:62 string-length-compared-to-zero
+xsl/html/autoidx.xsl:686:62 string-length-compared-to-zero
 xsl/html/autoidx.xsl:710:52 scans-whole-document
-xsl/html/autoidx.xsl:713:33 string-length-compared-to-zero suggestion "string($role) = ''"
-xsl/html/autoidx.xsl:713:62 string-length-compared-to-zero suggestion "string($type) = ''"
+xsl/html/autoidx.xsl:710:62 string-length-compared-to-zero
+xsl/html/autoidx.xsl:710:62 string-length-compared-to-zero
 xsl/html/autoidx.xsl:720:3 unused-function-template-parameter
 xsl/html/autoidx.xsl:721:3 unused-function-template-parameter
 xsl/html/autoidx.xsl:722:3 unused-function-template-parameter
