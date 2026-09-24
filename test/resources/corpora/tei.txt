@@ -758,8 +758,6 @@ docx/from/dynamic/tests/xspec/test-toc-scenario.xsl:6:17 leaking-result-namespac
 docx/from/dynamic/tests/xspec/test-toc-scenario.xsl:7:17 redundant-namespace-declarations fix ""
 docx/from/dynamic/tests/xspec/test-toc-scenario.xsl:8:17 redundant-namespace-declarations fix ""
 docx/from/dynamic/tests/xspec/test-toc-scenario.xsl:17:4 unused-named-template
-docx/from/dynamic/tests/xspec/test-toc-scenario.xsl:29:4 unused-named-template
-docx/from/dynamic/tests/xspec/test-toc-scenario.xsl:46:4 unused-named-template
 docx/from/fields.xsl:2:1 missing-id-in-stylesheet
 docx/from/fields.xsl:78:7 setting-value-of-variable-incorrectly
 docx/from/fields.xsl:94:4 setting-value-of-variable-incorrectly
@@ -4182,7 +4180,6 @@ odt/teitoodt.xsl:991:185 redundant-whitespace fix " "
 odt/teitoodt.xsl:1015:3 unused-named-template
 odt/teitoodt.xsl:1017:3 unused-named-template
 odt/teitoodt.xsl:1020:7 setting-value-of-variable-incorrectly
-odt/teitoodt.xsl:1025:3 unused-named-template
 odt/teitoodt.xsl:1026:5 short-names
 odt/teitoodt.xsl:1030:9 setting-value-of-variable-incorrectly
 odt/teitoodt.xsl:1040:29 using-namespace-axis

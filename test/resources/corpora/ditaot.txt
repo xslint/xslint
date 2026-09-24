@@ -270,7 +270,6 @@ src/main/plugins/org.dita.html5/xsl/syntax-braces.xsl:233:7 text-outside-xsl-tex
 src/main/plugins/org.dita.html5/xsl/syntax-braces.xsl:233:21 count-compared-to-zero fix "exists(preceding-sibling::*)"
 src/main/plugins/org.dita.html5/xsl/syntax-braces.xsl:244:3 unused-named-template
 src/main/plugins/org.dita.html5/xsl/syntax-braces.xsl:246:27 scans-whole-document
-src/main/plugins/org.dita.html5/xsl/syntax-braces.xsl:251:3 unused-named-template
 src/main/plugins/org.dita.html5/xsl/syntax-svg.xsl:9:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.html5/xsl/syntax-svg.xsl:11:17 redundant-namespace-declarations fix ""
 src/main/plugins/org.dita.html5/xsl/syntax-svg.xsl:53:5 blank-nested-if
@@ -582,9 +581,6 @@ src/main/plugins/org.dita.pdf2/xsl/fo/flag-rules.xsl:188:3 unused-named-template
 src/main/plugins/org.dita.pdf2/xsl/fo/flag-rules.xsl:197:9 empty-content-in-instructions
 src/main/plugins/org.dita.pdf2/xsl/fo/flag-rules.xsl:211:9 empty-content-in-instructions
 src/main/plugins/org.dita.pdf2/xsl/fo/flag-rules.xsl:218:1 unused-named-template
-src/main/plugins/org.dita.pdf2/xsl/fo/flag-rules.xsl:271:3 unused-named-template
-src/main/plugins/org.dita.pdf2/xsl/fo/flag-rules.xsl:308:3 unused-named-template
-src/main/plugins/org.dita.pdf2/xsl/fo/flag-rules.xsl:328:3 unused-named-template
 src/main/plugins/org.dita.pdf2/xsl/fo/flag-rules.xsl:425:20 string-length-compared-to-zero suggestion "$moreflags != ''"
 src/main/plugins/org.dita.pdf2/xsl/fo/flag-rules.xsl:428:6 setting-value-of-variable-incorrectly
 src/main/plugins/org.dita.pdf2/xsl/fo/flag-rules.xsl:429:6 setting-value-of-variable-incorrectly
@@ -1005,7 +1001,6 @@ src/main/plugins/org.dita.xhtml/xsl/xslhtml/syntax-braces.xsl:194:67 text-outsid
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/syntax-braces.xsl:194:81 count-compared-to-zero fix "exists(preceding-sibling::*)"
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/syntax-braces.xsl:204:1 unused-named-template
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/syntax-braces.xsl:206:25 scans-whole-document
-src/main/plugins/org.dita.xhtml/xsl/xslhtml/syntax-braces.xsl:211:1 unused-named-template
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/syntax-svg.xsl:10:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/syntax-svg.xsl:11:31 redundant-namespace-declarations fix ""
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/syntax-svg.xsl:64:3 blank-nested-if

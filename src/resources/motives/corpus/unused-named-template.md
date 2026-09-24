@@ -8,11 +8,12 @@ a template invoked from another file (via `xsl:import` or `xsl:include`) is
 not reported. The template is flagged only when no file calls it. Lint the
 whole project at once so the check can see every caller.
 
-A call only counts where something runs it. A template calling itself, or
-two calling each other and nothing else, never starts, and neither does one
-called only from a template that is itself dead — so each of them is reported,
-the way an unreachable function is. What a run enters is a template with a
-`match`, or a named one a caller outside every named template reaches.
+A call only counts where something could run it. A template calling itself,
+or two calling each other and nothing else, never starts, and neither does a
+template only such a loop calls, so each of them is reported. A template
+nothing calls at all is reported alone: what it calls is left unreported, since
+a run may enter it directly, and one suppressed entry point keeps its whole
+tree quiet.
 
 A caller may spell the name as a shadow attribute — `_name="{'footer'}"`,
 the form XSLT 3.0 allows for any attribute of its own elements — and that
@@ -26,8 +27,8 @@ XSLT 3.0 defines, invoked by the processor rather than by any
 `xsl:call-template`, so no stylesheet ever names it and it is left alone. The
 same holds of any template a run enters directly, such as one Saxon is given
 with `-it:`, but a name chosen on a command line is not something a stylesheet
-records, so those are reported and there is nothing here that could know
-otherwise. It is the local part of the name that settles the exemption, so a
+records, so that one template is reported while the templates it calls count
+as called. It is the local part of the name that settles the exemption, so a
 template called `initial-template` under any prefix is left alone — one of
 your own, in a namespace of your own and never called, goes unreported. Name
 your own templates something else and the check answers for them.

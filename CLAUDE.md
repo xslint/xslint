@@ -519,19 +519,19 @@ message: <one sentence>
 ```
 
 Without `reference`, a `declaration` is a defect when its `@name` matches no
-`usage` value by exact identity reached from outside every declaration
-(#1009). With `reference`, every `usage` value is lexed as XPath, and every text
-value template beside them, and the `@name` is looked for among the names its
-tokens reference: a `call` is a name opening a bracket or standing behind a `#`,
-a `variable` a name standing behind a `$`. So a name inside a string literal or
-a comment references nothing, and a gap in front of the bracket hides nothing
-(#498). A `call` matches by URI, local name and arity (#1008). The match is
-plain (a defect when nothing references the name, counting the declaration's own
-body), `reachable: true` (follows the call graph — a defect when referenced yet
-never reached from outside every declaration body), or `scoped: true` (counts
-usage only within the declaration's subtree, or an importing file). Because usage
-is followed across files, a symbol defined in a `_funcs.xsl` library and used
-elsewhere is never flagged.
+`usage` value by exact identity reached from outside every declaration, or from
+one nothing names (#1009). With `reference`, every `usage` value is lexed as
+XPath, and every text value template beside them, and the `@name` is looked for
+among the names its tokens reference: a `call` is a name opening a bracket or
+standing behind a `#`, a `variable` a name standing behind a `$`. So a name
+inside a string literal or a comment references nothing, and a gap in front of
+the bracket hides nothing (#498). A `call` matches by URI, local name and arity
+(#1008). The match is plain (a defect when nothing references the name, counting
+the declaration's own body), `reachable: true` (follows the call graph — a
+defect when referenced yet never reached from outside every declaration body),
+or `scoped: true` (counts usage only within the declaration's subtree, or an
+importing file). Because usage is followed across files, a symbol defined in a
+`_funcs.xsl` library and used elsewhere is never flagged.
 
 Validator and format checks — `checks/{validation,format}/<name>.yaml` — carry
 only `severity` and `message`; their logic lives in code and the YAML just tunes

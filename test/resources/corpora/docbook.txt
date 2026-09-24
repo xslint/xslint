@@ -572,7 +572,6 @@ contrib/xsl/xsd2db/xsd2db.xsl:8688:4 unused-named-template
 contrib/xsl/xsd2db/xsd2db.xsl:8699:10 using-disable-output-escaping
 contrib/xsl/xsd2db/xsd2db.xsl:8703:10 using-disable-output-escaping
 contrib/xsl/xsd2db/xsd2db.xsl:8706:10 using-disable-output-escaping
-contrib/xsl/xsd2db/xsd2db.xsl:8728:4 unused-named-template
 gentext/xsl/dsssl.xsl:2:1 missing-id-in-stylesheet
 gentext/xsl/dsssl.xsl:32:5 using-disable-output-escaping
 gentext/xsl/dsssl.xsl:42:43 redundant-whitespace fix " "
