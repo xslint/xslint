@@ -25,7 +25,9 @@ const SEVERITIES = ['off', 'warning', 'error']
  * reporting rather than silently ignoring.
  * @type {Array.<string>}
  */
-const KEYS = ['rules', 'exclude', 'max-warnings', 'log-level', 'quiet', 'stable']
+const KEYS = [
+  'rules', 'exclude', 'only', 'max-warnings', 'log-level', 'quiet', 'stable',
+]
 
 /**
  * Nearest configuration file, searching from given directory up to the root.
@@ -77,9 +79,9 @@ const typed = function(raw, key, ok, expected, fallback) {
  * reporting any unknown top-level key, any rule graded to an unknown severity,
  * and any known key holding the wrong type rather than dropping them silently.
  * @param {object|null} raw - Parsed YAML, or null when there is no file
- * @return {{rules: object, exclude: Array.<string>, maxWarnings: number|null,
- *  logLevel: string|null, quiet: boolean|null, stable: boolean|null}} -
- *  Normalized configuration
+ * @return {{rules: object, exclude: Array.<string>, only: Array.<string>,
+ *  maxWarnings: number|null, logLevel: string|null, quiet: boolean|null,
+ *  stable: boolean|null}} - Normalized configuration
  */
 const normalized = function(raw) {
   for (const key of Object.keys(raw || {})) {
@@ -102,6 +104,11 @@ const normalized = function(raw) {
     rules: rules,
     exclude: typed(
       raw, 'exclude',
+      (val) => Array.isArray(val) && val.every((it) => typeof it === 'string'),
+      'a list of strings', [],
+    ),
+    only: typed(
+      raw, 'only',
       (val) => Array.isArray(val) && val.every((it) => typeof it === 'string'),
       'a list of strings', [],
     ),
@@ -129,9 +136,9 @@ const normalized = function(raw) {
  * or the search origin when there is no file.
  * @param {string|undefined} explicit - Path from '--config', if any
  * @param {string} from - Directory the search starts in
- * @return {{rules: object, exclude: Array.<string>, maxWarnings: number|null,
- *  logLevel: string|null, quiet: boolean|null, stable: boolean|null,
- *  base: string}} - Configuration
+ * @return {{rules: object, exclude: Array.<string>, only: Array.<string>,
+ *  maxWarnings: number|null, logLevel: string|null, quiet: boolean|null,
+ *  stable: boolean|null, base: string}} - Configuration
  */
 const configFrom = function(explicit, from = process.cwd()) {
   let file
