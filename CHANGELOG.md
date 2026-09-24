@@ -9,6 +9,15 @@ publication date only; detailed notes begin with the Unreleased section.
 
 ## Unreleased
 
+- Leave out what `use-when="false()"` removes. Every check judged the
+  stylesheet as written, so an element a processor never compiles drew
+  defects of its own, as `empty-choose` did on an excluded `xsl:choose`, and
+  a parent missing it was judged as if it held it, so a `choose` whose only
+  `when` is excluded went unreported though Saxon refuses it. Such an element
+  is now dropped with everything under it before any check runs, in the plain,
+  namespaced and shadow spellings; a condition other than the literal is left
+  to the processor (#1048).
+
 - Read the entities an external parameter entity brings in. A stylesheet
   that takes its entity declarations from a file named by
   `<!ENTITY % name SYSTEM "file">`, as DocBook-XSL's index stylesheets take

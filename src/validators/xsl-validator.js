@@ -4,6 +4,9 @@
  */
 
 const {xml} = require('../helpers')
+const {XSLT} = require('../xsl-version')
+const {TRIVIA, tokenized} = require('../tokens')
+const {attributeOf, staticOf} = require('../expressions')
 const {kinds} = require('../resources/checks.json')
 const {logger} = require('../logger')
 
@@ -26,10 +29,61 @@ const META = kinds.validation[CHECK]
 const names = [CHECK]
 
 /**
+ * Whether a processor leaves the element out at compile time: its `use-when`
+ * is the literal `false()`, whatever gap stands between the tokens. An XSLT
+ * element spells it `use-when` or `_use-when`, any other element `xsl:use-when`
+ * or `xsl:_use-when`, a shadow read for what it names statically; any other
+ * condition is a processor's to decide (#1048).
+ * @param {Element} element - The element to judge
+ * @return {boolean} - True when no processor compiles it
+ */
+const excluded = function(element) {
+  let condition = element.getAttributeNS(XSLT, 'use-when') ||
+    staticOf(element.getAttributeNS(XSLT, '_use-when') || '')
+  if (element.namespaceURI === XSLT) {
+    condition = attributeOf(element, 'use-when')
+  }
+  return tokenized(condition)
+    .filter((token) => !TRIVIA.includes(token.type))
+    .map((token) => token.value)
+    .join('') === 'false()'
+}
+
+/**
+ * The document as a processor compiles it: every element `excluded` answers
+ * for is removed with all it holds, so no check judges what is never there,
+ * nor a parent as if it still held it. The root is kept whatever it says, a
+ * document with no element being one no check reads; the walk keeps a list of
+ * its own rather than recursing, and removes nothing until it ends.
+ * @param {Document} xsl - The parsed stylesheet
+ * @return {Document} - The same document, pruned
+ */
+const compiled = function(xsl) {
+  const pending = [xsl.documentElement]
+  const doomed = []
+  while (pending.length) {
+    const element = pending.pop()
+    if (element !== xsl.documentElement && excluded(element)) {
+      doomed.push(element)
+    } else {
+      for (const child of Array.from(element.childNodes)) {
+        if (child.nodeType === 1) {
+          pending.push(child)
+        }
+      }
+    }
+  }
+  for (const element of doomed) {
+    element.parentNode.removeChild(element)
+  }
+  return xsl
+}
+
+/**
  * Build the corpus from raw stylesheet sources, validating that each one is
  * well-formed XML. A source that does not parse is reported as a defect and
  * left out of the corpus, so the validators and linters that follow run only
- * over the stylesheets that parse.
+ * over the stylesheets that parse, each as a processor compiles it.
  * @param {Array.<{file: string, content: string, subsets: Map}>} sources -
  *  Raw stylesheets, each with the external subsets its entities name
  * @param {Array.<string>} suppressions - Array of suppressed checks
@@ -46,7 +100,7 @@ const validate = function(sources, suppressions = []) {
     try {
       corpus.push({
         file: file, content: content,
-        xsl: xml.parsedFromString(content, subsets),
+        xsl: compiled(xml.parsedFromString(content, subsets)),
       })
     } catch {
       if (!suppressed) {
