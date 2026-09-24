@@ -5,7 +5,12 @@ the result tree, unless the prefix is excluded. So a prefix declared only for
 the stylesheet's own logic — `xs` for a sequence type in `as="xs:integer"`, a
 helper `my`/`eo` called from a `select` — is serialized onto output elements it
 never names. `xsl:element` does not do this, so the leak appears precisely when
-a static `xsl:element` is rewritten as a literal result element.
+a static `xsl:element` is rewritten as a literal result element. Top-level data
+is not one either: an element outside the XSLT namespace standing directly in
+the stylesheet, such as a `doc:doc` documentation block, is never instantiated,
+so a stylesheet holding nothing else emits no namespace at all — and a prefix
+that only such a block names still leaks onto every result element a template
+builds.
 
 List such a prefix in `exclude-result-prefixes` on the stylesheet root: the
 prefix stays available to expressions and to name declarations, but is dropped
