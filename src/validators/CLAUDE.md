@@ -15,8 +15,11 @@ What it hands on is the stylesheet a processor compiles, not the one written: an
 `use-when` is the literal `false()`, in any of the four spellings an XSLT element or a literal
 result element gives it, is removed with everything under it. A selector judging the text as written
 reported an `empty-choose` on a `choose` Saxon-HE 12.5 never compiles, and stayed quiet on one whose
-only `when` it excludes, which Saxon refuses as XTSE0010. Any other condition is left standing, its
-answer being a processor's, and so is the root, a document with no element being one nothing reads.
+only `when` it excludes, which Saxon refuses as XTSE0010. The attribute is XSLT's from 2.0 on and a
+shadow from 3.0, at the version in force: xsltproc compiles an `xsl:if` carrying `use-when="false()"`
+in a 1.0 sheet and refuses the `xsl:sequence` inside it, so pruning there hid the defect it hits.
+Any other condition is left standing, its answer being a processor's, and so is the root, a
+document with no element being one nothing reads.
 The pack harness builds its corpus here too, so a pack reads what a run reads (#1048).
 
 ## `src/validators/xpath-validator.js`

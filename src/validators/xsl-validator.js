@@ -4,9 +4,9 @@
  */
 
 const {xml} = require('../helpers')
-const {XSLT} = require('../xsl-version')
+const {MODERN, XSLT, since, versionOf} = require('../xsl-version')
 const {TRIVIA, tokenized} = require('../tokens')
-const {attributeOf, staticOf} = require('../expressions')
+const {staticOf} = require('../expressions')
 const {kinds} = require('../resources/checks.json')
 const {logger} = require('../logger')
 
@@ -30,18 +30,25 @@ const names = [CHECK]
 
 /**
  * Whether a processor leaves the element out at compile time: its `use-when`
- * is the literal `false()`, whatever gap stands between the tokens. An XSLT
- * element spells it `use-when` or `_use-when`, any other element `xsl:use-when`
- * or `xsl:_use-when`, a shadow read for what it names statically; any other
- * condition is a processor's to decide (#1048).
+ * is the literal `false()`, whatever gap stands between the tokens. XSLT
+ * reads it from 2.0 on and a shadow from 3.0, at the version in force, so a
+ * 1.0 processor compiles what the attribute would drop. An XSLT element spells
+ * it plainly, any other element under the XSLT namespace (#1048).
  * @param {Element} element - The element to judge
  * @return {boolean} - True when no processor compiles it
  */
 const excluded = function(element) {
-  let condition = element.getAttributeNS(XSLT, 'use-when') ||
-    staticOf(element.getAttributeNS(XSLT, '_use-when') || '')
+  let plain = element.getAttributeNS(XSLT, 'use-when')
+  let shadowed = element.getAttributeNS(XSLT, '_use-when')
   if (element.namespaceURI === XSLT) {
-    condition = attributeOf(element, 'use-when')
+    plain = element.getAttribute('use-when')
+    shadowed = element.getAttribute('_use-when')
+  }
+  let condition = ''
+  if (plain && since(versionOf(element), MODERN)) {
+    condition = plain
+  } else if (shadowed && since(versionOf(element), '3.0')) {
+    condition = staticOf(shadowed)
   }
   return tokenized(condition)
     .filter((token) => !TRIVIA.includes(token.type))

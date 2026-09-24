@@ -15,8 +15,12 @@ publication date only; detailed notes begin with the Unreleased section.
   a parent missing it was judged as if it held it, so a `choose` whose only
   `when` is excluded went unreported though Saxon refuses it. Such an element
   is now dropped with everything under it before any check runs, in the plain,
-  namespaced and shadow spellings; a condition other than the literal is left
-  to the processor (#1048).
+  namespaced and shadow spellings, wherever the version in force reads the
+  attribute: 2.0 and later for the plain one, 3.0 and later for a shadow, so
+  a 1.0 sheet is still judged whole. A condition other than the literal is left
+  to the processor. Two reports follow from it: a disable directive inside a
+  dropped element is now unused, and a declaration only dropped code refers to
+  is now unused too (#1048).
 
 - Read the entities an external parameter entity brings in. A stylesheet
   that takes its entity declarations from a file named by
