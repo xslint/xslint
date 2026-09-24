@@ -122,9 +122,25 @@
 <h1>Starts with double slash</h1>
 <p>A leading <code>//</code> on a pattern selects nothing extra. Every XSLT pattern is matched
 unanchored — a node matches when any alternative of the pattern matches it,
-wherever it sits — so <code>match=&quot;//item&quot;</code> and <code>match=&quot;item&quot;</code> select exactly the same
-nodes, every <code>item</code> at any depth. Read carelessly, the <code>//</code> suggests a scan of the
-whole document that never happens.</p>
+wherever it sits — so in a document <code>match=&quot;//item&quot;</code> and <code>match=&quot;item&quot;</code> select
+the same nodes, every <code>item</code> at any depth. Read carelessly, the <code>//</code> suggests a
+scan of the whole document that never happens.</p>
+<p>What it does add, from XSLT 2.0 on, is a condition on the tree. A pattern opening
+with <code>/</code> or <code>//</code> matches only a node whose tree is rooted at a document node,
+where <code>item</code> matches in a parentless tree too — an element built into a variable
+declared <code>as=&quot;element()&quot;</code>, say:</p>
+<pre><code class="language-xsl">&lt;xsl:variable name=&quot;built&quot; as=&quot;element()&quot;&gt;
+  &lt;item/&gt;
+&lt;/xsl:variable&gt;
+&lt;xsl:apply-templates select=&quot;$built&quot;/&gt;
+</code></pre>
+<p>A template matching <code>item</code> handles that element, and one matching <code>//item</code> does
+not. XSLT 1.0 has no parentless trees, a result tree fragment always having a
+root node, so there the two spellings are one. The same holds for an <code>xsl:key</code>
+at any version, since <code>key()</code> answers only over a tree rooted at a document node.
+Everywhere else on 2.0+, check that no pattern is applied to a parentless tree,
+such as one bound with <code>as=&quot;element()&quot;</code>, before dropping the <code>//</code>, or keep the
+tree rooted by building it in an <code>xsl:document</code>.</p>
 <p>What it does change is which rule wins. A pattern&#39;s default priority comes from
 its shape: a lone name test scores 0, while a pattern carrying a <code>/</code> step scores
 0.5. So <code>//item</code> outranks <code>item</code> by half a point, and two templates that look
@@ -159,8 +175,9 @@ rather than leaning on a <code>//</code> to buy half a point:</p>
 expression — <code>xsl:key/@match</code>, <code>xsl:accumulator-rule/@match</code>, the <code>@count</code> and
 <code>@from</code> of <code>xsl:number</code>, and the <code>@group-starting-with</code> and <code>@group-ending-with</code>
 of <code>xsl:for-each-group</code>. None of those is anchored either. Priority is a
-template&#39;s concern alone, so in the others a leading <code>//</code> costs only the
-misreading.</p>
+template&#39;s concern alone, so in the others a leading <code>//</code> costs the misreading
+and, from 2.0 on, the parentless trees described above: a <code>count</code> that skips
+the nodes of one, or a group that never starts in one.</p>
 
   </div>
 </body>
