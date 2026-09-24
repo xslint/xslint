@@ -69,4 +69,16 @@ describe('helpers', function() {
           'stylesheet declaring it (#1010)',
       )
     })
+  it('binds the first of two declarations of one entity', function() {
+    const file = path.resolve(
+      __dirname, 'resources', 'entities', 'declared-twice.xsl')
+    const content = fs.readFileSync(file, 'utf-8')
+    assert.equal(
+      xml.parsedFromString(content, subsetsOf(file, content))
+        .getElementsByTagName('xsl:value-of')[0].getAttribute('select'),
+      'count(//alpha)',
+      'bound the declaration standing after the one a parameter entity ' +
+        'brought, where XML binds the first a document gives',
+    )
+  })
 })

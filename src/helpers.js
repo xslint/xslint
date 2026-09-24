@@ -96,11 +96,11 @@ const {delimited, escaped} = require('./fixes')
 const REFERENCE = /&([A-Za-z_][\w.-]*);/g
 
 /**
- * The general entities the given source declares inline in its internal DTD
- * subset, mapped to their replacement text. `@xmldom/xmldom` never expands
- * them, so a reference surfaces as an "entity not found" error though the
- * entity is well declared — DocBook and TEI rely on this — and stays literal
- * in the parsed value.
+ * The general entities the given source declares in its internal DTD subset,
+ * mapped to their replacement text. `@xmldom/xmldom` never expands them, so a
+ * reference stays literal in the parsed value. XML binds the first of two
+ * declarations of a name, so a later one — inline behind a subset a parameter
+ * entity brought, most often — is ignored rather than winning.
  * @param {string} str - XML source
  * @return {Map.<string, string>} - Declared entity names to their values
  */
@@ -110,7 +110,9 @@ const declaredEntities = function(str) {
     new RegExp(
       `<!ENTITY${GAP}+([A-Za-z_][\\w.-]*)${GAP}+` +
       `(?:"([^"]*)"|'([^']*)')`, 'g'))) {
-    entities.set(match[1], match[2] ?? match[3])
+    if (!entities.has(match[1])) {
+      entities.set(match[1], match[2] ?? match[3])
+    }
   }
   return entities
 }
