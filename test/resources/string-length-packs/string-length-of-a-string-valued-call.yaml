@@ -1,0 +1,27 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: string-length-compared-to-zero
+# A standard call that always answers one string is never absent, so the
+# emptiness test compares it with '' as it stands, prefixed or not; a user
+# function of the same name, and a node, still take the `string()` wrapper.
+found:
+  amount: 5
+  positions: [ [ 4, 36 ], [ 5, 36 ], [ 6, 36 ], [ 7, 36 ], [ 8, 36 ] ]
+  fixes:
+    - "normalize-space(@a) = ''"
+    - "fn:concat(@a, @b) eq ''"
+    - "substring-before(@a, '-') = ''"
+    - "string(my:normalize-space(@a)) = ''"
+    - "string(@a/normalize-space) = ''"
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fn="http://www.w3.org/2005/xpath-functions" xmlns:my="urn:my" version="2.0" exclude-result-prefixes="fn my">
+    <xsl:template match="/">
+      <xsl:variable name="a" select="string-length(normalize-space(@a)) = 0"/>
+      <xsl:variable name="b" select="fn:string-length(fn:concat(@a, @b)) eq 0"/>
+      <xsl:variable name="c" select="string-length(substring-before(@a, '-')) = 0"/>
+      <xsl:variable name="d" select="string-length(my:normalize-space(@a)) = 0"/>
+      <xsl:variable name="e" select="string-length(@a/normalize-space) = 0"/>
+    </xsl:template>
+  </xsl:stylesheet>

@@ -9,7 +9,7 @@ pack: string-length-compared-to-zero
 found:
   amount: 2
   positions: [ [ 4, 36 ], [ 5, 36 ] ]
-  fixes: [ "@x = ''", "@y != ''" ]
+  fixes: [ "string(@x) = ''", "@y != ''" ]
 input: |-
   <?xml version="1.0"?>
   <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:fn="http://www.w3.org/2005/xpath-functions" xmlns:my="urn:m" version="3.0" id="s">
