@@ -141,6 +141,22 @@ const BROUGHT = [
   ],
 ]
 
+/**
+ * The runs that leave out the check a live directive covers, each over a
+ * stylesheet whose directive a full run finds a defect under: the fixture,
+ * the options narrowing the run, and what narrows it. A check the run never
+ * ran draws no defect for the directive to cover, so its silence says
+ * nothing about whether the directive is stale (#1049).
+ * @type {Array.<Array>}
+ */
+const SKIPPED = [
+  ['directives/used.xsl', {only: ['not-using-output']}, 'a choice'],
+  ['directives/used.xsl', {suppress: ['short-names']}, 'a suppression'],
+  ['directives/disable-file.xsl', {only: ['output']}, 'a file-wide choice'],
+  ['directives/bare.xsl', {only: ['not-using-output']}, 'a bare choice'],
+  ['directives/bare.xsl', {suppress: ['short-names']}, 'a bare suppression'],
+]
+
 describe('lint (programmatic API)', function() {
   it('returns defects for in-memory sources', function() {
     const defects = lint([source('stylesheets/xsl-with-some-violations.xsl')])
@@ -294,6 +310,27 @@ describe('lint (programmatic API)', function() {
       [],
       'cannot call a directive unused where the tier withheld the defect it ' +
         'covers, the author having written it against a check that fires',
+    )
+  })
+  SKIPPED.forEach(([sheet, options, what]) => {
+    it(`leaves a directive called used under ${what}`, function() {
+      assert.deepEqual(
+        noted(() => lint([source(sheet)], options))
+          .filter((line) => line.includes('Unused xslint-disable')),
+        [],
+        `cannot call a directive unused under ${what}, the run having ` +
+          'never looked for the defect it covers',
+      )
+    })
+  })
+  it('calls a directive unused where the run ran what it names', function() {
+    assert.match(
+      noted(() => lint(
+        [source('directives/unused.xsl')], {only: ['short-names']},
+      )).join(' '),
+      /Unused xslint-disable directive at directives\/unused\.xsl:8/,
+      'cannot keep quiet about a stale directive under a narrowed run ' +
+        'that ran the one check it names',
     )
   })
   it('exposes the fix engine for callers to apply', function() {

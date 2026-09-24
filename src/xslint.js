@@ -196,7 +196,7 @@ const fs = require('fs')
 const {allFilesFrom, slashed, subsetsOf} = require('./helpers')
 const {ignoring} = require('./gitignore')
 const {parted} = require('./source')
-const {SUGGESTION} = require('./checks')
+const {SUGGESTION, suppressed} = require('./checks')
 const {kinds} = require('./resources/checks.json')
 const {validate: validateXsls, names: xslChecks} =
   require('./validators/xsl-validator')
@@ -475,6 +475,23 @@ const unchosenOf = function(chosen) {
 }
 
 /**
+ * Whether a run ran every check a directive names, or every check there is
+ * where it names none. A check the run skipped drew no defect for the
+ * directive to cover, so its silence says nothing about the directive, and
+ * calling it unused told an author to delete a live line (#1049).
+ * @param {{names: Array.<string>}} directive - A directive from a file
+ * @param {Array.<string>} suppressions - What the run skipped, `--only` too
+ * @return {boolean} - True when the run can judge the directive
+ */
+const judged = function(directive, suppressions) {
+  let names = directive.names
+  if (names.length === 0) {
+    names = CHECKS
+  }
+  return !names.some((name) => suppressed(name, suppressions))
+}
+
+/**
  * The suffixes a stylesheet is named with, both spellings of the one thing.
  * @type {Array.<string>}
  */
@@ -718,7 +735,9 @@ const lint = function(
       }
     }
     const found = defects.filter((defect) => defect.file === file)
-    for (const stale of unused(list, found)) {
+    for (const stale of unused(
+      list.filter((directive) => judged(directive, suppressions)), found,
+    )) {
       logger.warn(`Unused xslint-disable directive at ${file}:${stale.line}`)
     }
   }

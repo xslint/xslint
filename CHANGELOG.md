@@ -9,6 +9,13 @@ publication date only; detailed notes begin with the Unreleased section.
 
 ## Unreleased
 
+- Call a directive unused only where the run ran what it covers.
+  `--only`, `--suppress` and a rule turned `off` skip checks, and a directive
+  over one of them covered nothing and was reported unused, telling the author
+  to delete the line that keeps the file quiet in a full run. A directive is
+  now judged only when the run ran every check it names, or every check there
+  is for one naming none (#1049).
+
 - Read the entities an external parameter entity brings in. A stylesheet
   that takes its entity declarations from a file named by
   `<!ENTITY % name SYSTEM "file">`, as DocBook-XSL's index stylesheets take
