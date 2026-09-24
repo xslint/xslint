@@ -160,6 +160,29 @@ const REACHING = [
   },
 ]
 
+/**
+ * What a run narrowed by `--only` and the `only:` of its configuration
+ * reports: the flags, the configuration, and the checks left in the report.
+ * A suppression outranks a choice however either is spelled, and a flag
+ * replaces the choice a configuration makes rather than adding to it (#1030).
+ * @type {Array.<Array>}
+ */
+const CHOICES = [
+  [['--only=short', '--only=unused'], '',
+    ['short-names', 'unused-named-template'], 'two flags'],
+  [['--only=short', '--only=unused', '--suppress=short-names'], '',
+    ['unused-named-template'], 'a flag the run also suppresses'],
+  [['--only=short-names', '--suppress=short-names'], '',
+    [], 'the one chosen check suppressed'],
+  [[], 'only:\n  - short-names\n', ['short-names'], 'the config'],
+  [['--only=unused'], 'only:\n  - short-names\n',
+    ['unused-named-template'], 'a flag replacing the config'],
+  [['--suppress=short-names'], 'only:\n  - short\n  - unused\n',
+    ['unused-named-template'], 'the config beside a suppressing flag'],
+  [['--only=short-names'], 'rules:\n  short-names: off\n',
+    [], 'a flag choosing a check the config turns off'],
+]
+
 describe('xslint', function() {
   it('should print its own version', function() {
     const stdout = runXslint(['--version'])
@@ -181,7 +204,7 @@ describe('xslint', function() {
       'Processed files: 1',
       '(16:3) A variable or parameter is assigned via a nested xsl:value-of instead of the select attribute. Use select syntax instead. (setting-value-of-variable-incorrectly)',
       '(16:3) A variable, parameter, function, or template has a single-character name. Use a descriptive name that reveals intent. (short-names)',
-      '(31:24) A pattern alternative starts with //, which is redundant since every XSLT pattern already matches at any depth, and it lowers the rule\'s default priority from 0.5 to that of the step alone. Remove the leading // and give the rule an explicit priority if it must keep ranking as it does. (starts-with-double-slash)',
+      '(31:24) A pattern alternative starts with //, which adds nothing but, from XSLT 2.0 on, a demand that the node\'s tree be rooted at a document node, since every pattern already matches at any depth. On an xsl:template, removing it also lowers the default priority from 0.5 to that of the step alone, so give the rule an explicit priority if it must keep ranking as it does. (starts-with-double-slash)',
       '(45:3) A named template is never invoked via xsl:call-template from anything that runs. Remove it or call it. (unused-named-template)',
     ]
     expected.forEach((str) => assert.ok(stdout.includes(str)))
@@ -257,7 +280,7 @@ describe('xslint', function() {
       'Processed files: 1',
       '(16:3) A variable or parameter is assigned via a nested xsl:value-of instead of the select attribute. Use select syntax instead. (setting-value-of-variable-incorrectly)',
       '(16:3) A variable, parameter, function, or template has a single-character name. Use a descriptive name that reveals intent. (short-names)',
-      '(31:24) A pattern alternative starts with //, which is redundant since every XSLT pattern already matches at any depth, and it lowers the rule\'s default priority from 0.5 to that of the step alone. Remove the leading // and give the rule an explicit priority if it must keep ranking as it does. (starts-with-double-slash)',
+      '(31:24) A pattern alternative starts with //, which adds nothing but, from XSLT 2.0 on, a demand that the node\'s tree be rooted at a document node, since every pattern already matches at any depth. On an xsl:template, removing it also lowers the default priority from 0.5 to that of the step alone, so give the rule an explicit priority if it must keep ranking as it does. (starts-with-double-slash)',
       '(45:3) A named template is never invoked via xsl:call-template from anything that runs. Remove it or call it. (unused-named-template)',
     ]
     assert.ok(stdout.includes('Empty suppress is incorrect. Delete this "--suppress" or use another one.'))
@@ -407,6 +430,24 @@ describe('xslint', function() {
       '--quiet',
     ])
     assert.ok(!streams.stderr.includes('Processed files'))
+  })
+  CHOICES.forEach(([flags, content, expected, what]) => {
+    it(`should report only the chosen checks for ${what}`, function() {
+      const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-'))
+      const cfg = path.join(dir, '.xslint.yml')
+      fs.writeFileSync(cfg, content)
+      const {stdout} = xslintStreams([
+        'test/resources/stylesheets/xsl-with-some-violations.xsl',
+        '--format=json', `--config=${cfg}`, ...flags,
+      ])
+      fs.rmSync(dir, {recursive: true, force: true})
+      assert.deepEqual(
+        JSON.parse(stdout).map((defect) => defect.rule),
+        expected,
+        `cannot report anything but ${expected.join(', ') || 'nothing'} ` +
+          `for ${what}, a narrowed run leaving out every check it names not`,
+      )
+    })
   })
   it('should disable a rule named off in the config file', function() {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-'))

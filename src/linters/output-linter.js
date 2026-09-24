@@ -17,9 +17,7 @@
  * YAML kept only its severity and message. `graphOf` yields an edge only where
  * the target is in the corpus, which is half of what #468's guardrail asks;
  * the other half is that an href leaving the linted set means *external,
- * assume fine*. Both are the same rule read from either side — never invent a
- * defect out of what we were not handed — so linting one file of a project
- * cannot report what linting all of them does not. Reachability is transitive,
+ * assume fine*. Reachability is transitive,
  * an `xsl:output` three imports down governing as surely as one directly
  * imported, and it is not directional either: a tree serializes together, so
  * the module holding the only templates is answered by the sheet importing it
@@ -29,16 +27,23 @@
  * file's, and a module is quiet when any tree holding it declares an output or
  * reaches outside. Downward alone answers the smaller half: DocBook-XSL's 178
  * reports fall to 143 that way and to 19 with both directions, TEI's 159 to
- * 112 and then to 14, DITA-OT's 118 to 95. What survives is what should —
- * `anttools/xspec/coverage-report.xsl` is a `match="/"` with no `xsl:output`
- * that nobody imports.
+ * 112 and then to 14, DITA-OT's 118 to 95.
  *
- * Ten *decisions* carry it, `rooted` being two and `outward` two, and mutating
- * each says what pins it: seven redden a single pack, `supplying` four, and
- * the file's own place in its own reach five. Read coarsely — `rooted` one
- * decision and `outward` one — it is four that redden a single pack. Neither
- * reading is the other's, so a count here is stated with the decomposition it
- * was taken under, a sentence claiming five having been true under neither.
+ * That guardrail settles the importer and never the module it names, so every
+ * module of a tree the graph could not see was still judged (#1004). 91 of
+ * DITA-OT's 96 reports were modules its build reaches through a `plugin:` URI,
+ * which joined onto a directory names no file; and DocBook's `html/lists.xsl`,
+ * linted alone, was reported where the whole tree is quiet. A module is judged
+ * now only where a transformation starts — nothing in the corpus imports it,
+ * and a template of it matches the root or is `xsl:initial-template` — and
+ * the report stands on it alone, that being where an `xsl:output` belongs,
+ * while `src/import-graph.js` reads a `plugin:` URI. The corpora fall from 19,
+ * 14 and 96 to 5, 3 and 3, `coverage-report.xsl` among the five; two of
+ * DITA-OT's three are modules its install generates from a `_template.xsl`
+ * the checkout holds instead, which nothing here reads. A library matching the
+ * root and linted alone is still judged, so one file of a project can still
+ * draw what all of them do not. A named `xsl:output` supplies nothing, being
+ * a format an `xsl:result-document` asks for.
  *
  * One decision no pack defeats. The namespace half of `rooted` fires only on a
  * root *named* stylesheet or transform outside the XSLT namespace while
@@ -62,6 +67,7 @@
 const {graphOf, importsOf} = require('../import-graph')
 const {logger} = require('../logger')
 const {metaOf, suppressed} = require('../checks')
+const {entered} = require('../roots')
 const {XSLT} = require('../xsl-version')
 const path = require('path')
 
@@ -95,14 +101,16 @@ const rooted = function(xsl) {
 }
 
 /**
- * Whether the root holds a top-level XSLT child of that name.
+ * Whether the root holds an unnamed top-level `xsl:output`. A named one, in
+ * either spelling, is only a format an `xsl:result-document` asks for, and
+ * declares nothing about how the tree's own result is serialized (#1004).
  * @param {Document} xsl - The parsed stylesheet
- * @param {string} name - The local name to look for
  * @return {boolean} - Whether one stands there
  */
-const holds = function(xsl, name) {
+const serializes = function(xsl) {
   return Array.from(xsl.documentElement.childNodes).some(
-    (node) => node.namespaceURI === XSLT && node.localName === name,
+    (node) => node.namespaceURI === XSLT && node.localName === 'output' &&
+      !node.hasAttribute('name') && !node.hasAttribute('_name'),
   )
 }
 
@@ -143,7 +151,7 @@ const covered = function(corpus, edges) {
   const held = new Set(corpus.map(({file}) => path.normalize(file)))
   const supplying = new Set(
     corpus
-      .filter(({xsl}) => holds(xsl, 'output'))
+      .filter(({xsl}) => serializes(xsl))
       .map(({file}) => path.normalize(file)),
   )
   const outward = new Set(
@@ -164,8 +172,9 @@ const covered = function(corpus, edges) {
 }
 
 /**
- * Lint the corpus for a module carrying templates that no serialization
- * covers, the import tree being what settles it rather than the file (#548).
+ * Lint the corpus for an entry point no serialization covers: a module nothing
+ * in the corpus imports, where a transformation starts, whose import tree
+ * declares no output and reaches nothing outside the corpus (#548, #1004).
  * @param {Array.<{file: string, content: string, xsl: Document}>} corpus -
  *  Parsed stylesheets
  * @param {Array.<string>} suppressions - Array of suppressed checks
@@ -176,10 +185,12 @@ const lintByOutput = function(corpus, suppressions = []) {
   logger.debug(`Output linting started`)
   const defects = []
   if (!suppressed(CHECK, suppressions)) {
-    const settled = covered(corpus, graphOf(corpus))
+    const edges = graphOf(corpus)
+    const settled = covered(corpus, edges)
+    const imported = new Set(edges.map((edge) => edge.to))
     for (const {file, xsl} of corpus) {
-      if (rooted(xsl) && holds(xsl, 'template') &&
-        !settled.has(path.normalize(file))) {
+      if (rooted(xsl) && !imported.has(path.normalize(file)) &&
+        !settled.has(path.normalize(file)) && entered(xsl)) {
         defects.push({
           name: CHECK,
           severity: META.severity,

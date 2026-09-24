@@ -5,7 +5,7 @@
 
 const {comparedToZero} = require('../comparisons')
 const {metaOf, suppressed, defect} = require('../checks')
-const {WORDED, textOf, tight} = require('../syntax')
+const {WORDED, calls, textOf, tight} = require('../syntax')
 const {logger} = require('../logger')
 
 /**
@@ -55,11 +55,23 @@ const empty = function(operator, zero) {
 const ITEM = '.'
 
 /**
+ * The standard functions answering exactly one string whatever they are
+ * handed, so an emptiness test compares one with `''` as it stands: it is
+ * never absent, and a `string()` round it would say nothing (#1002).
+ * @type {Array.<string>}
+ */
+const STRINGS = [
+  'string', 'normalize-space', 'concat', 'substring', 'substring-before',
+  'substring-after', 'translate', 'upper-case', 'lower-case',
+  'normalize-unicode', 'string-join',
+]
+
+/**
  * Classify a `string-length(...)`-versus-`0`/`1` comparison for
- * `comparedToZero`. An emptiness test is reported, rewritten to `argument =
- * ''` where the argument can stand as an operand there and report-only
- * otherwise — a question about binding the tree answers and the text could not
- * (#578). The rewrite keeps the class it was handed, `eq` for `eq` (#763).
+ * `comparedToZero`, rewritten where the argument can stand as an operand and
+ * report-only otherwise (#578), in the class it was handed (#763). An
+ * emptiness test compares `string(argument)`, bracketing any argument, which
+ * an absent node answers with `''` where `@x = ''` answers false (#1002).
  * @param {{node: Node, expression: string, pattern: boolean}} found - Record
  * @param {{operator: string, zero: string, worded: boolean}} comparison - The
  *  operator, in the forward direction and spelled with symbols, the digit
@@ -84,6 +96,13 @@ const decide = function(found, {operator, zero, worded}, args) {
       argument = textOf(found, args[0])
       carries = tight(args[0])
     }
+    if (
+      hollow && args.length === 1 &&
+      !STRINGS.some((name) => calls(found, args[0], name))
+    ) {
+      argument = `string(${argument})`
+      carries = true
+    }
     let replacement = null
     if (carries) {
       replacement = `${argument} ${operand} ''`
@@ -107,9 +126,8 @@ const comparisons = function(found) {
 /**
  * Lint the valid expressions for `string-length(...)` compared with zero to
  * test emptiness, reporting one defect per comparison with a *suggestion* fix
- * that rewrites it to `X != ''` or `X = ''` when the argument is a simple
- * operand. A suggestion because they differ on an absent attribute and on a
- * multi-node set.
+ * that rewrites it to `X != ''` or `string(X) = ''` when the argument is a
+ * simple operand. A suggestion because the first differs on a multi-node set.
  * @param {Array.<{source: object, found: object}>} expressions - The valid
  *  expressions the validator kept, each paired with the file it came from
  * @param {Array.<string>} suppressions - Array of suppressed checks

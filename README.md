@@ -42,7 +42,7 @@ xslint points at each problem with its exact position and how to fix it:
 ```text
 [WARNING] sheet.xsl(2:1) The '@id' attribute is missing in the 'xsl:stylesheet' element. Declare it to specify the unique identifier explicitly. (missing-id-in-stylesheet)
 [WARNING] sheet.xsl(2:1) The xsl:output instruction is missing. Declare it to specify the serialization format explicitly. (not-using-output)
-[WARNING] sheet.xsl(3:24) A pattern alternative starts with //, which is redundant since every XSLT pattern already matches at any depth, and it lowers the rule's default priority from 0.5 to that of the step alone. Remove the leading // and give the rule an explicit priority if it must keep ranking as it does. (starts-with-double-slash)
+[WARNING] sheet.xsl(3:24) A pattern alternative starts with //, which adds nothing but, from XSLT 2.0 on, a demand that the node's tree be rooted at a document node, since every pattern already matches at any depth. On an xsl:template, removing it also lowers the default priority from 0.5 to that of the step alone, so give the rule an explicit priority if it must keep ranking as it does. (starts-with-double-slash)
 [WARNING] sheet.xsl(4:5) A variable, parameter, function, or template has a single-character name. Use a descriptive name that reveals intent. (short-names)
 ```
 
@@ -73,7 +73,7 @@ Pointed at core stylesheets from the three most widely-used XSLT projects —
 [DocBook-XSL](https://github.com/docbook/xslt10-stylesheets) (1.0),
 [TEI](https://github.com/TEIC/Stylesheets) (2.0), and
 [DITA-OT](https://github.com/dita-ot/dita-ot) (1.0/2.0) — xslint surfaced
-**10,901 findings across 43 different checks in 867 stylesheets, with no false
+**10,766 findings across 43 different checks in 867 stylesheets, with no false
 positives from its validators**: 3,279 pieces of literal text outside
 `xsl:text`, 639 `xsl:choose` blocks with no `xsl:otherwise`, and 586 template
 and function parameters nothing reads. Real stylistic and logical findings in
@@ -162,6 +162,21 @@ If you want to suppress many checks, use `--suppress` as many times as you need:
 xslint --suppress=oversized-template --suppress=short-names
 ```
 
+To ask one question of a whole tree, run only the checks you name with
+`--only`. It matches by substring the way `--suppress` does, and it may be
+given as many times as you need:
+
+```bash
+xslint --only=short-names --only=unused
+```
+
+The two combine, and a suppression always wins: a check both of them name stays
+quiet, so this runs every `unused-*` check but `unused-variable`:
+
+```bash
+xslint --only=unused --suppress=unused-variable
+```
+
 Use `--stable` when every defect in the report has to be worth acting on:
 
 ```bash
@@ -195,6 +210,8 @@ rules:
   "unused-*": error      # or a family, by glob
 exclude:
   - "test/**"                           # globs to skip, relative to this file
+only:
+  - "unused"                            # default for --only
 max-warnings: 10                        # default for --max-warnings
 log-level: info                         # default for --log-level
 quiet: false                            # default for --quiet
@@ -210,6 +227,9 @@ stable: false                           # default for --stable
   costs nothing rather than the walk it then throws away. A wildcard here reads
   a name opening with a dot like any other, so `dir/**` covers a
   `dir/.hidden/sheet.xsl` as much as the rest of what stands under `dir`.
+- **`only`** lists the substrings `--only` would take, narrowing every run to
+  the checks they name. Passing `--only` replaces this list rather than adding
+  to it, and a check `rules` turns `off` stays off whichever of the two chose it.
 - **`max-warnings`**, **`log-level`**, **`quiet`**, and **`stable`** set the
   defaults for the matching command-line flags. A check named **verbatim** under
   `rules` outranks `stable`, so grading a nursery check `warning` or `error`
@@ -218,9 +238,9 @@ stable: false                           # default for --stable
   withheld check is named on standard error.
 
 Unknown top-level keys, rule names that match no check, and values of the wrong
-type (a non-numeric `max-warnings`, a non-list `exclude`, a non-boolean
-`quiet`, a non-string `log-level`) are reported and ignored, so typos do not
-pass silently. An `exclude` glob is named the same way when a run walks a
+type (a non-numeric `max-warnings`, a non-list `exclude` or `only`, a
+non-boolean `quiet`, a non-string `log-level`) are reported and ignored, so
+typos do not pass silently. An `exclude` glob is named the same way when a run walks a
 directory and the glob excludes nothing anywhere under it.
 
 ## Inline suppression

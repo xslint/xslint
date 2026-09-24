@@ -1,0 +1,26 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: not-creating-attribute-correctly
+# Quiet on an xsl:attribute carrying a separator, a type or a validation, in
+# either spelling, none of which a literal attribute can say (#1005); the one
+# carrying none is reported.
+found:
+  amount: 1
+  positions: [ [ 12, 7 ] ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="3.0" id="style1">
+    <xsl:output encoding="UTF-8" method="xml"/>
+    <xsl:template match="/objects/o">
+      <cell>
+        <xsl:attribute name="widths" select="(1, 2)" separator=","/>
+        <xsl:attribute name="heights" select="(3, 4)" _separator="{';'}"/>
+        <xsl:attribute name="size" select="5" type="xs:integer"/>
+        <xsl:attribute name="rank" select="6" _type="{'xs:integer'}"/>
+        <xsl:attribute name="kind" select="'x'" validation="strip"/>
+        <xsl:attribute name="role" select="'y'" _validation="{'lax'}"/>
+        <xsl:attribute name="span" select="(7, 8)"/>
+      </cell>
+    </xsl:template>
+  </xsl:stylesheet>
