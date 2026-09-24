@@ -6,9 +6,9 @@
 const assert = require('assert')
 const fs = require('fs')
 const path = require('path')
-const {answered, chosen, splitOf, valued} = require('../src/selectors')
+const {answered, chosen, splitOf} = require('../src/selectors')
 const {EVERY} = require('../src/tree')
-const {nodes, strings} = require('../src/xpath')
+const {nodes} = require('../src/xpath')
 const {normalized} = require('../src/tokens')
 const {xml, yaml} = require('../src/helpers')
 const {kinds} = require('../src/resources/checks.json')
@@ -555,8 +555,8 @@ const HEADED = [
 ]
 
 /**
- * Whole selectors the two doors are judged on, served and unserved alike,
- * since what they promise is one answer whichever way it was reached. Five of
+ * Whole selectors `chosen` is judged on, served and unserved alike,
+ * since what it promises is one answer whichever way it was reached. Five of
  * the seven are served — one bucket, two merged by rank, one attribute off
  * each element, every attribute of the document, and one off every element
  * of a namespace — and two are refused, at the root and on a position.
@@ -947,17 +947,6 @@ describe('selectors', function() {
         `the nodes served for ${one} are not the nodes the engine chooses in ` +
           'the order it chooses them, and a report is printed in the order ' +
           'the linters push',
-      )
-    })
-  })
-  DOORS.forEach((one) => {
-    it(`values ${one} where the engine reads the same strings`, function() {
-      assert.deepStrictEqual(
-        valued(SHEET, one),
-        strings(SHEET, one),
-        `the strings served for ${one} are not the string values the engine ` +
-          'reads, so a cross-file check would judge a declaration against ' +
-          'usage text nobody wrote',
       )
     })
   })

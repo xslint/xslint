@@ -370,6 +370,7 @@ contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:1562:19 text-outside-xsl-text
 contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:1595:19 text-outside-xsl-text
 contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:1660:63 redundant-whitespace fix ""
 contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:1729:3 text-outside-xsl-text suggestion "<xsl:text>, </xsl:text>"
+contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:1734:1 unused-named-template
 contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:1759:54 predicate-position-literal fix "last()"
 contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:1783:1 unused-named-template
 contrib/xsl/tabular-toc/xsl/tabular-docbook.xsl:1937:3 unused-function-template-parameter
@@ -502,6 +503,7 @@ contrib/xsl/xsd2db/xsd2db.xsl:2844:16 use-choose-without-otherwise
 contrib/xsl/xsd2db/xsd2db.xsl:3810:7 unused-function-template-parameter
 contrib/xsl/xsd2db/xsd2db.xsl:3841:19 unused-variable
 contrib/xsl/xsd2db/xsd2db.xsl:3888:7 empty-content-in-instructions
+contrib/xsl/xsd2db/xsd2db.xsl:3908:4 unused-named-template
 contrib/xsl/xsd2db/xsd2db.xsl:3928:4 unused-named-template
 contrib/xsl/xsd2db/xsd2db.xsl:4092:10 use-choose-without-otherwise
 contrib/xsl/xsd2db/xsd2db.xsl:4195:10 use-choose-without-otherwise
@@ -1922,6 +1924,7 @@ xsl/fo/pagesetup.xsl:3541:9 not-creating-attribute-correctly
 xsl/fo/pagesetup.xsl:3552:9 not-creating-attribute-correctly
 xsl/fo/passivetex.xsl:2:1 missing-id-in-stylesheet
 xsl/fo/passivetex.xsl:5:3 redundant-namespace-declarations fix ""
+xsl/fo/passivetex.xsl:14:1 unused-named-template
 xsl/fo/pi.xsl:2:1 missing-id-in-stylesheet
 xsl/fo/pi.xsl:2:1 too-many-templates
 xsl/fo/pi.xsl:976:7 text-outside-xsl-text suggestion "<xsl:text>0pt</xsl:text>"
@@ -2702,6 +2705,7 @@ xsl/html/table.xsl:980:7 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text
 xsl/html/table.xsl:1017:13 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
 xsl/html/table.xsl:1085:13 use-choose-without-otherwise
 xsl/html/table.xsl:1116:13 use-choose-without-otherwise
+xsl/html/table.xsl:1171:1 unused-named-template
 xsl/html/table.xsl:1200:3 unused-function-template-parameter
 xsl/html/table.xsl:1201:3 unused-function-template-parameter
 xsl/html/task.xsl:2:1 missing-id-in-stylesheet
@@ -3073,6 +3077,7 @@ xsl/roundtrip/dbk2wp.xsl:435:5 use-choose-without-otherwise
 xsl/roundtrip/dbk2wp.xsl:473:21 redundant-whitespace fix " "
 xsl/roundtrip/dbk2wp.xsl:479:23 redundant-whitespace fix " "
 xsl/roundtrip/dbk2wp.xsl:609:5 use-choose-without-otherwise
+xsl/roundtrip/dbk2wp.xsl:645:3 unused-named-template
 xsl/roundtrip/dbk2wp.xsl:767:23 count-compared-to-zero fix "$node/preceding-sibling::*[self::d:entry|self::doc:entry]"
 xsl/roundtrip/dbk2wp.xsl:801:96 string-length-compared-to-zero suggestion "normalize-space(.) != &apos;&apos;"
 xsl/roundtrip/dbk2wp.xsl:806:211 string-length-compared-to-zero suggestion "normalize-space(.) != &apos;&apos;"
@@ -3434,6 +3439,7 @@ xsl/website/website-common.xsl:216:15 text-outside-xsl-text
 xsl/website/website-common.xsl:229:15 text-outside-xsl-text
 xsl/website/website-common.xsl:350:27 predicate-position-literal fix "last()"
 xsl/website/website-common.xsl:356:3 text-outside-xsl-text suggestion "<xsl:text>, </xsl:text>"
+xsl/website/website-common.xsl:379:1 unused-named-template
 xsl/website/website-common.xsl:665:3 unused-variable
 xsl/website/website-common.xsl:717:11 text-outside-xsl-text suggestion "<xsl:text>index.html</xsl:text>"
 xsl/website/website-common.xsl:742:9 not-creating-attribute-correctly

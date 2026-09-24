@@ -1,0 +1,36 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: unused-named-template
+found:
+  amount: 1
+  positions: [ [ 0, 3, 3 ] ]
+inputs:
+  - |-
+    <?xml version="1.0"?>
+    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
+      <xsl:template name="outer">
+        <xsl:call-template name="inner"/>
+      </xsl:template>
+      <xsl:template name="entered">
+        <xsl:call-template name="looped"/>
+      </xsl:template>
+      <xsl:template match="/">
+        <xsl:call-template name="entered"/>
+      </xsl:template>
+    </xsl:stylesheet>
+  - |-
+    <?xml version="1.0"?>
+    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
+      <xsl:template name="inner">
+        <xsl:call-template name="leaf"/>
+      </xsl:template>
+      <xsl:template name="leaf">
+        <xsl:text>entered with -it</xsl:text>
+      </xsl:template>
+      <xsl:template name="looped">
+        <xsl:if test="false()">
+          <xsl:call-template name="looped"/>
+        </xsl:if>
+      </xsl:template>
+    </xsl:stylesheet>
