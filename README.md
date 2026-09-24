@@ -261,7 +261,9 @@ suppressed.
 - **`xslint-disable-file [rules]`** — the whole file (put it near the top).
 
 A directive that suppresses nothing is reported as unused, so stale ones can be
-found and removed.
+found and removed. A run narrowed by `--only` or `--suppress` judges only the
+directives whose rules it ran, since a rule it skipped reports nothing for a
+directive to cover.
 
 An expression written across several lines is one value, and a directive that
 reaches any line of it silences every defect in it. Nothing inside a start tag

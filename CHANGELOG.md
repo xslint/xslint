@@ -9,6 +9,13 @@ publication date only; detailed notes begin with the Unreleased section.
 
 ## Unreleased
 
+- Call a directive unused only where the run ran what it covers.
+  `--only`, `--suppress` and a rule turned `off` skip checks, and a directive
+  over one of them covered nothing and was reported unused, telling the author
+  to delete the line that keeps the file quiet in a full run. A directive is
+  now judged only when the run ran every check it names, or every check there
+  is for one naming none (#1049).
+
 - Leave out what `use-when="false()"` removes. Every check judged the
   stylesheet as written, so an element a processor never compiles drew
   defects of its own, as `empty-choose` did on an excluded `xsl:choose`, and

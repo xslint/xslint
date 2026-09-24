@@ -980,7 +980,8 @@ the 22 and could only ever ask whether the string appeared.
   own index rather than the outer tree's (#929).
 - **Inline directives**: XML comments `xslint-disable-next-line`,
   `xslint-disable-line`, `xslint-disable-file`, each with optional space-separated
-  rule names (`src/directives.js`); an unused directive is reported.
+  rule names (`src/directives.js`); an unused directive is reported where the
+  run ran every check it names (#1049).
 - **Fix tiers**: a defect is fixable when it carries `fix: {line, col, value,
   replacement, suggestion?}`. A code-based linter never sees an expression the
   XPath validator refused, since #750 stages every one of them over what the
