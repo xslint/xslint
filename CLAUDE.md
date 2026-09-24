@@ -396,7 +396,8 @@ from `src/xpath.js`, the fontoxpath environment.
 and hands the defects back in one total order rather than in the order the
 walk or the wiring happened to give (#638). The command-line `xslint(paths,
 options)` in the same module wraps it — resolves config, reads the `.xsl`
-files, calls `lint`, applies `--fix`, reports, and sets the exit code as
+files and what their parameter entities name (#1010), calls `lint`, applies
+`--fix`, reports, and sets the exit code as
 `process.exitCode`, a `no-restricted-syntax` selector banning the
 `process.exit` that ends the process where it stands and abandons every write
 the kernel has not taken (#767, #822). The package `main` re-exports `lint`
@@ -919,7 +920,8 @@ the 22 and could only ever ask whether the string appeared.
   took the whole run down. The repo-wide sweep in
   the workflow excludes `test/resources/directives/wrapped*.xsl` for the same
   reason: they must keep the wrapped attribute value #611 is about, which xcop
-  joins onto one line. And `test/resources/scaling/**` for the first reason
+  joins onto one line. And `test/resources/entities/**`, whose entity xcop
+  cannot read (#1010). And `test/resources/scaling/**` for the first reason
   again: the one stylesheet the speed gate copies must declare namespaces
   nothing uses, or `namespace-linter` has no defect to build and the stage is
   measured on a path it never takes. Every other line of it conforms — the root
@@ -1052,7 +1054,7 @@ one of them.
 | `src/fixes.js` | Shared fix builders reading the raw source: `deletion`, `substitution`, `excision`, `standsAt` |
 | `src/fixer.js` | Applies a defect's `fix` to source (decode-walk, verify-before-apply, end-to-start) |
 | `src/xpath.js` | The fontoxpath environment, and what we add to it: `PREFIXES`, the evaluator, `satisfies`, `compiles`, and the three functions a selector of ours reaches for, `xslint:normalize-space`, `xslint:version` and `xslint:attribute` |
-| `src/helpers.js` | XML parsing (expands internal-subset entities), YAML parsing, `slashed`, and file recursion that opens no `.git` and no `node_modules` |
+| `src/helpers.js` | XML parsing (expands every entity it reads a declaration of), YAML parsing, `slashed`, and file recursion that opens no `.git` and no `node_modules` |
 | `src/resources/checks.json` | Every check as a run reads it, built from the YAML; never edited by hand |
 | `src/logger.js` | 4-level logger |
 | `src/output.js` | `colorful(stream)`, the one gate on coloring, and the leveled prefixed `writer` both streams are written through |

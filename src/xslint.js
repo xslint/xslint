@@ -193,7 +193,7 @@
 
 const path = require('path')
 const fs = require('fs')
-const {allFilesFrom, slashed} = require('./helpers')
+const {allFilesFrom, slashed, subsetsOf} = require('./helpers')
 const {ignoring} = require('./gitignore')
 const {parted} = require('./source')
 const {SUGGESTION} = require('./checks')
@@ -665,8 +665,9 @@ const ranked = function(one, two) {
  * wraps and an editor or LSP can call in-process. Each defect carries `{name,
  * severity, message, file, line, pos}` and, when fixable, a `fix`. Inline
  * `xslint-disable` directives are honored.
- * @param {Array.<{file: string, content: string}>} sources - Raw stylesheets,
- *  each as it was read, a byte order mark it opens with held aside by `parted`
+ * @param {Array.<{file: string, content: string, subsets: Map}>} sources -
+ *  Raw stylesheets as read, a byte order mark held aside by `parted`, and
+ *  the files their parameter entities name, read by the caller (#1010)
  * @param {{suppress: Array.<string>, overrides: {[check: string]: string},
  *  stable: boolean, admitted: Array.<string>, nursery: Map, only: Array}}
  *  options - Skips, re-grades, the tier gate, its exemptions and marks, choices
@@ -685,6 +686,7 @@ const lint = function(
   ]
   const read = sources.map((source) => ({
     file: source.file, content: parted(source.content).text,
+    subsets: source.subsets ?? new Map(),
   }))
   const {corpus, defects: malformed} = validateXsls(read, suppressions)
   const {expressions, defects: invalid} = validateXpaths(corpus, suppressions)
@@ -794,10 +796,13 @@ const xslint = function(pths, options) {
     logger.warn(`Exclusion '${pattern}' in configuration excluded nothing`)
   }
   logger.debug(`Found ${stylesheets.length} stylesheets to process`)
-  const sources = stylesheets.map((stylesheet) => ({
-    file: stylesheet,
-    content: fs.readFileSync(stylesheet, 'utf-8'),
-  }))
+  const sources = stylesheets
+    .map((stylesheet) => [stylesheet, fs.readFileSync(stylesheet, 'utf-8')])
+    .map(([stylesheet, content]) => ({
+      file: stylesheet,
+      content: content,
+      subsets: subsetsOf(stylesheet, content),
+    }))
   const stable = options.stable ?? config.stable ?? false
   let only = config.only
   if (options.only?.length > 0) {

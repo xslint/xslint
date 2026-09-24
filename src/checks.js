@@ -6,7 +6,7 @@
 const {kinds} = require('./resources/checks.json')
 const {offsetAt, placeAt, skip} = require('./source')
 const {written} = require('./fixes')
-const {unwritten} = require('./helpers')
+const {brought, spelledAt, unwritten} = require('./helpers')
 
 /**
  * The tier a fix lands in when a plain `--fix` applies it: deterministic and
@@ -59,11 +59,11 @@ const suppressed = function(check, suppressions) {
 const LEAD = {2: 1, 4: '<![CDATA['.length}
 
 /**
- * Where an offset inside an expression truly stands in the raw source. A
- * parser decodes entities and normalises line endings, so the parsed value
- * cannot answer it: the walk starts where the node opens, steps over the
- * markup before its value, and skips the offset in decoded characters —
- * unless an entity brought it: its place is the reference's (#628, #984).
+ * Where an offset inside an expression truly stands in the raw source, which
+ * the parsed value cannot answer: the walk starts where the node opens, steps
+ * over the markup before its value, and skips the offset in decoded
+ * characters, a replaced reference being one — unless an entity brought the
+ * node whole: its place is the reference's (#628, #984, #1010).
  * @param {{file: string, content: string}} source - The file the node sits in
  * @param {{node: Node, start: number}} found - The expression, as
  *  `src/attributes.js` yields it
@@ -74,11 +74,11 @@ const rawly = function(source, found, offset) {
   let at = offsetAt(
     source.content, found.node.lineNumber, found.node.columnNumber,
   )
-  if (!unwritten(found.node)) {
+  if (!brought(found.node)) {
     at = skip(
       source.content,
       at + (LEAD[found.node.nodeType] || 0),
-      found.start + offset,
+      spelledAt(found.node, found.start + offset),
     )
   }
   return at

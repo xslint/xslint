@@ -481,6 +481,11 @@ const APPLIED = [
  */
 const UNCHANGED = [
   {
+    name: 'cannot rewrite a literal a run behind an entity walks onto',
+    flag: '--fix',
+    sheet: 'an-entity-before-a-spaced-run.xsl',
+  },
+  {
     name: 'cannot declare a version whose prefix the root binds nowhere',
     flag: '--fix-suggestions',
     sheet: 'missing-version-declared-below-the-root.xsl',

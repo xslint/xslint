@@ -30,15 +30,16 @@
  *
  * A reference this run reached no declaration for stands for content nobody
  * read, so it is dropped rather than left to be reported as the characters
- * spelling its own name: DocBook's `&setup-language-variable;` comes from a
- * subset behind a parameter entity, and twelve references to it drew that
- * same wrapping advice. Dropping one means telling `&name;` from the
- * `&amp;name;` that is literal text, and a parsed value spells both the same
- * way; `spelled` reads the raw source for the names a reference there really
- * opens, XML's own five aside, `&lt;` written out being the spelling common
- * enough to matter. An instruction whose whole content was such a reference
- * now reads as empty rather than as loose text, which is one report traded
- * for another — and the one it gives up carried a fix where
+ * spelling its own name: DocBook's `&setup-language-variable;` drew that same
+ * wrapping advice twelve times while the subset its parameter entity names
+ * went unread, as one naming a file that is not there still does. Dropping
+ * one means telling `&name;` from the `&amp;name;` that is literal text, and
+ * a parsed value spells both the same way; `spelled` reads the raw source for
+ * the names a reference there really opens, XML's own five aside, `&lt;`
+ * written out being the spelling common enough to matter. An instruction
+ * whose whole content was such a reference now reads as empty rather than as
+ * loose text, which is one report traded for another — and the one it gives
+ * up carried a fix where
  * `empty-content-in-instructions` carries none. No stylesheet of the three
  * corpora holds that shape; twenty-one hold the two shapes this cures, and
  * the reports over all three are otherwise identical.
@@ -50,7 +51,12 @@
  * all: a declarative fixer reads that raw source itself to find the attribute
  * it deletes, and what it finds there is an ampersand —
  * `using-disable-output-escaping` built a zero-width edit on a line belonging
- * to another element.
+ * to another element. An attribute value an entity wrote into carries no fix
+ * either, nor does the element holding it, and a place inside it is walked
+ * with each reference one character wide, whatever its replacement spans: a
+ * run of spaces behind a forty-character `&long;` was walked forty characters
+ * into the raw text, onto a string literal a line below, and `--fix` collapsed
+ * the spaces in that (#1010).
  *
  * That same reading refuses what `@xmldom/xmldom` would repair rather than
  * reject: the level of a diagnostic is not consulted, since an attribute
@@ -96,11 +102,11 @@ const {delimited, escaped} = require('./fixes')
 const REFERENCE = /&([A-Za-z_][\w.-]*);/g
 
 /**
- * The general entities the given source declares inline in its internal DTD
- * subset, mapped to their replacement text. `@xmldom/xmldom` never expands
- * them, so a reference surfaces as an "entity not found" error though the
- * entity is well declared — DocBook and TEI rely on this — and stays literal
- * in the parsed value.
+ * The general entities the given source declares in its internal DTD subset,
+ * mapped to their replacement text. `@xmldom/xmldom` never expands them, so a
+ * reference stays literal in the parsed value. XML binds the first of two
+ * declarations of a name, so a later one — inline behind a subset a parameter
+ * entity brought, most often — is ignored rather than winning.
  * @param {string} str - XML source
  * @return {Map.<string, string>} - Declared entity names to their values
  */
@@ -110,9 +116,66 @@ const declaredEntities = function(str) {
     new RegExp(
       `<!ENTITY${GAP}+([A-Za-z_][\\w.-]*)${GAP}+` +
       `(?:"([^"]*)"|'([^']*)')`, 'g'))) {
-    entities.set(match[1], match[2] ?? match[3])
+    if (!entities.has(match[1])) {
+      entities.set(match[1], match[2] ?? match[3])
+    }
   }
   return entities
+}
+
+/**
+ * A parameter entity declared external, `<!ENTITY % name SYSTEM "file">` or
+ * its `PUBLIC` spelling, capturing the name and the system literal.
+ * @type {RegExp}
+ */
+const PARAMETER = new RegExp(
+  `<!ENTITY${GAP}+%${GAP}+([A-Za-z_][\\w.-]*)${GAP}+` +
+  `(?:SYSTEM|PUBLIC${GAP}+(?:"[^"]*"|'[^']*'))${GAP}+` +
+  `(?:"([^"]*)"|'([^']*)')`, 'g')
+
+/**
+ * The external parameter entities the source declares, by name, each mapped
+ * to the system literal naming the file its declarations stand in.
+ * @param {string} str - XML source
+ * @return {Map.<string, string>} - Parameter entity names to system literals
+ */
+const parametersOf = function(str) {
+  return new Map([...str.matchAll(PARAMETER)]
+    .map((match) => [match[1], match[2] ?? match[3]]))
+}
+
+/**
+ * The files the external parameter entities of a stylesheet name, read
+ * relative to it wherever one is there to read, by the system literal naming
+ * each. DocBook-XSL takes the entities of its index stylesheets from a
+ * `../common/entities.ent`, which a processor reads and the parser does not,
+ * so 211 of its expressions reached no check at all (#1010).
+ * @param {string} file - Path of the stylesheet
+ * @param {string} str - XML source
+ * @return {Map.<string, string>} - System literals to the text they name
+ */
+const subsetsOf = function(file, str) {
+  return new Map(
+    [...parametersOf(str).values()]
+      .map((literal) => [literal, path.resolve(path.dirname(file), literal)])
+      .filter(([, whole]) => fs.existsSync(whole) &&
+        fs.statSync(whole).isFile())
+      .map(([literal, whole]) => [literal, fs.readFileSync(whole, 'utf-8')]),
+  )
+}
+
+/**
+ * The source with every reference to an external parameter entity replaced by
+ * the declarations the file it names holds, where that file was read, so the
+ * entities it declares are the document's as much as the inline ones are.
+ * @param {string} str - XML source
+ * @param {Map.<string, string>} subsets - System literals to the text they name
+ * @return {string} - The source, its parameter entities read in
+ */
+const inlined = function(str, subsets) {
+  const parameters = parametersOf(str)
+  return str.replace(/%([A-Za-z_][\w.-]*);/g,
+    (whole, name) => subsets.get(parameters.get(name)) ?? whole)
 }
 
 /**
@@ -248,14 +311,53 @@ const markup = function(value, entities, bare) {
 const BROUGHT = new WeakSet()
 
 /**
- * Whether a node is one no line of its file spells, an entity having brought
- * it. Its place is where the reference stands, and that is the whole of what
- * the source says about it.
+ * Every attribute an entity wrote part of the value of, mapped to the spans of
+ * that value each replacement text fills, as an offset and a width. The rest
+ * of the value is what the source spells, so an offset outside every span
+ * still has a place in the file, where one inside a span has only the `&`.
+ * @type {WeakMap.<Node, Array.<Array.<number>>>}
+ */
+const WRITTEN = new WeakMap()
+
+/**
+ * Whether an entity brought the node whole, so that no line of its file spells
+ * any of it and its place is where the reference stands.
  * @param {Node} node - Node to weigh
- * @return {boolean} - True when an entity brought it
+ * @return {boolean} - True when an entity's markup made it
+ */
+const brought = function(node) {
+  return BROUGHT.has(node)
+}
+
+/**
+ * Whether a node is one no line of its file spells whole, an entity having
+ * brought it or written part of its value, or an element carrying such an
+ * attribute. A fix computed from its value would be written where the source
+ * spells a reference, so none is offered on it.
+ * @param {Node} node - Node to weigh
+ * @return {boolean} - True when an entity brought it or wrote into it
  */
 const unwritten = function(node) {
-  return BROUGHT.has(node)
+  return brought(node) || WRITTEN.has(node) ||
+    Array.from(node.attributes ?? []).some((one) => WRITTEN.has(one))
+}
+
+/**
+ * The offset into a node's value, counted the way the source spells it: each
+ * reference an entity replaced is one character there, however wide its
+ * replacement, and an offset inside a replacement stands at its `&` (#1010).
+ * @param {Node} node - Node whose value the offset is into
+ * @param {number} offset - Offset into the parsed value
+ * @return {number} - Decoded characters the source spells before that point
+ */
+const spelledAt = function(node, offset) {
+  let at = offset
+  for (const [from, width] of WRITTEN.get(node) ?? []) {
+    if (from < offset) {
+      at -= Math.min(width - 1, offset - from)
+    }
+  }
+  return at
 }
 
 /**
@@ -333,8 +435,19 @@ const standing = function(text, entities, bare) {
  */
 const expand = function(node, entities, bare) {
   if (node.nodeType === 2 && node.nodeValue.includes('&')) {
-    const value = node.nodeValue.replace(REFERENCE,
-      (whole, name) => entities.get(name) ?? whole)
+    const spans = []
+    let shift = 0
+    const value = node.nodeValue.replace(REFERENCE, (whole, name, index) => {
+      const text = entities.get(name) ?? whole
+      if (entities.has(name)) {
+        spans.push([index + shift, text.length])
+        shift += text.length - whole.length
+      }
+      return text
+    })
+    if (spans.length > 0) {
+      WRITTEN.set(node, spans)
+    }
     node.nodeValue = value
     node.value = value
   }
@@ -558,13 +671,16 @@ const forbidden = function(str, node, reaches) {
 
 /**
  * Parse XML from string. A byte order mark the text opens with is held aside
- * rather than parsed, `parted` saying why.
+ * rather than parsed, `parted` saying why. The entities it declares are the
+ * inline ones and those the files its external parameter entities name hold,
+ * wherever the caller read one (#1010).
  * @param {string} str - XML as string
+ * @param {Map.<string, string>} subsets - System literals to the text they name
  * @return {Document} - Parsed XML as Document
  */
-const xmlFromString = function(str) {
+const xmlFromString = function(str, subsets = new Map()) {
   const {text} = parted(str)
-  const entities = declaredEntities(text)
+  const entities = declaredEntities(inlined(text, subsets))
   const loose = external(text)
   try {
     const doc = parserFor().parseFromString(text, 'text/xml')
@@ -618,8 +734,11 @@ const slashed = function(pth, base) {
 
 module.exports = {
   allFilesFrom,
+  brought,
   SEALED,
   slashed,
+  spelledAt,
+  subsetsOf,
   unwritten,
   xml: {
     parsedFromFile: fromFile('XML', xmlFromString),

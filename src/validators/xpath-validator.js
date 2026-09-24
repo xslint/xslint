@@ -88,12 +88,13 @@ const validate = function(corpus, suppressions = []) {
   const expressions = []
   const defects = []
   for (const source of corpus) {
+    let skipped = 0
     for (const found of expressionsOf(source.xsl)) {
       const reading = parseOf(found)
       if (reading.fault === '') {
         expressions.push({source: source, found: found})
       } else if (UNRESOLVED.test(found.node.nodeValue)) {
-        logger.debug(`Skipping expression with an unresolved entity`)
+        skipped++
       } else {
         let check = MALFORMED
         if (raised(found)) {
@@ -103,6 +104,12 @@ const validate = function(corpus, suppressions = []) {
           defects.push(defect(check, META[check], source, found, reading.at))
         }
       }
+    }
+    if (skipped > 0) {
+      logger.info(
+        `Skipped ${skipped} expression(s) in ${source.file} holding an ` +
+          `entity no declaration this run read resolves`,
+      )
     }
   }
   logger.debug(`Found ${defects.length} expressions the version in force refuses`)

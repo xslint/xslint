@@ -121,6 +121,26 @@ const NARROWED = [
   ],
 ]
 
+/**
+ * The stylesheets holding a spaced run behind a reference to an entity of
+ * forty characters, declared inline and behind a parameter entity, with the
+ * line of the attribute carrying it. Walked forty characters through the raw
+ * text, the run lands on the literal a line below, and its fix rewrote that.
+ * @type {Array.<Array>}
+ */
+const BROUGHT = [
+  ['fix/an-entity-before-a-spaced-run.xsl', new Map(), 12, 'an internal'],
+  [
+    'entities/an-entity-before-a-spaced-run.xsl',
+    new Map([[
+      'long.ent',
+      fs.readFileSync(
+        path.resolve(__dirname, 'resources', 'entities', 'long.ent'), 'utf-8'),
+    ]]),
+    13, 'an external parameter',
+  ],
+]
+
 describe('lint (programmatic API)', function() {
   it('returns defects for in-memory sources', function() {
     const defects = lint([source('stylesheets/xsl-with-some-violations.xsl')])
@@ -442,6 +462,56 @@ describe('lint (programmatic API)', function() {
         .filter((defect) => defect.line === 1)
         .map((defect) => defect.fix.col),
       [103],
+    )
+  })
+  it('reads an expression a parameter entity brings from beside it', function() {
+    assert.deepEqual(
+      lint([{
+        ...source('entities/behind-a-parameter-entity.xsl'),
+        subsets: new Map([[
+          'shared.ent',
+          fs.readFileSync(
+            path.resolve(__dirname, 'resources', 'entities', 'shared.ent'),
+            'utf-8',
+          ),
+        ]]),
+      }])
+        .filter((defect) => defect.name === 'scans-whole-document')
+        .map((defect) => defect.line),
+      [15],
+      'cannot read the //alpha an external parameter entity declares, so ' +
+        'the expression holding it reaches no check at all (#1010)',
+    )
+  })
+  it('says which file holds the expressions it cannot read', function() {
+    assert.match(
+      noted(() => lint([source('entities/behind-a-parameter-entity.xsl')]))
+        .join(' '),
+      /1 expression.*entities\/behind-a-parameter-entity\.xsl/,
+      'dropped an expression holding an entity nobody declared without a ' +
+        'word at the default level, naming neither the count nor the file',
+    )
+  })
+  BROUGHT.forEach(([sheet, subsets, line, kind]) => {
+    it(`places a run behind ${kind} entity where the file spells it`, function() {
+      assert.deepEqual(
+        lint([{...source(sheet), subsets: subsets}])
+          .filter((defect) => defect.name === 'redundant-whitespace')
+          .map((defect) => [defect.line, defect.pos, defect.fix]),
+        [[line, 33, undefined]],
+        `walked a run behind ${kind} entity as far into the raw text as ` +
+          'the replacement is wide, or anchored a fix on a value no line spells',
+      )
+    })
+  })
+  it('offers no fix on an element whose attribute an entity wrote', function() {
+    assert.deepEqual(
+      lint([source('entities/a-constant-behind-an-entity.xsl')])
+        .filter((defect) => defect.name === 'incorrect-use-of-boolean-constants')
+        .map((defect) => [defect.line, defect.fix]),
+      [[12, undefined]],
+      'offered a substitution of a test its file spells as a reference, ' +
+        'anchored on text no line of the file holds',
     )
   })
 })
