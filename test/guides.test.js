@@ -29,7 +29,7 @@
  * the top of `src/grammar.js` and `src/syntax.js` — 24,681 characters. A turn
  * touching `test/` ran it close ever since, until #811's wildcard phase moved
  * this guide's nightly-tier note into `test/budget.test.js`; the dearest
- * reads 139,888, which is 0.93, and is `src/linters/`'s once more. What
+ * chain is `src/linters/`'s once more. What
  * answers a chain reaching the bar is that move again, a module's derivation
  * into the file-header note of the module itself, and never a bar widened to
  * fit what has grown past it: a docblock holds five lines of description
@@ -37,9 +37,9 @@
  * one instead. A `CEILING` of half the bar stood beside it until it was seen
  * to be a gate no tree could fail: the root stands in every chain, so the
  * chain holding it above weighs each other guide against the bar less what
- * stands over it — 21,327 for `src/linters/CLAUDE.md`, where half of the bar
- * is 75,000 — and holds the root itself to 86,746, a number derived from the
- * dearest chain rather than chosen. A gate no tree can fail is removed and
+ * stands over it, far under half the bar for every guide but the root, and
+ * holds the root itself to what the dearest chain leaves it, a number derived
+ * rather than chosen. A gate no tree can fail is removed and
  * not kept (#750, #660). All four of those figures — the chain, its ratio,
  * and the two allowances — follow from three file sizes, so one guide growing
  * moves every one of them, and none of them turned red when one did: #811's
@@ -48,10 +48,11 @@
  * 3,868 out, and the ratio 0.94 where three places said 0.91. The bar itself
  * was quiet throughout, as it is until 150,000, which is why this is the
  * third time the same class of figure has drifted. `DERIVED` in
- * `test/guides.js` holds each of them now, red from both sides in the way
- * `SPRAWLING` and `UNINDEXED` are: a figure the tree disagrees with fails,
- * and so does a figure standing in a document the row does not name, since a
- * claim nobody is reading is not a claim being kept. That second half is a
+ * `test/guides.js` held each of them from then until #1055, red from both
+ * sides in the way `SPRAWLING` and `UNINDEXED` are: a figure the tree
+ * disagrees with failed, and so did a figure standing in a document the row
+ * did not name, since a claim nobody is reading is not a claim being kept.
+ * That second half is a
  * **set** and not an `any`, which is the whole of it — the chain and its
  * ratio are carried twice, `test/CLAUDE.md` having spelled its half "the
  * dearest chain is that same one at" where `test/guides.js` says "the dearest
@@ -62,13 +63,17 @@
  * gate was happy off the other file. Each row therefore names every file
  * expected to carry it and the matched set is compared whole, so rewording
  * either carrier fails, and so does the claim appearing in a document no row
- * names. Growing a guide by 4,000 characters fails all five rows at once. The
- * asking is `matchAll` and never `test`, a global pattern leaving `lastIndex`
- * where it stopped and answering `false` to the very next question about the
- * same prose. The paragraph above stopped being advice while this change was
- * being written: #846 grew `src/linters/CLAUDE.md` by 3,113 and the merged
- * chain read 150,437, so the bar failed on a tree whose two authors had each
- * stayed under it. The prescribed relief is the one taken —
+ * names. Growing a guide by 4,000 characters failed all five rows at once,
+ * and that was the trouble with them: nearly every change edits a guide, so
+ * nearly every change restated every figure on the same lines, and two open
+ * pull requests conflicted there whichever of them merged first. The bar
+ * prints what the chain weighs whenever it fires, so #1055 took the figures
+ * out of the prose and the rows out with them, a claim no reader acts on
+ * being cheaper unstated than kept. The paragraph above stopped being
+ * advice while this change was being written: #846 grew
+ * `src/linters/CLAUDE.md` by 3,113 and the merged chain read 150,437, so the
+ * bar failed on a tree whose two authors had each stayed under it.
+ * The prescribed relief is the one taken —
  * `src/predicates.js`'s derivation went into the file-header note of
  * `src/predicates.js`, 2,507 characters out of the chain and none out of the
  * record — which is the third note to move that way after `src/grammar.js`
@@ -98,7 +103,7 @@
  * against: `test/conformance.test.js` stood at 998 of the 1000 lines its cap
  * then allowed, and its note was 190 more — a cap nothing under `test/`
  * answers to since #1047, so that refusal no longer holds. What that leaves is
- * 112 characters of headroom, off a chain that is `src/linters/`'s own once
+ * little headroom, off a chain that is `src/linters/`'s own once
  * more rather than `test/CLAUDE.md`'s: the merge behind #811's bracket phase
  * breached the bar by 844 with neither branch having crossed it alone, and
  * the root's `src/xslint.js` derivation moved into `src/CLAUDE.md` to answer
@@ -111,8 +116,8 @@
  * again, on the dearest note that guide holds rather than on the newest, or a
  * change's own note where that change fires it: the nightly tier's derivation
  * stands at the top of `test/budget.test.js` since, and this one at the top
- * of this file behind it, 2,003 characters out of every chain through `test/`
- * to date and none out of the dearest without them. The relief that bought
+ * of this file behind it, out of every chain through `test/` and none out
+ * of the dearest without them. The relief that bought
  * lasted one ticket again, and the third breach is the plainest of the three:
  * #884 gave `scripts/` a third script and so the root a third index row, and
  * the root stands in every chain, so 141 characters written there put
@@ -136,9 +141,8 @@
  * The headroom is one of the same class, the fifth
  * of them and the one that proves the point twice over — it stood outside the
  * table and drifted 418 behind the rows in it with every one of them green,
- * so it has a row of its own since #856, and the relief has one beside it
- * since this phase — a live figure in the very paragraph about a live figure
- * drifting being the one thing that cannot stand outside the table. The index
+ * so it had a row of its own from #856, and the relief one beside it, until
+ * #1055 retired the table and every figure in it. The index
  * answers to the tree from both sides, every path it names existing and every
  * module under `src/` being named by a row — the twenty-one linters by one of
  * them, the `*` standing for a name and never for a directory — and a note
@@ -166,9 +170,10 @@
  * the file-header note of `src/xslint.js`, and this note into the top of
  * `test/guides.test.js`, where the gate it derives already stood. The second
  * needs one line beside it, and that line is the principle `DOCUMENTS` was
- * written on rather than an exception to it: `MEASURED` names this file now,
- * so a figure is read where its prose went, a claim relocated out of every
- * document the gate reads being a claim kept nowhere (#851).
+ * written on rather than an exception to it: `MEASURED` named this file
+ * until #1055, so a figure was read where its prose went, a claim
+ * relocated out of every document the gate reads being a claim kept nowhere
+ * (#851).
  *
  * What that gate reached was list constants alone, and the vocabulary it
  * read them with stopped at twenty-three, so the two numbers a user acts
@@ -204,7 +209,7 @@ const {kinds} = require('../src/resources/checks.json')
 const {splitOf} = require('../src/selectors')
 const {GAP} = require('../src/tokens')
 const {
-  ROOT, GUIDES, DOCUMENTS, DERIVED, LOADED, ROOM, NEARBY, carries, slashed,
+  ROOT, GUIDES, DOCUMENTS, LOADED, ROOM, NEARBY, slashed,
   sized, worded, chained, loaded, indexed, noted, globbed,
 } = require('./guides')
 const path = require('path')
@@ -218,15 +223,6 @@ const assert = require('assert')
  * @type {Array.<string>}
  */
 const PROSE = ['src/attributes.js']
-
-/**
- * Where a figure derived from what the guides weigh may stand: the documents,
- * and the two modules doing the weighing — the walk that reads them, and this
- * gate, whose own note came out of `test/CLAUDE.md` and brought four of the
- * figures with it (#851).
- * @type {Array.<string>}
- */
-const MEASURED = DOCUMENTS.concat(['test/guides.js', 'test/guides.test.js'])
 
 /**
  * The most a day of ordinary work has added to the dearest chain since #823
@@ -461,42 +457,6 @@ describe('guides', function() {
         }
       }
     }
-  })
-  DERIVED.forEach((one) => {
-    it(`states ${one.truth().join(' and ')} where the chain says so`,
-      function() {
-        assert.deepEqual(
-          MEASURED.flatMap((file) => Array.from(
-            worded(file).matchAll(one.claim),
-            (hit) => `${file}: ${hit.slice(1).join(' and ')}`,
-          )).filter(
-            (said) => said.split(': ')[1] !== one.truth().join(' and '),
-          ),
-          [],
-          [
-            `a figure derived from what the guides weigh says something the `,
-            `tree does not: ${one.truth().join(' and ')} is what the chain `,
-            'reads here, and the bar stays quiet until ' + LOADED,
-            ', so nothing else catches this',
-          ].join(''),
-        )
-      })
-  })
-  DERIVED.forEach((one) => {
-    it(`reads ${one.truth().join(' and ')} in every file that states it`,
-      function() {
-        assert.deepEqual(
-          MEASURED.filter((file) => carries(one.claim, worded(file))).sort(),
-          one.carriers.slice().sort(),
-          [
-            'the files carrying this figure are not the files it is watched',
-            'in: a sentence reworded past the phrase drops out of the gate',
-            'above while its figure stays wrong, and one written into a new',
-            'document is watched nowhere — asking whether *some* file still',
-            'matches would answer yes to both',
-          ].join(' '),
-        )
-      })
   })
   it('counts a list a document names against that very list', function() {
     const near = new RegExp(

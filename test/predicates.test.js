@@ -32,7 +32,7 @@
  * `xpath` kind alone answers 42 of 54, which is no number a run ever sees,
  * and counting it that way is how the note came to say 33 and 24. Two
  * sentences carry the pair in opposite orders, so both are read and
- * rewording either fails, the lesson `DERIVED` records one section down.
+ * rewording either fails, the lesson `test/guides.test.js` records.
  *
  * Neither table asks whether an answer is *correct*: that is `CANDIDATES`
  * in `test/selectors.test.js`, which asks fontoxpath what each spelling
@@ -137,8 +137,8 @@ const READS = {
 /**
  * Each way this reach is stated, wherever it is stated, paired with what the
  * tree answers. A claim carried twice and asked as an `any` is satisfied by
- * whichever copy nobody touched — the lesson `DERIVED` records one directory
- * over — so every carrier is named and every occurrence in it is read.
+ * whichever copy nobody touched — the lesson `test/guides.test.js`
+ * records — so every carrier is named and every occurrence in it is read.
  * @type {Array.<{where: string, claim: RegExp,
  *  truth: function(object): Array.<string>}>}
  */
