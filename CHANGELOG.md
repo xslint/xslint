@@ -9,6 +9,14 @@ publication date only; detailed notes begin with the Unreleased section.
 
 ## Unreleased
 
+- Report a named template only a loop of its own calls.
+  `unused-named-template` counted any `xsl:call-template` as a use, so a
+  template calling itself, or two calling each other and nothing else, went
+  unreported though neither ever runs. The check now follows the call graph
+  and reports those, and a template only such a loop calls. A template nothing
+  calls is still reported alone, since a run may enter it with `-it:`, and what
+  it calls counts as called (#1009).
+
 - Run only the checks named by `--only`, or by an `only:` list in
   `.xslint.yml`, matched by substring as `--suppress` is. A check the run
   suppresses or the config turns `off` stays off, and a name that also stands
