@@ -3517,6 +3517,7 @@ odds/RngToRnc.xsl:1169:119 redundant-whitespace fix " "
 odds/RngToRnc.xsl:1198:7 text-outside-xsl-text suggestion "<xsl:text>\\</xsl:text>"
 odds/RngToRnc.xsl:1204:3 unused-named-template
 odds/RngToRnc.xsl:1205:7 unused-function-template-parameter
+odds/RngToRnc.xsl:1238:3 unused-named-template
 odds/RngToRnc.xsl:1277:3 unused-named-template
 odds/RngToRnc.xsl:1278:7 unused-function-template-parameter
 odds/RngToRnc.xsl:1307:79 redundant-whitespace fix " "
@@ -4078,6 +4079,7 @@ odt/odttotei.xsl:644:63 redundant-whitespace fix ""
 odt/odttotei.xsl:646:5 setting-value-of-variable-incorrectly
 odt/odttotei.xsl:649:5 unused-variable
 odt/odttotei.xsl:652:17 unabbreviated-axis fix ""
+odt/odttotei.xsl:666:3 unused-named-template
 odt/odttotei.xsl:669:86 redundant-whitespace fix " "
 odt/odttotei.xsl:671:9 not-creating-attribute-correctly
 odt/odttotei.xsl:750:7 use-choose-without-otherwise
@@ -4089,6 +4091,7 @@ odt/odttotei.xsl:905:31 unabbreviated-axis fix ""
 odt/odttotei.xsl:912:19 unabbreviated-axis fix ""
 odt/odttotei.xsl:915:31 unabbreviated-axis fix ""
 odt/odttotei.xsl:1043:3 text-outside-xsl-text
+odt/odttotei.xsl:1108:1 unused-named-template
 odt/odttotei.xsl:1109:4 short-names
 odt/odttotei.xsl:1113:8 setting-value-of-variable-incorrectly
 odt/odttotei.xsl:1165:5 unused-variable
@@ -4859,6 +4862,7 @@ profiles/iso/html/cals.xsl:296:23 count-compared-to-zero fix "empty($entry/prece
 profiles/iso/html/cals.xsl:324:7 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 profiles/iso/html/cals.xsl:324:23 count-compared-to-zero fix "empty($entry/preceding-sibling::*)"
 profiles/iso/html/cals.xsl:349:7 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
+profiles/iso/html/cals.xsl:430:3 unused-named-template
 profiles/iso/html/tbx.xsl:2:1 missing-id-in-stylesheet
 profiles/iso/html/tbx.xsl:87:5 use-choose-without-otherwise
 profiles/iso/html/tbx.xsl:91:4 use-choose-without-otherwise

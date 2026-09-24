@@ -205,7 +205,7 @@ describe('xslint', function() {
       '(16:3) A variable or parameter is assigned via a nested xsl:value-of instead of the select attribute. Use select syntax instead. (setting-value-of-variable-incorrectly)',
       '(16:3) A variable, parameter, function, or template has a single-character name. Use a descriptive name that reveals intent. (short-names)',
       '(31:24) A pattern alternative starts with //, which adds nothing but, from XSLT 2.0 on, a demand that the node\'s tree be rooted at a document node, since every pattern already matches at any depth. On an xsl:template, removing it also lowers the default priority from 0.5 to that of the step alone, so give the rule an explicit priority if it must keep ranking as it does. (starts-with-double-slash)',
-      '(45:3) A named template is never invoked via xsl:call-template. Remove it or call it. (unused-named-template)',
+      '(45:3) A named template is never invoked via xsl:call-template from anything that runs. Remove it or call it. (unused-named-template)',
     ]
     expected.forEach((str) => assert.ok(stdout.includes(str)))
   })
@@ -281,7 +281,7 @@ describe('xslint', function() {
       '(16:3) A variable or parameter is assigned via a nested xsl:value-of instead of the select attribute. Use select syntax instead. (setting-value-of-variable-incorrectly)',
       '(16:3) A variable, parameter, function, or template has a single-character name. Use a descriptive name that reveals intent. (short-names)',
       '(31:24) A pattern alternative starts with //, which adds nothing but, from XSLT 2.0 on, a demand that the node\'s tree be rooted at a document node, since every pattern already matches at any depth. On an xsl:template, removing it also lowers the default priority from 0.5 to that of the step alone, so give the rule an explicit priority if it must keep ranking as it does. (starts-with-double-slash)',
-      '(45:3) A named template is never invoked via xsl:call-template. Remove it or call it. (unused-named-template)',
+      '(45:3) A named template is never invoked via xsl:call-template from anything that runs. Remove it or call it. (unused-named-template)',
     ]
     assert.ok(stdout.includes('Empty suppress is incorrect. Delete this "--suppress" or use another one.'))
     expected.forEach((str) => assert.ok(stdout.includes(str)))

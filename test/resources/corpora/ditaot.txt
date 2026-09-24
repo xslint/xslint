@@ -86,6 +86,7 @@ src/main/plugins/org.dita.base/xsl/preprocess/conref_template.xsl:9:1 missing-id
 src/main/plugins/org.dita.base/xsl/preprocess/map-conref_template.xsl:9:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.base/xsl/preprocess/maplinkImpl.xsl:10:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.base/xsl/preprocess/maplinkImpl.xsl:10:1 too-many-templates
+src/main/plugins/org.dita.base/xsl/preprocess/maplinkImpl.xsl:70:3 unused-named-template
 src/main/plugins/org.dita.base/xsl/preprocess/maplinkImpl.xsl:313:67 name-compared-to-string suggestion "self::*:topicref"
 src/main/plugins/org.dita.base/xsl/preprocess/maplinkImpl.xsl:344:60 use-double-slash
 src/main/plugins/org.dita.base/xsl/preprocess/maplinkImpl.xsl:363:9 use-choose-without-otherwise
@@ -376,6 +377,7 @@ src/main/plugins/org.dita.html5/xsl/topic.xsl:2585:19 string-length-compared-to-
 src/main/plugins/org.dita.html5/xsl/topic.xsl:2616:5 blank-nested-if
 src/main/plugins/org.dita.html5/xsl/topic.xsl:2723:19 string-length-compared-to-zero suggestion "$HDRFILE != ''"
 src/main/plugins/org.dita.html5/xsl/topic.xsl:2734:19 string-length-compared-to-zero suggestion "$FTRFILE != ''"
+src/main/plugins/org.dita.html5/xsl/topic.xsl:2739:3 unused-named-template
 src/main/plugins/org.dita.html5/xsl/topic.xsl:2790:5 unused-function-template-parameter
 src/main/plugins/org.dita.html5/xsl/topic.xsl:2816:5 unused-function-template-parameter
 src/main/plugins/org.dita.html5/xsl/topic.xsl:2820:9 text-outside-xsl-text suggestion "<xsl:text>cite</xsl:text>"
@@ -396,6 +398,7 @@ src/main/plugins/org.dita.htmlhelp/xsl/map2htmlhelp/map2hhcImpl.xsl:23:1 missing
 src/main/plugins/org.dita.htmlhelp/xsl/map2htmlhelp/map2hhcImpl.xsl:23:1 too-many-templates
 src/main/plugins/org.dita.htmlhelp/xsl/map2htmlhelp/map2hhcImpl.xsl:167:9 not-creating-element-correctly
 src/main/plugins/org.dita.htmlhelp/xsl/map2htmlhelp/map2hhcImpl.xsl:271:11 not-creating-element-correctly
+src/main/plugins/org.dita.htmlhelp/xsl/map2htmlhelp/map2hhcImpl.xsl:329:1 unused-named-template
 src/main/plugins/org.dita.htmlhelp/xsl/map2htmlhelp/map2hhcImpl.xsl:331:3 use-choose-without-otherwise
 src/main/plugins/org.dita.htmlhelp/xsl/map2htmlhelp/map2hhpImpl.xsl:29:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.htmlhelp/xsl/map2htmlhelp/map2hhpImpl.xsl:29:1 too-many-templates
@@ -410,6 +413,7 @@ src/main/plugins/org.dita.htmlhelp/xsl/map2htmlhelp/map2hhpImpl.xsl:212:15 strin
 src/main/plugins/org.dita.htmlhelp/xsl/map2htmlhelp/map2hhpImpl.xsl:256:7 use-choose-without-otherwise
 src/main/plugins/org.dita.htmlhelp/xsl/map2htmlhelp/map2hhpImpl.xsl:280:17 string-length-compared-to-zero suggestion "$thisFilename != ''"
 src/main/plugins/org.dita.htmlhelp/xsl/map2htmlhelp/map2hhpImpl.xsl:300:3 use-choose-without-otherwise
+src/main/plugins/org.dita.htmlhelp/xsl/map2htmlhelp/map2hhpImpl.xsl:358:1 unused-named-template
 src/main/plugins/org.dita.htmlhelp/xsl/map2htmlhelp/map2hhpImpl.xsl:360:3 use-choose-without-otherwise
 src/main/plugins/org.dita.htmlhelp/xsl/map2htmlhelp/map2hhpImpl.xsl:378:3 setting-value-of-variable-incorrectly
 src/main/plugins/org.dita.htmlhelp/xsl/map2htmlhelp/map2hhpImpl.xsl:381:7 setting-value-of-variable-incorrectly
@@ -573,14 +577,17 @@ src/main/plugins/org.dita.pdf2/xsl/fo/flag-rules.xsl:9:1 missing-id-in-styleshee
 src/main/plugins/org.dita.pdf2/xsl/fo/flag-rules.xsl:9:1 too-many-templates
 src/main/plugins/org.dita.pdf2/xsl/fo/flag-rules.xsl:87:5 unused-function-template-parameter
 src/main/plugins/org.dita.pdf2/xsl/fo/flag-rules.xsl:185:1 unused-named-template
+src/main/plugins/org.dita.pdf2/xsl/fo/flag-rules.xsl:188:3 unused-named-template
 src/main/plugins/org.dita.pdf2/xsl/fo/flag-rules.xsl:197:9 empty-content-in-instructions
 src/main/plugins/org.dita.pdf2/xsl/fo/flag-rules.xsl:211:9 empty-content-in-instructions
 src/main/plugins/org.dita.pdf2/xsl/fo/flag-rules.xsl:218:1 unused-named-template
 src/main/plugins/org.dita.pdf2/xsl/fo/flag-rules.xsl:425:20 string-length-compared-to-zero suggestion "$moreflags != ''"
 src/main/plugins/org.dita.pdf2/xsl/fo/flag-rules.xsl:428:6 setting-value-of-variable-incorrectly
 src/main/plugins/org.dita.pdf2/xsl/fo/flag-rules.xsl:429:6 setting-value-of-variable-incorrectly
+src/main/plugins/org.dita.pdf2/xsl/fo/flag-rules.xsl:440:1 unused-named-template
 src/main/plugins/org.dita.pdf2/xsl/fo/flag-rules.xsl:473:22 string-length-compared-to-zero suggestion "$morerevs != ''"
 src/main/plugins/org.dita.pdf2/xsl/fo/flag-rules.xsl:476:8 setting-value-of-variable-incorrectly
+src/main/plugins/org.dita.pdf2/xsl/fo/flag-rules.xsl:492:1 unused-named-template
 src/main/plugins/org.dita.pdf2/xsl/fo/flag-rules.xsl:526:22 string-length-compared-to-zero suggestion "$morerevs != ''"
 src/main/plugins/org.dita.pdf2/xsl/fo/flag-rules.xsl:529:8 setting-value-of-variable-incorrectly
 src/main/plugins/org.dita.pdf2/xsl/fo/flagging-from-preprocess.xsl:8:1 missing-id-in-stylesheet
@@ -796,6 +803,7 @@ src/main/plugins/org.dita.xhtml/xsl/map2htmtoc/map2htmtocImpl.xsl:147:5 text-out
 src/main/plugins/org.dita.xhtml/xsl/map2htmtoc/map2htmtocImpl.xsl:156:7 setting-value-of-variable-incorrectly
 src/main/plugins/org.dita.xhtml/xsl/map2htmtoc/map2htmtocImpl.xsl:161:17 string-length-compared-to-zero suggestion "$CSS != ''"
 src/main/plugins/org.dita.xhtml/xsl/map2htmtoc/map2htmtocImpl.xsl:224:1 unused-named-template
+src/main/plugins/org.dita.xhtml/xsl/map2htmtoc/map2htmtocImpl.xsl:233:1 unused-named-template
 src/main/plugins/org.dita.xhtml/xsl/map2htmtoc/map2htmtocImpl.xsl:235:3 use-choose-without-otherwise
 src/main/plugins/org.dita.xhtml/xsl/map2xhtml-cover.xsl:9:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.xhtml/xsl/map2xhtmltoc.xsl:12:1 missing-id-in-stylesheet
@@ -870,6 +878,7 @@ src/main/plugins/org.dita.xhtml/xsl/xslhtml/dita2htmlImpl.xsl:2724:19 string-len
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/dita2htmlImpl.xsl:2757:5 blank-nested-if
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/dita2htmlImpl.xsl:2833:19 string-length-compared-to-zero suggestion "$HDRFILE != ''"
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/dita2htmlImpl.xsl:2840:19 string-length-compared-to-zero suggestion "$FTRFILE != ''"
+src/main/plugins/org.dita.xhtml/xsl/xslhtml/dita2htmlImpl.xsl:2845:3 unused-named-template
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/dita2htmlImpl.xsl:2896:5 unused-function-template-parameter
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/dita2htmlImpl.xsl:2922:5 unused-function-template-parameter
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/dita2htmlImpl.xsl:2926:9 text-outside-xsl-text suggestion "<xsl:text>cite</xsl:text>"

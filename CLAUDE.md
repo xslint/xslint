@@ -520,19 +520,19 @@ message: <one sentence>
 ```
 
 Without `reference`, a `declaration` is a defect when its `@name` matches no
-`usage` value by exact identity. With `reference`, every `usage` value is lexed
-as XPath, and every text value template beside them, and the `@name` is looked
-for among the names its tokens reference: a
-`call` is a name opening a bracket or standing behind a `#`, a `variable` a name
-standing behind a `$`. So a name inside a string literal or a comment references
-nothing, and a gap in front of the bracket hides nothing (#498). A `call`
-matches by URI, local name and arity (#1008). The match is
-plain (a defect when nothing references the name, counting the declaration's own
-body), `reachable: true` (follows the call graph — a defect when referenced yet
-never reached from outside every declaration body), or `scoped: true` (counts
-usage only within the declaration's subtree, or an importing file). Because usage
-is followed across files, a symbol defined in a `_funcs.xsl` library and used
-elsewhere is never flagged.
+`usage` value by exact identity reached from outside every declaration, or from
+one nothing names (#1009). With `reference`, every `usage` value is lexed as
+XPath, and every text value template beside them, and the `@name` is looked for
+among the names its tokens reference: a `call` is a name opening a bracket or
+standing behind a `#`, a `variable` a name standing behind a `$`. So a name
+inside a string literal or a comment references nothing, and a gap in front of
+the bracket hides nothing (#498). A `call` matches by URI, local name and arity
+(#1008). The match is plain (a defect when nothing references the name, counting
+the declaration's own body), `reachable: true` (follows the call graph — a
+defect when referenced yet never reached from outside every declaration body),
+or `scoped: true` (counts usage only within the declaration's subtree, or an
+importing file). Because usage is followed across files, a symbol defined in a
+`_funcs.xsl` library and used elsewhere is never flagged.
 
 Validator and format checks — `checks/{validation,format}/<name>.yaml` — carry
 only `severity` and `message`; their logic lives in code and the YAML just tunes
@@ -1037,7 +1037,7 @@ one of them.
 | `src/linters/*-linter.js` | Code-based `checks/format/*.yaml`, one construct each (axis, namespace, count, name, ...); see the flow diagram |
 | `src/checks.js` | Shared for code-based linters: `metaOf`, `suppressed`, `defect`, `rawly` |
 | `src/source.js` | Raw-text walking shared by `checks` and `fixer`: `parted`, `offsetAt`, `placeAt`, `character`, `skip` |
-| `src/selectors.js` | `splitOf` — a declarative selector parted into the names a shared walk can serve as its axis and the tail the engine must answer; `chosen`, `valued` |
+| `src/selectors.js` | `splitOf` — a declarative selector parted into the names a shared walk can serve as its axis and the tail the engine must answer; `chosen` |
 | `src/predicates.js` | `predicateOf` — what one predicate of a served selector answers of a candidate, off the walk rather than the engine, or nothing where the engine must answer it |
 | `src/attributes.js` | `expressionsOf` — every expression a stylesheet carries; `PATTERNS`, and `whole` for a linter that narrows to one attribute |
 | `src/xsl-version.js` | `versionOf`, `numbered` and `since` — the version in force at a node, as text and as the number a declarative floor compares, and a lower-bound gate over it |
@@ -1053,7 +1053,7 @@ one of them.
 | `src/fixers.js` | Maps a declarative check name to a `node => fix` builder |
 | `src/fixes.js` | Shared fix builders reading the raw source: `deletion`, `substitution`, `excision`, `standsAt` |
 | `src/fixer.js` | Applies a defect's `fix` to source (decode-walk, verify-before-apply, end-to-start) |
-| `src/xpath.js` | The fontoxpath environment, and what we add to it: `PREFIXES`, the two evaluators, `satisfies`, `compiles`, and the three functions a selector of ours reaches for, `xslint:normalize-space`, `xslint:version` and `xslint:attribute` |
+| `src/xpath.js` | The fontoxpath environment, and what we add to it: `PREFIXES`, the evaluator, `satisfies`, `compiles`, and the three functions a selector of ours reaches for, `xslint:normalize-space`, `xslint:version` and `xslint:attribute` |
 | `src/helpers.js` | XML parsing (expands every entity it reads a declaration of), YAML parsing, `slashed`, and file recursion that opens no `.git` and no `node_modules` |
 | `src/resources/checks.json` | Every check as a run reads it, built from the YAML; never edited by hand |
 | `src/logger.js` | 4-level logger |
