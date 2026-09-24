@@ -113,7 +113,7 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-warning">warning</span>
-    <code class="xpath">//xsl:attribute[not(contains(@name, '{')) and not(@_name)][not(@namespace) and not(@_namespace)][parent::*[not(self::xsl:*)]][not(*) or (count(*) = 1 and (xsl:value-of[not(@separator) and not(@_separator)] or xsl:text[not(@disable-output-escaping) and not(@_disable-output-escaping)]))][not(preceding-sibling::*[not(self::xsl:variable) and not(self::xsl:attribute)])][not(preceding-sibling::xsl:attribute[@_name or not(@name) or contains(@name, '{')])][not(preceding-sibling::xsl:attribute/@name = @name)]</code>
+    <code class="xpath">//xsl:attribute[not(contains(@name, '{')) and not(@_name)][not(@namespace) and not(@_namespace)][parent::*[not(self::xsl:*)]][not(*) or (count(*) = 1 and (xsl:value-of[not(@separator) and not(@_separator)] or xsl:text[not(@disable-output-escaping) and not(@_disable-output-escaping)]))][not(preceding-sibling::*[not(self::xsl:variable) and not(self::xsl:attribute)])][not(preceding-sibling::xsl:attribute[@_name or not(@name) or contains(@name, '{')])][not(preceding-sibling::xsl:attribute/@name = @name)][not(some $held in ../@*[not(namespace-uri() = 'http://www.w3.org/1999/XSL/Transform')] satisfies local-name($held) = replace(xslint:attribute(., 'name'), '^.*:', ''))][not(@separator) and not(@_separator) and not(@type) and not(@_type) and not(@validation) and not(@_validation)][not(some $value in (. | .//@select | .//@_select) satisfies preceding-sibling::xsl:variable[contains($value, concat('$', xslint:attribute(., 'name')))])]</code>
   </div>
   <div class="check-content">
 <h1>Not creating attribute correctly</h1>
@@ -140,7 +140,7 @@ belongs to. <code>xsl:attribute</code> earns its place when the name is computed
 the value needs instructions an AVT cannot hold (an <code>xsl:choose</code>), or the parent
 is itself an instruction such as <code>xsl:element</code> or <code>xsl:copy</code> — those are left
 alone.</p>
-<p>Three shapes cannot be written inline at all, whatever they look like. An
+<p>Several shapes cannot be written inline at all, whatever they look like. An
 <code>xsl:attribute</code> carrying <code>@namespace</code> puts the attribute in a namespace, and a
 literal attribute on a literal result element takes the one its own prefix
 binds — so inlining it moves the attribute. An <code>xsl:value-of</code> carrying
@@ -150,8 +150,25 @@ writes something else whenever the value is more than one item. An <code>xsl:tex
 carrying <code>@disable-output-escaping</code> asks the serializer for something a
 literal attribute has no way to say, and inside an attribute what it asks for
 is an error a processor may signal or ignore as it chooses, so rewriting it
-would pick one of those readings.</p>
-<p>Position is the fourth. A literal attribute is written before the element&#39;s
+would pick one of those readings. An <code>xsl:attribute</code> carrying <code>@separator</code>,
+<code>@type</code> or <code>@validation</code> asks for something no literal attribute can carry:
+its own separator, where an attribute value template joins with a space, or a
+type annotation and validation a literal attribute has no attribute to say.
+And an attribute the start tag already writes cannot be written there twice,
+since a second <code>class</code> on one element is not well-formed XML.</p>
+<p>Scope is another. A variable declared in the element&#39;s content is in scope
+for what follows it and not for the element&#39;s own start tag, so a value
+reading it cannot move there:</p>
+<pre><code class="language-xsl">&lt;fo:table-column&gt;
+  &lt;xsl:variable name=&quot;width&quot; select=&quot;@w&quot;/&gt;
+  &lt;xsl:attribute name=&quot;column-width&quot;&gt;
+    &lt;xsl:value-of select=&quot;$width&quot;/&gt;
+  &lt;/xsl:attribute&gt;
+&lt;/fo:table-column&gt;
+</code></pre>
+<p>is left alone, since <code>&lt;fo:table-column column-width=&quot;{$width}&quot;&gt;</code> reads a
+variable nothing has declared there.</p>
+<p>Position is the last. A literal attribute is written before the element&#39;s
 content is instantiated, so anything standing in front of the <code>xsl:attribute</code>
 that can supply an attribute of its own — an <code>xsl:copy-of</code>, an
 <code>xsl:apply-templates</code> or an <code>xsl:call-template</code> over attributes, bare or inside
