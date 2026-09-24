@@ -29,7 +29,7 @@
  * the top of `src/grammar.js` and `src/syntax.js` — 24,681 characters. A turn
  * touching `test/` ran it close ever since, until #811's wildcard phase moved
  * this guide's nightly-tier note into `test/budget.test.js`; the dearest
- * reads 139,888, which is 0.93, and is `src/linters/`'s once more. What
+ * reads 139,937, which is 0.93, and is `src/linters/`'s once more. What
  * answers a chain reaching the bar is that move again, a module's derivation
  * into the file-header note of the module itself, and never a bar widened to
  * fit what has grown past it: a docblock holds five lines of description
@@ -37,7 +37,7 @@
  * one instead. A `CEILING` of half the bar stood beside it until it was seen
  * to be a gate no tree could fail: the root stands in every chain, so the
  * chain holding it above weighs each other guide against the bar less what
- * stands over it — 21,327 for `src/linters/CLAUDE.md`, where half of the bar
+ * stands over it — 21,278 for `src/linters/CLAUDE.md`, where half of the bar
  * is 75,000 — and holds the root itself to 86,746, a number derived from the
  * dearest chain rather than chosen. A gate no tree can fail is removed and
  * not kept (#750, #660). All four of those figures — the chain, its ratio,
@@ -98,7 +98,7 @@
  * against: `test/conformance.test.js` stood at 998 of the 1000 lines its cap
  * then allowed, and its note was 190 more — a cap nothing under `test/`
  * answers to since #1047, so that refusal no longer holds. What that leaves is
- * 112 characters of headroom, off a chain that is `src/linters/`'s own once
+ * 63 characters of headroom, off a chain that is `src/linters/`'s own once
  * more rather than `test/CLAUDE.md`'s: the merge behind #811's bracket phase
  * breached the bar by 844 with neither branch having crossed it alone, and
  * the root's `src/xslint.js` derivation moved into `src/CLAUDE.md` to answer
@@ -111,7 +111,7 @@
  * again, on the dearest note that guide holds rather than on the newest, or a
  * change's own note where that change fires it: the nightly tier's derivation
  * stands at the top of `test/budget.test.js` since, and this one at the top
- * of this file behind it, 2,003 characters out of every chain through `test/`
+ * of this file behind it, 1,954 characters out of every chain through `test/`
  * to date and none out of the dearest without them. The relief that bought
  * lasted one ticket again, and the third breach is the plainest of the three:
  * #884 gave `scripts/` a third script and so the root a third index row, and
