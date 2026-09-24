@@ -9,6 +9,16 @@ publication date only; detailed notes begin with the Unreleased section.
 
 ## Unreleased
 
+- Read the entities an external parameter entity brings in. A stylesheet
+  that takes its entity declarations from a file named by
+  `<!ENTITY % name SYSTEM "file">`, as DocBook-XSL's index stylesheets take
+  theirs from `../common/entities.ent`, had every expression using one of
+  them skipped unchecked; the file is now read relative to the stylesheet, and
+  where two declarations name one entity the first binds, as XML says. A
+  defect in an attribute value an entity wrote into is placed where the file
+  spells it and carries no fix, where it used to be walked past the reference
+  onto the next line, and `--fix` rewrote whatever stood there (#1010).
+
 - Report a named template only a loop of its own calls.
   `unused-named-template` counted any `xsl:call-template` as a use, so a
   template calling itself, or two calling each other and nothing else, went
