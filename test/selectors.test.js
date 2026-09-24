@@ -197,8 +197,10 @@ const UNIONS = [
     ],
   },
   {
-    xpath: '//xsl:when[not(parent::xsl:choose)] | ' +
+    xpath: [
+      '//xsl:when[not(parent::xsl:choose)] |',
       '//xsl:otherwise[not(parent::xsl:choose)]',
+    ].join(' '),
     branches: [
       {locals: ['when'], tail: '[not(parent::xsl:choose)]'},
       {locals: ['otherwise'], tail: '[not(parent::xsl:choose)]'},
@@ -508,8 +510,10 @@ const CANDIDATES = [
   'string-length(xslint:normalize-space(.)) = 5',
   'comment()', 'not(comment())', 'node()', 'processing-instruction()',
   'descendant::text()', 'count(node()) = count(text())',
-  'text()[xslint:normalize-space(.) or ' +
+  [
+    'text()[xslint:normalize-space(.) or',
     'ancestor::*[@xml:space][1]/@xml:space = "preserve"]',
+  ].join(' '),
   'count(*) = 1 and not(text()[xslint:normalize-space(.)])',
   '@select and //xsl:text', '//xsl:text and @select',
   '@select and //xsl:nothing', 'not(node()) and @select',
@@ -759,10 +763,12 @@ describe('selectors', function() {
             anchor: '', tail: '', refused: '',
           },
         ],
-        'the usage selector of three of the four cross-file checks chooses ' +
-          'every attribute of a document, which is the sequence the walk in ' +
-          'src/tree.js already holds and remembers, and it is not being split ' +
+        [
+          'the usage selector of three of the four cross-file checks chooses',
+          'every attribute of a document, which is the sequence the walk in',
+          'src/tree.js already holds and remembers, and it is not being split',
           'off the engine',
+        ].join(' '),
       )
     })
   it('serves the named-attribute usage the fourth is written in', function() {
@@ -775,9 +781,11 @@ describe('selectors', function() {
         tail: '',
         refused: '',
       })),
-      'the usage selector naming one attribute of one element is not being ' +
-        'split off the engine, in both the spellings XSLT gives that ' +
+      [
+        'the usage selector naming one attribute of one element is not being',
+        'split off the engine, in both the spellings XSLT gives that',
         'attribute: a branch apiece, since the walk holds each by name (#851)',
+      ].join(' '),
     )
   })
   UNIONS.forEach((one) => {
@@ -791,9 +799,11 @@ describe('selectors', function() {
           tail: branch.tail,
           refused: '',
         })),
-        `the union ${one.xpath} is not parted into the branches an index ` +
-          'serves one at a time, so both halves go to the engine as one ' +
+        [
+          `the union ${one.xpath} is not parted into the branches an index`,
+          'serves one at a time, so both halves go to the engine as one',
           'descendant sweep apiece',
+        ].join(' '),
       )
     })
   })
@@ -802,9 +812,11 @@ describe('selectors', function() {
       assert.equal(
         splitOf(one).length,
         2,
-        `the union ${one} wears one predicate outside its brackets and is ` +
-          'not parted into the two arms that predicate distributes over, so ' +
+        [
+          `the union ${one} wears one predicate outside its brackets and is`,
+          'not parted into the two arms that predicate distributes over, so',
           'both halves go to the engine as one sweep over every node there is',
+        ].join(' '),
       )
     })
   })
@@ -813,10 +825,12 @@ describe('selectors', function() {
       assert.deepStrictEqual(
         placed(chosen(DISTRIBUTING, one)),
         placed(nodes(DISTRIBUTING, one)),
-        `the nodes served for the distributed union ${one} are not the ` +
-          'nodes the engine chooses in the order it chooses them, so a ' +
-          'predicate standing outside the brackets is being dropped from an ' +
+        [
+          `the nodes served for the distributed union ${one} are not the`,
+          'nodes the engine chooses in the order it chooses them, so a',
+          'predicate standing outside the brackets is being dropped from an',
           'arm, or the arms are merged on a rank the walk keeps for elements',
+        ].join(' '),
       )
     })
   })
@@ -825,8 +839,10 @@ describe('selectors', function() {
       assert.deepStrictEqual(
         splitOf(one.xpath),
         [],
-        `the selector ${one.xpath} is served from an index though it is ` +
+        [
+          `the selector ${one.xpath} is served from an index though it is`,
           `${one.why}, so the index answers a question the selector never put`,
+        ].join(' '),
       )
     })
   })
@@ -835,10 +851,12 @@ describe('selectors', function() {
       assert.deepStrictEqual(
         placed(chosen(MERGING, one)),
         placed(nodes(MERGING, one)),
-        `the nodes served for the union ${one} are not the nodes the engine ` +
-          'chooses in the order it chooses them, so a union is being ' +
-          'appended bucket after bucket rather than merged by rank, or a ' +
+        [
+          `the nodes served for the union ${one} are not the nodes the engine`,
+          'chooses in the order it chooses them, so a union is being',
+          'appended bucket after bucket rather than merged by rank, or a',
           'node standing in two branches or two arms is reported twice',
+        ].join(' '),
       )
     })
   })
@@ -847,10 +865,12 @@ describe('selectors', function() {
       assert.deepStrictEqual(
         placed(chosen(ANCHORING, one)),
         placed(nodes(ANCHORING, one)),
-        `the nodes served for ${one} are not the nodes the engine reaches ` +
-          'below its anchor, so an axis is being answered without the anchor ' +
-          'that stands in front of it and reports nodes the selector never ' +
+        [
+          `the nodes served for ${one} are not the nodes the engine reaches`,
+          'below its anchor, so an axis is being answered without the anchor',
+          'that stands in front of it and reports nodes the selector never',
           'selected',
+        ].join(' '),
       )
     })
   })
@@ -862,9 +882,11 @@ describe('selectors', function() {
         assert.deepStrictEqual(
           standing(() => chosen(SHEET, xpath)),
           standing(() => nodes(SHEET, xpath)),
-          `serving ${xpath} from an axis answers something else than the ` +
-            'engine answers of the whole selector, so the predicate reads ' +
+          [
+            `serving ${xpath} from an axis answers something else than the`,
+            'engine answers of the whole selector, so the predicate reads',
             'the sequence it stands in and cannot be asked of one candidate',
+          ].join(' '),
         )
       })
   })
@@ -874,10 +896,12 @@ describe('selectors', function() {
         .flatMap((node) => Array.from(node.childNodes))
         .map((node) => node.nodeValue ?? '')
         .some((data) => data.trim() === '' && normalized(data) !== ''),
-      'every text node in candidates.xsl that JavaScript reads as blank ' +
-        'is blank to XPath as well, so a row asking what a gap is made of ' +
-        'would pass against an answer spelling one the JavaScript way, ' +
+      [
+        'every text node in candidates.xsl that JavaScript reads as blank',
+        'is blank to XPath as well, so a row asking what a gap is made of',
+        'would pass against an answer spelling one the JavaScript way,',
         'which is the whole of the defect #881 was about',
+      ].join(' '),
     )
   })
   it('holds a name no UTF-16 length counts as XPath counts it', function() {
@@ -885,19 +909,23 @@ describe('selectors', function() {
       Array.from(SHEET.documentElement.getElementsByTagNameNS(XSLT, 'variable'))
         .map((node) => node.getAttribute('name'))
         .some((name) => Array.from(name).length !== name.length),
-      'no name in candidates.xsl stands outside the Basic Multilingual ' +
-        'Plane, so every string the vocabulary measures is one whose code ' +
-        'units are its characters and the rows asking a length of one prove ' +
+      [
+        'no name in candidates.xsl stands outside the Basic Multilingual',
+        'Plane, so every string the vocabulary measures is one whose code',
+        'units are its characters and the rows asking a length of one prove',
         'nothing about the length XPath means',
+      ].join(' '),
     )
   })
   APART.forEach((one) => {
     it(`serves ${one.xpath} by the arms that name a bucket`, function() {
       assert.ok(
         splitOf(one.xpath).length > 1,
-        `serving ${one.xpath} is refused though ${one.why}, so the arms a ` +
-          'walk already holds are swept for the sake of the one arm it does ' +
+        [
+          `serving ${one.xpath} is refused though ${one.why}, so the arms a`,
+          'walk already holds are swept for the sake of the one arm it does',
           'not, which is the whole selector paying for its widest branch',
+        ].join(' '),
       )
     })
   })
@@ -906,9 +934,11 @@ describe('selectors', function() {
       assert.deepStrictEqual(
         placed(chosen(APARTING, one.xpath)),
         placed(nodes(APARTING, one.xpath)),
-        `serving ${one.xpath} apart answers other nodes than the engine ` +
-          'answers of it, or answers them in another order, where a union is ' +
+        [
+          `serving ${one.xpath} apart answers other nodes than the engine`,
+          'answers of it, or answers them in another order, where a union is',
           'a set in document order and a node standing in two arms is one node',
+        ].join(' '),
       )
     })
   })
@@ -919,9 +949,11 @@ describe('selectors', function() {
           assert.deepStrictEqual(
             splitOf(one.xpath),
             [],
-            `the split ${table.verb}s ${one.xpath} over ${one.why}, so an ` +
-              'arm comes back as something the walk keeps no rank for, or ' +
+            [
+              `the split ${table.verb}s ${one.xpath} over ${one.why}, so an`,
+              'arm comes back as something the walk keeps no rank for, or',
               'an arm the selector asked for comes back not at all',
+            ].join(' '),
           )
         })
     })
@@ -932,9 +964,11 @@ describe('selectors', function() {
         assert.deepStrictEqual(
           placed(chosen(table.sheet, one.xpath)),
           placed(nodes(table.sheet, one.xpath)),
-          `${one.xpath} answers other nodes than the engine answers of it, ` +
-            'or answers them in another order, so a union the walk cannot ' +
+          [
+            `${one.xpath} answers other nodes than the engine answers of it,`,
+            'or answers them in another order, so a union the walk cannot',
             `promise every arm of is ${table.verb}ed all the same`,
+          ].join(' '),
         )
       })
     })
@@ -944,9 +978,11 @@ describe('selectors', function() {
       assert.deepStrictEqual(
         placed(chosen(SHEET, one)),
         placed(nodes(SHEET, one)),
-        `the nodes served for ${one} are not the nodes the engine chooses in ` +
-          'the order it chooses them, and a report is printed in the order ' +
+        [
+          `the nodes served for ${one} are not the nodes the engine chooses in`,
+          'the order it chooses them, and a report is printed in the order',
           'the linters push',
+        ].join(' '),
       )
     })
   })
@@ -956,9 +992,11 @@ describe('selectors', function() {
       assert.deepStrictEqual(
         {served: parted.served.length, asked: parted.asked},
         {served: one.served, asked: one.asked},
-        `the tail ${one.tail} is not parted clause by clause, so a bracket ` +
-          'holding one the vocabulary answers costs a fontoxpath call on ' +
+        [
+          `the tail ${one.tail} is not parted clause by clause, so a bracket`,
+          'holding one the vocabulary answers costs a fontoxpath call on',
           'every candidate the rest of that bracket would have refused',
+        ].join(' '),
       )
     })
   })
@@ -966,9 +1004,11 @@ describe('selectors', function() {
     assert.deepStrictEqual(
       [...worded(WIDE.note).matchAll(WIDE.claim)].map((each) => each[1]),
       [String(CANDIDATES.length + HEADED.length)],
-      'the note states an oracle other than the one this file sweeps, so a ' +
-        'paragraph promising a question per spelling is read as a limit ' +
+      [
+        'the note states an oracle other than the one this file sweeps, so a',
+        'paragraph promising a question per spelling is read as a limit',
         'that has stopped being one',
+      ].join(' '),
     )
   })
 })

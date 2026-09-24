@@ -158,17 +158,21 @@ describe('grammar over generated shapes', function() {
   it('cannot answer having swept fewer shapes than it was written for', () => {
     assert.ok(
       SHAPES.length >= 14000,
-      `the sweep generates ${SHAPES.length} shapes, fewer than the 14000 that ` +
-        'stood here when this gate was written, so it is answering about a ' +
+      [
+        `the sweep generates ${SHAPES.length} shapes, fewer than the 14000 that`,
+        'stood here when this gate was written, so it is answering about a',
         'space somebody has narrowed',
+      ].join(' '),
     )
   })
   KNOWN.forEach(({accepts, gap, holds}) => {
     it(`cannot annotate ${gap} having nothing to annotate`, function() {
       assert.ok(
         PARTED.some((line) => holds.test(line) && line.startsWith(accepts)),
-        `nothing swept is ${gap}, so the annotation is stale and the class it ` +
+        [
+          `nothing swept is ${gap}, so the annotation is stale and the class it`,
           'names is either fixed or out of reach of this sweep',
+        ].join(' '),
       )
     })
   })

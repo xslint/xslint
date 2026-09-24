@@ -266,3 +266,52 @@ tester.run(
     ],
   },
 )
+
+tester.run(
+  'no-wrapped-concatenation',
+  local.rules['no-wrapped-concatenation'],
+  {
+    valid: [
+      `const one = 'alpha' + beta`,
+      'const one = `alpha ${beta}` + gamma + \'delta\'',
+      'const one = [\n  \'alpha\',\n  `beta ${gamma}`,\n].join(\' \')',
+      'const one = first +\n  second',
+      'const one = 1 +\n  2',
+      'let one = \'\'\none +=\n  \'alpha\'',
+      'const one = use(\n  \'alpha\',\n  beta,\n) + \'gamma\'',
+    ],
+    invalid: [
+      {
+        code: 'const one = \'alpha \' +\n  \'beta\'',
+        errors: [{messageId: 'wrapped', line: 1}],
+      },
+      {
+        code: 'const one = `alpha ${beta} ` +\n  `gamma`',
+        errors: [{messageId: 'wrapped', line: 1}],
+      },
+      {
+        code: 'const one = first +\n  \'-\' + second',
+        errors: [{messageId: 'wrapped', line: 1}],
+      },
+      {
+        code: 'const one = \'alpha\' + first + second +\n  third',
+        errors: [{messageId: 'wrapped', line: 1}],
+      },
+      {
+        code: 'const one = \'alpha\'\n  + \'beta\'\n  + \'gamma\'',
+        errors: [{messageId: 'wrapped', line: 1}],
+      },
+      {
+        code: 'const one = \'alpha\' + (\n  first +\n  second\n)',
+        errors: [{messageId: 'wrapped', line: 1}],
+      },
+      {
+        code: 'use(\'alpha \' +\n  \'beta\', \'gamma \' +\n  \'delta\')',
+        errors: [
+          {messageId: 'wrapped', line: 1},
+          {messageId: 'wrapped', line: 2},
+        ],
+      },
+    ],
+  },
+)

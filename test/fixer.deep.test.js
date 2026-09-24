@@ -88,8 +88,10 @@ const APPLIED = [
     after: 'redundant-namespace-declarations.fixed.xsl',
   },
   {
-    name: 'should drop the redundant leading slashes of a match with ' +
+    name: [
+      'should drop the redundant leading slashes of a match with',
       '--fix-suggestions',
+    ].join(' '),
     flag: '--fix-suggestions',
     before: 'starts-with-double-slash.xsl',
     after: 'starts-with-double-slash.fixed.xsl',
@@ -101,22 +103,28 @@ const APPLIED = [
     after: 'starts-with-double-slash.safely-fixed.xsl',
   },
   {
-    name: 'should drop the redundant leading slashes of a key, and of no ' +
+    name: [
+      'should drop the redundant leading slashes of a key, and of no',
       'other pattern of a 3.0 sheet, with --fix',
+    ].join(' '),
     flag: '--fix',
     before: 'starts-with-double-slash-outside-a-template.xsl',
     after: 'starts-with-double-slash-outside-a-template.fixed.xsl',
   },
   {
-    name: 'should drop the redundant leading slashes of every pattern but a ' +
+    name: [
+      'should drop the redundant leading slashes of every pattern but a',
       'match of a 1.0 sheet with --fix',
+    ].join(' '),
     flag: '--fix',
     before: 'starts-with-double-slash-in-xslt-1.xsl',
     after: 'starts-with-double-slash-in-xslt-1.fixed.xsl',
   },
   {
-    name: 'should drop the leading slashes of every branch of one pattern, ' +
+    name: [
+      'should drop the leading slashes of every branch of one pattern,',
       'and of no branch of a template, with --fix',
+    ].join(' '),
     flag: '--fix',
     before: 'double-slash-opening-a-branch.xsl',
     after: 'double-slash-opening-a-branch.fixed.xsl',
@@ -134,22 +142,28 @@ const APPLIED = [
     after: 'redundant-import.fixed.xsl',
   },
   {
-    name: 'should delete four of five duplicate imports with ' +
+    name: [
+      'should delete four of five duplicate imports with',
       '--fix-suggestions',
+    ].join(' '),
     flag: '--fix-suggestions',
     before: 'redundant-import-many.xsl',
     after: 'redundant-import-many.fixed.xsl',
   },
   {
-    name: 'should keep the higher-precedence duplicate import with ' +
+    name: [
+      'should keep the higher-precedence duplicate import with',
       '--fix-suggestions',
+    ].join(' '),
     flag: '--fix-suggestions',
     before: 'redundant-import-between.xsl',
     after: 'redundant-import-between.fixed.xsl',
   },
   {
-    name: 'should delete a duplicate import spelled every way XML allows, ' +
+    name: [
+      'should delete a duplicate import spelled every way XML allows,',
       'with --fix-suggestions',
+    ].join(' '),
     flag: '--fix-suggestions',
     before: 'redundant-import-spelled-every-way.xsl',
     after: 'redundant-import-spelled-every-way.fixed.xsl',
@@ -161,22 +175,28 @@ const APPLIED = [
     after: 'use-node-set-extension.fixed.xsl',
   },
   {
-    name: 'should unwrap a node-set around a union, a path and a brace, ' +
+    name: [
+      'should unwrap a node-set around a union, a path and a brace,',
       'bracketing what binds looser than a step, with --fix',
+    ].join(' '),
     flag: '--fix',
     before: 'node-set-with-a-loose-argument.xsl',
     after: 'node-set-with-a-loose-argument.fixed.xsl',
   },
   {
-    name: 'should rewrite double negations to the bare argument wherever a ' +
+    name: [
+      'should rewrite double negations to the bare argument wherever a',
       'truth alone is taken, with --fix',
+    ].join(' '),
     flag: '--fix',
     before: 'redundant-double-negation.xsl',
     after: 'redundant-double-negation.fixed.xsl',
   },
   {
-    name: 'should rewrite a double negation standing in an operand, an if and ' +
+    name: [
+      'should rewrite a double negation standing in an operand, an if and',
       'a satisfies, bracketing the loose argument, with --fix',
+    ].join(' '),
     flag: '--fix',
     before: 'double-negation-in-a-boolean-context.xsl',
     after: 'double-negation-in-a-boolean-context.fixed.xsl',
@@ -188,15 +208,19 @@ const APPLIED = [
     after: 'redundant-boolean-call.fixed.xsl',
   },
   {
-    name: 'should strip a boolean() standing in a not(), an operand and a ' +
+    name: [
+      'should strip a boolean() standing in a not(), an operand and a',
       'satisfies, bracketing the loose argument, with --fix',
+    ].join(' '),
     flag: '--fix',
     before: 'boolean-call-in-a-boolean-context.xsl',
     after: 'boolean-call-in-a-boolean-context.fixed.xsl',
   },
   {
-    name: 'should rewrite the xsl:use-when of a simplified stylesheet ' +
+    name: [
+      'should rewrite the xsl:use-when of a simplified stylesheet',
       'with --fix',
+    ].join(' '),
     flag: '--fix',
     before: 'use-when-on-a-literal-result-element.xsl',
     after: 'use-when-on-a-literal-result-element.fixed.xsl',
@@ -208,8 +232,10 @@ const APPLIED = [
     after: 'predicate-position-literal.fixed.xsl',
   },
   {
-    name: 'should shorten a positional predicate spelled with eq, keeping ' +
+    name: [
+      'should shorten a positional predicate spelled with eq, keeping',
       'the padding and the prefix, with --fix',
+    ].join(' '),
     flag: '--fix',
     before: 'predicate-position-in-a-value-comparison.xsl',
     after: 'predicate-position-in-a-value-comparison.fixed.xsl',
@@ -221,8 +247,10 @@ const APPLIED = [
     after: 'count-compared-to-zero.fixed.xsl',
   },
   {
-    name: 'should rewrite a count comparison to boolean/not/bare on 1.0 ' +
+    name: [
+      'should rewrite a count comparison to boolean/not/bare on 1.0',
       'with --fix',
+    ].join(' '),
     flag: '--fix',
     before: 'count-in-xslt-1-0.xsl',
     after: 'count-in-xslt-1-0.fixed.xsl',
@@ -234,29 +262,37 @@ const APPLIED = [
     after: 'count-entity-comparison.fixed.xsl',
   },
   {
-    name: 'should rewrite a count comparison shifted by an earlier entity ' +
+    name: [
+      'should rewrite a count comparison shifted by an earlier entity',
       'with --fix',
+    ].join(' '),
     flag: '--fix',
     before: 'count-shifted-comparison.xsl',
     after: 'count-shifted-comparison.fixed.xsl',
   },
   {
-    name: 'should rewrite a count comparison inside an attribute value ' +
+    name: [
+      'should rewrite a count comparison inside an attribute value',
       'template, leaving the output text of the same line alone, with --fix',
+    ].join(' '),
     flag: '--fix',
     before: 'count-in-result-attribute.xsl',
     after: 'count-in-result-attribute.fixed.xsl',
   },
   {
-    name: 'should rewrite both count comparisons of one attribute value, the ' +
+    name: [
+      'should rewrite both count comparisons of one attribute value, the',
       'second shifted by the entity in the first, with --fix',
+    ].join(' '),
     flag: '--fix',
     before: 'count-in-attribute-value-templates.xsl',
     after: 'count-in-attribute-value-templates.fixed.xsl',
   },
   {
-    name: 'should rewrite a count comparison inside a text value template ' +
+    name: [
+      'should rewrite a count comparison inside a text value template',
       'with --fix',
+    ].join(' '),
     flag: '--fix',
     before: 'count-in-text-value-template.xsl',
     after: 'count-in-text-value-template.fixed.xsl',
@@ -268,57 +304,73 @@ const APPLIED = [
     after: 'overlapping-fixes.fixed.xsl',
   },
   {
-    name: 'should unwrap only the outer of two nested double negations with ' +
+    name: [
+      'should unwrap only the outer of two nested double negations with',
       '--fix',
+    ].join(' '),
     flag: '--fix',
     before: 'nested-double-negation.xsl',
     after: 'nested-double-negation.fixed.xsl',
   },
   {
-    name: 'should rewrite a string-length comparison to != / = with ' +
+    name: [
+      'should rewrite a string-length comparison to != / = with',
       '--fix-suggestions',
+    ].join(' '),
     flag: '--fix-suggestions',
     before: 'string-length-compared-to-zero.xsl',
     after: 'string-length-compared-to-zero.fixed.xsl',
   },
   {
-    name: 'should rewrite a string-length comparison to ne / eq where that ' +
+    name: [
+      'should rewrite a string-length comparison to ne / eq where that',
       'is the class it was written in, with --fix-suggestions',
+    ].join(' '),
     flag: '--fix-suggestions',
     before: 'string-length-in-a-value-comparison.xsl',
     after: 'string-length-in-a-value-comparison.fixed.xsl',
   },
   {
-    name: 'should rewrite a name comparison to a node test with ' +
+    name: [
+      'should rewrite a name comparison to a node test with',
       '--fix-suggestions',
+    ].join(' '),
     flag: '--fix-suggestions',
     before: 'name-compared-to-string.xsl',
     after: 'name-compared-to-string.fixed.xsl',
   },
   {
-    name: 'should declare the namespaced version on a simplified stylesheet ' +
+    name: [
+      'should declare the namespaced version on a simplified stylesheet',
       'with --fix-suggestions',
+    ].join(' '),
     flag: '--fix-suggestions',
     before: 'missing-version-in-simplified-stylesheet.xsl',
     after: 'missing-version-in-simplified-stylesheet.fixed.xsl',
   },
   {
-    name: 'should spell the version with the prefix the document binds with ' +
+    name: [
+      'should spell the version with the prefix the document binds with',
       '--fix-suggestions',
+    ].join(' '),
     flag: '--fix-suggestions',
     before: 'missing-version-with-an-unusual-prefix.xsl',
     after: 'missing-version-with-an-unusual-prefix.fixed.xsl',
   },
   {
-    name: 'should declare the plain version on a package root with ' +
+    name: [
+      'should declare the plain version on a package root with',
       '--fix-suggestions',
+    ].join(' '),
     flag: '--fix-suggestions',
     before: 'missing-version-in-a-package.xsl',
     after: 'missing-version-in-a-package.fixed.xsl',
   },
   {
-    name: 'should rewrite a translate case fold to lower/upper-case with ' +
+    name: [
+      'should rewrite a translate case fold to lower/upper-case with',
       '--fix-suggestions',
+    ].join(' '),
     flag: '--fix-suggestions',
     before: 'translate-for-case.xsl',
     after: 'translate-for-case.fixed.xsl',
@@ -330,15 +382,19 @@ const APPLIED = [
     after: 'leaking-result-namespace.fixed.xsl',
   },
   {
-    name: 'should append to an existing exclude-result-prefixes with ' +
+    name: [
+      'should append to an existing exclude-result-prefixes with',
       '--fix-suggestions',
+    ].join(' '),
     flag: '--fix-suggestions',
     before: 'leaking-result-namespace-appended.xsl',
     after: 'leaking-result-namespace-appended.fixed.xsl',
   },
   {
-    name: 'should rewrite a boolean-constant test to true()/false() with ' +
+    name: [
+      'should rewrite a boolean-constant test to true()/false() with',
       '--fix-suggestions',
+    ].join(' '),
     flag: '--fix-suggestions',
     before: 'incorrect-use-of-boolean-constants.xsl',
     after: 'incorrect-use-of-boolean-constants.fixed.xsl',
@@ -350,15 +406,19 @@ const APPLIED = [
     after: 'confusing-variable-and-node.fixed.xsl',
   },
   {
-    name: 'should rewrite a value however its attribute is spelled with ' +
+    name: [
+      'should rewrite a value however its attribute is spelled with',
       '--fix-suggestions',
+    ].join(' '),
     flag: '--fix-suggestions',
     before: 'spaced-attribute.xsl',
     after: 'spaced-attribute.fixed.xsl',
   },
   {
-    name: 'should delete a select whose value holds a numeric entity with ' +
+    name: [
+      'should delete a select whose value holds a numeric entity with',
       '--fix-suggestions',
+    ].join(' '),
     flag: '--fix-suggestions',
     before: 'variable-with-select-holding-a-numeric-entity.xsl',
     after: 'variable-with-select-holding-a-numeric-entity.fixed.xsl',
@@ -370,8 +430,10 @@ const APPLIED = [
     after: 'entity-in-a-rewritten-value.fixed.xsl',
   },
   {
-    name: 'should append to a spaced exclude-result-prefixes with ' +
+    name: [
+      'should append to a spaced exclude-result-prefixes with',
       '--fix-suggestions',
+    ].join(' '),
     flag: '--fix-suggestions',
     before: 'spaced-excluded-prefixes.xsl',
     after: 'spaced-excluded-prefixes.fixed.xsl',
@@ -407,8 +469,10 @@ const APPLIED = [
     after: 'missing-version-in-stylesheet.fixed.xsl',
   },
   {
-    name: 'should declare a missing version on a stylesheet embedded below ' +
+    name: [
+      'should declare a missing version on a stylesheet embedded below',
       'the document element with --fix-suggestions',
+    ].join(' '),
     flag: '--fix-suggestions',
     before: 'an-embedded-stylesheet-missing-its-version.xsl',
     after: 'an-embedded-stylesheet-missing-its-version.fixed.xsl',
@@ -420,36 +484,46 @@ const APPLIED = [
     after: 'mode-or-priority-without-match.fixed.xsl',
   },
   {
-    name: 'should delete the select of a variable, param and with-param that ' +
+    name: [
+      'should delete the select of a variable, param and with-param that',
       'also have a body with --fix-suggestions',
+    ].join(' '),
     flag: '--fix-suggestions',
     before: 'variable-or-param-with-select-and-content.xsl',
     after: 'variable-or-param-with-select-and-content.fixed.xsl',
   },
   {
-    name: 'should drop an orphan mode and priority written in the shadow ' +
+    name: [
+      'should drop an orphan mode and priority written in the shadow',
       'spelling with --fix-suggestions',
+    ].join(' '),
     flag: '--fix-suggestions',
     before: 'a-shadow-mode-the-fixer-drops.xsl',
     after: 'a-shadow-mode-the-fixer-drops.fixed.xsl',
   },
   {
-    name: 'should delete a select written in the shadow spelling with ' +
+    name: [
+      'should delete a select written in the shadow spelling with',
       '--fix-suggestions',
+    ].join(' '),
     flag: '--fix-suggestions',
     before: 'a-shadow-select-the-fixer-drops.xsl',
     after: 'a-shadow-select-the-fixer-drops.fixed.xsl',
   },
   {
-    name: 'should delete a select however its delimiter and gaps are spelled ' +
+    name: [
+      'should delete a select however its delimiter and gaps are spelled',
       'with --fix-suggestions',
+    ].join(' '),
     flag: '--fix-suggestions',
     before: 'variable-or-param-with-select-spelled-oddly.xsl',
     after: 'variable-or-param-with-select-spelled-oddly.fixed.xsl',
   },
   {
-    name: 'should delete a single-quoted and a spaced ' +
+    name: [
+      'should delete a single-quoted and a spaced',
       'disable-output-escaping with --fix-suggestions',
+    ].join(' '),
     flag: '--fix-suggestions',
     before: 'using-disable-output-escaping-spelled-oddly.xsl',
     after: 'using-disable-output-escaping-spelled-oddly.fixed.xsl',
@@ -616,14 +690,18 @@ const UNCHANGED = [
     sheet: 'variable-or-param-with-select-and-content.xsl',
   },
   {
-    name: 'cannot choose between a select written in both spellings with ' +
+    name: [
+      'cannot choose between a select written in both spellings with',
       '--fix-suggestions',
+    ].join(' '),
     flag: '--fix-suggestions',
     sheet: 'a-select-written-in-both-spellings.xsl',
   },
   {
-    name: 'cannot delete a declaration exclude-result-prefixes names with ' +
+    name: [
+      'cannot delete a declaration exclude-result-prefixes names with',
       '--fix',
+    ].join(' '),
     flag: '--fix',
     sheet: 'an-excluded-result-prefix.xsl',
   },
@@ -662,8 +740,10 @@ const DROPPED = [
     check: 'unabbreviated-axis',
   },
   {
-    name: 'should drop the fixed starts-with-double-slash defect from the ' +
+    name: [
+      'should drop the fixed starts-with-double-slash defect from the',
       'report',
+    ].join(' '),
     flag: '--fix-suggestions',
     sheet: 'starts-with-double-slash.xsl',
     check: 'starts-with-double-slash',
@@ -735,8 +815,10 @@ const DROPPED = [
     check: 'translate-for-case',
   },
   {
-    name: 'should drop the fixed leaking-result-namespace defect with ' +
+    name: [
+      'should drop the fixed leaking-result-namespace defect with',
       '--fix-suggestions',
+    ].join(' '),
     flag: '--fix-suggestions',
     sheet: 'leaking-result-namespace.xsl',
     check: 'leaking-result-namespace',
@@ -748,15 +830,19 @@ const DROPPED = [
     check: 'incorrect-use-of-boolean-constants',
   },
   {
-    name: 'should drop the fixed confusing-variable-and-node defect with ' +
+    name: [
+      'should drop the fixed confusing-variable-and-node defect with',
       '--fix-suggestions',
+    ].join(' '),
     flag: '--fix-suggestions',
     sheet: 'confusing-variable-and-node.xsl',
     check: 'confusing-variable-and-node',
   },
   {
-    name: 'should drop the fixed text-outside-xsl-text defect with ' +
+    name: [
+      'should drop the fixed text-outside-xsl-text defect with',
       '--fix-suggestions',
+    ].join(' '),
     flag: '--fix-suggestions',
     sheet: 'text-outside-xsl-text.xsl',
     check: 'text-outside-xsl-text',
@@ -843,9 +929,11 @@ describe('fixer', function() {
     assert.deepEqual(
       DROPPED.filter((row) => CROSS.includes(row.check)).map((row) => row.name),
       [],
-      'a row asks whether a cross-file check is gone from a stylesheet that ' +
-        'shares its corpus with 78 others, so a neighbour supplying the ' +
+      [
+        'a row asks whether a cross-file check is gone from a stylesheet that',
+        'shares its corpus with 78 others, so a neighbour supplying the',
         'usage would answer yes as loudly as the fix does',
+      ].join(' '),
     )
   })
   APPLIED.forEach((row) => {

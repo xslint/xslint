@@ -86,8 +86,10 @@ const stands = function(defect, place, yml) {
   if (spread(yml)) {
     assert.equal(
       defect.file, `file${place[0]}.xsl`,
-      `the defect stands in ${defect.file} where the pack puts it in file ` +
+      [
+        `the defect stands in ${defect.file} where the pack puts it in file`,
         `${place[0]} of the corpus`,
+      ].join(' '),
     )
     line = place[1]
     column = place[2]
@@ -99,8 +101,10 @@ const stands = function(defect, place, yml) {
   )
   assert.equal(
     defect.pos, column,
-    `the defect stands at column ${defect.pos} where the pack puts it at ` +
+    [
+      `the defect stands at column ${defect.pos} where the pack puts it at`,
       `${column}`,
+    ].join(' '),
   )
   assert.equal(
     defect.name, called,
@@ -109,13 +113,17 @@ const stands = function(defect, place, yml) {
   const check = graded(called)
   assert.equal(
     defect.severity, check.severity,
-    `the defect is graded ${defect.severity} where ${called} is a ` +
+    [
+      `the defect is graded ${defect.severity} where ${called} is a`,
       `${check.severity}`,
+    ].join(' '),
   )
   assert.equal(
     defect.message, check.message,
-    `the defect reads "${defect.message}" where ${called} says ` +
+    [
+      `the defect reads "${defect.message}" where ${called} says`,
       `"${check.message}"`,
+    ].join(' '),
   )
 }
 
@@ -185,10 +193,12 @@ const harness = function(what) {
       assert.deepStrictEqual(
         checked(packs).map((pack) => pack.yml.pack).sort(),
         expecting(packs),
-        'a check some pack expects a defect from is asked nothing about ' +
-          'suppression, so a linter ignoring what the run turns off would ' +
-          'pass — and a directory registering no such test at all reads ' +
+        [
+          'a check some pack expects a defect from is asked nothing about',
+          'suppression, so a linter ignoring what the run turns off would',
+          'pass — and a directory registering no such test at all reads',
           'exactly like one where every check is covered',
+        ].join(' '),
       )
     })
   checked(packs).forEach((loud) => {
@@ -199,10 +209,12 @@ const harness = function(what) {
           what.run(corpusOf(loud.yml), [term])
             .filter((defect) => defect.name === loud.yml.pack).length,
           0,
-          `the linter reported ${loud.yml.pack} in ` +
-            `${path.basename(loud.at)} though the run suppresses "${term}", ` +
-            'so nothing a user turns off through --suppress or a config ' +
+          [
+            `the linter reported ${loud.yml.pack} in`,
+            `${path.basename(loud.at)} though the run suppresses "${term}",`,
+            'so nothing a user turns off through --suppress or a config',
             'would go quiet',
+          ].join(' '),
         )
       })
   })
@@ -213,8 +225,10 @@ const harness = function(what) {
           const defects = what.run(corpusOf(yml), [])
           assert.equal(
             defects.length, yml.found.amount,
-            `the pack expects ${yml.found.amount} defects and the linter ` +
+            [
+              `the pack expects ${yml.found.amount} defects and the linter`,
               `found ${defects.length}`,
+            ].join(' '),
           )
           yml.found.positions.forEach(
             (place, index) => stands(defects[index], place, yml),
@@ -222,14 +236,18 @@ const harness = function(what) {
           const fixes = yml.found.fixes ?? []
           fixes.forEach((expected, index) => assert.equal(
             defects[index].fix?.replacement ?? null, expected,
-            `the fix replaces with ${defects[index].fix?.replacement} where ` +
+            [
+              `the fix replaces with ${defects[index].fix?.replacement} where`,
               `the pack expects ${expected}`,
+            ].join(' '),
           ))
           const values = yml.found.values ?? []
           values.forEach((expected, index) => assert.equal(
             defects[index].fix?.value ?? null, expected,
-            `the fix reads ${defects[index].fix?.value} where the pack ` +
+            [
+              `the fix reads ${defects[index].fix?.value} where the pack`,
               `expects ${expected}`,
+            ].join(' '),
           ))
         })
       })

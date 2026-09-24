@@ -162,22 +162,23 @@ run by the `lint` job) enforces: spaced operators, no single-letter names
 (`id-length` >= 2), postfix `x++` only (prefix `++x` is banned), bare module
 names in `require`/`import` (no `node:` prefix), no conditional operator
 (`a ? b : c` is banned outright by `no-ternary`, nesting and flat chain alike),
-no file longer than 1000 lines (`max-lines`),
+no source file longer than 1000 lines (`max-lines`, outside `test/`),
 no redundant return variable
 (`const x = expr; return x` is banned — return the expression), no missing
 argument (a call must fill every parameter the callee declares without a
 default), one `return` per function (a second exit is banned), no orphaned
 JSDoc block (a `/**` block standing in front of another one documents nothing,
-which is what a deleted function leaves behind), and no sprawling one (a
-description past five lines, or a single `@`-tag entry past three). The last
-five are project-local rules in `eslint-local-rules.js`, unit-tested in
-`test/eslint-local-rules.test.js`; the arity of the callee is read from its
+which is what a deleted function leaves behind), no sprawling one (a
+description past five lines, or a single `@`-tag entry past three), and no
+string wrapped across lines with `+`, an array's `join` being the spelling
+(#1047). The last six are project-local rules in `eslint-local-rules.js`,
+unit-tested in `test/eslint-local-rules.test.js`; the arity of the callee is read from its
 declaration in the same file, or by loading the module a relative `require`
 names. The orphan rule has to be one of them rather than a
 `no-restricted-syntax` selector, because a comment is not a node a selector can
-reach, and `jsdoc/require-param` cannot see it either: a block binds to the
-declaration that follows, so the second block wins and the first is judged
-against nothing. Removing `settled` in #709 left its block behind, describing a
+reach, nor is a line break, and `jsdoc/require-param` cannot see it either: a
+block binds to the declaration that follows, so the second block wins and the
+first is judged against nothing. Removing `settled` in #709 left its block behind, describing a
 `tokens` parameter and a token return directly above `operates`, which takes
 neither. That plugin file sat in ESLint's `ignores` and so was held to none of
 the rules it implements — nine ternaries lived there. It is linted now, with the
@@ -187,8 +188,8 @@ formatting rules its own style predates (`semi`, `quotes`, `comma-dangle`,
 matters reaches the plugin too. Shortening that off-list is its own job; only
 `eslint.config.mjs` is still unlinted.
 
-A file stops at 1000 lines, counting the blank ones and the comments, since a
-reader scrolls past those as well. One file stands above it and is named in
+A source file stops at 1000 lines, counting the blank ones and the comments,
+since a reader scrolls past those as well. One file stands above it and is named in
 `SPRAWLING` in the config — `src/grammar.js`, 2172 lines of one function per
 production of XPath 3.1 — rather than carrying a disable comment of its own, so
 what is exempted is one list a reviewer reads in the place the cap is set, not a

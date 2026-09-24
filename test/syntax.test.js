@@ -270,8 +270,10 @@ describe('syntax', function() {
         .map((found) => found.expression)
         .filter((xpath) => !STRINGS.some((one) => one.xpath === xpath)),
       [],
-      'The literals fixture carries a spelling no row asks about, so what ' +
+      [
+        'The literals fixture carries a spelling no row asks about, so what',
         'the helper answers for it is asserted nowhere',
+      ].join(' '),
     )
   })
   it('cannot leave a word comparison out of the pairing', function() {
@@ -281,8 +283,10 @@ describe('syntax', function() {
           'value-comparison',
       ).filter((word) => !Object.values(WORDED).includes(word)),
       [],
-      'A word the grammar reads as a value comparison has no symbol paired ' +
+      [
+        'A word the grammar reads as a value comparison has no symbol paired',
         'with it, so every check reading that table is blind to it',
+      ].join(' '),
     )
   })
 })

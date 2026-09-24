@@ -295,9 +295,11 @@ describe('grammar over the corpus', function() {
     it(`cannot answer having read no ${source}`, function() {
       assert.ok(
         new Set(SWEPT[source]).size >= least,
-        `the sweep reads ${new Set(SWEPT[source]).size} expressions from ` +
-          `every ${source} in the repository, which is fewer than the ` +
+        [
+          `the sweep reads ${new Set(SWEPT[source]).size} expressions from`,
+          `every ${source} in the repository, which is fewer than the`,
           `${least} that stood there when these gates were written`,
+        ].join(' '),
       )
     })
   })
@@ -326,19 +328,23 @@ describe('grammar over the corpus', function() {
   it('cannot answer having found the engine nothing to insist about', function() {
     assert.ok(
       EXPLAINED.length >= 40,
-      `${EXPLAINED.length} of these expressions are ones the grammar accepts ` +
-        'and the engine refuses over its own strictness, against the 40 that ' +
-        'stood here when these gates were written: either the class has ' +
-        'stopped naming them or the grammar has stopped accepting them, and ' +
+      [
+        `${EXPLAINED.length} of these expressions are ones the grammar accepts`,
+        'and the engine refuses over its own strictness, against the 40 that',
+        'stood here when these gates were written: either the class has',
+        'stopped naming them or the grammar has stopped accepting them, and',
         'the subtraction below now stands for almost nothing',
+      ].join(' '),
     )
   })
   it('cannot excuse the engine accepting what the grammar refuses', function() {
     assert.deepEqual(
       EXPLAINED.filter((one) => sided(one) === 'engine'),
       [],
-      'a spelling the engine takes and our own grammar refuses is being read ' +
+      [
+        'a spelling the engine takes and our own grammar refuses is being read',
         'as the engine being strict, which is an invented defect excused',
+      ].join(' '),
     )
   })
   it('cannot part from the engine anywhere it is not accounted for', function() {

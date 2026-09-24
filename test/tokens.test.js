@@ -527,8 +527,10 @@ describe('tokens', function() {
         tokenized(xpath).filter((token) => token.type !== TOKENS.WHITESPACE)[1]
           .type,
         TOKENS.NAME,
-        `${xpath} runs two terminals together that XPath makes a gap stand ` +
+        [
+          `${xpath} runs two terminals together that XPath makes a gap stand`,
           'between, and the word behind the literal arrived an operator',
+        ].join(' '),
       )
     })
   })

@@ -107,8 +107,10 @@ const validate = function(corpus, suppressions = []) {
     }
     if (skipped > 0) {
       logger.info(
-        `Skipped ${skipped} expression(s) in ${source.file} holding an ` +
+        [
+          `Skipped ${skipped} expression(s) in ${source.file} holding an`,
           `entity no declaration this run read resolves`,
+        ].join(' '),
       )
     }
   }

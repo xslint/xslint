@@ -24,9 +24,11 @@ const TYPES = {
  * @type {RegExp}
  */
 const DIRECTIVE = new RegExp(
-  `<!--${GAP}*xslint-(` +
-  [TYPES.FILE, TYPES.NEXT_LINE, TYPES.LINE].join('|') +
-  `)([a-z0-9${WHITESPACE}-]*)-->`,
+  [
+    `<!--${GAP}*xslint-(`,
+    [TYPES.FILE, TYPES.NEXT_LINE, TYPES.LINE].join('|'),
+    `)([a-z0-9${WHITESPACE}-]*)-->`,
+  ].join(''),
   'g',
 )
 

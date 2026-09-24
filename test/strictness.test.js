@@ -169,8 +169,10 @@ describe('strictness', function() {
     it(`names the gap behind a dollar ${where}`, function() {
       assert.ok(
         insists(xpath),
-        `${xpath} is not accounted for, though XPath 2.0 spells whitespace ` +
+        [
+          `${xpath} is not accounted for, though XPath 2.0 spells whitespace`,
           'between a variable reference\'s two terminals',
+        ].join(' '),
       )
     })
   })
@@ -212,8 +214,10 @@ describe('strictness', function() {
       TIGHT.filter(([xpath]) => !compiles(xpath))
         .map(([xpath, between]) => `${xpath} (${between})`),
       [],
-      'the engine refuses one of these, so it says nothing about a gap the ' +
+      [
+        'the engine refuses one of these, so it says nothing about a gap the',
         'engine allows and the class must leave alone',
+      ].join(' '),
     )
   })
   it('cannot read the engine as taking a gap behind a dollar', function() {
@@ -221,8 +225,10 @@ describe('strictness', function() {
       BOUND.filter(([xpath]) => compiles(xpath))
         .map(([xpath, where]) => `${xpath} (${where})`),
       [],
-      'the engine takes one of these as it stands, so the class excuses a ' +
+      [
+        'the engine takes one of these as it stands, so the class excuses a',
         'refusal nobody makes and would leave a real one unaccounted for',
+      ].join(' '),
     )
   })
   it('cannot name a spelling that is not XPath at all', function() {
@@ -231,8 +237,10 @@ describe('strictness', function() {
         .filter(([xpath]) => parsed(xpath, '3.0').fault !== '')
         .map(([xpath, where]) => `${xpath} (${where})`),
       [],
-      'the class holds a spelling our own grammar refuses, so subtracting it ' +
+      [
+        'the class holds a spelling our own grammar refuses, so subtracting it',
         'from a diff would hide a defect rather than account for the engine',
+      ].join(' '),
     )
   })
 })

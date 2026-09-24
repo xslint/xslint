@@ -166,8 +166,10 @@ describe('lint (programmatic API)', function() {
         lint([source(sheet)], {only: only, suppress: suppress})
           .map((defect) => defect.name),
         expected,
-        `cannot report anything but ${expected.join(', ') || 'nothing'} ` +
+        [
+          `cannot report anything but ${expected.join(', ') || 'nothing'}`,
           `for ${what}, a narrowed run leaving out every check it names not`,
+        ].join(' '),
       )
     })
   })
@@ -178,8 +180,10 @@ describe('lint (programmatic API)', function() {
         {only: ['qwerty']},
       )).join(' '),
       /qwerty/,
-      'cannot keep quiet about a choice naming no check, where a typo would ' +
+      [
+        'cannot keep quiet about a choice naming no check, where a typo would',
         'otherwise narrow the run to nothing and read as a clean report',
+      ].join(' '),
     )
   })
   it('re-grades a severity through overrides', function() {
@@ -197,8 +201,10 @@ describe('lint (programmatic API)', function() {
         [source('stylesheets/xsl-with-some-violations.xsl')],
         {stable: true, nursery: NURSED},
       ).some((defect) => defect.name === 'short-names'),
-      'cannot withhold a check the nursery marks, where the tier reports ' +
+      [
+        'cannot withhold a check the nursery marks, where the tier reports',
         'only what no open issue says is wrong about code a processor accepts',
+      ].join(' '),
     )
   })
   it('keeps every check where no stable tier is asked for', function() {
@@ -253,8 +259,10 @@ describe('lint (programmatic API)', function() {
         [source('stylesheets/xsl-with-some-violations.xsl')],
         {stable: true, nursery: NURSED, overrides: {'short-names': 'error'}},
       ).some((defect) => defect.name === 'short-names'),
-      'cannot re-admit a nursery check the configuration grades outright, ' +
+      [
+        'cannot re-admit a nursery check the configuration grades outright,',
         'where a grade written against the name is the user asking for it',
+      ].join(' '),
     )
   })
   it('withholds a nursery check the caller grades without naming', function() {
@@ -266,8 +274,10 @@ describe('lint (programmatic API)', function() {
           overrides: {'short-names': 'error'},
         },
       ).some((defect) => defect.name === 'short-names'),
-      'cannot withhold a nursery check a grade reached through a glob, ' +
+      [
+        'cannot withhold a nursery check a grade reached through a glob,',
         'where the pattern names no check and vouches for none',
+      ].join(' '),
     )
   })
   it('says which check a glob graded the tier withholds anyway', function() {
@@ -280,9 +290,11 @@ describe('lint (programmatic API)', function() {
         },
       )).join(' '),
       /short-names.*#911/,
-      'cannot name the check a glob graded and the tier withheld anyway, ' +
-        'beside the issue its mark stands on, so a grade that vouched for ' +
+      [
+        'cannot name the check a glob graded and the tier withheld anyway,',
+        'beside the issue its mark stands on, so a grade that vouched for',
         'nothing reads as a grade that took effect',
+      ].join(' '),
     )
   })
   it('leaves a directive over a withheld check called used', function() {
@@ -292,8 +304,10 @@ describe('lint (programmatic API)', function() {
         {stable: true, nursery: NURSED},
       )).filter((line) => line.includes('Unused xslint-disable')),
       [],
-      'cannot call a directive unused where the tier withheld the defect it ' +
+      [
+        'cannot call a directive unused where the tier withheld the defect it',
         'covers, the author having written it against a check that fires',
+      ].join(' '),
     )
   })
   it('exposes the fix engine for callers to apply', function() {
@@ -345,9 +359,11 @@ describe('lint (programmatic API)', function() {
           .filter((defect) => defect.line === line)
           .map((defect) => defect.name),
         [check],
-        `cannot report ${what} as anything but ${check}, the version in ` +
-          'force being what parts a stylesheet breaking a promise it made ' +
+        [
+          `cannot report ${what} as anything but ${check}, the version in`,
+          'force being what parts a stylesheet breaking a promise it made',
           'from one holding a fault no version of the language admits',
+        ].join(' '),
       )
     })
   })
@@ -479,8 +495,10 @@ describe('lint (programmatic API)', function() {
         .filter((defect) => defect.name === 'scans-whole-document')
         .map((defect) => defect.line),
       [15],
-      'cannot read the //alpha an external parameter entity declares, so ' +
+      [
+        'cannot read the //alpha an external parameter entity declares, so',
         'the expression holding it reaches no check at all (#1010)',
+      ].join(' '),
     )
   })
   it('says which file holds the expressions it cannot read', function() {
@@ -488,8 +506,10 @@ describe('lint (programmatic API)', function() {
       noted(() => lint([source('entities/behind-a-parameter-entity.xsl')]))
         .join(' '),
       /1 expression.*entities\/behind-a-parameter-entity\.xsl/,
-      'dropped an expression holding an entity nobody declared without a ' +
+      [
+        'dropped an expression holding an entity nobody declared without a',
         'word at the default level, naming neither the count nor the file',
+      ].join(' '),
     )
   })
   BROUGHT.forEach(([sheet, subsets, line, kind]) => {
@@ -499,8 +519,10 @@ describe('lint (programmatic API)', function() {
           .filter((defect) => defect.name === 'redundant-whitespace')
           .map((defect) => [defect.line, defect.pos, defect.fix]),
         [[line, 33, undefined]],
-        `walked a run behind ${kind} entity as far into the raw text as ` +
+        [
+          `walked a run behind ${kind} entity as far into the raw text as`,
           'the replacement is wide, or anchored a fix on a value no line spells',
+        ].join(' '),
       )
     })
   })
@@ -510,8 +532,10 @@ describe('lint (programmatic API)', function() {
         .filter((defect) => defect.name === 'incorrect-use-of-boolean-constants')
         .map((defect) => [defect.line, defect.fix]),
       [[12, undefined]],
-      'offered a substitution of a test its file spells as a reference, ' +
+      [
+        'offered a substitution of a test its file spells as a reference,',
         'anchored on text no line of the file holds',
+      ].join(' '),
     )
   })
 })

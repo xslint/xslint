@@ -20,9 +20,11 @@ const PLACE = {
  * What the file says about itself, since JSON cannot carry a comment.
  * @type {string}
  */
-const NOTE = 'Generated from checks/*/*.yaml by scripts/generate-checks.js; ' +
-  'the YAML is where a check is authored, this is only how a process reads ' +
-  'one without a parser. Run `npx grunt checks` rather than editing it.'
+const NOTE = [
+  'Generated from checks/*/*.yaml by scripts/generate-checks.js;',
+  'the YAML is where a check is authored, this is only how a process reads',
+  'one without a parser. Run `npx grunt checks` rather than editing it.',
+].join(' ')
 
 /**
  * Every check, kind by kind, read off the YAML that authors it.

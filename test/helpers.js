@@ -440,8 +440,10 @@ const walkedWith = function(dir, kilobytes) {
   }
   if (answer === null) {
     throw new Error(
-      `no stack from ${kilobytes}kB up let node answer about ${dir}, ` +
+      [
+        `no stack from ${kilobytes}kB up let node answer about ${dir},`,
         `${complaints.join(', ')}`,
+      ].join(' '),
     )
   }
   return answer

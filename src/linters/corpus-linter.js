@@ -279,9 +279,11 @@ const MARKS = ['$', '(', '#']
 const kinded = function(reference) {
   if (!REFERENCES.includes(reference)) {
     throw new Error(
-      `The reference kind "${reference}" is none of ` +
-        `${REFERENCES.join(', ')}, so nothing would be read as a reference ` +
+      [
+        `The reference kind "${reference}" is none of`,
+        `${REFERENCES.join(', ')}, so nothing would be read as a reference`,
         'and every declaration would be reported as dead',
+      ].join(' '),
     )
   }
   return reference
@@ -428,8 +430,10 @@ const called = function(found, parse) {
       }
       calls.push(`${nameOf(found, spelled)}#${arity}`)
     } else if (node.kind === 'arrow' && statically(parse, node)) {
-      calls.push(`${nameOf(found, spelledOf(parse, node.children[1]))}` +
-        `#${node.children.length - 1}`)
+      calls.push([
+        `${nameOf(found, spelledOf(parse, node.children[1]))}`,
+        `#${node.children.length - 1}`,
+      ].join(''))
     }
     node.children.forEach(visit)
   }

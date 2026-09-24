@@ -144,8 +144,10 @@ const textOutsideXslText = function(node) {
       col: held[0].columnNumber,
       value: held[0].nodeValue,
       replacement:
-        `<${prefix}:text>${escaped(held[0].nodeValue)}` +
-        `</${prefix}:text>`,
+        [
+          `<${prefix}:text>${escaped(held[0].nodeValue)}`,
+          `</${prefix}:text>`,
+        ].join(''),
     }
   }
   return fix

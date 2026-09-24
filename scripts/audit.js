@@ -140,11 +140,15 @@ const cause = function(reading) {
 const verdict = function(reading) {
   let said = ''
   if (unanswered(reading)) {
-    said = 'npm audit read no report from the registry, so nothing was ' +
-      `audited${cause(reading)}`
+    said = [
+      'npm audit read no report from the registry, so nothing was',
+      `audited${cause(reading)}`,
+    ].join(' ')
   } else if (!reported(reading)) {
-    said = 'npm audit could not run over this tree, so nothing was audited: ' +
-      `${reading.error.code}, ${reading.error.summary.replace(/[.]$/, '')}`
+    said = [
+      'npm audit could not run over this tree, so nothing was audited:',
+      `${reading.error.code}, ${reading.error.summary.replace(/[.]$/, '')}`,
+    ].join(' ')
   } else if (reading.metadata.vulnerabilities.total > 0) {
     said = `npm audit found ${
       counted(reading.metadata.vulnerabilities.total)}: ${

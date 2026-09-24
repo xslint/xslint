@@ -35,9 +35,11 @@ const SPLITS = new Map()
  * @type {RegExp}
  */
 const SWEEP = new RegExp(
-  '^//(?:\\(' + GAP + '*([^()\\[\\]]+?)' + GAP + '*\\)' +
-    '|([^()\\[\\]|/' + WHITESPACE + ']+))' +
+  [
+    '^//(?:\\(' + GAP + '*([^()\\[\\]]+?)' + GAP + '*\\)',
+    '|([^()\\[\\]|/' + WHITESPACE + ']+))',
     '(?:/@([^()\\[\\]|/' + WHITESPACE + ']+))?([^]*)$',
+  ].join(''),
 )
 
 /**
@@ -309,8 +311,10 @@ const filtered = function(text) {
  * @type {RegExp}
  */
 const STEP = new RegExp(
-  '^(?:([\\p{L}_][\\p{L}\\p{N}\\p{M}_.-]*):)?' +
+  [
+    '^(?:([\\p{L}_][\\p{L}\\p{N}\\p{M}_.-]*):)?',
     '(?:[\\p{L}_][\\p{L}\\p{N}\\p{M}_.-]*|\\*)$',
+  ].join(''),
   'u',
 )
 

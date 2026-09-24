@@ -577,16 +577,22 @@ const fault = function(name, readings) {
   }
   let said = ''
   if (cheapest > ceiling) {
-    said = `${name} spends ${cheapest.toFixed(2)}% of its own run, past the ` +
-      `${ceiling}% that test/scaling.test.js allows it`
+    said = [
+      `${name} spends ${cheapest.toFixed(2)}% of its own run, past the`,
+      `${ceiling}% that test/scaling.test.js allows it`,
+    ].join(' ')
   } else if (!named && growths.length > 0 && Math.min(...growths) > GROWTH) {
-    said = `${name} grew ${Math.min(...growths).toFixed(2)} times what the ` +
-      `middle stage grew when the corpus grew ${STEP} times, so its shape has ` +
-      `changed`
+    said = [
+      `${name} grew ${Math.min(...growths).toFixed(2)} times what the`,
+      `middle stage grew when the corpus grew ${STEP} times, so its shape has`,
+      `changed`,
+    ].join(' ')
   } else if (named && ceiling > SLACK * dearest) {
-    said = `${name} spends at most ${dearest.toFixed(2)}% of its run where it ` +
-      `is allowed ${ceiling}%, so the entry has stopped being a bar and wants ` +
-      `tightening`
+    said = [
+      `${name} spends at most ${dearest.toFixed(2)}% of its run where it`,
+      `is allowed ${ceiling}%, so the entry has stopped being a bar and wants`,
+      `tightening`,
+    ].join(' ')
   }
   return said
 }
@@ -610,12 +616,16 @@ const overspent = function(name, readings) {
   }
   let said = ''
   if (cheapest > ceiling) {
-    said = `${name} costs ${cheapest.toFixed(2)}% of the run, past the ` +
-      `${ceiling}% that test/scaling.test.js allows it`
+    said = [
+      `${name} costs ${cheapest.toFixed(2)}% of the run, past the`,
+      `${ceiling}% that test/scaling.test.js allows it`,
+    ].join(' ')
   } else if (named && ceiling > SLACK * dearest) {
-    said = `${name} costs at most ${dearest.toFixed(2)}% of the run where it ` +
-      `is allowed ${ceiling}%, so the entry has stopped being a bar and wants ` +
-      `tightening`
+    said = [
+      `${name} costs at most ${dearest.toFixed(2)}% of the run where it`,
+      `is allowed ${ceiling}%, so the entry has stopped being a bar and wants`,
+      `tightening`,
+    ].join(' ')
   }
   return said
 }
@@ -629,8 +639,10 @@ const overspent = function(name, readings) {
  */
 const tabled = function(weight) {
   return Array.from(weight.stages, ([name, one]) =>
-    `${name} ${one.share.toFixed(2)}% of its run, grew ` +
-    `${one.growth.toFixed(2)}`).concat(
+    [
+      `${name} ${one.share.toFixed(2)}% of its run, grew`,
+      `${one.growth.toFixed(2)}`,
+    ].join(' ')).concat(
     Array.from(weight.checks).sort((one, two) => two[1] - one[1]).map(
       ([name, share]) => `${name} ${share.toFixed(2)}%`,
     ),
@@ -777,9 +789,11 @@ describe('scaling', function() {
     assert.deepEqual(
       judgement.stages,
       [],
-      'a stage no longer costs or grows the way the bars in ' +
-        `test/scaling.test.js say, over a corpus of ${SMALL} stylesheets and ` +
+      [
+        'a stage no longer costs or grows the way the bars in',
+        `test/scaling.test.js say, over a corpus of ${SMALL} stylesheets and`,
         `one of ${SMALL * STEP}: ${judgement.table}`,
+      ].join(' '),
     )
   })
   it('holds every check to the bar it answers to', function() {
@@ -794,8 +808,10 @@ describe('scaling', function() {
     assert.deepEqual(
       judgement.checks,
       [],
-      'a check no longer costs the way the bars in test/scaling.test.js say, ' +
+      [
+        'a check no longer costs the way the bars in test/scaling.test.js say,',
         `over a corpus of ${SMALL * STEP} stylesheets: ${judgement.table}`,
+      ].join(' '),
     )
   })
   it('reads a clock too coarse for a check as no measurement', function() {
@@ -804,9 +820,11 @@ describe('scaling', function() {
         Array.from({length: 49}, (blank, at) => [`${at}`, [Number(at >= zeros)]]),
       ))),
       [true, false],
-      'the check tier no longer stands down under the tick Windows charges ' +
-        'processor time in, where 36 of its 49 readings come back zero, or no ' +
+      [
+        'the check tier no longer stands down under the tick Windows charges',
+        'processor time in, where 36 of its 49 readings come back zero, or no',
         'longer judges the 4 of 49 a fine clock leaves',
+      ].join(' '),
     )
   })
   it('names in SHARES only stages the pipeline still has', function() {
@@ -816,8 +834,10 @@ describe('scaling', function() {
           name !== 'xsl-validator' && name !== 'xpath-validator',
       ),
       [],
-      'a stage is allowed a cost of its own by name, yet nothing of that name ' +
+      [
+        'a stage is allowed a cost of its own by name, yet nothing of that name',
         'runs any more, so the entry weighs on nothing',
+      ].join(' '),
     )
   })
   it('names in COSTS only checks the pipeline still runs', function() {
@@ -826,8 +846,10 @@ describe('scaling', function() {
         (name) => !STAGES.some((stage) => stage.checks.includes(name)),
       ),
       [],
-      'a check is allowed a cost of its own by name, yet no stage owns one ' +
+      [
+        'a check is allowed a cost of its own by name, yet no stage owns one',
         'of that name any more, so the entry weighs on nothing',
+      ].join(' '),
     )
   })
   it('names in SHADOWED every check a sibling rides along with', function() {
@@ -841,9 +863,11 @@ describe('scaling', function() {
         ])).filter((pair) => pair[1] !== ''),
       ),
       SHADOWED,
-      'a check name stands inside another of its own stage, so the sweep ' +
-        'above cannot run the one without the other and charges the pair to ' +
+      [
+        'a check name stands inside another of its own stage, so the sweep',
+        'above cannot run the one without the other and charges the pair to',
         'a single bar without saying so',
+      ].join(' '),
     )
   })
   it('measures every linter the pipeline is staged from', function() {
@@ -860,10 +884,12 @@ describe('scaling', function() {
     assert.deepEqual(
       GUIDES.flatMap(misquoted),
       [],
-      'a guide quotes a bar at a number the tables above no longer hold, and ' +
-        'the prose is the half a session reads before it touches either one, ' +
-        'so a share left behind by the re-derivation that moved it is a bar ' +
+      [
+        'a guide quotes a bar at a number the tables above no longer hold, and',
+        'the prose is the half a session reads before it touches either one,',
+        'so a share left behind by the re-derivation that moved it is a bar',
         'loosened by nobody',
+      ].join(' '),
     )
   })
   it('states every bar of those tables in the guide read first', function() {
@@ -875,9 +901,11 @@ describe('scaling', function() {
           .test(prose),
       ),
       [],
-      'a bar stands in no guide every turn loads, so the gate above holds it ' +
-        'to nothing and a session meets it for the first time in the file ' +
+      [
+        'a bar stands in no guide every turn loads, so the gate above holds it',
+        'to nothing and a session meets it for the first time in the file',
         'that sets it',
+      ].join(' '),
     )
   })
 })

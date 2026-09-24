@@ -24,9 +24,11 @@ const RUNS = [
   {
     name: 'fails the run whose budget has stopped being a bar',
     args: ['tei', '4000', '40000'], code: 1,
-    said: '::error::linting tei took 4000ms where its budget allows 40000ms, ' +
-      'which is over 4 times the run: the budget has stopped being a bar ' +
+    said: [
+      '::error::linting tei took 4000ms where its budget allows 40000ms,',
+      'which is over 4 times the run: the budget has stopped being a bar',
       'and wants re-cutting from a measurement\n',
+    ].join(' '),
   },
   {
     name: 'passes the run standing inside its budget in silence',
@@ -40,8 +42,10 @@ describe('budget', function() {
       assert.deepEqual(
         ranScript('scripts/budget.js', row.args),
         {code: row.code, said: row.said},
-        'the nightly tier cannot read off scripts/budget.js what a corpus ' +
+        [
+          'the nightly tier cannot read off scripts/budget.js what a corpus',
           'cost it and whether to fail',
+        ].join(' '),
       )
     })
   })
