@@ -101,11 +101,18 @@ const APPLIED = [
     after: 'starts-with-double-slash.safely-fixed.xsl',
   },
   {
-    name: 'should drop the redundant leading slashes of a pattern outside a ' +
-      'template with --fix',
+    name: 'should drop the redundant leading slashes of a key, and of no ' +
+      'other pattern of a 3.0 sheet, with --fix',
     flag: '--fix',
     before: 'starts-with-double-slash-outside-a-template.xsl',
     after: 'starts-with-double-slash-outside-a-template.fixed.xsl',
+  },
+  {
+    name: 'should drop the redundant leading slashes of every pattern but a ' +
+      'match of a 1.0 sheet with --fix',
+    flag: '--fix',
+    before: 'starts-with-double-slash-in-xslt-1.xsl',
+    after: 'starts-with-double-slash-in-xslt-1.fixed.xsl',
   },
   {
     name: 'should drop the leading slashes of every branch of one pattern, ' +
