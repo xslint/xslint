@@ -106,7 +106,7 @@
       },
       "starts-with-double-slash": {
         "severity": "warning",
-        "message": "A pattern alternative starts with //, which is redundant since every XSLT pattern already matches at any depth, and it lowers the rule's default priority from 0.5 to that of the step alone. Remove the leading // and give the rule an explicit priority if it must keep ranking as it does.",
+        "message": "A pattern alternative starts with //, which adds nothing but, from XSLT 2.0 on, a demand that the node's tree be rooted at a document node, since every pattern already matches at any depth. On an xsl:template, removing it also lowers the default priority from 0.5 to that of the step alone, so give the rule an explicit priority if it must keep ranking as it does.",
         "fix": [
           "safe",
           "suggestion"
@@ -258,7 +258,7 @@
         "message": "A variable, function, or template name starts with a digit, which is invalid in XPath. Rename it to start with a letter."
       },
       "not-creating-attribute-correctly": {
-        "xpath": "//xsl:attribute[not(contains(@name, '{')) and not(@_name)][not(@namespace) and not(@_namespace)][parent::*[not(self::xsl:*)]][not(*) or (count(*) = 1 and (xsl:value-of[not(@separator) and not(@_separator)] or xsl:text[not(@disable-output-escaping) and not(@_disable-output-escaping)]))][not(preceding-sibling::*[not(self::xsl:variable) and not(self::xsl:attribute)])][not(preceding-sibling::xsl:attribute[@_name or not(@name) or contains(@name, '{')])][not(preceding-sibling::xsl:attribute/@name = @name)]",
+        "xpath": "//xsl:attribute[not(contains(@name, '{')) and not(@_name)][not(@namespace) and not(@_namespace)][parent::*[not(self::xsl:*)]][not(*) or (count(*) = 1 and (xsl:value-of[not(@separator) and not(@_separator)] or xsl:text[not(@disable-output-escaping) and not(@_disable-output-escaping)]))][not(preceding-sibling::*[not(self::xsl:variable) and not(self::xsl:attribute)])][not(preceding-sibling::xsl:attribute[@_name or not(@name) or contains(@name, '{')])][not(preceding-sibling::xsl:attribute/@name = @name)][not(some $held in ../@*[not(namespace-uri() = 'http://www.w3.org/1999/XSL/Transform')] satisfies local-name($held) = replace(xslint:attribute(., 'name'), '^.*:', ''))][not(@separator) and not(@_separator) and not(@type) and not(@_type) and not(@validation) and not(@_validation)][not(some $value in (. | .//@select | .//@_select) satisfies preceding-sibling::xsl:variable[contains($value, concat('$', xslint:attribute(., 'name')))])]",
         "severity": "warning",
         "message": "xsl:attribute with a static name on a literal element can be a literal attribute (an AVT for a computed value). Write it inline."
       },

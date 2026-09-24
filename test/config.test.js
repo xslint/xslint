@@ -46,6 +46,18 @@ const CASES = [
     expected: null,
   },
   {
+    name: 'parses the chosen checks into a list',
+    content: 'only:\n  - short\n  - unused-variable\n',
+    field: 'only',
+    expected: ['short', 'unused-variable'],
+  },
+  {
+    name: 'ignores an only that is not a list',
+    content: 'only: short-names\n',
+    field: 'only',
+    expected: [],
+  },
+  {
     name: 'reads the stable tier from the config file',
     content: 'stable: true\n',
     field: 'stable',
@@ -79,6 +91,7 @@ describe('config', function() {
     assert.deepStrictEqual(config, {
       rules: {},
       exclude: [],
+      only: [],
       maxWarnings: null,
       logLevel: null,
       quiet: null,

@@ -6,7 +6,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0" id="sl-fix">
   <xsl:template match="/">
     <xsl:if test="@a != ''">
-      <xsl:variable name="blank" select="@b = ''"/>
+      <xsl:variable name="blank" select="string(@b) = ''"/>
       <xsl:value-of select="@c != ''"/>
       <xsl:value-of select='@d != &apos;&apos;'/>
     </xsl:if>

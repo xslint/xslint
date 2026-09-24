@@ -435,6 +435,46 @@ const validatedSuppressions = function(suppressions) {
 }
 
 /**
+ * The checks a run narrowed to some substrings reports, every check where it
+ * names none. A choice naming no check is warned about, since a typo would
+ * otherwise narrow the run to nothing and read as a clean report (#1030).
+ * @param {Array.<string>} only - Substrings of the names chosen
+ * @return {Array.<string>} - Names of the checks chosen
+ */
+const chosenOf = function(only) {
+  for (const choice of only) {
+    if (!CHECKS.some((check) => check.includes(choice))) {
+      logger.warn(
+        `Check with substring '${choice}' does not exist. ` +
+        `Delete this '--only' or use another one.`,
+      )
+    }
+  }
+  let chosen = CHECKS
+  if (only.length > 0) {
+    chosen = CHECKS.filter(
+      (check) => only.some((choice) => check.includes(choice)),
+    )
+  }
+  return chosen
+}
+
+/**
+ * The checks left out of a narrowed run, spelled as suppressions — all but a
+ * name standing inside a chosen one, which a suppression, matching by
+ * substring, would silence with it; what those leave standing is filtered
+ * off the report instead (#1030).
+ * @param {Array.<string>} chosen - Names of the checks chosen
+ * @return {Array.<string>} - Names safe to suppress
+ */
+const unchosenOf = function(chosen) {
+  return CHECKS.filter(
+    (check) => !chosen.includes(check) &&
+      !chosen.some((name) => name.includes(check)),
+  )
+}
+
+/**
  * The suffixes a stylesheet is named with, both spellings of the one thing.
  * @type {Array.<string>}
  */
@@ -628,18 +668,21 @@ const ranked = function(one, two) {
  * @param {Array.<{file: string, content: string}>} sources - Raw stylesheets,
  *  each as it was read, a byte order mark it opens with held aside by `parted`
  * @param {{suppress: Array.<string>, overrides: {[check: string]: string},
- *  stable: boolean, admitted: Array.<string>, nursery: Map}} options - Skips,
- *  re-grades, the tier gate, the names it exempts, and the marks it reads
+ *  stable: boolean, admitted: Array.<string>, nursery: Map, only: Array}}
+ *  options - Skips, re-grades, the tier gate, its exemptions and marks, choices
  * @return {Array.<object>} - The defects that survive suppression
  */
 const lint = function(
   sources,
   {
     suppress = [], overrides = {}, stable = false,
-    admitted = Object.keys(overrides), nursery = NURSERY,
+    admitted = Object.keys(overrides), nursery = NURSERY, only = [],
   } = {},
 ) {
-  const suppressions = validatedSuppressions(suppress)
+  const chosen = chosenOf(only)
+  const suppressions = [
+    ...validatedSuppressions(suppress), ...unchosenOf(chosen),
+  ]
   const read = sources.map((source) => ({
     file: source.file, content: parted(source.content).text,
   }))
@@ -692,7 +735,7 @@ const lint = function(
     }
   }
   return defects.filter(
-    (defect) => !gated.has(defect.name) &&
+    (defect) => chosen.includes(defect.name) && !gated.has(defect.name) &&
       !suppresses(directives.get(defect.file), defect),
   ).sort(ranked)
 }
@@ -701,7 +744,7 @@ const lint = function(
  * Entry point for the command line.
  * @param {Array.<string>} pths - Files or directories with .xsl to lint
  * @param {object} options - CLI options: `logLevel`, `quiet`, `suppress`,
- *  `maxWarnings`, `config`, `format`, `stable`, `fix`, `fixDryRun`,
+ *  `maxWarnings`, `config`, `format`, `stable`, `only`, `fix`, `fixDryRun`,
  *  `fixSuggestions`
  */
 const xslint = function(pths, options) {
@@ -756,11 +799,16 @@ const xslint = function(pths, options) {
     content: fs.readFileSync(stylesheet, 'utf-8'),
   }))
   const stable = options.stable ?? config.stable ?? false
+  let only = config.only
+  if (options.only?.length > 0) {
+    only = options.only
+  }
   let reported = lint(sources, {
     suppress: [...options.suppress, ...disabled],
     overrides: overrides,
     stable: stable,
     admitted: admitted,
+    only: only,
   })
   if (options.fix || options.fixDryRun || options.fixSuggestions) {
     /**

@@ -145,7 +145,7 @@ contrib/samples/assembly/assemble.xsl:287:21 string-length-compared-to-zero sugg
 contrib/samples/assembly/assemble.xsl:290:21 string-length-compared-to-zero suggestion "$root.default.renderas != ''"
 contrib/samples/assembly/assemble.xsl:304:3 unused-function-template-parameter
 contrib/samples/assembly/assemble.xsl:309:3 use-choose-without-otherwise
-contrib/samples/assembly/assemble.xsl:341:21 string-length-compared-to-zero suggestion "$fileref = ''"
+contrib/samples/assembly/assemble.xsl:341:21 string-length-compared-to-zero suggestion "string($fileref) = ''"
 contrib/samples/assembly/assemble.xsl:349:21 count-compared-to-zero fix "not($ref.content/*)"
 contrib/samples/assembly/assemble.xsl:386:13 use-choose-without-otherwise
 contrib/samples/assembly/topic-maker-chunk.xsl:1:1 missing-id-in-stylesheet
@@ -580,7 +580,7 @@ gentext/xsl/dsssl.xsl:46:43 redundant-whitespace fix " "
 gentext/xsl/dsssl.xsl:47:43 redundant-whitespace fix " "
 gentext/xsl/dsssl.xsl:48:43 redundant-whitespace fix " "
 gentext/xsl/dsssl.xsl:49:43 redundant-whitespace fix " "
-gentext/xsl/dsssl.xsl:50:19 string-length-compared-to-zero suggestion "@key = ''"
+gentext/xsl/dsssl.xsl:50:19 string-length-compared-to-zero suggestion "string(@key) = ''"
 gentext/xsl/dsssl.xsl:50:43 redundant-whitespace fix " "
 gentext/xsl/dsssl.xsl:52:5 using-disable-output-escaping suggestion ""
 gentext/xsl/dsssl.xsl:54:5 using-disable-output-escaping suggestion ""
@@ -700,7 +700,7 @@ xsl/assembly/assemble.xsl:352:34 unabbreviated-axis fix ""
 xsl/assembly/assemble.xsl:352:54 unabbreviated-axis fix ""
 xsl/assembly/assemble.xsl:356:3 use-choose-without-otherwise
 xsl/assembly/assemble.xsl:383:23 string-length-compared-to-zero suggestion "$fragment.id != ''"
-xsl/assembly/assemble.xsl:406:21 string-length-compared-to-zero suggestion "$fileref = ''"
+xsl/assembly/assemble.xsl:406:21 string-length-compared-to-zero suggestion "string($fileref) = ''"
 xsl/assembly/assemble.xsl:433:21 count-compared-to-zero fix "not($ref.content)"
 xsl/assembly/assemble.xsl:530:13 use-choose-without-otherwise
 xsl/assembly/assemble.xsl:589:7 use-choose-without-otherwise
@@ -941,17 +941,17 @@ xsl/common/olink.xsl:57:3 unused-function-template-parameter
 xsl/common/olink.xsl:148:1 oversized-template
 xsl/common/olink.xsl:187:9 use-choose-without-otherwise
 xsl/common/olink.xsl:217:9 use-choose-without-otherwise
-xsl/common/olink.xsl:237:19 string-length-compared-to-zero suggestion "$targetdoc.att = ''"
+xsl/common/olink.xsl:237:19 string-length-compared-to-zero suggestion "string($targetdoc.att) = ''"
 xsl/common/olink.xsl:246:9 use-choose-without-otherwise
-xsl/common/olink.xsl:267:19 string-length-compared-to-zero suggestion "$targetdoc.att = ''"
-xsl/common/olink.xsl:269:19 string-length-compared-to-zero suggestion "$current.docid = ''"
+xsl/common/olink.xsl:267:19 string-length-compared-to-zero suggestion "string($targetdoc.att) = ''"
+xsl/common/olink.xsl:269:19 string-length-compared-to-zero suggestion "string($current.docid) = ''"
 xsl/common/olink.xsl:276:9 use-choose-without-otherwise
-xsl/common/olink.xsl:296:19 string-length-compared-to-zero suggestion "$targetptr.att = ''"
+xsl/common/olink.xsl:296:19 string-length-compared-to-zero suggestion "string($targetptr.att) = ''"
 xsl/common/olink.xsl:315:9 use-choose-without-otherwise
-xsl/common/olink.xsl:337:19 string-length-compared-to-zero suggestion "$targetptr.att = ''"
+xsl/common/olink.xsl:337:19 string-length-compared-to-zero suggestion "string($targetptr.att) = ''"
 xsl/common/olink.xsl:357:9 use-choose-without-otherwise
-xsl/common/olink.xsl:445:21 string-length-compared-to-zero suggestion "$selected.key = ''"
-xsl/common/olink.xsl:446:21 string-length-compared-to-zero suggestion "$target.lang = ''"
+xsl/common/olink.xsl:445:21 string-length-compared-to-zero suggestion "string($selected.key) = ''"
+xsl/common/olink.xsl:446:21 string-length-compared-to-zero suggestion "string($target.lang) = ''"
 xsl/common/olink.xsl:510:5 setting-value-of-variable-incorrectly
 xsl/common/olink.xsl:517:9 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 xsl/common/olink.xsl:518:9 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
@@ -1072,7 +1072,7 @@ xsl/epub/bin/spec/tools/obfuscate_regression_submission.xsl:2:1 missing-id-in-st
 xsl/epub/bin/xslt/obfuscate.xsl:2:1 missing-id-in-stylesheet
 xsl/epub/docbook.xsl:2:1 missing-id-in-stylesheet
 xsl/epub/docbook.xsl:2:1 too-many-templates
-xsl/epub/docbook.xsl:67:23 string-length-compared-to-zero suggestion "$base.dir = ''"
+xsl/epub/docbook.xsl:67:23 string-length-compared-to-zero suggestion "string($base.dir) = ''"
 xsl/epub/docbook.xsl:192:23 count-compared-to-zero fix "not(key('id',$rootid))"
 xsl/epub/docbook.xsl:265:9 use-choose-without-otherwise
 xsl/epub/docbook.xsl:305:5 setting-value-of-variable-incorrectly
@@ -1257,7 +1257,7 @@ xsl/epub3/epub3-chunk-mods.xsl:6:3 redundant-namespace-declarations fix ""
 xsl/epub3/epub3-chunk-mods.xsl:9:3 redundant-namespace-declarations fix ""
 xsl/epub3/epub3-element-mods.xsl:7:1 missing-id-in-stylesheet
 xsl/epub3/epub3-element-mods.xsl:7:1 too-many-templates
-xsl/epub3/epub3-element-mods.xsl:58:21 string-length-compared-to-zero suggestion "$base.dir = ''"
+xsl/epub3/epub3-element-mods.xsl:58:21 string-length-compared-to-zero suggestion "string($base.dir) = ''"
 xsl/epub3/epub3-element-mods.xsl:306:5 setting-value-of-variable-incorrectly
 xsl/epub3/epub3-element-mods.xsl:345:7 not-creating-attribute-correctly
 xsl/epub3/epub3-element-mods.xsl:376:7 not-creating-attribute-correctly
@@ -2017,10 +2017,8 @@ xsl/fo/table.xsl:1337:13 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text
 xsl/fo/table.xsl:1425:11 text-outside-xsl-text suggestion "<xsl:text>1*</xsl:text>"
 xsl/fo/table.xsl:1429:11 text-outside-xsl-text suggestion "<xsl:text>1*</xsl:text>"
 xsl/fo/table.xsl:1436:13 not-creating-attribute-correctly
-xsl/fo/table.xsl:1476:11 not-creating-attribute-correctly
 xsl/fo/table.xsl:1500:11 text-outside-xsl-text suggestion "<xsl:text>1*</xsl:text>"
 xsl/fo/table.xsl:1509:17 setting-value-of-variable-incorrectly
-xsl/fo/table.xsl:1514:15 not-creating-attribute-correctly
 xsl/fo/table.xsl:1674:5 text-outside-xsl-text suggestion "<xsl:text>pc</xsl:text>"
 xsl/fo/table.xsl:1675:5 text-outside-xsl-text suggestion "<xsl:text>pt</xsl:text>"
 xsl/fo/task.xsl:2:1 missing-id-in-stylesheet
@@ -2127,7 +2125,7 @@ xsl/fo/xref.xsl:1105:7 blank-nested-if
 xsl/fo/xref.xsl:1122:1 oversized-template
 xsl/fo/xref.xsl:1133:9 use-choose-without-otherwise
 xsl/fo/xref.xsl:1145:9 use-choose-without-otherwise
-xsl/fo/xref.xsl:1190:21 string-length-compared-to-zero suggestion "$olink.key = ''"
+xsl/fo/xref.xsl:1190:21 string-length-compared-to-zero suggestion "string($olink.key) = ''"
 xsl/fo/xref.xsl:1215:27 string-length-compared-to-zero suggestion "$content != ''"
 xsl/fo/xref.xsl:1334:3 setting-value-of-variable-incorrectly
 xsl/fo/xref.xsl:1338:3 setting-value-of-variable-incorrectly
@@ -2366,7 +2364,7 @@ xsl/html/chunk-common.xsl:1869:7 not-creating-attribute-correctly
 xsl/html/chunk-common.xsl:1873:39 scans-whole-document
 xsl/html/chunk.xsl:1:1 missing-id-in-stylesheet
 xsl/html/chunker.xsl:1:1 missing-id-in-stylesheet
-xsl/html/chunker.xsl:40:21 string-length-compared-to-zero suggestion "$base.dir = ''"
+xsl/html/chunker.xsl:40:21 string-length-compared-to-zero suggestion "string($base.dir) = ''"
 xsl/html/chunker.xsl:68:25 count-compared-to-zero fix "not(parent::*)"
 xsl/html/chunkfast.xsl:1:1 missing-id-in-stylesheet
 xsl/html/chunktoc.xsl:1:1 missing-id-in-stylesheet
@@ -2549,7 +2547,7 @@ xsl/html/html.xsl:552:7 not-creating-attribute-correctly
 xsl/html/html.xsl:563:3 unused-function-template-parameter
 xsl/html/html.xsl:651:21 count-compared-to-zero fix "not($css.node)"
 xsl/html/html.xsl:676:3 unused-function-template-parameter
-xsl/html/html.xsl:681:23 string-length-compared-to-zero suggestion "$src = ''"
+xsl/html/html.xsl:681:23 string-length-compared-to-zero suggestion "string($src) = ''"
 xsl/html/htmltbl.xsl:2:1 missing-id-in-stylesheet
 xsl/html/htmltbl.xsl:2:1 too-many-templates
 xsl/html/htmltbl.xsl:113:5 use-choose-without-otherwise
@@ -2784,7 +2782,7 @@ xsl/html/xref.xsl:1063:25 count-compared-to-zero fix "not(child::node())"
 xsl/html/xref.xsl:1063:31 unabbreviated-axis fix ""
 xsl/html/xref.xsl:1096:9 use-choose-without-otherwise
 xsl/html/xref.xsl:1108:9 use-choose-without-otherwise
-xsl/html/xref.xsl:1155:21 string-length-compared-to-zero suggestion "$olink.key = ''"
+xsl/html/xref.xsl:1155:21 string-length-compared-to-zero suggestion "string($olink.key) = ''"
 xsl/html/xref.xsl:1171:27 string-length-compared-to-zero suggestion "$content != ''"
 xsl/html/xref.xsl:1274:3 unused-function-template-parameter
 xsl/html/xref.xsl:1289:3 unused-function-template-parameter

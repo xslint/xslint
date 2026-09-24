@@ -4,7 +4,8 @@
 pack: not-creating-attribute-correctly
 # Reported, an xsl:variable binding a value and writing nothing into the
 # element it stands in, so the xsl:attribute behind it is still the first
-# thing the element is given and the inline form says what this says (#950).
+# thing the element is given and the inline form says what this says (#950),
+# as long as the value reads no variable the start tag cannot see (#1005).
 found:
   amount: 1
   positions: [ [ 7, 7 ] ]
@@ -16,7 +17,7 @@ input: |-
       <iota>
         <xsl:variable name="way" select="'ltr'"/>
         <xsl:attribute name="dir">
-          <xsl:value-of select="$way"/>
+          <xsl:value-of select="'ltr'"/>
         </xsl:attribute>
       </iota>
     </xsl:template>
