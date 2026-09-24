@@ -744,7 +744,7 @@ const lint = function(
  * Entry point for the command line.
  * @param {Array.<string>} pths - Files or directories with .xsl to lint
  * @param {object} options - CLI options: `logLevel`, `quiet`, `suppress`,
- *  `maxWarnings`, `config`, `format`, `stable`, `fix`, `fixDryRun`,
+ *  `maxWarnings`, `config`, `format`, `stable`, `only`, `fix`, `fixDryRun`,
  *  `fixSuggestions`
  */
 const xslint = function(pths, options) {

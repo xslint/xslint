@@ -9,6 +9,11 @@ publication date only; detailed notes begin with the Unreleased section.
 
 ## Unreleased
 
+- Run only the checks named by `--only`, or by an `only:` list in
+  `.xslint.yml`, matched by substring as `--suppress` is. A check the run
+  suppresses or the config turns `off` stays off, and a name that also stands
+  inside a longer one no longer lets the longer check through (#1030).
+
 - Ask what XSLT sets as the context before advising a `self::` node test.
   `name-compared-to-string` read only the predicates inside an expression, so
   under `xsl:for-each select="@*"`, `match="@*"` or a processing-instruction
