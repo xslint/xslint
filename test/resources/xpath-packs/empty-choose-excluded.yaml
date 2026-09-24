@@ -3,8 +3,8 @@
 ---
 pack: empty-choose
 found:
-  amount: 2
-  positions: [ [ 41, 5 ], [ 46, 5 ] ]
+  amount: 3
+  positions: [ [ 76, 5 ], [ 81, 5 ], [ 86, 5 ] ]
 input: |-
   <?xml version="1.0"?>
   <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="3.0" id="style1">
@@ -46,6 +46,46 @@ input: |-
           </xsl:otherwise>
         </xsl:choose>
       </xsl:if>
+      <xsl:choose use-when="0">
+        <xsl:otherwise>
+          <p>z0</p>
+        </xsl:otherwise>
+      </xsl:choose>
+      <xsl:choose use-when="0.0">
+        <xsl:otherwise>
+          <p>z1</p>
+        </xsl:otherwise>
+      </xsl:choose>
+      <xsl:choose use-when="0e0">
+        <xsl:otherwise>
+          <p>z2</p>
+        </xsl:otherwise>
+      </xsl:choose>
+      <xsl:choose use-when=".0">
+        <xsl:otherwise>
+          <p>z3</p>
+        </xsl:otherwise>
+      </xsl:choose>
+      <xsl:choose use-when="( )">
+        <xsl:otherwise>
+          <p>z4</p>
+        </xsl:otherwise>
+      </xsl:choose>
+      <xsl:choose use-when="''">
+        <xsl:otherwise>
+          <p>z5</p>
+        </xsl:otherwise>
+      </xsl:choose>
+      <xsl:choose use-when='""'>
+        <xsl:otherwise>
+          <p>z6</p>
+        </xsl:otherwise>
+      </xsl:choose>
+      <xsl:choose use-when="1">
+        <xsl:otherwise>
+          <p>z7</p>
+        </xsl:otherwise>
+      </xsl:choose>
       <xsl:choose use-when="true()">
         <xsl:otherwise>
           <p>f</p>
