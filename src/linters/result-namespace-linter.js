@@ -60,15 +60,33 @@ const prefixOf = function(name) {
 }
 
 /**
+ * Whether the element is top-level data or stands inside it: a non-XSLT child
+ * of an XSLT root, such as an oXygen `doc:doc` block, which a processor never
+ * instantiates, so it writes nothing into the result (#1006).
+ * @param {Element} element - Element to test
+ * @return {boolean} - True for data outside every sequence constructor
+ */
+const documentary = function(element) {
+  const xsl = element.ownerDocument
+  let top = element
+  while (top.parentNode !== xsl && top.parentNode.parentNode !== xsl) {
+    top = top.parentNode
+  }
+  return xsl.documentElement.namespaceURI === XSLT &&
+    top.namespaceURI !== XSLT
+}
+
+/**
  * Whether the element is a literal result element — a non-XSLT element that is
- * not an extension instruction, so it is copied verbatim into the output and
- * carries the stylesheet's in-scope namespaces with it.
+ * neither an extension instruction nor top-level data, so it is copied into
+ * the output and carries the stylesheet's in-scope namespaces with it.
  * @param {Element} element - Element to test
  * @param {Set.<string>} extension - Extension-element prefixes
  * @return {boolean} - True for a literal result element
  */
 const literal = function(element, extension) {
-  return element.namespaceURI !== XSLT && !extension.has(element.prefix)
+  return element.namespaceURI !== XSLT && !extension.has(element.prefix) &&
+    !documentary(element)
 }
 
 /**

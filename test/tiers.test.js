@@ -22,8 +22,9 @@
  * comparison there, which no edit to a declaration can satisfy.
  * Where the set equality carries its own weight is the check declaring both,
  * the tier being a property of the place a defect stands rather than of the
- * check: `starts-with-double-slash` is safe in a `@select` and a suggestion on
- * an `xsl:template`, whose priority a dropped `//` shifts (#583, #899).
+ * check: `starts-with-double-slash` is a suggestion on an `xsl:template`,
+ * whose priority a dropped `//` shifts, and on any 2.0+ pattern but a key's,
+ * which a parentless tree matches without it (#583, #899, #1015).
  * The third question is the other side of the same key: nobody but the check's
  * own page says what a check corrects. `README.md` spent 42% of itself
  * teaching the twenty-three of them, one bullet each and two for the check

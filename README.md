@@ -42,7 +42,7 @@ xslint points at each problem with its exact position and how to fix it:
 ```text
 [WARNING] sheet.xsl(2:1) The '@id' attribute is missing in the 'xsl:stylesheet' element. Declare it to specify the unique identifier explicitly. (missing-id-in-stylesheet)
 [WARNING] sheet.xsl(2:1) The xsl:output instruction is missing. Declare it to specify the serialization format explicitly. (not-using-output)
-[WARNING] sheet.xsl(3:24) A pattern alternative starts with //, which is redundant since every XSLT pattern already matches at any depth, and it lowers the rule's default priority from 0.5 to that of the step alone. Remove the leading // and give the rule an explicit priority if it must keep ranking as it does. (starts-with-double-slash)
+[WARNING] sheet.xsl(3:24) A pattern alternative starts with //, which adds nothing but, from XSLT 2.0 on, a demand that the node's tree be rooted at a document node, since every pattern already matches at any depth. On an xsl:template, removing it also lowers the default priority from 0.5 to that of the step alone, so give the rule an explicit priority if it must keep ranking as it does. (starts-with-double-slash)
 [WARNING] sheet.xsl(4:5) A variable, parameter, function, or template has a single-character name. Use a descriptive name that reveals intent. (short-names)
 ```
 
@@ -73,7 +73,7 @@ Pointed at core stylesheets from the three most widely-used XSLT projects —
 [DocBook-XSL](https://github.com/docbook/xslt10-stylesheets) (1.0),
 [TEI](https://github.com/TEIC/Stylesheets) (2.0), and
 [DITA-OT](https://github.com/dita-ot/dita-ot) (1.0/2.0) — xslint surfaced
-**10,867 findings across 43 different checks in 867 stylesheets, with no false
+**10,856 findings across 43 different checks in 867 stylesheets, with no false
 positives from its validators**: 3,279 pieces of literal text outside
 `xsl:text`, 639 `xsl:choose` blocks with no `xsl:otherwise`, and 586 template
 and function parameters nothing reads. Real stylistic and logical findings in

@@ -106,7 +106,7 @@
       },
       "starts-with-double-slash": {
         "severity": "warning",
-        "message": "A pattern alternative starts with //, which is redundant since every XSLT pattern already matches at any depth, and it lowers the rule's default priority from 0.5 to that of the step alone. Remove the leading // and give the rule an explicit priority if it must keep ranking as it does.",
+        "message": "A pattern alternative starts with //, which adds nothing but, from XSLT 2.0 on, a demand that the node's tree be rooted at a document node, since every pattern already matches at any depth. On an xsl:template, removing it also lowers the default priority from 0.5 to that of the step alone, so give the rule an explicit priority if it must keep ranking as it does.",
         "fix": [
           "safe",
           "suggestion"
@@ -167,7 +167,7 @@
       "blank-nested-if": {
         "xpath": "//xsl:if[(count(*) = 1) and (count(xsl:if) = 1) and not(text()[xslint:normalize-space(.) or ancestor::*[@xml:space][1]/@xml:space = 'preserve'])]",
         "severity": "warning",
-        "message": "A nested xsl:if inside another xsl:if is prohibited. Combine conditions with 'and' into a single xsl:if."
+        "message": "An xsl:if holds nothing but another xsl:if, which states one condition in two places. Combine the conditions with 'and' into a single xsl:if, unless the outer test guards the inner one against an error."
       },
       "duplicate-param-name": {
         "xpath": "//xsl:param[@name = preceding-sibling::xsl:param/@name]",

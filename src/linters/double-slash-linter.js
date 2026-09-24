@@ -133,7 +133,7 @@
 const {gathered, parseOf} = require('../syntax')
 const {metaOf, suppressed, defect} = require('../checks')
 const {TOKENS, normalized} = require('../tokens')
-const {XSLT} = require('../xsl-version')
+const {XSLT, MODERN, since} = require('../xsl-version')
 const {holding} = require('../tree')
 const {logger} = require('../logger')
 
@@ -198,10 +198,20 @@ const REPEATING = [
  * what makes dropping a leading `//` there a change of behaviour rather than of
  * text alone: a pattern carrying a `/` step has a default priority of 0.5 where
  * a lone name test has 0 (#583). Nowhere else is anything ranked, `priority`
- * being an attribute of `xsl:template` alone, so the edit is safe there.
+ * being an attribute of `xsl:template` alone, so nothing else loses rank to it.
  * @type {string}
  */
 const RANKED = 'template'
+
+/**
+ * The one XSLT element whose pattern matches the same nodes with or without a
+ * leading `//` at every version. From 2.0 on a pattern opening `//` matches
+ * only a node whose tree is rooted at a document node, where `item` also
+ * matches in a parentless tree, but `key()` answers over a document alone
+ * (#1015).
+ * @type {string}
+ */
+const KEYED = 'key'
 
 /**
  * The pattern that matches the document node itself, which a stylesheet is
@@ -289,15 +299,17 @@ const owned = function(inner, paths, at) {
  * The fix that drops a leading `//`: the two characters where they truly stand,
  * never sliced off the front of the value, since on `match=" //spaced"` that
  * would leave `/spaced` and turn an unanchored pattern into an absolute one.
- * A suggestion inside an `xsl:template` and safe everywhere else, for the
- * reason `RANKED` carries — the one tier a linter grades (#899).
- * @param {{node: Node, expression: string, pattern: boolean}} found - Record
+ * A suggestion on an `xsl:template` for the reason `RANKED` carries, and on
+ * 2.0+ anywhere but where `KEYED` stands, for the reason it carries (#1015).
+ * @param {{node: Node, version: string}} found - The pattern's record
  * @param {{value: string}} token - The `//` token
  * @return {{value: string, replacement: string}} - The fix
  */
 const cut = function(found, token) {
+  const element = holding(found.node).localName
   let tier = {}
-  if (holding(found.node).localName === RANKED) {
+  if (element === RANKED ||
+    (element !== KEYED && since(found.version, MODERN))) {
     tier = {suggestion: true}
   }
   return {value: token.value, replacement: '', ...tier}

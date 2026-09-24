@@ -106,7 +106,6 @@ common/common_core.xsl:1410:5 use-choose-without-otherwise
 common/common_core.xsl:1430:5 use-choose-without-otherwise
 common/common_core.xsl:1439:7 text-outside-xsl-text suggestion "<xsl:text>, </xsl:text>"
 common/common_figures.xsl:2:1 missing-id-in-stylesheet
-common/common_figures.xsl:4:17 leaking-result-namespace suggestion "tei xs"
 common/common_figures.xsl:94:3 oversized-template
 common/common_figures.xsl:118:16 short-names
 common/common_figures.xsl:148:16 use-choose-without-otherwise
@@ -2520,7 +2519,6 @@ docx/tools/fixdocprop.xsl:29:2 not-creating-attribute-correctly
 docx/tools/fixdotrels.xsl:2:1 missing-id-in-stylesheet
 docx/tools/fixgraphics.xsl:2:1 missing-id-in-stylesheet
 docx/tools/fixgraphics.xsl:2:57 redundant-namespace-declarations fix ""
-docx/tools/fixgraphics.xsl:3:17 leaking-result-namespace suggestion " exclude-result-prefixes=\"tiff\""
 docx/tools/fixgraphics.xsl:4:17 redundant-namespace-declarations fix ""
 docx/tools/fixstyle.xsl:2:1 missing-id-in-stylesheet
 docx/tools/fixstyle.xsl:36:56 use-double-slash
@@ -4051,7 +4049,6 @@ odt/expandxsl.xsl:2:1 missing-id-in-stylesheet
 odt/expandxsl.xsl:2:1 not-using-output
 odt/fixgraphics.xsl:2:1 missing-id-in-stylesheet
 odt/fixgraphics.xsl:2:57 redundant-namespace-declarations fix ""
-odt/fixgraphics.xsl:3:17 leaking-result-namespace suggestion " exclude-result-prefixes=\"tiff\""
 odt/fixgraphics.xsl:4:17 redundant-namespace-declarations fix ""
 odt/grouping.xsl:1:1 missing-id-in-stylesheet
 odt/grouping.xsl:90:4 short-names
@@ -4501,7 +4498,6 @@ profiles/iso/docx/from-pass2.xsl:407:24 count-compared-to-zero fix "empty(*)"
 profiles/iso/docx/from-pass2.xsl:450:6 short-names
 profiles/iso/docx/from-pass2.xsl:477:4 not-creating-attribute-correctly
 profiles/iso/docx/from-pass3.xsl:2:1 missing-id-in-stylesheet
-profiles/iso/docx/from-pass3.xsl:14:17 leaking-result-namespace suggestion "a pic rel ve o teidocx r m v wp w10 w wne mml vt cals tbx iso custprops tei"
 profiles/iso/docx/from-pass3.xsl:24:17 redundant-namespace-declarations fix ""
 profiles/iso/docx/from-pass3.xsl:88:7 use-choose-without-otherwise
 profiles/iso/docx/from.xsl:2:1 missing-id-in-stylesheet
@@ -4935,7 +4931,6 @@ profiles/iso/isofooter.xsl:7:17 redundant-namespace-declarations fix ""
 profiles/iso/isofooter.xsl:8:17 redundant-namespace-declarations fix ""
 profiles/iso/isofooter.xsl:9:17 redundant-namespace-declarations fix ""
 profiles/iso/isofooter.xsl:10:17 redundant-namespace-declarations fix ""
-profiles/iso/isofooter.xsl:11:17 leaking-result-namespace suggestion " exclude-result-prefixes=\"w\""
 profiles/iso/isofooter.xsl:12:17 redundant-namespace-declarations fix ""
 profiles/iso/isofooter.xsl:62:9 not-creating-element-correctly
 profiles/iso/isofooter.xsl:64:46 scans-whole-document
@@ -4948,7 +4943,6 @@ profiles/iso/isoheader.xsl:7:17 redundant-namespace-declarations fix ""
 profiles/iso/isoheader.xsl:8:17 redundant-namespace-declarations fix ""
 profiles/iso/isoheader.xsl:9:17 redundant-namespace-declarations fix ""
 profiles/iso/isoheader.xsl:10:17 redundant-namespace-declarations fix ""
-profiles/iso/isoheader.xsl:11:17 leaking-result-namespace suggestion " exclude-result-prefixes=\"w\""
 profiles/iso/isoheader.xsl:12:17 redundant-namespace-declarations fix ""
 profiles/iso/isoheader.xsl:62:9 not-creating-element-correctly
 profiles/iso/isoheader.xsl:64:39 scans-whole-document
@@ -5054,7 +5048,6 @@ profiles/iso/latex/to.xsl:422:1 text-outside-xsl-text suggestion "<xsl:text>\n\\
 profiles/iso/latex/to.xsl:527:6 unused-function-template-parameter
 profiles/iso/latex/to.xsl:528:6 unused-function-template-parameter
 profiles/iso/removechanges.xsl:2:1 missing-id-in-stylesheet
-profiles/iso/removechanges.xsl:14:17 leaking-result-namespace suggestion "a pic rel ve o teidocx r m v wp w10 w wne mml vt cals tbx iso custprops tei"
 profiles/iso/removechanges.xsl:73:29 unabbreviated-axis fix ""
 profiles/iso/removechanges.xsl:88:5 setting-value-of-variable-incorrectly
 profiles/iso/schema/isotei-lite.xsl:2:1 missing-id-in-stylesheet
@@ -5214,8 +5207,6 @@ profiles/iso/schema/test3.xsl:4:17 redundant-namespace-declarations fix ""
 profiles/iso/schema/test3.xsl:5:17 redundant-namespace-declarations fix ""
 profiles/iso/schema/test3.xsl:6:17 redundant-namespace-declarations fix ""
 profiles/iso/schema/test3.xsl:7:17 redundant-namespace-declarations fix ""
-profiles/iso/schema/test3.xsl:8:17 leaking-result-namespace
-profiles/iso/schema/test3.xsl:9:17 leaking-result-namespace
 profiles/iso/schema/test3.xsl:10:17 redundant-namespace-declarations fix ""
 profiles/iso/schema/test3.xsl:58:4 setting-value-of-variable-incorrectly
 profiles/iso/schema/test3.xsl:101:90 redundant-whitespace fix " "
