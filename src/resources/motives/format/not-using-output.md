@@ -11,7 +11,9 @@ for the first. What is asked to declare it is the stylesheet a transformation st
 one holding a template that matches the document root, or the template named
 `xsl:initial-template`, that nothing else imports. A library of templates for
 particular elements is imported into such a stylesheet and serializes as part
-of it, so it is left alone.
+of it, so it is left alone. A stylesheet that is neither cannot be told apart
+from such a library, so it is left alone as well — an identity transform run
+on its own, or one started from a named template, goes unreported.
 
 Which stylesheet declares it is a question about the whole import tree and not
 about one file. An `xsl:output` merges into every stylesheet that imports the
