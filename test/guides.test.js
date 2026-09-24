@@ -37,7 +37,7 @@
  * one instead. A `CEILING` of half the bar stood beside it until it was seen
  * to be a gate no tree could fail: the root stands in every chain, so the
  * chain holding it above weighs each other guide against the bar less what
- * stands over it, far under half the bar for every guide but the root, and
+ * stands over it, under half the bar for every guide but the root, and
  * holds the root itself to what the dearest chain leaves it, a number derived
  * rather than chosen. A gate no tree can fail is removed and
  * not kept (#750, #660). All four of those figures — the chain, its ratio,
