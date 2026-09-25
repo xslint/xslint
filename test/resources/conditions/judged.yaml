@@ -1,0 +1,59 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+- name: calls a plain use-when in a 2.0 stylesheet conditional
+  asked: conditional
+  input: |-
+    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0"><xsl:param name="width" use-when="$debug"/></xsl:stylesheet>
+  answer: true
+- name: calls a plain use-when in a 1.0 stylesheet unconditional
+  asked: conditional
+  input: |-
+    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0"><xsl:param name="width" use-when="$debug"/></xsl:stylesheet>
+  answer: false
+- name: calls a shadow use-when in a 2.0 stylesheet unconditional
+  asked: conditional
+  input: |-
+    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0"><xsl:param name="width" _use-when="$debug"/></xsl:stylesheet>
+  answer: false
+- name: calls a shadow use-when holding a run-time template in a 3.0 stylesheet conditional
+  asked: conditional
+  input: |-
+    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="3.0"><xsl:param name="width" _use-when="{$debug}"/></xsl:stylesheet>
+  answer: true
+- name: calls a use-when under no declared version conditional
+  asked: conditional
+  input: |-
+    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"><xsl:param name="width" use-when="$debug"/></xsl:stylesheet>
+  answer: true
+- name: calls an element carrying no use-when unconditional
+  asked: conditional
+  input: |-
+    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="3.0"><xsl:param name="width"/></xsl:stylesheet>
+  answer: false
+- name: calls the xsl:use-when of a literal result element conditional
+  asked: conditional
+  input: |-
+    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0"><xsl:template match="/"><box xsl:use-when="$debug"/></xsl:template></xsl:stylesheet>
+  at: //box
+  answer: true
+- name: excludes a literal false use-when in a 2.0 stylesheet
+  asked: excluded
+  input: |-
+    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="2.0"><xsl:param name="width" use-when="false()"/></xsl:stylesheet>
+  answer: true
+- name: keeps a literal false use-when in a 1.0 stylesheet
+  asked: excluded
+  input: |-
+    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0"><xsl:param name="width" use-when="false()"/></xsl:stylesheet>
+  answer: false
+- name: keeps a literal false use-when under no declared version
+  asked: excluded
+  input: |-
+    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"><xsl:param name="width" use-when="false()"/></xsl:stylesheet>
+  answer: false
+- name: keeps a use-when whose answer is a processor's
+  asked: excluded
+  input: |-
+    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="3.0"><xsl:param name="width" use-when="not(true())"/></xsl:stylesheet>
+  answer: false

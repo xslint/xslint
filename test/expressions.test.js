@@ -3,7 +3,10 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {enclosed} = require('../src/expressions')
+const {enclosed, nameOf} = require('../src/expressions')
+const {xml, yaml} = require('../src/helpers')
+const {nodes} = require('../src/xpath')
+const path = require('path')
 const assert = require('assert')
 
 /**
@@ -55,7 +58,27 @@ const TEMPLATES = [
   },
 ]
 
+/**
+ * Parameters paired with the expanded name their `name` holds.
+ * @type {Array.<{name: string, input: string, expanded: string}>}
+ */
+const NAMES = yaml.parsedFromFile(
+  path.resolve(__dirname, 'resources', 'expressions', 'names.yaml'),
+)
+
 describe('expressions', function() {
+  NAMES.forEach((row) => {
+    it(row.name, function() {
+      assert.equal(
+        nameOf(
+          nodes(xml.parsedFromString(row.input), '//xsl:param')[0], 'name',
+        ),
+        row.expanded,
+        `cannot expand the name to ${row.expanded}`,
+      )
+    })
+  })
+
   TEMPLATES.forEach(({name, value, found}) => {
     it(name, function() {
       assert.deepEqual(
