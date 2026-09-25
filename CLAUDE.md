@@ -1048,7 +1048,7 @@ one of them.
 | `src/comparisons.js` | `comparedToZero` — the shared scan for a call compared with `0`/`1` (count, string-length) |
 | `src/booleans.js` | `coerced` and `unwrapped` — where nothing but an effective boolean value is taken, and what may stand there instead |
 | `src/roots.js` | `roots` and `entered` — the templates matching the root of the document, and whether a transformation can start at a module |
-| `src/expressions.js` | `enclosed` — the expressions an attribute value template holds in its braces; `staticOf`, what one names before a processor runs; `attributeOf`, what an attribute says in either spelling |
+| `src/expressions.js` | `enclosed`, what an attribute value template's braces hold; `staticOf`, what one names statically; `attributeOf` and `nameOf`, an attribute's value in either spelling and its expanded name |
 | `src/tokens.js` | Positioned XPath lexer (`tokenized`, `TOKENS`), preserving whitespace; owns `GAP`, `TRIVIA`, `OPAQUE`, `NAMED`, `unquoted`, and `normalized`, the gap-collapsing XPath defines and the engine widens |
 | `src/grammar.js` | `parsed` and `matched` — the XPath 3.1 expression grammar and the pattern grammar, as recursive descent, at the version in force |
 | `src/syntax.js` | The one door between a record and its parse: `parseOf`, `isValid`, `gathered`, `textOf`, `calls`, `filters` |
