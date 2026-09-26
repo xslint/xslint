@@ -1,0 +1,20 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: invalid-xpath-expression
+found:
+  amount: 0
+  positions: [ ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="3.0">
+    <xsl:param name="Q{}x" as="Q{http://www.w3.org/2001/XMLSchema}integer" select="1"/>
+    <xsl:function name="Q{urn:f}double" as="Q{http://www.w3.org/2001/XMLSchema}integer">
+      <xsl:param name="Q{}n"/>
+      <xsl:sequence select="$Q{}n * 2"/>
+    </xsl:function>
+    <xsl:template match="/" name="Q{urn:f}main" mode="Q{urn:f}start">
+      <xsl:variable name="Q{}y" select="$Q{}x"/>
+      <xsl:call-template name="Q{urn:f}main"/>
+    </xsl:template>
+  </xsl:stylesheet>
