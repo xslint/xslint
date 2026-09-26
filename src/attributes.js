@@ -63,6 +63,61 @@ const whole = function(found, name) {
 const NAMED = new Set(ATTRIBUTES)
 
 /**
+ * The attributes of an XSLT element that XSLT declares an attribute value
+ * template, by the element carrying them. Any other plain attribute there is
+ * read as written, so the braces of an EQName such as `name="Q{}x"` enclose a
+ * namespace and not an expression (#1067).
+ * @type {Map.<string, Set.<string>>}
+ */
+const TEMPLATES = new Map(Object.entries({
+  'element': ['name', 'namespace'],
+  'attribute': ['name', 'namespace', 'separator'],
+  'namespace': ['name'],
+  'processing-instruction': ['name'],
+  'value-of': ['separator'],
+  'sort': ['lang', 'order', 'collation', 'stable', 'case-order', 'data-type'],
+  'merge-key': ['lang', 'order', 'collation', 'case-order', 'data-type'],
+  'number': [
+    'format', 'lang', 'letter-value', 'ordinal', 'start-at',
+    'grouping-separator', 'grouping-size',
+  ],
+  'for-each-group': ['collation'],
+  'analyze-string': ['flags'],
+  'message': ['terminate', 'error-code'],
+  'assert': ['error-code'],
+  'source-document': ['href'],
+  'stream': ['href'],
+  'evaluate': ['base-uri', 'schema-aware'],
+  'result-document': [
+    'format', 'href', 'method', 'allow-duplicate-names', 'build-tree',
+    'byte-order-mark', 'cdata-section-elements', 'doctype-public',
+    'doctype-system', 'encoding', 'escape-uri-attributes', 'html-version',
+    'include-content-type', 'indent', 'item-separator',
+    'json-node-output-method', 'media-type', 'normalization-form',
+    'omit-xml-declaration', 'parameter-document', 'standalone',
+    'suppress-indentation', 'undeclare-prefixes', 'output-version',
+  ],
+}).map(([element, names]) => [element, new Set(names)]))
+
+/**
+ * Whether the attribute's braces enclose expressions: any attribute of a
+ * literal result element, a shadow attribute or a foreign one, and on an XSLT
+ * element a plain attribute only where `TEMPLATES` names it.
+ * @param {Node} attribute - The attribute node
+ * @return {boolean} - True when its value is an attribute value template
+ */
+const templated = function(attribute) {
+  let taken = true
+  if (attribute.ownerElement.namespaceURI === XSLT &&
+    !attribute.namespaceURI && !attribute.nodeName.startsWith('_')) {
+    taken = Boolean(
+      TEMPLATES.get(attribute.ownerElement.localName)?.has(attribute.nodeName),
+    )
+  }
+  return taken
+}
+
+/**
  * The expression list already derived for a document. Eight code-based linters
  * ask for the same one in a run and deriving it walks every attribute and text
  * node, so it is derived once and remembered against the document itself —
@@ -167,7 +222,8 @@ const carried = function(node, bare, version) {
   const three = since(version, '3.0')
   const entire = node.nodeType === 2 &&
     (bare.has(node) || (three && shadow(node)))
-  const braced = node.nodeType === 2 || (three && expands(node))
+  const braced = (node.nodeType === 2 && templated(node)) ||
+    (node.nodeType !== 2 && three && expands(node))
   let taken = []
   if (entire) {
     taken = [wholeOf(node, version)]

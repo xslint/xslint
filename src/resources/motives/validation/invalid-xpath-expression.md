@@ -9,7 +9,11 @@ holding a bare XPath — `select`, `test`, `use`, `value`, `group-by`,
 is a pattern attribute: `match`, `count`, `from`, `group-starting-with`,
 `group-ending-with`. And another is each expression a `{...}` encloses — in an
 attribute value template, in the text of an XSLT 3.0 element whose `expand-text`
-is on, or in a shadow attribute such as `_select`. A malformed expression breaks
+is on, or in a shadow attribute such as `_select`. On an XSLT element only an
+attribute XSLT declares a template has braces to read — the `name` of an
+`xsl:element`, the `href` of an `xsl:result-document`, the `order` of an
+`xsl:sort` — so the `Q{}x` of `<xsl:param name="Q{}x"/>` is an EQName, a name in
+no namespace, and not an empty expression. A malformed expression breaks
 the transformation at runtime wherever it stands, so the sooner it surfaces the
 better. Only the syntax is checked, never the formatting.
 
