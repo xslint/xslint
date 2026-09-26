@@ -1,0 +1,27 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: duplicate-param-name
+found:
+  amount: 3
+  positions: [ [ 6, 5 ], [ 11, 5 ], [ 16, 5 ] ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="3.0" id="style1">
+    <xsl:output encoding="UTF-8" method="xml"/>
+    <xsl:template name="after">
+      <xsl:param name="width"/>
+      <xsl:param name="width" use-when="system-property('xsl:version') = '3.0'"/>
+      <xsl:sequence select="$width"/>
+    </xsl:template>
+    <xsl:template name="before">
+      <xsl:param name="height" use-when="system-property('xsl:version') = '3.0'"/>
+      <xsl:param name="height"/>
+      <xsl:sequence select="$height"/>
+    </xsl:template>
+    <xsl:template name="shadowed">
+      <xsl:param name="depth" _use-when="system-property('xsl:version') = '3.0'"/>
+      <xsl:param name="depth"/>
+      <xsl:sequence select="$depth"/>
+    </xsl:template>
+  </xsl:stylesheet>

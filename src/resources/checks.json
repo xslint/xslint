@@ -170,7 +170,7 @@
         "message": "An xsl:if holds nothing but another xsl:if, which states one condition in two places. Combine the conditions with 'and' into a single xsl:if, unless the outer test guards the inner one against an error."
       },
       "duplicate-param-name": {
-        "xpath": "//xsl:param[@name = preceding-sibling::xsl:param/@name]",
+        "xpath": "//xsl:param[some $sibling in preceding-sibling::xsl:param satisfies xslint:name($sibling, 'name') = xslint:name(., 'name') and not(xslint:conditional($sibling) and xslint:conditional(.))]",
         "severity": "error",
         "message": "Two xsl:param siblings share a @name. Each parameter of a template, function, or stylesheet must have a distinct name."
       },

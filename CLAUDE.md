@@ -488,14 +488,14 @@ refused, an `xsl:select` or an `xsl:match` being an attribute no version allows
 there, and never a defect invented against working code.
 
 XPath binds prefix `xsl:` to the XSLT namespace; `xslint:` is where our own
-functions live, and `src/xpath.js` registers three: `xslint:normalize-space`,
+functions live, and `src/xpath.js` registers five: `xslint:normalize-space`,
 which every selector of ours spells because the engine's own collapses
 JavaScript's whitespace rather than XML's `S`, `xslint:version`, the version in
-force at a node, and `xslint:attribute`, what an attribute of an XSLT element
-says in either of the two spellings XSLT gives one — each a function for the
-same reason, that no selector over the document answers it
-(#881, #851, #992). The note atop that module says which six of the seven
-selectors the first cost, and how.
+force at a node, `xslint:attribute`, what an XSLT attribute says in either
+spelling, `xslint:name`, the expanded name one holds, and `xslint:conditional`,
+whether a `use-when` may drop an element — each because no selector over the
+document answers it (#881, #851, #992, #1060). The note atop that module says
+which six of the seven selectors the first cost, and how.
 
 ## Check formats
 
@@ -1043,11 +1043,12 @@ one of them.
 | `src/predicates.js` | `predicateOf` — what one predicate of a served selector answers of a candidate, off the walk rather than the engine, or nothing where the engine must answer it |
 | `src/attributes.js` | `expressionsOf` — every expression a stylesheet carries; `PATTERNS`, and `whole` for a linter that narrows to one attribute |
 | `src/xsl-version.js` | `versionOf`, `numbered` and `since` — the version in force at a node, as text and as the number a declarative floor compares, and a lower-bound gate over it |
+| `src/conditions.js` | `excluded` and `conditional` — whether a `use-when` drops an element surely, or may |
 | `src/tree.js` | One pass over a document, remembered against it: `walked`, `named`, `attributed`, `ranked`, `holding` |
 | `src/comparisons.js` | `comparedToZero` — the shared scan for a call compared with `0`/`1` (count, string-length) |
 | `src/booleans.js` | `coerced` and `unwrapped` — where nothing but an effective boolean value is taken, and what may stand there instead |
 | `src/roots.js` | `roots` and `entered` — the templates matching the root of the document, and whether a transformation can start at a module |
-| `src/expressions.js` | `enclosed` — the expressions an attribute value template holds in its braces; `staticOf`, what one names before a processor runs; `attributeOf`, what an attribute says in either spelling |
+| `src/expressions.js` | `enclosed`, what an attribute value template's braces hold; `staticOf`, what one names statically; `attributeOf` and `nameOf`, an attribute's value in either spelling and its expanded name |
 | `src/tokens.js` | Positioned XPath lexer (`tokenized`, `TOKENS`), preserving whitespace; owns `GAP`, `TRIVIA`, `OPAQUE`, `NAMED`, `unquoted`, and `normalized`, the gap-collapsing XPath defines and the engine widens |
 | `src/grammar.js` | `parsed` and `matched` — the XPath 3.1 expression grammar and the pattern grammar, as recursive descent, at the version in force |
 | `src/syntax.js` | The one door between a record and its parse: `parseOf`, `isValid`, `gathered`, `textOf`, `calls`, `filters` |
@@ -1055,7 +1056,7 @@ one of them.
 | `src/fixers.js` | Maps a declarative check name to a `node => fix` builder |
 | `src/fixes.js` | Shared fix builders reading the raw source: `deletion`, `substitution`, `excision`, `standsAt` |
 | `src/fixer.js` | Applies a defect's `fix` to source (decode-walk, verify-before-apply, end-to-start) |
-| `src/xpath.js` | The fontoxpath environment, and what we add to it: `PREFIXES`, the evaluator, `satisfies`, `compiles`, and the three functions a selector of ours reaches for, `xslint:normalize-space`, `xslint:version` and `xslint:attribute` |
+| `src/xpath.js` | The fontoxpath environment, and what we add to it: `PREFIXES`, the evaluator, `satisfies`, `compiles`, and the five `xslint:` functions |
 | `src/helpers.js` | XML parsing (expands every entity it reads a declaration of), YAML parsing, `slashed`, and file recursion that opens no `.git` and no `node_modules` |
 | `src/resources/checks.json` | Every check as a run reads it, built from the YAML; never edited by hand |
 | `src/logger.js` | 4-level logger |

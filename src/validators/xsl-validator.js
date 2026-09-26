@@ -4,9 +4,7 @@
  */
 
 const {xml} = require('../helpers')
-const {MODERN, XSLT, since, versionOf} = require('../xsl-version')
-const {TOKENS, TRIVIA, tokenized} = require('../tokens')
-const {staticOf} = require('../expressions')
+const {excluded} = require('../conditions')
 const {kinds} = require('../resources/checks.json')
 const {logger} = require('../logger')
 
@@ -27,52 +25,6 @@ const META = kinds.validation[CHECK]
  * @type {Array.<string>}
  */
 const names = [CHECK]
-
-/**
- * Whether a condition is false with nothing evaluated: the call `false()`,
- * the empty sequence `()`, a numeric literal equal to zero, or a string
- * literal holding nothing, whatever gap stands between the tokens (#1057).
- * @param {string} condition - The text of a `use-when`
- * @return {boolean} - True when its effective boolean value is false
- */
-const falsy = function(condition) {
-  const solid = tokenized(condition)
-    .filter((token) => !TRIVIA.includes(token.type))
-  const [only] = solid
-  let answer = ['false()', '()']
-    .includes(solid.map((token) => token.value).join(''))
-  if (solid.length === 1 && only.type === TOKENS.NUMBER) {
-    answer = Number(only.value) === 0
-  } else if (solid.length === 1 && only.type === TOKENS.STRING) {
-    answer = only.value.length === 2
-  }
-  return answer
-}
-
-/**
- * Whether a processor leaves the element out at compile time: its `use-when`
- * is a literal `falsy` answers for. XSLT
- * reads it from 2.0 on and a shadow from 3.0, at the version in force, so a
- * 1.0 processor compiles what the attribute would drop. An XSLT element spells
- * it plainly, any other element under the XSLT namespace (#1048).
- * @param {Element} element - The element to judge
- * @return {boolean} - True when no processor compiles it
- */
-const excluded = function(element) {
-  let plain = element.getAttributeNS(XSLT, 'use-when')
-  let shadowed = element.getAttributeNS(XSLT, '_use-when')
-  if (element.namespaceURI === XSLT) {
-    plain = element.getAttribute('use-when')
-    shadowed = element.getAttribute('_use-when')
-  }
-  let condition = ''
-  if (plain && since(versionOf(element), MODERN)) {
-    condition = plain
-  } else if (shadowed && since(versionOf(element), '3.0')) {
-    condition = staticOf(shadowed)
-  }
-  return falsy(condition)
-}
 
 /**
  * The document as a processor compiles it: every element `excluded` answers

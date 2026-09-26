@@ -1,0 +1,35 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+- name: expands a prefixed name to the namespace its prefix is bound to
+  input: |-
+    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:p="urn:a" version="3.0"><xsl:param name="p:width"/></xsl:stylesheet>
+  expanded: Q{urn:a}width
+- name: expands a prefix to the binding nearest the element
+  input: |-
+    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:p="urn:a" version="3.0"><xsl:param xmlns:p="urn:b" name="p:width"/></xsl:stylesheet>
+  expanded: Q{urn:b}width
+- name: puts an unprefixed name in no namespace whatever the default one is
+  input: |-
+    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns="urn:d" version="3.0"><xsl:param name="width"/></xsl:stylesheet>
+  expanded: Q{}width
+- name: keeps a braced URI name as it is written
+  input: |-
+    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="3.0"><xsl:param name="Q{urn:a}width"/></xsl:stylesheet>
+  expanded: Q{urn:a}width
+- name: strips the gap around a name
+  input: |-
+    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="3.0"><xsl:param name="&#9;width&#10; "/></xsl:stylesheet>
+  expanded: Q{}width
+- name: reads a name spelled as a shadow attribute
+  input: |-
+    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="3.0"><xsl:param _name="{'width'}"/></xsl:stylesheet>
+  expanded: Q{}width
+- name: keeps a prefix bound nowhere apart from every namespace
+  input: |-
+    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="3.0"><xsl:param name="u:width"/></xsl:stylesheet>
+  expanded: Q{u:}width
+- name: expands nothing where neither spelling names one
+  input: |-
+    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="3.0"><xsl:param select="1"/></xsl:stylesheet>
+  expanded: ""

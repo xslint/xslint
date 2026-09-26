@@ -4,7 +4,7 @@
  */
 
 /*
- * The fontoxpath environment, and the two functions this project adds to it.
+ * The fontoxpath environment, and the functions this project adds to it.
  * `xslint:normalize-space` is what every selector of ours spells where XPath
  * would say `normalize-space`, because fontoxpath's own is JavaScript's: it
  * trims and collapses on `\s`, so a no-break space, a line separator and an
@@ -52,7 +52,8 @@ const {
   evaluateXPath, evaluateXPathToBoolean, evaluateXPathToNodes,
   compileXPathToJavaScript, registerCustomXPathFunction,
 } = require('fontoxpath')
-const {attributeOf} = require('./expressions')
+const {attributeOf, nameOf} = require('./expressions')
+const {conditional} = require('./conditions')
 const {normalized} = require('./tokens')
 const {numbered} = require('./xsl-version')
 
@@ -123,6 +124,30 @@ registerCustomXPathFunction(
   {namespaceURI: FUNCTIONS, localName: 'attribute'},
   ['node()', 'xs:string'], 'xs:string',
   (context, node, name) => attributeOf(node, name),
+)
+
+/**
+ * `xslint:name`, the expanded name an attribute of an XSLT element holds, or
+ * the empty sequence where it names none. A name is a QName rather than text,
+ * so `p:x` and `q:x` are one name where both prefixes are bound to one URI,
+ * and a selector comparing values reads the prefix instead (#1060).
+ */
+registerCustomXPathFunction(
+  {namespaceURI: FUNCTIONS, localName: 'name'},
+  ['node()', 'xs:string'], 'xs:string*',
+  (context, node, name) => [nameOf(node, name)].filter(Boolean),
+)
+
+/**
+ * `xslint:conditional`, whether a processor may leave an element out over a
+ * `use-when` in a spelling its version reads. A literal false is pruned before
+ * any selector runs, and what else a condition answers is a processor's, so a
+ * check whose defect a `use-when` can take away asks this instead (#1060).
+ */
+registerCustomXPathFunction(
+  {namespaceURI: FUNCTIONS, localName: 'conditional'},
+  ['node()'], 'xs:boolean',
+  (context, node) => conditional(node),
 )
 
 /**

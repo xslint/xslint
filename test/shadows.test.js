@@ -62,7 +62,6 @@ const compared = function(selector) {
  * @type {{[name: string]: string}}
  */
 const COMPARING = {
-  'duplicate-param-name': '#997, a shadow name duplicating one already taken',
   'duplicate-with-param-name': '#997, the same over xsl:with-param',
   'incorrect-use-of-boolean-constants': '#997, a shadow test spelling true',
   'missing-or-empty-href': '#997, a shadow href naming nothing',

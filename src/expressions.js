@@ -3,7 +3,9 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {tokenized, OPAQUE, TRIVIA, TOKENS, unquoted} = require('./tokens')
+const {
+  GAP, tokenized, OPAQUE, TRIVIA, TOKENS, unquoted,
+} = require('./tokens')
 
 /**
  * An expression with its string and comment spans blanked to spaces, so a
@@ -137,8 +139,39 @@ const attributeOf = function(element, name) {
     staticOf(element.getAttribute(`_${name}`) || '')
 }
 
+/**
+ * The gap standing at either end of a value, which a processor strips from
+ * an attribute holding a QName before it reads one.
+ * @type {RegExp}
+ */
+const EDGES = new RegExp(`^${GAP}+|${GAP}+$`, 'g')
+
+/**
+ * The expanded name an attribute of an XSLT element holds, `Q{uri}local`,
+ * read through `attributeOf` so either spelling counts. A prefix resolves at
+ * the element, a prefix bound nowhere staying itself; an unprefixed name is
+ * in no namespace, the default one applying to elements alone (#1060).
+ * @param {Element} element - The element carrying the attribute
+ * @param {string} name - The attribute's name, in its plain spelling
+ * @return {string} - The expanded name, or empty where neither spelling says
+ */
+const nameOf = function(element, name) {
+  const lexical = attributeOf(element, name).replace(EDGES, '')
+  const colon = lexical.indexOf(':')
+  let expanded = `Q{}${lexical}`
+  if (lexical === '' || lexical.startsWith('Q{')) {
+    expanded = lexical
+  } else if (colon > 0) {
+    const prefix = lexical.slice(0, colon)
+    const uri = element.lookupNamespaceURI(prefix) ?? `${prefix}:`
+    expanded = `Q{${uri}}${lexical.slice(colon + 1)}`
+  }
+  return expanded
+}
+
 module.exports = {
   attributeOf,
   enclosed,
+  nameOf,
   staticOf,
 }
