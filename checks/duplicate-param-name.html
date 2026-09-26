@@ -113,7 +113,7 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-error">error</span>
-    <code class="xpath">//xsl:param[some $sibling in preceding-sibling::xsl:param satisfies xslint:name($sibling, 'name') = xslint:name(., 'name') and not(xslint:conditional($sibling) and xslint:conditional(.))]</code>
+    <code class="xpath">//xsl:param[some $sibling in preceding-sibling::xsl:param satisfies xslint:name($sibling, 'name') = xslint:name(., 'name') and not(xslint:conditional($sibling) or xslint:conditional(.))]</code>
   </div>
   <div class="check-content">
 <h1>Duplicate <code>xsl:param</code> name</h1>
@@ -138,10 +138,11 @@ parameters distinct; giving them different local names does.</p>
   &lt;xsl:param name=&quot;height&quot;/&gt;
 &lt;/xsl:template&gt;
 </code></pre>
-<p>One name may be declared twice when both declarations carry a <code>use-when</code>
-(XSLT 2.0 and later, or <code>_use-when</code> from 3.0) whose conditions leave only one
-of them in the compiled stylesheet — the usual way to give one parameter a
-different declaration per processor:</p>
+<p>One name may be declared twice when a <code>use-when</code> (XSLT 2.0 and later, or
+<code>_use-when</code> from 3.0) on either declaration can leave it out of the compiled
+stylesheet. Whether the pair clashes then depends on a condition only the
+processor evaluates, so the pair is not reported. The usual shape gives one
+parameter a different declaration per processor:</p>
 <pre><code class="language-xsl">&lt;xsl:template name=&quot;render&quot;&gt;
   &lt;xsl:param name=&quot;size&quot; as=&quot;xs:integer&quot;
     use-when=&quot;system-property(&#39;xsl:version&#39;) = &#39;3.0&#39;&quot;/&gt;
@@ -149,9 +150,10 @@ different declaration per processor:</p>
     use-when=&quot;system-property(&#39;xsl:version&#39;) != &#39;3.0&#39;&quot;/&gt;
 &lt;/xsl:template&gt;
 </code></pre>
-<p>A parameter carrying no <code>use-when</code> is compiled wherever its sibling is, so a
-sibling of the same name clashes with it whenever that sibling&#39;s condition
-holds.</p>
+<p>A <code>use-when</code> on one side alone still clashes wherever its condition holds,
+since the parameter beside it is compiled everywhere. Keep such a condition
+false on every processor the stylesheet targets, or give the two parameters
+different names.</p>
 
   </div>
 </body>
