@@ -126,7 +126,11 @@ holding a bare XPath — <code>select</code>, <code>test</code>, <code>use</code
 is a pattern attribute: <code>match</code>, <code>count</code>, <code>from</code>, <code>group-starting-with</code>,
 <code>group-ending-with</code>. And another is each expression a <code>{...}</code> encloses — in an
 attribute value template, in the text of an XSLT 3.0 element whose <code>expand-text</code>
-is on, or in a shadow attribute such as <code>_select</code>. A malformed expression breaks
+is on, or in a shadow attribute such as <code>_select</code>. On an XSLT element only an
+attribute XSLT declares a template has braces to read — the <code>name</code> of an
+<code>xsl:element</code>, the <code>href</code> of an <code>xsl:result-document</code>, the <code>order</code> of an
+<code>xsl:sort</code> — so the <code>Q{}x</code> of <code>&lt;xsl:param name=&quot;Q{}x&quot;/&gt;</code> is an EQName, a name in
+no namespace, and not an empty expression. A malformed expression breaks
 the transformation at runtime wherever it stands, so the sooner it surfaces the
 better. Only the syntax is checked, never the formatting.</p>
 <p>A pattern is judged as a pattern, which is a narrower language than an
