@@ -29,10 +29,11 @@ Correct:
 </xsl:template>
 ```
 
-One name may be declared twice when both declarations carry a `use-when`
-(XSLT 2.0 and later, or `_use-when` from 3.0) whose conditions leave only one
-of them in the compiled stylesheet — the usual way to give one parameter a
-different declaration per processor:
+One name may be declared twice when a `use-when` (XSLT 2.0 and later, or
+`_use-when` from 3.0) on either declaration can leave it out of the compiled
+stylesheet. Whether the pair clashes then depends on a condition only the
+processor evaluates, so the pair is not reported. The usual shape gives one
+parameter a different declaration per processor:
 
 ```xsl
 <xsl:template name="render">
@@ -43,6 +44,7 @@ different declaration per processor:
 </xsl:template>
 ```
 
-A parameter carrying no `use-when` is compiled wherever its sibling is, so a
-sibling of the same name clashes with it whenever that sibling's condition
-holds.
+A `use-when` on one side alone still clashes wherever its condition holds,
+since the parameter beside it is compiled everywhere. Keep such a condition
+false on every processor the stylesheet targets, or give the two parameters
+different names.
