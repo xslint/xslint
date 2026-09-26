@@ -113,18 +113,23 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-error">error</span>
-    <code class="xpath">//xsl:param[@name = preceding-sibling::xsl:param/@name]</code>
+    <code class="xpath">//xsl:param[some $sibling in preceding-sibling::xsl:param satisfies xslint:name($sibling, 'name') = xslint:name(., 'name') and not(xslint:conditional($sibling) and xslint:conditional(.))]</code>
   </div>
   <div class="check-content">
 <h1>Duplicate <code>xsl:param</code> name</h1>
 <p>The parameters of a template, a stylesheet function, or the stylesheet itself
-form one namespace: each must have a distinct <code>@name</code>. Two parameters sharing a
+form one namespace: each must have a distinct name. Two parameters sharing a
 name is a static error — the processor cannot tell which one a reference binds
 to — and rejects the stylesheet.</p>
+<p>A name is compared the way the processor compares it, as an expanded QName
+rather than as text. <code>p:size</code> and <code>q:size</code> are one name when both prefixes are
+bound to the same namespace URI, <code>size</code> and <code>Q{}size</code> are one name, and the
+whitespace around a name is ignored. Respelling a prefix does not make two
+parameters distinct; giving them different local names does.</p>
 <p>Incorrect:</p>
-<pre><code class="language-xsl">&lt;xsl:template name=&quot;render&quot;&gt;
-  &lt;xsl:param name=&quot;size&quot;/&gt;
-  &lt;xsl:param name=&quot;size&quot;/&gt;
+<pre><code class="language-xsl">&lt;xsl:template name=&quot;render&quot; xmlns:p=&quot;urn:a&quot; xmlns:q=&quot;urn:a&quot;&gt;
+  &lt;xsl:param name=&quot;p:size&quot;/&gt;
+  &lt;xsl:param name=&quot;q:size&quot;/&gt;
 &lt;/xsl:template&gt;
 </code></pre>
 <p>Correct:</p>
@@ -133,6 +138,20 @@ to — and rejects the stylesheet.</p>
   &lt;xsl:param name=&quot;height&quot;/&gt;
 &lt;/xsl:template&gt;
 </code></pre>
+<p>One name may be declared twice when both declarations carry a <code>use-when</code>
+(XSLT 2.0 and later, or <code>_use-when</code> from 3.0) whose conditions leave only one
+of them in the compiled stylesheet — the usual way to give one parameter a
+different declaration per processor:</p>
+<pre><code class="language-xsl">&lt;xsl:template name=&quot;render&quot;&gt;
+  &lt;xsl:param name=&quot;size&quot; as=&quot;xs:integer&quot;
+    use-when=&quot;system-property(&#39;xsl:version&#39;) = &#39;3.0&#39;&quot;/&gt;
+  &lt;xsl:param name=&quot;size&quot;
+    use-when=&quot;system-property(&#39;xsl:version&#39;) != &#39;3.0&#39;&quot;/&gt;
+&lt;/xsl:template&gt;
+</code></pre>
+<p>A parameter carrying no <code>use-when</code> is compiled wherever its sibling is, so a
+sibling of the same name clashes with it whenever that sibling&#39;s condition
+holds.</p>
 
   </div>
 </body>
