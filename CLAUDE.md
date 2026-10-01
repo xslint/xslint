@@ -227,8 +227,8 @@ left standing in the surviving sentence is what keeps a derivation
 recoverable. Nothing weighed that `/* */` either until #1147, and thirty files
 had come to open with one past ten lines, `src/grammar.js` with 243: the note a
 module opens with, every comment above its first statement past the directives
-and imports bar that statement's docblock, what a machine reads and the
-licence lines, now stops at ten, set beside them as `top`.
+and imports bar each such statement's docblock, the licence lines and what
+ESLint reads short of a directive's description, now stops at ten, as `top`.
 
 A parameter a caller may leave out therefore says so in the signature, with a
 default — `fix = undefined` on `defect` in `src/checks.js`. A JSDoc `[fix]`

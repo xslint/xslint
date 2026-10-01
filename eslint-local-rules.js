@@ -213,35 +213,58 @@ const opening = function (statement) {
   return verdict;
 };
 
-// Whether a comment speaks to a machine rather than a reader: a shebang, or a
-// directive to ESLint itself.
-const directing = function (comment) {
-  return (
-    comment.type === "Shebang" || /^eslint(-|[\t\n\r ]|$)/u.test(comment.value.trim())
-  );
+// What a comment tells a reader, line by line: nothing of a shebang, of a
+// directive ESLint reads only the description behind its ` -- `, and the whole
+// of anything else. What a machine reads is blanked rather than cut, so every
+// line the reader is charged keeps the source line it stands on.
+const said = function (comment, directives) {
+  let from = 0;
+  if (comment.type === "Shebang") {
+    from = comment.value.length;
+  } else if (directives.includes(comment)) {
+    const cut = /[\t\n\r ]-{2,}[\t\n\r ]/u.exec(comment.value);
+    from = comment.value.length;
+    if (cut) {
+      from = cut.index + cut[0].length;
+    }
+  }
+  return worded({
+    ...comment,
+    value: [
+      comment.value.slice(0, from).replace(/[^\n]/gu, ""),
+      comment.value.slice(from),
+    ].join(""),
+  });
 };
 
-// The lines of the note a module opens with: every comment in front of its
-// first statement past the opening ones, weighed as one however many comments
-// spell it, bar that statement's own docblock, what a machine reads, and the
-// licence header's own lines (#1147).
+// The lines of the note a module opens with. The opening region is its
+// top-level statements up to and including the first that does not only open
+// the module; the note is every comment in front of that last one, bar the
+// licence lines and each region statement's own docblock, the last comment a
+// reader reads before it (#1147).
 const noted = function (source) {
-  const code = source.ast.body.find((statement) => !opening(statement));
+  const directives = source.getInlineConfigNodes();
+  const body = source.ast.body;
+  const reach = body.findIndex((statement) => !opening(statement));
+  let region = body;
   let bound = Infinity;
-  let own = null;
-  if (code) {
-    bound = code.range[0];
-    own = source.getCommentsBefore(code).at(-1) ?? null;
+  if (reach >= 0) {
+    region = body.slice(0, reach + 1);
+    bound = body[reach].range[0];
   }
+  const owned = region
+    .map(
+      (statement) =>
+        source
+          .getCommentsBefore(statement)
+          .filter((comment) => !directives.includes(comment))
+          .at(-1) ?? null
+    )
+    .filter(documents);
   return source
     .getAllComments()
-    .filter(
-      (comment) =>
-        comment.range[1] <= bound &&
-        !directing(comment) &&
-        !(comment === own && documents(comment))
-    )
-    .flatMap(worded)
+    .filter((comment) => comment.range[1] <= bound && !owned.includes(comment))
+    .flatMap((comment) => said(comment, directives))
     .filter((one) => !one.text.startsWith("SPDX-"));
 };
 

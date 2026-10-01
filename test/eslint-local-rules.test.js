@@ -234,6 +234,9 @@ tester.run(
       `#!/usr/bin/env node\n${SPDX}\n/*\n${lines(10)} */\nconst one = 1`,
       `${SPDX}\n/* eslint-disable no-console */\n/*\n${lines(10)} */\nconst one = 1`,
       `${SPDX}\n/*\n${lines(10)} */\n/**\n * One.\n */\nconst one = 1`,
+      `${SPDX}\n/*\n${lines(10)} */\n/**\n * One.\n */\n// eslint-disable-next-line no-console\nconsole.log(1)`,
+      `${SPDX}\n/*\n${lines(10)} */\n/**\n * One.\n * Two.\n */\nconst fs = require('fs')\nconst one = 1`,
+      `${SPDX}\n/* eslint-disable no-console -- The console is output. */\n/*\n${lines(9)} */\nconsole.log(1)`,
       {
         code: `${SPDX}\n/*\n${lines(12)} */\nconst one = 1`,
         options: [{top: 12}],
@@ -279,6 +282,18 @@ tester.run(
       {
         code: `${SPDX}\n/**\n * One.\n * Two.\n */\n/*\n${lines(10)} */\nconst one = 1`,
         errors: [{messageId: 'noted', line: 18}],
+      },
+      {
+        code: `${SPDX}\n/* eslint-local-rules.js holds what this reads.\n${lines(10)} */\nconst one = 1`,
+        errors: [{messageId: 'noted', line: 15}],
+      },
+      {
+        code: `${SPDX}\n// eslint-config-google says so.\n${'// Line.\n'.repeat(10)}const one = 1`,
+        errors: [{messageId: 'noted', line: 15}],
+      },
+      {
+        code: `${SPDX}\n/* eslint-disable no-console -- The console is output.\n${lines(10)} */\nconsole.log(1)`,
+        errors: [{messageId: 'noted', line: 15}],
       },
       {
         code: `${SPDX}\n/*\n${lines(4)} */`,
