@@ -229,18 +229,65 @@ module.exports = {
         type: "suggestion",
         docs: {
           description:
-            "disallow a variable that only exists to be returned next"
+            [
+              "disallow a variable that only exists to be returned, assigned",
+              "or bound next",
+            ].join(' ')
         },
         messages: {
           redundant:
             [
               "Return the expression directly instead of binding it to a",
               "variable first",
+            ].join(' '),
+          carried:
+            [
+              "Write the expression where the next statement reads it instead",
+              "of binding it to a variable first",
             ].join(' ')
         }
       },
       create(context) {
         return {
+          VariableDeclaration(node) {
+            let siblings = [];
+            if (
+              ["Program", "BlockStatement", "StaticBlock"]
+                .includes(node.parent.type)
+            ) {
+              siblings = node.parent.body;
+            }
+            if (node.parent.type === "SwitchCase") {
+              siblings = node.parent.consequent;
+            }
+            const next = siblings[siblings.indexOf(node) + 1];
+            const declared = node.declarations[0];
+            let targets = [];
+            if (next && next.type === "VariableDeclaration") {
+              targets = next.declarations.map((each) => each.init);
+            }
+            if (
+              next &&
+              next.type === "ExpressionStatement" &&
+              next.expression.type === "AssignmentExpression" &&
+              next.expression.operator === "="
+            ) {
+              targets = [next.expression.right];
+            }
+            const reads = context.sourceCode
+              .getDeclaredVariables(declared)
+              .flatMap((variable) => variable.references)
+              .filter((reference) => reference.isRead());
+            if (
+              node.kind === "const" &&
+              node.declarations.length === 1 &&
+              declared.id.type === "Identifier" &&
+              reads.length === 1 &&
+              targets.includes(reads[0].identifier)
+            ) {
+              context.report({ node, messageId: "carried" });
+            }
+          },
           ReturnStatement(node) {
             const block = node.parent;
             if (

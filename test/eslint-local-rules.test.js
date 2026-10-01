@@ -31,6 +31,16 @@ tester.run(
       'function used() { const one = make(); use(one); return one }',
       'function other() { const one = make(); return another }',
       'function pair() { const one = make(), two = one; return two }',
+      'function twice() { const one = make(); other = one; use(one) }',
+      'function inner() { const one = make(); other = one.field }',
+      'function later() { const one = make(); use(); other = one }',
+      'function grown() { const one = make(); other += one }',
+      'function loose() { let one = make(); other = one }',
+      'function bare() { const one = make(); one }',
+      'for (const one of list) { other = one }',
+      'function itself() { const one = () => one; other = one }',
+      'function nested() { const one = make(); const two = wrap(one) }',
+      'const one = make(); module.exports = one; module.exports.one = one',
     ],
     invalid: [
       {
@@ -40,6 +50,26 @@ tester.run(
       {
         code: 'function sum() { let total = 1 + 2; return total }',
         errors: [{messageId: 'redundant'}],
+      },
+      {
+        code: 'function moved() { const one = make(); other = one }',
+        errors: [{messageId: 'carried'}],
+      },
+      {
+        code: 'function bound() { const one = make(); const two = one }',
+        errors: [{messageId: 'carried'}],
+      },
+      {
+        code: 'function among() { const one = make(); let two = 2, three = one }',
+        errors: [{messageId: 'carried'}],
+      },
+      {
+        code: 'const one = make(); module.exports = one',
+        errors: [{messageId: 'carried'}],
+      },
+      {
+        code: 'switch (key) { case 1: const one = make(); other = one }',
+        errors: [{messageId: 'carried'}],
       },
     ],
   },

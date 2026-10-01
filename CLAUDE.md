@@ -161,7 +161,7 @@ names in `require`/`import` (no `node:` prefix), no conditional operator
 (`a ? b : c` is banned outright by `no-ternary`, nesting and flat chain alike),
 no source file longer than 1000 lines (`max-lines`, outside `test/`),
 no redundant return variable
-(`const x = expr; return x` is banned — return the expression), no missing
+(`const x = expr` read once, by a `return x` or `y = x` next), no missing
 argument (a call must fill every parameter the callee declares without a
 default), one `return` per function (a second exit is banned), no orphaned
 JSDoc block (a `/**` block standing in front of another one documents nothing,
@@ -187,7 +187,7 @@ matters reaches the plugin too. Shortening that off-list is its own job; only
 
 A source file stops at 1000 lines, counting the blank ones and the comments,
 since a reader scrolls past those as well. One file stands above it and is named in
-`SPRAWLING` in the config — `src/grammar.js`, 2172 lines of one function per
+`SPRAWLING` in the config — `src/grammar.js`, 2169 lines of one function per
 production of XPath 3.1 — rather than carrying a disable comment of its own, so
 what is exempted is one list a reviewer reads in the place the cap is set, not a
 mark to be found by opening every file. Neither half can rot in silence.
