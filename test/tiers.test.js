@@ -140,18 +140,17 @@ const spelled = function(fix) {
 
 /**
  * What teaches the two flags: the README's `Fixing` section, up to the next
- * heading, and the manual page that section links to.
+ * heading, and the manual page that section links to. A README without that
+ * section throws rather than leaving the manual page to answer alone.
  * @return {string} - The two texts, one after the other
  */
 const fixing = function() {
-  return [
-    fs.readFileSync(path.resolve(__dirname, '..', 'README.md'), 'utf-8')
-      .split(/^## /m).find((part) => part.startsWith('Fixing\n')),
-    fs.readFileSync(
+  return fs.readFileSync(path.resolve(__dirname, '..', 'README.md'), 'utf-8')
+    .split(/^## /m).find((part) => part.startsWith('Fixing\n'))
+    .concat('\n', fs.readFileSync(
       path.resolve(__dirname, '..', 'src', 'resources', 'manual', 'fixing.md'),
       'utf-8',
-    ),
-  ].join('\n')
+    ))
 }
 
 describe('tiers', function() {

@@ -789,10 +789,10 @@ Then run `npx grunt checks`, `npm test`, `npm run coverage`, and
   motive is where the end user learns the construct's harm and hand-fix; a
   behavior change with an untouched motive is presumed a bug. A change to only the
   fix tier touches the wiring and the docs — not the motive.
-- **Docs sync.** A behavior change must also update `README.md` (user-facing:
-  usage and the flags themselves, never the checks a flag covers), this file
-  (architecture), and the docs site (`npx grunt docs`), whose manual pages a
-  README section links to (#1095). What the README states of the tree is
+- **Docs sync.** A behavior change must also update `README.md` and the
+  `src/resources/manual/` page it links to (#1095; user-facing: the flags,
+  never the checks a flag covers), this file (architecture), and the docs site
+  (`npx grunt docs`). What the README states of the tree is
   `npx grunt readme`'s to write and `test/readme.test.js`'s to refuse (#896).
 
 ### No maturity flag
@@ -1085,7 +1085,7 @@ one of them.
 | `test/strictness.js` | `insists` — whether fontoxpath refuses an expression over its own strictness rather than over anything malformed in it |
 | `test/helpers.js` | The only door to a child process in the suite: `runXslint`, `xslintStatus`, `xslintStreams`, `xslintUnread`, `xcopped`, `walkedWith` |
 | `test/predicates.test.js` | The vocabulary held from both sides: every spelling it answers, and every one it refuses beside what puts that out of reach |
-| `test/tiers.test.js` | The tiers a check declares, held to the ones a run over `test/resources/fix` offers, and the README held to naming none of them |
+| `test/tiers.test.js` | The tiers a check declares, held to the ones a run over `test/resources/fix` offers, and the README and manual held to naming none |
 | `test/clock.js` | The one clock each timing test reads: processor time capped at the wall |
 | `test/chains.js` | `grown`: a linter timed over two chains |
 | `test/packs.js` | The one harness every pack directory is read through |

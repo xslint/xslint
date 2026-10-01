@@ -8,7 +8,7 @@ suppressed.
 <!-- xslint-disable-next-line short-names -->
 <xsl:variable name="x" select="1"/>
 
-<!-- xslint-disable-file not-using-schema-types -->
+<!-- xslint-disable-file short-names -->
 ```
 
 - **`xslint-disable-next-line [rules]`** — the line after the comment.
