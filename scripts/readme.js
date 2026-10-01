@@ -72,10 +72,9 @@ const wrapped = function(pattern) {
  * @type {{[check: string]: RegExp}}
  */
 const NAMED = {
-  'text-outside-xsl-text': /([0-9,]+) pieces of literal text outside/,
-  'use-choose-without-otherwise': /([0-9,]+) `xsl:choose` blocks/,
-  'unused-function-template-parameter':
-    /([0-9,]+) template and function parameters/,
+  'undefined-variable': /([0-9,]+) references to a variable/,
+  'broken-href': /Another ([0-9,]+) are imports and includes/,
+  'unused-function': /([0-9,]+) stylesheet functions nothing calls/,
 }
 
 /**
@@ -110,17 +109,12 @@ const FIGURES = [
   })),
   [{
     what: 'findings the recommended preset draws',
-    pattern: wrapped(/by default draws ([0-9,]+) of them/),
+    pattern: wrapped(/by default draws \*\*([0-9,]+) reports/),
     reads: DRAWN.filter(
       (one) => Object.values(kinds).some(
         (kind) => kind[one.check]?.preset === 'recommended',
       ),
     ).length,
-  },
-  {
-    what: 'checks written in code',
-    pattern: wrapped(/The kind holds ([0-9,]+) checks/),
-    reads: Object.keys(kinds.format).length,
   }],
 )
 

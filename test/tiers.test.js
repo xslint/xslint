@@ -11,8 +11,9 @@
  * a tier; which tier a single-tier check offers is `test/fixer.deep.test.js`'s
  * to pin. The set equality carries its own weight on a check declaring both,
  * the tier being a property of the place a defect stands (#583, #1015). The
- * third question is that `README.md` names no check, the check's own page
- * being what says what it corrects (#898).
+ * third question is that neither `README.md` nor the manual page its Fixing
+ * section links to names a check, the check's own page being what says what
+ * it corrects (#898, #1095).
  */
 
 const {lint, suffixed} = require('../src/xslint')
@@ -114,12 +115,18 @@ const spelled = function(fix) {
 }
 
 /**
- * What stands under the README's `Fixing` heading, up to the next one.
- * @return {string} - The section's own text
+ * What teaches the two flags: the README's `Fixing` section, up to the next
+ * heading, and the manual page that section links to. A README without that
+ * section throws rather than leaving the manual page to answer alone.
+ * @return {string} - The two texts, one after the other
  */
 const fixing = function() {
   return fs.readFileSync(path.resolve(__dirname, '..', 'README.md'), 'utf-8')
     .split(/^## /m).find((part) => part.startsWith('Fixing\n'))
+    .concat('\n', fs.readFileSync(
+      path.resolve(__dirname, '..', 'src', 'resources', 'manual', 'fixing.md'),
+      'utf-8',
+    ))
 }
 
 describe('tiers', function() {
@@ -152,10 +159,11 @@ describe('tiers', function() {
       fixable().map(([name]) => name).filter((name) => fixing().includes(name)),
       [],
       [
-        'the README `Fixing` section names a check whose page already teaches',
-        'the construct, so one reader is told the same thing twice and the',
-        'two spellings drift apart. That section owns the flags and the',
-        'guarantees; which check fixes itself is the catalog\'s (#898)',
+        'the README `Fixing` section or its manual page names a check whose',
+        'own page already teaches the construct, so one reader is told the',
+        'same thing twice and the two spellings drift apart. Those own the',
+        'flags and the guarantees; which check fixes itself is the',
+        'catalog\'s (#898, #1095)',
       ].join(' '),
     )
   })

@@ -8,12 +8,12 @@
  * reads off the committed corpus reports and off `checks.json`. Nothing
  * weighed them before, and the four in the Proven section drifted between
  * two-fold and twelve-fold under eighteen green jobs (#896). `npx grunt
- * readme` is the rewrite and this file the refusal, a figure refreshed only
- * at a release standing wrong for the whole cycle behind it. Every figure
- * agrees with the tree, is found in the README exactly once, since a pattern
- * matching nothing enforces nothing, and names a check the tree still holds.
- * The prose is the anchor and the digits the capture, so rewording a sentence
- * around a figure reddens while a reflow of the paragraph does not.
+ * readme` is the rewrite and this file the refusal. Every figure agrees with
+ * the tree, is found in the README exactly once, and names a check the tree
+ * still holds; the prose is the anchor and the digits the capture, so
+ * rewording a sentence around a figure reddens while a reflow does not. And
+ * every manual page the README links to is one the docs site builds, and
+ * every page built is one it links to (#1095).
  */
 
 const {
@@ -58,6 +58,33 @@ const times = function(pattern, text) {
  * @type {string}
  */
 const MOVED = '1,974'
+
+/**
+ * Where the manual the docs site builds is written, one Markdown file a page.
+ * @type {string}
+ */
+const MANUAL = path.resolve(__dirname, '..', 'src', 'resources', 'manual')
+
+/**
+ * Every page of the manual the README links to, by the name of its source.
+ * @return {Array.<string>} - The names, once each
+ */
+const linked = function() {
+  return Array.from(new Set(Array.from(
+    document().matchAll(/xslint[.]github[.]io\/xslint\/manual\/([a-z-]+)[.]html/g),
+    (found) => found[1],
+  )))
+}
+
+/**
+ * Every page of the manual the docs site builds, by the name of its source.
+ * @return {Array.<string>} - The names
+ */
+const written = function() {
+  return fs.readdirSync(MANUAL)
+    .filter((name) => name.endsWith('.md'))
+    .map((name) => path.basename(name, '.md'))
+}
 
 describe('readme', function() {
   it('states every figure as the tree reads it', function() {
@@ -131,6 +158,26 @@ describe('readme', function() {
         'the task rewrites something other than the figures the tree reads,',
         'so running it either leaves the drift or writes a document nobody',
         'asked for',
+      ].join(' '),
+    )
+  })
+  it('links only manual pages the docs site builds', function() {
+    assert.deepEqual(
+      linked().filter((name) => !written().includes(name)),
+      [],
+      [
+        'the README sends a reader to a manual page the docs site does not',
+        'build, so the summary it kept points at nothing (#1095)',
+      ].join(' '),
+    )
+  })
+  it('links every manual page the docs site builds', function() {
+    assert.deepEqual(
+      written().filter((name) => !linked().includes(name)),
+      [],
+      [
+        'the docs site builds a manual page the README never links, so what',
+        'moved out of the README is where no reader of it arrives (#1095)',
       ].join(' '),
     )
   })
