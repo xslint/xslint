@@ -213,11 +213,18 @@ const opening = function (statement) {
   return verdict;
 };
 
+// The two tags of the licence header, spelled at run time so the REUSE job
+// does not read this line as one.
+const LICENSED = [
+  ["SPDX", "FileCopyrightText"],
+  ["SPDX", "License", "Identifier"],
+].map((parts) => `${parts.join("-")}:`);
+
 // The lines of the note a module opens with. The opening region is its
 // top-level statements up to and including the first that does not only open
 // the module; the note is every comment line in front of that last one that
-// shares no line with code, a directive's as much as any, bar the licence
-// lines, a shebang, and each region statement's own docblock (#1147).
+// shares no line with code, a directive being none, bar the licence header's
+// tags, a shebang, and a non-directive region statement's docblock (#1147).
 const noted = function (source) {
   const directives = source.getInlineConfigNodes();
   const body = source.ast.body;
@@ -229,6 +236,7 @@ const noted = function (source) {
     bound = body[reach].range[0];
   }
   const owned = region
+    .filter((statement) => !statement.directive)
     .map(
       (statement) =>
         source
@@ -237,12 +245,21 @@ const noted = function (source) {
           .at(-1) ?? null
     )
     .filter(documents);
+  const prologue = body
+    .filter((statement) => statement.directive)
+    .map((statement) => statement.range);
   const coded = new Set(
-    source.ast.tokens.flatMap((token) => [
-      token.loc.start.line,
-      token.loc.end.line,
-    ])
+    source.ast.tokens
+      .filter((token) =>
+        prologue.every(
+          ([start, end]) => token.range[0] < start || token.range[1] > end
+        )
+      )
+      .flatMap((token) => [token.loc.start.line, token.loc.end.line])
   );
+  const header = source
+    .getAllComments()
+    .find((comment) => comment.type !== "Shebang");
   return source
     .getAllComments()
     .filter((comment) => comment.range[1] <= bound && !owned.includes(comment))
@@ -251,9 +268,14 @@ const noted = function (source) {
       if (comment.type === "Shebang") {
         said = said.slice(1);
       }
+      if (comment === header) {
+        said = said.filter(
+          (one) => !LICENSED.some((tag) => one.text.startsWith(tag))
+        );
+      }
       return said;
     })
-    .filter((one) => !coded.has(one.at) && !one.text.startsWith("SPDX-"));
+    .filter((one) => !coded.has(one.at));
 };
 
 // A project-local ESLint plugin, kept out of eslint.config.mjs so it can be

@@ -334,6 +334,22 @@ tester.run(
         errors: [{messageId: 'noted', line: 15, data: {max: 10, spent: 11}}],
       },
       {
+        code: `${SPDX}\n${'// SPDX-Note: the walk is paid once for every stylesheet it reads.\n'.repeat(11)}const one = 1`,
+        errors: [{messageId: 'noted', line: 15, data: {max: 10, spent: 11}}],
+      },
+      {
+        code: `${SPDX}\n/*\n${lines(9)} * ${['SPDX', 'FileCopyrightText'].join('-')}: the walk is paid once\n * ${['SPDX', 'License', 'Identifier'].join('-')}: MIT\n */\nconst one = 1`,
+        errors: [{messageId: 'noted', line: 16, data: {max: 10, spent: 11}}],
+      },
+      {
+        code: `${SPDX}\n${'\'use strict\' // a derivation line that answers why\n'.repeat(40)}const one = 1`,
+        errors: [{messageId: 'noted', line: 15, data: {max: 10, spent: 40}}],
+      },
+      {
+        code: `${SPDX}\n${`/**\n${lines(5)} */\n'use strict'\n`.repeat(8)}const one = 1`,
+        errors: [{messageId: 'noted', line: 22, data: {max: 10, spent: 40}}],
+      },
+      {
         code: `${SPDX}\n${'// eslint-disable-next-line no-console -- the console is output\n'.repeat(11)}console.log(1)`,
         errors: [{messageId: 'noted', line: 15, data: {max: 10, spent: 11}}],
       },
