@@ -236,7 +236,9 @@ tester.run(
       `${SPDX}\n/*\n${lines(10)} */\n/**\n * One.\n */\nconst one = 1`,
       `${SPDX}\n/*\n${lines(10)} */\n/**\n * One.\n */\n// eslint-disable-next-line no-console\nconsole.log(1)`,
       `${SPDX}\n/*\n${lines(10)} */\n/**\n * One.\n * Two.\n */\nconst fs = require('fs')\nconst one = 1`,
-      `${SPDX}\n/* eslint-disable no-console -- The console is output. */\n/*\n${lines(9)} */\nconsole.log(1)`,
+      `${SPDX}\n/* eslint-disable no-console -- The console is output. */\n/*\n${lines(10)} */\nconsole.log(1)`,
+      `${SPDX}\n/*\n${lines(8)} */\nconst alpha = require('./alpha') // reads the stylesheets\nconst beta = require('./beta') // reads the stylesheets\nconst gamma = require('./gamma') // reads the stylesheets\nconst one = 1`,
+      `${SPDX}\n/*\n${lines(8)} */\nconst {\n  alpha, // the first\n  beta, // the second\n  gamma, // the third\n} = require('./x')\nconst one = 1`,
       {
         code: `${SPDX}\n/*\n${lines(12)} */\nconst one = 1`,
         options: [{top: 12}],
@@ -292,8 +294,24 @@ tester.run(
         errors: [{messageId: 'noted', line: 15}],
       },
       {
-        code: `${SPDX}\n/* eslint-disable no-console -- The console is output.\n${lines(10)} */\nconsole.log(1)`,
-        errors: [{messageId: 'noted', line: 15}],
+        code: `${SPDX}\n/* eslint-disable no-console -- The console is output.\n${lines(11)} */\nconsole.log(1)`,
+        errors: [{messageId: 'noted', line: 16}],
+      },
+      {
+        code: `${SPDX}\n/* eslint-disable no-console\u00A0--\u00A0The console is output.\n${lines(11)} */\nconsole.log(1)`,
+        errors: [{messageId: 'noted', line: 16}],
+      },
+      {
+        code: `${SPDX}\n/* exported\n${lines(11)} */\nconst one = 1`,
+        errors: [{messageId: 'noted', line: 16}],
+      },
+      {
+        code: `${SPDX}\n/* global\n${lines(11)} */\nconst one = 1`,
+        errors: [{messageId: 'noted', line: 16}],
+      },
+      {
+        code: `${SPDX}\n/* globals\n${lines(11)} */\nconst one = 1`,
+        errors: [{messageId: 'noted', line: 16}],
       },
       {
         code: `${SPDX}\n/*\n${lines(4)} */`,

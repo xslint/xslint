@@ -213,35 +213,11 @@ const opening = function (statement) {
   return verdict;
 };
 
-// What a comment tells a reader, line by line: nothing of a shebang, of a
-// directive ESLint reads only the description behind its ` -- `, and the whole
-// of anything else. What a machine reads is blanked rather than cut, so every
-// line the reader is charged keeps the source line it stands on.
-const said = function (comment, directives) {
-  let from = 0;
-  if (comment.type === "Shebang") {
-    from = comment.value.length;
-  } else if (directives.includes(comment)) {
-    const cut = /[\t\n\r ]-{2,}[\t\n\r ]/u.exec(comment.value);
-    from = comment.value.length;
-    if (cut) {
-      from = cut.index + cut[0].length;
-    }
-  }
-  return worded({
-    ...comment,
-    value: [
-      comment.value.slice(0, from).replace(/[^\n]/gu, ""),
-      comment.value.slice(from),
-    ].join(""),
-  });
-};
-
 // The lines of the note a module opens with. The opening region is its
 // top-level statements up to and including the first that does not only open
-// the module; the note is every comment in front of that last one, bar the
-// licence lines and each region statement's own docblock, the last comment a
-// reader reads before it (#1147).
+// the module; the note is every comment line in front of that last one that
+// shares no line with code, bar the licence lines, a shebang, the first line of
+// a directive, and each region statement's own docblock (#1147).
 const noted = function (source) {
   const directives = source.getInlineConfigNodes();
   const body = source.ast.body;
@@ -261,11 +237,23 @@ const noted = function (source) {
           .at(-1) ?? null
     )
     .filter(documents);
+  const coded = new Set(
+    source.ast.tokens.flatMap((token) => [
+      token.loc.start.line,
+      token.loc.end.line,
+    ])
+  );
   return source
     .getAllComments()
     .filter((comment) => comment.range[1] <= bound && !owned.includes(comment))
-    .flatMap((comment) => said(comment, directives))
-    .filter((one) => !one.text.startsWith("SPDX-"));
+    .flatMap(function (comment) {
+      let said = worded(comment);
+      if (comment.type === "Shebang" || directives.includes(comment)) {
+        said = said.slice(1);
+      }
+      return said;
+    })
+    .filter((one) => !coded.has(one.at) && !one.text.startsWith("SPDX-"));
 };
 
 // A project-local ESLint plugin, kept out of eslint.config.mjs so it can be
