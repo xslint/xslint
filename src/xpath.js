@@ -5,47 +5,15 @@
 
 /*
  * The fontoxpath environment, and the functions this project adds to it.
- * `xslint:normalize-space` is what every selector of ours spells where XPath
- * would say `normalize-space`, because fontoxpath's own is JavaScript's: it
- * trims and collapses on `\s`, so a no-break space, a line separator and an
- * em space are gaps to it, where XPath defines the function over the four
- * characters of XML's `S` alone — the genre of the `\s` in #643, one
- * function further in.
- *
- * Seven selectors spell it, and six of them were wrong before #881, in both
- * directions at once. Three under-reported, the wider gap swallowing content
- * a stylesheet emits: `text-outside-xsl-text` read 29 nodes of the three
- * corpora as blank, `variable-or-param-with-select-and-content` missed an
- * XTSE0620 Saxon refuses to load, and `malformed-version-in-stylesheet` let
- * a `version="&#xA0;2.0"` pass as a number. Three over-reported, calling a
- * character nothing at all: `empty-content-in-instructions` called an
- * `xsl:if` empty that emits one, and `blank-nested-if` and
- * `setting-value-of-variable-incorrectly` advised a collapse that would have
- * dropped it. All three are report-only, so what the wider gap cost was a
- * misleading report and never a corrupted file. The 29 nodes are #881's
- * own measurement over the three corpora the README advertises.
- *
- * The seventh was already right, and that is the part worth keeping. Its
- * predicate is one `src/predicates.js` serves off the shared walk, whose
- * `normalized` reads the four characters XPath defines — so one tree held
- * both answers to the same question, and which one a check got depended on
- * whether the optimiser had reached it. A served answer that differs from
- * the engine's is worse than a slow one, however correct it is on its own,
- * which is why the vocabulary refuses a bare `normalize-space` outright and
- * serves only the `xslint:` spelling. Registering the function is what lets
- * it: the walk and the engine now read the same four characters.
- *
- * The second is `xslint:version`, and it is here for the reason the first is:
- * the question has one answer and no selector could reach it. XSLT puts a
- * version on any element and a shadow `_version` spells it as readily, so a
- * root's own version misjudges every subtree raised or lowered against it —
- * #618 settled that for `versionOf` and left four declarative gates reading
- * the root, two of them against a list of spellings where a floor was meant,
- * and two forking on the two root names where a third XSLT root takes the
- * plain attribute (#851). The function hands them `versionOf`'s own answer,
- * `NaN` where nothing declares one, which clears no floor and so leaves a
- * report unmade rather than inventing one against a stylesheet nothing here
- * can read the version of.
+ * `xslint:normalize-space` is what every selector of ours spells, because
+ * fontoxpath's own collapses on JavaScript's `\s` where XPath defines the
+ * gap as the four characters of XML's `S` (#643): six of the seven selectors
+ * spelling it were wrong in both directions before #881. The seventh was
+ * served off the shared walk, which already read the four characters, and a
+ * served answer differing from the engine's is worse than a slow one, so the
+ * vocabulary serves only the `xslint:` spelling. `xslint:version` hands a
+ * declarative gate `versionOf`'s answer at the node rather than the root's
+ * (#618, #851), `NaN` where nothing declares one, which clears no floor.
  */
 
 const {

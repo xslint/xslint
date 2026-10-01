@@ -3,8 +3,8 @@
 What each instrument of the suite measures, and the evidence every bar in it stands on.
 The bars themselves, and the rules for placing one, are in the root `CLAUDE.md`; this file
 is the derivation under each. A bar re-derived without its reading recorded here is a bar
-nobody can check. A note that outgrew the chain stands at the top of its own file instead,
-so an instrument the root index names with no section here carries its own (#844).
+nobody can check. An instrument the root index names with no section here carries a note of
+ten lines at most in its own file header, and the tickets it cites carry the rest (#844, #1147).
 
 ## Speed
 
@@ -425,8 +425,8 @@ pass needed a whole measurement discarded in front of it, the way the speed gate
 growth 3.10 to 4.56 over ten runs even so, where a window of sixty-four is warm by its own fourth
 pass and reads the band above with no warm-up at all.
 
-The second tier is the nightly one, and its derivation stands at the top of `test/budget.test.js`
-rather than here, the tables it is under being that file's: `corpora.yml` times DocBook-XSL, TEI
+The second tier is the nightly one, the tables it is under being `test/budget.test.js`'s:
+`corpora.yml` times DocBook-XSL, TEI
 and DITA-OT at pinned commits against a budget apiece, and `scripts/budget.js` judges each reading
 from both sides, past the budget and further than `SLACK` under it.
 
@@ -685,10 +685,8 @@ all three.
 
 ## `test/guides.test.js`
 
-Its derivation stands at the top of `test/guides.test.js` itself, for the reason it gives there:
-it was the dearest note this guide could move — `test/conformance.test.js`'s is refused by the
-line cap on the file it is about — and the chain through `test/` had reached the bar again, this
-change being one whose own prose put it there (#821, #851).
+Its note stands at the top of `test/guides.test.js`, and the tickets it cites carry the
+derivation (#821, #851, #1147).
 
 ## `test/strictness.js`
 
@@ -710,9 +708,8 @@ expression — so a gate reads it *beside* `parsed`, never instead of it, and
 
 ## `test/packs.js`
 
-Its derivation stands at the top of `test/packs.js` itself, the fourteenth note to stand at the top
-of its own module and the second of the two this chain moved to make room for the snapshot tier
-above (#821, #638).
+Its note stands at the top of `test/packs.js`, and the tickets it cites carry the derivation
+(#821, #638, #1147).
 
 ## `test/xcop.deep.test.js`
 
@@ -726,6 +723,5 @@ fixtures share a path.
 
 ## `test/manifest.test.js`
 
-Its derivation stands at the top of `test/manifest.test.js` itself, the thirteenth note to stand at
-the top of its own module and the first of the two this chain moved to make room for the snapshot
-tier above (#821, #638).
+Its note stands at the top of `test/manifest.test.js`, and the tickets it cites carry the
+derivation (#821, #638, #1147).

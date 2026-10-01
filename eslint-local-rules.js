@@ -190,20 +190,112 @@ const parted = function (comment) {
   return entries;
 };
 
+// Whether a top-level statement only opens a module, a directive such as
+// 'use strict', a require binding or an import, which a note below it still
+// opens the module above.
+const opening = function (statement) {
+  let verdict =
+    statement.type === "ImportDeclaration" || Boolean(statement.directive);
+  if (statement.type === "VariableDeclaration") {
+    verdict = statement.declarations.every(function (declarator) {
+      let init = declarator.init;
+      while (init && init.type === "MemberExpression") {
+        init = init.object;
+      }
+      return Boolean(
+        init &&
+          init.type === "CallExpression" &&
+          init.callee.type === "Identifier" &&
+          init.callee.name === "require"
+      );
+    });
+  }
+  return verdict;
+};
+
+// Whether a top-level statement opens a module and does nothing else a reader
+// needs told, a directive or an import binding no name, so a comment beside it
+// or above it is the note's.
+const idle = function (statement) {
+  return (
+    Boolean(statement.directive) ||
+    (statement.type === "ImportDeclaration" &&
+      statement.specifiers.length === 0)
+  );
+};
+
+// The two tags of the licence header, spelled at run time so the REUSE job
+// does not read this line as one.
+const LICENSED = [
+  ["SPDX", "FileCopyrightText"],
+  ["SPDX", "License", "Identifier"],
+].map((parts) => `${parts.join("-")}:`);
+
+// The lines of the note a module opens with. The opening region is its
+// top-level statements up to and including the first that does not only open
+// the module; the note is every comment line in front of that last one that
+// shares no line with code, a directive or a bare import being none, bar the
+// first line of each licence tag, a shebang, and the docblock of any other
+// region statement (#1147).
+const noted = function (source) {
+  const directives = source.getInlineConfigNodes();
+  const body = source.ast.body;
+  const reach = body.findIndex((statement) => !opening(statement));
+  let region = body;
+  let bound = Infinity;
+  if (reach >= 0) {
+    region = body.slice(0, reach + 1);
+    bound = body[reach].range[0];
+  }
+  const owned = region
+    .filter((statement) => !idle(statement))
+    .map(
+      (statement) =>
+        source
+          .getCommentsBefore(statement)
+          .filter((comment) => !directives.includes(comment))
+          .at(-1) ?? null
+    )
+    .filter(documents);
+  const prologue = body
+    .filter(idle)
+    .map((statement) => statement.range);
+  const coded = new Set(
+    source.ast.tokens
+      .filter((token) =>
+        prologue.every(
+          ([start, end]) => token.range[0] < start || token.range[1] > end
+        )
+      )
+      .flatMap((token) => [token.loc.start.line, token.loc.end.line])
+  );
+  const said = source
+    .getAllComments()
+    .filter((comment) => comment.range[1] <= bound && !owned.includes(comment))
+    .flatMap(function (comment) {
+      let lines = worded(comment);
+      if (comment.type === "Shebang") {
+        lines = lines.slice(1);
+      }
+      return lines;
+    })
+    .filter((one) => !coded.has(one.at));
+  const licence = LICENSED.map((tag) =>
+    said.find((one) => one.text.startsWith(tag))
+  );
+  return said.filter((one) => !licence.includes(one));
+};
+
 // A project-local ESLint plugin, kept out of eslint.config.mjs so it can be
-// unit-tested with ESLint's RuleTester (test/eslint-local-rules.test.js). One
-// rule flags a variable whose only purpose is to be returned by the very next
-// statement — that binding is redundant and should be inlined. Another flags
-// a call that leaves out an argument the callee declares. The third flags a
-// function that can be left through more than one return, where the branching,
-// not the exit, is what should carry the choice. The fourth flags a docblock
-// standing in front of another, which documents nothing, and the last weighs
-// what one docblock says, a file being capped at 1000 lines while the comments
-// inside it answered to nothing. No plugin dependency is needed; a single
-// no-restricted-syntax selector can neither compare a declaration's name with
-// the identifier the following return uses, nor weigh a call's argument count
-// against the parameter list of the callee, nor tell which function a return
-// belongs to, nor count the lines of a comment, which is no node at all.
+// unit-tested with ESLint's RuleTester (test/eslint-local-rules.test.js). Its
+// rules flag a variable bound only to be returned next, a call leaving out an
+// argument the callee declares, a function left through more than one return,
+// a docblock standing in front of another, a docblock or a module's opening
+// note past its cap, and a string wrapped across lines with `+` (#832, #1047,
+// #1147). Each asks what no no-restricted-syntax selector can: a name against
+// the next return, an arity against a declaration, the function a return
+// belongs to, or the lines of a comment, which is no node at all.
+
 // The operands a chain of `+` adds up, left to right, which JavaScript nests
 // on the left: a parenthesised sum on the right stays one operand.
 const summed = function (node) {
@@ -419,7 +511,7 @@ module.exports = {
       meta: {
         type: "suggestion",
         docs: {
-          description: "cap how many lines one JSDoc block may spend"
+          description: "cap how many lines a JSDoc block, or the note a module opens with, may spend"
         },
         messages: {
           sprawling:
@@ -429,21 +521,33 @@ module.exports = {
               "CLAUDE.md of the directory it sits in",
             ].join(' '),
           wordy:
-            "Cut '{{tag}}' to {{max}} lines or fewer: it spends {{spent}}"
+            "Cut '{{tag}}' to {{max}} lines or fewer: it spends {{spent}}",
+          noted:
+            [
+              "Cut the note this module opens with to {{max}} lines or fewer:",
+              "it spends {{spent}}, and the ticket it cites is where the",
+              "derivation stays recoverable",
+            ].join(" ")
         },
         schema: [
           {
             type: "object",
             properties: {
               description: { type: "integer", minimum: 1 },
-              tag: { type: "integer", minimum: 1 }
+              tag: { type: "integer", minimum: 1 },
+              top: { type: "integer", minimum: 1 }
             },
             additionalProperties: false
           }
         ]
       },
       create(context) {
-        const caps = { description: 5, tag: 3, ...context.options[0] };
+        const caps = {
+          description: 5,
+          tag: 3,
+          top: 10,
+          ...context.options[0]
+        };
         return {
           Program() {
             context.sourceCode
@@ -465,6 +569,14 @@ module.exports = {
                   });
                 }
               });
+            const note = noted(context.sourceCode);
+            if (note.length > caps.top) {
+              context.report({
+                loc: { line: note[caps.top].at, column: 0 },
+                messageId: "noted",
+                data: { max: caps.top, spent: note.length }
+              });
+            }
           }
         };
       }

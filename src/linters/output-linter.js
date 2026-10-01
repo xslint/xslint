@@ -4,67 +4,16 @@
  */
 
 /*
- * `not-using-output` was a per-file selector — `[xsl:template and
- * not(xsl:output)]` — and an `xsl:output` is not a per-file fact. It merges
- * into the sheet that imports it and governs the whole import tree, so a main
- * module that pushes its serialization into a shared `_output.xsl` was
- * reported for missing what it had, and the module holding it was reported by
- * `stylesheet-has-no-templates` for holding nothing else. One decomposition,
- * punished at both ends, and the one `too-many-templates` recommends (#548,
- * #494).
- *
- * The question needs the graph, so the check moved to the code stage and the
- * YAML kept only its severity and message. `graphOf` yields an edge only where
- * the target is in the corpus, which is half of what #468's guardrail asks;
- * the other half is that an href leaving the linted set means *external,
- * assume fine*. Reachability is transitive,
- * an `xsl:output` three imports down governing as surely as one directly
- * imported, and it is not directional either: a tree serializes together, so
- * the module holding the only templates is answered by the sheet importing it
- * as much as by the ones it imports. Saxon over a `main.xsl` declaring
- * `method="text"` and a `_lib.xsl` declaring nothing emits text, where
- * `_lib.xsl` alone emits XML. So the question is the tree's rather than the
- * file's, and a module is quiet when any tree holding it declares an output or
- * reaches outside. Downward alone answers the smaller half: DocBook-XSL's 178
- * reports fall to 143 that way and to 19 with both directions, TEI's 159 to
- * 112 and then to 14, DITA-OT's 118 to 95.
- *
- * That guardrail settles the importer and never the module it names, so every
- * module of a tree the graph could not see was still judged (#1004). 91 of
- * DITA-OT's 96 reports were modules its build reaches through a `plugin:` URI,
- * which joined onto a directory names no file; and DocBook's `html/lists.xsl`,
- * linted alone, was reported where the whole tree is quiet. A module is judged
- * now only where a transformation starts — nothing in the corpus imports it,
- * and a template of it matches the root or is `xsl:initial-template` — and
- * the report stands on it alone, that being where an `xsl:output` belongs,
- * while `src/import-graph.js` reads a `plugin:` URI. The corpora fall from 19,
- * 14 and 96 to 5, 3 and 3, `coverage-report.xsl` among the five; two of
- * DITA-OT's three are modules its install generates from a `_template.xsl`
- * the checkout holds instead, which nothing here reads. A library matching the
- * root and linted alone is still judged, so one file of a project can still
- * draw what all of them do not. A named `xsl:output` supplies nothing, being
- * a format an `xsl:result-document` asks for. A default-mode template taking
- * the element at the top of the document starts one too since #1046, which
- * `src/roots.js` derives, and the corpora rise to 6, 10 and 4, each added
- * report an identity transform or a template for the document element.
- *
- * One decision no pack defeats. The namespace half of `rooted` fires only on a
- * root *named* stylesheet or transform outside the XSLT namespace while
- * holding XSLT children, which is no stylesheet at all, and it stays: a
- * local-name test standing without its namespace is the shape this repository
- * refuses everywhere else. Two the first spelling carried are gone, for two
- * different reasons. `!holds(xsl, 'output')` beside the report was redundant
- * against every input there is, a file holding one being in `supplying` and so
- * settled through its own reach before the conjunct is read. `rooted` inside
- * `supplying` fired only on a root that is neither stylesheet nor transform
- * yet holds a top-level `xsl:output` — an `xsl:package`, where it was wrong, a
- * package's output governing the modules it imports as any other does, or a
- * shape XSLT refuses; 842 corpus stylesheets hold neither. So one went for
- * deciding nothing, one for deciding wrongly, and the third stays for deciding
- * rightly where nothing valid reaches it. What `rooted` decides whole is the
- * file judged, and the package is that live case: reached by
- * `xsl:use-package`, an edge this linter does not follow, so judging one
- * invents a defect out of a tree nobody handed us — #468 once more.
+ * `not-using-output`, asked of the import tree rather than the file: an
+ * `xsl:output` merges into whatever imports it, so a main module keeping its
+ * serialization in a shared `_output.xsl` was reported for missing what it
+ * had (#548). Reach through `graphOf` runs both ways, a tree serializing
+ * together, and an href leaving the linted set is assumed fine (#468). A
+ * module is judged only where a transformation starts, nothing in the corpus
+ * importing it and a template of it entering at the root, and the report
+ * stands on it alone (#1004, #1046). A named `xsl:output` supplies nothing,
+ * and an `xsl:package` is not judged, `xsl:use-package` being an edge this
+ * linter does not follow.
  */
 
 const {graphOf, importsOf} = require('../import-graph')

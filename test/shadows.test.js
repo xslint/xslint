@@ -6,18 +6,11 @@
 /*
  * The third way a declarative selector meets a shadow attribute, after the
  * presence test #849 fixed and the version gate #851 did: a selector reading
- * an attribute's **value**. `SUPPLIED` in `test/conformance.test.js` cannot
- * see one — it matches a presence clause closing on a bracket, an `and`, an
- * `or` or a union bar, and `@x = 'y'` closes on none of them — which is how
- * `using-disable-output-escaping` came to report the 1.0 spelling of an
- * attribute and miss the 3.0 one Saxon honours identically (#992). Six more
- * stood on a table here until #997 moved them onto `xslint:attribute`, so the
- * gate exempts nothing.
- *
- * It stands in a file of its own because `test/conformance.test.js` is at the
- * 1000-line `max-lines` cap, and because the checks are read here the way
- * `predicates`, `tiers` and `readme` read them — off `checks.json`, which
- * that file's own gate holds to the YAML authoring it.
+ * an attribute's value. `SUPPLIED` in `test/conformance.test.js` cannot see
+ * one, `@x = 'y'` closing on no bracket, `and`, `or` or union bar, which is
+ * how `using-disable-output-escaping` came to miss the 3.0 spelling Saxon
+ * honours (#992). It stands in a file of its own because that one is at the
+ * `max-lines` cap, and reads the checks off `checks.json`.
  */
 
 const {kinds} = require('../src/resources/checks.json')

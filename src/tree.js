@@ -6,21 +6,12 @@
 /*
  * `walked`, `named`, `attributed` and `holding` — one pass over a document,
  * remembered against it, and the axis every served selector comes off.
- * `named` buckets each element twice since #811's wildcard phase, once under
- * its own name and once under its namespace beside `EVERY`, which no local
- * name is — so `//xsl:*` is a bucket the walk already holds rather than
- * the one shape past a name that a sweep still paid for. That second key has
- * to be the *walk's* rather than a gather at the door, and the difference is
- * the whole of what the phase buys: building the wildcard's candidates by
- * filtering the buckets and sorting the union of them by rank reads every XSLT
- * element there is before a predicate has narrowed anything, where a bucket
- * standing in document order already needs neither.
- * `modern-construct-in-xslt-1` reads 116-120 ms over DocBook-XSL with its
- * wildcard arm at the engine and 31 with the bucket, and DITA-OT 10.1-10.8
- * against 3.1-3.7. TEI is the one corpus it leaves dearer, 11.3-14.0 against
- * 14.1-16.4: three quarters of its elements are XSLT and the arm's own
- * predicate is what narrows them, so the bucket hands over nearly everything
- * the sweep would have.
+ * `named` buckets each element twice, once under its own name and once under
+ * its namespace beside `EVERY`, which no local name is, so `//xsl:*` is a
+ * bucket the walk already holds (#811). That second key has to be the walk's
+ * rather than a gather at the door: filtering the buckets and sorting their
+ * union by rank reads every XSLT element before a predicate has narrowed
+ * anything, where a bucket standing in document order needs neither.
  */
 
 /**

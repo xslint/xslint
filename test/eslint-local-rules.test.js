@@ -22,6 +22,25 @@ const caller = path.join(__dirname, 'resources', 'eslint', 'caller.js')
  */
 const marker = `@${'todo'}`
 
+/**
+ * The licence header every source file opens with, which a top note follows.
+ */
+const SPDX = [
+  '/*',
+  ' * SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov',
+  ` * ${['SPDX', 'License', 'Identifier'].join('-')}: MIT`,
+  ' */',
+].join('\n')
+
+/**
+ * As many lines of a block comment's prose as asked, each closed by a break.
+ * @param {number} count - How many lines
+ * @return {string} - The lines
+ */
+const lines = function(count) {
+  return [...Array(count).keys()].map((index) => ` * Line ${index + 7}.\n`).join('')
+}
+
 tester.run(
   'no-redundant-return-variable',
   local.rules['no-redundant-return-variable'],
@@ -232,6 +251,32 @@ tester.run(
         code: '/**\n * One.\n * Two.\n * Three.\n * Four.\n * Five.\n * Six.\n * Seven.\n */\nconst one = 1',
         options: [{description: 8}],
       },
+      `${SPDX}\n/*\n${lines(10)} */\nconst one = 1`,
+      `${SPDX}\n/*\n${lines(5)} *\n${lines(5)} */\nconst one = 1`,
+      `const one = 1\n/*\n${lines(12)} */\nconst two = 2`,
+      `const one = require('./one')\nconst two = 2\n${'// Line.\n'.repeat(12)}const three = 3`,
+      `${SPDX}\n/*\n${lines(10)} */`,
+      `#!/usr/bin/env node\n${SPDX}\n/*\n${lines(10)} */\nconst one = 1`,
+      `${SPDX}\n/* eslint-disable no-console */\n/*\n${lines(9)} */\nconst one = 1`,
+      `${SPDX}\n/*\n${lines(10)} */\n/**\n * One.\n */\nconst one = 1`,
+      `${SPDX}\n/*\n${lines(9)} */\n/**\n * One.\n */\n// eslint-disable-next-line no-console\nconsole.log(1)`,
+      `${SPDX}\n/*\n${lines(10)} */\n/**\n * One.\n * Two.\n */\nconst fs = require('fs')\nconst one = 1`,
+      `${SPDX}\n/* eslint-disable no-console -- The console is output. */\n/*\n${lines(9)} */\nconsole.log(1)`,
+      `${SPDX}\n/*\n${lines(8)} */\nconst alpha = require('./alpha') // reads the stylesheets\nconst beta = require('./beta') // reads the stylesheets\nconst gamma = require('./gamma') // reads the stylesheets\nconst one = 1`,
+      `${SPDX}\n/*\n${lines(8)} */\nconst {\n  alpha, // the first\n  beta, // the second\n  gamma, // the third\n} = require('./x')\nconst one = 1`,
+      {
+        code: `${SPDX}\n/*\n${lines(10)} */\n/**\n * One.\n * Two.\n */\nimport {join} from 'path'\nexport const one = join('a')`,
+        languageOptions: {sourceType: 'module'},
+      },
+      {
+        code: `${SPDX}\n/*\n${lines(8)} */\nimport alpha from './alpha.js' // reads the stylesheets\nimport {beta} from './beta.js' // reads the stylesheets\nimport * as gamma from './gamma.js' // reads the stylesheets\nexport const one = [alpha, beta, gamma]`,
+        languageOptions: {sourceType: 'module'},
+      },
+      `// ${['SPDX', 'FileCopyrightText'].join('-')}: Copyright (c) 2025-2026 Max Trunnikov\n// ${['SPDX', 'License', 'Identifier'].join('-')}: MIT\n/*\n${lines(10)} */\nconst one = 1`,
+      {
+        code: `${SPDX}\n/*\n${lines(12)} */\nconst one = 1`,
+        options: [{top: 12}],
+      },
       {
         code: '/**\n * One.\n * @param {object} one - A description that\n *  wraps once\n */\nfunction pair(one) {}',
         options: [{tag: 2}],
@@ -241,6 +286,134 @@ tester.run(
       {
         code: '/**\n * One.\n * Two.\n * Three.\n * Four.\n * Five.\n * Six.\n */\nconst one = 1',
         errors: [{messageId: 'sprawling', line: 7}],
+      },
+      {
+        code: `${SPDX}\n/*\n${lines(11)} */\nconst one = 1`,
+        errors: [{messageId: 'noted', line: 16, data: {max: 10, spent: 11}}],
+      },
+      {
+        code: `/*\n${lines(11)} */\nconst one = 1`,
+        errors: [{messageId: 'noted', line: 12, data: {max: 10, spent: 11}}],
+      },
+      {
+        code: `${SPDX}\n/*\n${lines(4)} */\n/*\n${lines(7)} */\nconst one = 1`,
+        errors: [{messageId: 'noted', line: 18, data: {max: 10, spent: 11}}],
+      },
+      {
+        code: `${SPDX}\nconst one = require('./one')\n/*\n${lines(11)} */\nconst two = 2`,
+        errors: [{messageId: 'noted', line: 17, data: {max: 10, spent: 11}}],
+      },
+      {
+        code: `${SPDX}\n${'// Line.\n'.repeat(11)}const one = 1`,
+        errors: [{messageId: 'noted', line: 15, data: {max: 10, spent: 11}}],
+      },
+      {
+        code: `${SPDX.slice(0, -4)}\n${lines(11)} */\nconst one = 1`,
+        errors: [{messageId: 'noted', line: 14, data: {max: 10, spent: 11}}],
+      },
+      {
+        code: `${SPDX.split('\n').slice(0, 2).join('\n')}\n${` * ${['SPDX', 'FileCopyrightText'].join('-')}: why the walk is paid once\n`.repeat(40)}${SPDX.split('\n').slice(2).join('\n')}\nconst one = 1`,
+        errors: [{messageId: 'noted', line: 13, data: {max: 10, spent: 40}}],
+      },
+      {
+        code: `${SPDX}\n'use strict'\n/*\n${lines(11)} */\nconst one = 1`,
+        errors: [{messageId: 'noted', line: 17, data: {max: 10, spent: 11}}],
+      },
+      {
+        code: `${SPDX}\n/**\n * One.\n * Two.\n */\n/*\n${lines(10)} */\nconst one = 1`,
+        errors: [{messageId: 'noted', line: 18, data: {max: 10, spent: 12}}],
+      },
+      {
+        code: `${SPDX}\n/* eslint-local-rules.js holds what this reads.\n${lines(10)} */\nconst one = 1`,
+        errors: [{messageId: 'noted', line: 15, data: {max: 10, spent: 11}}],
+      },
+      {
+        code: `${SPDX}\n// eslint-config-google says so.\n${'// Line.\n'.repeat(10)}const one = 1`,
+        errors: [{messageId: 'noted', line: 15, data: {max: 10, spent: 11}}],
+      },
+      {
+        code: `${SPDX}\n/* eslint-disable no-console -- The console is output.\n${lines(11)} */\nconsole.log(1)`,
+        errors: [{messageId: 'noted', line: 15, data: {max: 10, spent: 12}}],
+      },
+      {
+        code: `${SPDX}\n/* eslint-disable no-console\u00A0--\u00A0The console is output.\n${lines(11)} */\nconsole.log(1)`,
+        errors: [{messageId: 'noted', line: 15, data: {max: 10, spent: 12}}],
+      },
+      {
+        code: `${SPDX}\n/* exported\n${lines(11)} */\nconst one = 1`,
+        errors: [{messageId: 'noted', line: 15, data: {max: 10, spent: 12}}],
+      },
+      {
+        code: `${SPDX}\n/* global\n${lines(11)} */\nconst one = 1`,
+        errors: [{messageId: 'noted', line: 15, data: {max: 10, spent: 12}}],
+      },
+      {
+        code: `${SPDX}\n/* globals\n${lines(11)} */\nconst one = 1`,
+        errors: [{messageId: 'noted', line: 15, data: {max: 10, spent: 12}}],
+      },
+      {
+        code: `${SPDX}\n/* eslint-disable no-console */\n/*\n${lines(10)} */\nconst one = 1`,
+        errors: [{messageId: 'noted', line: 16, data: {max: 10, spent: 11}}],
+      },
+      {
+        code: `${SPDX}\n/*\n${lines(10)} */\n/**\n * One.\n */\n// eslint-disable-next-line no-console\nconsole.log(1)`,
+        errors: [{messageId: 'noted', line: 20, data: {max: 10, spent: 11}}],
+      },
+      {
+        code: `${SPDX}\n${'/* exported the walk is paid once for every stylesheet */\n'.repeat(11)}const one = 1`,
+        errors: [{messageId: 'noted', line: 15, data: {max: 10, spent: 11}}],
+      },
+      {
+        code: `${SPDX}\n${'/* exported a derivation line that answers why */\n'.repeat(40)}const one = 1`,
+        errors: [{messageId: 'noted', line: 15, data: {max: 10, spent: 40}}],
+      },
+      {
+        code: `${SPDX}\n${['no-debugger', 'no-alert', 'no-eval', 'no-with', 'no-proto', 'no-caller', 'no-iterator', 'no-octal', 'no-new-func', 'no-script-url', 'no-void'].map((rule) => `/* eslint ${rule}: "error" -- why the walk is paid once */\n`).join('')}const one = 1`,
+        errors: [{messageId: 'noted', line: 15, data: {max: 10, spent: 11}}],
+      },
+      {
+        code: `${SPDX}\n${'// SPDX-Note: the walk is paid once for every stylesheet it reads.\n'.repeat(11)}const one = 1`,
+        errors: [{messageId: 'noted', line: 15, data: {max: 10, spent: 11}}],
+      },
+      {
+        code: `${SPDX}\n/*\n${lines(9)} * ${['SPDX', 'FileCopyrightText'].join('-')}: the walk is paid once\n * ${['SPDX', 'License', 'Identifier'].join('-')}: MIT\n */\nconst one = 1`,
+        errors: [{messageId: 'noted', line: 16, data: {max: 10, spent: 11}}],
+      },
+      {
+        code: `${SPDX}\n${'\'use strict\' // a derivation line that answers why\n'.repeat(40)}const one = 1`,
+        errors: [{messageId: 'noted', line: 15, data: {max: 10, spent: 40}}],
+      },
+      {
+        code: `${SPDX}\n${`/**\n${lines(5)} */\n'use strict'\n`.repeat(8)}const one = 1`,
+        errors: [{messageId: 'noted', line: 22, data: {max: 10, spent: 40}}],
+      },
+      {
+        code: `${SPDX}\n${'// eslint-disable-next-line no-console -- the console is output\n'.repeat(11)}console.log(1)`,
+        errors: [{messageId: 'noted', line: 15, data: {max: 10, spent: 11}}],
+      },
+      {
+        code: `${SPDX}\n${'/* global alpha -- bound by the page that loads this */\n'.repeat(11)}const one = alpha`,
+        errors: [{messageId: 'noted', line: 15, data: {max: 10, spent: 11}}],
+      },
+      {
+        code: `${SPDX}\n${['fs', 'path', 'os', 'url', 'util', 'events', 'stream', 'crypto', 'http', 'https', 'net', 'tls', 'zlib'].map((name) => `import '${name}' // a derivation line that answers why\n`).join('')}export const one = 1`,
+        languageOptions: {sourceType: 'module'},
+        errors: [{messageId: 'noted', line: 15, data: {max: 10, spent: 13}}],
+      },
+      {
+        code: `${SPDX}\n${['fs', 'path', 'os', 'url', 'util', 'events', 'stream', 'crypto', 'http', 'https', 'net', 'tls', 'zlib'].map((name) => `/**\n${lines(3)} */\nimport '${name}'\n`).join('')}export const one = 1`,
+        languageOptions: {sourceType: 'module'},
+        errors: [{messageId: 'noted', line: 25, data: {max: 10, spent: 39}}],
+      },
+      {
+        code: `${SPDX}\n${Array.from(Array(13).keys(), (index) => `import './version.js?${index}' // a derivation line that answers why\n`).join('')}export const one = 1`,
+        languageOptions: {sourceType: 'module'},
+        errors: [{messageId: 'noted', line: 15, data: {max: 10, spent: 13}}],
+      },
+      {
+        code: `${SPDX}\n/*\n${lines(4)} */`,
+        options: [{top: 3}],
+        errors: [{messageId: 'noted', line: 9, data: {max: 3, spent: 4}}],
       },
       {
         code: '/**\n * One.\n * Two.\n * Three.\n * Four.\n * Five.\n * Six.\n */\nconst one = 1\n/**\n * One.\n * Two.\n * Three.\n * Four.\n * Five.\n * Six.\n */\nconst two = 2',
