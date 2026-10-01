@@ -4,7 +4,8 @@ What each script builds or judges. The commands that run them are in the root `C
 
 ## `scripts/generate-docs.js`
 
-Builds the `docs/` site from checks + motives.
+Builds the `docs/` site from checks + motives, and a page per `src/resources/manual/*.md`, the
+manual each README section links to rather than spells out (#1095).
 
 ## `scripts/generate-checks.js`
 
@@ -61,7 +62,7 @@ verdict returned to nobody leaves the tier as unable to fail as #785 found it.
 ## `scripts/readme.js`
 
 Reads the figures `README.md` states of this repository off the tree that answers them: what the
-three committed corpus reports drew, and how many checks a kind of `checks.json` holds. It is
+three committed corpus reports drew, and how much of it the `recommended` preset draws. It is
 `snapshot.js`'s shape one document over — the same reports, asked what they *found* rather than
 whether they changed — but it takes the `checks` target's tier rather than snapshot's, since the
 thing being kept current is a hand-written file and not a generated one. So `npx grunt readme` is
@@ -80,9 +81,8 @@ paragraph does not, every gap in an anchor reading as the line break a wrap may 
 can hold each to a check `checks.json` still holds — a renamed one otherwise counting nothing and
 reading as a check that has stopped firing. What no generator can write is the half #780 was
 about: the sentence claiming the Formatting kind reads each expression as a stream of tokens,
-which is the shape those checks were migrated *off* through Phase 4 of #644, so a reader who
-trusted it went looking for the wrong thing. That one is prose, corrected by hand; only its count
-belongs here.
+which is the shape those checks were migrated *off* through Phase 4 of #644. That one is prose,
+corrected by hand, and moved with its count dropped to `src/resources/manual/checks.md` (#1095).
 
 ## `scripts/snapshot.js`
 

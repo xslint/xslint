@@ -35,8 +35,9 @@
  * hand drops to select something else — is a hazard of the construct, so it
  * moved into the motive rather than dying with the prose. What the section
  * owns is the two flags and the guarantees that hold whatever the check: the
- * exact span, the skip on a mismatch, the wider of two overlaps. It names no
- * check at all, the gate below failing the moment a bullet comes back (#898).
+ * exact span, the skip on a mismatch, the wider of two overlaps. The
+ * guarantees stand on the manual page it links to since #1095, so the gate
+ * below reads both, failing the moment a bullet comes back to either (#898).
  */
 
 const {lint, suffixed} = require('../src/xslint')
@@ -138,12 +139,19 @@ const spelled = function(fix) {
 }
 
 /**
- * What stands under the README's `Fixing` heading, up to the next one.
- * @return {string} - The section's own text
+ * What teaches the two flags: the README's `Fixing` section, up to the next
+ * heading, and the manual page that section links to.
+ * @return {string} - The two texts, one after the other
  */
 const fixing = function() {
-  return fs.readFileSync(path.resolve(__dirname, '..', 'README.md'), 'utf-8')
-    .split(/^## /m).find((part) => part.startsWith('Fixing\n'))
+  return [
+    fs.readFileSync(path.resolve(__dirname, '..', 'README.md'), 'utf-8')
+      .split(/^## /m).find((part) => part.startsWith('Fixing\n')),
+    fs.readFileSync(
+      path.resolve(__dirname, '..', 'src', 'resources', 'manual', 'fixing.md'),
+      'utf-8',
+    ),
+  ].join('\n')
 }
 
 describe('tiers', function() {
@@ -176,10 +184,11 @@ describe('tiers', function() {
       fixable().map(([name]) => name).filter((name) => fixing().includes(name)),
       [],
       [
-        'the README `Fixing` section names a check whose page already teaches',
-        'the construct, so one reader is told the same thing twice and the',
-        'two spellings drift apart. That section owns the flags and the',
-        'guarantees; which check fixes itself is the catalog\'s (#898)',
+        'the README `Fixing` section or its manual page names a check whose',
+        'own page already teaches the construct, so one reader is told the',
+        'same thing twice and the two spellings drift apart. Those own the',
+        'flags and the guarantees; which check fixes itself is the',
+        'catalog\'s (#898, #1095)',
       ].join(' '),
     )
   })

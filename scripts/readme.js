@@ -73,7 +73,7 @@ const wrapped = function(pattern) {
  */
 const NAMED = {
   'undefined-variable': /([0-9,]+) references to a variable/,
-  'broken-href': /([0-9,]+) imports and includes/,
+  'broken-href': /Another ([0-9,]+) are imports and includes/,
   'unused-function': /([0-9,]+) stylesheet functions nothing calls/,
 }
 
@@ -109,7 +109,7 @@ const FIGURES = [
   })),
   [{
     what: 'findings the recommended preset draws',
-    pattern: wrapped(/by default draws \*\*([0-9,]+) defects/),
+    pattern: wrapped(/by default draws \*\*([0-9,]+) reports/),
     reads: DRAWN.filter(
       (one) => Object.values(kinds).some(
         (kind) => kind[one.check]?.preset === 'recommended',

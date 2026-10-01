@@ -5,7 +5,8 @@
 
 /*
  * The figures the README states of this repository, held to what the tree
- * reads off the committed corpus reports and off `checks.json`.
+ * reads off the committed corpus reports and off `checks.json`, and the
+ * manual pages it links to, held to the ones the docs site builds.
  *
  * Nothing weighed them before. `README.md` stands in `DOCUMENTS`, so
  * `test/guides.test.js` does read the file, but the claim that gate judges
@@ -42,6 +43,11 @@
  * capture, so rewording a sentence around a figure reddens — while a reflow
  * of the paragraph does not, every gap in an anchor reading as the line break
  * a wrap may have put there.
+ *
+ * Two more since #1095, which moved the long sections into
+ * `src/resources/manual/` and left the README a paragraph and a link each:
+ * every page it links to is one the docs site builds, and every page built is
+ * one it links to, so neither a dead link nor an unreached page survives.
  */
 
 const {

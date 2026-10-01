@@ -57,16 +57,17 @@ one of them.
 
 ## Proven on real code
 
-Even the best-maintained XSLT in the world ships defects.
+Even the best-maintained XSLT in the world ships faults a processor refuses.
 [DocBook-XSL](https://github.com/docbook/xslt10-stylesheets) (1.0),
 [TEI](https://github.com/TEIC/Stylesheets) (2.0) and
 [DITA-OT](https://github.com/dita-ot/dita-ot) (1.0/2.0) are the three most
 widely used XSLT projects, and in their core stylesheets the `recommended`
-preset a run reports by default draws **245 defects**, with no false positives
+preset a run reports by default draws **245 reports**, with no false positives
 from its validators. Among them are 47 references to a variable no binding in
-scope declares, which a processor refuses outright, and 16 stylesheet functions
-nothing calls; 141 imports and includes name a file the checkout does not hold,
-most of them modules a build generates first. Run with `--preset all`, the same
+scope declares, each a stylesheet no processor will run, and 16 stylesheet
+functions nothing calls. Another 141 are imports and includes naming a file the
+checkout does not hold, most of them modules a build generates first, so they
+are worth a look rather than a patch. Run with `--preset all`, the same
 stylesheets draw **11,161 findings across 45 different checks in 867
 stylesheets**, most of them style.
 
