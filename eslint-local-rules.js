@@ -222,8 +222,7 @@ const textual = function (node) {
   );
 };
 
-// Whether a target evaluates nothing before the right-hand side does: a name,
-// or a chain of plain property reads off one.
+// Whether a target is a name or a chain of plain property reads off one.
 const plain = function (node) {
   return (
     node.type === "Identifier" ||
@@ -233,13 +232,11 @@ const plain = function (node) {
   );
 };
 
-// Whether a value is a function or class that takes its name from the binding
-// it is written into, which a property target does not give it.
-const anonymous = function (node) {
-  return (
-    ["FunctionExpression", "ArrowFunctionExpression", "ClassExpression"]
-      .includes(node.type) && !node.id
-  );
+// Whether a value is a named function expression, which evaluates nothing and
+// keeps its name wherever it is written, so the object of a property target
+// read before it cannot tell the difference.
+const inert = function (node) {
+  return node?.type === "FunctionExpression" && Boolean(node.id);
 };
 
 module.exports = {
@@ -295,10 +292,8 @@ module.exports = {
               next.expression.type === "AssignmentExpression" &&
               next.expression.operator === "=" &&
               plain(next.expression.left) &&
-              !(
-                next.expression.left.type === "MemberExpression" &&
-                anonymous(declared.init)
-              )
+              (next.expression.left.type === "Identifier" ||
+                inert(declared.init))
             ) {
               targets = [next.expression.right];
             }
