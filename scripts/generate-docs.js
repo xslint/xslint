@@ -13,8 +13,10 @@ const {marked} = require('marked')
 
 const CHECKS = path.join(__dirname, '..', 'src', 'resources', 'checks')
 const MOTIVES = path.join(__dirname, '..', 'src', 'resources', 'motives')
+const MANUAL = path.join(__dirname, '..', 'src', 'resources', 'manual')
 const DOCS = path.join(__dirname, '..', 'docs')
 const CHECKS_DIR = path.join(DOCS, 'checks')
+const MANUAL_DIR = path.join(DOCS, 'manual')
 const KINDS = ['xpath', 'corpus', 'validation', 'format']
 
 const CSS = `
@@ -215,7 +217,24 @@ const generate = function() {
       return {name, kind, lint, md}
     }))
 
+  const pages = fs.readdirSync(MANUAL)
+    .filter((file) => file.endsWith('.md'))
+    .sort()
+    .map((file) => {
+      const md = fs.readFileSync(path.join(MANUAL, file), 'utf-8')
+      return {
+        name: path.basename(file, '.md'),
+        title: md.split('\n')[0].replace(/^# /, ''),
+        md,
+      }
+    })
+
   fs.mkdirSync(CHECKS_DIR, {recursive: true})
+  fs.mkdirSync(MANUAL_DIR, {recursive: true})
+
+  const manualItems = pages
+    .map(({name, title}) => `    <li><a href="manual/${name}.html">${title}</a></li>`)
+    .join('\n')
 
   const indexRows = checks.map(({name, kind, lint}) => {
     return `  <tr>
@@ -241,6 +260,11 @@ const generate = function() {
   in CI via the <a href="https://github.com/xslint/xslint-action">GitHub Action</a>,
   or embedded through the
   <a href="https://github.com/xslint/xslint-lsp">language server</a>.</p>
+
+  <h2>Manual</h2>
+  <ul>
+${manualItems}
+  </ul>
 
   <h2>What it reports</h2>
   <pre><code>[ERROR]   sheet.xsl(2:1) The xsl:output instruction is missing. (not-using-output)
@@ -303,7 +327,20 @@ ${mdHtml}
     )
   }
 
-  console.log(`Generated docs for ${checks.length} checks in ${DOCS}`)
+  for (const {name, title, md} of pages) {
+    fs.writeFileSync(
+      path.join(MANUAL_DIR, `${name}.html`),
+      page(title, `  <a class="back" href="../index.html">← all checks</a>
+  <div class="check-content">
+${marked(md)}
+  </div>`, true),
+    )
+  }
+
+  console.log([
+    `Generated docs for ${checks.length} checks and`,
+    `${pages.length} manual pages in ${DOCS}`,
+  ].join(' '))
 }
 
 generate()

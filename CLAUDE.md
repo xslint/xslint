@@ -791,8 +791,8 @@ Then run `npx grunt checks`, `npm test`, `npm run coverage`, and
   fix tier touches the wiring and the docs — not the motive.
 - **Docs sync.** A behavior change must also update `README.md` (user-facing:
   usage and the flags themselves, never the checks a flag covers), this file
-  (architecture), and the docs site (`npx grunt docs`). What the README states
-  of the tree — what the corpora drew, how many checks a kind holds — is
+  (architecture), and the docs site (`npx grunt docs`), whose manual pages a
+  README section links to (#1095). What the README states of the tree is
   `npx grunt readme`'s to write and `test/readme.test.js`'s to refuse (#896).
 
 ### No maturity flag
