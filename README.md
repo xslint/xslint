@@ -36,7 +36,7 @@ Given a stylesheet like this:
   <xsl:template match="book">
     <xsl:param name="title" select="title"/>
     <xsl:param name="title" select="@title"/>
-    <h1><xsl:value-of select="$titel"/></h1>
+    <h1><xsl:value-of select="$subtitle"/></h1>
   </xsl:template>
 </xsl:stylesheet>
 ```
