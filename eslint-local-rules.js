@@ -216,8 +216,8 @@ const opening = function (statement) {
 // The lines of the note a module opens with. The opening region is its
 // top-level statements up to and including the first that does not only open
 // the module; the note is every comment line in front of that last one that
-// shares no line with code, bar the licence lines, a shebang, the first line of
-// a directive, and each region statement's own docblock (#1147).
+// shares no line with code, a directive's as much as any, bar the licence
+// lines, a shebang, and each region statement's own docblock (#1147).
 const noted = function (source) {
   const directives = source.getInlineConfigNodes();
   const body = source.ast.body;
@@ -248,7 +248,7 @@ const noted = function (source) {
     .filter((comment) => comment.range[1] <= bound && !owned.includes(comment))
     .flatMap(function (comment) {
       let said = worded(comment);
-      if (comment.type === "Shebang" || directives.includes(comment)) {
+      if (comment.type === "Shebang") {
         said = said.slice(1);
       }
       return said;

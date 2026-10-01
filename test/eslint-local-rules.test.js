@@ -232,11 +232,11 @@ tester.run(
       `const one = require('./one')\nconst two = 2\n${'// Line.\n'.repeat(12)}const three = 3`,
       `${SPDX}\n/*\n${lines(10)} */`,
       `#!/usr/bin/env node\n${SPDX}\n/*\n${lines(10)} */\nconst one = 1`,
-      `${SPDX}\n/* eslint-disable no-console */\n/*\n${lines(10)} */\nconst one = 1`,
+      `${SPDX}\n/* eslint-disable no-console */\n/*\n${lines(9)} */\nconst one = 1`,
       `${SPDX}\n/*\n${lines(10)} */\n/**\n * One.\n */\nconst one = 1`,
-      `${SPDX}\n/*\n${lines(10)} */\n/**\n * One.\n */\n// eslint-disable-next-line no-console\nconsole.log(1)`,
+      `${SPDX}\n/*\n${lines(9)} */\n/**\n * One.\n */\n// eslint-disable-next-line no-console\nconsole.log(1)`,
       `${SPDX}\n/*\n${lines(10)} */\n/**\n * One.\n * Two.\n */\nconst fs = require('fs')\nconst one = 1`,
-      `${SPDX}\n/* eslint-disable no-console -- The console is output. */\n/*\n${lines(10)} */\nconsole.log(1)`,
+      `${SPDX}\n/* eslint-disable no-console -- The console is output. */\n/*\n${lines(9)} */\nconsole.log(1)`,
       `${SPDX}\n/*\n${lines(8)} */\nconst alpha = require('./alpha') // reads the stylesheets\nconst beta = require('./beta') // reads the stylesheets\nconst gamma = require('./gamma') // reads the stylesheets\nconst one = 1`,
       `${SPDX}\n/*\n${lines(8)} */\nconst {\n  alpha, // the first\n  beta, // the second\n  gamma, // the third\n} = require('./x')\nconst one = 1`,
       {
@@ -255,68 +255,96 @@ tester.run(
       },
       {
         code: `${SPDX}\n/*\n${lines(11)} */\nconst one = 1`,
-        errors: [{messageId: 'noted', line: 16}],
+        errors: [{messageId: 'noted', line: 16, data: {max: 10, spent: 11}}],
       },
       {
         code: `/*\n${lines(11)} */\nconst one = 1`,
-        errors: [{messageId: 'noted', line: 12}],
+        errors: [{messageId: 'noted', line: 12, data: {max: 10, spent: 11}}],
       },
       {
         code: `${SPDX}\n/*\n${lines(4)} */\n/*\n${lines(7)} */\nconst one = 1`,
-        errors: [{messageId: 'noted', line: 18}],
+        errors: [{messageId: 'noted', line: 18, data: {max: 10, spent: 11}}],
       },
       {
         code: `${SPDX}\nconst one = require('./one')\n/*\n${lines(11)} */\nconst two = 2`,
-        errors: [{messageId: 'noted', line: 17}],
+        errors: [{messageId: 'noted', line: 17, data: {max: 10, spent: 11}}],
       },
       {
         code: `${SPDX}\n${'// Line.\n'.repeat(11)}const one = 1`,
-        errors: [{messageId: 'noted', line: 15}],
+        errors: [{messageId: 'noted', line: 15, data: {max: 10, spent: 11}}],
       },
       {
         code: `${SPDX.slice(0, -4)}\n${lines(11)} */\nconst one = 1`,
-        errors: [{messageId: 'noted', line: 14}],
+        errors: [{messageId: 'noted', line: 14, data: {max: 10, spent: 11}}],
       },
       {
         code: `${SPDX}\n'use strict'\n/*\n${lines(11)} */\nconst one = 1`,
-        errors: [{messageId: 'noted', line: 17}],
+        errors: [{messageId: 'noted', line: 17, data: {max: 10, spent: 11}}],
       },
       {
         code: `${SPDX}\n/**\n * One.\n * Two.\n */\n/*\n${lines(10)} */\nconst one = 1`,
-        errors: [{messageId: 'noted', line: 18}],
+        errors: [{messageId: 'noted', line: 18, data: {max: 10, spent: 12}}],
       },
       {
         code: `${SPDX}\n/* eslint-local-rules.js holds what this reads.\n${lines(10)} */\nconst one = 1`,
-        errors: [{messageId: 'noted', line: 15}],
+        errors: [{messageId: 'noted', line: 15, data: {max: 10, spent: 11}}],
       },
       {
         code: `${SPDX}\n// eslint-config-google says so.\n${'// Line.\n'.repeat(10)}const one = 1`,
-        errors: [{messageId: 'noted', line: 15}],
+        errors: [{messageId: 'noted', line: 15, data: {max: 10, spent: 11}}],
       },
       {
         code: `${SPDX}\n/* eslint-disable no-console -- The console is output.\n${lines(11)} */\nconsole.log(1)`,
-        errors: [{messageId: 'noted', line: 16}],
+        errors: [{messageId: 'noted', line: 15, data: {max: 10, spent: 12}}],
       },
       {
         code: `${SPDX}\n/* eslint-disable no-console\u00A0--\u00A0The console is output.\n${lines(11)} */\nconsole.log(1)`,
-        errors: [{messageId: 'noted', line: 16}],
+        errors: [{messageId: 'noted', line: 15, data: {max: 10, spent: 12}}],
       },
       {
         code: `${SPDX}\n/* exported\n${lines(11)} */\nconst one = 1`,
-        errors: [{messageId: 'noted', line: 16}],
+        errors: [{messageId: 'noted', line: 15, data: {max: 10, spent: 12}}],
       },
       {
         code: `${SPDX}\n/* global\n${lines(11)} */\nconst one = 1`,
-        errors: [{messageId: 'noted', line: 16}],
+        errors: [{messageId: 'noted', line: 15, data: {max: 10, spent: 12}}],
       },
       {
         code: `${SPDX}\n/* globals\n${lines(11)} */\nconst one = 1`,
-        errors: [{messageId: 'noted', line: 16}],
+        errors: [{messageId: 'noted', line: 15, data: {max: 10, spent: 12}}],
+      },
+      {
+        code: `${SPDX}\n/* eslint-disable no-console */\n/*\n${lines(10)} */\nconst one = 1`,
+        errors: [{messageId: 'noted', line: 16, data: {max: 10, spent: 11}}],
+      },
+      {
+        code: `${SPDX}\n/*\n${lines(10)} */\n/**\n * One.\n */\n// eslint-disable-next-line no-console\nconsole.log(1)`,
+        errors: [{messageId: 'noted', line: 20, data: {max: 10, spent: 11}}],
+      },
+      {
+        code: `${SPDX}\n${'/* exported the walk is paid once for every stylesheet */\n'.repeat(11)}const one = 1`,
+        errors: [{messageId: 'noted', line: 15, data: {max: 10, spent: 11}}],
+      },
+      {
+        code: `${SPDX}\n${'/* exported a derivation line that answers why */\n'.repeat(40)}const one = 1`,
+        errors: [{messageId: 'noted', line: 15, data: {max: 10, spent: 40}}],
+      },
+      {
+        code: `${SPDX}\n${['no-debugger', 'no-alert', 'no-eval', 'no-with', 'no-proto', 'no-caller', 'no-iterator', 'no-octal', 'no-new-func', 'no-script-url', 'no-void'].map((rule) => `/* eslint ${rule}: "error" -- why the walk is paid once */\n`).join('')}const one = 1`,
+        errors: [{messageId: 'noted', line: 15, data: {max: 10, spent: 11}}],
+      },
+      {
+        code: `${SPDX}\n${'// eslint-disable-next-line no-console -- the console is output\n'.repeat(11)}console.log(1)`,
+        errors: [{messageId: 'noted', line: 15, data: {max: 10, spent: 11}}],
+      },
+      {
+        code: `${SPDX}\n${'/* global alpha -- bound by the page that loads this */\n'.repeat(11)}const one = alpha`,
+        errors: [{messageId: 'noted', line: 15, data: {max: 10, spent: 11}}],
       },
       {
         code: `${SPDX}\n/*\n${lines(4)} */`,
         options: [{top: 3}],
-        errors: [{messageId: 'noted', line: 9}],
+        errors: [{messageId: 'noted', line: 9, data: {max: 3, spent: 4}}],
       },
       {
         code: '/**\n * One.\n * Two.\n * Three.\n * Four.\n * Five.\n * Six.\n */\nconst one = 1\n/**\n * One.\n * Two.\n * Three.\n * Four.\n * Five.\n * Six.\n */\nconst two = 2',
