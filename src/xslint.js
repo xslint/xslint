@@ -748,7 +748,7 @@ const sourceOf = function(file, content) {
  *  `maxWarnings`, `config`, `format`, `only`, `preset`, `fix`, `fixDryRun`,
  *  `fixSuggestions`
  */
-const xslint = function(pths, options) {
+module.exports = function xslint(pths, options) {
   logger.setLevel(leveled(options.quiet, options.logLevel))
   const config = configFrom(options.config)
   config.problems.forEach((problem) => logger.warn(problem))
@@ -813,7 +813,6 @@ const xslint = function(pths, options) {
   }
 }
 
-module.exports = xslint
 module.exports.lint = lint
 module.exports.fixed = fixed
 module.exports.settingsOf = settingsOf

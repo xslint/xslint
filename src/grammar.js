@@ -1484,10 +1484,9 @@ const laddered = function(cursor) {
      * @param {object} cursor - The cursor
      * @return {object} - The node
      */
-    const level_ = function(cursor) {
+    below = function(cursor) {
       return folded(cursor, under, level.types, level.kind)
     }
-    below = level_
     if (level.kind === 'sum') {
       const summed = below
       /**
@@ -1496,7 +1495,7 @@ const laddered = function(cursor) {
        * @param {object} cursor - The cursor
        * @return {object} - The node
        */
-      const ranged = function(cursor) {
+      below = function(cursor) {
         const from = significant(cursor)
         let node = summed(cursor)
         if (spells(cursor, 'to')) {
@@ -1506,7 +1505,6 @@ const laddered = function(cursor) {
         }
         return node
       }
-      below = ranged
     }
     if (level.kind === 'concat') {
       const concatenated = below
@@ -1517,7 +1515,7 @@ const laddered = function(cursor) {
        * @param {object} cursor - The cursor
        * @return {object} - The node
        */
-      const compared = function(cursor) {
+      below = function(cursor) {
         const from = significant(cursor)
         let node = concatenated(cursor)
         const found = COMPARISONS.find(
@@ -1532,7 +1530,6 @@ const laddered = function(cursor) {
         }
         return node
       }
-      below = compared
     }
   }
   return below(cursor)
