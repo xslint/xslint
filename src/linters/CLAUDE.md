@@ -2,9 +2,9 @@
 
 One linter per construct, and why each reads what it reads. The staging that hands them
 their input, the flow diagram, and the rules for adding a check are in the root
-`CLAUDE.md`; the shared modules they consume are in `src/CLAUDE.md`. A note that outgrew
-the chain stands at the top of its own module instead, so a linter the root index names
-with no section here carries its derivation in its own file header (#844).
+`CLAUDE.md`; the shared modules they consume are in `src/CLAUDE.md`. A linter the root
+index names with no section here carries a note of ten lines at most in its own file header,
+and the tickets it cites carry the rest (#844, #1147).
 
 ## `src/linters/parameter-linter.js`
 
@@ -52,9 +52,8 @@ element takes its own from the prefixes in scope.
 
 ## `src/linters/output-linter.js`
 
-Its derivation stands at the top of `src/linters/output-linter.js` itself, the dearest note this
-guide held: the root indexing one more script left this chain the dearest of the six, and a note
-moves one directory further down rather than a bar being widened to fit it (#821, #884).
+Its note stands at the top of `src/linters/output-linter.js`, and the tickets it cites carry the
+derivation (#821, #884, #1147).
 
 ## `src/linters/bare-name-linter.js`
 

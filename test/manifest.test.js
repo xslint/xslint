@@ -4,93 +4,15 @@
  */
 
 /*
- * What `package.json` declares, held to what a grunt wrapper runs and what
- * this repository's own JavaScript imports.
- *
- * Both halves of the suite run on one mocha, and did not until #841:
- * `grunt-mocha-cli` pins `mocha ^8.2.0`, so `npm install` nested a second
- * mocha under it — 8.4.0, from 2021 — and `grunt mochacli` ran the suite
- * there while `npm run coverage` ran it on 11. That nested tree is where
- * two of the nine advisories `npm audit` read on master stood and nowhere
- * else, `nanoid` and `minimatch`. An `overrides` entry in `package.json`
- * holds it to the `mocha` the root declares, and the first question below
- * asks it of every tool a grunt wrapper runs. The rest of that entry lifts
- * `diff` and `serialize-javascript` to the majors mocha 12 ships with —
- * every version mocha 11's own ranges admit is an advisory, and its one
- * call into each is unchanged in 12 — grunt's `js-yaml` to 4, whose
- * `safeLoad` grunt calls only in a `readYAML` nothing here calls, 3.x
- * never having been patched, and `typed-rest-client`'s exact `qs` up a
- * minor — a floor and not a pin, the range two advisories cover having
- * since reached the patch #841 first lifted it to (#870). The two majors
- * are spelled at the top level rather than under `mocha`, because npm
- * 11.12 honours a range scoped under `grunt` or `grunt-mocha-cli` and
- * drops the same range scoped under `mocha`. `daily.yml` runs `npm audit`
- * in a job of its own beside the six cells that run the suite, so an
- * advisory this project waits on upstream to patch does not take a
- * platform's test result down with it for as long as the wait lasts, and
- * six identical audits say one thing. What that job could not do was say
- * which of the two it had read: `npm audit` exits 1 on a registry 503 as
- * readily as on an advisory, so the issue it filed named neither the
- * packages nor the outage. `scripts/audit.js` judges the JSON now, and
- * `scripts/CLAUDE.md` carries that derivation (#884).
- *
- * It is that ticket one tool over, in the same file and for the same reason:
- * `grunt-eslint` 26 depends on `eslint ^9.22.0`, so npm nested a 9.39.4 under
- * it while the root declared 10, and the `lint` job — with `npm run fast` and
- * `npm test` behind it — read every rule this project sets through a major
- * nobody chose. The pin holding `grunt-mocha-cli` to the declared mocha was
- * written for mocha alone, and so was the question beside it, so eslint went
- * four majors unasked (#855).
- *
- * The second half is what that nesting was quietly supplying.
- * `eslint.config.mjs` imports `@eslint/js` and `@eslint/eslintrc`, and the
- * manifest declared neither; eslint 10 depends on neither either, so the only
- * provider in the tree was the nested 9's own, hoisted to where the config
- * resolved it. Every rule in this project stood on that accident until a
- * dependabot bump took it away: `grunt-eslint` 27 wants `eslint ^10.9.1`,
- * which dedupes against the root, and the 9 leaving took `@eslint/js` with
- * it — `Cannot find package '@eslint/js' imported from eslint.config.mjs`,
- * three jobs red on one bump and an hourly sentinel tripping over it. What
- * eslint 10 reported once it was the one running was seventeen errors of two
- * rules 9 does not have — fifteen `no-useless-assignment`, two
- * `preserve-caught-error` — every one a real dead initialiser or a rethrow
- * dropping its cause.
- *
- * Four questions of the one manifest, each red from both sides. Every tool a
- * grunt wrapper shares with the suite is pinned as `$name` in `overrides`,
- * **and no pin stands for a wrapper the Gruntfile has stopped loading** — the
- * expected side comes from `overrides` and the measured side from the
- * Gruntfile, which is what the first spelling got wrong: it read `wrapped()`
- * on both sides, so a wrapper deleted took the expectation with it and a
- * stale pin went unjudged. Each pin then has to hold: the tool resolved from
- * the wrapper's directory must be the file the root resolves to. Every bare
- * specifier this repository's own JavaScript names must be declared. And
- * every declared package must be named by that sweep or stand on
- * `UNIMPORTED` beside what runs it, a dependency nothing imports being either
- * a command some script runs or dead weight — and a sweep gone blind reads
- * exactly like a manifest with nothing left over.
- *
- * Two further questions are about the manifest's own coordinates rather than
- * about its dependencies: the npm name and the repository URL. Each is read
- * twice by a single pattern — once out of the field that declares it and once
- * out of every file this repository tracks, the generator the site is built
- * from among them — so a coordinate stated anywhere and the coordinate
- * declared are the same string or the gate is red, and a sweep gone blind
- * reads as a tree stating nothing rather than as a tree agreeing. Nothing
- * but a reader had ever compared the two, and the URI binding our own XPath
- * prefix was one owner out of date with the three fields beside it, still
- * naming what the move to the `xslint` organisation left behind. A sibling
- * never matches — `xslint-lsp` and `xslint-action` are repositories of their
- * own — which is what the alphabet closing each pattern is for. The npm
- * scope stays the personal one, decided rather than defaulted into: the
- * discoverability a rename buys is real, and so is a coordinate frozen
- * across two published integrations and an action, a deprecated alias
- * behind it, and a second name for a tool everything else already calls
- * xslint (#337).
- *
- * It is a mocha test rather than an ESLint rule because `eslint.config.mjs`
- * stands in ESLint's own `ignores` (#789), so no rule of ours can see the one
- * file whose undeclared imports this is about.
+ * What `package.json` declares, held to what a grunt wrapper runs, what this
+ * repository's own JavaScript imports, and the coordinates it states of
+ * itself. Every tool a grunt wrapper shares with the suite is pinned in
+ * `overrides` and must resolve to the file the root does, since nested copies
+ * once ran the suite on a second mocha (#841) and lint on an eslint nobody
+ * chose (#855). Every bare specifier must be declared, and every declared
+ * package imported or standing on `UNIMPORTED`. The npm name and repository
+ * URL stated anywhere must be the ones declared (#337). It is a mocha test
+ * because `eslint.config.mjs` stands in ESLint's own `ignores` (#789).
  */
 
 const {allFilesFrom} = require('../src/helpers')

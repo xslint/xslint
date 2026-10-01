@@ -5,87 +5,15 @@
 
 /*
  * `xmlFromString` reads a document the way a processor does where
- * `@xmldom/xmldom` will not. It resolves no entity at all, leaving every
- * `&name;` literal in the value it parsed, so `expand` puts what each one
- * stands for where the reference stands — and until #984 it put the
- * replacement text in as *characters*, whatever that text spelled. An entity
- * whose replacement is markup is the elements it spells: DocBook-XSL declares
- * `&lf;` as an `xsl:text` carrying a newline, and nine references to it were
- * reported as literal text inside an instruction, each offered a fix that
- * would have wrapped the ampersand in one more `xsl:text`. The other half of
- * the same reading is what no check saw at all: the expression such an
- * instruction carries reached no scanner, so a `//` standing inside one was a
- * scan of the whole document that nothing reported.
- *
- * So a text node holding a reference is rebuilt as markup and read by a parse
- * of its own — `markup`, then `grafted` — and what comes back is adopted into
- * the document where the reference stood. The rebuild escapes what stood
- * *around* the references, `nodeValue` being decoded already, so a `&lt;`
- * beside an entity is read as text a second time rather than as a tag. That
- * parse happens in the namespaces the reference point binds, `scoped`
- * gathering them off the ancestors, a replacement text naming its prefixes as
- * the document that holds it does. A replacement of characters alone comes
- * back as one text node, and the node keeps its own place rather than being
- * swapped for an equal.
- *
- * A reference this run reached no declaration for stands for content nobody
- * read, so it is dropped rather than left to be reported as the characters
- * spelling its own name: DocBook's `&setup-language-variable;` drew that same
- * wrapping advice twelve times while the subset its parameter entity names
- * went unread, as one naming a file that is not there still does. Dropping
- * one means telling `&name;` from the `&amp;name;` that is literal text, and
- * a parsed value spells both the same way; `spelled` reads the raw source for
- * the names a reference there really opens, XML's own five aside, `&lt;`
- * written out being the spelling common enough to matter. An instruction
- * whose whole content was such a reference now reads as empty rather than as
- * loose text, which is one report traded for another — and the one it gives
- * up carried a fix where
- * `empty-content-in-instructions` carries none. No stylesheet of the three
- * corpora holds that shape; twenty-one hold the two shapes this cures, and
- * the reports over all three are otherwise identical.
- *
- * Nothing an entity brought is written anywhere in the file holding it, so
- * `unwritten` says so and two things answer to it. A defect stands at the
- * reference, rather than at an offset walked forward through raw text that
- * spells something else entirely. And no fix is offered on such a node at
- * all: a declarative fixer reads that raw source itself to find the attribute
- * it deletes, and what it finds there is an ampersand —
- * `using-disable-output-escaping` built a zero-width edit on a line belonging
- * to another element. An attribute value an entity wrote into carries no fix
- * either, nor does the element holding it, and a place inside it is walked
- * with each reference one character wide, whatever its replacement spans: a
- * run of spaces behind a forty-character `&long;` was walked forty characters
- * into the raw text, onto a string literal a line below, and `--fix` collapsed
- * the spaces in that (#1010).
- *
- * That same reading refuses what `@xmldom/xmldom` would repair rather than
- * reject: the level of a diagnostic is not consulted, since an attribute
- * written without quotes arrives a mere `warning` and is then invented into a
- * value (#574). Which sequences a document may not hold is `forbidden`'s
- * question rather than the parser's, `ENTITIES` naming the three complaints
- * it lets stand: xmldom resolves no entity for us either way, and its
- * pre-scan reads a name as `\w+` where XML's `Name` admits a dot, so a
- * DocBook module declaring `&sc.name;` in its internal subset and using it
- * correctly earned `entity not found`, six of that corpus's stylesheets
- * reported as malformed on it (#877). What stands in their place is
- * `entitled`: a name resolves when it is one of XML's five, one the internal
- * subset declares, or anything at all where an external subset nobody read is
- * in play.
- *
- * Beside it are the two sequences the parser accepts in silence, at no level
- * — an `&` that opens no reference, which it rewrites to `&amp;`, and a `]]>`
- * that closes no section, which it keeps as it stands (#691). The runs come
- * from the tree and not from a scan of the source, because both are legal in
- * a comment and a processing instruction, and inside a CDATA section an `&`
- * is text while a `]]>` is the close — a text node cannot be any of the
- * three, so those are excluded by construction rather than by finding them.
- * An attribute value is a run too since #877, `strayed` taking the `]]>` rule
- * from its caller: such a value is not character data, so it holds a `]]>`
- * legally and a bare `&` no more legally than text does. That pass is
- * `forbidden`'s own and not `walked`'s XPath-shaped one, well-formedness
- * being a lexical question about every attribute the source spells:
- * borrowing that sequence kept an `xmlns:q="urn:x&y"` out of the report and a
- * namespace URI no conformant parser produces in the tree.
+ * `@xmldom/xmldom` will not. That parser resolves no entity, so `expand` puts
+ * each one's replacement where the reference stands, parsed as the markup it
+ * spells in the namespaces in scope there (#984); a reference no declaration
+ * was reached for is dropped rather than reported as its own name. Nothing an
+ * entity brought is written in the file, so `unwritten` places its defect at
+ * the reference and withholds every fix on it (#1010). Well-formedness is
+ * `forbidden`'s question rather than the parser's: xmldom repairs an unquoted
+ * attribute (#574), misreads a dotted entity name (#877), and accepts a stray
+ * `&` or `]]>` in silence (#691).
  */
 
 const fs = require('fs')

@@ -4,130 +4,16 @@
  */
 
 /*
- * The double slash trio is one construct read three ways, and all three of the
- * questions it asks are ones a selector had no way to put. What a `//` *is*:
- * `contains(@match, '//')` counted the one in `match="alpha[@url =
- * 'http://example.com']"`, where the lexer gives a string literal, a comment
- * and an inline `Q{...}` one token each and not one of them holds a separator
- * (#490).
- *
- * Where one *stands*: the checks split the work by whether the slashes led the
- * string, which holds only while the pattern is one branch, since a branch of
- * a union is matched unanchored exactly as the whole pattern is. So the `//`
- * of `match="alpha | //beta"` is the first check's redundancy and drew the
- * second's advice instead, with no fix behind it — while the `//` of `mu[nu |
- * //xi]` opens no branch, a predicate holding an expression rather than a
- * pattern, and scans the document from its root once for every node the
- * pattern is tested against. A `branch` node with nothing of its own to the
- * left of the `//` is the whole of that test, so a bracketed branch counts and
- * 3.0 admits one anywhere in a path.
- *
- * And *whose* path one is, which is the third question and #948's. A predicate
- * holds an expression, and an expression's inner `//` answers to no check of
- * ours anywhere: `select="xi//omicron"` draws nothing, where
- * `match="nu[xi//omicron]"` drew the advice to name the path. There is no path
- * there to name. The one the pattern walks is `nu` either way, and what the
- * brackets hold is the question being asked about it — which a run over a real
- * project reported on a `match="abstract[... and not(.//o[contains(@base,
- * 'x')])]"`, advising against the very anchoring the third check recommends.
- * So a `//` a predicate holds is reported only where it *opens* a path there,
- * the token index standing at that path's own `from`, which is the `mu[nu |
- * //xi]` above; everything else between the brackets is the expression's own
- * business. And the one that does open a path there answers to the third check
- * rather than to either of the pair, which is #970's: a predicate holds an
- * expression wherever it stands, so `match="item[//flag]"` walks the document
- * from its root once for every candidate, exactly as the `select` beside it
- * would. It drew the second check's advice to name a specific path, which is
- * about breadth and has nothing to say to a test that names no node of the
- * pattern at all — #432 having rewritten both messages to stop claiming a
- * document scan, rightly for the steps of a path and wrongly for the one
- * construct between brackets that performs one.
- *
- * Two more things came with the kind. The fix cuts the two characters where
- * they stand rather than rewriting the value around them, so it no longer
- * overlaps `redundant-whitespace` on a `match=" //spaced"` and both land in
- * one run, and every branch of `match="alpha | //beta | //gamma"` loses its
- * own where one whole-value substitution could only ever drop the first
- * (#571). And the pair reads every attribute holding a pattern — `PATTERNS`'
- * five names, standing in seven places over five elements — rather than
- * `xsl:template/@match` alone, so an `xsl:key` matching `gamma//delta` is
- * reported at last.
- *
- * The third check is the same shape one attribute over: it was declarative and
- * selected `//*`, so it read the `select` of a literal result element as
- * XPath — output data no processor evaluates — and `--fix-suggestions` wrote
- * `.//` into the result tree, a check about expressions changing what a
- * stylesheet emits (#788). It is handed the records the validator kept, which
- * hold no such attribute.
- *
- * What it asks is #958's, and until then it asked about the spelling instead
- * of the cost. It read one attribute, so the `//` of an `xsl:when`'s `test`
- * drew nothing where a `select` beside it drew the warning, though both are
- * evaluated for every node the template is applied to — and so did an
- * `xsl:key`'s `use` and the braces of a literal result element. It read one
- * token, the first solid one of the parse, so the two scans of
- * `distinct-values((//o/@name, //o/@local))` were invisible although each
- * walks the tree the whole of one walks. And it never asked how often the
- * expression runs, so a **top-level** `xsl:variable` or `xsl:param` drew it —
- * the one place the scan is paid once, against the source root, for the whole
- * transformation, where naming a narrower path binds something else, an
- * `xsl:key` answers a lookup by value, and hoisting into a global binding is
- * what the stylesheet already did. Its *content* is bound with it, so `once`
- * climbs rather than reads the carrying element: what a global binding holds
- * is evaluated once as surely as what its `select` says, and only an
- * instruction between the two whose content runs per item breaks that —
- * which is why `REPEATING` is the five of those and not a rule about depth.
- * eo's `restore-aliases.xsl` is the shape, four `xsl:sequence` children of
- * one global binding, and reading the carrying element alone answered two of
- * them and not the other two. That question was 16 of the 147 reports over
- * the three pinned corpora; the other two directions are the `path`
- * nodes the grammar built, a `//` counting where one opens a path of its own
- * and nowhere else, which is the test `owned` already applies one language
- * over. So `items//item` descends from a step, `/objects//o` from an absolute
- * one, `$root//node` from a binding and `.//item` from the context node, and
- * none of the four starts at the root. The name moved with the question:
- * `select-starts-with-double-slash` named an attribute this no longer singles
- * out and a position it no longer asks about.
- *
- * A top-level binding is not the only place the scan is paid once, which is
- * #978's. The template a stylesheet is *entered* at — the root for a pattern,
- * with nothing `CALLABLE` names on it — is applied to the single document
- * node, so its content runs once for a transformation and a `//` standing
- * there walks the tree the one time, with nothing narrower to name and nothing
- * to hoist it into that would not be evaluated as often. That is 28 of the 306
- * reports over the three pinned corpora, 12 in DocBook-XSL and 16 in TEI, none
- * at all in DITA-OT. Four neighbours are none of it and stay reported.
- * `CALLABLE` holds the two that put the template back within a caller's reach:
- * a `@name` makes it callable from anywhere and as often as its callers run,
- * and a `@mode` leaves it reachable only by an `xsl:apply-templates` naming
- * that mode, which runs as often as whatever holds it and over whatever tree
- * it selects — TEI's `odds/extract-isosch.xsl` applying one to a variable's
- * temporary tree rather than to the source at all. A pattern naming anything
- * below the root, the document element included, may be reached more than once
- * the same way; and `REPEATING` holds as it does under a binding, an
- * `xsl:for-each` inside the root template instantiating its content per item.
- * What is left unguarded is an unmoded root template re-entered by a
- * default-mode application of the document node, and the corpora say it is
- * theory: every `apply-templates` selecting one there names a mode, so no
- * withdrawal above rests on it. Each attribute is read in its shadow spelling
- * at every version rather than at 3.0 alone: a template spelling `_match`
- * lower down declares no pattern any processor honours, so what the reach
- * costs there is a report withheld on a file already broken and never one
- * invented against working code. Deeper than that lies the call graph — a
- * template reached from the root template alone is entered once as surely —
- * and those 38 further reports stand, reachability being a question about the
- * whole corpus where this one is answered by climbing from an expression to
- * the declaration above it.
- *
- * It offers no fix, and did from #457 until #949. `.//` names the same nodes
- * only where the context is the root, and there it walks the same tree the
- * `//` walked — so the rewrite changes what is selected wherever it would save
- * a traversal, and saves none wherever it is sound. Under Saxon 9.1.0.8 a
- * template matching `/object/metas` answers 2 nodes for `//o` and 0 for
- * `.//o`, where one matching `/` answers 2 for both. eo's `add-probes.xsl` is
- * the first shape, a named template gathering its candidates and called from
- * that match, so the rewrite left a stylesheet that compiles, runs and finds
- * nothing. The report stands, the path being the author's to name.
+ * The double slash trio is one construct read three ways off the tree rather
+ * than off the text, where a string literal or a `Q{...}` holds no separator
+ * (#490). A `//` opening a branch of a pattern is redundant, one inside a
+ * branch is broad, and one opening a path of its own in an expression or a
+ * predicate walks the document each time it is evaluated (#948, #970). That
+ * third check stays quiet where the walk is paid once, under a top-level
+ * binding or in the template a stylesheet is entered at, climbing past the
+ * `REPEATING` instructions rather than reading the carrying element alone
+ * (#958, #978). It offers no fix, since `.//` selects other nodes wherever the
+ * context is not the root (#949).
  */
 
 const {gathered, parseOf} = require('../syntax')

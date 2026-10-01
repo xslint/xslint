@@ -5,44 +5,14 @@
 
 /*
  * `enclosed` — the expressions an attribute value template holds in its
- * braces, and since #557 the whole of what this module is for. `masked`, which
- * blanks every kind `OPAQUE` names, is private to it now and `closes` is gone:
- * six checks scanned above them and each is on the tree, #577 taking
- * `comparedToZero` there, #575 the predicate scan, #596 and #561 the two
- * negation checks, #598 and #562 the name and translate scans, and #557 the
- * node-set one — where a literal is one node and nothing needs blanking to be
- * read over. The module survives its last check because the brace scan is text
- * work by nature rather than a scan that had not been migrated yet: an
- * attribute value is not XPath, so where its expressions begin and end is a
- * question about the value, and a `{` standing inside one of them is what
- * `masked` is still blanking. `lone` went with the negation pair, the only
- * readers it had left: it answered whether exactly one argument stood between
- * a call's brackets by counting the commas at depth zero, which a parse
- * answers by separating the arguments. Two things it could not do went with
- * it. A binding clause puts its commas at depth zero inside *one* argument, so
- * `not(not(for $va in a, $vb in b return $va))` went unreported — the gap
- * `BINDINGS` pinned in `test/expressions.test.js` until the checks reading it
- * came onto the tree, and a pack of each pins the construct now, the way
- * `count-with-a-binding-clause` has since #577. And a bracket holding only a
- * literal is not an empty bracket, which the masking hid: `count('abc')`
- * blanked to a gap, so no emptiness test could tell an absent argument from a
- * blanked one and the three checks fell silent on `count('abc') = 0`,
- * `boolean('abc')` and `not(not('abc'))`. Arity stays a question each check
- * asks by name — `fn:count`, `fn:not` and `fn:boolean` take exactly one
- * argument in every version and `fn:string-length` none or one — and
- * `children.length` over the parse is what answers it, where `count()` was
- * reported as a count of a node-set and `not(not())` as a double negation,
- * both carrying a **safe**-tier fix that plain `--fix` applied, so `test=""`
- * was written and the next run reported the `invalid-xpath-expression` the
- * last one had manufactured (#576). The parse gate in `defect` could not have
- * supplied that: it withheld a fix only where the engine refused the
- * expression, and fontoxpath's `compileXPathToJavaScript` resolves no
- * signature, so every one of those calls is valid text to it. Nor can the
- * engine be asked one call further — `evaluateXPath` does raise `XPST0017`
- * statically, but against a registry that is not the XSLT one: 26 of 28 XSLT
- * 3.0 functions and 14 of 29 XPath 3.1 ones are absent from it, `current()`,
- * `key()` and `document()` among them, so a check reading that verdict would
- * report the commonest calls in a 1.0 stylesheet as errors.
+ * braces, beside what an attribute names statically and says in either
+ * spelling. `masked`, which blanks every kind `OPAQUE` names, is private to
+ * it: the checks that once scanned above it are on the tree since #557 and
+ * #577, and the brace scan stays text work because an attribute value is not
+ * XPath, so where its expressions begin and end is a question about the
+ * value. Arity is asked of the parse, never by counting commas or blanking
+ * literals, which reported `count()` and `not(not())` with a safe fix that
+ * wrote an expression no processor parses (#576).
  */
 
 const {

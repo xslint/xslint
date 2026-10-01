@@ -214,7 +214,7 @@ export default defineConfig([
       "local/no-orphan-docblock": "error",
       "local/no-wrapped-concatenation": "error",
       "local/no-sprawling-docblock":
-        ["error", { description: 5, tag: 3 }],
+        ["error", { description: 5, tag: 3, top: 10 }],
       "valid-jsdoc": "off",
       "require-jsdoc": "off",
       semi: ["error", "never"],
@@ -235,6 +235,7 @@ export default defineConfig([
       "jsdoc/reject-any-type": "off",
       "@stylistic/space-infix-ops": "error",
       "no-ternary": "error",
+      "no-duplicate-imports": "error",
       "id-length": ["error", { min: 2 }],
       "no-restricted-syntax": ["error", ...RESTRICTED]
     }

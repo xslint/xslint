@@ -4,96 +4,16 @@
  */
 
 /*
- * Loads `checks/corpus/*.yaml`; cross-file rules. A cross-file check asks
- * one question of every declaration against every usage, so both sides
- * grow with the project and the work is their product; three things made
- * that product far dearer than it is. A usage selector is now evaluated
- * once for each corpus and xpath (`across`) rather than once for each
- * check naming it — three of the four checks give `//@*`, and choosing
- * every attribute of DocBook-XSL's 291 stylesheets costs 1.7 seconds, so
- * the run spent five answering one question three times over. A reference
- * string was built once for each declaration rather than once per pair,
- * and the usages holding it scanned once for each *distinct* reference,
- * DocBook-XSL declaring 3436 variables under 1207 names; and the cheap
- * test led, `within` climbing to the document root for every pair it
- * rejects where one `includes` rejects almost every pair. Together those
- * took the four checks from 35.0 to 10.2 seconds over that corpus and the
- * whole run from 40.2 to 29.8 (#755). What they left standing was the
- * product itself, the scan still being every distinct name against every
- * usage — 1207 against 72,077 attributes, 87 million substring tests, and
- * 98% of what the stage spent, `unused-variable` alone accounting for
- * 13.58 of its 13.81 seconds of scanning. The index is what retires it
- * (#783). `referencing` reads each usage value once for a template and
- * yields the names it *references*; `indexed` maps each name to the usages
- * holding it, once for a usage set and template; and a declaration is a
- * `Map.get` rather than a scan. `corpus-linter` falls from 8.52 to 2.20
- * seconds over DocBook-XSL, 6.26 to 1.21 over TEI and 1.37 to 0.56 over
- * DITA-OT, taking the staged run from 17.54 to 11.13, 14.33 to 9.34 and
- * 4.48 to 3.62, and the stage from half the run to a fifth of it. Speed is
- * the smaller half. A substring is not a reference: `includes('$row')` is
- * answered by `$rownum`, which is #776's defect on the other side of the
- * same product, so the fix and the speed-up are one edit and the report is
- * not byte-identical — four declarations that were silenced by a longer
- * name holding their characters are reported, `$page` behind `$pageid` and
- * `$target` behind `$targets` in DocBook-XSL, `$v` behind `$values` and
- * `$Heading` behind `$Heading1` in TEI, with none removed. Text is what
- * #783 read a name off, though, and text is the half that stayed wrong: it
- * found a fixed mark and took the run of characters `NAMED` in
- * `src/tokens.js` spells a name with beside it, so what stood between the
- * two was invisible. XPath lets a gap stand in front of the bracket a call
- * opens — the gap **Selector hygiene** calls part of a call, #621 being
- * the ticket where one of our own selectors spent it — so `my:spaced (1)`
- * called nothing this linter could see; a named function reference carries
- * no bracket at all, so `my:pick#1` called nothing either; and a mark
- * inside a string literal or a comment is a name no processor evaluates,
- * so `concat('$quoted', 'x')` and `1 (: $commented :)` each kept a
- * declaration alive that nothing uses. Two of those invent a defect
- * against working code and two withhold one (#498). So a reference is read
- * off the **tokens**, and one lexing answers all four: a literal, an
- * unclosed literal and a comment are one token apiece and hold no name to
- * find, a gap is `TRIVIA` and read over, and the `#` stands where the
- * bracket does. Which question is asked of a token first is part of the
- * reading: `$pick(41)` is XPath 3.1's dynamic call, a call on the
- * *variable*, so a name a `$` stands in front of is a variable however
- * tight the bracket behind it is. Asking the bracket first answered one
- * token two ways at once — the variable it uses reported dead, and a
- * function of that name marked used — so the `$` is asked before the
- * bracket, and asked of both spellings, `$my:pick(` lexing as one
- * `user_function` token where `$pick(` lexes as a name. A check names a
- * **kind** of reference rather than a template — `call` or `variable`,
- * what `REFERENCES` holds — and one this linter cannot read is refused by
- * `kinded` where the template's shape used to be, since an index built for
- * it holds no name at all and would report every declaration in the corpus
- * dead. `test/conformance.test.js` holds every check's `reference` to that
- * list, so the refusal stands in front of a check nobody has written yet.
- * The kinds cost one pass between them: `collected` builds every one of
- * them out of a single lexing of the usage set, a pass per kind lexing
- * DocBook-XSL's 72,077 attributes twice over, and a value holding none of
- * `$`, `(` or `#` is never lexed at all, most of an attribute set being no
- * expression. A value holding a brace is lexed twice, though, once whole
- * and once for each expression its braces enclose: an attribute the usage
- * selector chooses may be an XPath expression or an attribute value
- * template, and `//@*` cannot tell which. The two readings differ exactly
- * where a brace stands inside a string literal, which is where reading the
- * whole value as one expression loses a reference — DocBook-XSL's
- * `text="{$text} see '{$see}'"`, TEI's
- * `context="tei:param[parent::tei:model/@behaviour='{$B}']"` and DITA-OT's
- * `src="url('{concat($artworkPrefix, $image)}')"` each name a variable a
- * processor evaluates and the tokens of the value do not. So the names of
- * both readings are unioned, since a reading too wide withholds a report
- * where one too narrow invents one against working code (#498). What #783
- * left standing was the traversal itself, this being the one stage that
- * reached the engine directly: three of its four checks give `//@*` and
- * the fourth `//xsl:call-template/@name`, and neither is an axis a bucket
- * of elements can hold. It goes through `chosen` in
- * `src/selectors.js` since #811, which serves both of those and its three
- * element declarations besides, so the stage falls from 2.26 s to 0.11 s
- * over DocBook-XSL, 1.23 to 0.09 over TEI and 0.60 to 0.06 over DITA-OT —
- * a tenth to a twentieth of what it cost, taking the staged run down 25%,
- * 17% and 11% with the report byte-identical on all three. Half a run was
- * this stage over DocBook-XSL when #755 was filed and it is 1.5% to 2.3%
- * of one now, which is why its entry in `SHARES` is gone rather than re-
- * derived.
+ * Loads `checks/corpus/*.yaml`, the cross-file rules. A cross-file check asks
+ * one question of every declaration against every usage, so the work is their
+ * product, and it stays affordable because a usage selector is evaluated once
+ * per corpus (#755) and a declaration is a `Map.get` into the names `indexed`
+ * holds rather than a scan of every usage (#783). A reference is read off the
+ * tokens rather than the text, so a name inside a literal or a comment
+ * references nothing, a gap before the bracket hides nothing, and a `$` is
+ * asked before the bracket (#498, #776). A value holding a brace is read whole
+ * and as an attribute value template, the names of both readings unioned, and
+ * every selector is served off the shared walk through `chosen` (#811).
  */
 
 const {chosen} = require('../selectors')

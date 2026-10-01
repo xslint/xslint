@@ -6,77 +6,14 @@
 /*
  * `ignoring(start)` — what the `.gitignore` files standing over a directory
  * say about the paths below it, asked as the two questions a walk puts:
- * whether to descend a directory, and whether to keep a file.
- *
- * A walk opened every directory it was handed, so a tree the project itself
- * does not track was read, linted and reported like source. Over the eo
- * repository a run reported 5,031 stylesheets, of which 123 are the
- * checkout's own and 4,908 stand under a gitignored `.claude/worktrees` — 52
- * worktrees of the same checkout, reducing to 143 distinct paths, with every
- * tracked defect printed up to thirty-four times. Neither half of the refusal
- * in front of this reaches that: `SEALED` in `src/helpers.js` names two
- * directories and nothing else, and the configuration's `exclude:` waits for
- * a line somebody writes about a tree git is already told to forget (#929).
- *
- * Where it is asked is the seam #928 opened: a caller says, per directory,
- * whether to descend it, before it is opened. So the rules are read as the
- * walk passes each directory — one file per directory, remembered, however
- * many paths are asked about below it — rather than by asking
- * `git check-ignore` about every entry, which spends a process a path and
- * answers nothing where git is absent or the tree is no repository at all.
- * What a directory answers is asked before it is opened and what a file
- * answers only once its name says it is a stylesheet, so nothing the run
- * would not have read pays for the question.
- *
- * The rules are the second question and not the first, git's own index
- * outranking them: `git check-ignore` keeps a path the index holds whatever a
- * line says of it, and this checkout tracks two stylesheets under its own
- * `reports/`. Reading the rules alone reported 159 files where 161 stand, and
- * withdrew three DocBook-XSL defects the nightly snapshot names. So
- * `git ls-files` is asked once of each repository the walk meets, and only
- * where a path below it is judged — 18 ms here, against a walk of seconds —
- * and a tree git cannot read ignores nothing at all rather than guessing at
- * it, saying so at debug level rather than going quiet where git is absent.
- * What the index does not buy back is a path under an ignored
- * *directory*, git re-including nothing below one: a `reports/` line covers
- * the `reports/stray.xsl` no index ever heard of, so `covered` asks the
- * directories above a path before a rule is read about the path itself.
- *
- * Every rule is matched by `Minimatch` with braces and extglobs switched off,
- * git's format having no word for either: `{one,two}` and `one+(two)` name
- * the characters they spell. That is the direction the whole translation errs
- * in. Over-acceptance here is a stylesheet somebody asked for and never got
- * linted, which no report mentions; under-acceptance is only the directory
- * the walk still pays for, which is what it paid before — the asymmetry
- * `src/predicates.js` answers to, one question over. A trailing `/` leaves a
- * rule naming directories alone, a `/` surviving that anchors it at its own
- * file's directory, and a rule holding none matches at any depth, which is
- * the double star written in front of it. A `!` takes a name back, the last
- * rule matching a path decides it, and an outer file's rules stand in front
- * of an inner one's. A name is matched with its case, where git reads
- * `core.ignorecase` and so ignores a `BUILD/` under a `build/` line on the
- * filesystems that set it — the same direction again, a directory the walk
- * pays for as it always did.
- *
- * Every repository answers for its own subtree, which settles both the climb
- * and the descent. It climbs no higher than the one the walk starts inside —
- * the nearest ancestor holding a `.git`, a directory in a checkout and a file
- * in a worktree linking one — and reads nothing at all above a directory no
- * repository stands over, so what a temporary yard answers comes out of what
- * that yard holds rather than out of whatever a home directory carries. A
- * `.git` met on the way *down* opens a top the same way: an outer file's
- * rules reach no further into it than git's own do, and its own index is
- * asked, so a `reports/kept.xsl` a nested project tracks under its own
- * `reports/` line is read whether the walk starts at that project or
- * anywhere above it. Reading such a repository's rules without its index was
- * this same defect one level out, and it failed the same silent way: the
- * stylesheet is dropped and no report mentions it. What stays outside all of
- * it is the rest of what git would consult: `.git/info/exclude`
- * and the `core.excludesFile` a user configures, neither of them a file this
- * reads. A path named on the command line is read whatever the project
- * ignores, too — these rules answer for the walk below an argument and never
- * for the argument itself, so `xslint build` lints the directory a `build/`
- * line keeps out of `xslint .`.
+ * whether to descend a directory, and whether to keep a file. Without it a
+ * tree the project does not track was linted like source (#929). The rules
+ * are read once per directory as the walk passes it, rather than by a
+ * `git check-ignore` per path, and git's index outranks them, asked once per
+ * repository the walk meets. Matching errs toward reading too much, a
+ * stylesheet silently dropped being the worse failure. Every repository
+ * answers for its own subtree, and a path named on the command line is read
+ * whatever the project ignores.
  */
 
 const fs = require('fs')

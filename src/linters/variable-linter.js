@@ -7,24 +7,12 @@
  * `undefined-variable`, the first of #208's name-resolution tier: a `$name`
  * no binding in scope declares, which a processor refuses with XPST0008
  * before it transforms anything. What is in scope is read off the tree the
- * reference stands in: the `xsl:variable` and `xsl:param` in front of it and
- * of each ancestor below the top level, the `for`, `let`, `some`, `every` and
- * inline function of its own expression, the `$value` of an
- * `xsl:accumulator-rule`, the `err:` names of an `xsl:catch`, and behind
- * those the globals of the stylesheet. Those are known only for a whole one,
- * so a module is judged against each tree holding it: an entry point, a
- * module nothing in the corpus pulls in whose templates match the root or
- * name the initial one, with everything it reaches, where none of them pulls
- * in a file the corpus lacks, an href only a processor works out, or a
- * package. A library no such tree holds is left alone, its globals being its
- * importer's, and so is every module of DocBook-XSL's drivers, which include
- * a `param.xsl` its build generates. Over the three corpora that leaves 16
- * reports, TEI's `docx/misc/check-docx-and-annotate.xsl` and DITA-OT's
- * orphaned `org.dita.html5/xsl/mapwalker.xsl`, where Saxon-HE 12.9 raises
- * the same 16 XPST0008; the first draft, which judged every module and
- * reported what no module of its own imports declared, drew 96. The trees
- * are walked once per entry point over an adjacency built once, so a
- * reference costs a set lookup and a climb of its own ancestors.
+ * reference stands in, and behind it the globals of the stylesheet. Those are
+ * known only for a whole one, so a module is judged against each tree an entry
+ * point makes, and a library no such tree holds is left alone, its globals
+ * being its importer's. Over the three corpora that leaves the 16 reports
+ * Saxon-HE 12.9 raises as XPST0008, where judging every module drew 96. The
+ * trees are walked once per entry point over an adjacency built once.
  */
 
 const {expressionsOf} = require('../attributes')

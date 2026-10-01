@@ -4,40 +4,16 @@
  */
 
 /*
- * The tier as data: `fix:` in a check's YAML is what grades every fix that
- * check offers, `src/xslint.js` reading it so that no linter spells a tier a
- * second time, and this is where the declaration is held to a real run over
- * `test/resources/fix` — the corpus the **Fix in the same change** rule
- * already obliges every fixable check to stand a pair in, which is why it is
- * the one asked here.
- * Which half of that each side pins is worth saying, one of them being a
- * tautology and the other not. That a check declaring a tier offers a fix, and
- * that one offering a fix declares a tier, is real: a fixer deleted, or a
- * check that grows one and forgets to say so, turns this file red where
- * nothing else asks. *Which* tier a single-tier check offers is not — the run
- * reads the declaration, so it can answer with nothing else — and what pins
- * that is `test/fixer.deep.test.js`, whose `APPLIED` rows run a plain `--fix`
- * against a committed `.fixed.xsl` and whose `UNCHANGED` rows prove the same
- * flag leaves a suggestion where it stands. Re-grading a check breaks a file
- * comparison there, which no edit to a declaration can satisfy.
- * Where the set equality carries its own weight is the check declaring both,
- * the tier being a property of the place a defect stands rather than of the
- * check: `starts-with-double-slash` is a suggestion on an `xsl:template`,
- * whose priority a dropped `//` shifts, and on any 2.0+ pattern but a key's,
- * which a parentless tree matches without it (#583, #899, #1015).
- * The third question is the other side of the same key: nobody but the check's
- * own page says what a check corrects. `README.md` spent 42% of itself
- * teaching the twenty-three of them, one bullet each and two for the check
- * that grades per defect, and the audit behind this gate found the motive
- * already carrying twenty-three of those twenty-four at five times the
- * length. The one it did not — the brackets `use-node-set-extension` keeps
- * around an argument binding looser than a step, which a reader unwrapping by
- * hand drops to select something else — is a hazard of the construct, so it
- * moved into the motive rather than dying with the prose. What the section
- * owns is the two flags and the guarantees that hold whatever the check: the
- * exact span, the skip on a mismatch, the wider of two overlaps. The
- * guarantees stand on the manual page it links to since #1095, so the gate
- * below reads both, failing the moment a bullet comes back to either (#898).
+ * The tier as data: `fix:` in a check's YAML grades every fix that check
+ * offers, so no linter spells a tier a second time, and this holds the
+ * declaration to a real run over `test/resources/fix` (#899). What it pins is
+ * that a check declaring a tier offers a fix and one offering a fix declares
+ * a tier; which tier a single-tier check offers is `test/fixer.deep.test.js`'s
+ * to pin. The set equality carries its own weight on a check declaring both,
+ * the tier being a property of the place a defect stands (#583, #1015). The
+ * third question is that neither `README.md` nor the manual page its Fixing
+ * section links to names a check, the check's own page being what says what
+ * it corrects (#898, #1095).
  */
 
 const {lint, suffixed} = require('../src/xslint')
