@@ -64,8 +64,8 @@ Even the best-maintained XSLT in the world ships faults a processor refuses.
 widely used XSLT projects, and in their core stylesheets the `recommended`
 preset a run reports by default draws **245 reports**, with no false positives
 from its validators. Among them are 47 references to a variable no binding in
-scope declares, each a stylesheet no processor will run, and 16 stylesheet
-functions nothing calls. Another 141 are imports and includes naming a file the
+scope declares, which a processor refuses outright, and 16 stylesheet functions
+nothing calls. Another 141 are imports and includes naming a file the
 checkout does not hold, most of them modules a build generates first, so they
 are worth a look rather than a patch. Run with `--preset all`, the same
 stylesheets draw **11,161 findings across 45 different checks in 867
@@ -179,12 +179,12 @@ The [configuration guide][configuration] explains every key.
 
 ## Inline suppression
 
-Silence a check in one place with an XML comment, and a directive that
-silences nothing is reported as unused:
+Silence a check in one place with an XML comment. A directive that silences
+nothing is reported as unused, wherever the run ran the checks it names:
 
 ```xml
-<!-- xslint-disable-next-line short-names -->
-<xsl:variable name="x" select="1"/>
+<!-- xslint-disable-next-line unused-function -->
+<xsl:function name="my:hook">
 ```
 
 The [suppression guide][suppression] covers the line and file

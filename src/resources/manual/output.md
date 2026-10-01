@@ -14,8 +14,9 @@ variable turns coloring off everywhere.
 
 ## Machine-readable output
 
-`--format` selects the output. `text` (the default) is the human format above;
-`json` and `sarif` print a single document to stdout — logs stay on stderr, so
+`--format` selects the output. `text` (the default) prints one line per
+defect, naming its severity, file, line, column, message and check; `json` and
+`sarif` print a single document to stdout — logs stay on stderr, so
 the document is clean to pipe or redirect; `github` prints GitHub Actions
 workflow commands:
 
