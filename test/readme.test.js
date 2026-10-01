@@ -5,43 +5,15 @@
 
 /*
  * The figures the README states of this repository, held to what the tree
- * reads off the committed corpus reports and off `checks.json`.
- *
- * Nothing weighed them before. `README.md` stands in `DOCUMENTS`, so
- * `test/guides.test.js` does read the file, but the claim that gate judges
- * has to name one of a few lists and spell its count as a word — and every
- * figure in the Proven section is digits beside a noun of its own. So the
- * four numbers there drifted between two-fold and twelve-fold under eighteen
- * green jobs: 1,974 findings where the reports hold 10,488, 22 checks where
- * they hold 43, 70 files where they name 867, and one check overstated by two
- * and a half. The qualitative half of that sentence survived the whole drift
- * — every `malformed-stylesheet` report sits under DocBook's
- * `contrib/xsl/tabular-toc`, which `xmllint` refuses too (#877), so *no false
- * positives from its validators* stood true between four false numbers, which
- * is the worst arrangement available: a reader who checks the one falsifiable
- * claim finds it holds (#896).
- *
- * A figure a human keeps current is a figure that rots, and this repository
- * already knew the answer — `scripts/snapshot.js` judges what a corpus drew
- * against a committed report and rewrites it on `--write`, `scripts/budget.js`
- * judges what it cost. `scripts/readme.js` is that shape one document over,
- * and it takes the `checks` target's tier rather than snapshot's: `npx grunt
- * readme` is the rewrite, this file is the refusal, and there is no `--write`
- * and so no exit code needing a child process to read it. Release-time
- * stamping is the wrong tier for these — `up.yml` rewrites the `xslint@` pins
- * that way and should keep them, but a figure refreshed only at a release
- * stands wrong for the whole cycle behind it, which is the interval all of
- * these rotted in.
- *
- * Three questions, and the second is what keeps the first from going quiet.
- * Every figure agrees with the tree; every one of them is found in the README
- * exactly once, since a pattern matching nothing enforces nothing and one
- * matching twice cannot say which it kept; and every check a figure names is
- * a check the tree still holds, a renamed one otherwise reading as a check
- * that has stopped firing. The prose is the anchor and the digits the
- * capture, so rewording a sentence around a figure reddens — while a reflow
- * of the paragraph does not, every gap in an anchor reading as the line break
- * a wrap may have put there.
+ * reads off the committed corpus reports and off `checks.json`. Nothing
+ * weighed them before, and the four in the Proven section drifted between
+ * two-fold and twelve-fold under eighteen green jobs (#896). `npx grunt
+ * readme` is the rewrite and this file the refusal, a figure refreshed only
+ * at a release standing wrong for the whole cycle behind it. Every figure
+ * agrees with the tree, is found in the README exactly once, since a pattern
+ * matching nothing enforces nothing, and names a check the tree still holds.
+ * The prose is the anchor and the digits the capture, so rewording a sentence
+ * around a figure reddens while a reflow of the paragraph does not.
  */
 
 const {

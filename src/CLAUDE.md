@@ -7,9 +7,8 @@ file below in one line. Nothing here restates a rule; this is the evidence under
 
 ## `src/xslint.js`
 
-Its derivation stands at the top of `src/xslint.js` itself, for the reason the note on
-`src/grammar.js` below gives: it is the dearest note this guide held, and the chain through
-`src/linters/` had reached the bar again (#821, #851).
+Its note stands at the top of `src/xslint.js`, and the tickets it cites carry the derivation
+(#821, #851, #1147).
 
 ## `src/config.js`
 
@@ -18,8 +17,7 @@ Resolves `.xslint.yml` (severities/`off`, excludes, `max-warnings`).
 ## `src/gitignore.js`
 
 `ignoring(start)` — whether the project's own `.gitignore` files name a directory the walk is
-about to open, or a stylesheet beside it, and whether git's index holds it regardless; the
-derivation is at the top of the module (#929).
+about to open, or a stylesheet beside it, and whether git's index holds it regardless (#929).
 
 ## `src/directives.js`
 
@@ -192,7 +190,7 @@ while the `count(*) = 1` inside it is served. The per-pull-request gate sees non
 five `xsl:variable` and four `xsl:if` a stylesheet being too few candidates for it to clear the
 machine: over ten interleaved gate runs a side `xpath-linter` reads 22.97% to 26.82% against 18.76%
 to 25.62%, so no bar in `test/scaling.test.js` moves and the evidence for the change stands over the
-three corpora instead, at the top of `src/predicates.js`.
+three corpora instead.
 
 A union wearing its predicate **outside** the brackets is the sixth phase, and its subject is
 one selector — `malformed-version-in-stylesheet`'s `(//@version | //@xsl:version)[Q]`, one
@@ -209,8 +207,8 @@ split moved at all.
 
 ## `src/predicates.js`
 
-Its derivation stands at the top of `src/predicates.js` itself, for the reason the note above
-gives, this chain having reached the bar once #846 grew the guide below it (#821, #811).
+Its note stands at the top of `src/predicates.js`, and the tickets it cites carry the derivation
+(#821, #811, #1147).
 
 ## `src/attributes.js`
 
@@ -335,8 +333,8 @@ nobody needs are noise where a missing pair is a rewrite that means something el
 
 ## `src/expressions.js`
 
-Its derivation stands at the top of `src/expressions.js` itself, for the reason the note on
-`src/grammar.js` below gives (#821, #1094).
+Its note stands at the top of `src/expressions.js`, and the tickets it cites carry the derivation
+(#821, #1094, #1147).
 
 ## `src/tokens.js`
 
@@ -469,14 +467,13 @@ processor sees one (#643).
 
 ## `src/grammar.js`
 
-Its derivation stands at the top of `src/grammar.js` itself, one step further down than a directory
-guide can reach: it is the dearest note this guide held, and it arrives now when that file is opened
-rather than whenever anything under `src/` is (#821).
+Its note stands at the top of `src/grammar.js`, and the tickets it cites carry the derivation
+(#821, #1147).
 
 ## `src/syntax.js`
 
-Its derivation stands at the top of `src/syntax.js` itself, for the reason the note above gives
-(#821).
+Its note stands at the top of `src/syntax.js`, and the tickets it cites carry the derivation
+(#821, #1147).
 
 ## `src/import-graph.js`
 
@@ -584,15 +581,14 @@ XML parsing (expands every entity it reads a declaration of, #1010, and one nami
 end, #1044), YAML parsing, file recursion.
 What a replacement text stands for once it spells markup, why a reference is neither text nor a
 place a fix may be written, and which sequences a document may not hold where `@xmldom/xmldom`
-would repair one rather than refuse it, stand at the top of the module itself
-(#574, #691, #877, #984). `allFilesFrom` joins each subtree on with `flatMap` rather than
-spreading it into a `push`, since a spread hands every
-path over as an argument and V8 caps those at roughly 125 per kilobyte of stack: this repository's
+would repair one rather than refuse it, are #574, #691, #877 and #984's to say. `allFilesFrom`
+joins each subtree on with `flatMap` rather than spreading it into a `push`, since a spread hands
+every path over as an argument and V8 caps those at roughly 125 per kilobyte of stack: this repository's
 own checkout grew to 768,731 files and every run over it died with a `RangeError` before a byte of
 XSL was read, the walk being asked before anything is filtered for `.xsl` (#758). It opens no
 directory named `.git` or `node_modules` either, `SEALED` being the floor it keeps whatever a caller
 asked and 92% of this checkout's own entries standing inside one; what a caller turns down beside
-that floor, and the measurement under both, stands at the top of `src/xslint.js` (#923). The YAML
+that floor, and the measurement under both, is #923's. The YAML
 parser is required inside the function, not at the top: nothing on the linting path reads YAML any
 more, so a run that has no `.xslint.yml` never loads it.
 

@@ -12,10 +12,9 @@ sits in, and arrives with that directory rather than with every turn:
 `test/CLAUDE.md`, `scripts/CLAUDE.md`. A turn loads this file and the guide of
 every directory on the way down to whatever it touches, so a chain of them is
 what a bar on their size answers to — standing under the breach since #844, so
-a chain reddens with room still left to answer it — and a note
-that outgrew even a chain stands at the top of the module it is about, the way
-`src/grammar.js` and every `-linter.js` note under `src/linters/` do. So a
-claim goes where the code it is about goes, and the `Key files` index below
+a chain reddens with room still left to answer it — and what outgrows a chain
+is cut to the ticket that derived it, the note a module opens with being held
+to ten lines (#1147). So a claim goes where the code it is about goes, and the `Key files` index below
 names every file in one line. Both halves are machine-enforced —
 `test/guides.test.js` for the size, the index, and the counts a guide states of
 a list in the code, `test/conformance.test.js` for the length one states of a
@@ -101,7 +100,7 @@ temporary directory.
 
 Both halves run on one mocha, and did not until #841, whose `overrides` entry
 in `package.json` — the pins standing around it, and the audit job beside
-them — is derived at the top of `test/manifest.test.js`.
+them — is #841's to derive.
 
 ## Speed
 
@@ -109,7 +108,7 @@ Speed is machine-enforced like every other convention here, and it was the one
 that was not: the cross-file linter went quadratic and reached master with
 eighteen jobs green, at 52% to 72% of the whole run over the three corpora the
 README advertises (#755, #756). Two tiers hold it now, each beside its gate: `test/CLAUDE.md` for
-`test/scaling.test.js` and `test/import-linter.test.js`, and the top of
+`test/scaling.test.js` and `test/import-linter.test.js`, and
 `test/budget.test.js` for the nightly one.
 
 `test/scaling.test.js` is the per-pull-request tier. It charges every stage its
@@ -187,7 +186,7 @@ matters reaches the plugin too. Shortening that off-list is its own job; only
 
 A source file stops at 1000 lines, counting the blank ones and the comments,
 since a reader scrolls past those as well. One file stands above it and is named in
-`SPRAWLING` in the config — `src/grammar.js`, 2172 lines of one function per
+`SPRAWLING` in the config — `src/grammar.js`, 1940 lines of one function per
 production of XPath 3.1 — rather than carrying a disable comment of its own, so
 what is exempted is one list a reviewer reads in the place the cap is set, not a
 mark to be found by opening every file. Neither half can rot in silence.
@@ -225,7 +224,10 @@ a block cannot hold as a `/* */` beside it either — such prose is cut and not
 moved, the dearest chain of guides standing near `LOADED` and reddening
 well under it, so a guide is no place to put it either and the ticket number
 left standing in the surviving sentence is what keeps a derivation
-recoverable.
+recoverable. Nothing weighed that `/* */` either until #1147, and thirty files
+had come to open with one past ten lines, `src/grammar.js` with 243: the note a
+module opens with, every plain block in front of its first token bar the
+licence header, now stops at ten, set beside the other two as `top`.
 
 A parameter a caller may leave out therefore says so in the signature, with a
 default — `fix = undefined` on `defect` in `src/checks.js`. A JSDoc `[fix]`
@@ -492,8 +494,7 @@ JavaScript's whitespace rather than XML's `S`, `xslint:version`, the version in
 force at a node, `xslint:attribute`, what an XSLT attribute says in either
 spelling, `xslint:name`, the expanded name one holds, and `xslint:conditional`,
 whether a `use-when` may drop an element — each because no selector over the
-document answers it (#881, #851, #992, #1060). The note atop that module says
-which six of the seven selectors the first cost, and how.
+document answers it (#881, #851, #992, #1060).
 
 ## Check formats
 

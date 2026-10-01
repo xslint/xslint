@@ -4,87 +4,15 @@
  */
 
 /*
- * `name-compared-to-string` read what a comparison held and never where it
- * stood, and a node test is a question about what stands in the context. The
- * `self` axis's principal node kind is element, so a name test under it is
- * false for every attribute and every namespace node: `@*[name() != 'as']`
- * drew the advice to write `@*[not(self::as)]`, a predicate that excludes
- * nothing at all. Saxon 12.9 keeps every attribute through the second where
- * the first drops the one it names, so the rewrite copied into the result the
- * very attribute the stylesheet meant to leave out — and it is a suggestion an
- * editor offers in one click. Sixty-two of them stood over the three corpora,
- * `@*[name(.) = 'xml:id']` and `namespace::*[name() = '']` among them (#930).
- *
- * The axis is half of that question and the node test is the other half, which
- * asking the axis alone got wrong the other way about. A
- * `processing-instruction()` stands on the child axis, whose principal node
- * kind is element, and selects no element at all, so the
- * `processing-instruction()[name() = 'ditaot']` of a real stylesheet drew
- * `self::ditaot` — a predicate xsltproc answers for nothing where the
- * comparison answers for the one instruction, the `name()` of a processing
- * instruction being its target. Twenty-three of those stood over the corpora,
- * thirteen in TEI and ten in DITA-OT. A `comment()` and a `text()` have no name
- * for either spelling to read, and a `node()` reaches an instruction beside the
- * elements, so the two part there as well — fourteen in DocBook-XSL,
- * `node()[not(local-name() = 'title')]` among them. Two kind tests select an
- * element and nothing else, `element()` and `schema-element()`, and the report
- * stands under those.
- *
- * A step is not the only thing a predicate can hang off, either. Brackets take
- * one as a *filter*, so `(@one | @two)[name() = 'eff']` carries no axis for
- * anything to ask about, and what answers instead is whatever the filter
- * yields: a union off every arm at once — every, since one attribute arm is
- * enough to put the rewrite back on a node a name cannot name — a path off its
- * last step, and a variable, a call, the context item or an empty pair of
- * brackets off nothing, so those answer no. Three shapes answer no that could
- * have answered otherwise: a `Q{urn:x}foo` name test and a `..` step, which
- * select an element and nothing else, and a bare `.`, whose context is whatever
- * stands outside the expression. Each is a report withheld rather than a file
- * broken, and admitting all three draws not one further defect over the three
- * corpora.
- *
- * What is withheld is the whole report and not the fix alone, since the
- * message names the rewrite it cannot make. XPath 2.0 does have a node test
- * for the attribute half — `self::attribute(as)`, a kind test rather than a
- * name test — but that is a rewrite of another shape, and 1.0 has none at all,
- * so the string comparison is the only way to put the question there.
- *
- * That rule reached the axis arm and not the version one until #962. `test`
- * builds no node test for a `local-name()` comparison in a 1.0 stylesheet,
- * the `*:name` wildcard being 2.0's, nor for a string XML cannot spell a name
- * with, and `lintByName` reported both regardless and dropped the fix alone.
- * So the advice named a rewrite the version has no spelling for, over
- * `local-name()`, which is the one call that is *not* prefix-fragile and so
- * answers half the message before it is read. 302 of the check's 498 rows
- * over the three corpora were such reports: 293 a `local-name()` in 1.0
- * DocBook-XSL, and 9 a `name() = ''`, which asks whether a node has a name at
- * all and no node test spells at any version. What builds no replacement is
- * withheld whole now, one rule over both causes rather than a version test
- * standing beside a literal test.
- *
- * The context is carried down a walk rather than climbed to, because the parse
- * holds no parent pointers and a step holds its predicates as its children.
- * Only a predicate moves it, and it moves to what the step or the filter
- * holding it yields, which is a distinction rather than a convenience: the
- * `name()` of `@*[../child::zed[name() = 'gee']]` is asked of an element and
- * still reported, where the one in `@*[name() != 'as']` is asked of an
- * attribute.
- *
- * What stands outside every predicate is the context XSLT sets around the
- * expression, which the walk began by assuming an element until #1000: under
- * `xsl:for-each select="@*"` a `name(.) eq 'style'` drew `self::style`, 26
- * such reports in TEI's `html_figures.xsl` alone, and DocBook's
- * `xtangle.xsl` was told to copy the attribute it drops. So the walk begins
- * unknown and `outer` climbs to the nearest instruction selecting a context
- * or template matching one, answering with what that yields; the root counts,
- * its name being empty exactly as no name test matches it, and a named
- * template, a function or a top-level declaration says no. The same ticket
- * moved an unprefixed `name()` onto the wildcard: an element in a default
- * namespace answers its bare name, and a bare `self::pubdate` asks for no
- * namespace, which xsltproc confirms over DocBook's `biblio-iso690.xsl`.
- * In 1.0, which has no wildcard, that took the report with the rewrite until
- * #1042, though the comparison is as prefix-fragile there as anywhere: it
- * stands now, with no fix, where a `local-name()` in 1.0 is still withheld.
+ * `name-compared-to-string` advises a node test in place of comparing `name()`
+ * or `local-name()` with a string, and asks first where the call stands: a name
+ * test under the `self` axis is false for every attribute and namespace node,
+ * and a kind test such as `processing-instruction()` selects no element (#930).
+ * The context is carried down the walk to each predicate from what the step or
+ * filter holding it yields, and outside every predicate `outer` climbs to the
+ * instruction or template setting it (#1000). Where no replacement can be built
+ * at the version in force the report is withheld whole rather than the fix
+ * alone (#962), bar an unprefixed `name()` in 1.0, reported unfixed (#1042).
  */
 
 const {VALUED, calls, isValid, offsetOf, operatorOf, parseOf, stringOf,

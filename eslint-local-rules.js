@@ -190,6 +190,23 @@ const parted = function (comment) {
   return entries;
 };
 
+// The plain block comments a file opens with, the licence header aside: the
+// note at the top of a module, weighed as one however many blocks spell it,
+// since a reader scrolls past all of them before the first line of code.
+const noted = function (source) {
+  const first = source.getFirstToken(source.ast);
+  return source
+    .getAllComments()
+    .filter(
+      (comment) =>
+        (first === null || comment.range[1] <= first.range[0]) &&
+        comment.type === "Block" &&
+        !documents(comment) &&
+        !comment.value.includes("SPDX-License-Identifier")
+    )
+    .flatMap(worded);
+};
+
 // A project-local ESLint plugin, kept out of eslint.config.mjs so it can be
 // unit-tested with ESLint's RuleTester (test/eslint-local-rules.test.js). One
 // rule flags a variable whose only purpose is to be returned by the very next
@@ -198,8 +215,9 @@ const parted = function (comment) {
 // function that can be left through more than one return, where the branching,
 // not the exit, is what should carry the choice. The fourth flags a docblock
 // standing in front of another, which documents nothing, and the last weighs
-// what one docblock says, a file being capped at 1000 lines while the comments
-// inside it answered to nothing. No plugin dependency is needed; a single
+// what one docblock says and what the note a module opens with says, a file
+// being capped at 1000 lines while the comments inside it answered to nothing
+// (#832, #1147). No plugin dependency is needed; a single
 // no-restricted-syntax selector can neither compare a declaration's name with
 // the identifier the following return uses, nor weigh a call's argument count
 // against the parameter list of the callee, nor tell which function a return
@@ -370,21 +388,33 @@ module.exports = {
               "CLAUDE.md of the directory it sits in",
             ].join(' '),
           wordy:
-            "Cut '{{tag}}' to {{max}} lines or fewer: it spends {{spent}}"
+            "Cut '{{tag}}' to {{max}} lines or fewer: it spends {{spent}}",
+          noted:
+            [
+              "Cut the note this module opens with to {{max}} lines or fewer:",
+              "it spends {{spent}}, and the ticket it cites is where the",
+              "derivation stays recoverable",
+            ].join(" ")
         },
         schema: [
           {
             type: "object",
             properties: {
               description: { type: "integer", minimum: 1 },
-              tag: { type: "integer", minimum: 1 }
+              tag: { type: "integer", minimum: 1 },
+              top: { type: "integer", minimum: 1 }
             },
             additionalProperties: false
           }
         ]
       },
       create(context) {
-        const caps = { description: 5, tag: 3, ...context.options[0] };
+        const caps = {
+          description: 5,
+          tag: 3,
+          top: 10,
+          ...context.options[0]
+        };
         return {
           Program() {
             context.sourceCode
@@ -406,6 +436,14 @@ module.exports = {
                   });
                 }
               });
+            const note = noted(context.sourceCode);
+            if (note.length > caps.top) {
+              context.report({
+                loc: { line: note[caps.top].at, column: 0 },
+                messageId: "noted",
+                data: { max: caps.top, spent: note.length }
+              });
+            }
           }
         };
       }

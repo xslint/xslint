@@ -8,16 +8,10 @@
  * document, and whether a module holds a place a processor enters it at. It
  * was `root-template-linter`'s own question until #1004 asked it of the import
  * tree too, and a linter requires no other, so it stands in the core both of
- * them consume.
- *
- * A module is entered where the document node reaches it, and the built-in
- * rule hands that node's children on, so a default-mode template taking
- * whatever element stands at the top — any element at all, or the one a
- * `/name` spells — is a place too (#1046). A default-mode template naming
- * elements is not, nor is a named one. Over the pinned corpora the first drew
- * seven stylesheets more, five of them libraries nothing imports, and reads a
- * library linted alone besides; the second drew eight, one a program started
- * with `-it`.
+ * them consume. A module is entered where the document node reaches it, and
+ * the built-in rule hands that node's children on, so a default-mode template
+ * taking whatever element stands at the top is a place too (#1046); one
+ * naming elements is not, nor is a named one.
  */
 
 const {expressionsOf, whole} = require('./attributes')

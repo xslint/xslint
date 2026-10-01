@@ -22,6 +22,25 @@ const caller = path.join(__dirname, 'resources', 'eslint', 'caller.js')
  */
 const marker = `@${'todo'}`
 
+/**
+ * The licence header every source file opens with, which a top note follows.
+ */
+const SPDX = [
+  '/*',
+  ' * SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov',
+  ' * SPDX-License-Identifier: MIT',
+  ' */',
+].join('\n')
+
+/**
+ * As many lines of a block comment's prose as asked, each closed by a break.
+ * @param {number} count - How many lines
+ * @return {string} - The lines
+ */
+const lines = function(count) {
+  return [...Array(count).keys()].map((index) => ` * Line ${index + 7}.\n`).join('')
+}
+
 tester.run(
   'no-redundant-return-variable',
   local.rules['no-redundant-return-variable'],
@@ -207,6 +226,13 @@ tester.run(
         code: '/**\n * One.\n * Two.\n * Three.\n * Four.\n * Five.\n * Six.\n * Seven.\n */\nconst one = 1',
         options: [{description: 8}],
       },
+      `${SPDX}\n/*\n${lines(10)} */\nconst one = 1`,
+      `${SPDX}\n/*\n${lines(5)} *\n${lines(5)} */\nconst one = 1`,
+      `const one = 1\n/*\n${lines(12)} */\nconst two = 2`,
+      {
+        code: `${SPDX}\n/*\n${lines(12)} */\nconst one = 1`,
+        options: [{top: 12}],
+      },
       {
         code: '/**\n * One.\n * @param {object} one - A description that\n *  wraps once\n */\nfunction pair(one) {}',
         options: [{tag: 2}],
@@ -216,6 +242,23 @@ tester.run(
       {
         code: '/**\n * One.\n * Two.\n * Three.\n * Four.\n * Five.\n * Six.\n */\nconst one = 1',
         errors: [{messageId: 'sprawling', line: 7}],
+      },
+      {
+        code: `${SPDX}\n/*\n${lines(11)} */\nconst one = 1`,
+        errors: [{messageId: 'noted', line: 16}],
+      },
+      {
+        code: `/*\n${lines(11)} */\nconst one = 1`,
+        errors: [{messageId: 'noted', line: 12}],
+      },
+      {
+        code: `${SPDX}\n/*\n${lines(4)} */\n/*\n${lines(7)} */\nconst one = 1`,
+        errors: [{messageId: 'noted', line: 18}],
+      },
+      {
+        code: `${SPDX}\n/*\n${lines(4)} */`,
+        options: [{top: 3}],
+        errors: [{messageId: 'noted', line: 9}],
       },
       {
         code: '/**\n * One.\n * Two.\n * Three.\n * Four.\n * Five.\n * Six.\n */\nconst one = 1\n/**\n * One.\n * Two.\n * Three.\n * Four.\n * Five.\n * Six.\n */\nconst two = 2',
