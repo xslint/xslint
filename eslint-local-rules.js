@@ -511,7 +511,7 @@ module.exports = {
       meta: {
         type: "suggestion",
         docs: {
-          description: "cap how many lines one JSDoc block may spend"
+          description: "cap how many lines a JSDoc block, or the note a module opens with, may spend"
         },
         messages: {
           sprawling:

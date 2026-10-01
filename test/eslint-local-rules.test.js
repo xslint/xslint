@@ -264,6 +264,14 @@ tester.run(
       `${SPDX}\n/* eslint-disable no-console -- The console is output. */\n/*\n${lines(9)} */\nconsole.log(1)`,
       `${SPDX}\n/*\n${lines(8)} */\nconst alpha = require('./alpha') // reads the stylesheets\nconst beta = require('./beta') // reads the stylesheets\nconst gamma = require('./gamma') // reads the stylesheets\nconst one = 1`,
       `${SPDX}\n/*\n${lines(8)} */\nconst {\n  alpha, // the first\n  beta, // the second\n  gamma, // the third\n} = require('./x')\nconst one = 1`,
+      {
+        code: `${SPDX}\n/*\n${lines(10)} */\n/**\n * One.\n * Two.\n */\nimport {join} from 'path'\nexport const one = join('a')`,
+        languageOptions: {sourceType: 'module'},
+      },
+      {
+        code: `${SPDX}\n/*\n${lines(8)} */\nimport alpha from './alpha.js' // reads the stylesheets\nimport {beta} from './beta.js' // reads the stylesheets\nimport * as gamma from './gamma.js' // reads the stylesheets\nexport const one = [alpha, beta, gamma]`,
+        languageOptions: {sourceType: 'module'},
+      },
       `// ${['SPDX', 'FileCopyrightText'].join('-')}: Copyright (c) 2025-2026 Max Trunnikov\n// ${['SPDX', 'License', 'Identifier'].join('-')}: MIT\n/*\n${lines(10)} */\nconst one = 1`,
       {
         code: `${SPDX}\n/*\n${lines(12)} */\nconst one = 1`,
