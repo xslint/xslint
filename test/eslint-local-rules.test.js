@@ -43,35 +43,14 @@ tester.run(
       'const one = make(); module.exports = one; module.exports.one = one',
     ],
     invalid: [
-      {
-        code: 'function redundant() { const one = make(); return one }',
-        errors: [{messageId: 'redundant'}],
-      },
-      {
-        code: 'function sum() { let total = 1 + 2; return total }',
-        errors: [{messageId: 'redundant'}],
-      },
-      {
-        code: 'function moved() { const one = make(); other = one }',
-        errors: [{messageId: 'carried'}],
-      },
-      {
-        code: 'function bound() { const one = make(); const two = one }',
-        errors: [{messageId: 'carried'}],
-      },
-      {
-        code: 'function among() { const one = make(); let two = 2, three = one }',
-        errors: [{messageId: 'carried'}],
-      },
-      {
-        code: 'const one = make(); module.exports = one',
-        errors: [{messageId: 'carried'}],
-      },
-      {
-        code: 'switch (key) { case 1: const one = make(); other = one }',
-        errors: [{messageId: 'carried'}],
-      },
-    ],
+      ['redundant', 'function redundant() { const one = make(); return one }'],
+      ['redundant', 'function sum() { let total = 1 + 2; return total }'],
+      ['carried', 'function moved() { const one = make(); other = one }'],
+      ['carried', 'function bound() { const one = make(); const two = one }'],
+      ['carried', 'function among() { const one = make(); let two, three = one }'],
+      ['carried', 'const one = make(); module.exports = one'],
+      ['carried', 'switch (key) { case 1: const one = make(); other = one }'],
+    ].map(([messageId, code]) => ({code, errors: [{messageId}]})),
   },
 )
 
