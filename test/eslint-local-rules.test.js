@@ -388,6 +388,21 @@ tester.run(
         errors: [{messageId: 'noted', line: 15, data: {max: 10, spent: 11}}],
       },
       {
+        code: `${SPDX}\n${['fs', 'path', 'os', 'url', 'util', 'events', 'stream', 'crypto', 'http', 'https', 'net', 'tls', 'zlib'].map((name) => `import '${name}' // a derivation line that answers why\n`).join('')}export const one = 1`,
+        languageOptions: {sourceType: 'module'},
+        errors: [{messageId: 'noted', line: 15, data: {max: 10, spent: 13}}],
+      },
+      {
+        code: `${SPDX}\n${['fs', 'path', 'os', 'url', 'util', 'events', 'stream', 'crypto', 'http', 'https', 'net', 'tls', 'zlib'].map((name) => `/**\n${lines(3)} */\nimport '${name}'\n`).join('')}export const one = 1`,
+        languageOptions: {sourceType: 'module'},
+        errors: [{messageId: 'noted', line: 25, data: {max: 10, spent: 39}}],
+      },
+      {
+        code: `${SPDX}\n${Array.from(Array(13).keys(), (index) => `import './version.js?${index}' // a derivation line that answers why\n`).join('')}export const one = 1`,
+        languageOptions: {sourceType: 'module'},
+        errors: [{messageId: 'noted', line: 15, data: {max: 10, spent: 13}}],
+      },
+      {
         code: `${SPDX}\n/*\n${lines(4)} */`,
         options: [{top: 3}],
         errors: [{messageId: 'noted', line: 9, data: {max: 3, spent: 4}}],

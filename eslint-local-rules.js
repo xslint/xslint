@@ -213,6 +213,17 @@ const opening = function (statement) {
   return verdict;
 };
 
+// Whether a top-level statement opens a module and does nothing else a reader
+// needs told, a directive or an import binding no name, so a comment beside it
+// or above it is the note's.
+const idle = function (statement) {
+  return (
+    Boolean(statement.directive) ||
+    (statement.type === "ImportDeclaration" &&
+      statement.specifiers.length === 0)
+  );
+};
+
 // The two tags of the licence header, spelled at run time so the REUSE job
 // does not read this line as one.
 const LICENSED = [
@@ -223,9 +234,9 @@ const LICENSED = [
 // The lines of the note a module opens with. The opening region is its
 // top-level statements up to and including the first that does not only open
 // the module; the note is every comment line in front of that last one that
-// shares no line with code, a directive being none, bar the first line of
-// each licence tag, a shebang, and a non-directive region statement's
-// docblock (#1147).
+// shares no line with code, a directive or a bare import being none, bar the
+// first line of each licence tag, a shebang, and the docblock of any other
+// region statement (#1147).
 const noted = function (source) {
   const directives = source.getInlineConfigNodes();
   const body = source.ast.body;
@@ -237,7 +248,7 @@ const noted = function (source) {
     bound = body[reach].range[0];
   }
   const owned = region
-    .filter((statement) => !statement.directive)
+    .filter((statement) => !idle(statement))
     .map(
       (statement) =>
         source
@@ -247,7 +258,7 @@ const noted = function (source) {
     )
     .filter(documents);
   const prologue = body
-    .filter((statement) => statement.directive)
+    .filter(idle)
     .map((statement) => statement.range);
   const coded = new Set(
     source.ast.tokens
