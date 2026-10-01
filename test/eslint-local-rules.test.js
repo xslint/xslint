@@ -229,6 +229,8 @@ tester.run(
       `${SPDX}\n/*\n${lines(10)} */\nconst one = 1`,
       `${SPDX}\n/*\n${lines(5)} *\n${lines(5)} */\nconst one = 1`,
       `const one = 1\n/*\n${lines(12)} */\nconst two = 2`,
+      `const one = require('./one')\nconst two = 2\n${'// Line.\n'.repeat(12)}const three = 3`,
+      `${SPDX}\n/*\n${lines(10)} */`,
       {
         code: `${SPDX}\n/*\n${lines(12)} */\nconst one = 1`,
         options: [{top: 12}],
@@ -254,6 +256,18 @@ tester.run(
       {
         code: `${SPDX}\n/*\n${lines(4)} */\n/*\n${lines(7)} */\nconst one = 1`,
         errors: [{messageId: 'noted', line: 18}],
+      },
+      {
+        code: `${SPDX}\nconst one = require('./one')\n/*\n${lines(11)} */\nconst two = 2`,
+        errors: [{messageId: 'noted', line: 17}],
+      },
+      {
+        code: `${SPDX}\n${'// Line.\n'.repeat(11)}const one = 1`,
+        errors: [{messageId: 'noted', line: 15}],
+      },
+      {
+        code: `${SPDX.slice(0, -4)}\n${lines(11)} */\nconst one = 1`,
+        errors: [{messageId: 'noted', line: 14}],
       },
       {
         code: `${SPDX}\n/*\n${lines(4)} */`,

@@ -9,10 +9,10 @@
  * a fontoxpath call costing about 7 us for what a property read answers in
  * nanoseconds once #811 made the tail the whole cost. Off the parse, each of
  * the 56 distinct predicates in the tree is compiled once a run; 44 of them
- * are. Over-acceptance is a wrong report where under-acceptance is only the
- * engine call it was, so a regex, a bare `normalize-space` (#881), an absolute
- * path and an element's string value are refused, and no JavaScript built-in
- * is taken for XPath's notion (#643) — 44 of the 56 compile either way.
+ * answer off the walk. Over-acceptance is a wrong report where
+ * under-acceptance is only the engine call it was, so a regex, a bare
+ * `normalize-space` (#881), an absolute path and an element's string value
+ * are refused, and no JavaScript built-in is taken for XPath's notion (#643).
  */
 
 const {PREFIXES} = require('./xpath')

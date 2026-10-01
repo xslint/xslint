@@ -66,7 +66,7 @@ const SHARE = 7
  * `SHARES` names the three dear stages: an XSD regex asked of every candidate,
  * and one anchored on the root that spends everything inside a predicate that
  * descends the tree. What each reads, and what left this table once its
- * predicate compiled whole, is in the note above (#811, #881).
+ * predicate compiled whole, the tickets carry (#811, #881).
  * @type {{[check: string]: number}}
  */
 const COSTS = {

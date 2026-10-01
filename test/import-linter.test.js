@@ -10,32 +10,14 @@ const assert = require('assert')
 
 /*
  * `capped` in `test/clock.js` is why a window here is charged the smaller of
- * two clocks. `process.cpuUsage` sums every thread the process has, and Windows
- * charges each one it finds running at an interrupt a whole tick of some 15,625
- * microseconds — so a concurrent marker that ran a fraction of a millisecond is
- * charged a tick, and a window of sixty milliseconds is charged four of them
- * for every thread that woke inside it. The long chain allocates four times as
- * much per pass and is the one whose window provokes that marker, so the
- * phantom lands on the numerator of the growth rather than on both sides of it,
- * and the floor over three attempts does not reach what is systematic on one
- * side. That read 16.80 on `build (windows-2022, 20)` at `b9a201a`, inside the
- * distribution a walk-per-edge defect reads at, on a tree the same runner had
- * passed hours before under its own pull request; re-run at that very commit
- * the job came back green, which is the signature #892 named one gate over — a
- * verdict belonging to the clock and not to the tree.
- *
- * No single thread can spend more processor time than the wall its window
- * spanned, so the wall is the cap, and the reason a processor clock was chosen
- * survives it: a descheduled process is charged less than its wall, and the
- * smaller of the two is the processor's again. What the threads cost is
- * measurable where no tick hides it, a window of this test reading 1.95 times
- * its own wall here against 0.99 under `--predictable`, which leaves V8 one
- * thread to compile and collect on. Charging the smaller reads 4.23 to 4.46
- * over eight runs where the raw clock reads 4.34 to 4.66, so it is inert on a
- * clock that was honest; against one charging a tick per thread per interrupt
- * it reads 4.26 to 4.87 where the raw one reads 16.00 to 18.29; and the
- * walk-per-edge defect still fails it three times of three, at 14.75, 14.78
- * and 15.10 (#906).
+ * two clocks. `process.cpuUsage` sums every thread the process has, and
+ * Windows charges each one it finds running at an interrupt a whole tick, so
+ * the long chain's window drew a phantom on the numerator of the growth alone:
+ * 16.80 on `windows-2022` at `b9a201a`, green on a re-run, the signature of a
+ * verdict belonging to the clock (#892). No thread spends more processor time
+ * than the wall its window spanned, so the wall is the cap, inert on an honest
+ * clock while the walk-per-edge defect still fails it three times of three
+ * (#906).
  */
 
 /**

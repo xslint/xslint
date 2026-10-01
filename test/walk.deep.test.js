@@ -72,8 +72,8 @@ const WALKS = path.resolve(__dirname, '..', 'src', 'helpers.js')
 
 /**
  * How a module asks the file system what a directory holds, which is the call
- * and not the word: the note atop `src/xslint.js` says what order readdir
- * answers in, and a gate reading prose would have that module walking.
+ * and not the word: prose naming readdir, as #638's did, is no walk, and a gate
+ * reading prose would have that module walking.
  * @type {RegExp}
  */
 const READDIR = /\breaddir\w*\(/

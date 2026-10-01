@@ -89,11 +89,6 @@ const STATED = [
     truth: (found) => [String(found.whole.every), String(found.whole.compiled)],
   },
   {
-    where: NOTE,
-    claim: /(\d+) of the (\d+) compile either way/g,
-    truth: (found) => [String(found.whole.compiled), String(found.whole.every)],
-  },
-  {
     where: 'test/predicates.test.js',
     claim: new RegExp(
       `states of the vocabulary's reach, (\\d+) of${GAP}+(\\d+),`, 'g',

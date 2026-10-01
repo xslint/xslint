@@ -214,7 +214,7 @@ export default defineConfig([
       "local/no-orphan-docblock": "error",
       "local/no-wrapped-concatenation": "error",
       "local/no-sprawling-docblock":
-        ["error", { description: 5, tag: 3 }],
+        ["error", { description: 5, tag: 3, top: 10 }],
       "valid-jsdoc": "off",
       "require-jsdoc": "off",
       semi: ["error", "never"],

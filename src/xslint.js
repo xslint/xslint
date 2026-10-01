@@ -9,11 +9,11 @@
  * the speed gate times what the run runs. `lint` sorts its defects by file,
  * line, column and check, in code units rather than `localeCompare`, so a
  * committed report diffs stably (#638). A run reads only what `SUFFIXES`
- * names (#924); the walk never opens `.git` or `node_modules`, prunes a
- * directory a `dir/**` exclude covers whole (#923), and leaves out what
- * `.gitignore` refuses (#929). The exit code is `process.exitCode`, since
- * `process.exit` drops a report still in the pipe (#767). `xslint-lsp` runs
- * `fixed` on unsaved buffers, so no fix stands on text that does not parse.
+ * names (#924); the walk opens no `.git` or `node_modules`, prunes what a
+ * `dir/**` exclude covers whole (#923), and leaves out what `.gitignore`
+ * refuses (#929). The exit code is `process.exitCode`, as `process.exit` drops
+ * a report still in the pipe (#767). `xslint-lsp` runs `fixed` on unsaved
+ * buffers, so no fix stands on text that does not parse (#336, #636).
  */
 
 const path = require('path')

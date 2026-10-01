@@ -190,42 +190,53 @@ const parted = function (comment) {
   return entries;
 };
 
-// The tag the licence header carries, joined at run time so the REUSE job,
-// which parses every spelling of it in the tree, reads no expression here.
-const LICENSED = ["SPDX", "License", "Identifier"].join("-");
+// Whether a top-level statement only brings a module in, a require binding or
+// an import, which a note standing below it still opens the module above.
+const importing = function (statement) {
+  let verdict = statement.type === "ImportDeclaration";
+  if (statement.type === "VariableDeclaration") {
+    verdict = statement.declarations.every(function (declarator) {
+      let init = declarator.init;
+      while (init && init.type === "MemberExpression") {
+        init = init.object;
+      }
+      return Boolean(
+        init &&
+          init.type === "CallExpression" &&
+          init.callee.type === "Identifier" &&
+          init.callee.name === "require"
+      );
+    });
+  }
+  return verdict;
+};
 
-// The plain block comments a file opens with, the licence header aside: the
-// note at the top of a module, weighed as one however many blocks spell it,
-// since a reader scrolls past all of them before the first line of code.
+// The lines of the note a module opens with: every plain or line comment in
+// front of its first statement past the imports, weighed as one however many
+// comments spell it, the licence header's own lines aside (#1147).
 const noted = function (source) {
-  const first = source.getFirstToken(source.ast);
+  const code = source.ast.body.find((statement) => !importing(statement));
+  let bound = Infinity;
+  if (code) {
+    bound = code.range[0];
+  }
   return source
     .getAllComments()
-    .filter(
-      (comment) =>
-        (first === null || comment.range[1] <= first.range[0]) &&
-        comment.type === "Block" &&
-        !documents(comment) &&
-        !comment.value.includes(LICENSED)
-    )
-    .flatMap(worded);
+    .filter((comment) => comment.range[1] <= bound && !documents(comment))
+    .flatMap(worded)
+    .filter((one) => !one.text.startsWith("SPDX-"));
 };
 
 // A project-local ESLint plugin, kept out of eslint.config.mjs so it can be
-// unit-tested with ESLint's RuleTester (test/eslint-local-rules.test.js). One
-// rule flags a variable whose only purpose is to be returned by the very next
-// statement — that binding is redundant and should be inlined. Another flags
-// a call that leaves out an argument the callee declares. The third flags a
-// function that can be left through more than one return, where the branching,
-// not the exit, is what should carry the choice. The fourth flags a docblock
-// standing in front of another, which documents nothing, and the last weighs
-// what one docblock says and what the note a module opens with says, a file
-// being capped at 1000 lines while the comments inside it answered to nothing
-// (#832, #1147). No plugin dependency is needed; a single
-// no-restricted-syntax selector can neither compare a declaration's name with
-// the identifier the following return uses, nor weigh a call's argument count
-// against the parameter list of the callee, nor tell which function a return
-// belongs to, nor count the lines of a comment, which is no node at all.
+// unit-tested with ESLint's RuleTester (test/eslint-local-rules.test.js). Its
+// rules flag a variable bound only to be returned next, a call leaving out an
+// argument the callee declares, a function left through more than one return,
+// a docblock standing in front of another, a docblock or a module's opening
+// note past its cap, and a string wrapped across lines with `+` (#832, #1047,
+// #1147). Each asks what no no-restricted-syntax selector can: a name against
+// the next return, an arity against a declaration, the function a return
+// belongs to, or the lines of a comment, which is no node at all.
+
 // The operands a chain of `+` adds up, left to right, which JavaScript nests
 // on the left: a parenthesised sum on the right stays one operand.
 const summed = function (node) {

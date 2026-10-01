@@ -8,11 +8,12 @@
  * subject is this repository's own documentation (#821). What a turn loads
  * is a chain, the root guide and the guide of every directory down to the
  * file it touches, so the bar weighs the dearest chain against `LOADED`
- * less `ROOM`, which reddens while a relocation still fits (#844). What
- * answers a chain reaching it is a note moved to the module it is about,
- * never a bar widened to fit. The index answers to the tree from both sides,
- * a note answers to the index and to its own directory, and the counts a
- * guide states of a list in the code are held to that list (#825, #895).
+ * less `ROOM`, which reddens with room still left to answer it (#844). What
+ * answers a chain reaching it is a derivation cut to the ticket that derived
+ * it, never a bar widened to fit (#1147). The index answers to the tree
+ * from both sides, a note answers to the index and to its own directory, and
+ * the counts a guide states of a list in the code are held to that list (#825,
+ * #895).
  */
 
 const {allFilesFrom} = require('../src/helpers')
@@ -150,10 +151,9 @@ describe('guides', function() {
         `cannot load a chain of guides within ${ROOM} characters of the`,
         `${LOADED} the harness warns at, a turn touching a file loading the`,
         'root guide and the guide of every directory over it — the bar',
-        `stands at ${LOADED - ROOM} so that a derivation still has somewhere`,
-        'to go when it fires, what answers it being that derivation moving',
-        'one directory further down, into the file-header note of the module',
-        'it is about, and never a bar widened to fit what has grown past it',
+        `stands at ${LOADED - ROOM} so that it reddens with room still left`,
+        'to answer it, what answers it being a derivation cut to the ticket',
+        'that derived it, and never a bar widened to fit what has grown past it',
       ].join(' '),
     )
   })
