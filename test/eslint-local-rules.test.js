@@ -41,6 +41,12 @@ tester.run(
       'function itself() { const one = () => one; other = one }',
       'function nested() { const one = make(); const two = wrap(one) }',
       'const one = make(); module.exports = one; module.exports.one = one',
+      'function keyed() { const one = make(); registry[slot()] = one }',
+      'function called() { const one = make(); slot().field = one }',
+      'function after() { const one = make(); const two = slot(), three = one }',
+      'const one = function() {}; module.exports = one',
+      'const one = () => 1; registry.field = one',
+      'const one = class {}; module.exports = one',
     ],
     invalid: [
       ['redundant', 'function redundant() { const one = make(); return one }'],
@@ -50,6 +56,9 @@ tester.run(
       ['carried', 'function among() { const one = make(); let two, three = one }'],
       ['carried', 'const one = make(); module.exports = one'],
       ['carried', 'switch (key) { case 1: const one = make(); other = one }'],
+      ['carried', 'class A { static { const one = make(); other = one } }'],
+      ['carried', 'const one = function named() {}; module.exports = one'],
+      ['carried', 'const one = make(); registry.field.inner = one'],
     ].map(([messageId, code]) => ({code, errors: [{messageId}]})),
   },
 )

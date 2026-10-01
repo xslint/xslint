@@ -222,6 +222,26 @@ const textual = function (node) {
   );
 };
 
+// Whether a target evaluates nothing before the right-hand side does: a name,
+// or a chain of plain property reads off one.
+const plain = function (node) {
+  return (
+    node.type === "Identifier" ||
+    (node.type === "MemberExpression" &&
+      !node.computed &&
+      plain(node.object))
+  );
+};
+
+// Whether a value is a function or class that takes its name from the binding
+// it is written into, which a property target does not give it.
+const anonymous = function (node) {
+  return (
+    ["FunctionExpression", "ArrowFunctionExpression", "ClassExpression"]
+      .includes(node.type) && !node.id
+  );
+};
+
 module.exports = {
   rules: {
     "no-redundant-return-variable": {
@@ -264,13 +284,21 @@ module.exports = {
             const declared = node.declarations[0];
             let targets = [];
             if (next && next.type === "VariableDeclaration") {
-              targets = next.declarations.map((each) => each.init);
+              targets = next.declarations
+                .filter((each) => each.init)
+                .slice(0, 1)
+                .map((each) => each.init);
             }
             if (
               next &&
               next.type === "ExpressionStatement" &&
               next.expression.type === "AssignmentExpression" &&
-              next.expression.operator === "="
+              next.expression.operator === "=" &&
+              plain(next.expression.left) &&
+              !(
+                next.expression.left.type === "MemberExpression" &&
+                anonymous(declared.init)
+              )
             ) {
               targets = [next.expression.right];
             }

@@ -161,7 +161,7 @@ names in `require`/`import` (no `node:` prefix), no conditional operator
 (`a ? b : c` is banned outright by `no-ternary`, nesting and flat chain alike),
 no source file longer than 1000 lines (`max-lines`, outside `test/`),
 no redundant return variable
-(`const x = expr` read once, by a `return x` or `y = x` next), no missing
+(`x = e` read once, by `return x`, `y = x`, `let y = x` next), no missing
 argument (a call must fill every parameter the callee declares without a
 default), one `return` per function (a second exit is banned), no orphaned
 JSDoc block (a `/**` block standing in front of another one documents nothing,
