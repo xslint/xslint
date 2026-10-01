@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How xslint checks</title>
+  <style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    color: #24292e;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 24px 32px;
+  }
+  h1 { font-size: 2rem; font-weight: 600; margin-bottom: 4px; }
+  h2 { font-size: 1.3rem; font-weight: 600; margin: 20px 0 8px; }
+  a { color: #0366d6; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  p { margin: 8px 0; }
+  table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 0.9rem; }
+  th {
+    text-align: left;
+    padding: 10px 12px;
+    background: #f6f8fa;
+    border: 1px solid #e1e4e8;
+    font-weight: 600;
+  }
+  td { padding: 10px 12px; border: 1px solid #e1e4e8; vertical-align: top; }
+  tr:hover td { background: #f6f8fa; }
+  .severity-warning {
+    background: #fff8c5;
+    color: #9a6700;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .severity-error {
+    background: #ffebe9;
+    color: #cf222e;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .fix-safe {
+    background: #dafbe1;
+    color: #1a7f37;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .fix-suggestion {
+    background: #fbefff;
+    color: #8250df;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .preset-recommended {
+    background: #ddf4ff;
+    color: #0969da;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .fix-note {
+    background: #f6f8fa;
+    border-left: 4px solid #57606a;
+    padding: 8px 12px;
+    margin: 0 0 24px;
+    font-size: 0.9rem;
+  }
+  .back { display: inline-block; margin-bottom: 24px; font-size: 0.9rem; }
+  .meta { display: flex; gap: 12px; align-items: flex-start; margin: 12px 0 24px; flex-wrap: wrap; }
+  .xpath {
+    background: #f6f8fa;
+    border: 1px solid #e1e4e8;
+    border-radius: 4px;
+    padding: 6px 10px;
+    font-family: 'SFMono-Regular', Consolas, monospace;
+    font-size: 0.75rem;
+    word-break: break-all;
+    flex: 1;
+  }
+  pre { margin: 12px 0; border-radius: 6px; overflow-x: auto; }
+  code { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; }
+  .check-content h1 { font-size: 1.6rem; margin-bottom: 8px; }
+</style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+  <script>hljs.highlightAll();</script>
+</head>
+<body>
+  <a class="back" href="../index.html">← all checks</a>
+  <div class="check-content">
+<h1>How xslint checks</h1>
+<p>The full list of checks with descriptions and examples is available at
+<a href="../index.html">the check catalog</a>.</p>
+<p>xslint runs in two stages. <strong>Validators</strong> first establish that the input is
+valid; <strong>linters</strong> then run over the stylesheets that pass, catching
+stylistic, semantic, and logical problems. A stylesheet that does not parse is
+reported once and skipped, so one broken file never hides the feedback on the
+rest.</p>
+<p>Validators:</p>
+<ul>
+<li><strong>XML well-formedness</strong> — a stylesheet that is not well-formed XML, or
+that spells a namespace prefix it never declares, is reported at the line
+and column the parser stopped on and excluded from linting.</li>
+<li><strong>XPath syntax</strong> — every bare XPath expression (in <code>select</code>, <code>test</code>,
+<code>use</code>, <code>value</code>, <code>group-by</code>, <code>group-adjacent</code>, and the XSLT 3.0 <code>key</code>,
+<code>initial-value</code>, <code>xpath</code>, <code>context-item</code>, <code>with-params</code>,
+<code>namespace-context</code>, <code>for-each-item</code>, <code>for-each-source</code> and <code>use-when</code>) is
+parsed, on an XSLT element or — spelled <code>xsl:use-when</code>, the only spelling a
+simplified stylesheet has — on a literal result element; the ones the processor
+cannot parse are reported.</li>
+</ul>
+<p>Linters:</p>
+<ul>
+<li><strong>Per-file</strong> checks evaluate one stylesheet at a time (most checks).</li>
+<li><strong>Cross-file</strong> checks reason across all the stylesheets you lint together.
+For example, a named template defined in one file but invoked from another
+(via <code>xsl:import</code>/<code>xsl:include</code>) is not reported as unused, an
+<code>xsl:import</code>/<code>xsl:include</code> cycle across files is flagged (<code>circular-import</code>),
+and the same module imported twice in one stylesheet is flagged
+(<code>redundant-import</code>).
+Lint the whole project at once so these checks can see every caller and every
+imported module.</li>
+<li><strong>Formatting</strong> checks are written in code rather than as a declarative
+selector — their YAML tunes only <code>severity</code> and <code>message</code>. Most read the
+parse tree of one expression; the rest read the document or the import
+graph. The <a href="../index.html">check catalog</a> teaches every one of them.</li>
+</ul>
+<p>Every check that reads an expression reads it from an XPath or pattern attribute
+of an XSLT element (<code>select</code>, <code>test</code>, <code>match</code>, …) or from an attribute value
+template — <code>&lt;div class=&quot;{count(item) = 0}&quot;/&gt;</code> is checked, and fixed, inside the
+braces. An attribute of your own output vocabulary that happens to share a name
+with an XSLT one, as in <code>&lt;widget test=&quot;count(item) = 0&quot;/&gt;</code>, holds text destined
+for the result tree, so it is never read as XPath and never rewritten. And each
+of them is handed the expressions the validator kept, so a malformed one is
+reported once rather than nagged about its spacing, its axes and its
+<code>count(...)</code> calls on top of that.</p>
+
+  </div>
+</body>
+</html>

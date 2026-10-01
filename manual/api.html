@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Programmatic use</title>
+  <style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    color: #24292e;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 24px 32px;
+  }
+  h1 { font-size: 2rem; font-weight: 600; margin-bottom: 4px; }
+  h2 { font-size: 1.3rem; font-weight: 600; margin: 20px 0 8px; }
+  a { color: #0366d6; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  p { margin: 8px 0; }
+  table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 0.9rem; }
+  th {
+    text-align: left;
+    padding: 10px 12px;
+    background: #f6f8fa;
+    border: 1px solid #e1e4e8;
+    font-weight: 600;
+  }
+  td { padding: 10px 12px; border: 1px solid #e1e4e8; vertical-align: top; }
+  tr:hover td { background: #f6f8fa; }
+  .severity-warning {
+    background: #fff8c5;
+    color: #9a6700;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .severity-error {
+    background: #ffebe9;
+    color: #cf222e;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .fix-safe {
+    background: #dafbe1;
+    color: #1a7f37;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .fix-suggestion {
+    background: #fbefff;
+    color: #8250df;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .preset-recommended {
+    background: #ddf4ff;
+    color: #0969da;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .fix-note {
+    background: #f6f8fa;
+    border-left: 4px solid #57606a;
+    padding: 8px 12px;
+    margin: 0 0 24px;
+    font-size: 0.9rem;
+  }
+  .back { display: inline-block; margin-bottom: 24px; font-size: 0.9rem; }
+  .meta { display: flex; gap: 12px; align-items: flex-start; margin: 12px 0 24px; flex-wrap: wrap; }
+  .xpath {
+    background: #f6f8fa;
+    border: 1px solid #e1e4e8;
+    border-radius: 4px;
+    padding: 6px 10px;
+    font-family: 'SFMono-Regular', Consolas, monospace;
+    font-size: 0.75rem;
+    word-break: break-all;
+    flex: 1;
+  }
+  pre { margin: 12px 0; border-radius: 6px; overflow-x: auto; }
+  code { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; }
+  .check-content h1 { font-size: 1.6rem; margin-bottom: 8px; }
+</style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+  <script>hljs.highlightAll();</script>
+</head>
+<body>
+  <a class="back" href="../index.html">← all checks</a>
+  <div class="check-content">
+<h1>Programmatic use</h1>
+<p><code>xslint</code> is embeddable — editors, build tools, and the
+<a href="https://github.com/xslint/xslint-lsp">language server</a> import it instead of
+shelling out. <code>lint</code> takes in-memory sources and returns the defects, touching
+no files and never exiting:</p>
+<pre><code class="language-js">const {lint, fixed} = require(&#39;@maxonfjvipon/xslint&#39;)
+
+const sources = [{file: &#39;sheet.xsl&#39;, content: &#39;&lt;xsl:stylesheet .../&gt;&#39;}]
+const defects = lint(sources, {suppress: [&#39;short-names&#39;]})
+// each defect: {name, severity, message, file, line, pos, fix?}
+
+// apply the fixable ones without writing to disk:
+const {contents} = fixed(sources, defects)
+</code></pre>
+<p><code>lint(sources, {suppress, overrides, only, preset})</code> runs the validators and
+linters of a preset, <code>recommended</code> unless named, over the <code>{file, content}</code>
+sources, honors inline <code>xslint-disable</code> directives, runs every check
+<code>overrides</code> names beside the preset, and hands
+the defects back in the order the reports print them — file, line, column, rule;
+<code>fixed(sources, defects, suggestions)</code> returns the rewritten content per file.</p>
+<p><code>settingsOf(dir, flags)</code> reads the <code>.xslint.yml</code> nearest to <code>dir</code> the way the
+command line does, <code>flags</code> taking <code>config</code>, <code>preset</code>, <code>only</code> and <code>suppress</code>
+over it, and answers options to hand straight to <code>lint</code>, plus <code>excluded(path)</code>,
+whether <code>exclude:</code> keeps the stylesheet at that absolute path out, <code>file</code>, the
+absolute path of the configuration it read (undefined when none), <code>base</code>, the
+directory its globs resolve against, and <code>problems</code>, one sentence per
+unknown key, mistyped value or rule naming no check. It prints nothing, and
+throws rather than answering a problem where the preset names no check list or
+the file is not YAML at all, as the command line fails on both:</p>
+<pre><code class="language-js">const {lint, settingsOf} = require(&#39;@maxonfjvipon/xslint&#39;)
+
+const settings = settingsOf(&#39;/path/to/project&#39;)
+const defects = lint(
+  sources.filter((source) =&gt; !settings.excluded(source.file)), settings,
+)
+</code></pre>
+<p><code>stylesheetsOf(paths, settings)</code> answers <code>{stylesheets, problems}</code>: the absolute
+paths of the stylesheets a run over <code>paths</code> reads, found the way the command
+line finds them — both suffixes, what <code>.gitignore</code> and <code>exclude:</code> keep out —
+and one sentence per warning it prints on the way, logging nothing above the
+debug level itself. A relative path resolves against the working directory of
+the process, not against <code>settings.base</code>, so pass absolute ones.
+<code>sourceOf(file, content)</code> answers the source <code>lint</code> takes for that content,
+reading the parameter entities it declares and the hrefs it writes that no file
+stands behind relative to <code>file</code>, so a buffer nobody saved lints as the file
+would:</p>
+<pre><code class="language-js">const fs = require(&#39;fs&#39;)
+const {lint, settingsOf, stylesheetsOf, sourceOf} = require(&#39;@maxonfjvipon/xslint&#39;)
+
+const settings = settingsOf(&#39;/path/to/project&#39;)
+const {stylesheets} = stylesheetsOf([&#39;/path/to/project&#39;], settings)
+const defects = lint(
+  stylesheets.map((file) =&gt; sourceOf(file, fs.readFileSync(file, &#39;utf-8&#39;))),
+  settings,
+)
+</code></pre>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Output</title>
+  <style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    color: #24292e;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 24px 32px;
+  }
+  h1 { font-size: 2rem; font-weight: 600; margin-bottom: 4px; }
+  h2 { font-size: 1.3rem; font-weight: 600; margin: 20px 0 8px; }
+  a { color: #0366d6; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  p { margin: 8px 0; }
+  table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 0.9rem; }
+  th {
+    text-align: left;
+    padding: 10px 12px;
+    background: #f6f8fa;
+    border: 1px solid #e1e4e8;
+    font-weight: 600;
+  }
+  td { padding: 10px 12px; border: 1px solid #e1e4e8; vertical-align: top; }
+  tr:hover td { background: #f6f8fa; }
+  .severity-warning {
+    background: #fff8c5;
+    color: #9a6700;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .severity-error {
+    background: #ffebe9;
+    color: #cf222e;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .fix-safe {
+    background: #dafbe1;
+    color: #1a7f37;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .fix-suggestion {
+    background: #fbefff;
+    color: #8250df;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .preset-recommended {
+    background: #ddf4ff;
+    color: #0969da;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .fix-note {
+    background: #f6f8fa;
+    border-left: 4px solid #57606a;
+    padding: 8px 12px;
+    margin: 0 0 24px;
+    font-size: 0.9rem;
+  }
+  .back { display: inline-block; margin-bottom: 24px; font-size: 0.9rem; }
+  .meta { display: flex; gap: 12px; align-items: flex-start; margin: 12px 0 24px; flex-wrap: wrap; }
+  .xpath {
+    background: #f6f8fa;
+    border: 1px solid #e1e4e8;
+    border-radius: 4px;
+    padding: 6px 10px;
+    font-family: 'SFMono-Regular', Consolas, monospace;
+    font-size: 0.75rem;
+    word-break: break-all;
+    flex: 1;
+  }
+  pre { margin: 12px 0; border-radius: 6px; overflow-x: auto; }
+  code { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; }
+  .check-content h1 { font-size: 1.6rem; margin-bottom: 8px; }
+</style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+  <script>hljs.highlightAll();</script>
+</head>
+<body>
+  <a class="back" href="../index.html">← all checks</a>
+  <div class="check-content">
+<h1>Output</h1>
+<p>Defects are written to stdout; progress and diagnostic logs go to stderr, so
+<code>xslint path/to/dir &gt; report.txt</code> captures only the findings. Pass <code>--quiet</code> to
+drop the informational log lines:</p>
+<pre><code class="language-bash">xslint --quiet
+</code></pre>
+<p>Output is colored only when it goes to an interactive terminal, so a redirected
+or piped run stays plain text; setting the conventional <code>NO_COLOR</code> environment
+variable turns coloring off everywhere.</p>
+<h2>Machine-readable output</h2>
+<p><code>--format</code> selects the output. <code>text</code> (the default) prints one line per
+defect, naming its severity, file, line, column, message and check; <code>json</code> and
+<code>sarif</code> print a single document to stdout — logs stay on stderr, so
+the document is clean to pipe or redirect; <code>github</code> prints GitHub Actions
+workflow commands:</p>
+<pre><code class="language-bash">xslint --format json path/to/dir     # a flat array of defects
+xslint --format sarif path/to/dir    # a SARIF 2.1.0 log
+xslint --format github path/to/dir   # ::warning/::error annotations for CI
+</code></pre>
+<p>Each entry of the <code>json</code> array names the check as <code>rule</code> and carries its
+<code>severity</code>, its <code>message</code>, and the <code>file</code>, <code>line</code> and <code>column</code> the defect stands
+at. A fixable one carries a <code>fix</code> beside them, holding that span&#39;s own <code>line</code>
+and <code>column</code>, the <code>value</code> it replaces, the <code>replacement</code> it would write, and
+whether it is a <code>suggestion</code>. Defects come out ordered by file, then line, then
+column, then rule — so two runs over one tree emit the same document, and a
+report committed today diffs against one taken tomorrow.</p>
+<p>Inside a GitHub Action, <code>--format github</code> makes each defect an inline
+annotation on the pull-request diff with no upload step — the lowest-friction
+way to see findings on a review.</p>
+<p>SARIF feeds GitHub code scanning, so xslint findings appear as annotations on
+pull requests:</p>
+<pre><code class="language-yaml">- run: xslint --format sarif . &gt; xslint.sarif || true
+- uses: github/codeql-action/upload-sarif@v3
+  with:
+    sarif_file: xslint.sarif
+</code></pre>
+<p>The <code>|| true</code> keeps a findings exit code from failing the step before the
+upload; the alerts still surface in code scanning. Run it from the repository
+root so the reported paths stay repo-relative — a file outside the working
+directory is named by its absolute path instead.</p>
+
+  </div>
+</body>
+</html>

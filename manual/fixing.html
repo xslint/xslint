@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fixing</title>
+  <style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    color: #24292e;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 24px 32px;
+  }
+  h1 { font-size: 2rem; font-weight: 600; margin-bottom: 4px; }
+  h2 { font-size: 1.3rem; font-weight: 600; margin: 20px 0 8px; }
+  a { color: #0366d6; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  p { margin: 8px 0; }
+  table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 0.9rem; }
+  th {
+    text-align: left;
+    padding: 10px 12px;
+    background: #f6f8fa;
+    border: 1px solid #e1e4e8;
+    font-weight: 600;
+  }
+  td { padding: 10px 12px; border: 1px solid #e1e4e8; vertical-align: top; }
+  tr:hover td { background: #f6f8fa; }
+  .severity-warning {
+    background: #fff8c5;
+    color: #9a6700;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .severity-error {
+    background: #ffebe9;
+    color: #cf222e;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .fix-safe {
+    background: #dafbe1;
+    color: #1a7f37;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .fix-suggestion {
+    background: #fbefff;
+    color: #8250df;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .preset-recommended {
+    background: #ddf4ff;
+    color: #0969da;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .fix-note {
+    background: #f6f8fa;
+    border-left: 4px solid #57606a;
+    padding: 8px 12px;
+    margin: 0 0 24px;
+    font-size: 0.9rem;
+  }
+  .back { display: inline-block; margin-bottom: 24px; font-size: 0.9rem; }
+  .meta { display: flex; gap: 12px; align-items: flex-start; margin: 12px 0 24px; flex-wrap: wrap; }
+  .xpath {
+    background: #f6f8fa;
+    border: 1px solid #e1e4e8;
+    border-radius: 4px;
+    padding: 6px 10px;
+    font-family: 'SFMono-Regular', Consolas, monospace;
+    font-size: 0.75rem;
+    word-break: break-all;
+    flex: 1;
+  }
+  pre { margin: 12px 0; border-radius: 6px; overflow-x: auto; }
+  code { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; }
+  .check-content h1 { font-size: 1.6rem; margin-bottom: 8px; }
+</style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+  <script>hljs.highlightAll();</script>
+</head>
+<body>
+  <a class="back" href="../index.html">← all checks</a>
+  <div class="check-content">
+<h1>Fixing</h1>
+<p><code>--fix</code> applies the corrections that are deterministic and leave the stylesheet
+meaning what it meant. <code>--fix-suggestions</code> applies those and the ones that
+change behavior, remove code, or are one of several reasonable corrections,
+which a plain <code>--fix</code> never touches. A correction needing real judgment — a
+fresh name, a more specific path — stays report-only, and a run without either
+flag reports how many defects each option would fix.</p>
+<pre><code class="language-bash">xslint --fix path/to/dir
+xslint --fix-suggestions path/to/dir
+</code></pre>
+<p>Only the exact span that was flagged is rewritten — the rest of the file is
+left byte-for-byte intact — and a fix is skipped rather than applied when the
+source no longer matches what it expects. Where two corrections cover the same
+piece of an expression — the redundant whitespace in <code>d[position()  =  1]</code> sits
+inside the predicate that becomes <code>d[1]</code> — only the wider one is applied, and
+the other is announced as skipped. Run <code>--fix</code> again to take care of whatever
+the first run left.</p>
+<p>Which corrections a check offers, in which of those two tiers, and why the
+construct is worth correcting at all, is on that check&#39;s own page in the
+<a href="../index.html">check catalog</a>.</p>
+<p>An expression xslint cannot parse draws one defect, from the validator, and the
+checks that read expressions say nothing further about it: a stylesheet whose
+real fault is a missing bracket comes back with that fault and not with a page
+of advice about text no processor accepts. A rule that matches the attribute
+structurally rather than reading the expression can still report there, and is
+never offered a correction. Fix the syntax and the rest of the feedback appears
+on the next run.</p>
+<p>Where the expression sits no longer decides whether you are told why. A bare
+one — a <code>select</code>, a <code>test</code>, and the rest listed under
+<code>invalid-xpath-expression</code> — a <strong>pattern</strong> such as <code>match</code>, and each expression
+the braces of an attribute value template, a text value template or a shadow
+attribute enclose are all parsed, and whichever of them is broken is reported as
+malformed. The report points at the character the parser stopped on rather than
+at the attribute holding it, so a fault buried in a long expression, or in the
+second of two <code>{...}</code> on one line, names its own column.</p>
+<p>Pass <code>--fix-dry-run</code> to see what would remain after fixing, without writing any
+file:</p>
+<pre><code class="language-bash">xslint --fix-dry-run path/to/dir
+</code></pre>
+
+  </div>
+</body>
+</html>

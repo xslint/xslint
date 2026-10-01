@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Configuration</title>
+  <style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    color: #24292e;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 24px 32px;
+  }
+  h1 { font-size: 2rem; font-weight: 600; margin-bottom: 4px; }
+  h2 { font-size: 1.3rem; font-weight: 600; margin: 20px 0 8px; }
+  a { color: #0366d6; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  p { margin: 8px 0; }
+  table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 0.9rem; }
+  th {
+    text-align: left;
+    padding: 10px 12px;
+    background: #f6f8fa;
+    border: 1px solid #e1e4e8;
+    font-weight: 600;
+  }
+  td { padding: 10px 12px; border: 1px solid #e1e4e8; vertical-align: top; }
+  tr:hover td { background: #f6f8fa; }
+  .severity-warning {
+    background: #fff8c5;
+    color: #9a6700;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .severity-error {
+    background: #ffebe9;
+    color: #cf222e;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .fix-safe {
+    background: #dafbe1;
+    color: #1a7f37;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .fix-suggestion {
+    background: #fbefff;
+    color: #8250df;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .preset-recommended {
+    background: #ddf4ff;
+    color: #0969da;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .fix-note {
+    background: #f6f8fa;
+    border-left: 4px solid #57606a;
+    padding: 8px 12px;
+    margin: 0 0 24px;
+    font-size: 0.9rem;
+  }
+  .back { display: inline-block; margin-bottom: 24px; font-size: 0.9rem; }
+  .meta { display: flex; gap: 12px; align-items: flex-start; margin: 12px 0 24px; flex-wrap: wrap; }
+  .xpath {
+    background: #f6f8fa;
+    border: 1px solid #e1e4e8;
+    border-radius: 4px;
+    padding: 6px 10px;
+    font-family: 'SFMono-Regular', Consolas, monospace;
+    font-size: 0.75rem;
+    word-break: break-all;
+    flex: 1;
+  }
+  pre { margin: 12px 0; border-radius: 6px; overflow-x: auto; }
+  code { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; }
+  .check-content h1 { font-size: 1.6rem; margin-bottom: 8px; }
+</style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+  <script>hljs.highlightAll();</script>
+</head>
+<body>
+  <a class="back" href="../index.html">← all checks</a>
+  <div class="check-content">
+<h1>Configuration</h1>
+<p>Project-wide settings live in a <code>.xslint.yml</code> file, discovered by walking up
+from the current directory (or passed with <code>--config &lt;path&gt;</code>). Command-line
+flags override the file, and the file overrides the built-in defaults.</p>
+<pre><code class="language-yaml"># .xslint.yml
+preset: all              # default for --preset: recommended or all
+rules:
+  short-names: off       # turn one check off
+  &quot;unused-*&quot;: error      # or a family, by glob
+exclude:
+  - &quot;test/**&quot;                           # globs to skip, relative to this file
+only:
+  - &quot;unused&quot;                            # default for --only
+max-warnings: 10                        # default for --max-warnings
+log-level: info                         # default for --log-level
+quiet: false                            # default for --quiet
+</code></pre>
+<ul>
+<li><strong><code>preset</code></strong> names the preset a run starts from, <code>recommended</code> unless it
+says <code>all</code>. Passing <code>--preset</code> replaces it.</li>
+<li><strong><code>rules</code></strong> maps a check name — or a glob such as <code>unused-*</code> — to
+<code>off</code>, <code>warning</code>, or <code>error</code>. <code>off</code> disables the check (like <code>--suppress</code>);
+<code>warning</code> and <code>error</code> re-grade its severity. A check named exactly also runs
+where the preset leaves it out, which is how one style check joins a
+<code>recommended</code> run; a glob re-grades only the checks already in the run, so
+<code>&quot;*&quot;: warning</code> or <code>&quot;unused-*&quot;: error</code> adds none.</li>
+<li><strong><code>exclude</code></strong> lists globs, relative to the config file&#39;s own directory, whose
+matching files are not linted. A pattern covering everything under a
+directory — <code>dir/**</code> — also stops the walk descending it, so an exclusion
+costs nothing rather than the walk it then throws away. A wildcard here reads
+a name opening with a dot like any other, so <code>dir/**</code> covers a
+<code>dir/.hidden/sheet.xsl</code> as much as the rest of what stands under <code>dir</code>.</li>
+<li><strong><code>only</code></strong> lists the substrings <code>--only</code> would take, narrowing every run to
+the checks they name. Passing <code>--only</code> replaces this list rather than adding
+to it, and a check <code>rules</code> turns <code>off</code> stays off whichever of the two chose it.</li>
+<li><strong><code>max-warnings</code></strong>, <strong><code>log-level</code></strong>, and <strong><code>quiet</code></strong> set the defaults for the
+matching command-line flags.</li>
+</ul>
+<p>Unknown top-level keys, rule names that match no check, and values of the wrong
+type (a non-numeric <code>max-warnings</code>, a non-list <code>exclude</code> or <code>only</code>, a
+non-boolean <code>quiet</code>, a non-string <code>log-level</code> or <code>preset</code>) are reported and
+ignored, so typos do not pass silently. A preset that does not exist fails the
+run instead, before a file is read, since a run over no checks would read as a
+clean report. An
+<code>exclude</code> glob is named the same way when a run walks a directory and the glob
+excludes nothing anywhere under it.</p>
+
+  </div>
+</body>
+</html>
