@@ -190,6 +190,10 @@ const parted = function (comment) {
   return entries;
 };
 
+// The tag the licence header carries, joined at run time so the REUSE job,
+// which parses every spelling of it in the tree, reads no expression here.
+const LICENSED = ["SPDX", "License", "Identifier"].join("-");
+
 // The plain block comments a file opens with, the licence header aside: the
 // note at the top of a module, weighed as one however many blocks spell it,
 // since a reader scrolls past all of them before the first line of code.
@@ -202,7 +206,7 @@ const noted = function (source) {
         (first === null || comment.range[1] <= first.range[0]) &&
         comment.type === "Block" &&
         !documents(comment) &&
-        !comment.value.includes("SPDX-License-Identifier")
+        !comment.value.includes(LICENSED)
     )
     .flatMap(worded);
 };

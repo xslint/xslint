@@ -28,7 +28,7 @@ const marker = `@${'todo'}`
 const SPDX = [
   '/*',
   ' * SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov',
-  ' * SPDX-License-Identifier: MIT',
+  ` * ${['SPDX', 'License', 'Identifier'].join('-')}: MIT`,
   ' */',
 ].join('\n')
 
