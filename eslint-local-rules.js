@@ -223,8 +223,9 @@ const LICENSED = [
 // The lines of the note a module opens with. The opening region is its
 // top-level statements up to and including the first that does not only open
 // the module; the note is every comment line in front of that last one that
-// shares no line with code, a directive being none, bar the licence header's
-// tags, a shebang, and a non-directive region statement's docblock (#1147).
+// shares no line with code, a directive being none, bar the first line of
+// each licence tag, a shebang, and a non-directive region statement's
+// docblock (#1147).
 const noted = function (source) {
   const directives = source.getInlineConfigNodes();
   const body = source.ast.body;
@@ -257,25 +258,21 @@ const noted = function (source) {
       )
       .flatMap((token) => [token.loc.start.line, token.loc.end.line])
   );
-  const header = source
-    .getAllComments()
-    .find((comment) => comment.type !== "Shebang");
-  return source
+  const said = source
     .getAllComments()
     .filter((comment) => comment.range[1] <= bound && !owned.includes(comment))
     .flatMap(function (comment) {
-      let said = worded(comment);
+      let lines = worded(comment);
       if (comment.type === "Shebang") {
-        said = said.slice(1);
+        lines = lines.slice(1);
       }
-      if (comment === header) {
-        said = said.filter(
-          (one) => !LICENSED.some((tag) => one.text.startsWith(tag))
-        );
-      }
-      return said;
+      return lines;
     })
     .filter((one) => !coded.has(one.at));
+  const licence = LICENSED.map((tag) =>
+    said.find((one) => one.text.startsWith(tag))
+  );
+  return said.filter((one) => !licence.includes(one));
 };
 
 // A project-local ESLint plugin, kept out of eslint.config.mjs so it can be

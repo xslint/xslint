@@ -264,6 +264,7 @@ tester.run(
       `${SPDX}\n/* eslint-disable no-console -- The console is output. */\n/*\n${lines(9)} */\nconsole.log(1)`,
       `${SPDX}\n/*\n${lines(8)} */\nconst alpha = require('./alpha') // reads the stylesheets\nconst beta = require('./beta') // reads the stylesheets\nconst gamma = require('./gamma') // reads the stylesheets\nconst one = 1`,
       `${SPDX}\n/*\n${lines(8)} */\nconst {\n  alpha, // the first\n  beta, // the second\n  gamma, // the third\n} = require('./x')\nconst one = 1`,
+      `// ${['SPDX', 'FileCopyrightText'].join('-')}: Copyright (c) 2025-2026 Max Trunnikov\n// ${['SPDX', 'License', 'Identifier'].join('-')}: MIT\n/*\n${lines(10)} */\nconst one = 1`,
       {
         code: `${SPDX}\n/*\n${lines(12)} */\nconst one = 1`,
         options: [{top: 12}],
@@ -301,6 +302,10 @@ tester.run(
       {
         code: `${SPDX.slice(0, -4)}\n${lines(11)} */\nconst one = 1`,
         errors: [{messageId: 'noted', line: 14, data: {max: 10, spent: 11}}],
+      },
+      {
+        code: `${SPDX.split('\n').slice(0, 2).join('\n')}\n${` * ${['SPDX', 'FileCopyrightText'].join('-')}: why the walk is paid once\n`.repeat(40)}${SPDX.split('\n').slice(2).join('\n')}\nconst one = 1`,
+        errors: [{messageId: 'noted', line: 13, data: {max: 10, spent: 40}}],
       },
       {
         code: `${SPDX}\n'use strict'\n/*\n${lines(11)} */\nconst one = 1`,

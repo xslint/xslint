@@ -118,4 +118,17 @@ describe('eslint-config', function() {
       ].join(' '),
     )
   })
+  it('reports a module importing one side effect twice', async function() {
+    assert.ok(
+      (await new ESLint({cwd: ROOT}).lintText(
+        `import 'fs' // prose\nimport 'fs' // prose\nexport const one = 1\n`,
+        {filePath: path.join(SOURCES, 'repeated.mjs')},
+      ))[0].messages.some((one) => one.ruleId === 'no-duplicate-imports'),
+      [
+        'a side-effect import repeated goes unreported, so each copy buys',
+        'the note a module opens with a trailing comment and a docblock',
+        'the ten-line cap never charges (#1147)',
+      ].join(' '),
+    )
+  })
 })

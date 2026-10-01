@@ -235,6 +235,7 @@ export default defineConfig([
       "jsdoc/reject-any-type": "off",
       "@stylistic/space-infix-ops": "error",
       "no-ternary": "error",
+      "no-duplicate-imports": "error",
       "id-length": ["error", { min: 2 }],
       "no-restricted-syntax": ["error", ...RESTRICTED]
     }

@@ -225,12 +225,12 @@ a block cannot hold as a `/* */` beside it either — such prose is cut and not
 moved, the dearest chain of guides standing near `LOADED` and reddening
 well under it, so a guide is no place to put it either and the ticket number
 left standing in the surviving sentence is what keeps a derivation
-recoverable. Nothing weighed that `/* */` either until #1147, and thirty files
-had come to open with one past ten lines, `src/grammar.js` with 243: the note a
+recoverable. Nothing weighed that `/* */` until #1147, and thirty files had
+come to open with one past ten lines, `src/grammar.js` with 243: the note a
 module opens with, every comment line above its first statement past the
 directives and imports that shares no line with code but a directive, an ESLint
-directive's included, bar each import's docblock and the licence header's tags,
-now stops at ten.
+directive's included, bar the docblock of each import and of that statement and
+the first line of each licence tag, now stops at ten.
 
 A parameter a caller may leave out therefore says so in the signature, with a
 default — `fix = undefined` on `defect` in `src/checks.js`. A JSDoc `[fix]`
