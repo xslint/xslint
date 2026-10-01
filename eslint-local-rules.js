@@ -222,16 +222,6 @@ const textual = function (node) {
   );
 };
 
-// Whether a target is a name or a chain of plain property reads off one.
-const plain = function (node) {
-  return (
-    node.type === "Identifier" ||
-    (node.type === "MemberExpression" &&
-      !node.computed &&
-      plain(node.object))
-  );
-};
-
 // Whether a value is a named function expression, which evaluates nothing and
 // keeps its name wherever it is written, so the object of a property target
 // read before it cannot tell the difference.
@@ -291,7 +281,6 @@ module.exports = {
               next.type === "ExpressionStatement" &&
               next.expression.type === "AssignmentExpression" &&
               next.expression.operator === "=" &&
-              plain(next.expression.left) &&
               (next.expression.left.type === "Identifier" ||
                 inert(declared.init))
             ) {

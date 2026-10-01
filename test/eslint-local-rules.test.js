@@ -64,6 +64,8 @@ tester.run(
       ['carried', 'class A { static { const one = make(); other = one } }'],
       ['carried', 'const one = function named() {}; module.exports = one'],
       ['carried', 'const one = function a() {}; registry.field.inner = one'],
+      ['carried', 'const one = function named() {}; registry[slot()] = one'],
+      ['carried', 'const one = function named() {}; slot().field = one'],
     ].map(([messageId, code]) => ({code, errors: [{messageId}]})),
   },
 )
