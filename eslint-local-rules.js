@@ -190,10 +190,12 @@ const parted = function (comment) {
   return entries;
 };
 
-// Whether a top-level statement only brings a module in, a require binding or
-// an import, which a note standing below it still opens the module above.
-const importing = function (statement) {
-  let verdict = statement.type === "ImportDeclaration";
+// Whether a top-level statement only opens a module, a directive such as
+// 'use strict', a require binding or an import, which a note below it still
+// opens the module above.
+const opening = function (statement) {
+  let verdict =
+    statement.type === "ImportDeclaration" || Boolean(statement.directive);
   if (statement.type === "VariableDeclaration") {
     verdict = statement.declarations.every(function (declarator) {
       let init = declarator.init;
@@ -211,18 +213,34 @@ const importing = function (statement) {
   return verdict;
 };
 
-// The lines of the note a module opens with: every plain or line comment in
-// front of its first statement past the imports, weighed as one however many
-// comments spell it, the licence header's own lines aside (#1147).
+// Whether a comment speaks to a machine rather than a reader: a shebang, or a
+// directive to ESLint itself.
+const directing = function (comment) {
+  return (
+    comment.type === "Shebang" || /^eslint(-|[\t\n\r ]|$)/u.test(comment.value.trim())
+  );
+};
+
+// The lines of the note a module opens with: every comment in front of its
+// first statement past the opening ones, weighed as one however many comments
+// spell it, bar that statement's own docblock, what a machine reads, and the
+// licence header's own lines (#1147).
 const noted = function (source) {
-  const code = source.ast.body.find((statement) => !importing(statement));
+  const code = source.ast.body.find((statement) => !opening(statement));
   let bound = Infinity;
+  let own = null;
   if (code) {
     bound = code.range[0];
+    own = source.getCommentsBefore(code).at(-1) ?? null;
   }
   return source
     .getAllComments()
-    .filter((comment) => comment.range[1] <= bound && !documents(comment))
+    .filter(
+      (comment) =>
+        comment.range[1] <= bound &&
+        !directing(comment) &&
+        !(comment === own && documents(comment))
+    )
     .flatMap(worded)
     .filter((one) => !one.text.startsWith("SPDX-"));
 };

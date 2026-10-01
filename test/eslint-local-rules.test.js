@@ -231,6 +231,9 @@ tester.run(
       `const one = 1\n/*\n${lines(12)} */\nconst two = 2`,
       `const one = require('./one')\nconst two = 2\n${'// Line.\n'.repeat(12)}const three = 3`,
       `${SPDX}\n/*\n${lines(10)} */`,
+      `#!/usr/bin/env node\n${SPDX}\n/*\n${lines(10)} */\nconst one = 1`,
+      `${SPDX}\n/* eslint-disable no-console */\n/*\n${lines(10)} */\nconst one = 1`,
+      `${SPDX}\n/*\n${lines(10)} */\n/**\n * One.\n */\nconst one = 1`,
       {
         code: `${SPDX}\n/*\n${lines(12)} */\nconst one = 1`,
         options: [{top: 12}],
@@ -268,6 +271,14 @@ tester.run(
       {
         code: `${SPDX.slice(0, -4)}\n${lines(11)} */\nconst one = 1`,
         errors: [{messageId: 'noted', line: 14}],
+      },
+      {
+        code: `${SPDX}\n'use strict'\n/*\n${lines(11)} */\nconst one = 1`,
+        errors: [{messageId: 'noted', line: 17}],
+      },
+      {
+        code: `${SPDX}\n/**\n * One.\n * Two.\n */\n/*\n${lines(10)} */\nconst one = 1`,
+        errors: [{messageId: 'noted', line: 18}],
       },
       {
         code: `${SPDX}\n/*\n${lines(4)} */`,
