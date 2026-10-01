@@ -132,7 +132,7 @@ const UNIMPORTED = {
   'grunt-cli': 'the command that runs it',
   'grunt-eslint': 'a task the Gruntfile loads by name',
   'grunt-mocha-cli': 'a task the Gruntfile loads by name',
-  'patch-package': 'the postinstall step, run as a command',
+  'patch-package': 'the prepare step, run as a command',
 }
 
 /**
@@ -198,12 +198,24 @@ const packaged = function(specifier) {
 }
 
 /**
- * Every package this repository's own JavaScript names, node's own excluded.
+ * Every JavaScript file the package hands a user, which is what `files` in
+ * the manifest names and nothing beside it.
+ * @return {Array.<string>} - The paths, in no particular order
+ */
+const published = function() {
+  return manifest.files
+    .flatMap((dir) => allFilesFrom(path.join(ROOT, dir)))
+    .filter((file) => file.endsWith('.js') || file.endsWith('.mjs'))
+}
+
+/**
+ * Every package some JavaScript files name, node's own excluded.
+ * @param {Array.<string>} files - The files to read
  * @return {Array.<string>} - The names, sorted, without repetition
  */
-const imported = function() {
+const imported = function(files) {
   const names = new Set()
-  for (const file of owned()) {
+  for (const file of files) {
     for (const found of fs.readFileSync(file, 'utf-8').matchAll(NAMED)) {
       const specifier = found[1] ?? found[2] ?? found[3]
       if (!specifier.startsWith('.') && !specifier.startsWith('/')) {
@@ -321,7 +333,7 @@ describe('manifest', function() {
   })
   it('declares every package its own JavaScript names', function() {
     assert.deepEqual(
-      imported().filter((name) => !(name in DECLARED)),
+      imported(owned()).filter((name) => !(name in DECLARED)),
       [],
       [
         'this repository imports a package it declares nowhere, so what',
@@ -353,11 +365,24 @@ describe('manifest', function() {
         )
       })
   })
+  it('loads every runtime dependency from what it publishes', function() {
+    assert.deepEqual(
+      Object.keys(manifest.dependencies)
+        .filter((name) => !imported(published()).includes(name)),
+      [],
+      [
+        'a runtime dependency is loaded by nothing the package publishes, so',
+        'every user installs it and its tree for nothing: patch-package ran',
+        'as postinstall on each install while no patch it applies ships',
+        '(#1150). Declare it under devDependencies',
+      ].join(' '),
+    )
+  })
   it('names every package it declares, or says what the package is for',
     function() {
       assert.deepEqual(
         Object.keys(DECLARED)
-          .filter((name) => !imported().includes(name))
+          .filter((name) => !imported(owned()).includes(name))
           .sort(),
         Object.keys(UNIMPORTED).sort(),
         [
