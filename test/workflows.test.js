@@ -10,10 +10,10 @@
  * and a job's `permissions:` revokes every scope it leaves out, so `WRITES`
  * and `READS` hold each action to the scope it needs, red from both sides.
  * Each reporter names a label of its own, so two schedules never pool in one
- * issue (#884). The `up` job must reach every version the README pins (#897),
- * each stamp must reach exactly one placeholder in `src/version.js` (#917),
- * every release-notes command names a title (#919), and the suite runs in
- * front of the stamp, which would otherwise blind those gates (#946).
+ * issue (#884), and every gate a schedule runs reports (#1087). The `up` job
+ * must reach every version the README pins (#897), each stamp one placeholder
+ * in `src/version.js` (#917), every release-notes command a title (#919), and
+ * the suite runs in front of the stamp, which would blind those gates (#946).
  */
 
 const {GAP, WHITESPACE} = require('../src/tokens')
@@ -114,6 +114,42 @@ const JOBS = allFilesFrom(WORKFLOWS)
  * @type {Array.<string>}
  */
 const LABELS = JOBS.flatMap((job) => job.labels)
+
+/**
+ * Each workflow a schedule starts, knowing which of its jobs report a failure
+ * and which they wait on. A schedule runs with nobody watching, so a red run
+ * that files nothing is a gate heard by nobody: `mutation.yml` failed seven
+ * weeks in a row and the Actions tab was the only place that said so (#1087).
+ * @type {Array.<{where: string, jobs: Array.<string>,
+ *   reporters: Array.<{name: string, needs: Array.<string>}>}>}
+ */
+const SCHEDULED = allFilesFrom(WORKFLOWS)
+  .filter((file) => file.endsWith('.yml'))
+  .map((file) => ({file: file, workflow: yaml.parsedFromFile(file)}))
+  .filter((one) => 'schedule' in (one.workflow.on ?? {}))
+  .map((one) => ({
+    where: path.basename(one.file),
+    jobs: Object.keys(one.workflow.jobs),
+    reporters: Object.entries(one.workflow.jobs)
+      .filter((entry) => (entry[1].steps ?? []).some(
+        (step) => (step.uses ?? '').split('@')[0] === REPORTER,
+      ))
+      .map((entry) => ({
+        name: entry[0],
+        needs: [].concat(entry[1].needs ?? []),
+      })),
+  }))
+
+/**
+ * Each scheduled workflow that is no gate, against what it does instead. A
+ * run of one of these opens a pull request or comments on one, and that is
+ * the whole of what anybody hears of it, red or green.
+ * @type {{[where: string]: string}}
+ */
+const UNGATED = {
+  'deps-sentinel.yml': 'nudges the dependency pull requests open elsewhere',
+  'up-xslint-action.yml': 'opens a pull request bumping the action version',
+}
 
 /**
  * The README as a reader copies from it, line by line. It is the one document
@@ -412,6 +448,32 @@ describe('workflows', function() {
         'fail comments on the first one\'s issue and two schedules keep one',
         'thread between them — which cannot be closed for either without',
         'losing the other',
+      ].join(' '),
+    )
+  })
+  it('reports the failure of every job a scheduled gate runs', function() {
+    assert.deepEqual(
+      SCHEDULED.filter((one) => !(one.where in UNGATED)).filter(
+        (one) => !one.reporters.some((reporter) => one.jobs.every(
+          (job) => job === reporter.name || reporter.needs.includes(job),
+        )),
+      ).map((one) => one.where),
+      [],
+      [
+        'a schedule runs a gate whose failure files no issue, so the run goes',
+        'red with nobody watching and the gate holds the tree to nothing',
+      ].join(' '),
+    )
+  })
+  it('exempts from reporting only a schedule that runs no gate', function() {
+    assert.deepEqual(
+      Object.keys(UNGATED).filter((where) => !SCHEDULED.some(
+        (one) => one.where === where && one.reporters.length === 0,
+      )),
+      [],
+      [
+        'an exemption names a schedule that reports or runs no more, so it',
+        'stands for nothing and reads like a gate left quiet on purpose',
       ].join(' '),
     )
   })
