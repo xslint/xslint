@@ -967,7 +967,7 @@ the 22 and could only ever ask whether the string appeared.
 ## User configuration
 
 - **Suppress**: `xslint --suppress=<rule-substring>` matches names across every
-  validator and linter.
+  validator and linter; either flag splits its value on commas (#1161).
 - **Only**: `--only=<rule-substring>` (or `only:`, which the flag replaces)
   reports only the checks it names; a suppression outranks it (#1030).
 - **Preset**: `--preset` (or `preset:`) names where a run starts, `recommended`
