@@ -23,13 +23,17 @@ Correct:
   <!--body-->
 </xsl:template>
 ```
+
 or:
+
 ```xsl
 <xsl:template name="oo">
   <!--body-->
 </xsl:template>
 ```
+
 or:
+
 ```xsl
 <xsl:template name="oo" match="o/o">
   <!--body-->
