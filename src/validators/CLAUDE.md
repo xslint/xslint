@@ -13,8 +13,8 @@ answers stands under `src/helpers.js` and `src/source.js` in `src/CLAUDE.md` (#8
 
 What it hands on is the stylesheet a processor compiles, not the one written: an element whose
 `use-when` is false before anything is evaluated — `false()`, `()`, a numeric literal equal to
-zero or an empty string literal (#1057) — in any of the four spellings an XSLT element or a literal
-result element gives it, is removed with everything under it. A selector judging the text as written
+zero or an empty string literal (#1057) — in any of the three spellings an XSLT element or a literal
+result element gives it, a shadow being an XSLT element's alone (#1117), is removed with everything under it. A selector judging the text as written
 reported an `empty-choose` on a `choose` Saxon-HE 12.5 never compiles, and stayed quiet on one whose
 only `when` it excludes, which Saxon refuses as XTSE0010. The attribute is XSLT's from 2.0 on, at
 the version in force, and a shadow at every version, only a 3.0 processor reading one (#1114):
