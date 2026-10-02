@@ -19,3 +19,15 @@ jobs:
           node-version: 22
       - run: npm install
       - run: npx stryker run
+  report-fail:
+    name: Create issue on failure
+    needs: mutation
+    if: failure() && github.event.pull_request == null
+    runs-on: ubuntu-24.04
+    permissions:
+      issues: write
+    steps:
+      - uses: jayqi/failed-build-issue-action@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          label-name: mutation failed
