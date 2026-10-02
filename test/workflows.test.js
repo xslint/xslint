@@ -5,15 +5,14 @@
 
 /*
  * Every job granted the scope its own steps write with, and left the scope
- * they read with. A reporter whose token cannot write is a gate heard by
- * nobody: both nightlies and `deps-sentinel.yml` died that way (#826, #856),
- * and a job's `permissions:` revokes every scope it leaves out, so `WRITES`
- * and `READS` hold each action to the scope it needs, red from both sides.
- * Each reporter names a label of its own, so two schedules never pool in one
- * issue (#884). The `up` job must reach every version the README pins (#897),
- * each stamp must reach exactly one placeholder in `src/version.js` (#917),
- * every release-notes command names a title (#919), and the suite runs in
- * front of the stamp, which would otherwise blind those gates (#946).
+ * they read with: a reporter whose token cannot write is a gate heard by
+ * nobody, and `WRITES` and `READS` hold each action to its scope, red from
+ * both sides (#826, #856). Each reporter names a label of its own (#884), no
+ * checker runs with `fix` on, repairing what it should refuse (#701), the `up`
+ * job reaches every version the README pins (#897), each stamp reaches one
+ * placeholder in `src/version.js` (#917), every release-notes command names a
+ * title (#919), and the suite runs in front of the stamp, which would
+ * otherwise blind those gates (#946).
  */
 
 const {GAP, WHITESPACE} = require('../src/tokens')
@@ -89,7 +88,7 @@ const granting = function(workflow, job) {
  * steps run, what it may write and which label it reports under. A permission
  * is granted to a job and needed by a step, so neither half answers on its own.
  * @type {Array.<{where: string, uses: Array.<string>, labels: Array.<string>,
- *   granted: function(string): string}>}
+ *   repairs: Array.<string>, granted: function(string): string}>}
  */
 const JOBS = allFilesFrom(WORKFLOWS)
   .filter((file) => file.endsWith('.yml'))
@@ -104,6 +103,9 @@ const JOBS = allFilesFrom(WORKFLOWS)
       labels: (entry[1].steps ?? [])
         .filter((step) => (step.uses ?? '').split('@')[0] === REPORTER)
         .map((step) => (step.with ?? {})['label-name'] ?? ''),
+      repairs: (entry[1].steps ?? [])
+        .filter((step) => String((step.with ?? {}).fix) === 'true')
+        .map((step) => step.uses ?? step.name ?? ''),
       granted: granting(workflow, entry[1]),
     }))
   })
@@ -415,6 +417,19 @@ describe('workflows', function() {
       ].join(' '),
     )
   })
+  it('runs no checker that repairs the checkout instead of failing on it',
+    function() {
+      assert.deepStrictEqual(
+        JOBS.filter((job) => job.repairs.length > 0)
+          .map((job) => `${job.where}: ${job.repairs.join(', ')}`),
+        [],
+        [
+          'cannot run a checker with fix on, which rewrites a violation in a',
+          'checkout nobody commits and exits on what is left, so every',
+          'violation it can repair passes in perpetuity (#701)',
+        ].join(' '),
+      )
+    })
   it('holds no action the tree has stopped running', function() {
     assert.deepEqual(
       Object.keys(WRITES).concat(Object.keys(READS)).filter(

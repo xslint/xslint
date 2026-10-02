@@ -23,6 +23,7 @@ Correct:
 ```
 
 or:
+
 ```xsl
 <xsl:variable name="Lord Byron">
   1788-1824
@@ -30,6 +31,7 @@ or:
 ```
 
 or:
+
 ```xsl
 <xsl:param name="William Shakespeare">
   1564-1616
@@ -37,6 +39,7 @@ or:
 ```
 
 or:
+
 ```xsl
 <xsl:with-param name="Robert Burns">
   1759-1796
@@ -44,6 +47,7 @@ or:
 ```
 
 or:
+
 ```xsl
 <xsl:attribute-set name="font">
   <xsl:attribute name="fname"> 
@@ -53,6 +57,7 @@ or:
 ```
 
 or:
+
 ```xsl
 <xsl:comment>
   Text of comment.
@@ -60,6 +65,7 @@ or:
 ```
 
 or:
+
 ```xsl
 <xsl:processing-instruction name="xml-stylesheet">
     href="style.css" type="text/css"
@@ -67,6 +73,7 @@ or:
 ```
 
 or:
+
 ```xsl
 <xsl:message terminate="yes">
   text of message
@@ -74,6 +81,7 @@ or:
 ```
 
 or:
+
 ```xsl
 <ul>
   <li>William Shakespeare</li>
@@ -83,6 +91,7 @@ or:
 ```
 
 or:
+
 ```xsl
 <ex:note xmlns:ex="https://example.com">
   some text
