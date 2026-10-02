@@ -1,0 +1,31 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: text-outside-xsl-text
+# The text of an xsl:namespace is the namespace URI, the text of an xsl:value-of
+# or an xsl:sequence the value it yields, and the text of an xsl:assert the
+# error it raises, exactly as the text of an xsl:attribute is the attribute
+# value. None of them is loose text, wherever it stands, while the instruction
+# holding one of them and the instruction one of them holds still answer.
+found:
+  amount: 3
+  positions: [ [ 5, 7 ], [ 9, 21 ], [ 12, 7 ] ]
+  fixes:
+    [ "<xsl:text>loose</xsl:text>", "<xsl:text>inner</xsl:text>",
+      "<xsl:text>built</xsl:text>" ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="3.0" id="s">
+    <xsl:template match="/">
+      <out>
+        <xsl:if test="alpha">loose<xsl:namespace name="p">urn:bravo</xsl:namespace>
+          <xsl:value-of>charlie</xsl:value-of>
+        </xsl:if>
+        <xsl:sequence>delta</xsl:sequence>
+        <xsl:sequence><xsl:if test="echo">inner</xsl:if>foxtrot</xsl:sequence>
+        <xsl:assert test="golf">hotel</xsl:assert>
+        <xsl:value-of separator=", ">india<xsl:namespace name="q">urn:juliet</xsl:namespace>kilo</xsl:value-of>
+        <xsl:element name="{@lima}">built</xsl:element>
+      </out>
+    </xsl:template>
+  </xsl:stylesheet>

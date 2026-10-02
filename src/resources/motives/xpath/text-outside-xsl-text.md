@@ -1,9 +1,12 @@
 # Literal text outside `xsl:text`
 
 Literal text (other than whitespace) must not sit directly inside an `xsl:`
-instruction. Wrap it in `xsl:text`. The text can also be wrapped in
-`xsl:variable`, `xsl:param`, `xsl:with-param`, `xsl:attribute`,`xsl:comment`,
-`xsl:processing-instruction` and `xsl:message`. You can also use text inside
+instruction. Wrap it in `xsl:text`. An instruction whose content is the value
+it builds takes text directly, since there the text is that value rather than
+output standing loose beside the instructions: `xsl:variable`, `xsl:param`,
+`xsl:with-param`, `xsl:attribute`, `xsl:namespace`, `xsl:comment`,
+`xsl:processing-instruction`, `xsl:message`, `xsl:assert`, and the content
+forms of `xsl:value-of` and `xsl:sequence`. You can also use text inside
 html-tags or in other non-XSL elements.
 
 Incorrect:
@@ -50,6 +53,16 @@ or:
     Arial 
   </xsl:attribute>
 </xsl:attribute-set>
+```
+
+or:
+```xsl
+<xsl:namespace name="dc">http://purl.org/dc/elements/1.1/</xsl:namespace>
+```
+
+or:
+```xsl
+<xsl:value-of>Robert Burns</xsl:value-of>
 ```
 
 or:

@@ -68,7 +68,7 @@ scope declares, which a processor refuses outright, and 16 stylesheet functions
 nothing calls. Another 141 are imports and includes naming a file the
 checkout does not hold, most of them modules a build generates first, so they
 are worth a look rather than a patch. Run with `--preset all`, the same
-stylesheets draw **11,161 findings across 45 different checks in 867
+stylesheets draw **11,159 findings across 45 different checks in 867
 stylesheets**, most of them style.
 
 Every figure above is read off the reports committed under

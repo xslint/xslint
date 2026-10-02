@@ -3,8 +3,6 @@ anttools/xspec/coverage-report.xsl:11:1 not-using-output
 anttools/xspec/coverage-report.xsl:14:3 leaking-result-namespace suggestion "xs saxon test"
 anttools/xspec/coverage-report.xsl:42:3 unused-variable
 anttools/xspec/coverage-report.xsl:80:3 unused-variable
-anttools/xspec/coverage-report.xsl:124:3 text-outside-xsl-text
-anttools/xspec/coverage-report.xsl:139:3 text-outside-xsl-text
 anttools/xspec/coverage-report.xsl:239:53 unabbreviated-axis fix ".."
 anttools/xspec/coverage-report.xsl:278:1 text-outside-xsl-text suggestion "<xsl:text>ignored</xsl:text>"
 anttools/xspec/coverage-report.xsl:280:1 text-outside-xsl-text suggestion "<xsl:text>ignored</xsl:text>"
