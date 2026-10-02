@@ -82,3 +82,15 @@
   input: |-
     <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0"><xsl:param name="width" _use-when="false()"/></xsl:stylesheet>
   answer: true
+- name: keeps a literal result element whose namespaced underscore use-when is false
+  asked: excluded
+  input: |-
+    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="3.0"><xsl:template match="/"><div xsl:_use-when="false()"/></xsl:template></xsl:stylesheet>
+  at: //div
+  answer: false
+- name: calls a literal result element carrying a namespaced underscore use-when unconditional
+  asked: conditional
+  input: |-
+    <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="3.0"><xsl:template match="/"><div xsl:_use-when="$debug"/></xsl:template></xsl:stylesheet>
+  at: //div
+  answer: false

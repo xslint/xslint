@@ -4,7 +4,7 @@
  */
 
 /*
- * What a `use-when` does to an element, in the four spellings — the plain
+ * What a `use-when` does to an element, in the three spellings — the plain
  * attribute from 2.0 on, the shadow at any version (#1114) — asked in one
  * place so the pruning and the checks cannot part on which spelling counts
  * where. `excluded` is certain, and `src/validators/xsl-validator.js` prunes
@@ -41,13 +41,15 @@ const falsy = function(condition) {
 
 /**
  * The `use-when` an element carries, plain and shadowed: an XSLT element
- * spells it unprefixed, any other element under the XSLT namespace (#1048).
+ * spells it unprefixed, any other element under the XSLT namespace (#1048)
+ * and never as a shadow, which only an XSLT element's own attribute has, so
+ * a namespaced `_use-when` is a name no processor accepts (#1117).
  * @param {Element} element - The element to read
  * @return {{plain: string, shadowed: string}} - Both spellings, empty if absent
  */
 const spellings = function(element) {
   let plain = element.getAttributeNS(XSLT, 'use-when')
-  let shadowed = element.getAttributeNS(XSLT, '_use-when')
+  let shadowed = ''
   if (element.namespaceURI === XSLT) {
     plain = element.getAttribute('use-when')
     shadowed = element.getAttribute('_use-when')
