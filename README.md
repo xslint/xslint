@@ -151,10 +151,13 @@ $ xslint --version
 Run `xslint` with no arguments to check every `.xsl` and `.xslt` file under the
 current directory, or name the files and directories to check. Pick the preset
 with `--preset`, silence checks by substring with `--suppress`, and ask one
-question of a whole tree with `--only`:
+question of a whole tree with `--only`. Either flag takes a comma-separated
+list as readily as a repeat:
 
 ```bash
 xslint --preset all --suppress=short-names path/to/dir
+xslint --only=short-names,unused path/to/dir
+xslint --only=short-names --only=unused path/to/dir
 ```
 
 The [usage guide][usage] covers how a directory is walked, what
