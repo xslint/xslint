@@ -42,7 +42,7 @@ const STEP = 4
  * growth is the assertion, #755's regression having been a constant growth
  * ranks backwards. A share is of the whole run, so a stage made cheaper lifts
  * every other entry and the table is re-derived by the ratio of the dearest
- * readings (#777, #783, #800, #784, #811, #845); `test/CLAUDE.md` holds them.
+ * readings (#777, #783, #800, #784, #811, #845), and those tickets hold them.
  * @type {{[stage: string]: number}}
  */
 const SHARES = {
@@ -699,22 +699,6 @@ describe('scaling', function() {
         'the prose is the half a session reads before it touches either one,',
         'so a share left behind by the re-derivation that moved it is a bar',
         'loosened by nobody',
-      ].join(' '),
-    )
-  })
-  it('states every bar of those tables in the guide read first', function() {
-    const prose = fs.readFileSync(path.join(ROOT, 'CLAUDE.md'), 'utf-8')
-      .split(GAPS).join(' ')
-    assert.deepEqual(
-      Object.keys(QUOTED).filter(
-        (name) => !new RegExp(`\`${name}\` at ${shaped(QUOTED[name])}`)
-          .test(prose),
-      ),
-      [],
-      [
-        'a bar stands in no guide every turn loads, so the gate above holds it',
-        'to nothing and a session meets it for the first time in the file',
-        'that sets it',
       ].join(' '),
     )
   })

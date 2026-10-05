@@ -4,16 +4,11 @@
  */
 
 /*
- * The size and the shape of the guides themselves, the one gate whose
- * subject is this repository's own documentation (#821). What a turn loads
- * is a chain, the root guide and the guide of every directory down to the
- * file it touches, so the bar weighs the dearest chain against `LOADED`
- * less `ROOM`, which reddens with room still left to answer it (#844). What
- * answers a chain reaching it is a derivation cut to the ticket that derived
- * it, never a bar widened to fit (#1147). The index answers to the tree
- * from both sides, a note answers to the index and to its own directory, and
- * the counts a guide states of a list in the code are held to that list (#825,
- * #895).
+ * The guides themselves, the one gate whose subject is this repository's own
+ * documentation: `CLAUDE.md` as nothing but the import of `AGENTS.md`, no guide
+ * below the root, each guide within its cap, the index held to the tree from
+ * both sides, and the counts a guide states of a list held to that list
+ * (#825, #895, #1168).
  */
 
 const {allFilesFrom} = require('../src/helpers')
@@ -22,10 +17,11 @@ const {kinds} = require('../src/resources/checks.json')
 const {splitOf} = require('../src/selectors')
 const {GAP} = require('../src/tokens')
 const {
-  ROOT, GUIDES, DOCUMENTS, LOADED, ROOM, NEARBY, slashed,
-  sized, worded, chained, loaded, indexed, noted, globbed,
+  ROOT, NESTED, CAPS, IMPORTED, DOCUMENTS, NEARBY, slashed,
+  worded, indexed, globbed,
 } = require('./guides')
 const path = require('path')
+const fs = require('fs')
 const assert = require('assert')
 
 /**
@@ -36,16 +32,6 @@ const assert = require('assert')
  * @type {Array.<string>}
  */
 const PROSE = ['src/attributes.js']
-
-/**
- * The most a day of ordinary work has added to the dearest chain since #823
- * gave that chain its room back, read over the 45 merges between then and #844.
- * A day is the unit because a relocation lands in about one, this tree taking
- * three to eight merges a day, so it is what a chain has to survive between
- * turning red and being answered.
- * @type {number}
- */
-const GROWN = 5298
 
 /**
  * The selectors a shared walk cannot serve as an axis, which is what
@@ -128,44 +114,36 @@ const NUMBERS = new Map([['no', 0]].concat(
 ))
 
 describe('guides', function() {
-  it('walks the tree for the guides standing beside the code', function() {
-    assert.ok(
-      GUIDES.length > 1,
+  it('holds nothing in CLAUDE.md but the import of AGENTS.md', function() {
+    assert.equal(
+      fs.readFileSync(path.join(ROOT, 'CLAUDE.md'), 'utf-8'),
+      IMPORTED,
       [
-        'cannot find a guide beside the code it is about, this walk having',
-        `found ${GUIDES.join(', ')} and nothing else — the derivation behind`,
-        'a module lives in the CLAUDE.md of its own directory since #821, so',
-        'a walk reaching only the root one leaves every claim in the others',
-        'judged by nobody',
+        'CLAUDE.md holds more than the import of AGENTS.md, so a Claude Code',
+        'session reads a rule no other agent sees — a rule goes in AGENTS.md',
       ].join(' '),
     )
   })
-  it('cannot come within reach of what a turn may load', function() {
+  it('stands no guide below the root', function() {
     assert.deepEqual(
-      GUIDES.filter((one) => loaded(one) > LOADED - ROOM).map(
-        (one) => `${one} loads ${loaded(one)} in ${
-          chained(one).map((each) => `${each} at ${sized(each)}`).join(' + ')}`,
-      ),
+      NESTED,
       [],
       [
-        `cannot load a chain of guides within ${ROOM} characters of the`,
-        `${LOADED} the harness warns at, a turn touching a file loading the`,
-        'root guide and the guide of every directory over it — the bar',
-        `stands at ${LOADED - ROOM} so that it reddens with room still left`,
-        'to answer it, what answers it being a derivation cut to the ticket',
-        'that derived it, and never a bar widened to fit what has grown past it',
+        'cannot keep a guide below the root, what is true of one module being',
+        'the note that module opens with and the map being ARCHITECTURE.md',
       ].join(' '),
     )
   })
-  it('keeps room enough to answer a chain that has reached the bar', function() {
-    assert.ok(
-      ROOM >= GROWN * 1.5 && ROOM <= GROWN * 2,
+  it('keeps every guide within its cap', function() {
+    assert.deepEqual(
+      [...CAPS].filter(
+        ([named, cap]) => fs.readFileSync(path.join(ROOT, named), 'utf-8')
+          .split('\n').length - 1 > cap,
+      ).map(([named, cap]) => `${named} past ${cap} lines`),
+      [],
       [
-        `cannot keep ${ROOM} characters under the bar against a dearest day`,
-        `of ${GROWN}: a margin under half again of it is one a single day of`,
-        'work crosses without warning, and one past twice it reddens a tree',
-        'that has room to spare, both of which are a bar that has stopped',
-        'being one',
+        'a guide stands past its cap, and what answers it is history cut to',
+        'the ticket that holds it, never a cap widened to fit',
       ].join(' '),
     )
   })
@@ -177,7 +155,7 @@ describe('guides', function() {
         [
           `the index names ${row}, which the tree holds nothing of — a path`,
           'that has moved or gone takes its reader nowhere, and the index is',
-          'the whole of what the root guide keeps in place of the notes',
+          'the whole of what the map keeps in place of the notes',
         ].join(' '),
       )
     }
@@ -191,39 +169,10 @@ describe('guides', function() {
       [],
       [
         'cannot leave a module out of the index, one line naming what it is',
-        'being the whole of what the root guide says about it — a module',
+        'being the whole of what the map says about it — a module',
         'named nowhere is one a reader meets first in the code',
       ].join(' '),
     )
-  })
-  it('holds every note a guide carries to a row of the index', function() {
-    const rows = indexed()
-    for (const guide of GUIDES) {
-      assert.deepEqual(
-        noted(guide)
-          .filter((one) => !rows.some((row) => globbed(row).test(one))),
-        [],
-        [
-          `${guide} notes a file the index does not name — the two are one map,`,
-          'so a note reachable only by opening the guide it sits in is a',
-          'derivation the root has stopped pointing at',
-        ].join(' '),
-      )
-    }
-  })
-  it('cannot note a file the guide does not stand above', function() {
-    for (const guide of GUIDES) {
-      assert.deepEqual(
-        noted(guide)
-          .filter((one) => !one.startsWith(`${path.dirname(guide)}/`)),
-        [],
-        [
-          `${guide} notes a file outside its own directory, where a reader`,
-          'opening that file loads some other guide — a note arrives with',
-          'the directory it sits in, so it goes where its own code goes',
-        ].join(' '),
-      )
-    }
   })
   it('counts the attribute lists as long as they are, where it counts them', function() {
     const claimed = new RegExp(
