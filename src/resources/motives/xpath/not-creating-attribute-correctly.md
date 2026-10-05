@@ -1,10 +1,13 @@
 # Not creating attribute correctly
 
-The attribute analog of `not-creating-element-correctly`. When an `xsl:attribute`
-with a static name sits on a literal result element and its value is simple — a
-single `xsl:value-of`, a single `xsl:text`, plain text, or empty — it can be
-written inline as a literal attribute, with an attribute value template for a
-computed value:
+An `xsl:attribute` with a static name and a simple value writes the same
+attribute a literal one does, so a stylesheet mixing the two sends its reader
+looking for the computation the instruction promises, and finds none. This is
+the attribute analog of `not-creating-element-correctly`, and one way to say
+one thing keeps such an attribute inline. When an `xsl:attribute` with a static
+name sits on a literal result element and its value is simple — a single
+`xsl:value-of`, a single `xsl:text`, plain text, or empty — it is written as a
+literal attribute, with an attribute value template for a computed value:
 
 ```xsl
 <td>

@@ -87,13 +87,15 @@ const written = function() {
 }
 
 /**
- * The principles the README states, one entry a list item of its section.
+ * The principles the README states, each entry a list item of its section
+ * and ending where the list does.
  * @return {Array.<string>} - The entries, empty where it states none
  */
 const principles = function() {
   return (document().match(/^## Principles\n(.*?)(?=^## )/ms) ?? ['', ''])[1]
     .split(/^- /m)
     .slice(1)
+    .map((entry) => entry.split('\n\n')[0])
 }
 
 describe('readme', function() {

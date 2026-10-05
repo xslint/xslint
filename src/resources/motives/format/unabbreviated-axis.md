@@ -5,11 +5,11 @@ mixes them makes every reader stop at a longhand to ask what it means that the
 short form would not. In an expression the answer is nothing:
 `child::chapter/child::section/attribute::id` selects exactly what
 `chapter/section/@id` selects. Meanwhile a search for `@id` misses the
-longhand, and a reviewer used to one spelling reads past the other. One way to
-say one thing is worth more than whichever way is chosen, and the short forms
-are the idiom nearly all XSLT is already written in, so they are the default
-here. A team that spells `child::` out on purpose, for emphasis, is better
-served by turning this check off than by mixing the two.
+longhand, and a reviewer used to one spelling reads past the other. Keeping to
+one spelling settles the question, and the short forms are the one to keep,
+being the idiom nearly all XSLT is already written in. A team that spells
+`child::` out on purpose, for emphasis, turns this check off and keeps to the
+longhand throughout.
 
 The abbreviations are defined by XPath itself and select precisely the same
 nodes as the longhand — in an expression. A `match` is not an expression but a

@@ -1,11 +1,12 @@
 # Redundant whitespace
 
 Whitespace the processor ignores gives one expression as many spellings as
-there are ways to space it. `foo(  a) = 'hello' ` and `foo(a) = 'hello'` are the
+there are ways to space it. `@type  = 'index' ` and `@type = 'index'` are the
 same test, yet a search for the one misses the other, and a commit that tidies
 the spacing buries the line that changed under the lines that did not. One way
-to say one thing keeps an expression to a single spelling, so this check flags
-whitespace that can be removed without changing what the expression selects.
+to say one thing asks for a single space wherever a line holds a gap and none
+at either end, so this check flags whitespace that can be removed without
+changing what the expression selects.
 
 A whitespace run is redundant when it is longer than a single space, or when it
 sits at the very start or end of the expression. Whitespace inside a string

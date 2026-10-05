@@ -57,8 +57,7 @@ one of them.
 
 ## Principles
 
-xslint holds itself to four principles, so a report rests on a reason rather
-than on taste:
+xslint holds itself to these principles, and each report rests on one of them:
 
 - **One way to say one thing.** Where XSLT offers two spellings of the same
   meaning, a codebase that keeps to one reads faster and hides fewer faults,
@@ -67,8 +66,8 @@ than on taste:
   [Prettier](https://prettier.io/docs/option-philosophy) and
   [Bugayenko](https://www.yegor256.com/2014/08/13/strict-code-quality-control.html)
   make for uniform code over any one favourite form.
-- **The processor decides.** Nothing a processor accepts is reported as an
-  error, because an error is what the
+- **The processor decides.** Nothing a processor of the declared version
+  accepts is reported as an error, because an error is what the
   [specification](https://www.w3.org/TR/xslt-30/#errors) says a processor
   refuses, and a linter refusing more teaches its users to ignore it.
 - **A safe fix never changes the output.** `--fix` runs where nobody reads the
@@ -79,14 +78,15 @@ than on taste:
 - **Advice stays inside the declared version.** No check asks for what the
   stylesheet's `version` cannot run, because that version names the oldest
   processor it has to load on, and a
-  [1.0 processor](https://www.w3.org/TR/xslt-10/#forwards) fails on a newer
-  construct the moment it runs it.
+  [1.0 processor](https://www.w3.org/TR/xslt-10/#forwards) tolerates a newer
+  construct only in a stylesheet declaring a newer version.
 
 Where XSLT has two spellings, the default is the idiom most XSLT code already
-uses, never the shorter one for its own sake: shorter names are read
-[slower](https://doi.org/10.1109/SANER.2017.7884623), not faster. A team that
-mixes forms on purpose, writing `record[child::*]` for emphasis, is better
-served by turning the check off in `.xslint.yml` than by arguing with it.
+uses, chosen for consistency. Brevity alone is no reason, since abbreviated
+identifiers have been measured to take
+[longer to comprehend](https://doi.org/10.1109/SANER.2017.7884623) than full
+words. A team that mixes forms on purpose, writing `record[child::*]` for
+emphasis, turns the check off in `.xslint.yml`.
 
 ## Proven on real code
 
