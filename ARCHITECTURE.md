@@ -5,11 +5,10 @@ why a piece is built the way it is lives in the ticket its code cites.
 
 ## Staging
 
-xslint is a CLI linter for XSL stylesheets. It runs in two stages.
-**Validators** establish that the input is valid; **linters** run only over what
-passed. Each validator partitions its input, handing the valid part on and
-reporting the rest, so one broken file or one malformed expression never hides
-the feedback on everything else, and one fault draws one defect.
+xslint lints XSL stylesheets in two stages. **Validators** establish that the
+input is valid; **linters** run only over what passed. Each validator hands the
+valid part on and reports the rest, so one broken file or malformed expression
+never hides the feedback on everything else, and one fault draws one defect.
 
 ```text
 src/index.mjs             CLI entry (commander.js, ESM)
@@ -26,17 +25,16 @@ src/index.mjs             CLI entry (commander.js, ESM)
       *-linter.js                code-based checks/format/*.yaml (one construct each)
 ```
 
-What reaches an expression linter is the `expressionsOf` records the XPath
-validator kept, never the attributes they hang off, so a refused expression
-reaches no check at all.
+An expression linter is handed the `expressionsOf` records the XPath validator
+kept, so a refused expression reaches no check at all.
 
-`lint(sources, {suppress, overrides}) => defects` in `src/xslint.js` is the
-whole staging as a pure function: no file I/O, no output, no exit, and the
-defects in one total order. The command-line `xslint(paths, options)` wraps it:
-it resolves config, reads the files, calls `lint`, applies `--fix`, reports, and
-sets `process.exitCode`. The package `main` re-exports `lint`, `fixed`,
-`settingsOf`, `stylesheetsOf` and `sourceOf` for the editor integrations
-(`xslint-lsp`, `xslint-jetbrains`). `src/index.mjs` imports the pipeline inside
+`lint(sources, {suppress, overrides, only, preset}) => defects` in
+`src/xslint.js` is the whole staging as a pure function: no file I/O, no
+output, no exit, and the defects in one total order. The command-line
+`xslint(paths, options)` wraps it: it resolves config, reads the files, calls
+`lint`, applies `--fix`, reports, and sets `process.exitCode`. The editor
+integrations (`xslint-lsp`, `xslint-jetbrains`) use what the package `main`
+re-exports, listed in the index. `src/index.mjs` imports the pipeline inside
 the command action, so `--version` and `--help` load none of it.
 
 Each linter is one `{name, run, checks}` entry in `LINTERS` or
@@ -53,8 +51,7 @@ stylesheet carries:
 - an XPath or pattern attribute of an XSLT element, whole, and one of the same
   names in the XSLT namespace on any other element (`xsl:use-when`);
 - each expression an attribute value template encloses in braces, offset to
-  where it starts inside the value;
-- each expression a text value template encloses, where the nearest
+  where it starts, and each a text value template encloses where the nearest
   `expand-text` is on;
 - a shadow attribute (`_select` for `select`), which overrules the plain one.
 
@@ -62,13 +59,13 @@ The namespace decides, never the name, so the `select` of a literal result
 element is text bound for the result tree and is left alone. `pattern` says
 which language the text is in: a rewrite legal in an expression can be a syntax
 error in a pattern. `version` is the version in force at the node, read from
-the nearest `version` or `xsl:version` above it.
+the element itself or its innermost ancestor declaring one: `version` (or
+`_version`) on an XSLT element other than `xsl:output`, `xsl:version` on any
+other element.
 
-The XPath namespace `xslint:` holds five functions `src/xpath.js` registers for
-selectors: `xslint:normalize-space` (XML's whitespace, not JavaScript's),
-`xslint:version`, `xslint:attribute` (an attribute's value in either spelling),
-`xslint:name` (an expanded name), and `xslint:conditional` (whether a
-`use-when` may drop an element).
+`src/xpath.js` registers five selector functions: `xslint:normalize-space`
+(XML's whitespace), `xslint:version`, `xslint:attribute` (a value in either
+spelling), `xslint:name` (an expanded name), and `xslint:conditional`.
 
 ## Checks
 
@@ -105,11 +102,12 @@ preset: recommended|all
 ```
 
 Without `reference`, a declaration is a defect when its `@name` matches no
-`usage` value reached from outside every declaration. With `reference`, every
+`usage` value reached from outside every declaration, or from one nothing
+names. With `reference`, every
 usage value is lexed as XPath and the name is looked for among what its tokens
 reference: a `call` is a name opening a bracket or behind a `#`, matched by URI,
 local name and arity; a `variable` is a name behind a `$`. `reachable: true`
-follows the call graph from outside every declaration; `scoped: true` counts
+follows the call graph from the same starting points; `scoped: true` counts
 usage only within the declaration's subtree or an importing file. Usage is
 followed across files, so a function a library declares and another file calls
 is never flagged.
@@ -164,9 +162,10 @@ test; `test/conformance.test.js` enforces the name, the motive and the pack.
 - **Served selectors.** A selector opening `//name`, `//(a | b)`, a union of
   those, an anchor in front of `//`, an attribute axis or a prefixed wildcard is
   served from the shared walk (`src/selectors.js`, `src/predicates.js`), with
-  only what the walk cannot answer sent to fontoxpath. A bare wildcard or a
-  positional predicate cannot be served, and such a selector goes on
-  `UNINDEXED` in `test/conformance.test.js`, held from both sides.
+  only what the walk cannot answer sent to fontoxpath. A selector whose axis is
+  the root itself, a bare wildcard, or a positional predicate cannot be served
+  and goes on `UNINDEXED` in `test/conformance.test.js`, held from both sides;
+  every cross-file selector must be served, with no table to exempt one.
 - **Fix with detection.** A declarative check's fix is a `node => fix` builder
   in `src/fixers.js`; a code-based linter attaches its `fix` to the defect.
   Declare `suggestion` unless the edit is deterministic and keeps semantics.
@@ -221,7 +220,8 @@ quadratic whose constant is still small at those sizes.
 - Comments `xslint-disable-next-line`, `xslint-disable-line` and
   `xslint-disable-file` take optional rule names; an unused one is reported.
 
-A defect is fixable when it carries `fix: {line, col, value, replacement}`.
+A defect is fixable when it carries `fix: {line, col, value, replacement,
+suggestion}`, `suggestion` stamped from the check's `fix:` tier.
 `--fix` applies the safe tier, `--fix-suggestions` the suggestions too, and
 `--fix-dry-run` writes nothing. No fix is offered on an element holding an
 expression the grammar refuses. `src/fixer.js` locates each fix by decode-walking

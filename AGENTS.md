@@ -35,7 +35,8 @@ npm run coverage                                     # 100% branch gate
 
 Work in `npm run fast`, finish on `npm test`. CI runs more than `npm test`:
 `coverage`, `xcop`, `copyrights` (an SPDX header on every source file),
-`markdown-lint`, `yamllint`, `typos`, `pdd`, and `fixtures`. A green local
+`reuse`, `actionlint`, `markdown-lint`, `yamllint`, `typos`, `pdd`, and
+`fixtures`. A green local
 `npm test` is not a green CI, so run `npm run coverage` and the xcop suite too.
 
 ## Code style
@@ -63,14 +64,16 @@ ESLint (`eslint.config.mjs` and `eslint-local-rules.js`) refuses each of these.
   `src/xslint.js`, never by `.xsl` or `.xslt` spelled into a comparison.
 - `expression` names the text of an expression, never the node carrying it.
   Pass the `found` record, never a node and its text as two arguments.
-- Nothing depending on the outer loop alone is computed in the inner one.
+- `referencing` is never called inside a `usages` scan in
+  `src/linters/corpus-linter.js`; build the index once with `indexed`.
 - Set `process.exitCode`; never call `process.exit`.
 - No linter imports another, no validator another, and only `src/xslint.js`
   requires either directory.
 - A linter narrowing to one attribute calls `whole(found, name)`, never a
   hand-written `//@name`.
-- A version is read with `versionOf` in `src/xsl-version.js` and gated with
-  `since`, never with `getAttribute('version')`.
+- A linter reads the version off `found.version` and gates it with `since`;
+  `versionOf` is called only where a record is derived, and
+  `getAttribute('version')` never.
 
 ## Checks
 

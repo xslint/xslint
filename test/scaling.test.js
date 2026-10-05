@@ -535,11 +535,11 @@ const settled = function() {
 }
 
 /**
- * Every bar of this file as a guide must spell it, the number carrying the
+ * Every bar of this file as a guide would quote it, the number carrying the
  * unit it is quoted in: a share is a percentage of a run and a growth a
- * multiple of the middle stage's. The tables above are re-derived whenever a
- * stage made cheaper moves the denominator, while the prose saying what they
- * hold stands in another file, so the two drift unwatched (#821).
+ * multiple of the middle stage's. The guides name the bars and quote none,
+ * since a table re-derived beside prose quoting it drifts unwatched; this is
+ * what holds a quote that creeps back to the table (#821, #1168).
  * @type {{[name: string]: string}}
  */
 const QUOTED = Object.assign(
@@ -570,8 +570,7 @@ const shaped = function(bar) {
 
 /**
  * Every bar a guide quotes at a number this file does not hold. A gap collapses
- * first, because a bar is prose and prose wraps: the root guide spells one of
- * them across a line ending.
+ * first, because a bar is prose and prose wraps across a line ending.
  * @param {string} guide - Path of the guide from the repository root
  * @return {Array.<string>} - One line per bar quoted wrongly
  */
