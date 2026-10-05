@@ -7,9 +7,8 @@ short form would not. In an expression the answer is nothing:
 `chapter/section/@id` selects. Meanwhile a search for `@id` misses the
 longhand, and a reviewer used to one spelling reads past the other. Keeping to
 one spelling settles the question, and the short forms are the one to keep,
-being the idiom nearly all XSLT is already written in. A team that spells
-`child::` out on purpose, for emphasis, turns this check off and keeps to the
-longhand throughout.
+being the idiom nearly all XSLT is already written in. A team that mixes the
+forms on purpose, writing `record[child::*]` for emphasis, turns this check off.
 
 The abbreviations are defined by XPath itself and select precisely the same
 nodes as the longhand — in an expression. A `match` is not an expression but a
