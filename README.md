@@ -81,11 +81,8 @@ xslint holds itself to these principles, and each report rests on one of them:
   [1.0 processor](https://www.w3.org/TR/xslt-10/#forwards) tolerates a newer
   construct only in a stylesheet declaring a newer version.
 
-Where XSLT has two spellings, the default is the idiom most XSLT code already
-uses, chosen for consistency. Brevity alone is no reason, since abbreviated
-identifiers have been measured to take
-[longer to comprehend](https://doi.org/10.1109/SANER.2017.7884623) than full
-words. A team that mixes forms on purpose, writing `record[child::*]` for
+Where XSLT has two spellings, xslint asks for the one most XSLT code already
+uses. A team that mixes forms on purpose, writing `record[child::*]` for
 emphasis, turns the check off in `.xslint.yml`.
 
 ## Proven on real code

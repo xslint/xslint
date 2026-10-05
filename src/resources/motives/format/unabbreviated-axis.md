@@ -1,14 +1,9 @@
 # Can use abbreviated axis specifier
 
-XPath gives its four commonest steps two spellings each, and a codebase that
-mixes them makes every reader stop at a longhand to ask what it means that the
-short form would not. In an expression the answer is nothing:
-`child::chapter/child::section/attribute::id` selects exactly what
-`chapter/section/@id` selects. Meanwhile a search for `@id` misses the
-longhand, and a reviewer used to one spelling reads past the other. Keeping to
-one spelling settles the question, and the short forms are the one to keep,
-being the idiom nearly all XSLT is already written in. A team that mixes the
-forms on purpose, writing `record[child::*]` for emphasis, turns this check off.
+`child::chapter/attribute::id` selects exactly what `chapter/@id` selects, so a
+codebase holding both leaves readers asking how they differ and hides the
+longhand from a search for `@id`. Keep to the short forms, the idiom nearly all XSLT
+uses. A team that writes `child::` for emphasis turns this check off.
 
 The abbreviations are defined by XPath itself and select precisely the same
 nodes as the longhand — in an expression. A `match` is not an expression but a

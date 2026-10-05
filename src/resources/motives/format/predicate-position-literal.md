@@ -1,11 +1,8 @@
 # Positional predicate written the long way
 
-A predicate that holds a single number is, by definition, a test on the
-context position: `foo[1]` means `foo[position() = 1]`, and `foo[last()]` means
-`foo[position() = last()]`. Two spellings of one selection leave every reader
-to work out that they are one, and a search for `foo[1]` finds only half of
-them. One way to say one thing settles which to keep, and the bare number is
-the idiom XSLT is already written in.
+`foo[1]` means `foo[position() = 1]`, and `foo[last()]` means
+`foo[position() = last()]`. Two spellings of one selection hide each other from
+a search, so keep the bare number, the idiom XSLT uses.
 
 The equality is what makes it redundant, and it counts in either class XPath
 spells equality in. `[position() eq 1]` compares two `xs:integer` values and is
