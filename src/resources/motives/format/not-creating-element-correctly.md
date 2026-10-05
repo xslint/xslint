@@ -1,10 +1,14 @@
 # Not creating element correctly
 
-`xsl:element` with a static, literal name is unnecessarily verbose. Use a
-literal result element directly, and keep `xsl:element` for a name the
-stylesheet computes — one written as an attribute value template, `{...}`,
-which is the only spelling XSLT evaluates there. A `$` or a bracket standing
-outside those braces is part of the name itself, not a computation.
+`xsl:element` with a static name writes the element a literal result element of
+that name writes, and sends its reader looking for a computed name that is not
+there. Use a literal result element, and keep `xsl:element` for a name written as an
+attribute value template, `{...}`, the only spelling XSLT evaluates there. A `$`
+or a bracket outside those braces is part of the name itself.
+
+A literal result element also copies the namespaces in scope on it into the
+output, where `xsl:element` copies none, so list in `exclude-result-prefixes`
+every prefix the output must not declare.
 
 Two static names still want the instruction. A name whose prefix binds to the
 XSLT namespace has no literal form at all: `<xsl:element name="xsl:template"/>`

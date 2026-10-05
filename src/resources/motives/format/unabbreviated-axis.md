@@ -1,13 +1,9 @@
 # Can use abbreviated axis specifier
 
-The steps an XPath uses most often have short forms, and those short forms are
-what every XSLT reader scans for. Spelling them out buries the shape of the
-path under axis ceremony: `child::chapter/child::section/attribute::id` selects
-exactly what `chapter/section/@id` selects, in nearly three times the width,
-and the difference only grows inside a predicate, where the path is already
-competing for the reader's attention. Worse, `child::` is noise that says
-nothing — the child axis is the one a bare name already uses, so writing it out
-draws the eye to the one part of the step that carries no information.
+`child::chapter/attribute::id` selects exactly what `chapter/@id` selects, so a
+codebase holding both leaves readers asking how they differ and hides the
+longhand from a search for `@id`. Keep to the short forms, the idiom nearly all XSLT
+uses. A team that writes `child::` for emphasis turns this check off.
 
 The abbreviations are defined by XPath itself and select precisely the same
 nodes as the longhand — in an expression. A `match` is not an expression but a
