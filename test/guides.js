@@ -27,39 +27,49 @@ const slashed = function(whole) {
 /**
  * Directories the walk below leaves alone: the dependencies and the two
  * generated trees, plus every dotted name — `.claude/worktrees` among them,
- * which holds whole copies of this tree and would count every guide in it a
- * second time.
+ * which holds whole copies of this tree.
  * @type {Array.<string>}
  */
 const OUTSIDE = ['node_modules', 'coverage', 'docs']
 
 /**
- * Every guide the tree holds, walked rather than written down: the root one,
- * and the `CLAUDE.md` of each directory carrying the derivation behind its own
- * modules (#821). Walked, because the gates reading this judge what it holds
- * and nothing else, so a guide left off a hand-written list would take its
- * claims out of every one of them (#645).
+ * Names an agent harness loads as a guide on its own, wherever it meets one.
  * @type {Array.<string>}
  */
-const GUIDES = ['CLAUDE.md'].concat(
-  fs.readdirSync(ROOT, {withFileTypes: true})
-    .filter((one) => one.isDirectory())
-    .filter((one) => !one.name.startsWith('.') && !OUTSIDE.includes(one.name))
-    .flatMap((one) => allFilesFrom(path.join(ROOT, one.name)))
-    .filter((one) => path.basename(one) === 'CLAUDE.md')
-    .map(slashed),
-)
+const HARNESSED = ['CLAUDE.md', 'AGENTS.md']
 
 /**
- * How much a document holds, in the characters a reader of it is charged —
- * characters and not bytes, an em dash costing three of the second and one of
- * the first.
- * @param {string} named - Path of the document from the repository root
- * @return {number} - Its length
+ * Every file below the root carrying a name a harness loads, walked rather
+ * than written down, so a guide nobody listed is found all the same (#1168).
+ * @type {Array.<string>}
  */
-const sized = function(named) {
-  return fs.readFileSync(path.join(ROOT, named), 'utf-8').length
-}
+const NESTED = fs.readdirSync(ROOT, {withFileTypes: true})
+  .filter((one) => one.isDirectory())
+  .filter((one) => !one.name.startsWith('.') && !OUTSIDE.includes(one.name))
+  .flatMap((one) => allFilesFrom(path.join(ROOT, one.name)))
+  .filter((one) => HARNESSED.includes(path.basename(one)))
+  .map(slashed)
+
+/**
+ * The guides and the most lines each may hold: the rules every turn loads, at
+ * the size Claude Code's documentation asks of a memory file, and the map a
+ * change reads when it needs one (#1168).
+ * @type {Map.<string, number>}
+ */
+const CAPS = new Map([['AGENTS.md', 200], ['ARCHITECTURE.md', 300]])
+
+/**
+ * The guides, rules first.
+ * @type {Array.<string>}
+ */
+const GUIDES = [...CAPS.keys()]
+
+/**
+ * What the root `CLAUDE.md` holds: a heading, and the import handing a Claude
+ * Code session the rules every other agent reads in `AGENTS.md`.
+ * @type {string}
+ */
+const IMPORTED = '# CLAUDE.md\n\n@AGENTS.md\n'
 
 /**
  * The prose of a file as one line, so a claim that wraps mid-sentence reads
@@ -75,11 +85,8 @@ const worded = function(named) {
 }
 
 /**
- * The documents a claim of ours may stand in: every guide the tree holds, the
- * README the user reads, and the notes a release cuts from, which nothing read
- * until one of them miscounted a list a check names. Each is read where its
- * prose *names* what it counts, so a claim that moves out of the root is judged
- * where it went and one written where nobody looks is judged nowhere (#821).
+ * The documents a claim of ours may stand in: the guides, the README the user
+ * reads, and the notes a release cuts from (#821).
  * @type {Array.<string>}
  */
 const DOCUMENTS = GUIDES.concat(['README.md', 'CHANGELOG.md'])
@@ -95,65 +102,17 @@ const DOCUMENTS = GUIDES.concat(['README.md', 'CHANGELOG.md'])
 const NEARBY = 80
 
 /**
- * What a turn may load in guides, which is the harness's own number rather
- * than one of ours: Claude Code warns past 150,000 characters of them. What
- * arrives against it is a chain and not a pair — the root guide, and the
- * guide of every directory down to the file a turn touches, each injected
- * once; what the dearest weighs is the gate's to say (#750, #825, #1055).
- * @type {number}
- */
-const LOADED = 150000
-
-/**
- * The characters of headroom the bar keeps under `LOADED`, so a chain reddens
- * while there is still room to answer it rather than at the breach, where a
- * relocation no longer fits. It stands at 1.89 of the most a day of work has
- * added to the dearest chain, `GROWN` in `test/guides.test.js` holding it to
- * that band from both sides (#844).
- * @type {number}
- */
-const ROOM = 10000
-
-/**
- * The guides a turn loads on its way to one file: the root, and one for each
- * directory standing over it that carries a guide of its own. The guide named
- * is the last of them, so a chain is what its own directory costs a turn.
- * @param {string} named - Path of a guide from the repository root
- * @return {Array.<string>} - The guides loaded with it, the root first
- */
-const chained = function(named) {
-  const directories = path.dirname(named).split('/')
-  return ['CLAUDE.md'].concat(
-    directories.filter((one) => one !== '.')
-      .map(
-        (one, index) => `${directories.slice(0, index + 1).join('/')}/CLAUDE.md`,
-      )
-      .filter((one) => GUIDES.includes(one)),
-  )
-}
-
-/**
- * What a turn touching one directory is charged in guides, the whole chain
- * summed.
- * @param {string} named - Path of a guide from the repository root
- * @return {number} - Characters of guide that arrive with it
- */
-const loaded = function(named) {
-  return chained(named).reduce((total, one) => total + sized(one), 0)
-}
-
-/**
- * The paths the root guide's index names, read out of its `Key files` section
- * alone: the four kinds of check are tabulated in the same shape a few sections
- * up, so a sweep over every row of every table would read `xpath` and `corpus`
- * as files of ours.
+ * The paths the map's index names, read out of its `Key files` section alone:
+ * the four kinds of check are tabulated in the same shape a few sections up,
+ * so a sweep over every row of every table would read `xpath` and `corpus` as
+ * files of ours.
  * @return {Array.<string>} - The paths, as the index spells them
  */
 const indexed = function() {
   const rows = []
   let inside = false
   for (const line of fs.readFileSync(
-    path.join(ROOT, 'CLAUDE.md'), 'utf-8').split('\n')) {
+    path.join(ROOT, 'ARCHITECTURE.md'), 'utf-8').split('\n')) {
     if (line.startsWith('## ')) {
       inside = line === '## Key files'
     }
@@ -166,21 +125,9 @@ const indexed = function() {
 }
 
 /**
- * The files a guide holds a note about, one heading naming one path.
- * @param {string} named - Path of the guide from the repository root
- * @return {Array.<string>} - The paths it notes
- */
-const noted = function(named) {
-  return fs.readFileSync(path.join(ROOT, named), 'utf-8').split('\n')
-    .map((line) => line.match(/^## `([^`]+)`$/))
-    .filter((found) => found !== null)
-    .map((found) => found[1])
-}
-
-/**
  * An index row as the pattern it is, a row being allowed one `*` where a family
- * of modules shares a shape: the twenty-one linters are one row rather than
- * twenty-one, and the star stands for a name and never for a directory.
+ * of modules shares a shape: the linters are one row rather than one each, and
+ * the star stands for a name and never for a directory.
  * @param {string} row - The path an index row names
  * @return {RegExp} - What that row matches
  */
@@ -189,6 +136,6 @@ const globbed = function(row) {
 }
 
 module.exports = {
-  ROOT, GUIDES, DOCUMENTS, LOADED, ROOM, NEARBY, slashed,
-  sized, worded, chained, loaded, indexed, noted, globbed,
+  ROOT, NESTED, CAPS, GUIDES, IMPORTED, DOCUMENTS, NEARBY, slashed,
+  worded, indexed, globbed,
 }

@@ -42,7 +42,7 @@ const STEP = 4
  * growth is the assertion, #755's regression having been a constant growth
  * ranks backwards. A share is of the whole run, so a stage made cheaper lifts
  * every other entry and the table is re-derived by the ratio of the dearest
- * readings (#777, #783, #800, #784, #811, #845); `test/CLAUDE.md` holds them.
+ * readings (#777, #783, #800, #784, #811, #845), and those tickets hold them.
  * @type {{[stage: string]: number}}
  */
 const SHARES = {
@@ -535,11 +535,11 @@ const settled = function() {
 }
 
 /**
- * Every bar of this file as a guide must spell it, the number carrying the
+ * Every bar of this file as a guide would quote it, the number carrying the
  * unit it is quoted in: a share is a percentage of a run and a growth a
- * multiple of the middle stage's. The tables above are re-derived whenever a
- * stage made cheaper moves the denominator, while the prose saying what they
- * hold stands in another file, so the two drift unwatched (#821).
+ * multiple of the middle stage's. The guides name the bars and quote none,
+ * since a table re-derived beside prose quoting it drifts unwatched; this is
+ * what holds a quote that creeps back to the table (#821, #1168).
  * @type {{[name: string]: string}}
  */
 const QUOTED = Object.assign(
@@ -570,8 +570,7 @@ const shaped = function(bar) {
 
 /**
  * Every bar a guide quotes at a number this file does not hold. A gap collapses
- * first, because a bar is prose and prose wraps: the root guide spells one of
- * them across a line ending.
+ * first, because a bar is prose and prose wraps across a line ending.
  * @param {string} guide - Path of the guide from the repository root
  * @return {Array.<string>} - One line per bar quoted wrongly
  */
@@ -699,22 +698,6 @@ describe('scaling', function() {
         'the prose is the half a session reads before it touches either one,',
         'so a share left behind by the re-derivation that moved it is a bar',
         'loosened by nobody',
-      ].join(' '),
-    )
-  })
-  it('states every bar of those tables in the guide read first', function() {
-    const prose = fs.readFileSync(path.join(ROOT, 'CLAUDE.md'), 'utf-8')
-      .split(GAPS).join(' ')
-    assert.deepEqual(
-      Object.keys(QUOTED).filter(
-        (name) => !new RegExp(`\`${name}\` at ${shaped(QUOTED[name])}`)
-          .test(prose),
-      ),
-      [],
-      [
-        'a bar stands in no guide every turn loads, so the gate above holds it',
-        'to nothing and a session meets it for the first time in the file',
-        'that sets it',
       ].join(' '),
     )
   })

@@ -6,6 +6,9 @@ merge changes that keep the build green and respect the project's quality
 standards, following these
 [guidelines](https://www.yegor256.com/2014/04/15/github-guidelines.html).
 
+The rules a change follows are in [`AGENTS.md`](AGENTS.md), and the map of the
+code in [`ARCHITECTURE.md`](ARCHITECTURE.md).
+
 ## Before you open a pull request
 
 Make sure the full build passes:

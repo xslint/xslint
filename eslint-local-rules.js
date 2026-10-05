@@ -517,8 +517,8 @@ module.exports = {
           sprawling:
             [
               "Cut this description to {{max}} lines or fewer: it spends",
-              "{{spent}}, and the derivation behind a module belongs in the",
-              "CLAUDE.md of the directory it sits in",
+              "{{spent}}, and the ticket it cites is where the derivation",
+              "stays recoverable",
             ].join(' '),
           wordy:
             "Cut '{{tag}}' to {{max}} lines or fewer: it spends {{spent}}",

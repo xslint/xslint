@@ -27,7 +27,7 @@ const {GAP} = require('../src/tokens')
  * The file whose header note states what the vocabulary reaches, and the
  * reason this gate stands here rather than beside the guides': a derivation
  * relocated into a file-header note leaves the reach of the gate holding a
- * guide's counts to the code, so a count that moved out of `src/CLAUDE.md`
+ * guide's counts to the code, so a count that moved out of a guide
  * would answer to nothing at all (#821, #811).
  * @type {string}
  */
