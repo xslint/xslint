@@ -71,9 +71,9 @@ ESLint (`eslint.config.mjs` and `eslint-local-rules.js`) refuses each of these.
   requires either directory.
 - A linter narrowing to one attribute calls `whole(found, name)`, never a
   hand-written `//@name`.
-- A linter reads the version off `found.version` and gates it with `since`;
-  `versionOf` is called only where a record is derived, and
-  `getAttribute('version')` never.
+- A linter reads the version off `found.version` and gates it with `since`.
+  One holding a node and no record joins the `VERSIONED` exemption group in
+  `eslint.config.mjs` to call `versionOf`; `getAttribute('version')` never.
 
 ## Checks
 

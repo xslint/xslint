@@ -103,14 +103,14 @@ preset: recommended|all
 
 Without `reference`, a declaration is a defect when its `@name` matches no
 `usage` value reached from outside every declaration, or from one nothing
-names. With `reference`, every
-usage value is lexed as XPath and the name is looked for among what its tokens
-reference: a `call` is a name opening a bracket or behind a `#`, matched by URI,
-local name and arity; a `variable` is a name behind a `$`. `reachable: true`
-follows the call graph from the same starting points; `scoped: true` counts
-usage only within the declaration's subtree or an importing file. Usage is
-followed across files, so a function a library declares and another file calls
-is never flagged.
+names. With `reference`, every usage value is lexed as XPath and the name is
+looked for among what its tokens reference: a `call` is a name opening a
+bracket or behind a `#`, matched by URI, local name and arity; a `variable` is
+a name behind a `$`. `reachable: true` follows the call graph from outside
+every declaration body, so a callee of an uncalled declaration is a defect;
+`scoped: true` counts usage only within the declaration's subtree or an
+importing file. Usage is followed across files, so a function a library
+declares and another file calls is never flagged.
 
 `fix:` names the tier every fix of the check lands in, and is the one place a
 tier is spelled. `preset:` names the first preset holding the check;
