@@ -19,5 +19,6 @@ Correct:
 <xsl:if test="string(@name) = ''">unnamed</xsl:if>
 ```
 
-Either operand order is flagged, with `=` or `eq`, and so are `&gt;= 1` and
-`&lt; 1`, which ask the same question.
+Each comparison that only asks whether the string is empty is flagged:
+`&gt; 0`, `!= 0`, `= 0`, `&lt;= 0`, `&gt;= 1`, and `&lt; 1`, in either operand
+order and in their `gt`, `ne`, `eq`, `le`, `ge`, and `lt` spellings.

@@ -1,7 +1,7 @@
 # Redundant whitespace
 
-`@type = 'index'` and `@type = 'index'` are the same test, yet a search for one
-misses the other, and a commit that tidies the spacing buries the line that
+`@type  =  'index'` and `@type = 'index'` are the same test, yet a search for
+one misses the other, and a commit that tidies the spacing buries the line that
 changed. Remove the doubled and stray spaces.
 
 Incorrect (a doubled space and a trailing space):

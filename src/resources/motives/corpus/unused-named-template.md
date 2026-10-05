@@ -5,9 +5,10 @@ drifts out of date unnoticed. Remove it, or call it.
 
 The check reads every stylesheet linted together, so lint the whole project at
 once to let it see every caller. A template that only calls itself, or a loop
-of templates calling only each other, is reported too. A template named
-`xsl:initial-template`, under any prefix, is left alone, since the processor
-enters it directly.
+of templates calling only each other, is reported too. The processor enters
+`xsl:initial-template` directly, so any template whose name ends in
+`:initial-template` is left alone, one of your own in another namespace
+included.
 
 Incorrect:
 

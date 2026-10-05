@@ -477,7 +477,7 @@ const WORDS = 30
 /**
  * The most words a motive spends outside its code blocks and its headings.
  * Past it the motive carries the derivation, which serves whoever maintains
- * the check and belongs to the ticket that derived it (#1176).
+ * the check and not the user reading its warning (#1176).
  * @type {number}
  */
 const PROSE = 100
@@ -664,14 +664,14 @@ describe('conformance', function() {
       [],
       [
         `a motive spends more than ${PROSE} words outside its code blocks, so`,
-        'it carries a derivation that belongs to the ticket it came from (#1176)',
+        'it carries a derivation the user reading a warning does not need (#1176)',
       ].join(' '),
     )
   })
   for (const [motive, words] of [
     ['# Heading words\n\nTwo words.', 2],
     ['One.\n\n```text\nselect a b c\n```\n\nTwo here.', 3],
-    ['A\tgap  and\nlines.\n\n```\nx\n```\n```\ny z\n```', 4],
+    ['A\tgap  and\nlines.\n\n```\nx\n```\nmid\n```\ny z\n```', 5],
   ]) {
     it(`counts ${words} words of prose in "${motive.slice(0, 20)}"`, function() {
       assert.equal(

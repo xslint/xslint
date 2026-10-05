@@ -19,6 +19,7 @@ Correct:
 <xsl:if test="empty($items)">
 ```
 
-Either operand order and the value comparisons `eq`, `ne`, and `lt` are
-flagged the same way. A genuine count, such as `count($x) &gt; 1`, is left
-alone.
+Each comparison that asks only whether it is empty is flagged:
+`&gt; 0`, `!= 0`, `= 0`, `&lt;= 0`, `&gt;= 1`, and `&lt; 1`, in either operand
+order and in their `gt`, `ne`, `eq`, `le`, `ge`, and `lt` spellings. A genuine
+count, such as `count($x) &gt; 1`, is left alone.

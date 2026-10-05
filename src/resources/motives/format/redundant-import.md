@@ -1,11 +1,12 @@
 # Redundant import
 
-Referencing one module twice in a stylesheet puts it at two precedence levels,
-so a reader cannot tell which copy of a template wins or what
-`xsl:apply-imports` reaches next. Importing and also including it is worse:
-the included copy shadows the imported one, and the stylesheet's own templates
-now collide with it at equal precedence. Keep one reference, chosen with the
-stylesheet's overriding in view.
+Importing one module twice puts it at two precedence levels, so a reader
+cannot tell which copy of a template wins or what `xsl:apply-imports` reaches
+next. Including it twice defines every template in it twice at one
+precedence. Importing and also including it is worse: the included copy
+shadows the imported one, and the stylesheet's own templates now collide with
+it at equal precedence. Keep one reference, chosen with the stylesheet's
+overriding in view.
 
 Incorrect:
 
