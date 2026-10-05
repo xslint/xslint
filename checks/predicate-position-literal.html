@@ -112,10 +112,9 @@
   deterministic, and leaves the stylesheet meaning what it meant.</p>
   <div class="check-content">
 <h1>Positional predicate written the long way</h1>
-<p>A predicate that holds a single number is, by definition, a test on the
-context position: <code>foo[1]</code> means <code>foo[position() = 1]</code>, and <code>foo[last()]</code> means
-<code>foo[position() = last()]</code>. Spelling the <code>position() =</code> out adds nothing — it is
-the same selection, just longer to read.</p>
+<p><code>foo[1]</code> means <code>foo[position() = 1]</code>, and <code>foo[last()]</code> means
+<code>foo[position() = last()]</code>. Two spellings of one selection hide each other from
+a search, so keep the bare number, the idiom XSLT uses.</p>
 <p>The equality is what makes it redundant, and it counts in either class XPath
 spells equality in. <code>[position() eq 1]</code> compares two <code>xs:integer</code> values and is
 true at exactly the position <code>[1]</code> is true at, so the word spelling abbreviates

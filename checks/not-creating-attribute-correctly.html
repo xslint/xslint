@@ -110,11 +110,11 @@
   </div>
   <div class="check-content">
 <h1>Not creating attribute correctly</h1>
-<p>The attribute analog of <code>not-creating-element-correctly</code>. When an <code>xsl:attribute</code>
-with a static name sits on a literal result element and its value is simple — a
-single <code>xsl:value-of</code>, a single <code>xsl:text</code>, plain text, or empty — it can be
-written inline as a literal attribute, with an attribute value template for a
-computed value:</p>
+<p>An <code>xsl:attribute</code> with a static name and a simple value writes the attribute a
+literal one writes, and sends its reader looking for a computation that is not
+there. When it sits on a literal result element and its value is a
+single <code>xsl:value-of</code>, a single <code>xsl:text</code>, plain text, or empty, write it as a
+literal attribute, with an attribute value template for a computed value:</p>
 <pre><code class="language-xsl">&lt;td&gt;
   &lt;xsl:attribute name=&quot;class&quot;&gt;&lt;xsl:value-of select=&quot;@c&quot;/&gt;&lt;/xsl:attribute&gt;
   &lt;xsl:attribute name=&quot;role&quot;&gt;cell&lt;/xsl:attribute&gt;

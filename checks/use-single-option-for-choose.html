@@ -110,10 +110,11 @@
   </div>
   <div class="check-content">
 <h1>Use single option for choose</h1>
-<p>An <code>xsl:choose</code> with a single <code>xsl:when</code> and no <code>xsl:otherwise</code> is just an
-<code>xsl:if</code>. Use the simpler <code>xsl:if</code> instead. A <code>choose</code> that also has an
-<code>xsl:otherwise</code> is a genuine if/else and is left alone, and a <code>choose</code> with no
-<code>xsl:when</code> at all is reported by <code>empty-choose</code>, not here.</p>
+<p>An <code>xsl:choose</code> with a single <code>xsl:when</code> and no <code>xsl:otherwise</code> says what an
+<code>xsl:if</code> says, and sends its reader looking for a second branch that is not
+there. Write the <code>xsl:if</code>. A <code>choose</code> that also has an <code>xsl:otherwise</code> is a
+genuine if/else and is left alone, and a <code>choose</code> with no <code>xsl:when</code> at all is
+reported by <code>empty-choose</code>, not here.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:choose&gt;
   &lt;xsl:when test=&quot;@active&quot;&gt;Active&lt;/xsl:when&gt;

@@ -112,14 +112,10 @@
   deterministic, and leaves the stylesheet meaning what it meant.</p>
   <div class="check-content">
 <h1>Can use abbreviated axis specifier</h1>
-<p>The steps an XPath uses most often have short forms, and those short forms are
-what every XSLT reader scans for. Spelling them out buries the shape of the
-path under axis ceremony: <code>child::chapter/child::section/attribute::id</code> selects
-exactly what <code>chapter/section/@id</code> selects, in nearly three times the width,
-and the difference only grows inside a predicate, where the path is already
-competing for the reader&#39;s attention. Worse, <code>child::</code> is noise that says
-nothing — the child axis is the one a bare name already uses, so writing it out
-draws the eye to the one part of the step that carries no information.</p>
+<p><code>child::chapter/attribute::id</code> selects exactly what <code>chapter/@id</code> selects, so a
+codebase holding both leaves readers asking how they differ and hides the
+longhand from a search for <code>@id</code>. Keep to the short forms, the idiom nearly all XSLT
+uses. A team that writes <code>child::</code> for emphasis turns this check off.</p>
 <p>The abbreviations are defined by XPath itself and select precisely the same
 nodes as the longhand — in an expression. A <code>match</code> is not an expression but a
 pattern, a narrower grammar with its own rules about where <code>.</code> may stand and its
