@@ -1,31 +1,8 @@
 # Redundant whitespace
 
-`@type  =  'index'` and `@type = 'index'` are the same test, yet a search for
-one misses the other, and a commit that tidies the spacing buries the line that
+`@type = 'index'` and `@type = 'index'` are the same test, yet a search for one
+misses the other, and a commit that tidies the spacing buries the line that
 changed. Remove the doubled and stray spaces.
-
-A whitespace run is redundant when it is longer than a single space, or when it
-sits at the very start or end of the expression. Whitespace inside a string
-literal or a comment is left untouched — those spaces are part of the value the
-author wrote on purpose. The check runs only over expressions that already
-parse, so a malformed expression is reported once by the validator and never
-nagged about its spacing.
-
-A run holding a line ending is not redundant either. An expression written
-across several lines carries the indentation of each line it wraps onto, and
-that indentation is how a long expression stays readable rather than an
-accident to collapse:
-
-```xsl
-<xsl:if test="$document/section[@type = 'appendix']
-              and $document/section[@type = 'index']">
-  <xsl:value-of select="."/>
-</xsl:if>
-```
-
-Joining that onto one line would preserve what it selects and lose the reason
-anyone could read it. Only the doubled spaces standing within a single line are
-flagged.
 
 Incorrect (a doubled space and a trailing space):
 
@@ -42,3 +19,7 @@ Correct:
   <xsl:value-of select="."/>
 </xsl:if>
 ```
+
+A run is redundant when it is longer than one space within a line, or stands at
+the start or end of the expression. Whitespace in a string literal or a comment,
+and the indentation of an expression wrapped across lines, are left alone.

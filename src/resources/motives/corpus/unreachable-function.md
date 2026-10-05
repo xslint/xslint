@@ -1,17 +1,11 @@
 # Unreachable function
 
-A stylesheet function is reachable only if some call to it lives outside every
-function body — in a template, a global variable, or another function that is
-itself reachable. A function whose every call sits inside functions that are
-never reached can never run, even though its name does appear in a call. Most
-often the caller is a function nothing calls at all, which `unused-function`
-reports, and every helper it alone calls is dead with it. A recursion cycle
-nothing enters is the other shape: a function that calls only itself, or a
-pair (`my:even`/`my:odd`) that call only each other. Delete the dead callers
-with what they alone call, or reach them from a template.
-
-Unlike `unused-function`, which flags a name that appears in no call at all,
-this check flags a name that *is* called yet stays unreachable.
+A function called only from functions that are never reached can never run,
+even though its name appears in a call. The dead caller is often a function
+nothing calls (which `unused-function` reports), or a recursion cycle nothing
+enters, such as `my:even` and `my:odd` calling only each other. Delete the dead
+callers with what they alone call, or call them from a template or a global
+variable.
 
 Incorrect:
 

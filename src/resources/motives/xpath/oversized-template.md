@@ -1,15 +1,9 @@
 # Oversized template
 
-A single template holding more than 100 XSLT elements has stopped being a
-template and become a program. XSLT is at its best when a template does a small
-piece of the work and delegates the rest with `apply-templates`, letting the
-processor match the right template to each node. A template this large is doing
-by hand what the processor would do for you. Fan it out into focused templates.
-
-This check looks only at `xsl:template`, and by element count, not lines — so a
-template that is large only because it emits a lot of literal markup is left
-alone; it is undecomposed *logic* that is the smell. A complex `xsl:function`
-is covered separately by `function-complexity`.
+A template holding more than 100 XSLT elements is hard to read or change as
+one piece, and does by hand what template matching would do for it. Let it do
+a small part and delegate the rest with `xsl:apply-templates` to focused
+templates.
 
 Incorrect:
 
@@ -32,3 +26,6 @@ Correct:
   <!-- one focused piece of the work -->
 </xsl:template>
 ```
+
+Elements are counted, not lines, so literal result markup does not add to the
+size. A large `xsl:function` is covered by `function-complexity`.

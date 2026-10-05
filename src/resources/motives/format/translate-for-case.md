@@ -1,14 +1,9 @@
 # Translate for case
 
-The XSLT 1.0 way to change case is a `translate()` spelling out both alphabets:
-
-```xsl
-translate(@ident, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')
-```
-
-XSLT 2.0 added `lower-case()` and `upper-case()`, which are shorter, say what
-they mean, and fold all of Unicode rather than only ASCII. In a 2.0 or 3.0
-stylesheet the `translate` spell-out is an anachronism.
+A `translate()` spelling out both alphabets folds case over ASCII alone, so
+accented and other non-ASCII letters pass through unchanged, and the reader has
+to check 52 letters to see what it does. XSLT 2.0 has `lower-case()` and
+`upper-case()`, which say what they mean and fold all of Unicode.
 
 Incorrect:
 
@@ -22,11 +17,5 @@ Correct:
 <xsl:value-of select="lower-case(@id)"/>
 ```
 
-The check fires only in XSLT 2.0 and 3.0 — in 1.0 the `translate` form is the
-only option, so it is not a defect. Either alphabet may be quoted either way and
-the two need not agree, so `translate(@id, "A...Z", 'a...z')` is the same
-anachronism spelled to suit the attribute it stands in.
-
-A `translate` with any other pair of arguments is left alone, a near alphabet
-included: an alphabet missing a letter maps that letter to nothing, which is a
-deletion rather than a case fold.
+Only XSLT 2.0 and 3.0 stylesheets are checked, and only a `translate()` whose
+two arguments are the full upper and lower ASCII alphabets.

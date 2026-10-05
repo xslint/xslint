@@ -101,9 +101,10 @@ in `ARCHITECTURE.md`.
   `test/resources/fix/<name>.xsl` and `.fixed.xsl` pair and rows in
   `test/fixer.deep.test.js`.
 - A motive teaches the construct: the concrete harm first, then an
-  `Incorrect:`/`Correct:` pair of valid XSLT. It never mentions a fix tier,
-  `--fix`, or how the scanner works. A change to what a check flags updates
-  its motive.
+  `Incorrect:`/`Correct:` pair of valid XSLT, in a hundred words of prose
+  outside its code blocks. What does not fit is cut to the ticket that derived
+  it. It never mentions a fix tier, `--fix`, or how the scanner works. A change
+  to what a check flags updates its motive.
 - A check carries no `mature:` and no `nursery:`. Defects come from a corpus
   run or a user, never from an audit.
 - Then run `npx grunt checks`, `npm test`, `npm run coverage`, and

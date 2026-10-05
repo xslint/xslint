@@ -1,15 +1,10 @@
 # Duplicate `xsl:param` name
 
-The parameters of a template, a stylesheet function, or the stylesheet itself
-form one namespace: each must have a distinct name. Two parameters sharing a
-name is a static error — the processor cannot tell which one a reference binds
-to — and rejects the stylesheet.
-
-A name is compared the way the processor compares it, as an expanded QName
-rather than as text. `p:size` and `q:size` are one name when both prefixes are
-bound to the same namespace URI, `size` and `Q{}size` are one name, and the
-whitespace around a name is ignored. Respelling a prefix does not make two
-parameters distinct; giving them different local names does.
+Two parameters of one template, function, or stylesheet that share a name are a
+static error: the processor cannot tell which one a reference binds and rejects
+the stylesheet. Names compare as expanded QNames, so `p:size` and `q:size` clash
+when both prefixes bind the same namespace. Give the parameters different local
+names.
 
 Incorrect:
 
@@ -29,22 +24,5 @@ Correct:
 </xsl:template>
 ```
 
-One name may be declared twice when a `use-when` (XSLT 2.0 and later, or
-`_use-when` from 3.0) on either declaration can leave it out of the compiled
-stylesheet. Whether the pair clashes then depends on a condition only the
-processor evaluates, so the pair is not reported. The usual shape gives one
-parameter a different declaration per processor:
-
-```xsl
-<xsl:template name="render">
-  <xsl:param name="size" as="xs:integer"
-    use-when="system-property('xsl:version') = '3.0'"/>
-  <xsl:param name="size"
-    use-when="system-property('xsl:version') != '3.0'"/>
-</xsl:template>
-```
-
-A `use-when` on one side alone still clashes wherever its condition holds,
-since the parameter beside it is compiled everywhere. Keep such a condition
-false on every processor the stylesheet targets, or give the two parameters
-different names.
+A pair where either declaration carries a `use-when` is not reported, since
+only the processor knows whether both are compiled.

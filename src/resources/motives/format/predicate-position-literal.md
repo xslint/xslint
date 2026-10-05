@@ -4,22 +4,6 @@
 `foo[position() = last()]`. Two spellings of one selection hide each other from
 a search, so keep the bare number, the idiom XSLT uses.
 
-The equality is what makes it redundant, and it counts in either class XPath
-spells equality in. `[position() eq 1]` compares two `xs:integer` values and is
-true at exactly the position `[1]` is true at, so the word spelling abbreviates
-the way the symbol one does. Either operand order reads the same
-(`[1 = position()]`, `[last() eq position()]`), and the call is the standard
-`fn:position` or `fn:last` however its namespace is spelled — bare, or behind a
-prefix bound to the XPath functions namespace. A function of your own that
-borrows one of those local names is another function and is left alone.
-
-A predicate that asks anything else keeps its `position()`, which is
-load-bearing there. `[position() = 1 and @current]` is a boolean test, and
-`[1 and @current]` is a different one. `[position() > 1]` spans every position
-but the first rather than naming one. And `[position() = '1']` compares against
-a string, where the abbreviation `['1']` holds a non-empty string and so is true
-at every position instead of the first.
-
 Incorrect:
 
 ```xsl
@@ -35,3 +19,7 @@ Correct:
 <xsl:apply-templates select="row[last()]"/>
 <xsl:value-of select="cell[last()]"/>
 ```
+
+Either operand order is flagged, with `=` or `eq`. A predicate that asks more,
+such as `[position() = 1 and @current]` or `[position() > 1]`, keeps its
+`position()`.

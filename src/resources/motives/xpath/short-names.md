@@ -1,14 +1,8 @@
 # Short names
 
 A single-character name tells a reader nothing about what it holds. At the use
-site a binding is just `$f`, and nothing there says which element bound it or
-what it was for, so every reader of the template has to go and look. The cost
-is paid once per reading and never by the author, which is why these names
-survive.
-
-A parameter is a binding like any other, and the one most often spelled this
-way: the declaration stands at the top of the template and the uses are spread
-through the body, which is exactly the distance a name is supposed to close.
+site a binding is just `$f`, and every reader of the template has to go back to
+the declaration to learn what it is for.
 
 Incorrect:
 
@@ -28,29 +22,7 @@ Correct:
 </xsl:template>
 ```
 
-A prefix does not lengthen the name. `eo:k` and `k` read alike wherever they
-are used, since the prefix names the namespace the binding lives in and not the
-binding, so the local part is what carries the meaning and what has to earn its
-place. The same holds whichever element declares it — an `xsl:variable`, an
-`xsl:param`, an `xsl:template` or an `xsl:function`.
-
-Incorrect:
-
-```xsl
-<xsl:variable name="eo:r" select="'r'"/>
-```
-
-Correct:
-
-```xsl
-<xsl:variable name="eo:raw-marker" select="'r'"/>
-```
-
-XSLT 3.0 writes a name `_name` as readily as `name`, the underscore form an
-attribute value template, and the name is what the template yields rather than
-its text: `_name="{'q'}"` is six characters declaring the one-character
-variable `q`.
-
-An `xsl:with-param` is left alone. It passes a name the declaration already
-fixed, so renaming has to happen where the parameter is declared, and reporting
-both would report one author's choice twice.
+The check covers `xsl:variable`, `xsl:param`, `xsl:template`, and
+`xsl:function`, and measures the local part, so `eo:k` is as short as `k`. An
+`xsl:with-param` is left alone, since its name is fixed where the parameter is
+declared.

@@ -4,7 +4,7 @@
  */
 
 const {allFilesFrom, xml, yaml} = require('../src/helpers')
-const {GAP, tokenized} = require('../src/tokens')
+const {GAP, GAPS, tokenized} = require('../src/tokens')
 const {splitOf} = require('../src/selectors')
 const {REFERENCES} = require('../src/linters/corpus-linter')
 const {kinds} = require('../src/resources/checks.json')
@@ -475,6 +475,25 @@ const READS = /dir: '([\w-]+-packs)'/g
 const WORDS = 30
 
 /**
+ * The most words a motive spends outside its code blocks and its headings.
+ * Past it the motive carries the derivation, which serves whoever maintains
+ * the check and belongs to the ticket that derived it (#1176).
+ * @type {number}
+ */
+const PROSE = 100
+
+/**
+ * The words a motive spends on prose, its fenced blocks and headings left out.
+ * @param {string} motive - The markdown of a motive
+ * @return {number} - How many words the reader reads beside the examples
+ */
+const spent = function(motive) {
+  return motive.replace(/```[^]*?```/g, ' ').split('\n')
+    .filter((line) => !line.startsWith('#')).join(' ')
+    .split(GAPS).filter((word) => word.length > 0).length
+}
+
+/**
  * Where one sentence of a message ends and the next opens: a stop, a gap, and
  * a capital. A `.` standing alone as the context item, or inside `2.0` or a
  * `(...)`, ends nothing, since no capital follows it.
@@ -634,6 +653,30 @@ describe('conformance', function() {
       assert.deepStrictEqual(
         departures(message), [departure].filter(Boolean),
         `the message gate does not read "${message}" as it should`,
+      )
+    })
+  }
+  it(`holds every motive to ${PROSE} words of prose`, function() {
+    assert.deepStrictEqual(
+      KINDS.flatMap((kind) => allFilesFrom(path.join(MOTIVES, kind))
+        .filter((motive) => spent(fs.readFileSync(motive, 'utf-8')) > PROSE)
+        .map((motive) => `${kind}/${path.basename(motive, '.md')}`)),
+      [],
+      [
+        `a motive spends more than ${PROSE} words outside its code blocks, so`,
+        'it carries a derivation that belongs to the ticket it came from (#1176)',
+      ].join(' '),
+    )
+  })
+  for (const [motive, words] of [
+    ['# Heading words\n\nTwo words.', 2],
+    ['One.\n\n```xsl\n<xsl:if test="a b c"/>\n```\n\nTwo here.', 3],
+    ['A\tgap  and\nlines.\n\n```\nx\n```\n```\ny z\n```', 4],
+  ]) {
+    it(`counts ${words} words of prose in "${motive.slice(0, 20)}"`, function() {
+      assert.equal(
+        spent(motive), words,
+        `the motive gate does not count the prose of "${motive}" as it should`,
       )
     })
   }

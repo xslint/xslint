@@ -1,32 +1,9 @@
 # Modern construct in a 1.0 stylesheet
 
-A stylesheet that declares `version="1.0"` must run on an XSLT 1.0 processor,
-where the instructions and syntax introduced in XSLT 2.0 simply do not exist. A
-1.0 processor (or Saxon-HE in 1.0 mode) rejects them, so a declared-1.0
-stylesheet that reaches for a 2.0 construct is a real portability bug — it will
-not run where its own version attribute promises it will.
-
-This check flags a curated set of 2.0-only XSLT **instructions** —
-`xsl:for-each-group`, `xsl:sequence`, `xsl:analyze-string`, `xsl:next-match`,
-`xsl:perform-sort`, `xsl:namespace`, `xsl:character-map`, `xsl:result-document`,
-`xsl:import-schema` — and the 2.0 **`as` sequence-type attribute** on any other
-XSLT element, whenever the version in force over that element is earlier than
-2.0. Only elements in the XSLT namespace are examined for
-`@as`, so a literal result element that legitimately carries an `as` attribute —
-`<link rel="preload" as="script"/>` in HTML output — is never mistaken for the
-sequence-type attribute.
-
-`xsl:function` is deliberately left out: it has its own check,
-`function-use-in-xslt-1`, which asks the same question of the same version.
-The 2.0 functions and operators that live *inside* XPath expressions
-(`lower-case()`, `matches()`, `||`, `if/then/else`, `*:name`) are not flagged
-yet — telling a reserved 2.0 built-in from a user-namespaced call needs
-token-aware parsing, which waits on the full-fidelity parser (#228).
-
-Either rewrite the construct with its 1.0 equivalent — a Muenchian grouping key
-for `xsl:for-each-group`, a named template for `xsl:sequence` — or raise the
-stylesheet to `version="2.0"`. Because that rewrite is structural, this check
-reports without a `--fix`.
+A stylesheet whose version in force is below 2.0 promises to run on an XSLT 1.0
+processor, which rejects the instructions XSLT 2.0 added. Rewrite the construct
+with its 1.0 equivalent (a Muenchian key for `xsl:for-each-group`, a named
+template for `xsl:sequence`), or raise the version to 2.0.
 
 Incorrect:
 
@@ -51,3 +28,8 @@ Correct:
   </xsl:template>
 </xsl:stylesheet>
 ```
+
+The check covers `xsl:for-each-group`, `xsl:sequence`, `xsl:analyze-string`,
+`xsl:next-match`, `xsl:perform-sort`, `xsl:namespace`, `xsl:character-map`,
+`xsl:result-document`, `xsl:import-schema`, and an `as` attribute on any XSLT
+element but `xsl:function`.
