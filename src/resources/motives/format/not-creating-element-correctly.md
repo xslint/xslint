@@ -1,7 +1,8 @@
 # Not creating element correctly
 
-`xsl:element` with a static name promises a computed one and delivers none. Use
-a literal result element, and keep `xsl:element` for a name written as an
+`xsl:element` with a static name writes the element a literal result element of
+that name writes, and sends its reader looking for a computed name that is not
+there. Use a literal result element, and keep `xsl:element` for a name written as an
 attribute value template, `{...}`, the only spelling XSLT evaluates there. A `$`
 or a bracket outside those braces is part of the name itself.
 

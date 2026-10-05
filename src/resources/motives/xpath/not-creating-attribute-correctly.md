@@ -1,7 +1,8 @@
 # Not creating attribute correctly
 
-An `xsl:attribute` with a static name and a simple value promises a computation
-and delivers none. When it sits on a literal result element and its value is a
+An `xsl:attribute` with a static name and a simple value writes the attribute a
+literal one writes, and sends its reader looking for a computation that is not
+there. When it sits on a literal result element and its value is a
 single `xsl:value-of`, a single `xsl:text`, plain text, or empty, write it as a
 literal attribute, with an attribute value template for a computed value:
 

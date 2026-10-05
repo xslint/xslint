@@ -57,7 +57,7 @@ one of them.
 
 ## Principles
 
-xslint holds itself to these principles, and each report rests on one of them:
+xslint holds itself to these principles:
 
 - **One way to say one thing.** Where XSLT offers two spellings of the same
   meaning, a codebase that keeps to one reads faster and hides fewer faults,
