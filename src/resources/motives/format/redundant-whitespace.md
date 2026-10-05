@@ -1,10 +1,11 @@
 # Redundant whitespace
 
-A bare XPath expression should read cleanly. Whitespace that the processor
-ignores still costs the reader: a doubled space, a space hugging a parenthesis,
-or a stray space at the start or end of the expression all add noise without
-adding meaning. This check flags whitespace that can be removed without
-changing what the expression selects.
+Whitespace the processor ignores gives one expression as many spellings as
+there are ways to space it. `foo(  a) = 'hello' ` and `foo(a) = 'hello'` are the
+same test, yet a search for the one misses the other, and a commit that tidies
+the spacing buries the line that changed under the lines that did not. One way
+to say one thing keeps an expression to a single spelling, so this check flags
+whitespace that can be removed without changing what the expression selects.
 
 A whitespace run is redundant when it is longer than a single space, or when it
 sits at the very start or end of the expression. Whitespace inside a string

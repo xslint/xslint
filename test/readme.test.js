@@ -11,9 +11,9 @@
  * readme` is the rewrite and this file the refusal. Every figure agrees with
  * the tree, is found in the README exactly once, and names a check the tree
  * still holds; the prose is the anchor and the digits the capture, so
- * rewording a sentence around a figure reddens while a reflow does not. And
- * every manual page the README links to is one the docs site builds, and
- * every page built is one it links to (#1095).
+ * rewording a sentence around a figure reddens while a reflow does not. A
+ * manual page the README links to is one the docs site builds and the reverse
+ * (#1095), and every principle the README states cites its source (#1171).
  */
 
 const {
@@ -84,6 +84,16 @@ const written = function() {
   return fs.readdirSync(MANUAL)
     .filter((name) => name.endsWith('.md'))
     .map((name) => path.basename(name, '.md'))
+}
+
+/**
+ * The principles the README states, one entry a list item of its section.
+ * @return {Array.<string>} - The entries, empty where it states none
+ */
+const principles = function() {
+  return (document().match(/^## Principles\n(.*?)(?=^## )/ms) ?? ['', ''])[1]
+    .split(/^- /m)
+    .slice(1)
 }
 
 describe('readme', function() {
@@ -178,6 +188,26 @@ describe('readme', function() {
       [
         'the docs site builds a manual page the README never links, so what',
         'moved out of the README is where no reader of it arrives (#1095)',
+      ].join(' '),
+    )
+  })
+  it('states the principles its checks follow', function() {
+    assert.notDeepEqual(
+      principles(),
+      [],
+      [
+        'the README states no principle, so a reviewer handed a style fix',
+        'reads it as taste and answers it with taste (#1171)',
+      ].join(' '),
+    )
+  })
+  it('cites a source for every principle it states', function() {
+    assert.deepEqual(
+      principles().filter((entry) => !/\]\(https:\/\/[^)]+\)/.test(entry)),
+      [],
+      [
+        'the README states a principle without the source it rests on, so',
+        'it reads as one more opinion rather than the practice it borrows',
       ].join(' '),
     )
   })

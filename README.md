@@ -55,6 +55,39 @@ That is the `recommended` preset, which a run reports unless told otherwise.
 `xsl:text` to single-letter names. The [check catalog][checks] teaches every
 one of them.
 
+## Principles
+
+xslint holds itself to four principles, so a report rests on a reason rather
+than on taste:
+
+- **One way to say one thing.** Where XSLT offers two spellings of the same
+  meaning, a codebase that keeps to one reads faster and hides fewer faults,
+  which is the case [gofmt](https://go-proverbs.github.io/),
+  [PEP 20](https://peps.python.org/pep-0020/),
+  [Prettier](https://prettier.io/docs/option-philosophy) and
+  [Bugayenko](https://www.yegor256.com/2014/08/13/strict-code-quality-control.html)
+  make for uniform code over any one favourite form.
+- **The processor decides.** Nothing a processor accepts is reported as an
+  error, because an error is what the
+  [specification](https://www.w3.org/TR/xslt-30/#errors) says a processor
+  refuses, and a linter refusing more teaches its users to ignore it.
+- **A safe fix never changes the output.** `--fix` runs where nobody reads the
+  diff, so a fix that changes what a stylesheet produces is held back as a
+  suggestion, the line
+  [ESLint](https://eslint.org/docs/latest/extend/custom-rules#applying-fixes)
+  draws between a fix and a suggestion.
+- **Advice stays inside the declared version.** No check asks for what the
+  stylesheet's `version` cannot run, because that version names the oldest
+  processor it has to load on, and a
+  [1.0 processor](https://www.w3.org/TR/xslt-10/#forwards) fails on a newer
+  construct the moment it runs it.
+
+Where XSLT has two spellings, the default is the idiom most XSLT code already
+uses, never the shorter one for its own sake: shorter names are read
+[slower](https://doi.org/10.1109/SANER.2017.7884623), not faster. A team that
+mixes forms on purpose, writing `record[child::*]` for emphasis, is better
+served by turning the check off in `.xslint.yml` than by arguing with it.
+
 ## Proven on real code
 
 Even the best-maintained XSLT in the world ships faults a processor refuses.
