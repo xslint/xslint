@@ -1,6 +1,6 @@
 # `scripts/` — module notes
 
-What each script builds or judges. The commands that run them are in the root `CLAUDE.md`.
+What each script builds or judges. The commands that run them are in `AGENTS.md`.
 
 ## `scripts/generate-docs.js`
 

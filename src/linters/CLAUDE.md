@@ -1,10 +1,10 @@
 # `src/linters/` — module notes
 
 One linter per construct, and why each reads what it reads. The staging that hands them
-their input, the flow diagram, and the rules for adding a check are in the root
-`CLAUDE.md`; the shared modules they consume are in `src/CLAUDE.md`. A linter the root
-index names with no section here carries a note of ten lines at most in its own file header,
-and the tickets it cites carry the rest (#844, #1147).
+their input and the flow diagram are in `ARCHITECTURE.md`, the rules for adding a check in
+`AGENTS.md`; the shared modules they consume are in `src/CLAUDE.md`. A linter the index
+names with no section here carries a note of ten lines at most in its own file header, and
+the tickets it cites carry the rest (#844, #1147).
 
 ## `src/linters/parameter-linter.js`
 
@@ -87,7 +87,7 @@ the `$errors` #458 offers subtracts nothing at all (#922).
 ## `src/linters/*-linter.js`
 
 Code-based `checks/format/*.yaml`, one construct each (axis, namespace, count, name, ...); see the
-flow diagram in the root `CLAUDE.md`. Ten of the thirteen read the tree rather than the expression's
+flow diagram in `ARCHITECTURE.md`. Ten of the thirteen read the tree rather than the expression's
 text, which is what Phase 4 of #644 is moving all of them onto: `count-compared-to-zero` and
 `string-length-compared-to-zero` through `src/comparisons.js` (#577); `predicate-position-literal`,
 which walks the `predicate` nodes the grammar built rather than matching brackets and reducing what

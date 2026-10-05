@@ -14,7 +14,9 @@ Make sure the full build passes:
 npm test
 ```
 
-This runs the test suite and ESLint through Grunt.
+This runs the test suite and ESLint through Grunt. The rules a change answers
+to are in [`AGENTS.md`](AGENTS.md), and the map of the code, with the reasons
+behind those rules, in [`ARCHITECTURE.md`](ARCHITECTURE.md).
 
 ## Adding a linter rule
 

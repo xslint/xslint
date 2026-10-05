@@ -1,10 +1,11 @@
 # `test/` — the suite's instruments
 
 What each instrument of the suite measures, and the evidence every bar in it stands on.
-The bars themselves, and the rules for placing one, are in the root `CLAUDE.md`; this file
-is the derivation under each. A bar re-derived without its reading recorded here is a bar
-nobody can check. An instrument the root index names with no section here carries a note of
-ten lines at most in its own file header, and the tickets it cites carry the rest (#844, #1147).
+The bars themselves, and the rules for placing one, are in `AGENTS.md`; this file is the
+derivation under each. A bar re-derived without its reading recorded here is a bar nobody can
+check. An instrument the index in `ARCHITECTURE.md` names with no section here carries a note
+of ten lines at most in its own file header, and the tickets it cites carry the rest
+(#844, #1147).
 
 ## Speed
 
@@ -667,8 +668,9 @@ described at #748's reading of 1828 while it stood at 2386, a drift of 30% under
 promising that neither half could rot in silence. The length is asked as the cap twice, quiet at the
 stated length and reporting the file one line under it, so the reading is ESLint's own in the unit
 the cap is written in rather than a second count taken beside it — which would have to argue about
-whether the newline a file ends with is a line of its own. Every guide is read rather than the root
-alone, so a number that moves into a directory guide is judged where it went; and an exempt file
+whether the newline a file ends with is a line of its own. Every guide is read, and
+`ARCHITECTURE.md` beside them, rather than the root alone, so a number that moves into a
+directory guide is judged where it went; and an exempt file
 with no stated length at all fails as loudly as one whose stated length has drifted, an exemption
 from a bound being bounded by nothing but the number a reader is given. A claim is a count of lines
 standing within `NEARBY` characters of the file's own name, so the drift above is recorded as a

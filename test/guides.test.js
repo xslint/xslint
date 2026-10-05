@@ -4,16 +4,15 @@
  */
 
 /*
- * The size and the shape of the guides themselves, the one gate whose
- * subject is this repository's own documentation (#821). What a turn loads
- * is a chain, the root guide and the guide of every directory down to the
- * file it touches, so the bar weighs the dearest chain against `LOADED`
- * less `ROOM`, which reddens with room still left to answer it (#844). What
- * answers a chain reaching it is a derivation cut to the ticket that derived
- * it, never a bar widened to fit (#1147). The index answers to the tree
- * from both sides, a note answers to the index and to its own directory, and
- * the counts a guide states of a list in the code are held to that list (#825,
- * #895).
+ * The size and the shape of the guides themselves (#821). A turn loads a
+ * chain, the root guide with what it imports and the guide of every directory
+ * down to the file it touches, so the dearest chain is weighed against
+ * `LOADED` less `ROOM` (#844) and what a turn starts with against `BRIEF`, the
+ * map standing in `ARCHITECTURE.md` instead (#1168). What answers a bar is a
+ * derivation cut to its ticket, never a bar widened to fit (#1147). The index
+ * answers to the tree from both sides, a note answers to the index and to its
+ * own directory, and the counts a document states of a list in the code are
+ * held to that list (#825, #895).
  */
 
 const {allFilesFrom} = require('../src/helpers')
@@ -22,10 +21,12 @@ const {kinds} = require('../src/resources/checks.json')
 const {splitOf} = require('../src/selectors')
 const {GAP} = require('../src/tokens')
 const {
-  ROOT, GUIDES, DOCUMENTS, LOADED, ROOM, NEARBY, slashed,
-  sized, worded, chained, loaded, indexed, noted, globbed,
+  ROOT, ENTRY, ARCHITECTURE, GUIDES, DOCUMENTS, LOADED, BRIEF, ROOM, NEARBY,
+  slashed, sized, lined, worded, imports, chained, loaded, indexed, noted,
+  globbed,
 } = require('./guides')
 const path = require('path')
+const fs = require('fs')
 const assert = require('assert')
 
 /**
@@ -46,6 +47,13 @@ const PROSE = ['src/attributes.js']
  * @type {number}
  */
 const GROWN = 5298
+
+/**
+ * The file the rules stand in, which the root guide imports and every other
+ * agent reads of its own accord (#1168).
+ * @type {string}
+ */
+const RULES = 'AGENTS.md'
 
 /**
  * The selectors a shared walk cannot serve as an axis, which is what
@@ -157,6 +165,46 @@ describe('guides', function() {
       ].join(' '),
     )
   })
+  it('keeps every guide a turn starts with to the rules', function() {
+    assert.deepEqual(
+      chained(ENTRY).filter((one) => lined(one) > BRIEF)
+        .map((one) => `${one} holds ${lined(one)} lines`),
+      [],
+      [
+        `cannot start a turn with a guide past ${BRIEF} lines, the length`,
+        'past which Claude Code follows a file less closely — a guide every',
+        'turn loads holds the rules, and the map and the derivation behind',
+        `them go to ${ARCHITECTURE}, which no turn loads`,
+      ].join(' '),
+    )
+  })
+  it('says nothing in the root guide but the import of the rules', function() {
+    assert.deepEqual(
+      fs.readFileSync(path.join(ROOT, ENTRY), 'utf-8').split('\n')
+        .filter((line) => line.trim() !== '' && !line.startsWith('# ')),
+      [`@${RULES}`],
+      [
+        `cannot say anything in ${ENTRY} but the import of ${RULES}: every`,
+        'other agent reads that file and never this one, so a rule written',
+        'here is a rule only one of them follows',
+      ].join(' '),
+    )
+  })
+  it('imports only files the tree holds', function() {
+    assert.deepEqual(
+      GUIDES.flatMap(
+        (guide) => imports(guide)
+          .filter((one) => !fs.existsSync(path.join(ROOT, one)))
+          .map((one) => `${guide} imports ${one}`),
+      ),
+      [],
+      [
+        'a guide imports a file the tree does not hold — an at-sign standing',
+        'bare in prose is an import Claude Code tries and drops, so a name a',
+        'guide only mentions goes in backticks',
+      ].join(' '),
+    )
+  })
   it('keeps room enough to answer a chain that has reached the bar', function() {
     assert.ok(
       ROOM >= GROWN * 1.5 && ROOM <= GROWN * 2,
@@ -177,7 +225,7 @@ describe('guides', function() {
         [
           `the index names ${row}, which the tree holds nothing of — a path`,
           'that has moved or gone takes its reader nowhere, and the index is',
-          'the whole of what the root guide keeps in place of the notes',
+          `the whole of what ${ARCHITECTURE} keeps in place of the notes`,
         ].join(' '),
       )
     }
@@ -191,7 +239,7 @@ describe('guides', function() {
       [],
       [
         'cannot leave a module out of the index, one line naming what it is',
-        'being the whole of what the root guide says about it — a module',
+        `being the whole of what ${ARCHITECTURE} says about it — a module`,
         'named nowhere is one a reader meets first in the code',
       ].join(' '),
     )
@@ -206,7 +254,7 @@ describe('guides', function() {
         [
           `${guide} notes a file the index does not name — the two are one map,`,
           'so a note reachable only by opening the guide it sits in is a',
-          'derivation the root has stopped pointing at',
+          'derivation the index has stopped pointing at',
         ].join(' '),
       )
     }

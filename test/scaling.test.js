@@ -20,7 +20,7 @@ const fs = require('fs')
 const path = require('path')
 const {GAPS} = require('../src/tokens')
 const {clocked} = require('./clock')
-const {ROOT, GUIDES} = require('./guides')
+const {ROOT, ENTRY, ARCHITECTURE, GUIDES, chained} = require('./guides')
 const {STAGES} = require('../src/xslint')
 const {validate: validateXsls} = require('../src/validators/xsl-validator')
 const {validate: validateXpaths} = require('../src/validators/xpath-validator')
@@ -570,8 +570,8 @@ const shaped = function(bar) {
 
 /**
  * Every bar a guide quotes at a number this file does not hold. A gap collapses
- * first, because a bar is prose and prose wraps: the root guide spells one of
- * them across a line ending.
+ * first, because a bar is prose and prose wraps, so a name and its number may
+ * stand either side of a line ending.
  * @param {string} guide - Path of the guide from the repository root
  * @return {Array.<string>} - One line per bar quoted wrongly
  */
@@ -692,7 +692,7 @@ describe('scaling', function() {
   })
   it('holds every bar a guide quotes to the table it stands in', function() {
     assert.deepEqual(
-      GUIDES.flatMap(misquoted),
+      GUIDES.concat([ARCHITECTURE]).flatMap(misquoted),
       [],
       [
         'a guide quotes a bar at a number the tables above no longer hold, and',
@@ -703,8 +703,9 @@ describe('scaling', function() {
     )
   })
   it('states every bar of those tables in the guide read first', function() {
-    const prose = fs.readFileSync(path.join(ROOT, 'CLAUDE.md'), 'utf-8')
-      .split(GAPS).join(' ')
+    const prose = chained(ENTRY)
+      .map((one) => fs.readFileSync(path.join(ROOT, one), 'utf-8'))
+      .join(' ').split(GAPS).join(' ')
     assert.deepEqual(
       Object.keys(QUOTED).filter(
         (name) => !new RegExp(`\`${name}\` at ${shaped(QUOTED[name])}`)

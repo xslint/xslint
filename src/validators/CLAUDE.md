@@ -1,7 +1,7 @@
 # `src/validators/` — module notes
 
 The two stages that partition the input before a linter sees it. The staging itself is in
-the root `CLAUDE.md`.
+`ARCHITECTURE.md`.
 
 ## `src/validators/xsl-validator.js`
 

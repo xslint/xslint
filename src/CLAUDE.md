@@ -2,8 +2,9 @@
 
 What each module here is for and why it is the way it is: the derivation behind it, the
 ticket it answers, and the measurement any number in it stands on. The rules a change to
-any of them answers to are in the root `CLAUDE.md`, whose `Key files` index names every
-file below in one line. Nothing here restates a rule; this is the evidence under one.
+any of them answers to are in `AGENTS.md`, and the `Key files` index of `ARCHITECTURE.md`
+names every file below in one line. Nothing here restates a rule; this is the evidence under
+one.
 
 ## `src/xslint.js`
 
