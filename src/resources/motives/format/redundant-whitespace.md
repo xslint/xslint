@@ -2,7 +2,7 @@
 
 `@type  =  'index'` and `@type = 'index'` are the same test, yet a search for
 one misses the other, and a commit that tidies the spacing buries the line that
-changed. Keep one spacing per expression.
+changed. Remove the doubled and stray spaces.
 
 A whitespace run is redundant when it is longer than a single space, or when it
 sits at the very start or end of the expression. Whitespace inside a string
