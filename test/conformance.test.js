@@ -670,7 +670,7 @@ describe('conformance', function() {
   })
   for (const [motive, words] of [
     ['# Heading words\n\nTwo words.', 2],
-    ['One.\n\n```xsl\n<xsl:if test="a b c"/>\n```\n\nTwo here.', 3],
+    ['One.\n\n```text\nselect a b c\n```\n\nTwo here.', 3],
     ['A\tgap  and\nlines.\n\n```\nx\n```\n```\ny z\n```', 4],
   ]) {
     it(`counts ${words} words of prose in "${motive.slice(0, 20)}"`, function() {
