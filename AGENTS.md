@@ -130,12 +130,12 @@ in `ARCHITECTURE.md`.
 
 ## Speed
 
-No test times anything. The nightly `corpora` job alone judges speed, a
-quadratic in any stage and what a run costs outright alike. It times three
-real corpora against the budgets in `.github/workflows/corpora.yml`, judged by
-`scripts/budget.js`, and diffs what they draw against `test/resources/corpora/`.
-A budget is a ratchet, red past it and red so far under it that `SLACK` asks
-for it to be retightened.
+No test reads a clock, which `TIMED` in `eslint.config.mjs` refuses. The
+nightly `corpora` job alone judges speed, a quadratic in any stage and what a
+run costs outright alike. It times three real corpora against the budgets in
+`.github/workflows/corpora.yml`, judged by `scripts/budget.js`, and diffs what
+they draw against `test/resources/corpora/`. A budget is a ratchet, red past it
+and red so far under it that `SLACK` asks for it to be retightened.
 
 - With a defect to catch, a bar stands at the geometric middle of the readings
   with the defect and without it.
