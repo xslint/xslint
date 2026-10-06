@@ -142,7 +142,7 @@ for it to be retightened.
   with the defect and without it.
 - With none, it stands between half again and twice the dearest reading, taken
   over several runs.
-- No bar is a share of the run: a share moves with the runner (#1186).
+- No bar is a share of the run (#1186).
 
 ## Guides
 

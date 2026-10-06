@@ -199,8 +199,8 @@ xcop installed the fixtures are pending; CI passes `--forbid-pending`.
 
 ## Speed
 
-The bars `AGENTS.md` names are measured with `test/clock.js`, processor time
-capped at the wall, over a corpus `test/scaling.test.js` builds at two sizes.
+`GROWTH` is read off `test/clock.js`, processor time capped at the wall, over
+a corpus built at two sizes; the `corpora` budgets read the wall clock.
 `test/chains.js` times a cross-file check over two import chains, for a
 quadratic whose constant is still small at those sizes.
 
