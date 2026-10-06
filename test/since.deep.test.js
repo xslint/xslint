@@ -9,6 +9,7 @@ const fs = require('fs')
 const path = require('path')
 const os = require('os')
 const {pathToFileURL} = require('url')
+const {slashed} = require('../src/helpers')
 
 /**
  * Directory the two states of the seeded repository live in.
@@ -258,6 +259,7 @@ describe('since', function() {
     )
     repository(yard, ['.'])
     gitted(yard, IDENTITY.concat(['commit', '--quiet', '-m', 'base']))
+    placed('after/edited.xsl', path.join(yard, 'shared'))
     assert.deepStrictEqual(
       JSON.parse(
         xslintStreams([
@@ -265,9 +267,11 @@ describe('since', function() {
           '--since', 'HEAD', path.join(yard, 'src', 'edited.xsl'),
           path.join(yard, 'lib'),
         ]).stdout,
-      ),
-      [],
-      'judged a linked sheet by the name of its target, or by a commit that holds no target',
+      ).map(
+        (defect) => `${slashed(path.resolve(defect.file), yard)}:${defect.line}`,
+      ).sort(),
+      ['lib/linked.xsl:7', 'src/edited.xsl:7'],
+      'judged a linked sheet apart from the edits of its target, or by a commit that holds no target',
     )
   })
   REFUSED.forEach((row) => {

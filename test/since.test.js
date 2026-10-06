@@ -50,12 +50,21 @@ const drawn = function(tree, file, line, name) {
  * What the change keeps of the defects it draws, against what the commit drew.
  * @param {Array.<object>} head - Defects the working tree draws
  * @param {Array.<object>} base - Defects the commit drew
+ * @param {object} links - The sheet each linked file leads to, by its name
  * @return {Array.<object>} - The ones the change introduced
  */
-const kept = function(head, base) {
+const kept = function(head, base, links = {}) {
   return introduced(
     head, base, moves(),
-    new Map(head.map((defect) => [defect.file, slashed(defect.file, ROOT)])),
+    new Map(
+      head.map((defect) => [
+        defect.file,
+        {
+          name: slashed(defect.file, ROOT),
+          real: links[slashed(defect.file, ROOT)] ?? slashed(defect.file, ROOT),
+        },
+      ]),
+    ),
     TREE,
   )
 }
@@ -63,7 +72,8 @@ const kept = function(head, base) {
 /**
  * One defect the working tree draws, the one the commit drew, and whether the
  * change introduced it.
- * @type {Array.<{name: string, head: Array, base: Array, fresh: boolean}>}
+ * @type {Array.<{name: string, head: Array, base: Array, fresh: boolean,
+ *  links: (object|undefined)}>}
  */
 const JUDGED = [
   {
@@ -150,6 +160,20 @@ const JUDGED = [
     base: ['my sheet.txt', 3, 'short-names'],
     fresh: true,
   },
+  {
+    name: 'calls old a defect a line added above its target moved down',
+    head: ['linked.txt', 2, 'short-names'],
+    base: ['linked.txt', 1, 'short-names'],
+    fresh: false,
+    links: {'linked.txt': 'grown.txt'},
+  },
+  {
+    name: 'calls new a defect on a line the change edited in its target',
+    head: ['linked.txt', 4, 'short-names'],
+    base: ['linked.txt', 3, 'short-names'],
+    fresh: true,
+    links: {'linked.txt': 'grown.txt'},
+  },
 ]
 
 describe('since', function() {
@@ -157,7 +181,9 @@ describe('since', function() {
     it(row.name, function() {
       const head = drawn(ROOT, ...row.head)
       assert.strictEqual(
-        kept([head], [drawn(TREE, ...row.base)]).includes(head), row.fresh,
+        kept([head], [drawn(TREE, ...row.base)], row.links)
+          .includes(head),
+        row.fresh,
         `misjudged whether the change introduced the defect at ${row.head.join(':')}`,
       )
     })

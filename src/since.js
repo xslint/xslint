@@ -138,8 +138,8 @@ const originOf = function(hunks, line) {
  * @param {Array.<object>} drawn - Defects the working tree draws
  * @param {Array.<object>} earlier - Defects the commit drew
  * @param {Map.<string, object>} moves - What `moved` answered
- * @param {Map.<string, string>} named - Each linted file by its path in the
- *  repository
+ * @param {Map.<string, {name: string, real: string}>} named - Each linted
+ *  file by its path in the repository and the path of the sheet it links to
  * @param {string} tree - Directory the commit was written out to
  * @return {Array.<object>} - The defects the change introduced
  */
@@ -150,10 +150,12 @@ const introduced = function(drawn, earlier, moves, named, tree) {
     counts.set(key, (counts.get(key) ?? 0) + 1)
   }
   return drawn.filter((defect) => {
-    const file = named.get(defect.file)
-    const move = moves.get(file) ?? {origin: file, hunks: []}
-    const key = [move.origin, originOf(move.hunks, defect.line), defect.name]
-      .join('\0')
+    const {name, real} = named.get(defect.file)
+    const move = moves.get(name) ?? {origin: name, hunks: []}
+    const key = [
+      move.origin, originOf((moves.get(real) ?? move).hunks, defect.line),
+      defect.name,
+    ].join('\0')
     const left = counts.get(key) ?? 0
     counts.set(key, left - 1)
     return left < 1
@@ -339,7 +341,11 @@ const since = function(drawn, ref, pths, base, suffixes, linted) {
       moves,
       new Map(
         drawn.map((defect) => [
-          defect.file, slashed(resolved(defect.file), root),
+          defect.file,
+          {
+            name: slashed(resolved(defect.file), root),
+            real: slashed(fs.realpathSync.native(defect.file), root),
+          },
         ]),
       ),
       tree,
