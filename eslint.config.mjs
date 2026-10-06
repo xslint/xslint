@@ -189,7 +189,7 @@ const PREFIXED = {
 
 const TIMED = {
   selector:
-    "Identifier[name=/^(Date|performance|cpuUsage|hrtime|uptime)$/], Literal[value=/^(Date|performance|cpuUsage|hrtime|uptime|perf_hooks)$/]",
+    "Identifier[name=/^(Date|performance|cpuUsage|resourceUsage|hrtime|uptime|cpus)$/], Literal[value=/^(Date|performance|cpuUsage|resourceUsage|hrtime|uptime|cpus|perf_hooks)$/], TemplateElement[value.cooked=/perf_hooks/]",
   message:
     "No test reads a clock: a reading inside a test moves with the runner, so a bar on it flaked on every platform that charged time differently, and the nightly corpora budgets are the only timing there is (#1186, #1160)"
 };
