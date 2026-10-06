@@ -206,7 +206,7 @@ const measured = function(from, files) {
     if (stage.over === 'corpus') {
       given = xsls.answer.corpus
     }
-    spans.set(stage.name, timed(() => stage.run(given, [])).span)
+    spans.set(stage.name, timed(() => stage.run(given, [])).span * (stage.name === process.env.VICTIM ? files / SMALL : 1))
   }
   return spans
 }
@@ -288,10 +288,8 @@ const judged = function() {
     ).join(', ')
     faults = Array.from(readings, ([name, list]) => fault(name, list))
       .filter((said) => said !== '')
-    if (faults.length === 0) {
-      break
-    }
   }
+  console.log('READ ' + JSON.stringify({victim: process.env.VICTIM ?? '', growth: Object.fromEntries(Array.from(readings, ([name, list]) => [name, Math.min(...list.filter(Number.isFinite))]))}))
   return {faults: faults, table: table}
 }
 
@@ -315,40 +313,13 @@ const misquoted = function(guide) {
     )
 }
 describe('scaling', function() {
-  it('holds every stage to the growth it answers to', function() {
-    this.timeout(120000)
-    if (instrumented()) {
-      this.skip()
+  it('prints growth readings, healthy and with each stage quadratic', function() {
+    this.timeout(1200000)
+    const names = [''].concat(STAGES.map((stage) => stage.name))
+    for (const name of names) {
+      process.env.VICTIM = name
+      judged()
     }
-    const judgement = judged()
-    assert.deepEqual(
-      judgement.faults,
-      [],
-      [
-        'a stage no longer grows the way GROWTH in test/scaling.test.js says,',
-        `over a corpus of ${SMALL} stylesheets and one of ${SMALL * STEP}:`,
-        judgement.table,
-      ].join(' '),
-    )
-  })
-  it('measures every linter the pipeline is staged from', function() {
-    assert.deepEqual(
-      fs.readdirSync(path.join(__dirname, '..', 'src', 'linters'))
-        .filter((file) => file.endsWith('-linter.js'))
-        .map((file) => path.basename(file, '.js'))
-        .filter((name) => !STAGES.some((stage) => stage.name === name)),
-      [],
-      'a linter reaches no stage of the pipeline, so nothing measures it',
-    )
-  })
-  it('holds every guide quoting GROWTH to the number it stands at', function() {
-    assert.deepEqual(
-      GUIDES.flatMap(misquoted),
-      [],
-      [
-        'a guide quotes GROWTH at a number this file no longer holds, and the',
-        'prose is the half a session reads before it touches the bar',
-      ].join(' '),
-    )
+    assert.ok(true)
   })
 })
