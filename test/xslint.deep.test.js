@@ -15,7 +15,7 @@ const os = require('os')
 
 /**
  * The two sizes of report a piped run is asked for. Twenty copies of the
- * scaling sheet stand past what a pipe takes, so the run is left writing into
+ * fixture sheet stand past what a pipe takes, so the run is left writing into
  * a full one, which is #767's shape; two fit wherever they are read, so the
  * run is over before the reader looks and node's own flush throws the report
  * away (#822). How wide a pipe the host gives decides which a run meets.

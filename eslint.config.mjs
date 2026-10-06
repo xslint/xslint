@@ -187,6 +187,13 @@ const PREFIXED = {
     "Which prefix an XSLT element is written under is the document's to choose, so code spelling one reads it with lookupPrefix and writes nothing where the namespace is bound to none: textOutsideXslText put a literal <xsl:text> into TEI's simple/mapatts.xsl, which binds XSLT to XSL and binds nothing at all to xsl, and a file every processor loaded before the run was one no parser read after it (#976). missingVersion, sixty lines above it in the same module, had read the prefix since #608"
 };
 
+const TIMED = {
+  selector:
+    "Identifier[name=/^(Date|performance|cpuUsage|resourceUsage|hrtime|uptime|cpus)$/], Literal[value=/^(Date|performance|cpuUsage|resourceUsage|hrtime|uptime|cpus|perf_hooks)$/], TemplateElement[value.cooked=/perf_hooks/]",
+  message:
+    "No test reads a clock: a reading inside a test moves with the runner, so a bar on it flaked on every platform that charged time differently, and the nightly corpora budgets are the only timing there is (#1186, #1160)"
+};
+
 const SPRAWLING = ["src/grammar.js"];
 
 export default defineConfig([
@@ -315,6 +322,12 @@ export default defineConfig([
         ["error", ...RESTRICTED, STAGED, OPAQUE, TRIVIA, PAIRED, VERSIONED,
           GRADED, QUOTED, WIDENED,
           HOMED, SPAWNED, PREFIXED]
+    }
+  },
+  {
+    files: ["test/**/*.js"],
+    rules: {
+      "no-restricted-syntax": ["error", ...RESTRICTED, TIMED]
     }
   },
   {

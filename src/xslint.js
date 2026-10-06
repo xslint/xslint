@@ -5,10 +5,9 @@
 
 /*
  * Orchestrates discovery, config, staging and output; exports the pure `lint`
- * (package `main`), `fixed`, and `STAGES`, derived from the linter lists so
- * the speed gate times what the run runs. `lint` sorts its defects by file,
- * line, column and check, in code units rather than `localeCompare`, so a
- * committed report diffs stably (#638). A run reads only what `SUFFIXES`
+ * (package `main`) and `fixed`. `lint` sorts its defects by file, line, column
+ * and check, in code units rather than `localeCompare`, so a committed report
+ * diffs stably (#638). A run reads only what `SUFFIXES`
  * names (#924); the walk opens no `.git` or `node_modules`, prunes what a
  * `dir/**` exclude covers whole (#923), and leaves out what `.gitignore`
  * refuses (#929). The exit code is `process.exitCode`, as `process.exit` drops
@@ -81,29 +80,20 @@ const {minimatch} = require('minimatch')
  * in step. What is left here reads the document rather than the expressions it
  * carries: the two declarative loaders and the four asking about namespaces,
  * imports and parameters.
- * @type {Array.<{name: string,
- *  run: function(Array.<{file: string, xsl: Document}>,
+ * @type {Array.<{run: function(Array.<{file: string, xsl: Document}>,
  *  Array.<string>): Array.<object>, checks: Array.<string>}>}
  */
 const LINTERS = [
-  {name: 'xpath-linter', run: lintByXpath, checks: xpathChecks},
-  {name: 'corpus-linter', run: lintByCorpus, checks: corpusChecks},
-  {name: 'namespace-linter', run: lintByNamespace, checks: namespaceChecks},
-  {
-    name: 'result-namespace-linter',
-    run: lintByResultNamespace,
-    checks: resultNamespaceChecks,
-  },
-  {name: 'import-linter', run: lintByImports, checks: importChecks},
-  {name: 'output-linter', run: lintByOutput, checks: outputChecks},
-  {name: 'parameter-linter', run: lintByParameter, checks: parameterChecks},
-  {name: 'element-linter', run: lintByElement, checks: elementChecks},
-  {name: 'variable-linter', run: lintByVariable, checks: variableChecks},
-  {
-    name: 'root-template-linter',
-    run: lintByRootTemplate,
-    checks: rootTemplateChecks,
-  },
+  {run: lintByXpath, checks: xpathChecks},
+  {run: lintByCorpus, checks: corpusChecks},
+  {run: lintByNamespace, checks: namespaceChecks},
+  {run: lintByResultNamespace, checks: resultNamespaceChecks},
+  {run: lintByImports, checks: importChecks},
+  {run: lintByOutput, checks: outputChecks},
+  {run: lintByParameter, checks: parameterChecks},
+  {run: lintByElement, checks: elementChecks},
+  {run: lintByVariable, checks: variableChecks},
+  {run: lintByRootTemplate, checks: rootTemplateChecks},
 ]
 
 /**
@@ -112,70 +102,23 @@ const LINTERS = [
  * reported draws one defect rather than a second from every check that reads
  * the same text (#750). Ten of them scanned the whole corpus; the exclusion is
  * structural now, with no gate to remember.
- * @type {Array.<{name: string,
- *  run: function(Array.<{source: object, found: object}>,
+ * @type {Array.<{run: function(Array.<{source: object, found: object}>,
  *  Array.<string>): Array.<object>, checks: Array.<string>}>}
  */
 const EXPRESSION_LINTERS = [
-  {name: 'xpath-axis-linter', run: lintByAxis, checks: axisChecks},
-  {
-    name: 'using-namespace-axis-linter',
-    run: lintByNamespaceAxis,
-    checks: namespaceAxisChecks,
-  },
-  {name: 'node-set-linter', run: lintByNodeSet, checks: nodeSetChecks},
-  {
-    name: 'double-slash-linter',
-    run: lintByDoubleSlash,
-    checks: doubleSlashChecks,
-  },
-  {name: 'count-linter', run: lintByCount, checks: countChecks},
-  {
-    name: 'string-length-linter',
-    run: lintByStringLength,
-    checks: stringLengthChecks,
-  },
-  {name: 'name-linter', run: lintByName, checks: nameChecks},
-  {name: 'translate-linter', run: lintByTranslate, checks: translateChecks},
-  {
-    name: 'redundant-double-negation-linter',
-    run: lintByDoubleNegation,
-    checks: doubleNegationChecks,
-  },
-  {
-    name: 'redundant-boolean-call-linter',
-    run: lintByBooleanCall,
-    checks: booleanCallChecks,
-  },
-  {
-    name: 'predicate-position-linter',
-    run: lintByPredicatePosition,
-    checks: predicatePositionChecks,
-  },
-  {name: 'bare-name-linter', run: lintByBareName, checks: bareNameChecks},
-  {name: 'xpath-format-linter', run: lintByFormat, checks: formatChecks},
-]
-
-/**
- * Every linting stage a run passes through, with what it is handed — the
- * corpus, or the expressions the validator kept — and the checks it owns, a
- * stage run under every name but one being how a check is weighed alone.
- * Derived from the two lists, so neither a linter nor a check can be wired into
- * the pipeline and left out of what measures it (#756, #811).
- * @type {Array.<{name: string, over: string, checks: Array.<string>,
- *  run: function(Array, Array.<string>): Array.<object>}>}
- */
-const STAGES = [
-  ...LINTERS.map(
-    ({name, run, checks}) => ({
-      name: name, run: run, over: 'corpus', checks: checks,
-    }),
-  ),
-  ...EXPRESSION_LINTERS.map(
-    ({name, run, checks}) => ({
-      name: name, run: run, over: 'expressions', checks: checks,
-    }),
-  ),
+  {run: lintByAxis, checks: axisChecks},
+  {run: lintByNamespaceAxis, checks: namespaceAxisChecks},
+  {run: lintByNodeSet, checks: nodeSetChecks},
+  {run: lintByDoubleSlash, checks: doubleSlashChecks},
+  {run: lintByCount, checks: countChecks},
+  {run: lintByStringLength, checks: stringLengthChecks},
+  {run: lintByName, checks: nameChecks},
+  {run: lintByTranslate, checks: translateChecks},
+  {run: lintByDoubleNegation, checks: doubleNegationChecks},
+  {run: lintByBooleanCall, checks: booleanCallChecks},
+  {run: lintByPredicatePosition, checks: predicatePositionChecks},
+  {run: lintByBareName, checks: bareNameChecks},
+  {run: lintByFormat, checks: formatChecks},
 ]
 
 /**
@@ -191,8 +134,8 @@ const VALIDATOR_CHECKS = [...xslChecks, ...xpathValidatorChecks]
  */
 const CHECKS = [
   ...VALIDATOR_CHECKS,
-  ...LINTERS.flatMap((stage) => stage.checks),
-  ...EXPRESSION_LINTERS.flatMap((stage) => stage.checks),
+  ...LINTERS.flatMap((linter) => linter.checks),
+  ...EXPRESSION_LINTERS.flatMap((linter) => linter.checks),
 ]
 
 /**
@@ -818,7 +761,6 @@ module.exports.fixed = fixed
 module.exports.settingsOf = settingsOf
 module.exports.stylesheetsOf = stylesheetsOf
 module.exports.sourceOf = sourceOf
-module.exports.STAGES = STAGES
 module.exports.PRESETS = PRESETS
 module.exports.SUFFIXES = SUFFIXES
 module.exports.suffixed = suffixed
