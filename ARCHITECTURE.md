@@ -198,11 +198,7 @@ xcop installed the fixtures are pending; CI passes `--forbid-pending`.
 
 ## Speed
 
-`test/chains.js` times a cross-file check over two import chains on
-`test/clock.js`, processor time capped at the wall. A short chain holds a
-hundred files or more, since a quadratic whose constant is still small hides
-under the parse at forty (#769, #1141). The `corpora` budgets read the wall
-clock.
+The nightly `corpora` budgets, read off the wall clock, are the only timing.
 
 ## User configuration
 
@@ -290,8 +286,6 @@ left-most, then the wider, wins, and the other waits for the next run.
 | `test/helpers.js` | The only door to a child process: `runXslint`, `xslintStatus`, `xslintStreams`, `xslintUnread`, `xcopped`, `walkedWith` |
 | `test/predicates.test.js` | The predicate vocabulary from both sides |
 | `test/tiers.test.js` | Declared tiers against what a run offers; README and manual naming none |
-| `test/clock.js` | Processor time capped at the wall |
-| `test/chains.js` | `grown`: a linter timed over two chains |
 | `test/packs.js` | The one pack harness |
 | `test/xcop.deep.test.js` | xcop over every pack's inline XSL |
 | `test/workflows.test.js` | Workflow scopes, release stamping, and README version pins |

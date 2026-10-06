@@ -130,12 +130,9 @@ in `ARCHITECTURE.md`.
 
 ## Speed
 
-No test times the whole pipeline. `test/import-linter.test.js` and
-`test/output-linter.test.js` hold their linter's growth over two import chains
-through `test/chains.js`; a quadratic in either validator or in any other
-linter, `corpus-linter` and `variable-linter` among them, and what a run costs
-outright are judged by the nightly `corpora` job alone. It times three real
-corpora against the budgets in `.github/workflows/corpora.yml`, judged by
+No test times anything. The nightly `corpora` job alone judges speed, a
+quadratic in any stage and what a run costs outright alike. It times three
+real corpora against the budgets in `.github/workflows/corpora.yml`, judged by
 `scripts/budget.js`, and diffs what they draw against `test/resources/corpora/`.
 A budget is a ratchet, red past it and red so far under it that `SLACK` asks
 for it to be retightened.
@@ -144,7 +141,7 @@ for it to be retightened.
   with the defect and without it.
 - With none, it stands between half again and twice the dearest reading, taken
   over several runs.
-- No bar is a share or a growth of the whole run (#1186).
+- No bar is a share, a growth, or a reading taken inside a test (#1186, #1160).
 
 ## Guides
 
