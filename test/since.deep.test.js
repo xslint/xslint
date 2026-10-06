@@ -26,14 +26,16 @@ const IDENTITY = [
 ]
 
 /**
- * Every sheet of one state of the repository copied into a directory.
+ * Every sheet of one state of the repository written into a directory, by
+ * hand: a copy keeps the source's time on Windows, and git takes a sheet of
+ * the same size and time for one it need not read.
  * @param {string} state - `before` or `after`
  * @param {string} yard - Directory they are copied into
  */
 const seeded = function(state, yard) {
   fs.readdirSync(path.join(SINCE, state)).forEach(
-    (name) => fs.copyFileSync(
-      path.join(SINCE, state, name), path.join(yard, name),
+    (name) => fs.writeFileSync(
+      path.join(yard, name), fs.readFileSync(path.join(SINCE, state, name)),
     ),
   )
 }
