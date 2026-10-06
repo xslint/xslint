@@ -208,6 +208,7 @@ describe('since', function() {
         'lib.xsl:7 unused-named-template',
         'pasted.xsl:7 short-names',
         'swapped.xsl:8 short-names',
+        'wrapped.xsl:7 short-names',
       ],
       'reported a defect the commit drew too, or missed one the change added',
     )

@@ -1,0 +1,5 @@
+zero
+<xsl:value-of select="$b"/>
+<xsl:variable select="'>'"
+  name="b"/>
+four

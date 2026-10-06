@@ -16,6 +16,7 @@ const os = require('os')
 const path = require('path')
 const {execFileSync} = require('child_process')
 const {SEALED, slashed} = require('./helpers')
+const {offsetAt, parted, placeAt} = require('./source')
 
 /**
  * The header of a hunk `git diff -U0` prints, its counts left out where one.
@@ -133,13 +134,41 @@ const originOf = function(hunks, line) {
 }
 
 /**
+ * The last line of the start tag opening where a defect stands, or its own
+ * line where none opens there, since an element's defect is reported on the
+ * line its tag opens on and an edit to any line of it touches the element.
+ * @param {string} content - Text of the sheet
+ * @param {object} defect - The defect, by its line and column
+ * @return {number} - Line the tag closes on
+ */
+const reachOf = function(content, defect) {
+  let at = offsetAt(content, defect.line, defect.pos)
+  let reach = defect.line
+  if (content[at] === '<') {
+    let quote = ''
+    at++
+    while (at < content.length && !(quote === '' && content[at] === '>')) {
+      if (quote === '' && (content[at] === '"' || content[at] === '\'')) {
+        quote = content[at]
+      } else if (content[at] === quote) {
+        quote = ''
+      }
+      at++
+    }
+    reach = placeAt(content, at).line
+  }
+  return reach
+}
+
+/**
  * The defects of the working tree the commit did not draw on the line each
  * stood on then, a count per line and check so a second defect is new.
  * @param {Array.<object>} drawn - Defects the working tree draws
  * @param {Array.<object>} earlier - Defects the commit drew
  * @param {Map.<string, object>} moves - What `moved` answered
- * @param {Map.<string, {name: string, real: string}>} named - Each linted
- *  file by its path in the repository and the path of the sheet it links to
+ * @param {Map.<string, {name: string, real: string, content: string}>}
+ *  named - Each linted file by its path in the repository, the path of the
+ *  sheet it links to, and its text
  * @param {string} tree - Directory the commit was written out to
  * @return {Array.<object>} - The defects the change introduced
  */
@@ -150,12 +179,17 @@ const introduced = function(drawn, earlier, moves, named, tree) {
     counts.set(key, (counts.get(key) ?? 0) + 1)
   }
   return drawn.filter((defect) => {
-    const {name, real} = named.get(defect.file)
+    const {name, real, content} = named.get(defect.file)
     const move = moves.get(name) ?? {origin: name, hunks: []}
-    const key = [
-      move.origin, originOf((moves.get(real) ?? move).hunks, defect.line),
-      defect.name,
-    ].join('\0')
+    const {hunks} = moves.get(real) ?? move
+    let origin = originOf(hunks, defect.line)
+    const reach = reachOf(content, defect)
+    for (let line = defect.line + 1; line <= reach; line++) {
+      if (originOf(hunks, line) === 0) {
+        origin = 0
+      }
+    }
+    const key = [move.origin, origin, defect.name].join('\0')
     const left = counts.get(key) ?? 0
     counts.set(key, left - 1)
     return left < 1
@@ -340,11 +374,12 @@ const since = function(drawn, ref, pths, base, suffixes, linted) {
       ),
       moves,
       new Map(
-        drawn.map((defect) => [
-          defect.file,
+        [...new Set(drawn.map((defect) => defect.file))].map((file) => [
+          file,
           {
-            name: slashed(resolved(defect.file), root),
-            real: slashed(fs.realpathSync.native(defect.file), root),
+            name: slashed(resolved(file), root),
+            real: slashed(fs.realpathSync.native(file), root),
+            content: parted(fs.readFileSync(file, 'utf-8')).text,
           },
         ]),
       ),

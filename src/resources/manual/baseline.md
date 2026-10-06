@@ -69,10 +69,10 @@ xslint --since origin/master --max-warnings=0 src
 The run lints the commit where HEAD left `<ref>`, their merge base, in a
 scratch copy too, so a branch behind `master` answers for its own lines
 alone, and maps each line of the working tree to the line it was through
-`git diff`. A defect is
-reported when the change added or edited its line, or when that line did not
-draw the same check in the commit, as when a change deletes the last call to a
-template another sheet declares. A renamed sheet keeps its old defects once
+`git diff`. A defect is reported when the change added or edited its line, or
+any line of the start tag that opens there, or when that line did not draw the
+same check in the commit, as when a change deletes the last call to a template
+another sheet declares. A renamed sheet keeps its old defects once
 git sees the rename, and a file git does not track is new as a whole. A sheet
 of a submodule, or of any repository nested in the tree, is left out of the
 report, since that repository judges its own sheets, and so is a linked sheet

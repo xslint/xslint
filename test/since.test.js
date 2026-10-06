@@ -43,7 +43,7 @@ const moves = function() {
  * @return {object} - The defect, as a run reports it
  */
 const drawn = function(tree, file, line, name) {
-  return {file: path.join(tree, file), line: line, column: 1, name: name}
+  return {file: path.join(tree, file), line: line, pos: 1, name: name}
 }
 
 /**
@@ -51,9 +51,11 @@ const drawn = function(tree, file, line, name) {
  * @param {Array.<object>} head - Defects the working tree draws
  * @param {Array.<object>} base - Defects the commit drew
  * @param {object} links - The sheet each linked file leads to, by its name
+ * @param {Array.<string>} read - The files of the working tree whose text is
+ *  read from the heads resources, the rest standing empty
  * @return {Array.<object>} - The ones the change introduced
  */
-const kept = function(head, base, links = {}) {
+const kept = function(head, base, links = {}, read = []) {
   return introduced(
     head, base, moves(),
     new Map(
@@ -62,6 +64,11 @@ const kept = function(head, base, links = {}) {
         {
           name: slashed(defect.file, ROOT),
           real: links[slashed(defect.file, ROOT)] ?? slashed(defect.file, ROOT),
+          content: read.filter((name) => name === slashed(defect.file, ROOT))
+            .map((name) => fs.readFileSync(
+              path.resolve(__dirname, 'resources', 'since', 'heads', name),
+              'utf-8',
+            )).join(''),
         },
       ]),
     ),
@@ -73,7 +80,7 @@ const kept = function(head, base, links = {}) {
  * One defect the working tree draws, the one the commit drew, and whether the
  * change introduced it.
  * @type {Array.<{name: string, head: Array, base: Array, fresh: boolean,
- *  links: (object|undefined)}>}
+ *  links: (object|undefined), read: (Array|undefined)}>}
  */
 const JUDGED = [
   {
@@ -81,6 +88,20 @@ const JUDGED = [
     head: ['grown.txt', 2, 'short-names'],
     base: ['grown.txt', 1, 'short-names'],
     fresh: false,
+  },
+  {
+    name: 'calls new a defect whose start tag runs past a quoted bracket onto a line the change edited',
+    head: ['grown.txt', 3, 'short-names'],
+    base: ['grown.txt', 2, 'short-names'],
+    fresh: true,
+    read: ['grown.txt'],
+  },
+  {
+    name: 'calls old a defect whose start tag closes on its own line',
+    head: ['grown.txt', 2, 'short-names'],
+    base: ['grown.txt', 1, 'short-names'],
+    fresh: false,
+    read: ['grown.txt'],
   },
   {
     name: 'calls new a defect on a line the change edited',
@@ -181,7 +202,7 @@ describe('since', function() {
     it(row.name, function() {
       const head = drawn(ROOT, ...row.head)
       assert.strictEqual(
-        kept([head], [drawn(TREE, ...row.base)], row.links)
+        kept([head], [drawn(TREE, ...row.base)], row.links, row.read)
           .includes(head),
         row.fresh,
         `misjudged whether the change introduced the defect at ${row.head.join(':')}`,
