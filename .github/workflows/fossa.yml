@@ -1,0 +1,22 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+name: fossa
+'on':
+  push:
+    branches:
+      - master
+concurrency:
+  group: fossa
+  cancel-in-progress: true
+permissions:
+  contents: read
+jobs:
+  fossa:
+    timeout-minutes: 15
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: fossas/fossa-action@v2.0.0
+        with:
+          api-key: ${{ secrets.FOSSA_API_KEY }}
