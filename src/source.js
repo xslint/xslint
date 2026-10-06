@@ -184,6 +184,7 @@ const skip = function(content, at, count) {
 }
 
 module.exports = {
+  ENDINGS,
   NAMED,
   parted,
   offsetAt,

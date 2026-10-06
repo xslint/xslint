@@ -314,6 +314,18 @@ const chosenOf = function(only, listed, graded) {
       )
     }
   }
+  return selected(only, listed, graded)
+}
+
+/**
+ * The checks `chosenOf` answers, chosen without a word about a choice naming
+ * none, so a caller asking again after the run warns nothing twice.
+ * @param {Array.<string>} only - Substrings of the names chosen
+ * @param {Array.<string>} listed - Names of the checks the preset holds
+ * @param {Array.<string>} graded - Names of the checks the run re-grades
+ * @return {Array.<string>} - Names of the checks chosen
+ */
+const selected = function(only, listed, graded) {
   let chosen = CHECKS.filter(
     (check) => listed.includes(check) || graded.includes(check),
   )
@@ -323,6 +335,21 @@ const chosenOf = function(only, listed, graded) {
     )
   }
   return chosen
+}
+
+/**
+ * The checks a run under these settings reports, chosen and left unsuppressed,
+ * so a baseline judges and rewrites only the entries the run could draw.
+ * @param {{suppress: Array.<string>, overrides: object, only: Array.<string>,
+ *  preset: string}} settings - What `settingsOf` answers
+ * @return {Array.<string>} - Names of the checks run
+ */
+const ranOf = function(
+  {suppress = [], overrides = {}, only = [], preset = PRESET},
+) {
+  return selected(only, presetted(preset), Object.keys(overrides)).filter(
+    (check) => !suppressed(check, suppress.filter((sup) => sup !== '')),
+  )
 }
 
 /**
@@ -759,6 +786,28 @@ module.exports = function xslint(pths, options) {
   const settings = settingsFrom(config, options)
   settings.problems.forEach((problem) => logger.warn(problem))
   const maxWarnings = options.maxWarnings ?? config.maxWarnings ?? -1
+  const fixing = options.fix || options.fixDryRun || options.fixSuggestions
+  if (options.baselineWrite && fixing) {
+    throw new Error(
+      'Option --baseline-write records what a run finds and cannot run with a fix flag',
+    )
+  }
+  let ledger
+  if (options.baseline) {
+    ledger = path.resolve(options.baseline)
+  } else if (config.baseline) {
+    ledger = path.resolve(config.base, config.baseline)
+  }
+  let target
+  let earlier = {}
+  if (options.baselineWrite) {
+    target = path.resolve(options.baselineWrite)
+    if (fs.existsSync(target)) {
+      earlier = JSON.parse(fs.readFileSync(target, 'utf-8'))
+    }
+  } else if (ledger) {
+    earlier = JSON.parse(fs.readFileSync(ledger, 'utf-8'))
+  }
   logger.info(`Directories and files to process: ${pths.join(', ')}`)
   const found = stylesheetsOf(pths, settings)
   found.problems.forEach((problem) => logger.warn(problem))
@@ -766,8 +815,9 @@ module.exports = function xslint(pths, options) {
   const sources = found.stylesheets.map(
     (stylesheet) => sourceOf(stylesheet, fs.readFileSync(stylesheet, 'utf-8')),
   )
-  let reported = lint(sources, settings)
-  if (options.fix || options.fixDryRun || options.fixSuggestions) {
+  const drawn = lint(sources, settings)
+  let reported = drawn
+  if (fixing) {
     /**
      * @todo #571:60min Fix over several passes until nothing changes: a fix
      *  `fixer.js` skips for overlapping another is never applied, so `--fix`
@@ -797,24 +847,16 @@ module.exports = function xslint(pths, options) {
       logger.info(`${suggested.length} more fixable with --fix-suggestions`)
     }
   }
-  let ledger
-  if (options.baseline) {
-    ledger = path.resolve(options.baseline)
-  } else if (config.baseline) {
-    ledger = path.resolve(config.base, config.baseline)
-  }
-  if (options.baselineWrite) {
-    const target = path.resolve(options.baselineWrite)
+  if (target) {
     fs.writeFileSync(
       target,
-      `${JSON.stringify(recorded(reported, sources, path.dirname(target)), null, 2)}\n`,
+      `${JSON.stringify(recorded(reported, sources, path.dirname(target), ranOf(settings), earlier), null, 2)}\n`,
     )
     logger.info(`Recorded ${reported.length} defects in ${target}`)
     reported = []
   } else if (ledger) {
     const {fresh, stale} = matched(
-      reported, sources, JSON.parse(fs.readFileSync(ledger, 'utf-8')),
-      path.dirname(ledger),
+      drawn, sources, earlier, path.dirname(ledger), ranOf(settings),
     )
     stale.forEach((entry) => logger.error(
       [
@@ -825,7 +867,7 @@ module.exports = function xslint(pths, options) {
     if (stale.length > 0) {
       process.exitCode = 1
     }
-    reported = fresh
+    reported = reported.filter((defect) => fresh.includes(defect))
   }
   logger.info(`Processed files: ${found.stylesheets.length}`)
   if (reported.length > 0) {
@@ -847,6 +889,7 @@ module.exports = function xslint(pths, options) {
 module.exports.lint = lint
 module.exports.fixed = fixed
 module.exports.settingsOf = settingsOf
+module.exports.ranOf = ranOf
 module.exports.stylesheetsOf = stylesheetsOf
 module.exports.sourceOf = sourceOf
 module.exports.STAGES = STAGES

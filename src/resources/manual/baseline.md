@@ -37,5 +37,11 @@ more often than recorded reports the extra ones.
 
 The baseline only shrinks. When a recorded defect is fixed, its entry is stale:
 the run names it and fails until the file is rewritten with
-`--baseline-write`. Only the files a run reads are judged, so a run over one
-directory says nothing of the entries for the rest of the tree.
+`--baseline-write`. A run judges only the files it reads and the checks it
+runs, and a rewrite replaces only those entries, so a run over one directory,
+or with `--only`, leaves the rest of the file as it was.
+
+`--baseline-write` refuses to run with `--fix`, `--fix-suggestions`, or
+`--fix-dry-run`, since it would record lines the fix rewrites. Under
+`--baseline`, a fix run reports the new defects it left unfixed and calls no
+entry stale for a defect it fixed; the next run without a fix flag does.

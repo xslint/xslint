@@ -959,6 +959,75 @@ describe('xslint', function() {
       'did not compare the run against the baseline its config file names',
     )
   })
+  it('should pass a fix dry run against its own baseline', function() {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-'))
+    fs.copyFileSync(
+      'test/resources/baseline/recorded.xsl', path.join(dir, 'a.xsl'),
+    )
+    const file = path.join(dir, 'baseline.json')
+    xslintStatus(['--preset', 'all', '--baseline-write', file, dir])
+    const status = xslintStatus([
+      '--preset', 'all', '--baseline', file, '--fix-dry-run',
+      '--fix-suggestions', dir,
+    ])
+    fs.rmSync(dir, {recursive: true, force: true})
+    assert.equal(
+      status, 0,
+      'called stale the entries of defects a dry run only said it would fix',
+    )
+  })
+  it('should refuse to write a baseline while fixing', function() {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-'))
+    fs.copyFileSync(
+      'test/resources/baseline/recorded.xsl', path.join(dir, 'a.xsl'),
+    )
+    const status = xslintStatus([
+      '--preset', 'all', '--fix', '--baseline-write',
+      path.join(dir, 'baseline.json'), dir,
+    ])
+    fs.rmSync(dir, {recursive: true, force: true})
+    assert.equal(
+      status, 1,
+      'recorded a baseline against text a fix in the same run rewrote',
+    )
+  })
+  it('should fix nothing when its baseline file is missing', function() {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-'))
+    const sheet = path.join(dir, 'a.xsl')
+    fs.copyFileSync('test/resources/baseline/recorded.xsl', sheet)
+    xslintStatus([
+      '--preset', 'all', '--fix', '--fix-suggestions', '--baseline',
+      path.join(dir, 'missing.json'), dir,
+    ])
+    const content = fs.readFileSync(sheet, 'utf-8')
+    fs.rmSync(dir, {recursive: true, force: true})
+    assert.equal(
+      content, fs.readFileSync('test/resources/baseline/recorded.xsl', 'utf-8'),
+      'rewrote a sheet before finding the baseline it was told to read missing',
+    )
+  })
+  it('should keep what a rewrite over one directory did not read', function() {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-'))
+    for (const sub of ['one', 'two']) {
+      fs.mkdirSync(path.join(dir, sub))
+      fs.copyFileSync(
+        'test/resources/baseline/recorded.xsl', path.join(dir, sub, 'a.xsl'),
+      )
+    }
+    const file = path.join(dir, 'baseline.json')
+    xslintStatus(['--preset', 'all', '--baseline-write', file, dir])
+    xslintStatus([
+      '--preset', 'all', '--baseline-write', file, path.join(dir, 'one'),
+    ])
+    const status = xslintStatus([
+      '--preset', 'all', '--baseline', file, '--max-warnings=0', dir,
+    ])
+    fs.rmSync(dir, {recursive: true, force: true})
+    assert.equal(
+      status, 0,
+      'dropped the entries of a directory a rewrite of the baseline never read',
+    )
+  })
   it('should record every check a run draws in the baseline', function() {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-'))
     fs.copyFileSync(

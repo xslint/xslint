@@ -32,10 +32,10 @@ kept, so a refused expression reaches no check at all.
 `src/xslint.js` is the whole staging as a pure function: no file I/O, no
 output, no exit, and the defects in one total order. The command-line
 `xslint(paths, options)` wraps it: it resolves config, reads the files, calls
-`lint`, applies `--fix`, reports, and sets `process.exitCode`. The editor
-integrations (`xslint-lsp`, `xslint-jetbrains`) use what the package `main`
-re-exports, listed in the index. `src/index.mjs` imports the pipeline inside
-the command action, so `--version` and `--help` load none of it.
+`lint`, applies `--fix`, filters by or writes the baseline, reports, and sets
+`process.exitCode`. The editor integrations (`xslint-lsp`, `xslint-jetbrains`)
+use what the package `main` re-exports, listed in the index. `src/index.mjs`
+imports the pipeline in the command action: `--version` and `--help` load none.
 
 Each linter is one `{name, run, checks}` entry in `LINTERS` or
 `EXPRESSION_LINTERS` in `src/xslint.js`. The `CHECKS` names that `--suppress`
@@ -232,9 +232,9 @@ left-most, then the wider, wins, and the other waits for the next run.
 | File | Role |
 | --- | --- |
 | `src/index.mjs` | CLI entry (commander.js, ESM); imports the pipeline inside the command action |
-| `src/xslint.js` | Discovery, config, staging, output; exports `lint`, `fixed`, `settingsOf`, `stylesheetsOf`, `sourceOf`, and the `STAGES` the speed gate times |
+| `src/xslint.js` | Discovery, config, staging, output; exports `lint`, `fixed`, `settingsOf`, `ranOf`, `stylesheetsOf`, `sourceOf`, and the `STAGES` the speed gate times |
 | `src/config.js` | Resolves `.xslint.yml` (severities, `off`, excludes, `max-warnings`) |
-| `src/baseline.js` | `recorded` and `matched`: the defects a baseline file holds by file, check and line text, and the stale entries that fail a run |
+| `src/baseline.js` | `recorded` and `matched`: the defects a baseline file holds by file, check and line text, and the stale entries that fail a run, over the files read and the checks `ranOf` names |
 | `src/gitignore.js` | `ignoring(start)`: what the project's `.gitignore` files refuse |
 | `src/directives.js` | Parses inline `xslint-disable-*` comments |
 | `src/reporters.js` | `reporterOf(format)`: `text`, `json`, `sarif`, or `github` |
