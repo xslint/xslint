@@ -54,9 +54,11 @@ how a defect is matched.
 A recorded defect is matched by its file and the text of its line, so a pull
 request that renames a sheet or edits a recorded line, in a feature as much as
 in a fix, sees those defects reported as new. Fix them while you are there.
-Otherwise read the list the gate prints: when every defect on it sits in the
-renamed sheet or on the edited lines, record the tree again, and when any
-other is there, it is new and needs fixing first:
+Otherwise check each defect the gate lists against the committed baseline. It
+is old when the baseline holds its check for that sheet, under the old name
+after a rename, at least as many times as the gate now lists it there. Any
+other is new, even on an edited line, and needs fixing first. Once every
+listed defect is old, record the tree again:
 
 ```bash
 xslint --baseline-write xslint-baseline.json src
