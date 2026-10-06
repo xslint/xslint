@@ -62,8 +62,10 @@ xslint --since origin/master --max-warnings=0 src
 ```
 
 The [baseline guide](baseline.html) covers how it maps lines.
-A pull request that fixes recorded defects still drops their entries, so the
-gate on `master` stays green:
+An edit can fix a recorded defect in passing, as a longer name or a new call
+to an unused template does, and `--since` never names the entry it leaves
+stale. Every pull request prunes and commits the file, so the gate on `master`
+stays green:
 
 ```bash
 xslint --baseline xslint-baseline.json --baseline-prune src
