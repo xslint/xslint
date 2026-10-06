@@ -132,9 +132,9 @@ in `ARCHITECTURE.md`.
 
 No test times the whole pipeline. `test/import-linter.test.js` and
 `test/output-linter.test.js` hold their linter's growth over two import chains
-through `test/chains.js`; a quadratic in any other linter, `corpus-linter` and
-`variable-linter` among them, and what a run costs outright are judged by the
-nightly `corpora` job alone. It times three real corpora against the budgets
+through `test/chains.js`; a quadratic in either validator or in any other
+linter, `corpus-linter` and `variable-linter` among them, and what a run costs
+outright are judged by the nightly `corpora` job alone. It times three real corpora against the budgets
 in `.github/workflows/corpora.yml`, judged by `scripts/budget.js`, and diffs
 what they draw against `test/resources/corpora/`. A budget is a ratchet, red
 past it and red so far under it that `SLACK` asks for it to be retightened.
