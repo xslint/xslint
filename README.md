@@ -261,6 +261,13 @@ records nothing new, so the baseline only shrinks. The [baseline
 guide][baseline] covers how a defect is matched and where the file is read
 from.
 
+## Adopting
+
+On a large tree, measure the reports by check, commit the `--fix` output on
+its own, turn off only the checks the team rejects, and gate CI on a baseline
+of the rest. Then fix one check per pull request and prune what it left
+stale. The [adoption guide][adopting] gives the commands for each step.
+
 ## Checks
 
 Validators first make sure every stylesheet is well-formed and every XPath
@@ -341,5 +348,6 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the full workflow and
 [output]: https://xslint.github.io/xslint/manual/output.html
 [fixing]: https://xslint.github.io/xslint/manual/fixing.html
 [baseline]: https://xslint.github.io/xslint/manual/baseline.html
+[adopting]: https://xslint.github.io/xslint/manual/adopting.html
 [stages]: https://xslint.github.io/xslint/manual/checks.html
 [api]: https://xslint.github.io/xslint/manual/api.html
