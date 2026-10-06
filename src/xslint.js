@@ -80,29 +80,20 @@ const {minimatch} = require('minimatch')
  * in step. What is left here reads the document rather than the expressions it
  * carries: the two declarative loaders and the four asking about namespaces,
  * imports and parameters.
- * @type {Array.<{name: string,
- *  run: function(Array.<{file: string, xsl: Document}>,
+ * @type {Array.<{run: function(Array.<{file: string, xsl: Document}>,
  *  Array.<string>): Array.<object>, checks: Array.<string>}>}
  */
 const LINTERS = [
-  {name: 'xpath-linter', run: lintByXpath, checks: xpathChecks},
-  {name: 'corpus-linter', run: lintByCorpus, checks: corpusChecks},
-  {name: 'namespace-linter', run: lintByNamespace, checks: namespaceChecks},
-  {
-    name: 'result-namespace-linter',
-    run: lintByResultNamespace,
-    checks: resultNamespaceChecks,
-  },
-  {name: 'import-linter', run: lintByImports, checks: importChecks},
-  {name: 'output-linter', run: lintByOutput, checks: outputChecks},
-  {name: 'parameter-linter', run: lintByParameter, checks: parameterChecks},
-  {name: 'element-linter', run: lintByElement, checks: elementChecks},
-  {name: 'variable-linter', run: lintByVariable, checks: variableChecks},
-  {
-    name: 'root-template-linter',
-    run: lintByRootTemplate,
-    checks: rootTemplateChecks,
-  },
+  {run: lintByXpath, checks: xpathChecks},
+  {run: lintByCorpus, checks: corpusChecks},
+  {run: lintByNamespace, checks: namespaceChecks},
+  {run: lintByResultNamespace, checks: resultNamespaceChecks},
+  {run: lintByImports, checks: importChecks},
+  {run: lintByOutput, checks: outputChecks},
+  {run: lintByParameter, checks: parameterChecks},
+  {run: lintByElement, checks: elementChecks},
+  {run: lintByVariable, checks: variableChecks},
+  {run: lintByRootTemplate, checks: rootTemplateChecks},
 ]
 
 /**
@@ -111,48 +102,23 @@ const LINTERS = [
  * reported draws one defect rather than a second from every check that reads
  * the same text (#750). Ten of them scanned the whole corpus; the exclusion is
  * structural now, with no gate to remember.
- * @type {Array.<{name: string,
- *  run: function(Array.<{source: object, found: object}>,
+ * @type {Array.<{run: function(Array.<{source: object, found: object}>,
  *  Array.<string>): Array.<object>, checks: Array.<string>}>}
  */
 const EXPRESSION_LINTERS = [
-  {name: 'xpath-axis-linter', run: lintByAxis, checks: axisChecks},
-  {
-    name: 'using-namespace-axis-linter',
-    run: lintByNamespaceAxis,
-    checks: namespaceAxisChecks,
-  },
-  {name: 'node-set-linter', run: lintByNodeSet, checks: nodeSetChecks},
-  {
-    name: 'double-slash-linter',
-    run: lintByDoubleSlash,
-    checks: doubleSlashChecks,
-  },
-  {name: 'count-linter', run: lintByCount, checks: countChecks},
-  {
-    name: 'string-length-linter',
-    run: lintByStringLength,
-    checks: stringLengthChecks,
-  },
-  {name: 'name-linter', run: lintByName, checks: nameChecks},
-  {name: 'translate-linter', run: lintByTranslate, checks: translateChecks},
-  {
-    name: 'redundant-double-negation-linter',
-    run: lintByDoubleNegation,
-    checks: doubleNegationChecks,
-  },
-  {
-    name: 'redundant-boolean-call-linter',
-    run: lintByBooleanCall,
-    checks: booleanCallChecks,
-  },
-  {
-    name: 'predicate-position-linter',
-    run: lintByPredicatePosition,
-    checks: predicatePositionChecks,
-  },
-  {name: 'bare-name-linter', run: lintByBareName, checks: bareNameChecks},
-  {name: 'xpath-format-linter', run: lintByFormat, checks: formatChecks},
+  {run: lintByAxis, checks: axisChecks},
+  {run: lintByNamespaceAxis, checks: namespaceAxisChecks},
+  {run: lintByNodeSet, checks: nodeSetChecks},
+  {run: lintByDoubleSlash, checks: doubleSlashChecks},
+  {run: lintByCount, checks: countChecks},
+  {run: lintByStringLength, checks: stringLengthChecks},
+  {run: lintByName, checks: nameChecks},
+  {run: lintByTranslate, checks: translateChecks},
+  {run: lintByDoubleNegation, checks: doubleNegationChecks},
+  {run: lintByBooleanCall, checks: booleanCallChecks},
+  {run: lintByPredicatePosition, checks: predicatePositionChecks},
+  {run: lintByBareName, checks: bareNameChecks},
+  {run: lintByFormat, checks: formatChecks},
 ]
 
 /**
@@ -168,8 +134,8 @@ const VALIDATOR_CHECKS = [...xslChecks, ...xpathValidatorChecks]
  */
 const CHECKS = [
   ...VALIDATOR_CHECKS,
-  ...LINTERS.flatMap((stage) => stage.checks),
-  ...EXPRESSION_LINTERS.flatMap((stage) => stage.checks),
+  ...LINTERS.flatMap((linter) => linter.checks),
+  ...EXPRESSION_LINTERS.flatMap((linter) => linter.checks),
 ]
 
 /**

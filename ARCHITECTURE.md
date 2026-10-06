@@ -37,7 +37,7 @@ integrations (`xslint-lsp`, `xslint-jetbrains`) use what the package `main`
 re-exports, listed in the index. `src/index.mjs` imports the pipeline inside
 the command action, so `--version` and `--help` load none of it.
 
-Each linter is one `{name, run, checks}` entry in `LINTERS` or
+Each linter is one `{run, checks}` entry in `LINTERS` or
 `EXPRESSION_LINTERS` in `src/xslint.js`. The `CHECKS` names that `--suppress`
 and config globs match are derived from those entries.
 
