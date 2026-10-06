@@ -110,15 +110,11 @@
   </div>
   <div class="check-content">
 <h1>Duplicate <code>xsl:param</code> name</h1>
-<p>The parameters of a template, a stylesheet function, or the stylesheet itself
-form one namespace: each must have a distinct name. Two parameters sharing a
-name is a static error — the processor cannot tell which one a reference binds
-to — and rejects the stylesheet.</p>
-<p>A name is compared the way the processor compares it, as an expanded QName
-rather than as text. <code>p:size</code> and <code>q:size</code> are one name when both prefixes are
-bound to the same namespace URI, <code>size</code> and <code>Q{}size</code> are one name, and the
-whitespace around a name is ignored. Respelling a prefix does not make two
-parameters distinct; giving them different local names does.</p>
+<p>Two parameters of one template, function, or stylesheet that share a name are a
+static error: the processor cannot tell which one a reference binds and rejects
+the stylesheet. Names compare as expanded QNames, so <code>p:size</code> and <code>q:size</code> clash
+when both prefixes bind the same namespace. Give the parameters different local
+names.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:template name=&quot;render&quot; xmlns:p=&quot;urn:a&quot; xmlns:q=&quot;urn:a&quot;&gt;
   &lt;xsl:param name=&quot;p:size&quot;/&gt;
@@ -131,22 +127,8 @@ parameters distinct; giving them different local names does.</p>
   &lt;xsl:param name=&quot;height&quot;/&gt;
 &lt;/xsl:template&gt;
 </code></pre>
-<p>One name may be declared twice when a <code>use-when</code> (XSLT 2.0 and later, or
-<code>_use-when</code> from 3.0) on either declaration can leave it out of the compiled
-stylesheet. Whether the pair clashes then depends on a condition only the
-processor evaluates, so the pair is not reported. The usual shape gives one
-parameter a different declaration per processor:</p>
-<pre><code class="language-xsl">&lt;xsl:template name=&quot;render&quot;&gt;
-  &lt;xsl:param name=&quot;size&quot; as=&quot;xs:integer&quot;
-    use-when=&quot;system-property(&#39;xsl:version&#39;) = &#39;3.0&#39;&quot;/&gt;
-  &lt;xsl:param name=&quot;size&quot;
-    use-when=&quot;system-property(&#39;xsl:version&#39;) != &#39;3.0&#39;&quot;/&gt;
-&lt;/xsl:template&gt;
-</code></pre>
-<p>A <code>use-when</code> on one side alone still clashes wherever its condition holds,
-since the parameter beside it is compiled everywhere. Keep such a condition
-false on every processor the stylesheet targets, or give the two parameters
-different names.</p>
+<p>A pair where either declaration carries a <code>use-when</code> is not reported, since
+only the processor knows whether both are compiled.</p>
 
   </div>
 </body>

@@ -110,25 +110,10 @@
   </div>
   <div class="check-content">
 <h1>An href that names no module</h1>
-<p><code>xsl:import</code> and <code>xsl:include</code> exist to name another stylesheet module, and
-<code>@href</code> is the only thing on them that does it. With none there is nothing to
-pull in, and a processor refuses the whole stylesheet — <code>XTSE0010</code>, a required
-attribute missing — rather than loading it and leaving the templates that
-module was to supply quietly undefined. An empty one is not the milder case: a
-relative reference of no characters is the module itself, so the stylesheet
-imports or includes its own source, and that is refused too, under <code>XTSE0210</code>
-for an import and <code>XTSE0180</code> for an include.</p>
-<p>The empty spelling is the one that hides. <code>href=&quot;&quot;</code> survives a search for the
-attribute and reads as a placeholder somebody meant to fill, which is usually
-what it is — a module moved, a path deleted mid-edit, or an attribute value
-template that resolved to nothing. Nothing about the element says which module
-was meant, so the repair is always to write the path rather than to drop the
-attribute: an <code>xsl:include</code> that includes nothing has no reason to stand.</p>
-<p>XSLT 3.0 writes the reference <code>_href</code> as readily as <code>href</code>, the underscore form
-an attribute value template evaluated before the stylesheet compiles. So
-<code>_href=&quot;&quot;</code> and <code>_href=&quot;{&#39;&#39;}&quot;</code> name the module itself exactly as <code>href=&quot;&quot;</code> does,
-while <code>_href=&quot;{$base}&quot;</code> names whatever that static parameter holds and is left
-alone.</p>
+<p><code>@href</code> is what tells <code>xsl:import</code> and <code>xsl:include</code> which module to pull in.
+Without one the processor refuses the stylesheet (<code>XTSE0010</code>), and an empty one
+names the stylesheet itself, which is refused too. An empty <code>href</code> is usually a
+module moved or a path deleted mid-edit. Write the path of the module meant.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:import/&gt;
 &lt;xsl:include href=&quot;&quot;/&gt;
@@ -137,9 +122,7 @@ alone.</p>
 <pre><code class="language-xsl">&lt;xsl:import href=&quot;common/attributes.xsl&quot;/&gt;
 &lt;xsl:include href=&quot;common/tables.xsl&quot;/&gt;
 </code></pre>
-<p><code>xsl:result-document</code> carries an <code>@href</code> as well, and leaving it out there says
-something else entirely — write to the principal result — so an absent one is
-no fault at all and this is not about it.</p>
+<p>The XSLT 3.0 spelling <code>_href</code> is checked the same way.</p>
 
   </div>
 </body>

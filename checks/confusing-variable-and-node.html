@@ -113,59 +113,25 @@
   stylesheet does, or is one of several the check would accept.</p>
   <div class="check-content">
 <h1>Are you confusing a variable and a node?</h1>
-<p>When a variable and a node share the same name, using the bare name in
-<code>select</code> silently picks the node child rather than the variable.</p>
+<p>When a variable and a child element share a name, a bare <code>title</code> in the
+<code>select</code> of <code>xsl:apply-templates</code>, <code>xsl:for-each</code>, <code>xsl:value-of</code>, or
+<code>xsl:copy-of</code> picks the child, and the variable is silently ignored. Write
+<code>$title</code> for the variable. Where the variable may hold an atomic value, rename
+it or spell the child <code>child::title</code> instead.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:template match=&quot;/&quot;&gt;
-  &lt;xsl:variable name=&quot;title&quot; select=&quot;&#39;Hello&#39;&quot;/&gt;
+  &lt;xsl:variable name=&quot;title&quot; select=&quot;book/title&quot;/&gt;
   &lt;xsl:apply-templates select=&quot;title&quot;/&gt;
 &lt;/xsl:template&gt;
 </code></pre>
 <p>Correct:</p>
 <pre><code class="language-xsl">&lt;xsl:template match=&quot;/&quot;&gt;
-  &lt;xsl:variable name=&quot;title&quot; select=&quot;&#39;Hello&#39;&quot;/&gt;
+  &lt;xsl:variable name=&quot;title&quot; select=&quot;book/title&quot;/&gt;
   &lt;xsl:apply-templates select=&quot;$title&quot;/&gt;
 &lt;/xsl:template&gt;
 </code></pre>
-<p>Only a variable in scope can be confused, which is one declared in front of
-the instruction or in front of one of its ancestors. One declared inside an
-earlier sibling, such as an <code>xsl:if</code>, ends with that sibling, and <code>$heading</code>
-there names nothing:</p>
-<pre><code class="language-xsl">&lt;xsl:if test=&quot;title&quot;&gt;
-  &lt;xsl:variable name=&quot;heading&quot; select=&quot;string(title)&quot;/&gt;
-&lt;/xsl:if&gt;
-&lt;xsl:apply-templates select=&quot;heading&quot;/&gt;
-</code></pre>
-<p>Only the name opening a path is confused, too. A name inside a predicate is
-asked of another context node, so in
-<code>following-sibling::item[string(contrib) = $contrib]</code> the inner <code>contrib</code> is
-the child of each <code>item</code>, and no variable could stand in for it.</p>
-<p>A variable that may hold an atomic value is still worth the warning, but not
-the dollar sign. Only a few shapes are sure to yield nodes: a path or a step,
-another variable, a union, <code>intersect</code> or <code>except</code> of those, a filter over
-one, a <code>!</code> mapping onto one, and a call to <code>key</code>, <code>id</code>, <code>idref</code>,
-<code>element-with-id</code>, <code>document</code>, <code>doc</code>, <code>collection</code>, <code>root</code>, <code>outermost</code> or
-<code>innermost</code>. Anything else may not — a literal, <code>string(contrib)</code>,
-<code>upper-case(title)</code>, <code>count(part) + 1</code>, <code>@kind = &#39;x&#39;</code>, <code>title/string()</code> — nor
-may a variable whose <code>as</code> names an atomic type. There <code>select=&quot;$contrib&quot;</code>
-hands a string, a number or a boolean to an instruction that selects nodes,
-which is a type error. Rename the variable instead, or spell the child as
-<code>child::contrib</code>.</p>
-<p>A variable bound by <em>content</em> rather than by <code>select</code> is a different thing, and
-a bare name standing beside one is usually right. Its nodes form a tree of
-their own, parented by nothing in the source document, so they are members of
-no <code>node()</code> the source yields. <code>node() except errors</code> subtracts the child
-element it names; <code>node() except $errors</code> subtracts nothing at all, which turns
-an identity transform that replaces an element into one that emits it twice:</p>
-<pre><code class="language-xsl">&lt;xsl:template match=&quot;object&quot;&gt;
-  &lt;xsl:variable name=&quot;errors&quot; as=&quot;element()*&quot;&gt;
-    &lt;xsl:apply-templates select=&quot;metas&quot;/&gt;
-  &lt;/xsl:variable&gt;
-  &lt;xsl:copy&gt;
-    &lt;xsl:apply-templates select=&quot;(node() except errors)|@*&quot;/&gt;
-  &lt;/xsl:copy&gt;
-&lt;/xsl:template&gt;
-</code></pre>
+<p>Only a name opening a path is checked, against a variable in scope that binds
+its value with <code>select</code>.</p>
 
   </div>
 </body>

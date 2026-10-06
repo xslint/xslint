@@ -115,10 +115,6 @@
 iterates over it. One that follows an instruction is invalid: a processor
 rejects it, and some silently ignore it, so the output looks unsorted for no
 visible reason.</p>
-<p>An <code>xsl:with-param</code> is not that content. Inside <code>xsl:apply-templates</code> the
-content model is <code>(xsl:sort | xsl:with-param)*</code>, so the two stand in any order
-and a parameter ahead of a sort is correct XSLT, whatever it looks like.
-<code>xsl:for-each</code> takes no parameters at all, which is where the rule bites.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:for-each select=&quot;item&quot;&gt;
   &lt;xsl:value-of select=&quot;.&quot;/&gt;
@@ -131,7 +127,8 @@ and a parameter ahead of a sort is correct XSLT, whatever it looks like.
   &lt;xsl:value-of select=&quot;.&quot;/&gt;
 &lt;/xsl:for-each&gt;
 </code></pre>
-<p>Correct as well, and left alone:</p>
+<p>An <code>xsl:with-param</code> may stand before a sort inside <code>xsl:apply-templates</code>, so
+this is correct:</p>
 <pre><code class="language-xsl">&lt;xsl:apply-templates select=&quot;item&quot;&gt;
   &lt;xsl:with-param name=&quot;depth&quot; select=&quot;1&quot;/&gt;
   &lt;xsl:sort select=&quot;@name&quot;/&gt;

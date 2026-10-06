@@ -110,16 +110,10 @@
   </div>
   <div class="check-content">
 <h1>Scans whole document</h1>
-<p>A path opening with <code>//</code> is evaluated as <code>/descendant-or-self::node()/…</code>, so it
-walks the entire document from the root — and it does so every time the
-expression it stands in is evaluated. Inside a template applied per node, that
-is once per node; inside the <code>use</code> of an <code>xsl:key</code>, once per node the key
-matches; inside an attribute value template, once per element instantiated.
-Unlike the steps of a <code>match</code> pattern, where a leading <code>//</code> is merely redundant
-and an inner one only widens what the rule takes, here it is a real, repeated,
-whole-tree scan.</p>
-<p>Most of the time the author meant something narrower than the whole document,
-and naming it removes the traversal outright:</p>
+<p>A path opening with <code>//</code> walks the entire document from the root every time
+its expression runs, which in a template applied per node is once per node.
+The author usually meant something narrower. Name that path, look the value up
+with <code>xsl:key</code>, or bind the scan once in a top-level variable.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:template match=&quot;section&quot;&gt;
   &lt;xsl:for-each select=&quot;//item&quot;&gt;
@@ -134,86 +128,9 @@ and naming it removes the traversal outright:</p>
   &lt;/xsl:for-each&gt;
 &lt;/xsl:template&gt;
 </code></pre>
-<p>This is a change of meaning and not a respelling of the same expression, which
-is why there is no mechanical rewrite of it. <code>//item</code> selects every <code>item</code> in
-the document; <code>item</code> selects the children of the node being matched, and
-<code>.//item</code> its descendants. Those agree only when the current node is the root,
-and where they agree <code>.//item</code> walks the same tree the <code>//</code> did, so it buys
-nothing. Read the template that holds the expression and write the path the
-author was reaching for.</p>
-<p>Where the whole document genuinely is the subject and the lookup is by value,
-an <code>xsl:key</code> replaces the repeated scan with an index the processor builds
-once:</p>
-<p>Incorrect:</p>
-<pre><code class="language-xsl">&lt;xsl:template match=&quot;ref&quot;&gt;
-  &lt;xsl:value-of select=&quot;//item[@id = current()/@target]/title&quot;/&gt;
-&lt;/xsl:template&gt;
-</code></pre>
-<p>Correct:</p>
-<pre><code class="language-xsl">&lt;xsl:key name=&quot;items&quot; match=&quot;item&quot; use=&quot;@id&quot;/&gt;
-
-&lt;xsl:template match=&quot;ref&quot;&gt;
-  &lt;xsl:value-of select=&quot;key(&#39;items&#39;, @target)/title&quot;/&gt;
-&lt;/xsl:template&gt;
-</code></pre>
-<p>Where the whole document is the subject and the answer does not depend on the
-node being processed, a top-level binding pays for the walk once:</p>
-<p>Incorrect:</p>
-<pre><code class="language-xsl">&lt;xsl:template match=&quot;ref&quot;&gt;
-  &lt;xsl:value-of select=&quot;count(//item)&quot;/&gt;
-&lt;/xsl:template&gt;
-</code></pre>
-<p>Correct:</p>
-<pre><code class="language-xsl">&lt;xsl:variable name=&quot;items&quot; select=&quot;//item&quot;/&gt;
-
-&lt;xsl:template match=&quot;ref&quot;&gt;
-  &lt;xsl:value-of select=&quot;count($items)&quot;/&gt;
-&lt;/xsl:template&gt;
-</code></pre>
-<p>That is why a <code>//</code> inside a top-level <code>xsl:variable</code> or <code>xsl:param</code> is left
-alone: it is bound once for the transformation, against the source root, and
-there is no cheaper way to name every <code>item</code> in a document. The template the
-stylesheet is entered at — <code>match=&quot;/&quot;</code>, with neither <code>@name</code> nor <code>@mode</code> — is
-left alone for the same reason: it is applied to the one document node, so the
-walk is paid once there too. Give that template a <code>@name</code> and it becomes
-callable from anywhere, as often as its callers run. Give it a <code>@mode</code> and only
-an <code>xsl:apply-templates</code> naming that mode reaches it, as often as whatever
-holds that instruction runs, and over whatever tree it selects — which need not
-be the source document at all, a moded root template applied to a variable&#39;s
-temporary tree walking that tree instead. Match anything below the root, the
-document element included, and <code>xsl:apply-templates</code> may reach it more than
-once. An <code>xsl:for-each</code> inside the root template is the ordinary case again,
-its content instantiated once per item.</p>
-<p>A pattern carries the same construct between its brackets. A predicate holds an
-expression, so a <code>//</code> opening a path there abandons the node being tested and
-walks the document from its root, once for every candidate the pattern is
-matched against:</p>
-<p>Incorrect:</p>
-<pre><code class="language-xsl">&lt;xsl:template match=&quot;item[//flag]&quot;&gt;
-  &lt;xsl:value-of select=&quot;@id&quot;/&gt;
-&lt;/xsl:template&gt;
-</code></pre>
-<p>Correct:</p>
-<pre><code class="language-xsl">&lt;xsl:template match=&quot;item[.//flag]&quot;&gt;
-  &lt;xsl:value-of select=&quot;@id&quot;/&gt;
-&lt;/xsl:template&gt;
-</code></pre>
-<p>Anchoring buys something here that it does not buy above, because the context
-node in a predicate is the candidate rather than the root. It is a change of
-meaning all the same, and usually the meaning that was wanted: <code>//flag</code> asks
-whether the document holds a <code>flag</code> anywhere at all, which says nothing about
-the <code>item</code> in hand, so the rule takes every <code>item</code> or none of them. Decide which
-node the question is about, or name the path from the root you really meant.</p>
-<p>One of the three remedies above is not open to a pattern in every version. XSLT
-1.0 forbids a variable reference in one, so <code>match=&quot;item[$flags]&quot;</code> is rejected
-before the stylesheet runs; 2.0 and later allow it, and a global binding pays
-for the walk once there as it does anywhere else. An <code>xsl:key</code> is allowed in a
-pattern in every version.</p>
-<p>Where the slashes stand inside the expression does not matter, only whether
-they open a path. <code>distinct-values((//a, //b))</code> walks the tree twice for the
-same reason <code>//a</code> walks it once. An inner <code>//</code> (<code>items//item</code>), one inside a
-string literal, and one reached through a variable (<code>$root//item</code>) or the
-context node (<code>.//item</code>) are left alone — none of them starts at the root.</p>
+<p>A <code>//</code> in a top-level <code>xsl:variable</code> or <code>xsl:param</code>, or in the template matching
+<code>/</code> with neither <code>@name</code> nor <code>@mode</code>, runs once and is left alone. A <code>//</code>
+opening a path in a pattern&#39;s predicate is reported too.</p>
 
   </div>
 </body>

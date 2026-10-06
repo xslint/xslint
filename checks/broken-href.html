@@ -110,15 +110,10 @@
   </div>
   <div class="check-content">
 <h1>Broken href</h1>
-<p>An <code>xsl:import</code> or <code>xsl:include</code> whose <code>href</code> names a file that is not there is
-not a module a processor skips. XSLT treats it as static error XTSE0165: the whole
-stylesheet fails to compile, and not only the templates that would have come
-from the missing module. The typical cause is a module that was renamed or
-moved while a stylesheet elsewhere kept pointing at its old place, and nothing
-fails until somebody runs the transformation that reaches it.</p>
-<p>A relative <code>href</code> resolves against the directory of the stylesheet holding it,
-not against the directory the processor was started in, so <code>../common/util.xsl</code>
-in <code>html/docbook.xsl</code> names <code>common/util.xsl</code> beside the <code>html</code> directory.</p>
+<p>An <code>xsl:import</code> or <code>xsl:include</code> whose <code>href</code> names a missing file stops the
+whole stylesheet from compiling (static error XTSE0165). It usually means the
+module was renamed or moved. A relative <code>href</code> resolves against the directory
+of the stylesheet holding it.</p>
 <p>Incorrect, where the module has moved to <code>lib/</code>:</p>
 <pre><code class="language-xsl">&lt;xsl:stylesheet version=&quot;2.0&quot; xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot;&gt;
   &lt;xsl:import href=&quot;common.xsl&quot;/&gt;
@@ -129,15 +124,8 @@ in <code>html/docbook.xsl</code> names <code>common/util.xsl</code> beside the <
   &lt;xsl:import href=&quot;lib/common.xsl&quot;/&gt;
 &lt;/xsl:stylesheet&gt;
 </code></pre>
-<p>A module a build generates, such as a parameter file written from a
-specification, is missing from a source tree until that build runs, and a
-stylesheet importing it cannot be run from the tree as it stands. Generate the
-module first, or leave the importing stylesheet out of what is linted.</p>
-<p>Only a relative <code>href</code> is judged. A URL, an absolute path, a <code>plugin:</code> URI, a
-fragment or a value with an escape is resolved by a catalog or a processor
-setting this linter does not see. An <code>xml:base</code> on the import or above it
-moves where the <code>href</code> points, and a <code>use-when</code> there may keep a processor from
-reading the module at all; neither is reported.</p>
+<p>Only a relative <code>href</code> is checked, and not on an import under an <code>xml:base</code> or
+a <code>use-when</code>, which may move or skip the module.</p>
 
   </div>
 </body>

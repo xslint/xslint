@@ -110,17 +110,11 @@
   </div>
   <div class="check-content">
 <h1>Using namespace axis</h1>
-<p>XPath 2.0 deprecated the <code>namespace::</code> axis, and support for it stopped being
-something a stylesheet may count on. A processor must offer the axis only while
-backwards compatible behaviour is enabled, which means an effective version of
-1.0; anywhere else support is optional, and a processor that does not offer it
-must reject the expression outright with a static error, <code>XPST0010</code>. So the same
-stylesheet runs on one processor and fails to compile on the next, and there is
-a system property, <code>xsl:supports-namespace-axis</code>, whose whole reason for
-existing is to let a stylesheet ask which kind it is running on. Inspect
-namespace bindings with the standard functions <code>in-scope-prefixes()</code> and
-<code>namespace-uri-for-prefix()</code> instead, which every 2.0 processor has. In XSLT 1.0
-the axis is guaranteed, so the concern begins at 2.0.</p>
+<p>XPath 2.0 deprecated the <code>namespace::</code> axis. Outside backwards compatible
+mode a processor may refuse it with the static error <code>XPST0010</code>, so the same
+stylesheet compiles on one processor and fails on the next. Read namespace
+bindings with <code>in-scope-prefixes()</code> and <code>namespace-uri-for-prefix()</code>, which
+every 2.0 processor has.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:stylesheet version=&quot;2.0&quot; xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot;&gt;
   &lt;xsl:output method=&quot;html&quot;/&gt;
@@ -142,24 +136,8 @@ the axis is guaranteed, so the concern begins at 2.0.</p>
   &lt;/xsl:template&gt;
 &lt;/xsl:stylesheet&gt;
 </code></pre>
-<p>Which function replaces the axis depends on what the namespace node was read for:
-its name is a prefix, its string value the namespace URI. A <code>namespace::*</code> walked
-for its prefixes becomes <code>in-scope-prefixes(.)</code>; a <code>namespace::foo</code> read for its
-URI becomes <code>namespace-uri-for-prefix(&#39;foo&#39;, .)</code>. Two cases need care:
-<code>count(namespace::*)</code> becomes <code>count(in-scope-prefixes(.))</code>, but that raises a
-type error on a context node that is not an element, where the axis merely
-yielded nothing; and a <code>namespace::foo</code> copied by <code>xsl:copy-of</code> writes a
-namespace node into the result tree, which no function returns — recreate it with
-<code>xsl:namespace</code>, as
-<code>&lt;xsl:namespace name=&quot;foo&quot; select=&quot;namespace-uri-for-prefix(&#39;foo&#39;, .)&quot;/&gt;</code>.</p>
-<p>A <code>namespace::</code> step of a <code>match</code> pattern is a case apart, and neither function
-reaches it: a pattern is matched by walking up from the node under test, so no
-step of one is ever a function call. A template written <code>match=&quot;namespace::*&quot;</code>
-is restructured rather than rewritten — match the element and read its bindings
-in the body, with the <code>in-scope-prefixes()</code> loop above. A predicate standing in
-that same pattern holds an ordinary expression, so the axis in
-<code>match=&quot;para[namespace::foo]&quot;</code> becomes
-<code>match=&quot;para[namespace-uri-for-prefix(&#39;foo&#39;, .)]&quot;</code>.</p>
+<p>Only XSLT 2.0 and later stylesheets are checked. A <code>namespace::</code> step of a
+<code>match</code> pattern is left alone, since no function can stand there.</p>
 
   </div>
 </body>

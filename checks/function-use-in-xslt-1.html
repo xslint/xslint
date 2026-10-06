@@ -110,15 +110,9 @@
   </div>
   <div class="check-content">
 <h1>Function use in a pre-2.0 stylesheet</h1>
-<p><code>xsl:function</code> was introduced in XSLT 2.0. A stylesheet that declares
-<code>version=&quot;1.0&quot;</code> (or <code>1.1</code>) but defines an <code>xsl:function</code> cannot run on a 1.0
-processor — the instruction does not exist there. What decides it is the
-version in force over the function, which is the nearest one declared above it
-rather than the root&#39;s: XSLT lets <code>version</code> sit on any of its own elements and
-<code>xsl:version</code> on any literal result element, each setting the version of
-everything beneath. So a <code>1.1</code> stylesheet is caught as plainly as an explicit
-<code>1.0</code>, and one declaring no version at all names no processor to be wrong
-about — a missing version is its own fault, reported as itself.</p>
+<p><code>xsl:function</code> arrives in XSLT 2.0, so a function standing where the version in
+force is below 2.0 cannot run on the processor that version names. The version
+in force is the nearest <code>version</code> (or <code>xsl:version</code>) declared above it.</p>
 <p>Either replace the function with an <code>xsl:template</code> that has a <code>name</code>, or raise
 the stylesheet to <code>version=&quot;2.0&quot;</code>.</p>
 <p>Incorrect:</p>

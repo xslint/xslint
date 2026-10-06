@@ -112,21 +112,10 @@
   deterministic, and leaves the stylesheet meaning what it meant.</p>
   <div class="check-content">
 <h1>Use node-set extension</h1>
-<p>The <code>node-set()</code> extension function is an XSLT 1.0 workaround for converting
-result tree fragments into node-sets. It is unnecessary in XSLT 2.0 and later,
-where temporary trees can be queried directly.</p>
-<p>Two namespaces declare it for that one purpose — EXSLT&#39;s common module,
-<code>http://exslt.org/common</code>, and Microsoft&#39;s <code>urn:schemas-microsoft-com:xslt</code> —
-and the prefix a stylesheet binds to either is the author&#39;s to choose, so
-<code>exsl:node-set</code>, <code>msxsl:node-set</code> and <code>common:node-set</code> can all be the same
-call. A <code>node-set</code> of your own, in a namespace of your own, is a different
-function and does whatever you wrote it to do.</p>
-<p>Unwrapping by hand is not always a matter of deleting the call and its
-brackets. The argument sat inside them, so one binding looser than a step
-still needs them wherever an expression stands around the call:
-<code>exsl:node-set($x | $y)/title</code> is <code>($x | $y)/title</code>, where dropping both
-brackets writes <code>$x | $y/title</code> — a union of <code>$x</code> with the titles under <code>$y</code>,
-which is another sequence altogether.</p>
+<p>The <code>node-set()</code> extension function converts a result tree fragment into a
+node-set, a workaround XSLT 1.0 needed. From 2.0 on a temporary tree is queried
+directly, so the call only ties the stylesheet to an extension namespace it no
+longer needs. Query the variable itself.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:stylesheet version=&quot;2.0&quot;
   xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot;
@@ -152,6 +141,9 @@ which is another sequence altogether.</p>
   &lt;/xsl:template&gt;
 &lt;/xsl:stylesheet&gt;
 </code></pre>
+<p>Only XSLT 2.0 and later stylesheets are checked, for the function in EXSLT&#39;s
+<code>http://exslt.org/common</code> and Microsoft&#39;s <code>urn:schemas-microsoft-com:xslt</code>
+under any prefix. A <code>node-set</code> in a namespace of your own is left alone.</p>
 
   </div>
 </body>

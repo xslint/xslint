@@ -114,10 +114,10 @@
   <div class="check-content">
 <h1>Incorrect use of boolean constants</h1>
 <p>When an <code>xsl:if</code> or <code>xsl:when</code> test is the bare string <code>&#39;true&#39;</code> or <code>&#39;false&#39;</code>,
-it is a non-empty string, so the branch is <em>always</em> taken — <code>test=&quot;&#39;false&#39;&quot;</code>
+it is a non-empty string, so the branch is <em>always</em> taken: <code>test=&quot;&#39;false&#39;&quot;</code>
 runs when you meant it never should. Say what you mean with the boolean
 functions <code>true()</code> and <code>false()</code>.</p>
-<p>Incorrect (the branch always runs):</p>
+<p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:if test=&quot;&#39;false&#39;&quot;&gt;
   &lt;xsl:value-of select=&quot;.&quot;/&gt;
 &lt;/xsl:if&gt;
@@ -127,18 +127,8 @@ functions <code>true()</code> and <code>false()</code>.</p>
   &lt;xsl:value-of select=&quot;.&quot;/&gt;
 &lt;/xsl:if&gt;
 </code></pre>
-<p>The quote makes no difference: <code>&#39;true&#39;</code> and <code>&quot;true&quot;</code> are the same string, and an
-attribute already standing in double quotes writes the constant
-<code>test=&quot;&amp;quot;true&amp;quot;&quot;</code>, which is always true exactly as the single-quoted
-spelling is.</p>
-<p>XSLT 3.0 writes the test <code>_test</code> as readily as <code>test</code>, the underscore form an
-attribute value template evaluated before the stylesheet compiles, and the test
-is what that template yields. So <code>_test=&quot;&#39;true&#39;&quot;</code> is the constant string once
-more, while <code>_test=&quot;{&#39;true&#39;}&quot;</code> yields the expression <code>true</code>, a child element of
-that name, which is another question.</p>
-<p>Comparing a value to the string <code>&#39;true&#39;</code> is a different thing and correct —
-XML attributes are strings, so <code>@active = &#39;true&#39;</code> is how you test one. That,
-and literal output like <code>&lt;td hidden=&quot;true&quot;/&gt;</code>, are left alone.</p>
+<p>Either quote is flagged. A comparison such as <code>@active = &#39;true&#39;</code> is left alone,
+since attribute values are strings.</p>
 
   </div>
 </body>

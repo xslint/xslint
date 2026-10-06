@@ -112,24 +112,13 @@
   deterministic, and leaves the stylesheet meaning what it meant.</p>
   <div class="check-content">
 <h1>Redundant boolean call</h1>
-<p><code>boolean(x)</code> computes the effective boolean value of <code>x</code> — which is the very
-thing XSLT and XPath compute for themselves wherever a truth is what they are
-after. The <code>@test</code> of an <code>xsl:if</code> or an <code>xsl:when</code> is such a place, and so is the
-<code>use-when</code> that decides whether an element is compiled at all, each operand of
-<code>and</code> and <code>or</code>, the argument of <code>not()</code>, the condition of an <code>if</code> expression and
-the body of a <code>satisfies</code>. In all of them <code>boolean(x)</code> behaves
-exactly as <code>x</code> does, so the wrapper says nothing and the reader has to look past
-it to find the condition.</p>
-<p>Where the value itself is wanted, the call is doing real work and belongs.
-Comparing with it is one such place: <code>@a = boolean(@b)</code> compares a string with a
-boolean, and without the call two strings are compared instead. A predicate is
-another, and a sharper one, because XPath reads a numeric predicate as a test on
-the context position — <code>item[boolean(count(e))]</code> selects every <code>item</code> with an <code>e</code>
-under it, while <code>item[count(e)]</code> selects the one whose position equals that
-count. Printing is a third: <code>&lt;div flag=&quot;{boolean(x)}&quot;/&gt;</code> prints <code>true</code> or
-<code>false</code>, where <code>{x}</code> prints the node&#39;s own text.</p>
-<p>An attribute of your own output vocabulary called <code>test</code> is text for the result
-tree, and is never read as XPath.</p>
+<p>Wherever only a truth is taken, XPath already computes the effective boolean
+value, so <code>boolean(x)</code> behaves exactly as <code>x</code> and the reader has to look past
+the call to find the condition. Drop the wrapper in a <code>@test</code> or <code>use-when</code>, an
+operand of <code>and</code> or <code>or</code>, the argument of <code>not()</code>, an <code>if</code> condition, or a
+<code>satisfies</code> body.</p>
+<p>Where the value is used, as in a comparison, a predicate, or an attribute
+value template, the call changes the result and is left alone.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:if test=&quot;boolean(@enabled)&quot;&gt;
 &lt;xsl:value-of select=&quot;not(boolean(@enabled))&quot;/&gt;

@@ -112,58 +112,22 @@
   deterministic, and leaves the stylesheet meaning what it meant.</p>
   <div class="check-content">
 <h1>Count compared to zero</h1>
-<p><code>count($x) &amp;gt; 0</code> and <code>count($x) = 0</code> ask the processor to walk the whole
-sequence and tally it, only to find out whether it holds anything. The question
-is existence, and every version of XPath can state it directly — and let the
-engine stop at the first item instead of counting every one.</p>
+<p><code>count($x) &amp;gt; 0</code> and <code>count($x) = 0</code> make the processor tally the whole
+sequence only to learn whether it holds anything. Test existence directly, so
+the engine can stop at the first item: <code>exists()</code> and <code>empty()</code> on XSLT 2.0
+and later, the bare sequence and <code>not()</code> on 1.0.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:if test=&quot;count($items) &amp;gt; 0&quot;&gt;
 &lt;xsl:if test=&quot;count($items) = 0&quot;&gt;
 </code></pre>
-<p>Correct, on XSLT 2.0 and later:</p>
+<p>Correct:</p>
 <pre><code class="language-xsl">&lt;xsl:if test=&quot;exists($items)&quot;&gt;
 &lt;xsl:if test=&quot;empty($items)&quot;&gt;
 </code></pre>
-<p>Correct, on XSLT 1.0 (where <code>exists()</code>/<code>empty()</code> do not exist):</p>
-<pre><code class="language-xsl">&lt;xsl:if test=&quot;$items&quot;&gt;
-&lt;xsl:if test=&quot;not($items)&quot;&gt;
-</code></pre>
-<p>A node-set in a boolean context is already true exactly when it is non-empty, so
-wherever nothing but a truth is taken the bare <code>$items</code> says it — a whole
-<code>@test</code> or <code>@use-when</code>, an operand of <code>and</code> or <code>or</code>, the argument of <code>not()</code>, an
-<code>if</code> condition, a <code>satisfies</code> body. Only where a value is taken rather than a
-truth, a <code>@select</code> or an attribute value template among them, does the wrapper
-earn its place:</p>
-<pre><code class="language-xsl">&lt;xsl:if test=&quot;@heading and $items&quot;&gt;
-&lt;xsl:variable name=&quot;any&quot; select=&quot;boolean($items)&quot;/&gt;
-</code></pre>
-<p>The empty case is <code>not($items)</code> either way. The 1.0 forms are valid in every
-version, so an unversioned stylesheet can use them too.</p>
-<p>The call is the standard <code>fn:count</code> however its namespace is spelled: bare, as
-the default function namespace; behind a prefix bound to that namespace, which is
-the idiomatic <code>fn:count($items) = 0</code> of a 2.0 stylesheet; or with the namespace
-written inline. A function of your own that happens to be called <code>count</code> is
-another function and is left alone, and so is a call spelling no argument or
-several, <code>fn:count</code> taking exactly one.</p>
-<p>Nor does the operator&#39;s spelling. XSLT 2.0 brought the value comparisons, which
-ask the same six questions in words, so <code>count($items) eq 0</code>,
-<code>count($items) ne 0</code> and <code>0 lt count($items)</code> are the existence tests <code>= 0</code>,
-<code>!= 0</code> and <code>0 &amp;lt;</code> are, and collapse to the same <code>exists()</code>/<code>empty()</code> — the
-direct form is a call and carries no operator, so nothing of the original
-spelling is lost in dropping it.</p>
-<p>The operand order does not matter: <code>0 &amp;lt; count($items)</code> and
-<code>0 = count($items)</code> are flagged the same way. A comparison that is not an
-existence test — <code>count($x) &amp;gt; 1</code>, <code>count($x) = 5</code> — is a genuine count and is
-left alone. So is a <code>0</code> or <code>1</code> that is only part of a wider operand: in
-<code>$max + 1 &amp;gt; count($x)</code> the left side is <code>$max + 1</code>, and in
-<code>count($x) &amp;gt; 0 + $n</code> the right side is <code>0 + $n</code>, so neither compares the call
-against a bare <code>0</code> or <code>1</code>.</p>
-<p>The comparison is caught in the XPath and pattern attributes of XSLT elements and
-inside an attribute value template, where <code>&amp;lt;div empty=&quot;{count($items) = 0}&quot;/&amp;gt;</code>
-holds a real expression; both a comparison and its rewrite print <code>true</code>/<code>false</code>
-there, so the fix stays safe. An attribute of your output vocabulary that happens
-to be called <code>test</code> or <code>select</code> carries text for the result tree, not XPath, and
-is never touched.</p>
+<p>Each comparison that asks only whether it is empty is flagged:
+<code>&amp;gt; 0</code>, <code>!= 0</code>, <code>= 0</code>, <code>&amp;lt;= 0</code>, <code>&amp;gt;= 1</code>, and <code>&amp;lt; 1</code>, in either operand
+order and in their <code>gt</code>, <code>ne</code>, <code>eq</code>, <code>le</code>, <code>ge</code>, and <code>lt</code> spellings. A genuine
+count, such as <code>count($x) &amp;gt; 1</code>, is left alone.</p>
 
   </div>
 </body>

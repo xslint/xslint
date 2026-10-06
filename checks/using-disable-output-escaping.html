@@ -116,22 +116,14 @@
 <p>Setting <code>disable-output-escaping=&quot;yes&quot;</code> bypasses XML serialization rules and
 produces implementation-defined, non-portable results. Use <code>xsl:copy-of</code> or
 proper element construction to emit pre-formed markup.</p>
-<p>The attribute is XSLT&#39;s own, and <code>xsl:value-of</code> and <code>xsl:text</code> are the only
-two instructions that carry it. An element of the result vocabulary spelling
-the same name is not using the feature at all: there the attribute is output
-data, copied into the result tree like any other, and no processor reads it as
-an instruction.</p>
-<p>XSLT 3.0 spells the attribute <code>_disable-output-escaping</code> as readily as
-<code>disable-output-escaping</code>, the underscore form holding an attribute value
-template a processor evaluates before it transforms anything. So
-<code>_disable-output-escaping=&quot;{&#39;yes&#39;}&quot;</code> is the same instruction written the modern
-way, and a processor honours it exactly as it honours the plain spelling.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:value-of select=&quot;raw-html&quot; disable-output-escaping=&quot;yes&quot;/&gt;
 </code></pre>
 <p>Correct:</p>
 <pre><code class="language-xsl">&lt;xsl:copy-of select=&quot;raw-html/node()&quot;/&gt;
 </code></pre>
+<p>Only <code>xsl:value-of</code> and <code>xsl:text</code> are checked, with the attribute spelled
+plain or as <code>_disable-output-escaping</code>.</p>
 
   </div>
 </body>

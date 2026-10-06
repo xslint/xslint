@@ -110,51 +110,26 @@
   </div>
   <div class="check-content">
 <h1>XPath syntax newer than the XSLT version in force</h1>
-<p>A stylesheet&#39;s <code>version</code> is a promise about which processors can run it. XPath
-grew with XSLT, so the same characters are a different language under a
-different version: <code>1 cast as xs:integer</code> is an expression in XSLT 2.0 and, in
-1.0, the name <code>cast</code> standing beside the name <code>as</code>. A pattern grew the same way,
-and further — XSLT 3.0 rebuilt patterns on the expression grammar, admitting a
-parenthesized step and the <code>self</code>, <code>descendant</code>, <code>descendant-or-self</code> and
-<code>namespace</code> axes that no earlier version has. Reach for one of those under a
-<code>version</code> that predates it and the stylesheet asks for a language its own
-declaration says it will not use, which a conformant processor of the declared
-version refuses to compile.</p>
-<p>Such a stylesheet usually runs anyway, and that is what makes the defect worth
-reporting rather than obvious. A 3.0 processor evaluates a <code>version=&quot;2.0&quot;</code>
-stylesheet exactly as if it said <code>version=&quot;3.0&quot;</code>; only <code>version=&quot;1.0&quot;</code> asks for
-a real backwards compatible mode. So every modern processor loads the file, the
-tests pass, and the promise is broken silently — until the stylesheet reaches a
-processor of the version it declares, or a build pins one, and it fails to
-compile there instead of at the desk of whoever wrote it. The syntax is not
-malformed and the fault is not in the expression: the expression and the
-<code>version</code> disagree, and either one of them can be the thing that moves.</p>
-<p>So there are two hand-fixes, and which is right is a question about the
-stylesheet rather than about the line. Raise the <code>version</code> to the one the
-construct needs, if nothing depends on running under the older one — that is
-the honest reading when the newer syntax was chosen deliberately. Or spell the
-construct the way the declared version allows and keep the promise. A
-parenthesized pattern step is a union of whole paths written short, so writing
-the paths out restores it at any version; the <code>self::</code> axis of a pattern is the
-node test standing alone; and an expression reaching for <code>cast as</code>, <code>intersect</code>
-or <code>if/then/else</code> has a 1.0 equivalent in <code>number()</code>, a predicate over a union,
-and a two-branch <code>xsl:choose</code>.</p>
-<p>Incorrect (a parenthesized pattern step is XSLT 3.0, and this promises 2.0):</p>
+<p>A stylesheet&#39;s <code>version</code> promises which processors can run it. XPath and
+patterns grew with XSLT: <code>cast as</code> is 2.0, and a <code>self</code> axis in a pattern is
+3.0. A newer processor runs the file anyway, so the fault surfaces only where a
+processor of the declared version refuses to compile it. Raise the <code>version</code>, or
+spell the construct the way the declared version allows.</p>
+<p>Incorrect (a parenthesized pattern step is XSLT 3.0):</p>
 <pre><code class="language-xsl">&lt;xsl:stylesheet xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot; version=&quot;2.0&quot;&gt;
   &lt;xsl:template match=&quot;metas/meta[head = &#39;also&#39;]/(tail|part)&quot;&gt;
     &lt;xsl:value-of select=&quot;.&quot;/&gt;
   &lt;/xsl:template&gt;
 &lt;/xsl:stylesheet&gt;
 </code></pre>
-<p>Correct (the same nodes, as the union of whole paths every version spells):</p>
+<p>Correct (the same nodes as a union of whole paths):</p>
 <pre><code class="language-xsl">&lt;xsl:stylesheet xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot; version=&quot;2.0&quot;&gt;
   &lt;xsl:template match=&quot;metas/meta[head = &#39;also&#39;]/tail | metas/meta[head = &#39;also&#39;]/part&quot;&gt;
     &lt;xsl:value-of select=&quot;.&quot;/&gt;
   &lt;/xsl:template&gt;
 &lt;/xsl:stylesheet&gt;
 </code></pre>
-<p>Correct as well, where the stylesheet has no reason to stay at 2.0 (say what it
-needs, and the pattern is legal as written):</p>
+<p>Correct as well, where nothing holds the stylesheet at 2.0:</p>
 <pre><code class="language-xsl">&lt;xsl:stylesheet xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot; version=&quot;3.0&quot;&gt;
   &lt;xsl:template match=&quot;metas/meta[head = &#39;also&#39;]/(tail|part)&quot;&gt;
     &lt;xsl:value-of select=&quot;.&quot;/&gt;

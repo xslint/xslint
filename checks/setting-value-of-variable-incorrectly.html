@@ -110,13 +110,10 @@
   </div>
   <div class="check-content">
 <h1>Setting value of variable incorrectly</h1>
-<p>A variable or a parameter whose body is one <code>xsl:value-of</code> builds a result
-tree fragment to hold a value it has already computed: the instruction
-evaluates its <code>select</code>, turns the result into a string, and writes that string
-into a fragment the variable then names. The <code>select</code> attribute binds the value
-itself, without the fragment. It is shorter to read and cheaper to run, and it
-reads the same on an <code>xsl:param</code> default and on an <code>xsl:with-param</code> as on an
-<code>xsl:variable</code>.</p>
+<p>A variable or parameter whose body is one <code>xsl:value-of</code> builds a result tree
+fragment to hold a string it has already computed. A <code>select</code> binds that string
+directly, which is shorter to read and cheaper to run. Keep the expression
+yielding one string: a bare <code>select=&quot;heading&quot;</code> binds the nodes themselves.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:variable name=&quot;title&quot;&gt;
   &lt;xsl:value-of select=&quot;heading&quot;/&gt;
@@ -128,57 +125,9 @@ reads the same on an <code>xsl:param</code> default and on an <code>xsl:with-par
 <p>Correct, in XSLT 2.0 and later:</p>
 <pre><code class="language-xsl">&lt;xsl:variable name=&quot;title&quot; select=&quot;string-join(heading, &#39; &#39;)&quot;/&gt;
 </code></pre>
-<p>The string is what the body was binding, so the <code>select</code> says so, and which
-string it was depends on the version. In 1.0 <code>xsl:value-of</code> takes the string
-value of the first <code>heading</code> alone, which is what <code>string(heading)</code> takes too.
-From 2.0 on it takes every item and joins them with a space, and <code>string()</code> of
-two headings is an error there, <code>XPTY0004</code>, so <code>string-join</code> is the spelling
-that agrees.</p>
-<p>Moving the expression over bare, as <code>select=&quot;heading&quot;</code>, binds something else
-on every version: the <code>heading</code> nodes themselves rather than one string made
-of them. There <code>count($title)</code> counts the headings rather than one value,
-<code>$title/@lang</code> reaches an attribute a string does not carry, and node identity
-is the document&#39;s. Under an <code>as=&quot;xs:string&quot;</code> it is worse: the first time two
-headings arrive, the processor raises <code>XTTE0570</code>. Where the variable is only
-ever read as a string of one item the forms agree, and nowhere else.</p>
-<p>An <code>xsl:value-of</code> whose <code>separator</code> joins the items some other way names a
-value one plain <code>select</code> has no way to say, and so does one that computes its
-value from a body of its own rather than from a <code>select</code>:</p>
-<pre><code class="language-xsl">&lt;xsl:variable name=&quot;joined&quot;&gt;
-  &lt;xsl:value-of select=&quot;item&quot; separator=&quot;,&quot;/&gt;
-&lt;/xsl:variable&gt;
-</code></pre>
-<p>Neither is the shorthand this advice is about. On 2.0 and later the first can
-still drop its fragment, as <code>select=&quot;string-join(item, &#39;,&#39;)&quot;</code>.</p>
-<p>The shorthand needs the <code>xsl:value-of</code> to be the whole of the body. Text beside
-it belongs to the fragment too, and <code>select</code> has nowhere to put it:</p>
-<pre><code class="language-xsl">&lt;xsl:variable name=&quot;title&quot;&gt;Chapter: &lt;xsl:value-of select=&quot;heading&quot;/&gt;&lt;/xsl:variable&gt;
-</code></pre>
-<p>There the value is the <code>Chapter:</code> text and the heading, which one attribute cannot
-express — use <code>select=&quot;concat(&#39;Chapter: &#39;, heading)&quot;</code> instead. Indentation is
-usually not content, XSLT stripping whitespace-only text from a stylesheet, and
-neither a comment nor a processing instruction reaches the fragment.</p>
-<p>Usually, because <code>xml:space</code> decides it. Where the nearest ancestor declaring
-that attribute sets it to <code>preserve</code>, the whitespace is part of the fragment:</p>
-<pre><code class="language-xsl">&lt;xsl:variable name=&quot;title&quot; xml:space=&quot;preserve&quot;&gt;  &lt;xsl:value-of select=&quot;heading&quot;/&gt;&lt;/xsl:variable&gt;
-</code></pre>
-<p>That binds two spaces and the heading, which <code>select=&quot;heading&quot;</code> does not —
-<code>select=&quot;concat(&#39;  &#39;, heading)&quot;</code> is the shorthand there. A nearer
-<code>xml:space=&quot;default&quot;</code> cancels a <code>preserve</code> higher up.</p>
-<p>The shorthand also needs the variable to carry no <code>select</code> of its own. One
-holding both a <code>select</code> and a body offers a processor two candidate values and
-no rule for choosing between them, which XSLT forbids outright — 1.0 calls it
-an error, 2.0 and 3.0 raise <code>XTSE0620</code>, and the stylesheet compiles on no
-version:</p>
-<pre><code class="language-xsl">&lt;xsl:variable name=&quot;title&quot; select=&quot;&#39;Chapter&#39;&quot;&gt;
-  &lt;xsl:value-of select=&quot;heading&quot;/&gt;
-&lt;/xsl:variable&gt;
-</code></pre>
-<p>Neither form of the shorthand resolves that one, both values being spelled
-already. Drop whichever of the two says what was meant, and the variable binds
-one value again. XSLT 3.0&#39;s shadow spelling <code>_select</code> is the same attribute
-computed at compile time, so it stands in the way exactly as the plain one
-does.</p>
+<p>The check covers <code>xsl:variable</code>, <code>xsl:param</code>, and <code>xsl:with-param</code> carrying no
+<code>select</code>, where the <code>xsl:value-of</code> has no <code>separator</code> and no text stands beside
+it.</p>
 
   </div>
 </body>

@@ -113,27 +113,9 @@
   stylesheet does, or is one of several the check would accept.</p>
   <div class="check-content">
 <h1>Missing version in stylesheet</h1>
-<p>Every stylesheet declares the XSLT version it conforms to, and one that declares
-none is invalid — a conformant processor is required to reject it. Which
-attribute carries the declaration depends on the root element.</p>
-<p>A root XSLT defines itself carries a plain <code>version</code>: <code>xsl:stylesheet</code>, its exact
-synonym <code>xsl:transform</code>, and — since XSLT 3.0 — <code>xsl:package</code>, which declares a
-module other stylesheets can use. A <em>simplified</em> stylesheet — one whose root is a
-literal result element and whose whole transformation is that element&#39;s
-content — carries <code>xsl:version</code> instead, in the XSLT namespace. An unprefixed
-<code>version</code> will not do there,
-because on a literal result element it belongs to the result vocabulary and means
-whatever that vocabulary says it means; an SVG or XHTML root may well carry its
-own. The prefixed attribute is also the only thing that makes such a document a
-stylesheet rather than ordinary XML, so leaving it off does not produce a
-stylesheet with a missing version — it produces something a processor will not
-recognise as a stylesheet at all.</p>
-<p>A third arrangement carries nothing on its root at all. An <em>embedded</em> stylesheet
-is a document of data with an <code>xsl:stylesheet</code> inside it, picked out by an
-<code>xml-stylesheet</code> instruction pointing at that element&#39;s <code>id</code>. The version belongs
-to the embedded element, which declares it as any other stylesheet root does, and
-the outer root is data — adding <code>xsl:version</code> to it would claim the whole
-document is a transformation, which is the one thing it is not.</p>
+<p>A stylesheet that declares no XSLT version is invalid, and a conformant
+processor rejects it. Declare <code>version</code> on the <code>xsl:stylesheet</code>,
+<code>xsl:transform</code>, or <code>xsl:package</code> root.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:stylesheet xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot;&gt;
     &lt;!-- stylesheet logic --&gt;
@@ -144,34 +126,9 @@ document is a transformation, which is the one thing it is not.</p>
     &lt;!-- stylesheet logic --&gt;
 &lt;/xsl:stylesheet&gt;
 </code></pre>
-<p>Incorrect:</p>
-<pre><code class="language-xsl">&lt;html xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot;&gt;
-    &lt;body&gt;&lt;xsl:value-of select=&quot;/page/title&quot;/&gt;&lt;/body&gt;
-&lt;/html&gt;
-</code></pre>
-<p>Correct:</p>
-<pre><code class="language-xsl">&lt;html xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot; xsl:version=&quot;2.0&quot;&gt;
-    &lt;body&gt;&lt;xsl:value-of select=&quot;/page/title&quot;/&gt;&lt;/body&gt;
-&lt;/html&gt;
-</code></pre>
-<p>Incorrect:</p>
-<pre><code class="language-xsl">&lt;?xml-stylesheet type=&quot;text/xsl&quot; href=&quot;#style&quot;?&gt;
-&lt;page&gt;
-    &lt;xsl:stylesheet xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot; id=&quot;style&quot;&gt;
-        &lt;xsl:template match=&quot;/&quot;&gt;&lt;xsl:value-of select=&quot;/page/title&quot;/&gt;&lt;/xsl:template&gt;
-    &lt;/xsl:stylesheet&gt;
-    &lt;title&gt;Report&lt;/title&gt;
-&lt;/page&gt;
-</code></pre>
-<p>Correct:</p>
-<pre><code class="language-xsl">&lt;?xml-stylesheet type=&quot;text/xsl&quot; href=&quot;#style&quot;?&gt;
-&lt;page&gt;
-    &lt;xsl:stylesheet xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot; id=&quot;style&quot; version=&quot;1.0&quot;&gt;
-        &lt;xsl:template match=&quot;/&quot;&gt;&lt;xsl:value-of select=&quot;/page/title&quot;/&gt;&lt;/xsl:template&gt;
-    &lt;/xsl:stylesheet&gt;
-    &lt;title&gt;Report&lt;/title&gt;
-&lt;/page&gt;
-</code></pre>
+<p>A simplified stylesheet, whose root is a literal result element, declares
+<code>xsl:version</code> on that root instead. A stylesheet embedded in a data document
+declares <code>version</code> on its own <code>xsl:stylesheet</code> element.</p>
 
   </div>
 </body>

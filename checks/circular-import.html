@@ -110,14 +110,9 @@
   </div>
   <div class="check-content">
 <h1>Circular import</h1>
-<p>A stylesheet must not <code>xsl:import</code> or <code>xsl:include</code>, directly or through a
-chain, a stylesheet that pulls it back — nor import itself. A processor treats
-this as a static error (<code>XTSE0210</code>) and refuses to compile the stylesheet, so
-the cycle is never a working design, only a mistake to break.</p>
-<p>The linter resolves every <code>@href</code> against the importing file&#39;s own directory
-and matches it to the corpus. A cycle needs every edge in it to resolve within
-the files being linted, so an href pointing at a library outside the corpus is
-treated as external and never mistaken for part of a cycle.</p>
+<p>A stylesheet that imports or includes itself, directly or through a chain of
+modules that pulls it back, is a static error, and the processor refuses to
+compile it. Move the shared code into a third module both import.</p>
 <p>Incorrect (<code>a.xsl</code> and <code>b.xsl</code> import each other):</p>
 <pre><code class="language-xsl">&lt;!-- a.xsl --&gt;
 &lt;xsl:stylesheet version=&quot;2.0&quot; xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot;&gt;
@@ -129,8 +124,7 @@ treated as external and never mistaken for part of a cycle.</p>
   &lt;xsl:import href=&quot;a.xsl&quot;/&gt;
 &lt;/xsl:stylesheet&gt;
 </code></pre>
-<p>Correct — move the shared code into a third module both import, so the graph
-stays acyclic:</p>
+<p>Correct:</p>
 <pre><code class="language-xsl">&lt;!-- a.xsl --&gt;
 &lt;xsl:stylesheet version=&quot;2.0&quot; xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot;&gt;
   &lt;xsl:import href=&quot;common.xsl&quot;/&gt;
@@ -141,6 +135,7 @@ stays acyclic:</p>
   &lt;xsl:import href=&quot;common.xsl&quot;/&gt;
 &lt;/xsl:stylesheet&gt;
 </code></pre>
+<p>A cycle is reported only when every module in it is among the linted files.</p>
 
   </div>
 </body>

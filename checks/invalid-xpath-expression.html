@@ -110,57 +110,13 @@
   </div>
   <div class="check-content">
 <h1>Invalid XPath expression</h1>
-<p>Every expression a stylesheet carries must be one the processor can parse, and a
-stylesheet carries them in more places than its <code>select</code>. One is an attribute
-holding a bare XPath — <code>select</code>, <code>test</code>, <code>use</code>, <code>value</code>, <code>group-by</code>,
-<code>group-adjacent</code>, or the XSLT 3.0 <code>key</code>, <code>initial-value</code>, <code>xpath</code>,
-<code>context-item</code>, <code>with-params</code>, <code>namespace-context</code>, the <code>for-each-item</code> and
-<code>for-each-source</code> of an <code>xsl:merge-source</code>, and the static <code>use-when</code>. Another
-is a pattern attribute: <code>match</code>, <code>count</code>, <code>from</code>, <code>group-starting-with</code>,
-<code>group-ending-with</code>. And another is each expression a <code>{...}</code> encloses — in an
-attribute value template, in the text of an element whose <code>expand-text</code> is
-on, or in a shadow attribute such as <code>_select</code>. On an XSLT element only an
-attribute XSLT declares a template has braces to read — the <code>name</code> of an
-<code>xsl:element</code>, the <code>href</code> of an <code>xsl:result-document</code>, the <code>order</code> of an
-<code>xsl:sort</code> — so the <code>Q{}x</code> of <code>&lt;xsl:param name=&quot;Q{}x&quot;/&gt;</code> is an EQName, a name in
-no namespace, and not an empty expression. Where an XSLT element writes an
-attribute in both spellings, the shadow is the one a processor reads and the
-plain one beside it is ignored, so only the shadow is checked. A malformed
-expression breaks
-the transformation at runtime wherever it stands, so the sooner it surfaces the
-better. Only the syntax is checked, never the formatting.</p>
-<p>A pattern is judged as a pattern, which is a narrower language than an
-expression rather than a second reading of one. A pattern is matched by walking
-<em>up</em> from a node, so it may only name a step such a walk can answer: <code>child</code> and
-<code>attribute</code> at every version, joined by <code>self</code>, <code>descendant</code>,
-<code>descendant-or-self</code> and <code>namespace</code> in XSLT 3.0, and never <code>parent</code>,
-<code>ancestor</code>, <code>ancestor-or-self</code>, <code>following</code>, <code>following-sibling</code>, <code>preceding</code> or
-<code>preceding-sibling</code>. Those seven a pattern may not name at any version, which
-is what makes one of them a syntax mistake rather than the version mismatch the
-next paragraph is about; the four XSLT 3.0 added are the language growing. A
-predicate inside it is an ordinary expression and may name any of them. A
-pattern is also a union of paths and nothing else, so <code>1 + 1</code>, <code>@a = &#39;b&#39;</code> and
-<code>a, b</code> are all perfectly good expressions and none of them is a pattern a
-processor will load.</p>
-<p>The expression is read under the version in force where it stands, because the
-same characters are a different language under a different one. <code>1 cast as xs:integer</code> is an expression in XSLT 2.0 and a syntax error in 1.0, where XPath
-has no <code>cast as</code> and reads the same text as the name <code>cast</code> beside the name
-<code>as</code>; <code>map {&quot;a&quot;: 1}</code>, <code>$a =&gt; f()</code> and <code>a intersect b</code> are the same story at
-their own versions. What is reported here is text no version of the language
-admits, so raising the stylesheet&#39;s <code>version</code> will not rescue it. An expression
-a later version does admit is a different defect — a promise broken about which
-language the stylesheet is written in — and is reported as that instead.</p>
-<p>Every prefix resolves while parsing, so an unknown prefix or a custom function
-is never mistaken for a syntax error. Neither is a static-type mismatch:
-<code>substring-before($spans, &#39;:&#39;) - 1</code> reads a numeric prefix in XPath 1.0 and is
-a type error in later versions, but that is what the expression <em>means</em>, not
-whether it parses. The <code>namespace::</code> axis is left alone at every version, since
-1.0 and 2.0 define it and a stylesheet raised to 3.0 keeps the steps it was
-written with. Whitespace the grammar allows is not a mistake either — a gap
-around the <code>::</code> of an axis, or on either side of what a node test brackets, so
-<code>child :: a</code>, <code>parent::node ( )</code> and <code>element( a )</code> are read as the steps
-<code>child::a</code>, <code>parent::node()</code> and <code>element(a)</code> name. Only genuine syntax
-mistakes are reported.</p>
+<p>A malformed expression stops the transformation when the processor reaches it.
+Every place one stands is read: an attribute holding XPath (<code>select</code>, <code>test</code>,
+<code>use-when</code> and the like), a pattern (<code>match</code>, <code>count</code>, <code>from</code>), and each <code>{...}</code>
+of a value template. A pattern is held to the narrower pattern language, which
+names no <code>parent</code>, <code>ancestor</code>, <code>following</code> or <code>preceding</code> step outside a
+predicate. Syntax that a later XSLT version admits is reported by
+<code>syntax-newer-than-xslt-version</code> instead.</p>
 <p>Incorrect (<code>==</code> is not an XPath operator):</p>
 <pre><code class="language-xsl">&lt;xsl:if test=&quot;foo(a) == &#39;hello&#39;&quot;&gt;
   &lt;xsl:value-of select=&quot;.&quot;/&gt;
@@ -171,12 +127,12 @@ mistakes are reported.</p>
   &lt;xsl:value-of select=&quot;.&quot;/&gt;
 &lt;/xsl:if&gt;
 </code></pre>
-<p>Incorrect (a pattern cannot look sideways, so no processor loads this):</p>
+<p>Incorrect (a pattern cannot look sideways):</p>
 <pre><code class="language-xsl">&lt;xsl:template match=&quot;following-sibling::para&quot;&gt;
   &lt;xsl:value-of select=&quot;.&quot;/&gt;
 &lt;/xsl:template&gt;
 </code></pre>
-<p>Correct (name the nodes that match, and let a predicate look where it likes):</p>
+<p>Correct (a predicate may look anywhere):</p>
 <pre><code class="language-xsl">&lt;xsl:template match=&quot;para[preceding-sibling::*]&quot;&gt;
   &lt;xsl:value-of select=&quot;.&quot;/&gt;
 &lt;/xsl:template&gt;

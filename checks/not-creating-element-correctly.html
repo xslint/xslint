@@ -112,18 +112,10 @@
 <h1>Not creating element correctly</h1>
 <p><code>xsl:element</code> with a static name writes the element a literal result element of
 that name writes, and sends its reader looking for a computed name that is not
-there. Use a literal result element, and keep <code>xsl:element</code> for a name written as an
-attribute value template, <code>{...}</code>, the only spelling XSLT evaluates there. A <code>$</code>
-or a bracket outside those braces is part of the name itself.</p>
-<p>A literal result element also copies the namespaces in scope on it into the
-output, where <code>xsl:element</code> copies none, so list in <code>exclude-result-prefixes</code>
-every prefix the output must not declare.</p>
-<p>Two static names still want the instruction. A name whose prefix binds to the
-XSLT namespace has no literal form at all: <code>&lt;xsl:element name=&quot;xsl:template&quot;/&gt;</code>
-writes an element into the result tree, where <code>&lt;xsl:template&gt;</code> is an
-instruction the processor runs. And a <code>namespace</code> attribute puts the element in
-a namespace named outright, which a literal result element cannot do — it takes
-its own from the prefixes in scope.</p>
+there. Use a literal result element, and keep <code>xsl:element</code> for a name written
+as an attribute value template, <code>{...}</code>. A literal result element copies the
+namespaces in scope into the output, so list in <code>exclude-result-prefixes</code> every
+prefix the output must not declare.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:element name=&quot;div&quot;&gt;
   &lt;xsl:value-of select=&quot;.&quot;/&gt;
@@ -134,6 +126,8 @@ its own from the prefixes in scope.</p>
   &lt;xsl:value-of select=&quot;.&quot;/&gt;
 &lt;/div&gt;
 </code></pre>
+<p>A name whose prefix binds to the XSLT namespace, or an <code>xsl:element</code> with a
+<code>namespace</code> attribute, has no literal form and is left alone.</p>
 
   </div>
 </body>

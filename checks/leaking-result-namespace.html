@@ -113,35 +113,11 @@
   stylesheet does, or is one of several the check would accept.</p>
   <div class="check-content">
 <h1>Leaking result namespace</h1>
-<p>A literal result element copies every namespace in scope on the stylesheet into
-the result tree, unless the prefix is excluded. The XSLT namespace is the one
-exception, under whatever prefix it is bound, so it never needs excluding. So a
-prefix declared only for the stylesheet&#39;s own logic — <code>xs</code> for a sequence type
-in <code>as=&quot;xs:integer&quot;</code>, a helper <code>my</code>/<code>eo</code> called from a <code>select</code> — is serialized
-onto output elements it never names. <code>xsl:element</code> does not do this, so the leak
-appears precisely when a static <code>xsl:element</code> is rewritten as a literal result
-element. Top-level data is not one either: an element outside the XSLT namespace
-standing directly in the stylesheet, such as a <code>doc:doc</code> documentation block, is
-never instantiated, so a stylesheet holding nothing else emits no namespace at
-all — and a prefix that only such a block names still leaks onto every result
-element a template builds.</p>
-<p>List such a prefix in <code>exclude-result-prefixes</code> on the stylesheet root: the
-prefix stays available to expressions and to name declarations, but is dropped
-from the serialized output. This differs from a redundant declaration (a prefix
-used nowhere, which should be removed): the prefix here is used, just not by any
-result element.</p>
-<p>A simplified stylesheet, whose root is itself a literal result element, spells
-the attribute in the XSLT namespace instead: <code>xsl:exclude-result-prefixes</code>. A
-plain <code>exclude-result-prefixes</code> there is one more attribute copied into the
-result, and excludes nothing. The same holds for the extension namespaces a
-root declares, which never reach the result: <code>extension-element-prefixes</code> on
-<code>xsl:stylesheet</code>, <code>xsl:extension-element-prefixes</code> on a simplified root.</p>
-<pre><code class="language-xsl">&lt;out xsl:version=&quot;2.0&quot; xsl:exclude-result-prefixes=&quot;xs&quot;
-  xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot;
-  xmlns:xs=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;
-  &lt;xsl:value-of select=&quot;1 cast as xs:integer&quot;/&gt;
-&lt;/out&gt;
-</code></pre>
+<p>A literal result element copies every namespace in scope into the result, so a
+prefix declared only for the stylesheet&#39;s logic (<code>xs</code> for <code>as=&quot;xs:integer&quot;</code>, a
+prefix for your own functions) is serialized onto output elements that never
+use it. List the prefix in <code>exclude-result-prefixes</code> on the stylesheet root:
+expressions still use it, and the output no longer carries it.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:stylesheet version=&quot;2.0&quot;
   xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot;
@@ -166,6 +142,8 @@ root declares, which never reach the result: <code>extension-element-prefixes</c
   &lt;/xsl:template&gt;
 &lt;/xsl:stylesheet&gt;
 </code></pre>
+<p>A simplified stylesheet, whose root is itself a literal result element, spells
+the attribute <code>xsl:exclude-result-prefixes</code>.</p>
 
   </div>
 </body>

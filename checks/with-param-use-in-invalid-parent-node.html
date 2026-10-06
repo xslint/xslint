@@ -110,44 +110,13 @@
   </div>
   <div class="check-content">
 <h1>Using <code>xsl:with-param</code> in invalid parent node</h1>
-<p><code>xsl:with-param</code> supplies a value to the template a caller is invoking, so it
-means something only inside an instruction that invokes one: <code>xsl:call-template</code>,
-<code>xsl:apply-templates</code>, <code>xsl:apply-imports</code>, <code>xsl:next-match</code> and
-<code>xsl:next-iteration</code>. Standing anywhere else it names a parameter of no call at
-all, and a processor refuses the whole module rather than reading past the
-element — xsltproc reports <code>element with-param is not allowed within that context</code>, Saxon raises <code>XTSE0010</code> — so one misplaced parameter costs the
-stylesheet every transformation it was loaded for.</p>
-<p>Which of those five may hold it depends on the version declared over it, which
-is the nearest <code>version</code> on an ancestor XSLT element or <code>xsl:version</code> on a
-literal result element, and so may be raised or lowered for one template rather
-than the whole file. XSLT 1.0 defines <code>xsl:apply-imports</code> as empty; passing
-parameters through it arrived with XSLT 2.0. A stylesheet declaring <code>1.0</code> and
-passing one anyway does not compile on the 1.0 processor its own version
-attribute promises it will run on, while a 2.0 processor reads the same file
-without complaint — backwards compatible behaviour changes how expressions are
-evaluated, not which children an element may carry — so the fault stays hidden
-until the stylesheet moves. <code>xsl:next-match</code> and <code>xsl:next-iteration</code> are
-themselves instructions XSLT 2.0 and 3.0 introduced, so in a 1.0 stylesheet the
-fault is the instruction rather than the parameter inside it: the element has
-nowhere to stand at all, and taking its parameter away leaves a 1.0 processor
-refusing the same module for the same reason. The version condition therefore
-concerns <code>xsl:apply-imports</code> alone — the one of the five that XSLT 1.0 does
-define, and defines as empty.</p>
-<p>Raise the declared version where no 1.0 processor has to run the stylesheet.
-Where one does, the parameter has to go, and what it carried reaches the imported
-template as a global <code>xsl:param</code> or as a value that template selects for itself.</p>
+<p><code>xsl:with-param</code> passes a value to the template a call invokes, so it belongs
+only inside <code>xsl:call-template</code>, <code>xsl:apply-templates</code>, <code>xsl:apply-imports</code>,
+<code>xsl:next-match</code>, or <code>xsl:next-iteration</code>. Anywhere else a processor refuses
+the whole module, and the stylesheet runs no transformation at all.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:stylesheet version=&quot;1.0&quot; xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot;&gt;
   &lt;xsl:with-param name=&quot;Kipling&quot; select=&quot;1865&quot;/&gt;
-&lt;/xsl:stylesheet&gt;
-</code></pre>
-<p>Incorrect, since XSLT 1.0 gives <code>xsl:apply-imports</code> no parameter to take:</p>
-<pre><code class="language-xsl">&lt;xsl:stylesheet version=&quot;1.0&quot; xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot;&gt;
-  &lt;xsl:template match=&quot;poet&quot;&gt;
-    &lt;xsl:apply-imports&gt;
-      &lt;xsl:with-param name=&quot;Dickens&quot; select=&quot;1812&quot;/&gt;
-    &lt;/xsl:apply-imports&gt;
-  &lt;/xsl:template&gt;
 &lt;/xsl:stylesheet&gt;
 </code></pre>
 <p>Correct:</p>
@@ -155,30 +124,9 @@ template as a global <code>xsl:param</code> or as a value that template selects 
   &lt;xsl:with-param name=&quot;Shakespeare&quot; select=&quot;1564&quot;/&gt;
 &lt;/xsl:call-template&gt;
 </code></pre>
-<p>or:</p>
-<pre><code class="language-xsl">&lt;xsl:apply-templates select=&quot;node&quot;&gt;
-  &lt;xsl:with-param name=&quot;Austen&quot; select=&quot;1775&quot;/&gt;
-&lt;/xsl:apply-templates&gt;
-</code></pre>
-<p>or, once the version over it is 2.0 or later:</p>
-<pre><code class="language-xsl">&lt;xsl:stylesheet version=&quot;2.0&quot; xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot;&gt;
-  &lt;xsl:template match=&quot;poet&quot;&gt;
-    &lt;xsl:apply-imports&gt;
-      &lt;xsl:with-param name=&quot;Dickens&quot; select=&quot;1812&quot;/&gt;
-    &lt;/xsl:apply-imports&gt;
-  &lt;/xsl:template&gt;
-&lt;/xsl:stylesheet&gt;
-</code></pre>
-<p>or:</p>
-<pre><code class="language-xsl">&lt;xsl:next-match&gt;
-  &lt;xsl:with-param name=&quot;Carroll&quot; select=&quot;1832&quot;/&gt;
-&lt;/xsl:next-match&gt;
-</code></pre>
-<p>or:</p>
-<pre><code class="language-xsl">&lt;xsl:next-iteration&gt;
-  &lt;xsl:with-param name=&quot;Christie&quot; select=&quot;1890&quot;/&gt;
-&lt;/xsl:next-iteration&gt;
-</code></pre>
+<p>XSLT 1.0 defines <code>xsl:apply-imports</code> as empty, so a parameter inside one is
+reported where the version in force is below 2.0. Raise that version, or pass
+the value another way.</p>
 
   </div>
 </body>

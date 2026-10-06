@@ -113,20 +113,10 @@
   stylesheet does, or is one of several the check would accept.</p>
   <div class="check-content">
 <h1>Using internal content and @select to set a variable, param or with-param</h1>
-<p>An xsl:variable, an xsl:param and an xsl:with-param — the variable-binding
-elements — take their value either from a @select expression or from their
-body, never from both. Given both, a processor holds two candidate values and
-no rule for choosing one, so XSLT forbids the combination outright: 1.0 calls
-it an error, 2.0 and 3.0 raise the static error XTSE0620. The stylesheet does
-not run at all, on any version, hence the error severity. A body of nothing
-but whitespace and comments is not content, and is left alone.</p>
-<p><code>--fix-suggestions</code> deletes the <code>@select</code> and leaves the body as the value. It
-is a suggestion rather than a safe fix: the body binds a tree — a document node
-on 2.0 and later, a result tree fragment on 1.0 — where the expression bound
-its own type, so <code>$physicist</code> stops being a string, and an <code>@as</code> the body
-cannot convert to turns the edit into a type error. Dropping the body instead
-is the other correction, and no single edit expresses it — make that one by
-hand when the <code>@select</code> held the value you meant.</p>
+<p>An <code>xsl:variable</code>, <code>xsl:param</code> or <code>xsl:with-param</code> takes its value from its
+<code>select</code> or from its body, never both. Given both, XSLT raises a static error
+(XTSE0620), and the stylesheet does not run on any version. Keep whichever of
+the two says what you meant.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:variable name=&quot;physicist&quot; select=&quot;&#39;Isaac Newton&#39;&quot;&gt;
     Albert Einstein
@@ -147,15 +137,8 @@ hand when the <code>@select</code> held the value you meant.</p>
 <p>or:</p>
 <pre><code class="language-xsl">&lt;xsl:variable name=&quot;physicist&quot; select=&quot;&#39;Ernest Rutherford&#39;&quot;/&gt;
 </code></pre>
-<p>A body of nothing but whitespace is no content at all, XSLT stripping such a
-text node from the stylesheet before a processor reads it, so a <code>select</code> beside
-it is fine. <code>xml:space</code> is the exception, and there the error is real:</p>
-<pre><code class="language-xsl">&lt;xsl:variable name=&quot;mayor&quot; select=&quot;&#39;Ivanov&#39;&quot; xml:space=&quot;preserve&quot;&gt;   &lt;/xsl:variable&gt;
-</code></pre>
-<p>The three spaces survive, so the element has both a <code>select</code> and content.
-SaxonJ-HE 12.5 refuses to compile that, reporting <code>XTSE0620</code>. Drop whichever
-of the two says what was meant. A nearer <code>xml:space=&quot;default&quot;</code> cancels a
-<code>preserve</code> higher up, and the body is empty again.</p>
+<p>A body of nothing but whitespace and comments is empty, unless an
+<code>xml:space=&quot;preserve&quot;</code> keeps the whitespace.</p>
 
   </div>
 </body>

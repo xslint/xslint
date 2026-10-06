@@ -111,13 +111,8 @@
   <div class="check-content">
 <h1>Short names</h1>
 <p>A single-character name tells a reader nothing about what it holds. At the use
-site a binding is just <code>$f</code>, and nothing there says which element bound it or
-what it was for, so every reader of the template has to go and look. The cost
-is paid once per reading and never by the author, which is why these names
-survive.</p>
-<p>A parameter is a binding like any other, and the one most often spelled this
-way: the declaration stands at the top of the template and the uses are spread
-through the body, which is exactly the distance a name is supposed to close.</p>
+site a binding is just <code>$f</code>, and every reader of the template has to go back to
+the declaration to learn what it is for.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:template name=&quot;indent&quot;&gt;
   &lt;xsl:param name=&quot;d&quot; as=&quot;xs:integer&quot;/&gt;
@@ -130,24 +125,10 @@ through the body, which is exactly the distance a name is supposed to close.</p>
   &lt;xsl:value-of select=&quot;string-join((for $i in 1 to $depth return &#39;  &#39;), &#39;&#39;)&quot;/&gt;
 &lt;/xsl:template&gt;
 </code></pre>
-<p>A prefix does not lengthen the name. <code>eo:k</code> and <code>k</code> read alike wherever they
-are used, since the prefix names the namespace the binding lives in and not the
-binding, so the local part is what carries the meaning and what has to earn its
-place. The same holds whichever element declares it — an <code>xsl:variable</code>, an
-<code>xsl:param</code>, an <code>xsl:template</code> or an <code>xsl:function</code>.</p>
-<p>Incorrect:</p>
-<pre><code class="language-xsl">&lt;xsl:variable name=&quot;eo:r&quot; select=&quot;&#39;r&#39;&quot;/&gt;
-</code></pre>
-<p>Correct:</p>
-<pre><code class="language-xsl">&lt;xsl:variable name=&quot;eo:raw-marker&quot; select=&quot;&#39;r&#39;&quot;/&gt;
-</code></pre>
-<p>XSLT 3.0 writes a name <code>_name</code> as readily as <code>name</code>, the underscore form an
-attribute value template, and the name is what the template yields rather than
-its text: <code>_name=&quot;{&#39;q&#39;}&quot;</code> is six characters declaring the one-character
-variable <code>q</code>.</p>
-<p>An <code>xsl:with-param</code> is left alone. It passes a name the declaration already
-fixed, so renaming has to happen where the parameter is declared, and reporting
-both would report one author&#39;s choice twice.</p>
+<p>The check covers <code>xsl:variable</code>, <code>xsl:param</code>, <code>xsl:template</code>, and
+<code>xsl:function</code>, and measures the local part, so <code>eo:k</code> is as short as <code>k</code>. An
+<code>xsl:with-param</code> is left alone, since its name is fixed where the parameter is
+declared.</p>
 
   </div>
 </body>

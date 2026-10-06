@@ -110,30 +110,10 @@
   </div>
   <div class="check-content">
 <h1>Modern construct in a 1.0 stylesheet</h1>
-<p>A stylesheet that declares <code>version=&quot;1.0&quot;</code> must run on an XSLT 1.0 processor,
-where the instructions and syntax introduced in XSLT 2.0 simply do not exist. A
-1.0 processor (or Saxon-HE in 1.0 mode) rejects them, so a declared-1.0
-stylesheet that reaches for a 2.0 construct is a real portability bug — it will
-not run where its own version attribute promises it will.</p>
-<p>This check flags a curated set of 2.0-only XSLT <strong>instructions</strong> —
-<code>xsl:for-each-group</code>, <code>xsl:sequence</code>, <code>xsl:analyze-string</code>, <code>xsl:next-match</code>,
-<code>xsl:perform-sort</code>, <code>xsl:namespace</code>, <code>xsl:character-map</code>, <code>xsl:result-document</code>,
-<code>xsl:import-schema</code> — and the 2.0 <strong><code>as</code> sequence-type attribute</strong> on any other
-XSLT element, whenever the version in force over that element is earlier than
-2.0. Only elements in the XSLT namespace are examined for
-<code>@as</code>, so a literal result element that legitimately carries an <code>as</code> attribute —
-<code>&lt;link rel=&quot;preload&quot; as=&quot;script&quot;/&gt;</code> in HTML output — is never mistaken for the
-sequence-type attribute.</p>
-<p><code>xsl:function</code> is deliberately left out: it has its own check,
-<code>function-use-in-xslt-1</code>, which asks the same question of the same version.
-The 2.0 functions and operators that live <em>inside</em> XPath expressions
-(<code>lower-case()</code>, <code>matches()</code>, <code>||</code>, <code>if/then/else</code>, <code>*:name</code>) are not flagged
-yet — telling a reserved 2.0 built-in from a user-namespaced call needs
-token-aware parsing, which waits on the full-fidelity parser (#228).</p>
-<p>Either rewrite the construct with its 1.0 equivalent — a Muenchian grouping key
-for <code>xsl:for-each-group</code>, a named template for <code>xsl:sequence</code> — or raise the
-stylesheet to <code>version=&quot;2.0&quot;</code>. Because that rewrite is structural, this check
-reports without a <code>--fix</code>.</p>
+<p>A stylesheet whose version in force is below 2.0 promises to run on an XSLT 1.0
+processor, which rejects the instructions XSLT 2.0 added. Rewrite the construct
+with its 1.0 equivalent (a Muenchian key for <code>xsl:for-each-group</code>, a named
+template for <code>xsl:sequence</code>), or raise the version to 2.0.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:stylesheet xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot; version=&quot;1.0&quot;&gt;
   &lt;xsl:template match=&quot;/objects&quot;&gt;
@@ -152,6 +132,10 @@ reports without a <code>--fix</code>.</p>
   &lt;/xsl:template&gt;
 &lt;/xsl:stylesheet&gt;
 </code></pre>
+<p>The check covers <code>xsl:for-each-group</code>, <code>xsl:sequence</code>, <code>xsl:analyze-string</code>,
+<code>xsl:next-match</code>, <code>xsl:perform-sort</code>, <code>xsl:namespace</code>, <code>xsl:character-map</code>,
+<code>xsl:result-document</code>, <code>xsl:import-schema</code>, and an <code>as</code> attribute on any XSLT
+element but <code>xsl:function</code>.</p>
 
   </div>
 </body>

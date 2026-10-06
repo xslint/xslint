@@ -110,15 +110,10 @@
   </div>
   <div class="check-content">
 <h1>Function or template is not child of stylesheet</h1>
-<p>An <code>xsl:function</code> or <code>xsl:template</code> declares a component of the stylesheet, and
-a component belongs where the processor looks for one: at the top level, as a
-child of <code>xsl:stylesheet</code>, <code>xsl:transform</code> or <code>xsl:package</code>. One buried inside another
-instruction is never reached, because a template body is a sequence
-constructor and a declaration is not an instruction it can hold.</p>
-<p>XSLT 3.0 gives it one other home. Inside an <code>xsl:override</code> under
-<code>xsl:use-package</code>, a template or function is the component that replaces the
-one the used package declares, and that is the only place an overriding
-component may stand. Those are left alone.</p>
+<p>An <code>xsl:function</code> or <code>xsl:template</code> declares a component, and a processor looks
+for components only at the top level, as children of <code>xsl:stylesheet</code>,
+<code>xsl:transform</code> or <code>xsl:package</code>. One nested inside another instruction is an
+error, and the stylesheet does not compile.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:stylesheet xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot; version=&quot;2.0&quot;&gt;
   &lt;xsl:template match=&quot;chapter&quot;&gt;
@@ -138,6 +133,8 @@ component may stand. Those are left alone.</p>
   &lt;/xsl:function&gt;
 &lt;/xsl:stylesheet&gt;
 </code></pre>
+<p>A template or function inside <code>xsl:override</code> replaces a component of a used
+package, and is left alone.</p>
 
   </div>
 </body>

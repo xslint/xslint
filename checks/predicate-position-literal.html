@@ -115,20 +115,6 @@
 <p><code>foo[1]</code> means <code>foo[position() = 1]</code>, and <code>foo[last()]</code> means
 <code>foo[position() = last()]</code>. Two spellings of one selection hide each other from
 a search, so keep the bare number, the idiom XSLT uses.</p>
-<p>The equality is what makes it redundant, and it counts in either class XPath
-spells equality in. <code>[position() eq 1]</code> compares two <code>xs:integer</code> values and is
-true at exactly the position <code>[1]</code> is true at, so the word spelling abbreviates
-the way the symbol one does. Either operand order reads the same
-(<code>[1 = position()]</code>, <code>[last() eq position()]</code>), and the call is the standard
-<code>fn:position</code> or <code>fn:last</code> however its namespace is spelled — bare, or behind a
-prefix bound to the XPath functions namespace. A function of your own that
-borrows one of those local names is another function and is left alone.</p>
-<p>A predicate that asks anything else keeps its <code>position()</code>, which is
-load-bearing there. <code>[position() = 1 and @current]</code> is a boolean test, and
-<code>[1 and @current]</code> is a different one. <code>[position() &gt; 1]</code> spans every position
-but the first rather than naming one. And <code>[position() = &#39;1&#39;]</code> compares against
-a string, where the abbreviation <code>[&#39;1&#39;]</code> holds a non-empty string and so is true
-at every position instead of the first.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:value-of select=&quot;item[position() = 1]&quot;/&gt;
 &lt;xsl:apply-templates select=&quot;row[position() = last()]&quot;/&gt;
@@ -139,6 +125,9 @@ at every position instead of the first.</p>
 &lt;xsl:apply-templates select=&quot;row[last()]&quot;/&gt;
 &lt;xsl:value-of select=&quot;cell[last()]&quot;/&gt;
 </code></pre>
+<p>Either operand order is flagged, with <code>=</code> or <code>eq</code>. A predicate that asks more,
+such as <code>[position() = 1 and @current]</code> or <code>[position() &gt; 1]</code>, keeps its
+<code>position()</code>.</p>
 
   </div>
 </body>

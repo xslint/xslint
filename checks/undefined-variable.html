@@ -110,32 +110,11 @@
   </div>
   <div class="check-content">
 <h1>Undefined variable</h1>
-<p>A variable reference that no binding in scope declares is a static error,
-<code>XPST0008</code>, and every processor refuses the whole stylesheet for it before it
-transforms a single node. One misspelled name in one template of a large
-module is enough, and the message names only the first such reference, so a
-file can hide several behind the one that is reported.</p>
-<p>A variable is in scope in the places XSLT gives it and nowhere else. A local
-<code>xsl:variable</code> or <code>xsl:param</code> reaches the siblings that follow it and
-everything they hold, so a variable declared inside an <code>xsl:if</code> or an
-<code>xsl:when</code> is gone at the closing tag, a variable read above its declaration
-is not yet bound, and a parameter of one template is not in scope in another.
-A template&#39;s own parameters do not reach its <code>match</code> pattern either, which
-sees the globals alone, and a parameter&#39;s default sees only the parameters in
-front of it. A <code>for</code>, <code>let</code>, <code>some</code> or <code>every</code> clause and an inline function
-bind their names inside the expression, an <code>xsl:accumulator-rule</code> binds
-<code>$value</code>, and an <code>xsl:catch</code> binds the <code>err:</code> names. A global binding, a
-top-level <code>xsl:variable</code> or <code>xsl:param</code>, is in scope everywhere in the
-stylesheet, whichever module declares it and whichever way the import between
-the two runs. A name spelled with a prefix is the namespace that prefix binds,
-so <code>$my:limit</code> and <code>$limit</code> are two different variables.</p>
-<p>A module is judged against the stylesheet it belongs to: a module where a
-transformation starts, holding a template that matches the root or the
-initial template and pulled in by no other, together with every module it
-imports and includes. A module no such stylesheet holds is a library whose
-globals may come from whatever imports it, and a stylesheet pulling in a
-module the linted files do not hold, or using a package, may take a global
-from there, so a reference past its locals is left alone in either.</p>
+<p>A reference no binding in scope declares is static error <code>XPST0008</code>, and the
+processor refuses the whole stylesheet. A local <code>xsl:variable</code> or <code>xsl:param</code>
+reaches only the siblings after it and what they hold, so one declared inside
+an <code>xsl:if</code> is gone at its closing tag. Correct the name, move the declaration
+up, or make the value an <code>xsl:param</code>.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:template match=&quot;/&quot;&gt;
   &lt;xsl:param name=&quot;title&quot;/&gt;
@@ -158,12 +137,9 @@ from there, so a reference past its locals is left alone in either.</p>
   &lt;/xsl:if&gt;
 &lt;/xsl:template&gt;
 </code></pre>
-<p>The fix is one of three, and only the author knows which. A misspelled name
-is corrected to the binding it meant, which is usually a character or two
-away. A variable read outside the block declaring it moves up to a level
-whose siblings include the reference. A value a caller is meant to supply
-becomes an <code>xsl:param</code> of the template reading it, with an <code>xsl:with-param</code>
-at every call.</p>
+<p>In a module that may take globals from outside the linted files (a library no
+entry stylesheet holds, or one using a package or an unlinted module), a name
+no local binding declares is left alone.</p>
 
   </div>
 </body>
