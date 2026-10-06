@@ -38,12 +38,13 @@ const STEP = 4
 
 /**
  * How many times the middle stage's growth any stage may grow by when the
- * corpus grows `STEP` times: the geometric middle of the dearest ordinary
- * reading and the cheapest of a stage made quadratic (#1186). One whose
- * constant is still small here is #769's question instead.
+ * corpus grows `STEP` times: half again the dearest ordinary reading a runner
+ * gave, 2.03. A stage made quadratic reads `STEP` times its own growth, so one
+ * growing slower than the middle can turn quadratic under this (#1186), and
+ * one whose constant is still small here is #769's question.
  * @type {number}
  */
-const GROWTH = 1.9
+const GROWTH = 3.1
 
 /**
  * How many times a disagreeing measurement is taken again before it is
