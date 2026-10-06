@@ -31,11 +31,12 @@ cannot satisfy yet belongs in the baseline.
 
 ## Gate on a baseline
 
-Record every remaining defect and commit the file:
+Record every remaining defect, and commit the file with the `.xslint.yml`
+that turned checks off, since CI reads both:
 
 ```bash
 xslint --baseline-write xslint-baseline.json src
-git add xslint-baseline.json
+git add .xslint.yml xslint-baseline.json
 ```
 
 Then run the gate in CI:
@@ -61,7 +62,8 @@ xslint --only incorrect-use-of-boolean-constants --fix-suggestions src
 xslint --baseline xslint-baseline.json --baseline-prune src
 ```
 
-A prune never records a defect, so the count in the file only goes down. A
+Commit the pruned file with the fix. A prune never records a defect, so the
+count in the file only goes down. A
 recorded defect is matched by the text of its line, so a fix that rewrites a
 line also loses the entries other checks hold on it, and the prune reports
 them as new. Record such a check again on its own:
@@ -79,14 +81,18 @@ sees it.
 
 The `all` preset adds the rest of the catalog, and with it every fix `--fix`
 applies on its own, since those leave a stylesheet meaning what it meant. Set
-`preset: all` in `.xslint.yml`, then commit the fixes apart from everything
-else, so a reviewer reads a mechanical diff and nothing more:
+`preset: all` in `.xslint.yml` and run `--fix` again until a run fixes
+nothing, since one pass skips a fix that overlaps another. Commit the stylesheets
+alone, so a reviewer reads a mechanical diff and nothing more, then record
+what the fixes left and commit it with the preset:
 
 ```bash
 xslint --fix src
-git commit -am "Apply the safe xslint fixes"
+git add src
+git commit -m "Apply the safe xslint fixes"
 xslint --baseline-write xslint-baseline.json src
+git add .xslint.yml xslint-baseline.json
 ```
 
-The last command records what the fixes left, without `--only`, since every
-check the preset adds starts with no entries.
+The rewrite runs without `--only`, since every check the preset adds starts
+with no entries.
