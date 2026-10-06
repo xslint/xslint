@@ -6,13 +6,12 @@
 /*
  * The speed gate: charges every stage its own processor time over a
  * generated corpus at 40 stylesheets and again at 160, and fails a stage
- * spending more of the whole run than `SHARES` or `SHARE` allows, or, with
- * no entry, growing past `GROWTH` beside the middle stage (#755, #777). Cost
- * is the sharp question, the regression this exists for having changed a
- * constant rather than an exponent. The corpus is copied from one committed
- * stylesheet with every name renumbered, so no memo flatters it, and every
- * fortieth copy is heavy for the skew a real corpus has (#800). `COST` and
- * `COSTS` ask the same of each check of a stage owning several (#811).
+ * growing past `GROWTH` beside the middle stage, which is a stage turning
+ * quadratic. What a stage costs outright is the nightly `corpora` job's to
+ * judge, a share of the run having read differently on every runner (#1186).
+ * The corpus is copied from one committed stylesheet with every name
+ * renumbered, so no memo flatters it, and every fortieth copy is heavy for the
+ * skew a real corpus has (#800).
  */
 
 const assert = require('assert')
@@ -38,88 +37,10 @@ const SMALL = 40
 const STEP = 4
 
 /**
- * What percentage of its own run each stage may spend. A share and not a
- * growth is the assertion, #755's regression having been a constant growth
- * ranks backwards. A share is of the whole run, so a stage made cheaper lifts
- * every other entry and the table is re-derived by the ratio of the dearest
- * readings (#777, #783, #800, #784, #811, #845), and those tickets hold them.
- * @type {{[stage: string]: number}}
- */
-const SHARES = {
-  'xpath-linter': 39,
-  'xpath-validator': 26,
-  'xsl-validator': 18,
-}
-
-/**
- * What percentage of the run any stage not named in `SHARES` may spend. The
- * twenty-one of them read 0.69% to 4.95% here, so this is the bar a cheap
- * stage crosses by becoming an expensive one, earning an entry or a fix.
- * It comes up whenever a stage made cheaper shrinks the denominator, by the
- * ratio of the dearest reading (#784, #811, #845).
- * @type {number}
- */
-const SHARE = 7
-
-/**
- * The checks that legitimately cost more of a run than the rest, the way
- * `SHARES` names the three dear stages: an XSD regex asked of every candidate,
- * and one anchored on the root that spends everything inside a predicate that
- * descends the tree. What each reads, and what left this table once its
- * predicate compiled whole, the tickets carry (#811, #881).
- * @type {{[check: string]: number}}
- */
-const COSTS = {
-  'name-starts-with-numeric': 7,
-  'too-many-templates': 4,
-}
-
-/**
- * What percentage of the run one check of a stage owning several may spend.
- * This one stands between two measured distributions rather than under one: a
- * check the walk stops serving reads 4.32% at its cheapest where the dearest
- * served reading is 1.84%. A check whose stage owns it alone is that stage and
- * answers to `SHARE` already (#811).
- * @type {number}
- */
-const COST = 3
-
-/**
- * The checks a sibling of their own stage rides along with. `--suppress`
- * matches by substring, so a name standing inside another cannot be left
- * running while that other is silenced, and the sweep below charges the pair to
- * one bar. It is empty since #958 renamed the one pair that clashed, and it
- * stays because the gate below is what stops a second arriving unread (#811).
- * @type {{[check: string]: string}}
- */
-const SHADOWED = {}
-
-/**
- * What fraction of the checks may read `0` before the clock has resolved none
- * of them. A quarter is the geometric middle of the two measured
- * distributions: 1 to 4 of the forty-nine read `0` here over five runs,
- * against 36 to 38 under a clock quantised to the scheduler tick Windows
- * charges processor time in (#892).
- * @type {number}
- */
-const RESOLVED = 0.25
-
-/**
- * How many times its own reading a ceiling may stand above before it has
- * stopped being a bar. A ratchet turns red from both sides: a stage that grew
- * past its entry fails, and so does one made so much cheaper that the entry it
- * left behind would let the whole regression back in. Four rather than two, a
- * share cancelling a machine's speed and not its character.
- * @type {number}
- */
-const SLACK = 4
-
-/**
- * How many times the middle stage's growth a stage with no entry in `SHARES`
- * may grow by when the corpus grows `STEP` times. Asked of those alone, an
- * entry pinning what a stage costs outright being the stronger statement. A
- * quadratic reads `STEP` itself where the twenty read 0.70 to 1.19; one whose
- * constant is still small here is #769's question instead.
+ * How many times the middle stage's growth any stage may grow by when the
+ * corpus grows `STEP` times. A quadratic reads `STEP` itself where the
+ * ordinary stages read 0.70 to 1.19; one whose constant is still small here is
+ * #769's question instead.
  * @type {number}
  */
 const GROWTH = 3.0
@@ -268,60 +189,31 @@ const timed = function(fun) {
  * Milliseconds each stage spends over one corpus, timed directly rather than by
  * subtracting one run from another: the error of two timings compounds, and a
  * stage whose own reading is stable to three percent reads twenty that way.
- * What each stage was handed comes back beside what it spent, since weighing
- * one check means running its stage again over that same input.
  * @param {number} from - Number of the first stylesheet
  * @param {number} files - How many the corpus holds
- * @return {{spans: Map.<string, number>, given: Map.<string, Array>}} - Both
+ * @return {Map.<string, number>} - Milliseconds by stage
  */
 const measured = function(from, files) {
   const sources = corpus(from, files)
   const spans = new Map()
-  const given = new Map()
   const xsls = timed(() => validateXsls(sources, []))
   spans.set('xsl-validator', xsls.span)
   const xpaths = timed(() => validateXpaths(xsls.answer.corpus, []))
   spans.set('xpath-validator', xpaths.span)
   for (const stage of STAGES) {
-    given.set(stage.name, xpaths.answer.expressions)
+    let given = xpaths.answer.expressions
     if (stage.over === 'corpus') {
-      given.set(stage.name, xsls.answer.corpus)
+      given = xsls.answer.corpus
     }
-    spans.set(
-      stage.name, timed(() => stage.run(given.get(stage.name), [])).span,
-    )
+    spans.set(stage.name, timed(() => stage.run(given, [])).span)
   }
-  return {spans: spans, given: given}
+  return spans
 }
 
 /**
- * Milliseconds one check of a stage owning several spends, each timed by
- * running that stage again over the same input under every other name it owns.
- * The filter asks what the check's own name holds rather than what it equals,
- * which drops the check itself and leaves a sibling standing inside it running,
- * that being a name no suppression can reach past (#811).
- * @param {Map.<string, Array>} given - What each stage was handed
- * @return {Map.<string, number>} - Milliseconds by check
- */
-const costed = function(given) {
-  const costs = new Map()
-  for (const stage of STAGES.filter((one) => one.checks.length > 1)) {
-    for (const check of stage.checks) {
-      costs.set(check, timed(() => stage.run(
-        given.get(stage.name),
-        stage.checks.filter((one) => !check.includes(one)),
-      )).span)
-    }
-  }
-  return costs
-}
-
-/**
- * The middle of a list of readings. It answers the growth question alone,
- * where the readings are ratios rather than milliseconds: every stage of
- * ordinary shape grows about as the corpus does, so their median is one
- * stage's growth whichever stage sits there. The median *cost* decides nothing
- * since #777, fourteen ordinary stages having kept swapping places.
+ * The middle of a list of readings, which are ratios rather than milliseconds:
+ * every stage of ordinary shape grows about as the corpus does, so their median
+ * is one stage's growth whichever stage sits there.
  * @param {Array.<number>} list - The readings
  * @return {number} - Their median
  */
@@ -332,350 +224,109 @@ const middle = function(list) {
 }
 
 /**
- * What percentage of its run each stage spends, how it grew as a multiple of
- * the middle stage's growth, and what each check of a stage owning several
- * costs of that same run. Quotients taken inside one process, which is what
- * survives a shared machine, each divided by something the whole run supplies,
- * which is what survives a different one (#777, #811).
+ * How each stage grew, as a multiple of the middle stage's growth: a quotient
+ * taken inside one process, which survives a shared machine, divided by one the
+ * whole run supplies, which survives a different one (#777).
  * @param {number} attempt - Which attempt this is, deciding the file numbers
- * @return {{stages: Map.<string, object>, checks: Map.<string, number>}} - Both
+ * @return {Map.<string, number>} - Growth by stage
  */
 const weighed = function(attempt) {
   const small = measured(attempt * SPREAD, SMALL)
   const large = measured(attempt * SPREAD + SPREAD / 2, SMALL * STEP)
   const ratios = new Map(
-    Array.from(
-      small.spans, ([name, span]) => [name, large.spans.get(name) / span],
-    ),
+    Array.from(small, ([name, span]) => [name, large.get(name) / span]),
   )
-  const whole = Array.from(large.spans.values())
-    .reduce((one, two) => one + two, 0)
   const linear = middle(Array.from(ratios.values()))
-  return {
-    stages: new Map(
-      Array.from(large.spans, ([name, span]) => [name, {
-        share: 100 * span / whole,
-        growth: ratios.get(name) / linear,
-      }]),
-    ),
-    checks: new Map(
-      Array.from(
-        costed(large.given), ([name, span]) => [name, 100 * span / whole],
-      ),
-    ),
-  }
+  return new Map(
+    Array.from(ratios, ([name, ratio]) => [name, ratio / linear]),
+  )
 }
 
 /**
  * What is wrong with a stage's readings, or an empty string when nothing is.
- * A ceiling is judged off the cheapest of them and the slack off the dearest,
- * each side asked of the reading that most favours passing. A non-finite growth
- * is no reading and is dropped: Windows charges in ticks coarser than a cheap
- * stage costs over the small corpus, which leaves the share unhurt.
+ * The cheapest growth is judged, the reading that most favours passing. A
+ * non-finite growth is no reading and is dropped: Windows charges in ticks
+ * coarser than a cheap stage costs over the small corpus.
  * @param {string} name - Name of the stage
- * @param {Array.<{share: number, growth: number}>} readings - Per attempt
+ * @param {Array.<number>} readings - Its growth, per attempt
  * @return {string} - The fault, or an empty string
  */
 const fault = function(name, readings) {
-  const cheapest = Math.min(...readings.map((one) => one.share))
-  const dearest = Math.max(...readings.map((one) => one.share))
-  const growths = readings.map((one) => one.growth).filter(Number.isFinite)
-  const named = Object.hasOwn(SHARES, name)
-  let ceiling = SHARE
-  if (named) {
-    ceiling = SHARES[name]
-  }
+  const growths = readings.filter(Number.isFinite)
   let said = ''
-  if (cheapest > ceiling) {
-    said = [
-      `${name} spends ${cheapest.toFixed(2)}% of its own run, past the`,
-      `${ceiling}% that test/scaling.test.js allows it`,
-    ].join(' ')
-  } else if (!named && growths.length > 0 && Math.min(...growths) > GROWTH) {
+  if (growths.length > 0 && Math.min(...growths) > GROWTH) {
     said = [
       `${name} grew ${Math.min(...growths).toFixed(2)} times what the`,
       `middle stage grew when the corpus grew ${STEP} times, so its shape has`,
       `changed`,
     ].join(' ')
-  } else if (named && ceiling > SLACK * dearest) {
-    said = [
-      `${name} spends at most ${dearest.toFixed(2)}% of its run where it`,
-      `is allowed ${ceiling}%, so the entry has stopped being a bar and wants`,
-      `tightening`,
-    ].join(' ')
   }
   return said
 }
 
 /**
- * What is wrong with one check's readings, or an empty string when nothing is.
- * No growth question stands beside the share: a check is part of one stage, and
- * the stage is asked how it grew already. The two ends of the readings answer
- * the two sides here as they do for a stage, and for the same reason.
- * @param {string} name - Name of the check
- * @param {Array.<number>} readings - Its share of the run, per attempt
- * @return {string} - The fault, or an empty string
- */
-const overspent = function(name, readings) {
-  const cheapest = Math.min(...readings)
-  const dearest = Math.max(...readings)
-  const named = Object.hasOwn(COSTS, name)
-  let ceiling = COST
-  if (named) {
-    ceiling = COSTS[name]
-  }
-  let said = ''
-  if (cheapest > ceiling) {
-    said = [
-      `${name} costs ${cheapest.toFixed(2)}% of the run, past the`,
-      `${ceiling}% that test/scaling.test.js allows it`,
-    ].join(' ')
-  } else if (named && ceiling > SLACK * dearest) {
-    said = [
-      `${name} costs at most ${dearest.toFixed(2)}% of the run where it`,
-      `is allowed ${ceiling}%, so the entry has stopped being a bar and wants`,
-      `tightening`,
-    ].join(' ')
-  }
-  return said
-}
-
-/**
- * What one attempt measured, as the line a failing gate prints: every stage
- * with its growth beside its share, then every check answering to a bar of its
- * own, dearest first, that being the order a re-cut of `COST` reads them in.
- * @param {{stages: Map, checks: Map}} weight - One attempt's readings
- * @return {string} - The readings, joined
- */
-const tabled = function(weight) {
-  return Array.from(weight.stages, ([name, one]) =>
-    [
-      `${name} ${one.share.toFixed(2)}% of its run, grew`,
-      `${one.growth.toFixed(2)}`,
-    ].join(' ')).concat(
-    Array.from(weight.checks).sort((one, two) => two[1] - one[1]).map(
-      ([name, share]) => `${name} ${share.toFixed(2)}%`,
-    ),
-  ).join(', ')
-}
-
-/**
- * Whether the clock resolved what the check tier judges. A check costs a
- * fraction of a millisecond and Windows charges in ticks of some sixteen, so a
- * reading there counts tick boundaries rather than measuring the check: three
- * quarters of them come back `0` and what is left swings five times over
- * between attempts of one run (#892).
- * @param {Map.<string, Array.<number>>} costs - Each check's readings so far
- * @return {boolean} - Whether the tier has a measurement to judge
- */
-const resolves = function(costs) {
-  return Array.from(costs.values()).filter(
-    (readings) => Math.max(...readings) === 0,
-  ).length < RESOLVED * costs.size
-}
-
-/**
- * Every stage whose cost or growth, and every check whose cost, disagrees with
- * what its bar says, measured again up to `ATTEMPTS` times while any of them
- * does, beside the whole table of readings — a gate that fails must say what it
- * measured. The first measurement is thrown away, on the one principle a
- * warm-up has: warm the code with the work about to be timed.
- * @return {{stages: Array, checks: Array, resolved: boolean, table: string}} -
- *   Each tier's faults, whether the clock resolved the checks, and the readings
+ * Every stage whose growth disagrees with `GROWTH`, measured again up to
+ * `ATTEMPTS` times while any of them does, beside the last attempt's readings —
+ * a gate that fails must say what it measured. The first measurement is thrown
+ * away, on the one principle a warm-up has: warm the code with the work about
+ * to be timed.
+ * @return {{faults: Array.<string>, table: string}} - Faults and readings
  */
 const judged = function() {
   weighed(ATTEMPTS)
   const readings = new Map()
-  const costs = new Map()
-  let stages = []
-  let checks = []
-  let resolved = true
+  let faults = []
   let table = ''
   for (let attempt = 0; attempt < ATTEMPTS; attempt++) {
-    const weight = weighed(attempt)
-    for (const [name, one] of weight.stages) {
-      readings.set(name, (readings.get(name) ?? []).concat([one]))
+    const growths = weighed(attempt)
+    for (const [name, growth] of growths) {
+      readings.set(name, (readings.get(name) ?? []).concat([growth]))
     }
-    for (const [name, share] of weight.checks) {
-      costs.set(name, (costs.get(name) ?? []).concat([share]))
-    }
-    table = tabled(weight)
-    stages = Array.from(readings, ([name, list]) => fault(name, list))
+    table = Array.from(
+      growths, ([name, growth]) => `${name} grew ${growth.toFixed(2)}`,
+    ).join(', ')
+    faults = Array.from(readings, ([name, list]) => fault(name, list))
       .filter((said) => said !== '')
-    checks = Array.from(costs, ([name, list]) => overspent(name, list))
-      .filter((said) => said !== '')
-    resolved = resolves(costs)
-    if (stages.length === 0 && (checks.length === 0 || !resolved)) {
+    if (faults.length === 0) {
       break
     }
   }
-  return {
-    stages: stages, checks: checks, resolved: resolved, table: table,
-  }
+  return {faults: faults, table: table}
 }
 
 /**
- * The one measurement both tiers read, taken on the first ask and remembered.
- * A stage answers to its bar under a clock that cannot resolve a check, so the
- * two are an `it` apiece and only the second stands down — sharing this, a
- * corpus of its own paying for the building and the discarded warm-up twice.
- * @type {?object}
- */
-let taken = null
-
-/**
- * What `judged` answered, measured once however many tiers ask for it.
- * @return {object} - Each tier's faults, the clock's verdict, and the readings
- */
-const settled = function() {
-  if (taken === null) {
-    taken = judged()
-  }
-  return taken
-}
-
-/**
- * Every bar of this file as a guide would quote it, the number carrying the
- * unit it is quoted in: a share is a percentage of a run and a growth a
- * multiple of the middle stage's. The guides name the bars and quote none,
- * since a table re-derived beside prose quoting it drifts unwatched; this is
- * what holds a quote that creeps back to the table (#821, #1168).
- * @type {{[name: string]: string}}
- */
-const QUOTED = Object.assign(
-  {SHARE: `${SHARE}%`, GROWTH: GROWTH.toFixed(1), COST: `${COST}%`},
-  Object.fromEntries(
-    Object.keys(SHARES).map((name) => [name, `${SHARES[name]}%`]),
-  ),
-  Object.fromEntries(
-    Object.keys(COSTS).map((name) => [name, `${COSTS[name]}%`]),
-  ),
-)
-
-/**
- * How a bar of one unit is written, as the pattern matching every number a
- * guide may have put where that bar belongs: a share to the whole percent and a
- * growth to the tenth. Neither shape reaches the other's, which is what keeps a
- * measurement quoted beside a bar from being read as one.
- * @param {string} bar - What the bar must be quoted as
- * @return {string} - Pattern for a number quoted in the same unit
- */
-const shaped = function(bar) {
-  let pattern = '(\\d+\\.\\d+)'
-  if (bar.endsWith('%')) {
-    pattern = '(\\d+%)'
-  }
-  return pattern
-}
-
-/**
- * Every bar a guide quotes at a number this file does not hold. A gap collapses
- * first, because a bar is prose and prose wraps across a line ending.
+ * Every guide quoting `GROWTH` at a number this file does not hold. A gap
+ * collapses first, because a bar is prose and prose wraps across a line
+ * ending; the guides name the bar and quote none, and this holds a quote that
+ * creeps back (#821, #1168).
  * @param {string} guide - Path of the guide from the repository root
- * @return {Array.<string>} - One line per bar quoted wrongly
+ * @return {Array.<string>} - One line per quote standing wrongly
  */
 const misquoted = function(guide) {
-  const prose = fs.readFileSync(path.join(ROOT, guide), 'utf-8')
-    .split(GAPS).join(' ')
-  return Object.keys(QUOTED).flatMap(
-    (name) => Array.from(
-      prose.matchAll(new RegExp(`\`${name}\` at ${shaped(QUOTED[name])}`, 'g')),
-    )
-      .filter((found) => found[1] !== QUOTED[name])
-      .map(
-        (found) => `${guide} quotes \`${name}\` at ${found[1]}, not ${
-          QUOTED[name]}`,
-      ),
+  return Array.from(
+    fs.readFileSync(path.join(ROOT, guide), 'utf-8').split(GAPS).join(' ')
+      .matchAll(/`GROWTH` at (\d+\.\d+)/g),
   )
+    .filter((found) => found[1] !== GROWTH.toFixed(1))
+    .map(
+      (found) => `${guide} quotes \`GROWTH\` at ${found[1]}, not ${
+        GROWTH.toFixed(1)}`,
+    )
 }
 describe('scaling', function() {
-  it('holds every stage to the bar it answers to', function() {
+  it('holds every stage to the growth it answers to', function() {
     this.timeout(120000)
     if (instrumented()) {
       this.skip()
     }
-    const judgement = settled()
+    const judgement = judged()
     assert.deepEqual(
-      judgement.stages,
+      judgement.faults,
       [],
       [
-        'a stage no longer costs or grows the way the bars in',
-        `test/scaling.test.js say, over a corpus of ${SMALL} stylesheets and`,
-        `one of ${SMALL * STEP}: ${judgement.table}`,
-      ].join(' '),
-    )
-  })
-  it('holds every check to the bar it answers to', function() {
-    this.timeout(120000)
-    if (instrumented()) {
-      this.skip()
-    }
-    const judgement = settled()
-    if (!judgement.resolved) {
-      this.skip()
-    }
-    assert.deepEqual(
-      judgement.checks,
-      [],
-      [
-        'a check no longer costs the way the bars in test/scaling.test.js say,',
-        `over a corpus of ${SMALL * STEP} stylesheets: ${judgement.table}`,
-      ].join(' '),
-    )
-  })
-  it('reads a clock too coarse for a check as no measurement', function() {
-    assert.deepEqual(
-      [4, 36].map((zeros) => resolves(new Map(
-        Array.from({length: 49}, (blank, at) => [`${at}`, [Number(at >= zeros)]]),
-      ))),
-      [true, false],
-      [
-        'the check tier no longer stands down under the tick Windows charges',
-        'processor time in, where 36 of its 49 readings come back zero, or no',
-        'longer judges the 4 of 49 a fine clock leaves',
-      ].join(' '),
-    )
-  })
-  it('names in SHARES only stages the pipeline still has', function() {
-    assert.deepEqual(
-      Object.keys(SHARES).filter(
-        (name) => !STAGES.some((stage) => stage.name === name) &&
-          name !== 'xsl-validator' && name !== 'xpath-validator',
-      ),
-      [],
-      [
-        'a stage is allowed a cost of its own by name, yet nothing of that name',
-        'runs any more, so the entry weighs on nothing',
-      ].join(' '),
-    )
-  })
-  it('names in COSTS only checks the pipeline still runs', function() {
-    assert.deepEqual(
-      Object.keys(COSTS).filter(
-        (name) => !STAGES.some((stage) => stage.checks.includes(name)),
-      ),
-      [],
-      [
-        'a check is allowed a cost of its own by name, yet no stage owns one',
-        'of that name any more, so the entry weighs on nothing',
-      ].join(' '),
-    )
-  })
-  it('names in SHADOWED every check a sibling rides along with', function() {
-    assert.deepEqual(
-      Object.fromEntries(
-        STAGES.flatMap((stage) => stage.checks.map((check) => [
-          check,
-          stage.checks.filter(
-            (one) => one !== check && check.includes(one),
-          ).join(' '),
-        ])).filter((pair) => pair[1] !== ''),
-      ),
-      SHADOWED,
-      [
-        'a check name stands inside another of its own stage, so the sweep',
-        'above cannot run the one without the other and charges the pair to',
-        'a single bar without saying so',
+        'a stage no longer grows the way GROWTH in test/scaling.test.js says,',
+        `over a corpus of ${SMALL} stylesheets and one of ${SMALL * STEP}:`,
+        judgement.table,
       ].join(' '),
     )
   })
@@ -689,15 +340,13 @@ describe('scaling', function() {
       'a linter reaches no stage of the pipeline, so nothing measures it',
     )
   })
-  it('holds every bar a guide quotes to the table it stands in', function() {
+  it('holds every guide quoting GROWTH to the number it stands at', function() {
     assert.deepEqual(
       GUIDES.flatMap(misquoted),
       [],
       [
-        'a guide quotes a bar at a number the tables above no longer hold, and',
-        'the prose is the half a session reads before it touches either one,',
-        'so a share left behind by the re-derivation that moved it is a bar',
-        'loosened by nobody',
+        'a guide quotes GROWTH at a number this file no longer holds, and the',
+        'prose is the half a session reads before it touches the bar',
       ].join(' '),
     )
   })
