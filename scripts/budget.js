@@ -8,9 +8,8 @@
 /**
  * How many times a run's own milliseconds its budget may stand above them
  * before it has stopped being a bar. #755's quadratic cost DocBook-XSL 44
- * seconds against a budget of 180 and would have passed it twice over. Four,
- * as `SLACK` in `test/scaling.test.js` is, a shared runner disagreeing about a
- * wall clock by more than it does about a share.
+ * seconds against a budget of 180 and would have passed it twice over. Four
+ * leaves room for a shared runner disagreeing about a wall clock.
  * @type {number}
  */
 const SLACK = 4

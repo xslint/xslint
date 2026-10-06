@@ -5,10 +5,9 @@
 
 /*
  * Orchestrates discovery, config, staging and output; exports the pure `lint`
- * (package `main`), `fixed`, and `STAGES`, derived from the linter lists so
- * the speed gate times what the run runs. `lint` sorts its defects by file,
- * line, column and check, in code units rather than `localeCompare`, so a
- * committed report diffs stably (#638). A run reads only what `SUFFIXES`
+ * (package `main`) and `fixed`. `lint` sorts its defects by file, line, column
+ * and check, in code units rather than `localeCompare`, so a committed report
+ * diffs stably (#638). A run reads only what `SUFFIXES`
  * names (#924); the walk opens no `.git` or `node_modules`, prunes what a
  * `dir/**` exclude covers whole (#923), and leaves out what `.gitignore`
  * refuses (#929). The exit code is `process.exitCode`, as `process.exit` drops
@@ -18,10 +17,13 @@
 
 const path = require('path')
 const fs = require('fs')
-const {absentOf, allFilesFrom, slashed, subsetsOf} = require('./helpers')
+const {
+  absentOf, allFilesFrom, compared, slashed, subsetsOf,
+} = require('./helpers')
 const {ignoring} = require('./gitignore')
 const {parted} = require('./source')
 const {SUGGESTION, suppressed} = require('./checks')
+const {recorded, matched, trimmed} = require('./baseline')
 const {kinds} = require('./resources/checks.json')
 const {validate: validateXsls, names: xslChecks} =
   require('./validators/xsl-validator')
@@ -81,29 +83,20 @@ const {minimatch} = require('minimatch')
  * in step. What is left here reads the document rather than the expressions it
  * carries: the two declarative loaders and the four asking about namespaces,
  * imports and parameters.
- * @type {Array.<{name: string,
- *  run: function(Array.<{file: string, xsl: Document}>,
+ * @type {Array.<{run: function(Array.<{file: string, xsl: Document}>,
  *  Array.<string>): Array.<object>, checks: Array.<string>}>}
  */
 const LINTERS = [
-  {name: 'xpath-linter', run: lintByXpath, checks: xpathChecks},
-  {name: 'corpus-linter', run: lintByCorpus, checks: corpusChecks},
-  {name: 'namespace-linter', run: lintByNamespace, checks: namespaceChecks},
-  {
-    name: 'result-namespace-linter',
-    run: lintByResultNamespace,
-    checks: resultNamespaceChecks,
-  },
-  {name: 'import-linter', run: lintByImports, checks: importChecks},
-  {name: 'output-linter', run: lintByOutput, checks: outputChecks},
-  {name: 'parameter-linter', run: lintByParameter, checks: parameterChecks},
-  {name: 'element-linter', run: lintByElement, checks: elementChecks},
-  {name: 'variable-linter', run: lintByVariable, checks: variableChecks},
-  {
-    name: 'root-template-linter',
-    run: lintByRootTemplate,
-    checks: rootTemplateChecks,
-  },
+  {run: lintByXpath, checks: xpathChecks},
+  {run: lintByCorpus, checks: corpusChecks},
+  {run: lintByNamespace, checks: namespaceChecks},
+  {run: lintByResultNamespace, checks: resultNamespaceChecks},
+  {run: lintByImports, checks: importChecks},
+  {run: lintByOutput, checks: outputChecks},
+  {run: lintByParameter, checks: parameterChecks},
+  {run: lintByElement, checks: elementChecks},
+  {run: lintByVariable, checks: variableChecks},
+  {run: lintByRootTemplate, checks: rootTemplateChecks},
 ]
 
 /**
@@ -112,70 +105,23 @@ const LINTERS = [
  * reported draws one defect rather than a second from every check that reads
  * the same text (#750). Ten of them scanned the whole corpus; the exclusion is
  * structural now, with no gate to remember.
- * @type {Array.<{name: string,
- *  run: function(Array.<{source: object, found: object}>,
+ * @type {Array.<{run: function(Array.<{source: object, found: object}>,
  *  Array.<string>): Array.<object>, checks: Array.<string>}>}
  */
 const EXPRESSION_LINTERS = [
-  {name: 'xpath-axis-linter', run: lintByAxis, checks: axisChecks},
-  {
-    name: 'using-namespace-axis-linter',
-    run: lintByNamespaceAxis,
-    checks: namespaceAxisChecks,
-  },
-  {name: 'node-set-linter', run: lintByNodeSet, checks: nodeSetChecks},
-  {
-    name: 'double-slash-linter',
-    run: lintByDoubleSlash,
-    checks: doubleSlashChecks,
-  },
-  {name: 'count-linter', run: lintByCount, checks: countChecks},
-  {
-    name: 'string-length-linter',
-    run: lintByStringLength,
-    checks: stringLengthChecks,
-  },
-  {name: 'name-linter', run: lintByName, checks: nameChecks},
-  {name: 'translate-linter', run: lintByTranslate, checks: translateChecks},
-  {
-    name: 'redundant-double-negation-linter',
-    run: lintByDoubleNegation,
-    checks: doubleNegationChecks,
-  },
-  {
-    name: 'redundant-boolean-call-linter',
-    run: lintByBooleanCall,
-    checks: booleanCallChecks,
-  },
-  {
-    name: 'predicate-position-linter',
-    run: lintByPredicatePosition,
-    checks: predicatePositionChecks,
-  },
-  {name: 'bare-name-linter', run: lintByBareName, checks: bareNameChecks},
-  {name: 'xpath-format-linter', run: lintByFormat, checks: formatChecks},
-]
-
-/**
- * Every linting stage a run passes through, with what it is handed — the
- * corpus, or the expressions the validator kept — and the checks it owns, a
- * stage run under every name but one being how a check is weighed alone.
- * Derived from the two lists, so neither a linter nor a check can be wired into
- * the pipeline and left out of what measures it (#756, #811).
- * @type {Array.<{name: string, over: string, checks: Array.<string>,
- *  run: function(Array, Array.<string>): Array.<object>}>}
- */
-const STAGES = [
-  ...LINTERS.map(
-    ({name, run, checks}) => ({
-      name: name, run: run, over: 'corpus', checks: checks,
-    }),
-  ),
-  ...EXPRESSION_LINTERS.map(
-    ({name, run, checks}) => ({
-      name: name, run: run, over: 'expressions', checks: checks,
-    }),
-  ),
+  {run: lintByAxis, checks: axisChecks},
+  {run: lintByNamespaceAxis, checks: namespaceAxisChecks},
+  {run: lintByNodeSet, checks: nodeSetChecks},
+  {run: lintByDoubleSlash, checks: doubleSlashChecks},
+  {run: lintByCount, checks: countChecks},
+  {run: lintByStringLength, checks: stringLengthChecks},
+  {run: lintByName, checks: nameChecks},
+  {run: lintByTranslate, checks: translateChecks},
+  {run: lintByDoubleNegation, checks: doubleNegationChecks},
+  {run: lintByBooleanCall, checks: booleanCallChecks},
+  {run: lintByPredicatePosition, checks: predicatePositionChecks},
+  {run: lintByBareName, checks: bareNameChecks},
+  {run: lintByFormat, checks: formatChecks},
 ]
 
 /**
@@ -191,8 +137,8 @@ const VALIDATOR_CHECKS = [...xslChecks, ...xpathValidatorChecks]
  */
 const CHECKS = [
   ...VALIDATOR_CHECKS,
-  ...LINTERS.flatMap((stage) => stage.checks),
-  ...EXPRESSION_LINTERS.flatMap((stage) => stage.checks),
+  ...LINTERS.flatMap((linter) => linter.checks),
+  ...EXPRESSION_LINTERS.flatMap((linter) => linter.checks),
 ]
 
 /**
@@ -313,6 +259,18 @@ const chosenOf = function(only, listed, graded) {
       )
     }
   }
+  return selected(only, listed, graded)
+}
+
+/**
+ * The checks `chosenOf` answers, chosen without a word about a choice naming
+ * none, so a caller asking again after the run warns nothing twice.
+ * @param {Array.<string>} only - Substrings of the names chosen
+ * @param {Array.<string>} listed - Names of the checks the preset holds
+ * @param {Array.<string>} graded - Names of the checks the run re-grades
+ * @return {Array.<string>} - Names of the checks chosen
+ */
+const selected = function(only, listed, graded) {
   let chosen = CHECKS.filter(
     (check) => listed.includes(check) || graded.includes(check),
   )
@@ -322,6 +280,21 @@ const chosenOf = function(only, listed, graded) {
     )
   }
   return chosen
+}
+
+/**
+ * The checks a run under these settings reports, chosen and left unsuppressed,
+ * so a baseline judges and rewrites only the entries the run could draw.
+ * @param {{suppress: Array.<string>, overrides: object, only: Array.<string>,
+ *  preset: string}} settings - What `settingsOf` answers
+ * @return {Array.<string>} - Names of the checks run
+ */
+const ranOf = function(
+  {suppress = [], overrides = {}, only = [], preset = PRESET},
+) {
+  return selected(only, presetted(preset), Object.keys(overrides)).filter(
+    (check) => !suppressed(check, suppress.filter((sup) => sup !== '')),
+  )
 }
 
 /**
@@ -509,19 +482,6 @@ const leveled = function(quiet, level) {
     chosen = levels.WARNING
   }
   return chosen
-}
-
-/**
- * Two strings ranked by code unit, the order `Array.prototype.sort` gives with
- * no comparator at all, rather than `localeCompare`, whose answer belongs to
- * the machine's locale and so cannot underlie a report committed once and
- * diffed on every runner (#638).
- * @param {string} one - A string
- * @param {string} two - Another string
- * @return {number} - Negative, zero or positive, as a comparator answers
- */
-const compared = function(one, two) {
-  return Number(one > two) - Number(one < two)
 }
 
 /**
@@ -742,11 +702,33 @@ const sourceOf = function(file, content) {
 }
 
 /**
+ * The entries of a baseline whose file still stands beside it and whose check
+ * xslint still has, so a prune or a rewrite drops the entries of a sheet
+ * deleted since and of a check renamed or retired.
+ * @param {object} baseline - What the baseline file holds
+ * @param {string} base - Directory the baseline file lives in
+ * @return {object} - The same entries, less those of every missing file and
+ *  unknown check
+ */
+const standing = function(baseline, base) {
+  return Object.fromEntries(
+    Object.entries(baseline)
+      .filter(([file]) => fs.existsSync(path.resolve(base, file)))
+      .map(([file, checks]) => [
+        file,
+        Object.fromEntries(
+          Object.entries(checks).filter(([name]) => CHECKS.includes(name)),
+        ),
+      ]),
+  )
+}
+
+/**
  * Entry point for the command line.
  * @param {Array.<string>} pths - Files or directories with .xsl to lint
  * @param {object} options - CLI options: `logLevel`, `quiet`, `suppress`,
  *  `maxWarnings`, `config`, `format`, `only`, `preset`, `fix`, `fixDryRun`,
- *  `fixSuggestions`
+ *  `fixSuggestions`, `baseline`, `baselineWrite`, `baselinePrune`
  */
 module.exports = function xslint(pths, options) {
   logger.setLevel(leveled(options.quiet, options.logLevel))
@@ -758,6 +740,33 @@ module.exports = function xslint(pths, options) {
   const settings = settingsFrom(config, options)
   settings.problems.forEach((problem) => logger.warn(problem))
   const maxWarnings = options.maxWarnings ?? config.maxWarnings ?? -1
+  const fixing = options.fix || options.fixDryRun || options.fixSuggestions
+  if (options.baselineWrite && fixing) {
+    throw new Error(
+      'Option --baseline-write records what a run finds and cannot run with a fix flag',
+    )
+  }
+  let ledger
+  if (options.baseline) {
+    ledger = path.resolve(options.baseline)
+  } else if (config.baseline) {
+    ledger = path.resolve(config.base, config.baseline)
+  }
+  if (options.baselinePrune && !ledger) {
+    throw new Error(
+      'Option --baseline-prune rewrites the file --baseline names and cannot run without one',
+    )
+  }
+  let target
+  let earlier = {}
+  if (options.baselineWrite) {
+    target = path.resolve(options.baselineWrite)
+    if (fs.existsSync(target)) {
+      earlier = JSON.parse(fs.readFileSync(target, 'utf-8'))
+    }
+  } else if (ledger) {
+    earlier = JSON.parse(fs.readFileSync(ledger, 'utf-8'))
+  }
   logger.info(`Directories and files to process: ${pths.join(', ')}`)
   const found = stylesheetsOf(pths, settings)
   found.problems.forEach((problem) => logger.warn(problem))
@@ -765,8 +774,9 @@ module.exports = function xslint(pths, options) {
   const sources = found.stylesheets.map(
     (stylesheet) => sourceOf(stylesheet, fs.readFileSync(stylesheet, 'utf-8')),
   )
-  let reported = lint(sources, settings)
-  if (options.fix || options.fixDryRun || options.fixSuggestions) {
+  const drawn = lint(sources, settings)
+  let reported = drawn
+  if (fixing) {
     /**
      * @todo #571:60min Fix over several passes until nothing changes: a fix
      *  `fixer.js` skips for overlapping another is never applied, so `--fix`
@@ -796,6 +806,37 @@ module.exports = function xslint(pths, options) {
       logger.info(`${suggested.length} more fixable with --fix-suggestions`)
     }
   }
+  if (target) {
+    fs.writeFileSync(
+      target,
+      `${JSON.stringify(recorded(reported, sources, path.dirname(target), ranOf(settings), standing(earlier, path.dirname(target))), null, 2)}\n`,
+    )
+    logger.info(`Recorded ${reported.length} defects in ${target}`)
+    reported = []
+  } else if (ledger) {
+    const {fresh, stale} = matched(
+      drawn, sources, earlier, path.dirname(ledger), ranOf(settings),
+    )
+    if (options.baselinePrune) {
+      fs.writeFileSync(
+        ledger,
+        `${JSON.stringify(trimmed(drawn, sources, standing(earlier, path.dirname(ledger)), path.dirname(ledger), ranOf(settings)), null, 2)}\n`,
+      )
+      logger.info(`Pruned the stale entries of ${ledger}`)
+    } else {
+      stale.forEach((entry) => logger.error(
+        [
+          `Baseline entry ${entry.file} records ${entry.count} ${entry.name}`,
+          `defects the run no longer draws, drop them from ${ledger} with`,
+          '--baseline-prune',
+        ].join(' '),
+      ))
+    }
+    if (stale.length > 0 && !options.baselinePrune) {
+      process.exitCode = 1
+    }
+    reported = reported.filter((defect) => fresh.includes(defect))
+  }
   logger.info(`Processed files: ${found.stylesheets.length}`)
   if (reported.length > 0) {
     logger.info(`Defects found: ${reported.length}`)
@@ -816,9 +857,9 @@ module.exports = function xslint(pths, options) {
 module.exports.lint = lint
 module.exports.fixed = fixed
 module.exports.settingsOf = settingsOf
+module.exports.ranOf = ranOf
 module.exports.stylesheetsOf = stylesheetsOf
 module.exports.sourceOf = sourceOf
-module.exports.STAGES = STAGES
 module.exports.PRESETS = PRESETS
 module.exports.SUFFIXES = SUFFIXES
 module.exports.suffixed = suffixed
