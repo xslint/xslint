@@ -58,6 +58,18 @@ const CASES = [
     expected: 'all',
   },
   {
+    name: 'reads the baseline a run compares against',
+    content: 'baseline: build/xslint-baseline.json\n',
+    field: 'baseline',
+    expected: 'build/xslint-baseline.json',
+  },
+  {
+    name: 'ignores a baseline that is not a string',
+    content: 'baseline: 42\n',
+    field: 'baseline',
+    expected: null,
+  },
+  {
     name: 'ignores a preset that is not a string',
     content: 'preset:\n  - all\n',
     field: 'preset',
@@ -125,6 +137,7 @@ describe('config', function() {
       maxWarnings: null,
       logLevel: null,
       quiet: null,
+      baseline: null,
       problems: [],
       base: dir,
       file: undefined,

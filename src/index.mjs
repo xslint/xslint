@@ -24,6 +24,14 @@ program
       .default('text'),
   )
   .option('--config <path>', 'Path to a configuration file')
+  .option(
+    '--baseline <file>',
+    'Report only the defects the baseline file does not record',
+  )
+  .option(
+    '--baseline-write <file>',
+    'Record every defect found into the baseline file and report none',
+  )
   .option('--fix', 'Rewrite the fixable defects in place')
   .option(
     '--fix-suggestions',

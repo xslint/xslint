@@ -206,17 +206,16 @@ quadratic whose constant is still small at those sizes.
 
 ## User configuration
 
-- `--suppress=<substring>` turns off every check whose name matches.
-- `--only=<substring>` (or `only:`) reports only the checks it names; a
-  suppression outranks it.
+- `--suppress=<substring>` turns off every check whose name matches, and
+  outranks `--only=<substring>` (or `only:`), which reports only those named.
 - `--preset` (or `preset:`) is `recommended` unless `all`. `--only` replaces it,
   a re-grade naming a check exactly adds to it, and `off` outranks both.
 - `.xslint.yml`, found by walking up or named by `--config`, turns checks
   `off`, re-grades severity, excludes globs, and defaults `max-warnings`,
-  `log-level` and `quiet`. Flags override the file, which overrides the
-  defaults. Unknown keys and patterns matching nothing are reported. A
-  `dir/**` exclusion is not walked at all, and neither is what the project's
-  `.gitignore` files name, unless git's index holds the path.
+  `log-level`, `quiet` and `baseline`. Flags override the file, which
+  overrides the defaults. Unknown keys and patterns matching nothing are
+  reported. A `dir/**` exclusion is not walked at all, nor is what the
+  project's `.gitignore` files name, unless git's index holds the path.
 - Comments `xslint-disable-next-line`, `xslint-disable-line` and
   `xslint-disable-file` take optional rule names; an unused one is reported.
 
@@ -235,6 +234,7 @@ left-most, then the wider, wins, and the other waits for the next run.
 | `src/index.mjs` | CLI entry (commander.js, ESM); imports the pipeline inside the command action |
 | `src/xslint.js` | Discovery, config, staging, output; exports `lint`, `fixed`, `settingsOf`, `stylesheetsOf`, `sourceOf`, and the `STAGES` the speed gate times |
 | `src/config.js` | Resolves `.xslint.yml` (severities, `off`, excludes, `max-warnings`) |
+| `src/baseline.js` | `recorded` and `matched`: the defects a baseline file holds by file, check and line text, and the stale entries that fail a run |
 | `src/gitignore.js` | `ignoring(start)`: what the project's `.gitignore` files refuse |
 | `src/directives.js` | Parses inline `xslint-disable-*` comments |
 | `src/reporters.js` | `reporterOf(format)`: `text`, `json`, `sarif`, or `github` |

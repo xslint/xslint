@@ -246,6 +246,20 @@ xslint --max-warnings=0    # any warning fails the run
 xslint --max-warnings=10   # more than ten warnings fails the run
 ```
 
+## Baseline
+
+To adopt xslint on a tree that already holds hundreds of defects, record them
+once with `--baseline-write` and fail the build only on the new ones:
+
+```bash
+xslint --baseline-write xslint-baseline.json
+xslint --baseline xslint-baseline.json --max-warnings=0
+```
+
+A fixed defect fails the run until the file is rewritten, so the baseline only
+shrinks. The [baseline guide][baseline] covers how a defect is matched and
+where the file is read from.
+
 ## Checks
 
 Validators first make sure every stylesheet is well-formed and every XPath
@@ -325,5 +339,6 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the full workflow and
 [suppression]: https://xslint.github.io/xslint/manual/suppression.html
 [output]: https://xslint.github.io/xslint/manual/output.html
 [fixing]: https://xslint.github.io/xslint/manual/fixing.html
+[baseline]: https://xslint.github.io/xslint/manual/baseline.html
 [stages]: https://xslint.github.io/xslint/manual/checks.html
 [api]: https://xslint.github.io/xslint/manual/api.html

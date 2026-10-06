@@ -22,6 +22,7 @@ const {absentOf, allFilesFrom, slashed, subsetsOf} = require('./helpers')
 const {ignoring} = require('./gitignore')
 const {parted} = require('./source')
 const {SUGGESTION, suppressed} = require('./checks')
+const {recorded, matched} = require('./baseline')
 const {kinds} = require('./resources/checks.json')
 const {validate: validateXsls, names: xslChecks} =
   require('./validators/xsl-validator')
@@ -746,7 +747,7 @@ const sourceOf = function(file, content) {
  * @param {Array.<string>} pths - Files or directories with .xsl to lint
  * @param {object} options - CLI options: `logLevel`, `quiet`, `suppress`,
  *  `maxWarnings`, `config`, `format`, `only`, `preset`, `fix`, `fixDryRun`,
- *  `fixSuggestions`
+ *  `fixSuggestions`, `baseline`, `baselineWrite`
  */
 module.exports = function xslint(pths, options) {
   logger.setLevel(leveled(options.quiet, options.logLevel))
@@ -795,6 +796,36 @@ module.exports = function xslint(pths, options) {
     if (suggested.length > 0) {
       logger.info(`${suggested.length} more fixable with --fix-suggestions`)
     }
+  }
+  let ledger
+  if (options.baseline) {
+    ledger = path.resolve(options.baseline)
+  } else if (config.baseline) {
+    ledger = path.resolve(config.base, config.baseline)
+  }
+  if (options.baselineWrite) {
+    const target = path.resolve(options.baselineWrite)
+    fs.writeFileSync(
+      target,
+      `${JSON.stringify(recorded(reported, sources, path.dirname(target)), null, 2)}\n`,
+    )
+    logger.info(`Recorded ${reported.length} defects in ${target}`)
+    reported = []
+  } else if (ledger) {
+    const {fresh, stale} = matched(
+      reported, sources, JSON.parse(fs.readFileSync(ledger, 'utf-8')),
+      path.dirname(ledger),
+    )
+    stale.forEach((entry) => logger.error(
+      [
+        `Baseline entry ${entry.file} records ${entry.count} ${entry.name}`,
+        `defects the run no longer draws, rewrite ${ledger} with --baseline-write`,
+      ].join(' '),
+    ))
+    if (stale.length > 0) {
+      process.exitCode = 1
+    }
+    reported = fresh
   }
   logger.info(`Processed files: ${found.stylesheets.length}`)
   if (reported.length > 0) {
