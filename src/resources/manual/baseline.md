@@ -48,7 +48,7 @@ them takes `--baseline-write`, which suits a newly enabled check. A run judges
 only the files it reads and the checks it runs, and a prune or a rewrite
 replaces only those entries, so a run over one directory, or with `--only`,
 leaves the rest of the file as it was. Both drop the entries of a sheet that
-no longer exists.
+no longer exists and of a check xslint no longer has.
 
 `--baseline-write` and `--baseline-prune` refuse to run with `--fix`,
 `--fix-suggestions`, or `--fix-dry-run`, since they would judge lines the fix

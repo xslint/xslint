@@ -759,17 +759,24 @@ const sourceOf = function(file, content) {
 }
 
 /**
- * The entries of a baseline whose file still stands beside it, so a prune or
- * a rewrite drops the entries of a sheet deleted since.
+ * The entries of a baseline whose file still stands beside it and whose check
+ * xslint still has, so a prune or a rewrite drops the entries of a sheet
+ * deleted since and of a check renamed or retired.
  * @param {object} baseline - What the baseline file holds
  * @param {string} base - Directory the baseline file lives in
- * @return {object} - The same entries, less those of every missing file
+ * @return {object} - The same entries, less those of every missing file and
+ *  unknown check
  */
 const standing = function(baseline, base) {
   return Object.fromEntries(
-    Object.entries(baseline).filter(
-      ([file]) => fs.existsSync(path.resolve(base, file)),
-    ),
+    Object.entries(baseline)
+      .filter(([file]) => fs.existsSync(path.resolve(base, file)))
+      .map(([file, checks]) => [
+        file,
+        Object.fromEntries(
+          Object.entries(checks).filter(([name]) => CHECKS.includes(name)),
+        ),
+      ]),
   )
 }
 
@@ -872,7 +879,7 @@ module.exports = function xslint(pths, options) {
         ledger,
         `${JSON.stringify(trimmed(drawn, sources, standing(earlier, path.dirname(ledger)), path.dirname(ledger), ranOf(settings)), null, 2)}\n`,
       )
-      logger.info(`Pruned ${stale.length} stale entries from ${ledger}`)
+      logger.info(`Pruned the stale entries of ${ledger}`)
     } else {
       stale.forEach((entry) => logger.error(
         [

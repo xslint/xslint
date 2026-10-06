@@ -34,6 +34,16 @@ const baselined = function(subs) {
 }
 
 /**
+ * The two runs that rewrite a baseline file, each by the flags it is given
+ * the file through.
+ * @type {Array.<{name: string, flags: function(string): Array.<string>}>}
+ */
+const REWRITES = [
+  {name: 'prune', flags: (file) => ['--baseline', file, '--baseline-prune']},
+  {name: 'rewrite', flags: (file) => ['--baseline-write', file]},
+]
+
+/**
  * The two sizes of report a piped run is asked for. Twenty copies of the
  * scaling sheet stand past what a pipe takes, so the run is left writing into
  * a full one, which is #767's shape; two fit wherever they are read, so the
@@ -1078,32 +1088,33 @@ describe('xslint', function() {
       'fixed a sheet in the run that pruned the baseline against its old text',
     )
   })
-  it('should drop the entries of a deleted sheet on a prune', function() {
-    const {dir, file} = baselined(['one', 'two'])
-    fs.rmSync(path.join(dir, 'two'), {recursive: true, force: true})
-    xslintStatus([
-      '--preset', 'all', '--baseline', file, '--baseline-prune',
-      path.join(dir, 'one'),
-    ])
-    const written = Object.keys(JSON.parse(fs.readFileSync(file, 'utf-8')))
-    fs.rmSync(dir, {recursive: true, force: true})
-    assert.deepStrictEqual(
-      written, ['one/a.xsl'],
-      'kept the entries of a sheet deleted since the baseline was written',
-    )
-  })
-  it('should drop the entries of a deleted sheet on a rewrite', function() {
-    const {dir, file} = baselined(['one', 'two'])
-    fs.rmSync(path.join(dir, 'two'), {recursive: true, force: true})
-    xslintStatus([
-      '--preset', 'all', '--baseline-write', file, path.join(dir, 'one'),
-    ])
-    const written = Object.keys(JSON.parse(fs.readFileSync(file, 'utf-8')))
-    fs.rmSync(dir, {recursive: true, force: true})
-    assert.deepStrictEqual(
-      written, ['one/a.xsl'],
-      'kept the entries of a sheet deleted since the baseline was written',
-    )
+  REWRITES.forEach((row) => {
+    it(`should drop the entries of a deleted sheet on a ${row.name}`, function() {
+      const {dir, file} = baselined(['one', 'two'])
+      fs.rmSync(path.join(dir, 'two'), {recursive: true, force: true})
+      xslintStatus(
+        ['--preset', 'all'].concat(row.flags(file), [path.join(dir, 'one')]),
+      )
+      const written = Object.keys(JSON.parse(fs.readFileSync(file, 'utf-8')))
+      fs.rmSync(dir, {recursive: true, force: true})
+      assert.deepStrictEqual(
+        written, ['one/a.xsl'],
+        'kept the entries of a sheet deleted since the baseline was written',
+      )
+    })
+    it(`should drop the entries of a check xslint lacks on a ${row.name}`, function() {
+      const {dir, file} = baselined(['.'])
+      const held = JSON.parse(fs.readFileSync(file, 'utf-8'))
+      held['a.xsl']['retired-check'] = held['a.xsl']['short-names']
+      fs.writeFileSync(file, JSON.stringify(held))
+      xslintStatus(['--preset', 'all'].concat(row.flags(file), [dir]))
+      const written = JSON.parse(fs.readFileSync(file, 'utf-8'))
+      fs.rmSync(dir, {recursive: true, force: true})
+      assert.ok(
+        !Object.hasOwn(written['a.xsl'], 'retired-check'),
+        'kept the entries of a check no catalog names any more',
+      )
+    })
   })
   it('should record every check a run draws in the baseline', function() {
     const {dir, file} = baselined(['.'])
