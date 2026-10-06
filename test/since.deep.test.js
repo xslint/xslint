@@ -276,8 +276,8 @@ describe('since', function() {
   })
   it('logs what a run without it logs, and nothing of the commit', function() {
     const yard = scratch(true)
-    placed('logged/stale.xsl', yard)
-    placed('logged/reaching.xsl', yard)
+    placed(path.join('..', 'directives', 'unused.xsl'), yard)
+    placed(path.join('..', 'entities', 'self-reaching.xsl'), yard)
     repository(yard, ['.'])
     gitted(yard, IDENTITY.concat(['commit', '--quiet', '-m', 'base']))
     const args = ['--only', 'short-names', '--only', 'no-such-check', yard]
