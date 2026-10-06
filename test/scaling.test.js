@@ -6,9 +6,9 @@
 /*
  * The speed gate: charges every stage its own processor time over a
  * generated corpus at 40 stylesheets and again at 160, and fails a stage
- * growing past `GROWTH` beside the middle stage, which is a stage turning
- * quadratic. What a stage costs outright is the nightly `corpora` job's to
- * judge, a share of the run having read differently on every runner (#1186).
+ * growing past `GROWTH` beside the middle stage, as a stage turned quadratic
+ * does unless it grew slowly before. What a stage costs outright is the
+ * nightly `corpora` job's to judge (#1186).
  * The corpus is copied from one committed stylesheet with every name
  * renumbered, so no memo flatters it, and every fortieth copy is heavy for the
  * skew a real corpus has (#800).
@@ -38,10 +38,10 @@ const STEP = 4
 
 /**
  * How many times the middle stage's growth any stage may grow by when the
- * corpus grows `STEP` times: half again the dearest ordinary reading a runner
- * gave, 2.03. A stage made quadratic reads `STEP` times its own growth, so one
- * growing slower than the middle can turn quadratic under this (#1186), and
- * one whose constant is still small here is #769's question.
+ * corpus grows `STEP` times: half again the dearest ordinary reading the
+ * matrix gave, 2.03. Readings of a stage made quadratic overlap the ordinary
+ * ones, so this catches most quadratics and not all (#1186), and one whose
+ * constant is still small here is #769's question.
  * @type {number}
  */
 const GROWTH = 3.1
@@ -164,11 +164,10 @@ const corpus = function(from, files) {
 }
 
 /**
- * Whether V8 is counting branches in this process, which makes it the wrong
- * process to ask about speed. c8's bookkeeping falls unevenly across the
- * stages — it charges `xpath-linter` 65% to 69% of a run an uninstrumented one
- * charges 52% to 57% — so what it answers about is c8, intermittently red on a
- * tree nobody has touched. The gate skips here and speaks in `npm test`.
+ * Whether V8 is counting branches in this process. The gate skips here:
+ * `npm test` reads it on every runner of the matrix already, and one more
+ * reading under c8 and parallel workers adds a chance to flake and nothing to
+ * catch.
  * @return {boolean} - Whether this process is instrumented for coverage
  */
 const instrumented = function() {
