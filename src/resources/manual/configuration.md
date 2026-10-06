@@ -17,6 +17,7 @@ only:
 max-warnings: 10                        # default for --max-warnings
 log-level: info                         # default for --log-level
 quiet: false                            # default for --quiet
+baseline: xslint-baseline.json          # default for --baseline
 ```
 
 - **`preset`** names the preset a run starts from, `recommended` unless it
@@ -38,10 +39,12 @@ quiet: false                            # default for --quiet
   to it, and a check `rules` turns `off` stays off whichever of the two chose it.
 - **`max-warnings`**, **`log-level`**, and **`quiet`** set the defaults for the
   matching command-line flags.
+- **`baseline`** names the [baseline](baseline.html) file a run compares
+  against, relative to this file. Passing `--baseline` replaces it.
 
 Unknown top-level keys, rule names that match no check, and values of the wrong
 type (a non-numeric `max-warnings`, a non-list `exclude` or `only`, a
-non-boolean `quiet`, a non-string `log-level` or `preset`) are reported and
+non-boolean `quiet`, a non-string `log-level`, `preset`, or `baseline`) are reported and
 ignored, so typos do not pass silently. A preset that does not exist fails the
 run instead, before a file is read, since a run over no checks would read as a
 clean report. An

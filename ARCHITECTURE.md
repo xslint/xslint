@@ -32,10 +32,10 @@ kept, so a refused expression reaches no check at all.
 `src/xslint.js` is the whole staging as a pure function: no file I/O, no
 output, no exit, and the defects in one total order. The command-line
 `xslint(paths, options)` wraps it: it resolves config, reads the files, calls
-`lint`, applies `--fix`, reports, and sets `process.exitCode`. The editor
-integrations (`xslint-lsp`, `xslint-jetbrains`) use what the package `main`
-re-exports, listed in the index. `src/index.mjs` imports the pipeline inside
-the command action, so `--version` and `--help` load none of it.
+`lint`, applies `--fix`, filters by or writes the baseline, reports, and sets
+`process.exitCode`. The editor integrations (`xslint-lsp`, `xslint-jetbrains`)
+use what the package `main` re-exports, listed in the index. `src/index.mjs`
+imports the pipeline in the command action: `--version` and `--help` load none.
 
 Each linter is one `{run, checks}` entry in `LINTERS` or
 `EXPRESSION_LINTERS` in `src/xslint.js`. The `CHECKS` names that `--suppress`
@@ -202,17 +202,16 @@ The nightly `corpora` budgets, read off the wall clock, are the only timing.
 
 ## User configuration
 
-- `--suppress=<substring>` turns off every check whose name matches.
-- `--only=<substring>` (or `only:`) reports only the checks it names; a
-  suppression outranks it.
+- `--suppress=<substring>` turns off every check whose name matches, and
+  outranks `--only=<substring>` (or `only:`), which reports only those named.
 - `--preset` (or `preset:`) is `recommended` unless `all`. `--only` replaces it,
   a re-grade naming a check exactly adds to it, and `off` outranks both.
 - `.xslint.yml`, found by walking up or named by `--config`, turns checks
   `off`, re-grades severity, excludes globs, and defaults `max-warnings`,
-  `log-level` and `quiet`. Flags override the file, which overrides the
-  defaults. Unknown keys and patterns matching nothing are reported. A
-  `dir/**` exclusion is not walked at all, and neither is what the project's
-  `.gitignore` files name, unless git's index holds the path.
+  `log-level`, `quiet` and `baseline`. Flags override the file, which
+  overrides the defaults. Unknown keys and patterns matching nothing are
+  reported. A `dir/**` exclusion is not walked at all, nor is what the
+  project's `.gitignore` files name, unless git's index holds the path.
 - Comments `xslint-disable-next-line`, `xslint-disable-line` and
   `xslint-disable-file` take optional rule names; an unused one is reported.
 
@@ -229,8 +228,9 @@ left-most, then the wider, wins, and the other waits for the next run.
 | File | Role |
 | --- | --- |
 | `src/index.mjs` | CLI entry (commander.js, ESM); imports the pipeline inside the command action |
-| `src/xslint.js` | Discovery, config, staging, output; exports `lint`, `fixed`, `settingsOf`, `stylesheetsOf`, `sourceOf` |
+| `src/xslint.js` | Discovery, config, staging, output; exports `lint`, `fixed`, `settingsOf`, `ranOf`, `stylesheetsOf`, `sourceOf` |
 | `src/config.js` | Resolves `.xslint.yml` (severities, `off`, excludes, `max-warnings`) |
+| `src/baseline.js` | `recorded`, `matched` and `trimmed`: the defects a baseline file holds by file, check and line text, the stale entries that fail a run, and the file with them dropped, over the files read and the checks `ranOf` names |
 | `src/gitignore.js` | `ignoring(start)`: what the project's `.gitignore` files refuse |
 | `src/directives.js` | Parses inline `xslint-disable-*` comments |
 | `src/reporters.js` | `reporterOf(format)`: `text`, `json`, `sarif`, or `github` |
@@ -265,7 +265,7 @@ left-most, then the wider, wins, and the other waits for the next run.
 | `src/fixes.js` | Fix builders over the raw source: `deletion`, `substitution`, `excision`, `standsAt` |
 | `src/fixer.js` | Applies fixes to source: decode-walk, verify, end to start |
 | `src/xpath.js` | The fontoxpath environment: `PREFIXES`, the evaluator, `satisfies`, `compiles`, the `xslint:` functions |
-| `src/helpers.js` | XML and YAML parsing, `slashed`, `absentOf`, file recursion skipping `.git` and `node_modules` |
+| `src/helpers.js` | XML and YAML parsing, `slashed`, `compared`, `absentOf`, file recursion skipping `.git` and `node_modules` |
 | `src/resources/checks.json` | Every check as a run reads it; generated, never edited |
 | `src/logger.js` | 4-level logger |
 | `src/output.js` | `colorful(stream)` and the leveled `writer` |

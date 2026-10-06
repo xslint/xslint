@@ -27,6 +27,7 @@ const SEVERITIES = ['off', 'warning', 'error']
  */
 const KEYS = [
   'rules', 'exclude', 'only', 'preset', 'max-warnings', 'log-level', 'quiet',
+  'baseline',
 ]
 
 /**
@@ -82,8 +83,8 @@ const typed = function(raw, key, ok, expected, fallback, problems) {
  * them silently, for the caller to print or show where it will (#1128).
  * @param {object|null} raw - Parsed YAML, or null when there is no file
  * @return {{rules: object, exclude: Array.<string>, only: Array.<string>,
- *  preset: string|null, maxWarnings: number|null, logLevel: string|null,
- *  quiet: boolean|null, problems: Array.<string>}} - Normalized configuration
+ *  preset: ?string, maxWarnings: ?number, logLevel: ?string, quiet: ?boolean,
+ *  baseline: ?string, problems: Array.<string>}} - Normalized configuration
  */
 const normalized = function(raw) {
   const problems = Object.keys(raw || {})
@@ -131,6 +132,10 @@ const normalized = function(raw) {
       raw, 'quiet', (val) => typeof val === 'boolean', 'a boolean', null,
       problems,
     ),
+    baseline: typed(
+      raw, 'baseline', (val) => typeof val === 'string', 'a string', null,
+      problems,
+    ),
     problems: problems,
   }
 }
@@ -144,8 +149,8 @@ const normalized = function(raw) {
  * @param {string|undefined} explicit - Path from '--config', if any
  * @param {string} from - Directory the search starts in
  * @return {{rules: object, exclude: Array, only: Array, preset: ?string,
- *  maxWarnings: ?number, logLevel: ?string, quiet: ?boolean, problems: Array,
- *  base: string, file: (string|undefined)}} - Configuration
+ *  maxWarnings: ?number, logLevel: ?string, quiet: ?boolean, baseline: ?string,
+ *  problems: Array, base: string, file: (string|undefined)}} - Configuration
  */
 const configFrom = function(explicit, from = process.cwd()) {
   let file
