@@ -47,9 +47,11 @@ nothing new, so it reports the new defects as any other run does. Recording
 them takes `--baseline-write`, which suits a newly enabled check. A run judges
 only the files it reads and the checks it runs, and a prune or a rewrite
 replaces only those entries, so a run over one directory, or with `--only`,
-leaves the rest of the file as it was.
+leaves the rest of the file as it was. Both drop the entries of a sheet that
+no longer exists.
 
-`--baseline-write` refuses to run with `--fix`, `--fix-suggestions`, or
-`--fix-dry-run`, since it would record lines the fix rewrites. Under
-`--baseline`, a fix run reports the new defects it left unfixed and calls no
-entry stale for a defect it fixed; the next run without a fix flag does.
+`--baseline-write` and `--baseline-prune` refuse to run with `--fix`,
+`--fix-suggestions`, or `--fix-dry-run`, since they would judge lines the fix
+rewrites. Under `--baseline`, a fix run reports the new defects it left
+unfixed and calls no entry stale for a defect it fixed; the next run without a
+fix flag does.

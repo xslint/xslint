@@ -1065,6 +1065,46 @@ describe('xslint', function() {
       'pruned without a baseline file to rewrite',
     )
   })
+  it('should refuse to prune a baseline while fixing', function() {
+    const {dir, file} = baselined(['.'])
+    xslintStatus([
+      '--preset', 'all', '--baseline', file, '--baseline-prune',
+      '--fix-suggestions', dir,
+    ])
+    const content = fs.readFileSync(path.join(dir, 'a.xsl'), 'utf-8')
+    fs.rmSync(dir, {recursive: true, force: true})
+    assert.equal(
+      content, fs.readFileSync('test/resources/baseline/recorded.xsl', 'utf-8'),
+      'fixed a sheet in the run that pruned the baseline against its old text',
+    )
+  })
+  it('should drop the entries of a deleted sheet on a prune', function() {
+    const {dir, file} = baselined(['one', 'two'])
+    fs.rmSync(path.join(dir, 'two'), {recursive: true, force: true})
+    xslintStatus([
+      '--preset', 'all', '--baseline', file, '--baseline-prune',
+      path.join(dir, 'one'),
+    ])
+    const written = Object.keys(JSON.parse(fs.readFileSync(file, 'utf-8')))
+    fs.rmSync(dir, {recursive: true, force: true})
+    assert.deepStrictEqual(
+      written, ['one/a.xsl'],
+      'kept the entries of a sheet deleted since the baseline was written',
+    )
+  })
+  it('should drop the entries of a deleted sheet on a rewrite', function() {
+    const {dir, file} = baselined(['one', 'two'])
+    fs.rmSync(path.join(dir, 'two'), {recursive: true, force: true})
+    xslintStatus([
+      '--preset', 'all', '--baseline-write', file, path.join(dir, 'one'),
+    ])
+    const written = Object.keys(JSON.parse(fs.readFileSync(file, 'utf-8')))
+    fs.rmSync(dir, {recursive: true, force: true})
+    assert.deepStrictEqual(
+      written, ['one/a.xsl'],
+      'kept the entries of a sheet deleted since the baseline was written',
+    )
+  })
   it('should record every check a run draws in the baseline', function() {
     const {dir, file} = baselined(['.'])
     let written = {}

@@ -759,6 +759,21 @@ const sourceOf = function(file, content) {
 }
 
 /**
+ * The entries of a baseline whose file still stands beside it, so a prune or
+ * a rewrite drops the entries of a sheet deleted since.
+ * @param {object} baseline - What the baseline file holds
+ * @param {string} base - Directory the baseline file lives in
+ * @return {object} - The same entries, less those of every missing file
+ */
+const standing = function(baseline, base) {
+  return Object.fromEntries(
+    Object.entries(baseline).filter(
+      ([file]) => fs.existsSync(path.resolve(base, file)),
+    ),
+  )
+}
+
+/**
  * Entry point for the command line.
  * @param {Array.<string>} pths - Files or directories with .xsl to lint
  * @param {object} options - CLI options: `logLevel`, `quiet`, `suppress`,
@@ -844,7 +859,7 @@ module.exports = function xslint(pths, options) {
   if (target) {
     fs.writeFileSync(
       target,
-      `${JSON.stringify(recorded(reported, sources, path.dirname(target), ranOf(settings), earlier), null, 2)}\n`,
+      `${JSON.stringify(recorded(reported, sources, path.dirname(target), ranOf(settings), standing(earlier, path.dirname(target))), null, 2)}\n`,
     )
     logger.info(`Recorded ${reported.length} defects in ${target}`)
     reported = []
@@ -855,7 +870,7 @@ module.exports = function xslint(pths, options) {
     if (options.baselinePrune) {
       fs.writeFileSync(
         ledger,
-        `${JSON.stringify(trimmed(drawn, sources, earlier, path.dirname(ledger), ranOf(settings)), null, 2)}\n`,
+        `${JSON.stringify(trimmed(drawn, sources, standing(earlier, path.dirname(ledger)), path.dirname(ledger), ranOf(settings)), null, 2)}\n`,
       )
       logger.info(`Pruned ${stale.length} stale entries from ${ledger}`)
     } else {

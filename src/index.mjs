@@ -36,7 +36,7 @@ program
     new Option(
       '--baseline-prune',
       'Drop the entries of the baseline file the run no longer draws',
-    ).conflicts('baselineWrite'),
+    ).conflicts(['baselineWrite', 'fix', 'fixDryRun', 'fixSuggestions']),
   )
   .option('--fix', 'Rewrite the fixable defects in place')
   .option(
