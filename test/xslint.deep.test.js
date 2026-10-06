@@ -14,8 +14,38 @@ const fs = require('fs')
 const os = require('os')
 
 /**
+ * A scratch directory holding the sheet a baseline is recorded from as `a.xsl`
+ * in each of the subdirectories named, `.` for its root, with the baseline a
+ * run over the whole of it writes beside them.
+ * @param {Array.<string>} subs - Where the copies of the sheet go
+ * @return {{dir: string, file: string}} - The directory and its baseline
+ */
+const baselined = function(subs) {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-'))
+  for (const sub of subs) {
+    fs.mkdirSync(path.join(dir, sub), {recursive: true})
+    fs.copyFileSync(
+      'test/resources/baseline/recorded.xsl', path.join(dir, sub, 'a.xsl'),
+    )
+  }
+  const file = path.join(dir, 'baseline.json')
+  xslintStatus(['--preset', 'all', '--baseline-write', file, dir])
+  return {dir: dir, file: file}
+}
+
+/**
+ * The two runs that rewrite a baseline file, each by the flags it is given
+ * the file through.
+ * @type {Array.<{name: string, flags: function(string): Array.<string>}>}
+ */
+const REWRITES = [
+  {name: 'prune', flags: (file) => ['--baseline', file, '--baseline-prune']},
+  {name: 'rewrite', flags: (file) => ['--baseline-write', file]},
+]
+
+/**
  * The two sizes of report a piped run is asked for. Twenty copies of the
- * scaling sheet stand past what a pipe takes, so the run is left writing into
+ * fixture sheet stand past what a pipe takes, so the run is left writing into
  * a full one, which is #767's shape; two fit wherever they are read, so the
  * run is over before the reader looks and node's own flush throws the report
  * away (#822). How wide a pipe the host gives decides which a run meets.
@@ -908,6 +938,199 @@ describe('xslint', function() {
     ])
     fs.rmSync(dir, {recursive: true, force: true})
     assert.equal(status, 0)
+  })
+  it('should pass a tree against the baseline it wrote', function() {
+    const {dir, file} = baselined(['.'])
+    const status = xslintStatus([
+      '--preset', 'all', '--baseline', file, '--max-warnings=0', dir,
+    ])
+    fs.rmSync(dir, {recursive: true, force: true})
+    assert.equal(
+      status, 0,
+      'failed a tree on the defects its own baseline recorded',
+    )
+  })
+  it('should name the entry a fixed defect left stale', function() {
+    const {dir, file} = baselined(['.'])
+    fs.copyFileSync(
+      'test/resources/baseline/repaired.xsl', path.join(dir, 'a.xsl'),
+    )
+    const streams = xslintStreams(['--preset', 'all', '--baseline', file, dir])
+    fs.rmSync(dir, {recursive: true, force: true})
+    assert.ok(
+      streams.stderr.includes('a.xsl records 1 starts-with-double-slash'),
+      'did not name the baseline entry no defect matches any more',
+    )
+  })
+  it('should read the baseline the config file names', function() {
+    const {dir} = baselined(['.'])
+    const cfg = path.join(dir, '.xslint.yml')
+    fs.writeFileSync(cfg, 'baseline: baseline.json\n')
+    const status = xslintStatus([
+      '--preset', 'all', `--config=${cfg}`, '--max-warnings=0', dir,
+    ])
+    fs.rmSync(dir, {recursive: true, force: true})
+    assert.equal(
+      status, 0,
+      'did not compare the run against the baseline its config file names',
+    )
+  })
+  it('should pass a fix dry run against its own baseline', function() {
+    const {dir, file} = baselined(['.'])
+    const status = xslintStatus([
+      '--preset', 'all', '--baseline', file, '--fix-dry-run',
+      '--fix-suggestions', dir,
+    ])
+    fs.rmSync(dir, {recursive: true, force: true})
+    assert.equal(
+      status, 0,
+      'called stale the entries of defects a dry run only said it would fix',
+    )
+  })
+  it('should refuse to write a baseline while fixing', function() {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-'))
+    fs.copyFileSync(
+      'test/resources/baseline/recorded.xsl', path.join(dir, 'a.xsl'),
+    )
+    const status = xslintStatus([
+      '--preset', 'all', '--fix', '--baseline-write',
+      path.join(dir, 'baseline.json'), dir,
+    ])
+    fs.rmSync(dir, {recursive: true, force: true})
+    assert.equal(
+      status, 1,
+      'recorded a baseline against text a fix in the same run rewrote',
+    )
+  })
+  it('should fix nothing when its baseline file is missing', function() {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-'))
+    const sheet = path.join(dir, 'a.xsl')
+    fs.copyFileSync('test/resources/baseline/recorded.xsl', sheet)
+    xslintStatus([
+      '--preset', 'all', '--fix', '--fix-suggestions', '--baseline',
+      path.join(dir, 'missing.json'), dir,
+    ])
+    const content = fs.readFileSync(sheet, 'utf-8')
+    fs.rmSync(dir, {recursive: true, force: true})
+    assert.equal(
+      content, fs.readFileSync('test/resources/baseline/recorded.xsl', 'utf-8'),
+      'rewrote a sheet before finding the baseline it was told to read missing',
+    )
+  })
+  it('should keep what a rewrite over one directory did not read', function() {
+    const {dir, file} = baselined(['one', 'two'])
+    xslintStatus([
+      '--preset', 'all', '--baseline-write', file, path.join(dir, 'one'),
+    ])
+    const status = xslintStatus([
+      '--preset', 'all', '--baseline', file, '--max-warnings=0', dir,
+    ])
+    fs.rmSync(dir, {recursive: true, force: true})
+    assert.equal(
+      status, 0,
+      'dropped the entries of a directory a rewrite of the baseline never read',
+    )
+  })
+  it('should pass a repaired tree once its baseline is pruned', function() {
+    const {dir, file} = baselined(['.'])
+    fs.copyFileSync(
+      'test/resources/baseline/repaired.xsl', path.join(dir, 'a.xsl'),
+    )
+    xslintStatus(['--preset', 'all', '--baseline', file, '--baseline-prune', dir])
+    const status = xslintStatus([
+      '--preset', 'all', '--baseline', file, '--max-warnings=0', dir,
+    ])
+    fs.rmSync(dir, {recursive: true, force: true})
+    assert.equal(
+      status, 0,
+      'kept failing on a stale entry the prune was asked to drop',
+    )
+  })
+  it('should keep failing a new defect after the baseline is pruned', function() {
+    const {dir, file} = baselined(['.'])
+    fs.writeFileSync(
+      path.join(dir, 'a.xsl'),
+      fs.readFileSync('test/resources/baseline/grown.xsl', 'utf-8')
+        .replace('match="//title"', 'match="title"'),
+    )
+    xslintStatus(['--preset', 'all', '--baseline', file, '--baseline-prune', dir])
+    const status = xslintStatus([
+      '--preset', 'all', '--baseline', file, '--max-warnings=0', dir,
+    ])
+    fs.rmSync(dir, {recursive: true, force: true})
+    assert.equal(
+      status, 1,
+      'passed a new defect a prune of the baseline recorded as old',
+    )
+  })
+  it('should refuse to prune without a baseline', function() {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-'))
+    fs.copyFileSync(
+      'test/resources/baseline/recorded.xsl', path.join(dir, 'a.xsl'),
+    )
+    const streams = xslintStreams(['--preset', 'all', '--baseline-prune', dir])
+    fs.rmSync(dir, {recursive: true, force: true})
+    assert.ok(
+      streams.stderr.includes('--baseline-prune rewrites the file'),
+      'pruned without a baseline file to rewrite',
+    )
+  })
+  it('should refuse to prune a baseline while fixing', function() {
+    const {dir, file} = baselined(['.'])
+    xslintStatus([
+      '--preset', 'all', '--baseline', file, '--baseline-prune',
+      '--fix-suggestions', dir,
+    ])
+    const content = fs.readFileSync(path.join(dir, 'a.xsl'), 'utf-8')
+    fs.rmSync(dir, {recursive: true, force: true})
+    assert.equal(
+      content, fs.readFileSync('test/resources/baseline/recorded.xsl', 'utf-8'),
+      'fixed a sheet in the run that pruned the baseline against its old text',
+    )
+  })
+  REWRITES.forEach((row) => {
+    it(`should drop the entries of a deleted sheet on a ${row.name}`, function() {
+      const {dir, file} = baselined(['one', 'two'])
+      fs.rmSync(path.join(dir, 'two'), {recursive: true, force: true})
+      xslintStatus(
+        ['--preset', 'all'].concat(row.flags(file), [path.join(dir, 'one')]),
+      )
+      const written = Object.keys(JSON.parse(fs.readFileSync(file, 'utf-8')))
+      fs.rmSync(dir, {recursive: true, force: true})
+      assert.deepStrictEqual(
+        written, ['one/a.xsl'],
+        'kept the entries of a sheet deleted since the baseline was written',
+      )
+    })
+    it(`should drop the entries of a check xslint lacks on a ${row.name}`, function() {
+      const {dir, file} = baselined(['.'])
+      const held = JSON.parse(fs.readFileSync(file, 'utf-8'))
+      held['a.xsl']['retired-check'] = held['a.xsl']['short-names']
+      fs.writeFileSync(file, JSON.stringify(held))
+      xslintStatus(['--preset', 'all'].concat(row.flags(file), [dir]))
+      const written = JSON.parse(fs.readFileSync(file, 'utf-8'))
+      fs.rmSync(dir, {recursive: true, force: true})
+      assert.ok(
+        !Object.hasOwn(written['a.xsl'], 'retired-check'),
+        'kept the entries of a check no catalog names any more',
+      )
+    })
+  })
+  it('should record every check a run draws in the baseline', function() {
+    const {dir, file} = baselined(['.'])
+    let written = {}
+    if (fs.existsSync(file)) {
+      written = JSON.parse(fs.readFileSync(file, 'utf-8'))
+    }
+    fs.rmSync(dir, {recursive: true, force: true})
+    assert.deepStrictEqual(
+      Object.keys(written['a.xsl'] ?? {}),
+      [
+        'setting-value-of-variable-incorrectly', 'short-names',
+        'starts-with-double-slash', 'unused-named-template',
+      ],
+      'did not record the checks the run drew against the sheet',
+    )
   })
   it('should disable a family of rules by glob in the config', function() {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-'))

@@ -130,20 +130,18 @@ in `ARCHITECTURE.md`.
 
 ## Speed
 
-`test/scaling.test.js` charges every stage its own processor time as a share of
-the run and holds it to `SHARES` or `SHARE`, its growth to `GROWTH`, and every
-check of a stage to `COSTS` or `COST`. The nightly `corpora` job times three
-real corpora against the budgets in `.github/workflows/corpora.yml`, judged by
-`scripts/budget.js`, and diffs what they draw against
-`test/resources/corpora/`. Every bar is a ratchet, red past
-it and red so far under it that `SLACK` asks for it to be retightened.
+No test reads a clock, which `TIMED` in `eslint.config.mjs` refuses. The
+nightly `corpora` job alone judges speed, a quadratic in any stage and what a
+run costs outright alike. It times three real corpora against the budgets in
+`.github/workflows/corpora.yml`, judged by `scripts/budget.js`, and diffs what
+they draw against `test/resources/corpora/`. A budget is a ratchet, red past it
+and red so far under it that `SLACK` asks for it to be retightened.
 
 - With a defect to catch, a bar stands at the geometric middle of the readings
   with the defect and without it.
 - With none, it stands between half again and twice the dearest reading, taken
   over several runs.
-- A share is of the whole run, so a stage made cheaper means re-deriving the
-  table by the ratio of the dearest readings.
+- No bar is a share, a growth, or a reading taken inside a test (#1186, #1160).
 
 ## Guides
 
