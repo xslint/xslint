@@ -156,12 +156,12 @@ const within = function(pth, dir) {
  */
 const rootOf = function(pths) {
   const under = pths.filter((pth) => fs.existsSync(pth))
-    .map((pth) => fs.realpathSync(pth))
+    .map((pth) => fs.realpathSync.native(pth))
   let [start] = under.concat([process.cwd()])
   if (!fs.statSync(start).isDirectory()) {
     start = path.dirname(start)
   }
-  const root = fs.realpathSync(
+  const root = fs.realpathSync.native(
     gitIn(
       start, ['rev-parse', '--show-toplevel'],
       `Option --since reads git, and ${start} is not inside a repository`,
@@ -210,7 +210,7 @@ const since = function(drawn, ref, pths, base, linted) {
   const origins = new Set(
     [...moves].filter(([name]) => named(name)).map(([, move]) => move.origin),
   )
-  const scratch = fs.realpathSync(
+  const scratch = fs.realpathSync.native(
     fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-since-')),
   )
   const tree = path.join(scratch, 'tree')
@@ -232,12 +232,12 @@ const since = function(drawn, ref, pths, base, linted) {
         ).split('\0')
           .filter((name) => origins.has(name) || named(name))
           .map((name) => path.join(tree, name)),
-        path.join(tree, slashed(fs.realpathSync(base), root)),
+        path.join(tree, slashed(fs.realpathSync.native(base), root)),
       ),
       moves,
       new Map(
         drawn.map((defect) => [
-          defect.file, slashed(fs.realpathSync(defect.file), root),
+          defect.file, slashed(fs.realpathSync.native(defect.file), root),
         ]),
       ),
       tree,
