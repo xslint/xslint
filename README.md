@@ -257,7 +257,7 @@ xslint --baseline xslint-baseline.json --max-warnings=0
 A fixed defect fails the run until `--baseline-prune` drops its entry. A prune
 records nothing new, so the baseline only shrinks. A pull request can be
 judged by git instead, with no file: `--since origin/master` reports only the
-defects the change introduced since that commit. The [baseline
+defects the change introduced since it left that branch. The [baseline
 guide][baseline] covers how a defect is matched, where the file is read from,
 and how `--since` maps lines.
 

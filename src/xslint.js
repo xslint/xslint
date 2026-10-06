@@ -810,11 +810,14 @@ module.exports = function xslint(pths, options) {
   if (options.since) {
     reported = since(
       reported, options.since,
-      pths.map((pth) => path.resolve(process.cwd(), pth)), settings.base,
-      (files, base) => lint(
+      pths.map((pth) => path.resolve(process.cwd(), pth)),
+      settings.base, SUFFIXES,
+      (files, working) => lint(
         files
           .filter((file) => suffixed(file))
-          .filter((file) => !excluded(file, settings.exclude, base))
+          .filter((file) => !excluded(
+            working(file), settings.exclude, settings.base,
+          ))
           .map((file) => sourceOf(file, fs.readFileSync(file, 'utf-8'))),
         settings,
       ),

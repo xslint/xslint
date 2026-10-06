@@ -66,14 +66,17 @@ change by git instead and needs no file:
 xslint --since origin/master --max-warnings=0 src
 ```
 
-The run lints the commit `<ref>` names in a scratch copy too, and maps each
-line of the working tree to the line it was through `git diff`. A defect is
+The run lints the commit where HEAD left `<ref>`, their merge base, in a
+scratch copy too, so a branch behind `master` answers for its own lines
+alone, and maps each line of the working tree to the line it was through
+`git diff`. A defect is
 reported when the change added or edited its line, or when that line did not
 draw the same check in the commit, as when a change deletes the last call to a
 template another sheet declares. A renamed sheet keeps its old defects once
 git sees the rename, and a file git does not track is new as a whole. A sheet
 of a submodule, or of any repository nested in the tree, is left out of the
-report, since that repository judges its own sheets.
+report, since that repository judges its own sheets, and so is a linked sheet
+whose target lies there or outside the repository.
 
 Every path named must lie in one repository, and CI must fetch the commit:
 with `actions/checkout`, set `fetch-depth: 0`. `--since` refuses to run with

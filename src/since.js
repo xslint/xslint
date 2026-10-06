@@ -200,14 +200,34 @@ const nested = function(file, root) {
 }
 
 /**
- * The repository the named paths stand in, and each of them resolved through
- * every link, as git spells the top.
+ * Whether a defect stands where the commit can judge it: outside a nested
+ * repository, and on a sheet whose link, if any, leads to one the repository
+ * holds outside such a repository.
+ * @param {string} file - Absolute path of the sheet
+ * @param {string} root - Top of the repository
+ * @return {boolean} - True where the commit can judge it
+ */
+const judged = function(file, root) {
+  const real = fs.realpathSync.native(file)
+  return !nested(resolved(file), root) && within(real, root) &&
+    !nested(real, root)
+}
+
+/**
+ * The repository the named paths stand in, and each of them as git spells
+ * the top: a directory resolved through every link, a sheet keeping its own
+ * name as `resolved` keeps it.
  * @param {Array.<string>} pths - Absolute paths the run was named
  * @return {{root: string, under: Array.<string>}} - Its top, and the paths
  */
 const rootOf = function(pths) {
-  const under = pths.filter((pth) => fs.existsSync(pth))
-    .map((pth) => fs.realpathSync.native(pth))
+  const under = pths.filter((pth) => fs.existsSync(pth)).map((pth) => {
+    let spelled = resolved(pth)
+    if (fs.statSync(pth).isDirectory()) {
+      spelled = fs.realpathSync.native(pth)
+    }
+    return spelled
+  })
   let [start] = under.concat([process.cwd()])
   if (!fs.statSync(start).isDirectory()) {
     start = path.dirname(start)
@@ -228,22 +248,30 @@ const rootOf = function(pths) {
 }
 
 /**
- * The defects a change introduced since a commit: the commit written out to
- * a scratch tree that is removed again, its files under the named paths
- * linted there, and every defect of the working tree judged against them.
+ * The defects a change introduced since the commit HEAD left a ref at: the
+ * commit written out to a scratch tree that is removed again, its sheets
+ * under the named paths linted there, and every defect judged against them.
  * @param {Array.<object>} drawn - Defects the working tree draws
  * @param {string} ref - What `--since` names
  * @param {Array.<string>} pths - Absolute paths the run was named
  * @param {string} base - Directory the exclusion globs resolve against
- * @param {function(Array.<string>, string): Array.<object>} linted - What
- *  the files of the commit draw, given with the base mirrored into its tree
+ * @param {Array.<string>} suffixes - What a sheet's name ends in
+ * @param {function(Array.<string>, function(string): string): Array} linted
+ *  - What the commit's sheets draw, given how each is spelled in the working
+ *  tree
  * @return {Array.<object>} - The defects the change introduced
  */
-const since = function(drawn, ref, pths, base, linted) {
+const since = function(drawn, ref, pths, base, suffixes, linted) {
   const {root, under} = rootOf(pths)
   const commit = gitIn(
-    root, ['rev-parse', '--verify', '--end-of-options', `${ref}^{commit}`],
-    `Option --since names ${ref}, which git does not resolve to a commit`,
+    root,
+    [
+      'merge-base', gitIn(
+        root, ['rev-parse', '--verify', '--end-of-options', `${ref}^{commit}`],
+        `Option --since names ${ref}, which git does not resolve to a commit`,
+      ).trim(), 'HEAD',
+    ],
+    `Option --since names ${ref}, which shares no commit with HEAD`,
   ).trim()
   const moves = moved(
     gitIn(
@@ -252,7 +280,7 @@ const since = function(drawn, ref, pths, base, linted) {
         '-c', 'core.quotePath=false', 'diff', '--no-color', '--no-ext-diff',
         '--no-textconv', '--text', '--inter-hunk-context=0', '--src-prefix=a/',
         '--dst-prefix=b/', '-M', '-U0', commit, '--',
-      ],
+      ].concat(suffixes.map((suffix) => `:(glob)**/*${suffix}`)),
       `Git could not diff ${root} against commit ${commit}`,
     ),
   )
@@ -278,17 +306,22 @@ const since = function(drawn, ref, pths, base, linted) {
       problem, env,
     )
     introducing = introduced(
-      drawn.filter(
-        (defect) => !nested(resolved(defect.file), root),
-      ),
+      drawn.filter((defect) => judged(defect.file, root)),
       linted(
         gitIn(
           root, ['ls-tree', '-r', '-z', '--full-tree', '--name-only', commit],
           problem,
         ).split('\0')
           .filter((name) => origins.has(name) || named(name))
-          .map((name) => path.join(tree, name)),
-        path.join(tree, slashed(fs.realpathSync.native(base), root)),
+          .map((name) => path.join(tree, name))
+          .filter((file) => fs.existsSync(file)),
+        (file) => path.join(
+          base,
+          path.relative(
+            fs.realpathSync.native(base),
+            path.join(root, slashed(file, tree)),
+          ),
+        ),
       ),
       moves,
       new Map(

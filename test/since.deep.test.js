@@ -55,14 +55,19 @@ const placed = function(name, dir) {
 }
 
 /**
- * A repository whose commit holds the `before` sheets, a repository of its
- * own in `vendor`, and a `node_modules` sheet calling `kept.xsl`, its working
- * tree changed to the `after` sheets, and its git config merging hunks and
- * diffing every sheet through a driver that drops its first line.
+ * A repository in a directory whose configuration excludes its `gen`: its
+ * commit holds the `before` sheets, a nested repository, and a `node_modules`
+ * and a `gen` sheet calling `kept.xsl`, its working tree the `after` sheets,
+ * a branch off it edits `kept.xsl`, and its config merges hunks and diffs
+ * sheets through a driver dropping a line, all but one marked binary.
  * @return {string} - The directory of the repository
  */
 const changed = function() {
-  const yard = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-since-'))
+  const yard = path.join(
+    fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-since-')), 'repo',
+  )
+  fs.mkdirSync(yard)
+  placed('workspace.yml', path.dirname(yard))
   seeded('before', yard)
   placed('nested/vendored.xsl', path.join(yard, 'vendor'))
   repository(path.join(yard, 'vendor'), ['.'])
@@ -71,11 +76,18 @@ const changed = function() {
     IDENTITY.concat(['commit', '--quiet', '-m', 'vendor']),
   )
   placed('sealed/caller.xsl', path.join(yard, 'node_modules', 'kit'))
-  fs.writeFileSync(path.join(yard, '.gitattributes'), '*.xsl diff=shifted\npasted.xsl -diff\n')
+  placed('sealed/caller.xsl', path.join(yard, 'gen'))
+  fs.writeFileSync(
+    path.join(yard, '.gitattributes'), '*.xsl diff=shifted\npasted.xsl -diff\n',
+  )
   repository(yard, ['.'])
   gitted(yard, ['config', 'diff.interHunkContext', '5'])
   gitted(yard, ['config', 'diff.shifted.textconv', 'sed 1d'])
   gitted(yard, IDENTITY.concat(['commit', '--quiet', '-m', 'base']))
+  gitted(yard, ['checkout', '--quiet', '-b', 'ahead'])
+  seeded('ahead', yard)
+  gitted(yard, IDENTITY.concat(['commit', '--quiet', '-am', 'ahead']))
+  gitted(yard, ['checkout', '--quiet', '-'])
   gitted(yard, ['mv', 'moving.xsl', 'moved.xsl'])
   seeded('after', yard)
   return yard
@@ -130,7 +142,8 @@ describe('since', function() {
           [
             '--preset', 'all', '--only', 'short-names',
             '--only', 'unused-named-template', '--format', 'json',
-            '--since', 'HEAD', yard,
+            '--config', path.join(path.dirname(yard), 'workspace.yml'),
+            '--since', 'ahead', yard,
           ],
           {
             GIT_DIR: path.join(yard, 'vendor', '.git'),
@@ -165,16 +178,36 @@ describe('since', function() {
       'judged a named sheet against a commit it was not read from',
     )
   })
-  it('calls old a defect of a sheet reached through a link', function() {
+  it('judges a linked sheet by its own name, and not one linked out of the repository', function() {
     if (process.platform === 'win32') {
       this.skip()
     }
-    const yard = scratch(false)
+    const yard = path.join(scratch(false), 'repo')
+    placed('before/edited.xsl', path.join(path.dirname(yard), 'common'))
     placed('before/edited.xsl', path.join(yard, 'shared'))
+    placed('before/edited.xsl', path.join(yard, 'vendor'))
+    repository(path.join(yard, 'vendor'), ['.'])
+    gitted(
+      path.join(yard, 'vendor'),
+      IDENTITY.concat(['commit', '--quiet', '-m', 'vendor']),
+    )
     fs.mkdirSync(path.join(yard, 'src'))
+    fs.mkdirSync(path.join(yard, 'lib'))
     fs.symlinkSync(
       path.join('..', 'shared', 'edited.xsl'),
       path.join(yard, 'src', 'edited.xsl'),
+    )
+    fs.symlinkSync(
+      path.join('..', 'shared', 'edited.xsl'),
+      path.join(yard, 'lib', 'linked.xsl'),
+    )
+    fs.symlinkSync(
+      path.join('..', '..', 'common', 'edited.xsl'),
+      path.join(yard, 'lib', 'outer.xsl'),
+    )
+    fs.symlinkSync(
+      path.join('..', 'vendor', 'edited.xsl'),
+      path.join(yard, 'lib', 'vendored.xsl'),
     )
     repository(yard, ['.'])
     gitted(yard, IDENTITY.concat(['commit', '--quiet', '-m', 'base']))
@@ -182,11 +215,12 @@ describe('since', function() {
       JSON.parse(
         xslintStreams([
           '--preset', 'all', '--only', 'short-names', '--format', 'json',
-          '--since', 'HEAD', path.join(yard, 'src'),
+          '--since', 'HEAD', path.join(yard, 'src', 'edited.xsl'),
+          path.join(yard, 'lib'),
         ]).stdout,
       ),
       [],
-      'judged a linked sheet by the name of the sheet it links to',
+      'judged a linked sheet by the name of its target, or by a commit that holds no target',
     )
   })
   REFUSED.forEach((row) => {
