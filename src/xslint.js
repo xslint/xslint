@@ -24,6 +24,7 @@ const {ignoring} = require('./gitignore')
 const {parted} = require('./source')
 const {SUGGESTION, suppressed} = require('./checks')
 const {recorded, matched, trimmed} = require('./baseline')
+const {since} = require('./since')
 const {kinds} = require('./resources/checks.json')
 const {validate: validateXsls, names: xslChecks} =
   require('./validators/xsl-validator')
@@ -749,7 +750,7 @@ module.exports = function xslint(pths, options) {
   let ledger
   if (options.baseline) {
     ledger = path.resolve(options.baseline)
-  } else if (config.baseline) {
+  } else if (config.baseline && !options.since) {
     ledger = path.resolve(config.base, config.baseline)
   }
   if (options.baselinePrune && !ledger) {
@@ -806,7 +807,19 @@ module.exports = function xslint(pths, options) {
       logger.info(`${suggested.length} more fixable with --fix-suggestions`)
     }
   }
-  if (target) {
+  if (options.since) {
+    reported = since(
+      reported, options.since,
+      pths.map((pth) => path.resolve(process.cwd(), pth)), settings.base,
+      (files, base) => lint(
+        files
+          .filter((file) => suffixed(file))
+          .filter((file) => !excluded(file, settings.exclude, base))
+          .map((file) => sourceOf(file, fs.readFileSync(file, 'utf-8'))),
+        settings,
+      ),
+    )
+  } else if (target) {
     fs.writeFileSync(
       target,
       `${JSON.stringify(recorded(reported, sources, path.dirname(target), ranOf(settings), standing(earlier, path.dirname(target))), null, 2)}\n`,

@@ -53,9 +53,17 @@ how a defect is matched.
 
 A recorded defect is matched by its file and the text of its line, so a pull
 request that renames a sheet or edits a recorded line, in a feature as much as
-in a fix, sees those defects reported as new. The baseline cannot tell them
-from defects the change added, so fix every defect the gate lists, then drop
-the entries the fixes left stale:
+in a fix, sees those defects reported as new. Gate pull requests on the change
+itself instead, which reports only the defects introduced since the target
+branch:
+
+```bash
+xslint --since origin/master --max-warnings=0 src
+```
+
+The [baseline guide](baseline.html) covers how it maps lines.
+A pull request that fixes recorded defects still drops their entries, so the
+gate on `master` stays green:
 
 ```bash
 xslint --baseline xslint-baseline.json --baseline-prune src

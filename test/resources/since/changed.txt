@@ -1,0 +1,48 @@
+diff --git a/shrunk.txt b/carried.txt
+similarity index 64%
+rename from shrunk.txt
+rename to carried.txt
+index b566061..361b9a9 100644
+--- a/shrunk.txt
++++ b/carried.txt
+@@ -2,2 +1,0 @@ one
+-two
+-three
+diff --git a/deleted.txt b/deleted.txt
+deleted file mode 100644
+index 286c5f5..0000000
+--- a/deleted.txt
++++ /dev/null
+@@ -1 +0,0 @@
+-gone
+diff --git a/grown.txt b/grown.txt
+index b566061..0aa25dd 100644
+--- a/grown.txt
++++ b/grown.txt
+@@ -0,0 +1 @@
++zero
+@@ -3 +4 @@ two
+-three
++THREE
+diff --git a/renamed.txt b/moved.txt
+similarity index 85%
+rename from renamed.txt
+rename to moved.txt
+index b00a0f1..562d7a4 100644
+--- a/renamed.txt
++++ b/moved.txt
+@@ -7 +7 @@ six
+-seven
++SEVEN
+diff --git a/still.txt b/carried/still.txt
+similarity index 100%
+rename from still.txt
+rename to carried/still.txt
+diff --git a/added.txt b/added.txt
+new file mode 100644
+index 0000000..b77b4eb
+--- /dev/null
++++ b/added.txt
+@@ -0,0 +1,2 @@
++x
++y

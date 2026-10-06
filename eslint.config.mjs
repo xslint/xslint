@@ -177,7 +177,7 @@ const SPAWNED = {
   selector:
     "CallExpression[callee.name='require'][arguments.0.value='child_process'], ImportDeclaration[source.value='child_process'], ImportExpression[source.value='child_process']",
   message:
-    "Only src/gitignore.js starts a process, and once per repository: what it asks git for is the index, which outranks every rule a .gitignore holds and which no file on disk answers (#929). Asking git about a path instead spends a fork per entry and answers nothing at all where git is absent or the tree is no repository, so everything else here reads files"
+    "Only src/gitignore.js and src/since.js start a process. The first asks git for the index once per repository, which outranks every rule a .gitignore holds and which no file on disk answers (#929); the second asks git for a commit and the diff since it, once per --since run (#1193). Asking git about a path instead spends a fork per entry and answers nothing at all where git is absent or the tree is no repository, so everything else here reads files"
 };
 
 const PREFIXED = {
@@ -272,7 +272,7 @@ export default defineConfig([
     }
   },
   {
-    files: ["src/gitignore.js"],
+    files: ["src/gitignore.js", "src/since.js"],
     rules: {
       "no-restricted-syntax":
         ["error", ...RESTRICTED, STAGED, OPAQUE, TRIVIA, PAIRED, CLASSED,

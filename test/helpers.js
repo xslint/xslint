@@ -465,4 +465,5 @@ module.exports = {
   xcopped,
   cmdAvailable,
   repository,
+  gitted,
 }

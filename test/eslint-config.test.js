@@ -27,7 +27,7 @@ const SOURCES = path.join(ROOT, 'src')
  * reach turns red, and so does an entry whose file starts nothing (#929).
  * @type {Array.<string>}
  */
-const SPAWNING = ['src/gitignore.js']
+const SPAWNING = ['src/gitignore.js', 'src/since.js']
 
 /**
  * The configuration as it stands.
@@ -78,7 +78,7 @@ describe('eslint-config', function() {
       ].join(' '),
     )
   })
-  it('holds every source file to that ban but the one that starts one',
+  it('holds every source file to that ban but the ones that start one',
     async function() {
       const ban = spawning(await configured())
       const eslint = new ESLint({cwd: ROOT})

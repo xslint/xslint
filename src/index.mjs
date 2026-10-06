@@ -38,6 +38,15 @@ program
       'Drop the entries of the baseline file the run no longer draws',
     ).conflicts(['baselineWrite', 'fix', 'fixDryRun', 'fixSuggestions']),
   )
+  .addOption(
+    new Option(
+      '--since <ref>',
+      'Report only the defects the change since this git commit introduced',
+    ).conflicts([
+      'baseline', 'baselineWrite', 'baselinePrune',
+      'fix', 'fixDryRun', 'fixSuggestions',
+    ]),
+  )
   .option('--fix', 'Rewrite the fixable defects in place')
   .option(
     '--fix-suggestions',

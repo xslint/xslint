@@ -32,10 +32,11 @@ kept, so a refused expression reaches no check at all.
 `src/xslint.js` is the whole staging as a pure function: no file I/O, no
 output, no exit, and the defects in one total order. The command-line
 `xslint(paths, options)` wraps it: it resolves config, reads the files, calls
-`lint`, applies `--fix`, filters by or writes the baseline, reports, and sets
-`process.exitCode`. The editor integrations (`xslint-lsp`, `xslint-jetbrains`)
-use what the package `main` re-exports, listed in the index. `src/index.mjs`
-imports the pipeline in the command action: `--version` and `--help` load none.
+`lint`, applies `--fix`, filters by `--since` or by the baseline or writes it,
+reports, and sets `process.exitCode`. The editor integrations (`xslint-lsp`,
+`xslint-jetbrains`) use what the package `main` re-exports, listed in the
+index. `src/index.mjs` imports the pipeline in the command action: `--version`
+and `--help` load none.
 
 Each linter is one `{run, checks}` entry in `LINTERS` or
 `EXPRESSION_LINTERS` in `src/xslint.js`. The `CHECKS` names that `--suppress`
@@ -232,6 +233,7 @@ left-most, then the wider, wins, and the other waits for the next run.
 | `src/config.js` | Resolves `.xslint.yml` (severities, `off`, excludes, `max-warnings`) |
 | `src/baseline.js` | `recorded`, `matched` and `trimmed`: the defects a baseline file holds by file, check and line text, the stale entries that fail a run, and the file with them dropped, over the files read and the checks `ranOf` names |
 | `src/gitignore.js` | `ignoring(start)`: what the project's `.gitignore` files refuse |
+| `src/since.js` | `since`: the defects a change introduced since a git commit, the commit linted in a scratch tree and each line mapped through `git diff` |
 | `src/directives.js` | Parses inline `xslint-disable-*` comments |
 | `src/reporters.js` | `reporterOf(format)`: `text`, `json`, `sarif`, or `github` |
 | `src/validators/xsl-validator.js` | Builds the corpus; reports each non-well-formed stylesheet |
