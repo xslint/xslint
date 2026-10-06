@@ -46,3 +46,24 @@ index 0000000..b77b4eb
 @@ -0,0 +1,2 @@
 +x
 +y
+diff --git a/dashed.txt b/dashed.txt
+index 1efb327..6372083 100644
+--- a/dashed.txt
++++ b/dashed.txt
+@@ -2 +1,0 @@ a
+--- note
+diff --git a/my sheet.txt b/my sheet.txt
+index d68dd40..70b7197 100644
+--- a/my sheet.txt	
++++ b/my sheet.txt	
+@@ -0,0 +1 @@
++zero
+@@ -3 +4 @@ b
+-c
++C
+diff --git a/plussed.txt b/plussed.txt
+index de98044..03e2321 100644
+--- a/plussed.txt
++++ b/plussed.txt
+@@ -1,0 +2 @@ a
++++ b/x

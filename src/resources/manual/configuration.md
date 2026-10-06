@@ -40,7 +40,8 @@ baseline: xslint-baseline.json          # default for --baseline
 - **`max-warnings`**, **`log-level`**, and **`quiet`** set the defaults for the
   matching command-line flags.
 - **`baseline`** names the [baseline](baseline.html) file a run compares
-  against, relative to this file. Passing `--baseline` replaces it.
+  against, relative to this file. Passing `--baseline` replaces it, and
+  `--since` leaves it unread.
 
 Unknown top-level keys, rule names that match no check, and values of the wrong
 type (a non-numeric `max-warnings`, a non-list `exclude` or `only`, a

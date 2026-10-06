@@ -729,7 +729,7 @@ const standing = function(baseline, base) {
  * @param {Array.<string>} pths - Files or directories with .xsl to lint
  * @param {object} options - CLI options: `logLevel`, `quiet`, `suppress`,
  *  `maxWarnings`, `config`, `format`, `only`, `preset`, `fix`, `fixDryRun`,
- *  `fixSuggestions`, `baseline`, `baselineWrite`, `baselinePrune`
+ *  `fixSuggestions`, `baseline`, `baselineWrite`, `baselinePrune`, `since`
  */
 module.exports = function xslint(pths, options) {
   logger.setLevel(leveled(options.quiet, options.logLevel))

@@ -126,6 +126,30 @@ const JUDGED = [
     base: ['other.txt', 4, 'short-names'],
     fresh: true,
   },
+  {
+    name: 'reads a deleted line spelled like a header as a deleted line',
+    head: ['dashed.txt', 2, 'short-names'],
+    base: ['dashed.txt', 3, 'short-names'],
+    fresh: false,
+  },
+  {
+    name: 'reads an added line spelled like a header as an added line',
+    head: ['x', 3, 'short-names'],
+    base: ['x', 3, 'short-names'],
+    fresh: false,
+  },
+  {
+    name: 'calls old a defect a line added above moved down in a spaced name',
+    head: ['my sheet.txt', 5, 'short-names'],
+    base: ['my sheet.txt', 4, 'short-names'],
+    fresh: false,
+  },
+  {
+    name: 'calls new a defect on a line the change edited in a spaced name',
+    head: ['my sheet.txt', 4, 'short-names'],
+    base: ['my sheet.txt', 3, 'short-names'],
+    fresh: true,
+  },
 ]
 
 describe('since', function() {

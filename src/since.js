@@ -15,7 +15,7 @@ const fs = require('fs')
 const os = require('os')
 const path = require('path')
 const {execFileSync} = require('child_process')
-const {slashed} = require('./helpers')
+const {SEALED, slashed} = require('./helpers')
 
 /**
  * The header of a hunk `git diff -U0` prints, its counts left out where one.
@@ -61,16 +61,18 @@ const moved = function(patch) {
   let entry = {hunks: []}
   for (const line of patch.split('\n')) {
     const hunk = HUNK.exec(line)
+    const header = entry.hunks.length === 0
     if (line.startsWith('diff --git ')) {
       entry = {hunks: []}
     } else if (line.startsWith('rename from ')) {
       entry.origin = line.slice('rename from '.length)
     } else if (line.startsWith('rename to ')) {
       files.set(line.slice('rename to '.length), entry)
-    } else if (line.startsWith('--- ')) {
+    } else if (header && line.startsWith('--- ')) {
       entry.origin = line.slice('--- '.length).replace(/^a\//, '')
-    } else if (line.startsWith('+++ b/')) {
-      files.set(line.slice('+++ b/'.length), entry)
+        .replace(/\t$/, '')
+    } else if (header && line.startsWith('+++ b/')) {
+      files.set(line.slice('+++ b/'.length).replace(/\t$/, ''), entry)
     } else if (hunk) {
       entry.hunks.push({
         newStart: Number(hunk[3]),
@@ -149,6 +151,23 @@ const within = function(pth, dir) {
 }
 
 /**
+ * Whether a file stands in a repository nested below the top, a submodule or
+ * a checkout of its own, which judges its own sheets.
+ * @param {string} file - Absolute path of the file, resolved
+ * @param {string} root - Top of the repository
+ * @return {boolean} - True where a `.git` stands between them
+ */
+const nested = function(file, root) {
+  let inside = false
+  let dir = path.dirname(file)
+  while (dir.length > root.length) {
+    inside ||= fs.existsSync(path.join(dir, '.git'))
+    dir = path.dirname(dir)
+  }
+  return inside
+}
+
+/**
  * The repository the named paths stand in, and each of them resolved through
  * every link, as git spells the top.
  * @param {Array.<string>} pths - Absolute paths the run was named
@@ -199,13 +218,16 @@ const since = function(drawn, ref, pths, base, linted) {
       root,
       [
         '-c', 'core.quotePath=false', 'diff', '--no-color', '--no-ext-diff',
-        '--src-prefix=a/', '--dst-prefix=b/', '-M', '-U0', commit, '--',
+        '--no-textconv', '--inter-hunk-context=0', '--src-prefix=a/',
+        '--dst-prefix=b/', '-M', '-U0', commit, '--',
       ],
       `Git could not diff ${root} against commit ${commit}`,
     ),
   )
   const named = (name) => under.some(
-    (pth) => within(path.join(root, name), pth),
+    (pth) => within(path.join(root, name), pth) &&
+      !slashed(path.join(root, name), pth).split('/')
+        .some((segment) => SEALED.includes(segment)),
   )
   const origins = new Set(
     [...moves].filter(([name]) => named(name)).map(([, move]) => move.origin),
@@ -224,7 +246,9 @@ const since = function(drawn, ref, pths, base, linted) {
       problem, env,
     )
     introducing = introduced(
-      drawn,
+      drawn.filter(
+        (defect) => !nested(fs.realpathSync.native(defect.file), root),
+      ),
       linted(
         gitIn(
           root, ['ls-tree', '-r', '-z', '--full-tree', '--name-only', commit],

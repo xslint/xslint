@@ -41,16 +41,40 @@ const seeded = function(state, yard) {
 }
 
 /**
- * A repository whose one commit holds the `before` sheets, its working tree
- * changed to the `after` ones: `moving.xsl` renamed, `fresh.xsl` left
- * untracked, and the call to the template of `lib.xsl` taken out of
- * `main.xsl`.
+ * One committed fixture written into a directory of the repository, which is
+ * made first.
+ * @param {string} name - Fixture under the since resources
+ * @param {string} dir - Directory it is written into
+ */
+const placed = function(name, dir) {
+  fs.mkdirSync(dir, {recursive: true})
+  fs.writeFileSync(
+    path.join(dir, path.basename(name)),
+    fs.readFileSync(path.join(SINCE, name)),
+  )
+}
+
+/**
+ * A repository whose commit holds the `before` sheets, a repository of its
+ * own in `vendor`, and a `node_modules` sheet calling `kept.xsl`, its working
+ * tree changed to the `after` sheets, and its git config merging hunks and
+ * diffing every sheet through a driver that drops its first line.
  * @return {string} - The directory of the repository
  */
 const changed = function() {
   const yard = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-since-'))
   seeded('before', yard)
+  placed('nested/vendored.xsl', path.join(yard, 'vendor'))
+  repository(path.join(yard, 'vendor'), ['.'])
+  gitted(
+    path.join(yard, 'vendor'),
+    IDENTITY.concat(['commit', '--quiet', '-m', 'vendor']),
+  )
+  placed('sealed/caller.xsl', path.join(yard, 'node_modules', 'kit'))
+  fs.writeFileSync(path.join(yard, '.gitattributes'), '*.xsl diff=shifted\n')
   repository(yard, ['.'])
+  gitted(yard, ['config', 'diff.interHunkContext', '5'])
+  gitted(yard, ['config', 'diff.shifted.textconv', 'sed 1d'])
   gitted(yard, IDENTITY.concat(['commit', '--quiet', '-m', 'base']))
   gitted(yard, ['mv', 'moving.xsl', 'moved.xsl'])
   seeded('after', yard)
