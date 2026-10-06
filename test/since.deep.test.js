@@ -71,7 +71,7 @@ const changed = function() {
     IDENTITY.concat(['commit', '--quiet', '-m', 'vendor']),
   )
   placed('sealed/caller.xsl', path.join(yard, 'node_modules', 'kit'))
-  fs.writeFileSync(path.join(yard, '.gitattributes'), '*.xsl diff=shifted\n')
+  fs.writeFileSync(path.join(yard, '.gitattributes'), '*.xsl diff=shifted\npasted.xsl -diff\n')
   repository(yard, ['.'])
   gitted(yard, ['config', 'diff.interHunkContext', '5'])
   gitted(yard, ['config', 'diff.shifted.textconv', 'sed 1d'])
@@ -81,16 +81,62 @@ const changed = function() {
   return yard
 }
 
+/**
+ * A scratch directory, made a repository with nothing committed where asked.
+ * @param {boolean} init - Whether git is to init it
+ * @return {string} - The directory
+ */
+const scratch = function(init) {
+  const yard = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-since-'))
+  if (init) {
+    gitted(yard, ['init', '--quiet'])
+  }
+  return yard
+}
+
+/**
+ * A run `--since` refuses, and what its refusal says.
+ * @type {Array.<{name: string, args: function(): Array, says: RegExp}>}
+ */
+const REFUSED = [
+  {
+    name: 'refuses a revision git does not know',
+    args: () => ['--since', 'no-such-revision', scratch(true)],
+    says: /no-such-revision/,
+  },
+  {
+    name: 'refuses a path outside the repository',
+    args: () => ['--since', 'HEAD', scratch(true), scratch(false)],
+    says: /outside/,
+  },
+  {
+    name: 'refuses a path with no repository, giving the reason git gives',
+    args: () => ['--since', 'HEAD', scratch(false)],
+    says: /not a git repository/,
+  },
+  {
+    name: 'refuses to run with a baseline',
+    args: () => ['--since', 'HEAD', '--baseline', 'xslint.json'],
+    says: /cannot be used with/,
+  },
+]
+
 describe('since', function() {
   it('reports only the defects the change introduced', function() {
     const yard = changed()
     assert.deepStrictEqual(
       JSON.parse(
-        xslintStreams([
-          '--preset', 'all', '--only', 'short-names',
-          '--only', 'unused-named-template', '--format', 'json',
-          '--since', 'HEAD', yard,
-        ]).stdout,
+        xslintStreams(
+          [
+            '--preset', 'all', '--only', 'short-names',
+            '--only', 'unused-named-template', '--format', 'json',
+            '--since', 'HEAD', yard,
+          ],
+          {
+            GIT_DIR: path.join(yard, 'vendor', '.git'),
+            GIT_DIFF_OPTS: '--unified=3',
+          },
+        ).stdout,
       ).map((defect) => [
         `${path.relative(yard, path.resolve(defect.file))}:${defect.line}`,
         defect.rule,
@@ -119,28 +165,36 @@ describe('since', function() {
       'judged a named sheet against a commit it was not read from',
     )
   })
-  it('refuses a revision git does not know', function() {
-    assert.match(
-      runXslint(['--since', 'no-such-revision', changed()]),
-      /no-such-revision/,
-      'ran against a revision git cannot resolve to a commit',
+  it('calls old a defect of a sheet reached through a link', function() {
+    if (process.platform === 'win32') {
+      this.skip()
+    }
+    const yard = scratch(false)
+    placed('before/edited.xsl', path.join(yard, 'shared'))
+    fs.mkdirSync(path.join(yard, 'src'))
+    fs.symlinkSync(
+      path.join('..', 'shared', 'edited.xsl'),
+      path.join(yard, 'src', 'edited.xsl'),
+    )
+    repository(yard, ['.'])
+    gitted(yard, IDENTITY.concat(['commit', '--quiet', '-m', 'base']))
+    assert.deepStrictEqual(
+      JSON.parse(
+        xslintStreams([
+          '--preset', 'all', '--only', 'short-names', '--format', 'json',
+          '--since', 'HEAD', path.join(yard, 'src'),
+        ]).stdout,
+      ),
+      [],
+      'judged a linked sheet by the name of the sheet it links to',
     )
   })
-  it('refuses a path outside the repository', function() {
-    assert.match(
-      runXslint([
-        '--since', 'HEAD', changed(),
-        fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-since-')),
-      ]),
-      /outside/,
-      'judged a path the repository does not hold against its commit',
-    )
-  })
-  it('refuses to run with a baseline', function() {
-    assert.match(
-      runXslint(['--since', 'HEAD', '--baseline', 'xslint.json', changed()]),
-      /cannot be used with/,
-      'ran a change against both its commit and a baseline',
-    )
+  REFUSED.forEach((row) => {
+    it(row.name, function() {
+      assert.match(
+        runXslint(row.args()), row.says,
+        `ran where --since cannot judge the change, as in ${row.name}`,
+      )
+    })
   })
 })

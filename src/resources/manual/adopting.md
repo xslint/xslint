@@ -70,7 +70,13 @@ xslint --baseline xslint-baseline.json --baseline-prune src
 ```
 
 Prune the whole tree, never one sheet, since a check that reads across sheets
-finds different things in one sheet on its own.
+finds different things in one sheet on its own. A pull request that renames a
+sheet rewrites the file instead, since `--since` follows the rename while the
+file still records the old path, and a prune records nothing new:
+
+```bash
+xslint --baseline-write xslint-baseline.json src
+```
 
 ## Pay it down
 

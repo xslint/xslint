@@ -24,27 +24,47 @@ const {SEALED, slashed} = require('./helpers')
 const HUNK = /^@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@/
 
 /**
- * What git answers in a directory, or a failure naming what was asked.
+ * The variables a hook or the user exports that point git at another
+ * repository, index, or diff than the one the directory holds.
+ * @type {Array.<string>}
+ */
+const ELSEWHERE = [
+  'GIT_DIR', 'GIT_WORK_TREE', 'GIT_COMMON_DIR', 'GIT_INDEX_FILE',
+  'GIT_DIFF_OPTS', 'GIT_EXTERNAL_DIFF',
+]
+
+/**
+ * What git answers in a directory, or a failure naming what was asked and the
+ * first line of why git refused.
  * @param {string} dir - Directory git runs in
  * @param {Array.<string>} args - What it is asked
  * @param {string} problem - The error a failure throws
- * @param {object} env - Environment git runs under
+ * @param {object} env - Variables set over the environment git inherits
  * @return {string} - What it printed
  */
-const gitIn = function(dir, args, problem, env = process.env) {
+const gitIn = function(dir, args, problem, env = {}) {
   let printed
   try {
     printed = execFileSync('git', args, {
       cwd: dir,
-      env: env,
+      env: Object.fromEntries(
+        Object.entries(process.env)
+          .filter(([name]) => !ELSEWHERE.includes(name))
+          .concat(Object.entries(env)),
+      ),
       encoding: 'utf-8',
-      stdio: ['ignore', 'pipe', 'ignore'],
+      stdio: ['ignore', 'pipe', 'pipe'],
       timeout: 120000,
       maxBuffer: 256 * 1024 * 1024,
       windowsHide: true,
     })
-  } catch {
-    throw new Error(problem)
+  } catch (error) {
+    throw new Error(
+      `${problem}: ${[error.stderr, error.message].join('\n').split('\n')
+        .map((line) => line.trim()).find((line) => line.length > 0)}`
+        .replace(/\.$/, ''),
+      {cause: error},
+    )
   }
   return printed
 }
@@ -151,6 +171,18 @@ const within = function(pth, dir) {
 }
 
 /**
+ * A sheet's path with its directory resolved through every link, and its own
+ * name kept, so a linked sheet is judged under the name the commit holds it by.
+ * @param {string} file - Absolute path of the sheet
+ * @return {string} - The path, resolved
+ */
+const resolved = function(file) {
+  return path.join(
+    fs.realpathSync.native(path.dirname(file)), path.basename(file),
+  )
+}
+
+/**
  * Whether a file stands in a repository nested below the top, a submodule or
  * a checkout of its own, which judges its own sheets.
  * @param {string} file - Absolute path of the file, resolved
@@ -183,7 +215,7 @@ const rootOf = function(pths) {
   const root = fs.realpathSync.native(
     gitIn(
       start, ['rev-parse', '--show-toplevel'],
-      `Option --since reads git, and ${start} is not inside a repository`,
+      `Option --since reads git, which finds no repository at ${start}`,
     ).trim(),
   )
   const outside = under.filter((pth) => !within(pth, root))
@@ -218,7 +250,7 @@ const since = function(drawn, ref, pths, base, linted) {
       root,
       [
         '-c', 'core.quotePath=false', 'diff', '--no-color', '--no-ext-diff',
-        '--no-textconv', '--inter-hunk-context=0', '--src-prefix=a/',
+        '--no-textconv', '--text', '--inter-hunk-context=0', '--src-prefix=a/',
         '--dst-prefix=b/', '-M', '-U0', commit, '--',
       ],
       `Git could not diff ${root} against commit ${commit}`,
@@ -238,7 +270,7 @@ const since = function(drawn, ref, pths, base, linted) {
   const tree = path.join(scratch, 'tree')
   let introducing
   try {
-    const env = {...process.env, GIT_INDEX_FILE: path.join(scratch, 'index')}
+    const env = {GIT_INDEX_FILE: path.join(scratch, 'index')}
     const problem = `Git could not write out commit ${commit} of ${root}`
     gitIn(root, ['read-tree', commit], problem, env)
     gitIn(
@@ -247,7 +279,7 @@ const since = function(drawn, ref, pths, base, linted) {
     )
     introducing = introduced(
       drawn.filter(
-        (defect) => !nested(fs.realpathSync.native(defect.file), root),
+        (defect) => !nested(resolved(defect.file), root),
       ),
       linted(
         gitIn(
@@ -261,7 +293,7 @@ const since = function(drawn, ref, pths, base, linted) {
       moves,
       new Map(
         drawn.map((defect) => [
-          defect.file, slashed(fs.realpathSync.native(defect.file), root),
+          defect.file, slashed(resolved(defect.file), root),
         ]),
       ),
       tree,

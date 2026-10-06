@@ -86,9 +86,10 @@ const execCmd = function(command, args, print) {
  * Run xslint in a child process, exactly as a user would, so the test sees the
  * same output — no node warnings are silenced.
  * @param {Array.<string>} args - Array of args
+ * @param {object} env - Variables set over the environment it inherits
  * @return {import('child_process').SpawnSyncReturns<string>} - Result
  */
-const spawnXslint = function(args) {
+const spawnXslint = function(args, env = {}) {
   return spawnSync(
     'node',
     [path.resolve('./src/index.mjs'), ...args],
@@ -96,6 +97,7 @@ const spawnXslint = function(args) {
       timeout: 120000,
       windowsHide: true,
       encoding: 'utf-8',
+      env: {...process.env, ...env},
     },
   )
 }
@@ -122,10 +124,11 @@ const xslintStatus = function(args) {
 /**
  * Helper to run xslint, keeping stdout and stderr apart.
  * @param {Array.<string>} args - Array of args
+ * @param {object} env - Variables set over the environment it inherits
  * @return {{stdout: string, stderr: string}} Streams
  */
-const xslintStreams = function(args) {
-  const result = spawnXslint(args)
+const xslintStreams = function(args, env = {}) {
+  const result = spawnXslint(args, env)
   return {stdout: result.stdout, stderr: result.stderr}
 }
 
