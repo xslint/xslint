@@ -2,20 +2,10 @@
 
 `xsl:element` with a static name writes the element a literal result element of
 that name writes, and sends its reader looking for a computed name that is not
-there. Use a literal result element, and keep `xsl:element` for a name written as an
-attribute value template, `{...}`, the only spelling XSLT evaluates there. A `$`
-or a bracket outside those braces is part of the name itself.
-
-A literal result element also copies the namespaces in scope on it into the
-output, where `xsl:element` copies none, so list in `exclude-result-prefixes`
-every prefix the output must not declare.
-
-Two static names still want the instruction. A name whose prefix binds to the
-XSLT namespace has no literal form at all: `<xsl:element name="xsl:template"/>`
-writes an element into the result tree, where `<xsl:template>` is an
-instruction the processor runs. And a `namespace` attribute puts the element in
-a namespace named outright, which a literal result element cannot do — it takes
-its own from the prefixes in scope.
+there. Use a literal result element, and keep `xsl:element` for a name written
+as an attribute value template, `{...}`. A literal result element copies the
+namespaces in scope into the output, so list in `exclude-result-prefixes` every
+prefix the output must not declare.
 
 Incorrect:
 
@@ -32,3 +22,6 @@ Correct:
   <xsl:value-of select="."/>
 </div>
 ```
+
+A name whose prefix binds to the XSLT namespace, or an `xsl:element` with a
+`namespace` attribute, has no literal form and is left alone.

@@ -174,10 +174,10 @@ test; `test/conformance.test.js` enforces the name, the motive and the pack.
   `APPLIED`/`UNCHANGED`/`DROPPED`. A fix that needs structural editing waits for
   the full-fidelity parser (#228).
 - **Motive.** Lead with the concrete harm, then an `Incorrect:`/`Correct:` pair
-  of valid XSLT and how to migrate by hand. Never name a fix tier, `--fix`, or
-  report-only, never describe internals, and keep the prose true to the
-  selector: no "such as" for a closed list, no "root template" for any
-  `/`-prefixed match.
+  of valid XSLT, in a hundred words of prose outside code blocks. Never name a
+  fix tier, `--fix`, or report-only, never describe internals, and keep the
+  prose true to the selector: no "such as" for a closed list, no "root
+  template" for any `/`-prefixed match.
 
 ## Test packs
 

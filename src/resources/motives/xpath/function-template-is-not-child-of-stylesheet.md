@@ -1,15 +1,9 @@
 # Function or template is not child of stylesheet
 
-An `xsl:function` or `xsl:template` declares a component of the stylesheet, and
-a component belongs where the processor looks for one: at the top level, as a
-child of `xsl:stylesheet`, `xsl:transform` or `xsl:package`. One buried inside another
-instruction is never reached, because a template body is a sequence
-constructor and a declaration is not an instruction it can hold.
-
-XSLT 3.0 gives it one other home. Inside an `xsl:override` under
-`xsl:use-package`, a template or function is the component that replaces the
-one the used package declares, and that is the only place an overriding
-component may stand. Those are left alone.
+An `xsl:function` or `xsl:template` declares a component, and a processor looks
+for components only at the top level, as children of `xsl:stylesheet`,
+`xsl:transform` or `xsl:package`. One nested inside another instruction is an
+error, and the stylesheet does not compile.
 
 Incorrect:
 
@@ -35,3 +29,6 @@ Correct:
   </xsl:function>
 </xsl:stylesheet>
 ```
+
+A template or function inside `xsl:override` replaces a component of a used
+package, and is left alone.

@@ -1,14 +1,8 @@
 # Circular import
 
-A stylesheet must not `xsl:import` or `xsl:include`, directly or through a
-chain, a stylesheet that pulls it back — nor import itself. A processor treats
-this as a static error (`XTSE0210`) and refuses to compile the stylesheet, so
-the cycle is never a working design, only a mistake to break.
-
-The linter resolves every `@href` against the importing file's own directory
-and matches it to the corpus. A cycle needs every edge in it to resolve within
-the files being linted, so an href pointing at a library outside the corpus is
-treated as external and never mistaken for part of a cycle.
+A stylesheet that imports or includes itself, directly or through a chain of
+modules that pulls it back, is a static error, and the processor refuses to
+compile it. Move the shared code into a third module both import.
 
 Incorrect (`a.xsl` and `b.xsl` import each other):
 
@@ -24,8 +18,7 @@ Incorrect (`a.xsl` and `b.xsl` import each other):
 </xsl:stylesheet>
 ```
 
-Correct — move the shared code into a third module both import, so the graph
-stays acyclic:
+Correct:
 
 ```xsl
 <!-- a.xsl -->
@@ -38,3 +31,5 @@ stays acyclic:
   <xsl:import href="common.xsl"/>
 </xsl:stylesheet>
 ```
+
+A cycle is reported only when every module in it is among the linted files.

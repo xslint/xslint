@@ -1,14 +1,9 @@
 # Missing id in stylesheet
 
-The `id` attribute on the stylesheet root (`xsl:stylesheet`, `xsl:transform`
-or, since XSLT 3.0, `xsl:package`) is optional, and on a standalone
-stylesheet it changes nothing about how the transform runs — it matters only
-for a stylesheet embedded in another document and referenced by fragment. So
-this is not a correctness rule; it is a consistency one. Declaring identity is
-still worth doing: it distinguishes a stylesheet in logs, error messages, and
-tooling that processes several at once. The only coherent policies are "every
-stylesheet declares an id" or "none does", and the second cannot be enforced,
-so xslint asks for the first.
+The `id` on the stylesheet root changes nothing about how a standalone
+transform runs, but it tells one stylesheet from another in logs, error
+messages, and tools that process several at once. The one policy a linter can
+hold is that every stylesheet declares it, so declare it on each.
 
 Incorrect:
 

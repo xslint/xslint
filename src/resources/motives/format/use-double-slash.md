@@ -1,11 +1,9 @@
 # Use double slash
 
-A `//` step in a pattern matches the node at *any* depth, so the pattern is
-broader and vaguer than a named path. It is not a performance problem — a
-pattern is tested against a node, not walked as a query — but `root//item` will
-also match an `item` nested far deeper than you meant as the document grows, and
-it hides the structure the template actually expects. When you know the shape of
-the input, name the path.
+A `//` step in a pattern matches at any depth, so `root//item` also takes an
+`item` nested far deeper than meant as the document grows, and it hides the
+structure the template expects. When you know the shape of the input, name the
+path.
 
 Incorrect:
 
@@ -23,29 +21,6 @@ Correct:
 </xsl:template>
 ```
 
-Every attribute holding a pattern reads the same way — `xsl:key/@match`,
-`xsl:accumulator-rule/@match`, the `@count` and `@from` of `xsl:number`, and the
-`@group-starting-with` and `@group-ending-with` of `xsl:for-each-group`. A `//`
-widens what one of those takes in exactly as it widens a template's `@match`:
-
-```xsl
-<xsl:key name="lookup" match="chapter/section/item" use="@id"/>
-```
-
-A predicate is not part of the path the pattern walks. `match="item[.//note]"`
-matches an `item` and nothing else — the `.//note` between the brackets is a
-question asked *about* the node already in hand, and asking it at any depth is
-usually the whole point. It reads there exactly as it reads in a `select`, where
-nobody would call it vague:
-
-```xsl
-<xsl:template match="item[not(.//note)]">
-  <xsl:value-of select="@id"/>
-</xsl:template>
-```
-
-Characters that merely look like a step are none: the `//` of a URL inside a
-string literal, of a comment, or of the namespace an inline `Q{...}` spells is
-part of the thing it stands in and reaches no depth at all, so
-`match="a[@href = 'http://example.com']"` names one child element and nothing
-deeper.
+Every attribute holding a pattern is checked, such as `xsl:key/@match` and the
+`@count` of `xsl:number`. A `//` inside a predicate, as in `item[.//note]`, is
+left alone.

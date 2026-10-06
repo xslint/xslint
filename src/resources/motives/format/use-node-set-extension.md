@@ -1,22 +1,9 @@
 # Use node-set extension
 
-The `node-set()` extension function is an XSLT 1.0 workaround for converting
-result tree fragments into node-sets. It is unnecessary in XSLT 2.0 and later,
-where temporary trees can be queried directly.
-
-Two namespaces declare it for that one purpose — EXSLT's common module,
-`http://exslt.org/common`, and Microsoft's `urn:schemas-microsoft-com:xslt` —
-and the prefix a stylesheet binds to either is the author's to choose, so
-`exsl:node-set`, `msxsl:node-set` and `common:node-set` can all be the same
-call. A `node-set` of your own, in a namespace of your own, is a different
-function and does whatever you wrote it to do.
-
-Unwrapping by hand is not always a matter of deleting the call and its
-brackets. The argument sat inside them, so one binding looser than a step
-still needs them wherever an expression stands around the call:
-`exsl:node-set($x | $y)/title` is `($x | $y)/title`, where dropping both
-brackets writes `$x | $y/title` — a union of `$x` with the titles under `$y`,
-which is another sequence altogether.
+The `node-set()` extension function converts a result tree fragment into a
+node-set, a workaround XSLT 1.0 needed. From 2.0 on a temporary tree is queried
+directly, so the call only ties the stylesheet to an extension namespace it no
+longer needs. Query the variable itself.
 
 Incorrect:
 
@@ -48,3 +35,7 @@ Correct:
   </xsl:template>
 </xsl:stylesheet>
 ```
+
+Only XSLT 2.0 and later stylesheets are checked, for the function in EXSLT's
+`http://exslt.org/common` and Microsoft's `urn:schemas-microsoft-com:xslt`
+under any prefix. A `node-set` in a namespace of your own is left alone.

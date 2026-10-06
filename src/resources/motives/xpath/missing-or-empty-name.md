@@ -1,30 +1,9 @@
 # A name that is missing or empty
 
-Twelve XSLT elements are named by a `@name` that must be a QName —
-`xsl:variable`, `xsl:param`, `xsl:with-param`, `xsl:call-template`,
-`xsl:template`, `xsl:function`, `xsl:key`, `xsl:attribute-set`,
-`xsl:decimal-format`, `xsl:character-map`, `xsl:mode` and `xsl:accumulator`. An
-empty string is not one, on any of them: the stylesheet is a static error, so a
-processor refuses to compile it rather than running it and producing something
-odd, and the whole transformation stops on a typo. Leaving the attribute out
-altogether is a different fault — nine of the twelve must carry one, while
-`xsl:template`, `xsl:mode` and `xsl:decimal-format` are named by choice, and an
-absent `@name` on those three asks for the unnamed default rather than for
-nothing.
-
-The empty spelling is the one that hides. `name=""` reads as a name at a
-glance, survives a search for the attribute, and looks deliberate beside a
-neighbour that has one — which is usually what it is, a name deleted mid-edit
-and never written back, or an attribute value template that resolved to
-nothing. Nothing about the element says which name was meant, so the fix is
-always to write it rather than to remove the attribute: an `xsl:key` without a
-key name has no reason to exist.
-
-XSLT 3.0 hides it once more, writing the name `_name` as readily as `name`, the
-underscore form an attribute value template evaluated before the stylesheet
-compiles. So `_name=""` and `_name="{''}"` name nothing exactly as `name=""`
-does, while `_name="{$prefix}"` names whatever that static parameter holds and
-is left alone.
+An empty `name=""` holds no QName, so the stylesheet is a static error and no
+processor compiles it. It usually marks a name deleted mid-edit, and nothing
+says which name was meant, so write it back. A missing `@name` fails the same
+way on an element that requires one.
 
 Incorrect:
 
@@ -44,6 +23,5 @@ Correct:
 <xsl:variable name="total" select="count(item)"/>
 ```
 
-An `xsl:output` also takes a `@name`, and an empty one there is a different
-error with a different remedy, so it is left to the check that is about
-serialization.
+An `xsl:template`, `xsl:mode`, or `xsl:decimal-format` may leave its name out,
+though never empty. The XSLT 3.0 spelling `_name=""` is empty too.
