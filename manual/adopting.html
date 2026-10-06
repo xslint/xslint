@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Adopting</title>
+  <style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    color: #24292e;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 24px 32px;
+  }
+  h1 { font-size: 2rem; font-weight: 600; margin-bottom: 4px; }
+  h2 { font-size: 1.3rem; font-weight: 600; margin: 20px 0 8px; }
+  a { color: #0366d6; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  p { margin: 8px 0; }
+  table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 0.9rem; }
+  th {
+    text-align: left;
+    padding: 10px 12px;
+    background: #f6f8fa;
+    border: 1px solid #e1e4e8;
+    font-weight: 600;
+  }
+  td { padding: 10px 12px; border: 1px solid #e1e4e8; vertical-align: top; }
+  tr:hover td { background: #f6f8fa; }
+  .severity-warning {
+    background: #fff8c5;
+    color: #9a6700;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .severity-error {
+    background: #ffebe9;
+    color: #cf222e;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .fix-safe {
+    background: #dafbe1;
+    color: #1a7f37;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .fix-suggestion {
+    background: #fbefff;
+    color: #8250df;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .preset-recommended {
+    background: #ddf4ff;
+    color: #0969da;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .fix-note {
+    background: #f6f8fa;
+    border-left: 4px solid #57606a;
+    padding: 8px 12px;
+    margin: 0 0 24px;
+    font-size: 0.9rem;
+  }
+  .back { display: inline-block; margin-bottom: 24px; font-size: 0.9rem; }
+  .meta { display: flex; gap: 12px; align-items: flex-start; margin: 12px 0 24px; flex-wrap: wrap; }
+  .xpath {
+    background: #f6f8fa;
+    border: 1px solid #e1e4e8;
+    border-radius: 4px;
+    padding: 6px 10px;
+    font-family: 'SFMono-Regular', Consolas, monospace;
+    font-size: 0.75rem;
+    word-break: break-all;
+    flex: 1;
+  }
+  pre { margin: 12px 0; border-radius: 6px; overflow-x: auto; }
+  code { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; }
+  .check-content h1 { font-size: 1.6rem; margin-bottom: 8px; }
+</style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+  <script>hljs.highlightAll();</script>
+</head>
+<body>
+  <a class="back" href="../index.html">← all checks</a>
+  <div class="check-content">
+<h1>Adopting</h1>
+<p>The first run over a tree that grew for years without a linter draws hundreds
+of reports. These steps take it from there to a build that fails on new
+defects, and then pay the old ones down one pull request at a time.</p>
+<h2>Measure</h2>
+<p>Count what the <code>recommended</code> preset finds, by check:</p>
+<pre><code class="language-bash">xslint --quiet --format json src | jq -r &#39;.[].rule&#39; | sort | uniq -c | sort -rn
+</code></pre>
+<p>A few checks usually carry most of the reports. Read their pages in the
+<a href="../index.html">check catalog</a> before deciding what to do with them. Run the
+same command later to see how much is left.</p>
+<h2>Turn off what you reject</h2>
+<p>A check the team disagrees with goes off in <code>.xslint.yml</code>. Nothing it finds is
+reported again, new defects included:</p>
+<pre><code class="language-yaml">rules:
+  template-writes-nothing: off
+</code></pre>
+<p>Keep this for checks you never mean to follow. A check you agree with but
+cannot satisfy yet belongs in the baseline.</p>
+<h2>Gate on a baseline</h2>
+<p>Record every remaining defect and commit the file, with the <code>.xslint.yml</code> if
+you wrote one, since CI reads both:</p>
+<pre><code class="language-bash">xslint --baseline-write xslint-baseline.json src
+git add xslint-baseline.json
+</code></pre>
+<p>Then run the gate in CI:</p>
+<pre><code class="language-bash">xslint --baseline xslint-baseline.json --max-warnings=0 src
+</code></pre>
+<p>The build now fails on any defect the file does not record, and on any
+recorded one that is gone until its entry is dropped. Pass <code>--baseline</code> in CI
+rather than naming the file in <code>.xslint.yml</code>, so a run on a developer&#39;s
+machine still shows the whole debt. The <a href="baseline.html">baseline guide</a> covers
+how a defect is matched.</p>
+<p>A recorded defect is matched by its file and the text of its line, so a pull
+request that renames a sheet or edits a recorded line, in a feature as much as
+in a fix, sees those defects reported as new. The baseline cannot tell them
+from defects the change added, so fix every defect the gate lists, then drop
+the entries the fixes left stale:</p>
+<pre><code class="language-bash">xslint --baseline xslint-baseline.json --baseline-prune src
+</code></pre>
+<p>Prune the whole tree, never one sheet, since a check that reads across sheets
+finds different things in one sheet on its own.</p>
+<h2>Pay it down</h2>
+<p>Take one check per pull request. List what it still finds, fix it, and drop
+the entries the fix left stale:</p>
+<pre><code class="language-bash">xslint --only incorrect-use-of-boolean-constants src
+xslint --only incorrect-use-of-boolean-constants --fix-suggestions src
+xslint --baseline xslint-baseline.json --baseline-prune src
+</code></pre>
+<p>Commit the pruned file with the fix. A prune never records a defect, so the
+count in the file only goes down. A fix that rewrites a line also loses the
+entries other checks hold on it, and the prune lists them as new: fix those
+too and prune again, as above.</p>
+<p>To turn on a check you turned off, delete its line from <code>rules:</code> and record
+what it finds before the gate sees it:</p>
+<pre><code class="language-bash">xslint --only template-writes-nothing --baseline-write xslint-baseline.json src
+</code></pre>
+<p>A rewrite with <code>--only</code> replaces the entries of that one check and leaves the
+rest of the file as it was.</p>
+<h2>Move to the whole catalog</h2>
+<p>The <code>all</code> preset adds the rest of the catalog. Many checks a team rejects come
+with it, and a check turned off after it is recorded keeps its entries in the
+file for good. So set <code>preset: all</code> in <code>.xslint.yml</code>, then measure again and
+turn off what you reject before anything else.</p>
+<p>The preset also brings every fix <code>--fix</code> applies on its own, since those leave
+a stylesheet meaning what it meant. Run <code>--fix</code> again until a run fixes
+nothing, since one pass skips a fix that overlaps another, and commit the
+stylesheets alone, so a reviewer reads a mechanical diff and nothing more.
+Then record what the fixes left and commit it with the preset:</p>
+<pre><code class="language-bash">xslint --fix src
+git add src
+git commit -m &quot;Apply the safe xslint fixes&quot;
+xslint --baseline-write xslint-baseline.json src
+git add .xslint.yml xslint-baseline.json
+</code></pre>
+
+  </div>
+</body>
+</html>
