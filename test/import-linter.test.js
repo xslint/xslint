@@ -21,10 +21,10 @@ const assert = require('assert')
  */
 
 /**
- * Stylesheets in the short chain. Two hundred rather than the forty
- * `test/scaling.test.js` builds: a quadratic whose constant is still small is
- * invisible at the size where the per-edge cost dominates, and this check read
- * a flat 1.0 to 1.6 there while it cost the square of the chain (#769).
+ * Stylesheets in the short chain. Two hundred, since a quadratic whose
+ * constant is still small is invisible at forty, where the per-edge cost
+ * dominates, and this check read a flat 1.0 to 1.6 there while it cost the
+ * square of the chain (#769).
  * @type {number}
  */
 const CHAIN = 200

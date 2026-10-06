@@ -9,11 +9,11 @@ const {harness} = require('./packs')
 const assert = require('assert')
 
 /**
- * Stylesheets in the short chain. A hundred rather than the forty
- * `test/scaling.test.js` builds, where the walk per file still hid under the
- * parse and the stage read a growth of 3.11 on one runner and passed on the
- * next, and rather than the two hundred `test/import-linter.test.js` builds,
- * over which the cube took a long chain past a second a pass (#1141).
+ * Stylesheets in the short chain. A hundred rather than forty, where the walk
+ * per file still hid under the parse and the stage read a growth of 3.11 on
+ * one runner and passed on the next, and rather than the two hundred
+ * `test/import-linter.test.js` builds, over which the cube took a long chain
+ * past a second a pass (#1141).
  * @type {number}
  */
 const CHAIN = 100

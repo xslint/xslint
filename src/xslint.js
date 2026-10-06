@@ -5,10 +5,9 @@
 
 /*
  * Orchestrates discovery, config, staging and output; exports the pure `lint`
- * (package `main`), `fixed`, and `STAGES`, derived from the linter lists so
- * the speed gate times what the run runs. `lint` sorts its defects by file,
- * line, column and check, in code units rather than `localeCompare`, so a
- * committed report diffs stably (#638). A run reads only what `SUFFIXES`
+ * (package `main`) and `fixed`. `lint` sorts its defects by file, line, column
+ * and check, in code units rather than `localeCompare`, so a committed report
+ * diffs stably (#638). A run reads only what `SUFFIXES`
  * names (#924); the walk opens no `.git` or `node_modules`, prunes what a
  * `dir/**` exclude covers whole (#923), and leaves out what `.gitignore`
  * refuses (#929). The exit code is `process.exitCode`, as `process.exit` drops
@@ -154,21 +153,6 @@ const EXPRESSION_LINTERS = [
   },
   {name: 'bare-name-linter', run: lintByBareName, checks: bareNameChecks},
   {name: 'xpath-format-linter', run: lintByFormat, checks: formatChecks},
-]
-
-/**
- * Every linting stage a run passes through, with what it is handed — the
- * corpus, or the expressions the validator kept. Derived from the two lists, so
- * no linter can be wired into the pipeline and left out of what measures it
- * (#756).
- * @type {Array.<{name: string, over: string,
- *  run: function(Array, Array.<string>): Array.<object>}>}
- */
-const STAGES = [
-  ...LINTERS.map(({name, run}) => ({name: name, run: run, over: 'corpus'})),
-  ...EXPRESSION_LINTERS.map(
-    ({name, run}) => ({name: name, run: run, over: 'expressions'}),
-  ),
 ]
 
 /**
@@ -811,7 +795,6 @@ module.exports.fixed = fixed
 module.exports.settingsOf = settingsOf
 module.exports.stylesheetsOf = stylesheetsOf
 module.exports.sourceOf = sourceOf
-module.exports.STAGES = STAGES
 module.exports.PRESETS = PRESETS
 module.exports.SUFFIXES = SUFFIXES
 module.exports.suffixed = suffixed

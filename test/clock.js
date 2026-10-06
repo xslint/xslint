@@ -4,8 +4,8 @@
  */
 
 /*
- * The one clock every in-process timing reads, `test/scaling.test.js` and
- * the chains of `test/chains.js`. Processor time rather than the wall, which
+ * The one clock every in-process timing reads, the chains of
+ * `test/chains.js`. Processor time rather than the wall, which
  * charges a window for every slice the scheduler hands elsewhere; capped at
  * the wall all the same, since `process.cpuUsage` sums every thread and V8
  * collects and compiles on threads of its own (#906, #908).
