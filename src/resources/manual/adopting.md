@@ -16,20 +16,6 @@ A few checks usually carry most of the reports. Read their pages in the
 [check catalog](../index.html) before deciding what to do with them. Run the
 same command later to see how much is left.
 
-## Fix what is safe
-
-`--fix` applies only the corrections that leave a stylesheet meaning what it
-meant. Commit its output on its own, so a reviewer reads a mechanical diff and
-nothing else:
-
-```bash
-xslint --fix src
-git commit -am "Apply the safe xslint fixes"
-```
-
-`--fix-suggestions` can change behavior, so it belongs with the work below,
-one check at a time.
-
 ## Turn off what you reject
 
 A check the team disagrees with goes off in `.xslint.yml`. Nothing it finds is
@@ -37,7 +23,7 @@ reported again, new defects included:
 
 ```yaml
 rules:
-  short-names: off
+  template-writes-nothing: off
 ```
 
 Keep this for checks you never mean to follow. A check you agree with but
@@ -75,15 +61,32 @@ xslint --only incorrect-use-of-boolean-constants --fix-suggestions src
 xslint --baseline xslint-baseline.json --baseline-prune src
 ```
 
-A prune never records a defect, so the count in the file only goes down. To
-turn on a check you turned off, remove it from `rules:` and record what it
-finds before the gate sees it:
+A prune never records a defect, so the count in the file only goes down. A
+recorded defect is matched by the text of its line, so a fix that rewrites a
+line also loses the entries other checks hold on it, and the prune reports
+them as new. Record such a check again on its own:
 
 ```bash
-xslint --only short-names --baseline-write xslint-baseline.json src
+xslint --only undefined-variable --baseline-write xslint-baseline.json src
 ```
 
 A rewrite with `--only` replaces the entries of that one check and leaves the
-rest of the file as it was. Moving to the `all` preset works the same way: set
-`preset: all` in `.xslint.yml` and run `--baseline-write` once without
-`--only`.
+rest of the file as it was. The same command brings back a check you turned
+off: delete its line from `rules:` and record what it finds before the gate
+sees it.
+
+## Move to the whole catalog
+
+The `all` preset adds the rest of the catalog, and with it every fix `--fix`
+applies on its own, since those leave a stylesheet meaning what it meant. Set
+`preset: all` in `.xslint.yml`, then commit the fixes apart from everything
+else, so a reviewer reads a mechanical diff and nothing more:
+
+```bash
+xslint --fix src
+git commit -am "Apply the safe xslint fixes"
+xslint --baseline-write xslint-baseline.json src
+```
+
+The last command records what the fixes left, without `--only`, since every
+check the preset adds starts with no entries.

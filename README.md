@@ -263,10 +263,10 @@ from.
 
 ## Adopting
 
-On a large tree, measure the reports by check, commit the `--fix` output on
-its own, turn off only the checks the team rejects, and gate CI on a baseline
-of the rest. Then fix one check per pull request and prune what it left
-stale. The [adoption guide][adopting] gives the commands for each step.
+On a large tree, measure the reports by check, turn off only the checks the
+team rejects, and gate CI on a baseline of the rest. Then fix one check per
+pull request and prune what it left stale. The [adoption guide][adopting]
+gives the commands for each step, and for moving to the `all` preset.
 
 ## Checks
 
