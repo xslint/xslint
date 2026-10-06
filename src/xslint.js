@@ -511,13 +511,16 @@ const ranked = function(one, two) {
  * @param {Array.<{file: string, content: string, subsets: Map,
  *  absent: Set}>} sources - Raw stylesheets, what their parameter entities
  *  name, and the hrefs no file stands behind, read by the caller (#1010, #209)
- * @param {{suppress: Array.<string>, overrides: {[check: string]: string},
- *  only: Array, preset: string}} options - Skips, re-grades, choices and the
- *  preset a run starts from, `recommended` unless named (#1094)
+ * @param {{suppress: Array, overrides: object, only: Array, preset: string,
+ *  warn: function(string)}} options - Skips, re-grades, choices, the preset,
+ *  `recommended` unless named, and what a directive warning goes to (#1094)
  * @return {Array.<object>} - The defects that survive suppression
  */
 const lint = function(
-  sources, {suppress = [], overrides = {}, only = [], preset = PRESET} = {},
+  sources, {
+    suppress = [], overrides = {}, only = [], preset = PRESET,
+    warn = (message) => logger.warn(message),
+  } = {},
 ) {
   const chosen = chosenOf(only, presetted(preset), Object.keys(overrides))
   const suppressions = [
@@ -551,9 +554,7 @@ const lint = function(
     for (const directive of list) {
       for (const name of directive.names) {
         if (!CHECKS.includes(name)) {
-          logger.warn(
-            `Rule '${name}' in an xslint-disable directive does not exist`,
-          )
+          warn(`Rule '${name}' in an xslint-disable directive does not exist`)
         }
       }
     }
@@ -561,7 +562,7 @@ const lint = function(
     for (const stale of unused(
       list.filter((directive) => judged(directive, suppressions)), found,
     )) {
-      logger.warn(`Unused xslint-disable directive at ${file}:${stale.line}`)
+      warn(`Unused xslint-disable directive at ${file}:${stale.line}`)
     }
   }
   return defects.filter(
@@ -819,7 +820,7 @@ module.exports = function xslint(pths, options) {
             working(file), settings.exclude, settings.base,
           ))
           .map((file) => sourceOf(file, fs.readFileSync(file, 'utf-8'))),
-        settings,
+        {...settings, warn: () => undefined},
       ),
     )
   } else if (target) {

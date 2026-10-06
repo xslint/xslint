@@ -274,6 +274,20 @@ describe('since', function() {
       'judged a linked sheet apart from the edits of its target, or by a commit that holds no target',
     )
   })
+  it('warns of a stale directive once, on the sheet of the working tree', function() {
+    const yard = scratch(true)
+    placed('stale.xsl', yard)
+    repository(yard, ['.'])
+    gitted(yard, IDENTITY.concat(['commit', '--quiet', '-m', 'base']))
+    assert.deepStrictEqual(
+      xslintStreams(['--preset', 'all', '--since', 'HEAD', yard]).stderr
+        .split('\n')
+        .filter((line) => line.includes('Unused xslint-disable directive'))
+        .map((line) => line.includes(path.join(yard, 'stale.xsl'))),
+      [true],
+      'warned of a directive the commit holds, or of one in its scratch copy',
+    )
+  })
   REFUSED.forEach((row) => {
     it(row.name, function() {
       assert.match(
