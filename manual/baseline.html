@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Baseline</title>
+  <style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    color: #24292e;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 24px 32px;
+  }
+  h1 { font-size: 2rem; font-weight: 600; margin-bottom: 4px; }
+  h2 { font-size: 1.3rem; font-weight: 600; margin: 20px 0 8px; }
+  a { color: #0366d6; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  p { margin: 8px 0; }
+  table { width: 100%; border-collapse: collapse; margin-top: 16px; font-size: 0.9rem; }
+  th {
+    text-align: left;
+    padding: 10px 12px;
+    background: #f6f8fa;
+    border: 1px solid #e1e4e8;
+    font-weight: 600;
+  }
+  td { padding: 10px 12px; border: 1px solid #e1e4e8; vertical-align: top; }
+  tr:hover td { background: #f6f8fa; }
+  .severity-warning {
+    background: #fff8c5;
+    color: #9a6700;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .severity-error {
+    background: #ffebe9;
+    color: #cf222e;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .fix-safe {
+    background: #dafbe1;
+    color: #1a7f37;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .fix-suggestion {
+    background: #fbefff;
+    color: #8250df;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .preset-recommended {
+    background: #ddf4ff;
+    color: #0969da;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .fix-note {
+    background: #f6f8fa;
+    border-left: 4px solid #57606a;
+    padding: 8px 12px;
+    margin: 0 0 24px;
+    font-size: 0.9rem;
+  }
+  .back { display: inline-block; margin-bottom: 24px; font-size: 0.9rem; }
+  .meta { display: flex; gap: 12px; align-items: flex-start; margin: 12px 0 24px; flex-wrap: wrap; }
+  .xpath {
+    background: #f6f8fa;
+    border: 1px solid #e1e4e8;
+    border-radius: 4px;
+    padding: 6px 10px;
+    font-family: 'SFMono-Regular', Consolas, monospace;
+    font-size: 0.75rem;
+    word-break: break-all;
+    flex: 1;
+  }
+  pre { margin: 12px 0; border-radius: 6px; overflow-x: auto; }
+  code { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; }
+  .check-content h1 { font-size: 1.6rem; margin-bottom: 8px; }
+</style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+  <script>hljs.highlightAll();</script>
+</head>
+<body>
+  <a class="back" href="../index.html">← all checks</a>
+  <div class="check-content">
+<h1>Baseline</h1>
+<p>A tree that has grown for years without a linter draws hundreds of defects on
+its first run. A baseline records them once, so the build fails only on the
+defects a change adds:</p>
+<pre><code class="language-bash">xslint --baseline-write xslint-baseline.json
+git add xslint-baseline.json
+xslint --baseline xslint-baseline.json --max-warnings=0
+</code></pre>
+<p><code>--baseline-write &lt;file&gt;</code> records every defect the run finds and reports
+none. <code>--baseline &lt;file&gt;</code>, or the <code>baseline</code> key of <code>.xslint.yml</code>, reports only
+the defects the file does not record. A path given on the command line is read
+against the working directory, and one in <code>.xslint.yml</code> against the directory
+of that file.</p>
+<p>A defect is recorded by its file, its check, and the text of the line it stands
+on. Line numbers are left out, so a line moved by an edit above it still
+matches.
+The file is JSON sorted by key, and each path in it is relative to the
+baseline&#39;s own directory, so it can be committed and diffed:</p>
+<pre><code class="language-json">{
+  &quot;src/main.xsl&quot;: {
+    &quot;short-names&quot;: {
+      &quot;4f1c0d2a9b7e3c55&quot;: 2
+    }
+  }
+}
+</code></pre>
+<p>A count is how many times that line draws that check. A line that draws it
+more often than recorded reports the extra ones.</p>
+<p>The baseline only shrinks. When a recorded defect is fixed, its entry is stale:
+the run names it and fails until the entry is dropped:</p>
+<pre><code class="language-bash">xslint --baseline xslint-baseline.json --baseline-prune
+</code></pre>
+<p><code>--baseline-prune</code> lowers each count to what the run still draws and records
+nothing new, so it reports the new defects as any other run does. Recording
+them takes <code>--baseline-write</code>, which suits a newly enabled check. A run judges
+only the files it reads and the checks it runs, and a prune or a rewrite
+replaces only those entries, so a run over one directory, or with <code>--only</code>,
+leaves the rest of the file as it was. Both drop the entries of a sheet that
+no longer exists and of a check xslint no longer has.</p>
+<p><code>--baseline-write</code> and <code>--baseline-prune</code> refuse to run with <code>--fix</code>,
+<code>--fix-suggestions</code>, or <code>--fix-dry-run</code>, since they would judge lines the fix
+rewrites. Under <code>--baseline</code>, a fix run reports the new defects it left
+unfixed and calls no entry stale for a defect it fixed; the next run without a
+fix flag does.</p>
+
+  </div>
+</body>
+</html>

@@ -121,6 +121,7 @@ only:
 max-warnings: 10                        # default for --max-warnings
 log-level: info                         # default for --log-level
 quiet: false                            # default for --quiet
+baseline: xslint-baseline.json          # default for --baseline
 </code></pre>
 <ul>
 <li><strong><code>preset</code></strong> names the preset a run starts from, <code>recommended</code> unless it
@@ -142,10 +143,12 @@ the checks they name. Passing <code>--only</code> replaces this list rather than
 to it, and a check <code>rules</code> turns <code>off</code> stays off whichever of the two chose it.</li>
 <li><strong><code>max-warnings</code></strong>, <strong><code>log-level</code></strong>, and <strong><code>quiet</code></strong> set the defaults for the
 matching command-line flags.</li>
+<li><strong><code>baseline</code></strong> names the <a href="baseline.html">baseline</a> file a run compares
+against, relative to this file. Passing <code>--baseline</code> replaces it.</li>
 </ul>
 <p>Unknown top-level keys, rule names that match no check, and values of the wrong
 type (a non-numeric <code>max-warnings</code>, a non-list <code>exclude</code> or <code>only</code>, a
-non-boolean <code>quiet</code>, a non-string <code>log-level</code> or <code>preset</code>) are reported and
+non-boolean <code>quiet</code>, a non-string <code>log-level</code>, <code>preset</code>, or <code>baseline</code>) are reported and
 ignored, so typos do not pass silently. A preset that does not exist fails the
 run instead, before a file is read, since a run over no checks would read as a
 clean report. An
