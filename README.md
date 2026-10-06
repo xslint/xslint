@@ -102,7 +102,7 @@ stylesheets**, most of them style.
 Every figure above comes from the reports committed under
 `test/resources/corpora/`. A nightly job re-lints the three projects at their
 pinned commits and diffs the output against those reports line for line, so
-the build fails as soon as a figure here goes stale.
+the nightly build fails once a figure here goes stale.
 
 ## Continuous integration
 
@@ -301,7 +301,7 @@ before sending us your pull request please make sure all your tests pass:
 npm test
 ```
 
-Most of that time goes to the `*.deep.test.js` files, which run the
+Most of the `npm test` run goes to the `*.deep.test.js` files, which run the
 command-line tool in a child process. While you are still working, run the rest
 of the suite on its own. It holds most of the tests and starts no process:
 
