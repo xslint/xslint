@@ -1,7 +1,7 @@
 # Adopting
 
 The first run over a tree that grew for years without a linter draws hundreds
-of reports. These steps take it from there to a build that fails only on new
+of reports. These steps take it from there to a build that fails on new
 defects, and then pay the old ones down one pull request at a time.
 
 ## Measure
@@ -31,12 +31,12 @@ cannot satisfy yet belongs in the baseline.
 
 ## Gate on a baseline
 
-Record every remaining defect, and commit the file with the `.xslint.yml`
-that turned checks off, since CI reads both:
+Record every remaining defect and commit the file, with the `.xslint.yml` if
+you wrote one, since CI reads both:
 
 ```bash
 xslint --baseline-write xslint-baseline.json src
-git add .xslint.yml xslint-baseline.json
+git add xslint-baseline.json
 ```
 
 Then run the gate in CI:
@@ -51,6 +51,19 @@ rather than naming the file in `.xslint.yml`, so a run on a developer's
 machine still shows the whole debt. The [baseline guide](baseline.html) covers
 how a defect is matched.
 
+A recorded defect is matched by the text of its line, so any change to that
+text, in a feature as much as in a fix, makes it stale and reports it as new.
+Fix it while you are there, or drop the stale entry and record the check again
+on its own:
+
+```bash
+xslint --baseline xslint-baseline.json --baseline-prune src
+xslint --only incorrect-use-of-boolean-constants --baseline-write xslint-baseline.json src
+```
+
+A rewrite with `--only` replaces the entries of that one check and leaves the
+rest of the file as it was.
+
 ## Pay it down
 
 Take one check per pull request. List what it still finds, fix it, and drop
@@ -63,33 +76,32 @@ xslint --baseline xslint-baseline.json --baseline-prune src
 ```
 
 Commit the pruned file with the fix. A prune never records a defect, so the
-count in the file only goes down. A
-recorded defect is matched by the text of its line, so a fix that rewrites a
-line also loses the entries other checks hold on it, and the prune reports
-them as new. Record such a check again on its own:
-
-```bash
-xslint --only undefined-variable --baseline-write xslint-baseline.json src
-```
-
-A rewrite with `--only` replaces the entries of that one check and leaves the
-rest of the file as it was. The same command brings back a check you turned
-off: delete its line from `rules:` and record what it finds before the gate
-sees it.
+count in the file only goes down. A fix that rewrites a line also loses the
+entries other checks hold on it, and the prune reports them as new: record
+each such check again with `--only` and `--baseline-write`, as above. The same
+command brings back a check you turned off: delete its line from `rules:` and
+record what it finds before the gate sees it.
 
 ## Move to the whole catalog
 
 The `all` preset adds the rest of the catalog, and with it every fix `--fix`
 applies on its own, since those leave a stylesheet meaning what it meant. Set
 `preset: all` in `.xslint.yml` and run `--fix` again until a run fixes
-nothing, since one pass skips a fix that overlaps another. Commit the stylesheets
-alone, so a reviewer reads a mechanical diff and nothing more, then record
-what the fixes left and commit it with the preset:
+nothing, since one pass skips a fix that overlaps another. Commit the
+stylesheets alone, so a reviewer reads a mechanical diff and nothing more:
 
 ```bash
 xslint --fix src
 git add src
 git commit -m "Apply the safe xslint fixes"
+```
+
+Many checks a team rejects come with this preset, and a check turned off
+after it is recorded keeps its entries in the file for good. So measure again
+and turn off what you reject, then record what is left and commit it with the
+preset:
+
+```bash
 xslint --baseline-write xslint-baseline.json src
 git add .xslint.yml xslint-baseline.json
 ```
