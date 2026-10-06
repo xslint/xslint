@@ -60,26 +60,25 @@ one of them.
 xslint holds itself to these principles:
 
 - **One way to say one thing.** Where XSLT offers two spellings of the same
-  meaning, a codebase that keeps to one reads faster and hides fewer faults,
-  which is the case [gofmt](https://go-proverbs.github.io/),
+  meaning, a codebase that keeps to one reads faster and hides fewer faults.
+  [gofmt](https://go-proverbs.github.io/),
   [PEP 20](https://peps.python.org/pep-0020/),
   [Prettier](https://prettier.io/docs/option-philosophy) and
   [Bugayenko](https://www.yegor256.com/2014/08/13/strict-code-quality-control.html)
-  make for uniform code over any one favourite form.
-- **The processor decides.** Nothing a processor of the declared version
-  accepts is reported as an error, because an error is what the
-  [specification](https://www.w3.org/TR/xslt-30/#errors) says a processor
-  refuses, and a linter refusing more teaches its users to ignore it.
+  make the same case for uniform code.
+- **The processor decides.** xslint reports an error only where a processor of
+  the declared version would refuse the stylesheet, since that is what the
+  [specification](https://www.w3.org/TR/xslt-30/#errors) calls an error. A
+  linter that refuses more teaches its users to ignore it.
 - **A safe fix never changes the output.** `--fix` runs where nobody reads the
-  diff, so a fix that changes what a stylesheet produces is held back as a
-  suggestion, the line
-  [ESLint](https://eslint.org/docs/latest/extend/custom-rules#applying-fixes)
-  draws between a fix and a suggestion.
-- **Advice stays inside the declared version.** No check asks for what the
-  stylesheet's `version` cannot run, because that version names the oldest
-  processor it has to load on, and a
+  diff, so a fix that changes what a stylesheet produces ships as a suggestion
+  instead. [ESLint](https://eslint.org/docs/latest/extend/custom-rules#applying-fixes)
+  draws the same line.
+- **Advice stays inside the declared version.** No check asks for a construct
+  the stylesheet's `version` cannot run. That version names the oldest
+  processor the stylesheet has to load on, and a
   [1.0 processor](https://www.w3.org/TR/xslt-10/#forwards) tolerates a newer
-  construct only in a stylesheet declaring a newer version.
+  construct only when the stylesheet declares a newer version.
 
 Where XSLT has two spellings, xslint asks for the one most XSLT code already
 uses. A team that mixes forms on purpose, writing `record[child::*]` for
@@ -87,24 +86,23 @@ emphasis, turns the check off in `.xslint.yml`.
 
 ## Proven on real code
 
-Even the best-maintained XSLT in the world ships faults a processor refuses.
 [DocBook-XSL](https://github.com/docbook/xslt10-stylesheets) (1.0),
 [TEI](https://github.com/TEIC/Stylesheets) (2.0) and
 [DITA-OT](https://github.com/dita-ot/dita-ot) (1.0/2.0) are the three most
-widely used XSLT projects, and in their core stylesheets the `recommended`
+widely used XSLT projects. In their core stylesheets the `recommended`
 preset a run reports by default draws **245 reports**, with no false positives
 from its validators. Among them are 47 references to a variable no binding in
 scope declares, which a processor refuses outright, and 16 stylesheet functions
 nothing calls. Another 141 are imports and includes naming a file the
-checkout does not hold, most of them modules a build generates first, so they
-are worth a look rather than a patch. Run with `--preset all`, the same
+checkout does not hold. Most of those are modules a build generates first, so
+they are worth a look but usually need no patch. Run with `--preset all`, the same
 stylesheets draw **11,161 findings across 45 different checks in 867
 stylesheets**, most of them style.
 
-Every figure above is read off the reports committed under
-`test/resources/corpora/`, which a nightly job re-lints at the pinned commits
-and diffs line for line, so a number here is one the tree still draws, and
-the build fails while it is not.
+Every figure above comes from the reports committed under
+`test/resources/corpora/`. A nightly job re-lints the three projects at their
+pinned commits and diffs the output against those reports line for line, so
+the nightly build fails once a figure here goes stale.
 
 ## Continuous integration
 
@@ -116,7 +114,7 @@ get inline annotations on your pull requests:
 - uses: xslint/xslint-action@0.0.14
 ```
 
-Or run it on commit with [pre-commit](https://pre-commit.com) — add to your
+Or run it on commit with [pre-commit](https://pre-commit.com) by adding this to your
 `.pre-commit-config.yaml`:
 
 ```yaml
@@ -133,10 +131,10 @@ xslint runs inside your editor through the
 [xslint-lsp](https://github.com/xslint/xslint-lsp) language server, with the
 same diagnostics and quick-fixes as the CLI:
 
-- **VS Code, Cursor, VSCodium, Windsurf, Gitpod** — install the extension from
+- **VS Code, Cursor, VSCodium, Windsurf, Gitpod:** install the extension from
   [Open VSX](https://open-vsx.org/extension/maxonfjvipon/xslint-vscode), or the
   `.vsix` attached to each [release](https://github.com/xslint/xslint-lsp/releases).
-- **IntelliJ IDEA, WebStorm, PyCharm, and other JetBrains IDEs** — install the
+- **IntelliJ IDEA, WebStorm, PyCharm, and other JetBrains IDEs:** install the
   [xslint-jetbrains](https://github.com/xslint/xslint-jetbrains) plugin.
 
 ## Installation
@@ -294,7 +292,7 @@ const {contents} = fixed(sources, defects)
 The [API guide][api] documents `lint`, `fixed`, `settingsOf`,
 `stylesheetsOf` and `sourceOf`.
 
-## How to Contribute
+## How to contribute
 
 Fork repository, make changes, then send us a [pull request][guidelines].
 We will review your changes and apply them to the `master` branch shortly,
@@ -305,25 +303,24 @@ before sending us your pull request please make sure all your tests pass:
 npm test
 ```
 
-Most of those seconds go to the `*.deep.test.js` files, which run the
+Most of the `npm test` run goes to the `*.deep.test.js` files, which run the
 command-line tool in a child process. While you are still working, run the rest
-of the suite on its own — it holds most of the tests and starts no process:
+of the suite on its own. It holds most of the tests and starts no process:
 
 ```bash
 npm run fast
 ```
 
-A test you add belongs on the side it costs: name it `*.deep.test.js` when it
-runs `xslint` or `xcop` in a child process — which it does by requiring
-`test/helpers.js` — and plain `*.test.js` when it stays in this one.
-`test/conformance.test.js` checks that both ways round, so a misnamed file turns
-the build red rather than quietly slowing the fast half down.
+Name a new test `*.deep.test.js` when it runs `xslint` or `xcop` in a child
+process (it does so by requiring `test/helpers.js`), and plain `*.test.js` when
+it stays in this one. `test/conformance.test.js` checks the naming both ways, so
+a misnamed file fails the build.
 
 New linter rules live in `src/resources/checks/xpath` (per-file) or
 `src/resources/checks/corpus` (cross-file), each with a matching test pack in
 `test/resources`. The validators in `src/resources/checks/validation` and the
 formatting checks in `src/resources/checks/format` are fixed in code; their
-YAML only tunes severity and message. That YAML is where a check is written, but
+YAML only tunes severity and message. You write a check in YAML, but
 a run reads `src/resources/checks.json`, so rebuild and commit it whenever you
 touch one:
 
@@ -331,11 +328,11 @@ touch one:
 npx grunt checks
 ```
 
-Forgetting is not a silent mistake — the test suite re-renders the file from the
-YAML and fails on any difference. Regenerate the documentation site with
+If you forget, the test suite re-renders the file from the YAML and fails on any
+difference. Regenerate the documentation site with
 `npx grunt docs`.
 
-You will need [npm] and [node] installed
+You will need [npm] and [node] installed.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for the full workflow and
 [CHANGELOG.md](CHANGELOG.md) for release notes.
