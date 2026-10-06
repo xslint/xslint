@@ -24,7 +24,7 @@ const {
 const {ignoring} = require('./gitignore')
 const {parted} = require('./source')
 const {SUGGESTION, suppressed} = require('./checks')
-const {recorded, matched} = require('./baseline')
+const {recorded, matched, trimmed} = require('./baseline')
 const {kinds} = require('./resources/checks.json')
 const {validate: validateXsls, names: xslChecks} =
   require('./validators/xsl-validator')
@@ -763,7 +763,7 @@ const sourceOf = function(file, content) {
  * @param {Array.<string>} pths - Files or directories with .xsl to lint
  * @param {object} options - CLI options: `logLevel`, `quiet`, `suppress`,
  *  `maxWarnings`, `config`, `format`, `only`, `preset`, `fix`, `fixDryRun`,
- *  `fixSuggestions`, `baseline`, `baselineWrite`
+ *  `fixSuggestions`, `baseline`, `baselineWrite`, `baselinePrune`
  */
 module.exports = function xslint(pths, options) {
   logger.setLevel(leveled(options.quiet, options.logLevel))
@@ -786,6 +786,11 @@ module.exports = function xslint(pths, options) {
     ledger = path.resolve(options.baseline)
   } else if (config.baseline) {
     ledger = path.resolve(config.base, config.baseline)
+  }
+  if (options.baselinePrune && !ledger) {
+    throw new Error(
+      'Option --baseline-prune rewrites the file --baseline names and cannot run without one',
+    )
   }
   let target
   let earlier = {}
@@ -847,13 +852,22 @@ module.exports = function xslint(pths, options) {
     const {fresh, stale} = matched(
       drawn, sources, earlier, path.dirname(ledger), ranOf(settings),
     )
-    stale.forEach((entry) => logger.error(
-      [
-        `Baseline entry ${entry.file} records ${entry.count} ${entry.name}`,
-        `defects the run no longer draws, rewrite ${ledger} with --baseline-write`,
-      ].join(' '),
-    ))
-    if (stale.length > 0) {
+    if (options.baselinePrune) {
+      fs.writeFileSync(
+        ledger,
+        `${JSON.stringify(trimmed(drawn, sources, earlier, path.dirname(ledger), ranOf(settings)), null, 2)}\n`,
+      )
+      logger.info(`Pruned ${stale.length} stale entries from ${ledger}`)
+    } else {
+      stale.forEach((entry) => logger.error(
+        [
+          `Baseline entry ${entry.file} records ${entry.count} ${entry.name}`,
+          `defects the run no longer draws, drop them from ${ledger} with`,
+          '--baseline-prune',
+        ].join(' '),
+      ))
+    }
+    if (stale.length > 0 && !options.baselinePrune) {
       process.exitCode = 1
     }
     reported = reported.filter((defect) => fresh.includes(defect))

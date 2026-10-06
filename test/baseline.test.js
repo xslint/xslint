@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {recorded, matched} = require('../src/baseline')
+const {recorded, matched, trimmed} = require('../src/baseline')
 const {lint, settingsOf, sourceOf, ranOf} = require('../src/xslint')
 const assert = require('assert')
 const fs = require('fs')
@@ -175,6 +175,39 @@ describe('baseline', function() {
         'unused-named-template',
       ],
       'dropped the entries of checks a narrowed rewrite never ran',
+    )
+  })
+  it('drops the entry of a defect a prune no longer draws', function() {
+    const {sources, reported} = run('repaired.xsl')
+    assert.deepStrictEqual(
+      Object.keys(
+        trimmed(reported, sources, baseline(), BASE, every())['recorded.xsl'],
+      ),
+      [
+        'setting-value-of-variable-incorrectly', 'short-names',
+        'unused-named-template',
+      ],
+      'kept the entry of a defect fixed since the baseline was written',
+    )
+  })
+  it('adds no defect a prune newly draws', function() {
+    const {sources, reported} = run('grown.xsl')
+    assert.deepStrictEqual(
+      trimmed(reported, sources, baseline(), BASE, every()), baseline(),
+      'recorded a defect added after the baseline while pruning it',
+    )
+  })
+  it('keeps the entries of a file a prune did not read', function() {
+    assert.deepStrictEqual(
+      trimmed([], [], baseline(), BASE, every()), baseline(),
+      'dropped the entries of a file outside the paths a prune linted',
+    )
+  })
+  it('keeps the entries of a check a prune did not run', function() {
+    const {sources, reported} = run('repaired.xsl')
+    assert.deepStrictEqual(
+      trimmed(reported, sources, baseline(), BASE, ['short-names']), baseline(),
+      'dropped the entries of checks a narrowed prune never ran',
     )
   })
 })

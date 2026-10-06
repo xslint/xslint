@@ -36,10 +36,18 @@ A count is how many times that line draws that check. A line that draws it
 more often than recorded reports the extra ones.
 
 The baseline only shrinks. When a recorded defect is fixed, its entry is stale:
-the run names it and fails until the file is rewritten with
-`--baseline-write`. A run judges only the files it reads and the checks it
-runs, and a rewrite replaces only those entries, so a run over one directory,
-or with `--only`, leaves the rest of the file as it was.
+the run names it and fails until the entry is dropped:
+
+```bash
+xslint --baseline xslint-baseline.json --baseline-prune
+```
+
+`--baseline-prune` lowers each count to what the run still draws and records
+nothing new, so it reports the new defects as any other run does. Recording
+them takes `--baseline-write`, which suits a newly enabled check. A run judges
+only the files it reads and the checks it runs, and a prune or a rewrite
+replaces only those entries, so a run over one directory, or with `--only`,
+leaves the rest of the file as it was.
 
 `--baseline-write` refuses to run with `--fix`, `--fix-suggestions`, or
 `--fix-dry-run`, since it would record lines the fix rewrites. Under

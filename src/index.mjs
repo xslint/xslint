@@ -32,6 +32,12 @@ program
     '--baseline-write <file>',
     'Record every defect found into the baseline file and report none',
   )
+  .addOption(
+    new Option(
+      '--baseline-prune',
+      'Drop the entries of the baseline file the run no longer draws',
+    ).conflicts('baselineWrite'),
+  )
   .option('--fix', 'Rewrite the fixable defects in place')
   .option(
     '--fix-suggestions',

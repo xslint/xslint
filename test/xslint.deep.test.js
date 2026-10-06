@@ -1021,6 +1021,50 @@ describe('xslint', function() {
       'dropped the entries of a directory a rewrite of the baseline never read',
     )
   })
+  it('should pass a repaired tree once its baseline is pruned', function() {
+    const {dir, file} = baselined(['.'])
+    fs.copyFileSync(
+      'test/resources/baseline/repaired.xsl', path.join(dir, 'a.xsl'),
+    )
+    xslintStatus(['--preset', 'all', '--baseline', file, '--baseline-prune', dir])
+    const status = xslintStatus([
+      '--preset', 'all', '--baseline', file, '--max-warnings=0', dir,
+    ])
+    fs.rmSync(dir, {recursive: true, force: true})
+    assert.equal(
+      status, 0,
+      'kept failing on a stale entry the prune was asked to drop',
+    )
+  })
+  it('should keep failing a new defect after the baseline is pruned', function() {
+    const {dir, file} = baselined(['.'])
+    fs.writeFileSync(
+      path.join(dir, 'a.xsl'),
+      fs.readFileSync('test/resources/baseline/grown.xsl', 'utf-8')
+        .replace('match="//title"', 'match="title"'),
+    )
+    xslintStatus(['--preset', 'all', '--baseline', file, '--baseline-prune', dir])
+    const status = xslintStatus([
+      '--preset', 'all', '--baseline', file, '--max-warnings=0', dir,
+    ])
+    fs.rmSync(dir, {recursive: true, force: true})
+    assert.equal(
+      status, 1,
+      'passed a new defect a prune of the baseline recorded as old',
+    )
+  })
+  it('should refuse to prune without a baseline', function() {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-'))
+    fs.copyFileSync(
+      'test/resources/baseline/recorded.xsl', path.join(dir, 'a.xsl'),
+    )
+    const streams = xslintStreams(['--preset', 'all', '--baseline-prune', dir])
+    fs.rmSync(dir, {recursive: true, force: true})
+    assert.ok(
+      streams.stderr.includes('--baseline-prune rewrites the file'),
+      'pruned without a baseline file to rewrite',
+    )
+  })
   it('should record every check a run draws in the baseline', function() {
     const {dir, file} = baselined(['.'])
     let written = {}
