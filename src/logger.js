@@ -30,10 +30,11 @@ const LEVELS = {
 let currentLevel = LEVELS[LOG_LEVELS.INFO]
 
 /**
- * Logger.
- * @type {{debug: function(string, ...*): void, info: function(string, ...*):
- *  void, warn: function(string, ...*): void, error: function(string, ...*):
- *  void, setLevel: function(string): void}}
+ * Logger, whose `hushed` runs an action with only errors shown and returns
+ * what the action returns.
+ * @type {{debug: function(string, ...*), info: function(string, ...*),
+ *  warn: function(string, ...*), error: function(string, ...*),
+ *  setLevel: function(string), hushed: function(function(): *): *}}
  */
 const logger = {
   debug: (msg, ...args) => {
@@ -66,6 +67,15 @@ const logger = {
     } else {
       currentLevel = LEVELS[level]
       logger.debug(`Log level set to '${level}'`)
+    }
+  },
+  hushed: (action) => {
+    const level = currentLevel
+    currentLevel = LEVELS[LOG_LEVELS.ERROR]
+    try {
+      return action()
+    } finally {
+      currentLevel = level
     }
   },
 }

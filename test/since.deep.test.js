@@ -274,18 +274,17 @@ describe('since', function() {
       'judged a linked sheet apart from the edits of its target, or by a commit that holds no target',
     )
   })
-  it('warns of a stale directive once, on the sheet of the working tree', function() {
+  it('logs what a run without it logs, and nothing of the commit', function() {
     const yard = scratch(true)
-    placed('stale.xsl', yard)
+    placed('logged/stale.xsl', yard)
+    placed('logged/reaching.xsl', yard)
     repository(yard, ['.'])
     gitted(yard, IDENTITY.concat(['commit', '--quiet', '-m', 'base']))
+    const args = ['--only', 'short-names', '--only', 'no-such-check', yard]
     assert.deepStrictEqual(
-      xslintStreams(['--preset', 'all', '--since', 'HEAD', yard]).stderr
-        .split('\n')
-        .filter((line) => line.includes('Unused xslint-disable directive'))
-        .map((line) => line.includes(path.join(yard, 'stale.xsl'))),
-      [true],
-      'warned of a directive the commit holds, or of one in its scratch copy',
+      xslintStreams(['--since', 'HEAD'].concat(args)).stderr,
+      xslintStreams(args).stderr,
+      'logged the commit it judged by, its scratch copy, or a choice twice',
     )
   })
   REFUSED.forEach((row) => {

@@ -72,6 +72,24 @@ describe('logger', function() {
       )
     })
   })
+  it('drops a warning logged while hushed', function() {
+    assert.equal(
+      captured(levels.INFO, () => logger.hushed(() => logger.warn('hsh')))
+        .includes('hsh'),
+      false,
+    )
+  })
+  it('logs at its own level once a hushed action ends', function() {
+    assert.ok(
+      captured(levels.INFO, () => {
+        logger.hushed(() => undefined)
+        logger.info('back')
+      }).includes('back'),
+    )
+  })
+  it('hands back what the hushed action returns', function() {
+    assert.equal(logger.hushed(() => 'kept'), 'kept')
+  })
   it('warns about an unknown level', function() {
     assert.ok(
       captured(levels.DEBUG, () => logger.setLevel('nonsense'))
