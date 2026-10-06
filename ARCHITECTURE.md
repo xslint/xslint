@@ -37,10 +37,9 @@ output, no exit, and the defects in one total order. The command-line
 use what the package `main` re-exports, listed in the index. `src/index.mjs`
 imports the pipeline in the command action: `--version` and `--help` load none.
 
-Each linter is one `{name, run, checks}` entry in `LINTERS` or
+Each linter is one `{run, checks}` entry in `LINTERS` or
 `EXPRESSION_LINTERS` in `src/xslint.js`. The `CHECKS` names that `--suppress`
-and config globs match, and the `STAGES` that `test/scaling.test.js` times, are
-derived from those entries.
+and config globs match are derived from those entries.
 
 ## Expressions
 
@@ -199,10 +198,7 @@ xcop installed the fixtures are pending; CI passes `--forbid-pending`.
 
 ## Speed
 
-The bars `AGENTS.md` names are measured with `test/clock.js`, processor time
-capped at the wall, over a corpus `test/scaling.test.js` builds at two sizes.
-`test/chains.js` times a cross-file check over two import chains, for a
-quadratic whose constant is still small at those sizes.
+The nightly `corpora` budgets, read off the wall clock, are the only timing.
 
 ## User configuration
 
@@ -232,7 +228,7 @@ left-most, then the wider, wins, and the other waits for the next run.
 | File | Role |
 | --- | --- |
 | `src/index.mjs` | CLI entry (commander.js, ESM); imports the pipeline inside the command action |
-| `src/xslint.js` | Discovery, config, staging, output; exports `lint`, `fixed`, `settingsOf`, `ranOf`, `stylesheetsOf`, `sourceOf`, and the `STAGES` the speed gate times |
+| `src/xslint.js` | Discovery, config, staging, output; exports `lint`, `fixed`, `settingsOf`, `ranOf`, `stylesheetsOf`, `sourceOf` |
 | `src/config.js` | Resolves `.xslint.yml` (severities, `off`, excludes, `max-warnings`) |
 | `src/baseline.js` | `recorded`, `matched` and `trimmed`: the defects a baseline file holds by file, check and line text, the stale entries that fail a run, and the file with them dropped, over the files read and the checks `ranOf` names |
 | `src/gitignore.js` | `ignoring(start)`: what the project's `.gitignore` files refuse |
@@ -290,10 +286,7 @@ left-most, then the wider, wins, and the other waits for the next run.
 | `test/helpers.js` | The only door to a child process: `runXslint`, `xslintStatus`, `xslintStreams`, `xslintUnread`, `xcopped`, `walkedWith` |
 | `test/predicates.test.js` | The predicate vocabulary from both sides |
 | `test/tiers.test.js` | Declared tiers against what a run offers; README and manual naming none |
-| `test/clock.js` | Processor time capped at the wall |
-| `test/chains.js` | `grown`: a linter timed over two chains |
 | `test/packs.js` | The one pack harness |
-| `test/scaling.test.js` | The speed gate |
 | `test/xcop.deep.test.js` | xcop over every pack's inline XSL |
 | `test/workflows.test.js` | Workflow scopes, release stamping, and README version pins |
 | `test/manifest.test.js` | `package.json` against what the tree runs and imports |

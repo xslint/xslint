@@ -4,7 +4,7 @@
  */
 
 const {
-  lint, fixed, settingsOf, stylesheetsOf, sourceOf,
+  lint, fixed, settingsOf, stylesheetsOf, sourceOf, PRESETS,
 } = require('../src/xslint')
 const fs = require('fs')
 const os = require('os')
@@ -370,6 +370,16 @@ describe('lint (programmatic API)', function() {
       ),
       /Preset 'fastidious' does not exist/,
       'ran over a preset naming no check list, which reads as a clean report',
+    )
+  })
+  it('runs every check a linter module declares', function() {
+    assert.deepEqual(
+      fs.readdirSync(path.join(__dirname, '..', 'src', 'linters'))
+        .filter((file) => file.endsWith('-linter.js'))
+        .flatMap((file) => require(path.join('..', 'src', 'linters', file)).names)
+        .filter((name) => !PRESETS.all.includes(name)),
+      [],
+      'a linter module declares a check that no run reaches',
     )
   })
   it('returns defects for in-memory sources', function() {
