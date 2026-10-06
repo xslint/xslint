@@ -136,6 +136,6 @@ const globbed = function(row) {
 }
 
 module.exports = {
-  ROOT, NESTED, CAPS, GUIDES, IMPORTED, DOCUMENTS, NEARBY, slashed,
+  ROOT, NESTED, CAPS, IMPORTED, DOCUMENTS, NEARBY, slashed,
   worded, indexed, globbed,
 }

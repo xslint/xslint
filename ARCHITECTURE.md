@@ -199,8 +199,9 @@ xcop installed the fixtures are pending; CI passes `--forbid-pending`.
 ## Speed
 
 `test/chains.js` times a cross-file check over two import chains on
-`test/clock.js`, processor time capped at the wall, for a quadratic whose
-constant is still small at those sizes. The `corpora` budgets read the wall
+`test/clock.js`, processor time capped at the wall. A short chain holds a
+hundred files or more, since a quadratic whose constant is still small hides
+under the parse at forty (#769, #1141). The `corpora` budgets read the wall
 clock.
 
 ## User configuration

@@ -130,14 +130,14 @@ in `ARCHITECTURE.md`.
 
 ## Speed
 
-No test times the whole pipeline. A cross-file check whose cost can grow
-with the import graph is held to a growth over two chains by `test/chains.js`,
-as `test/import-linter.test.js` and `test/output-linter.test.js` do. What a
-run costs outright is judged by the nightly `corpora` job alone: it times
-three real corpora against the budgets in `.github/workflows/corpora.yml`,
-judged by `scripts/budget.js`, and diffs what they draw against
-`test/resources/corpora/`. A budget is a ratchet, red past it and red so far
-under it that `SLACK` asks for it to be retightened.
+No test times the whole pipeline. `test/import-linter.test.js` and
+`test/output-linter.test.js` hold their linter's growth over two import chains
+through `test/chains.js`; a quadratic in any other linter, `corpus-linter` and
+`variable-linter` among them, and what a run costs outright are judged by the
+nightly `corpora` job alone. It times three real corpora against the budgets
+in `.github/workflows/corpora.yml`, judged by `scripts/budget.js`, and diffs
+what they draw against `test/resources/corpora/`. A budget is a ratchet, red
+past it and red so far under it that `SLACK` asks for it to be retightened.
 
 - With a defect to catch, a bar stands at the geometric middle of the readings
   with the defect and without it.
