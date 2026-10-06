@@ -57,8 +57,9 @@ in a fix, sees those defects reported as new. Fix them while you are there.
 Otherwise read each listed defect against the diff of the change, since the
 baseline cannot tell an old defect on an edited line from a new one. A defect
 is old when its line was there before the change, edited or moved with a
-renamed sheet, and drew the same check then. A defect on a line the change
-added, or of a check its line did not draw before, is new and needs fixing
+renamed sheet, and drew the same check then at least as many times as it does
+now. A defect on a line the change added, of a check its line did not draw
+before, or past the number of times its line drew it, is new and needs fixing
 first. Once every listed defect is old, record the tree again and compare how
 often each sheet draws each check before and after:
 
