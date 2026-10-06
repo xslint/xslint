@@ -95,7 +95,7 @@ from its validators. Among them are 47 references to a variable no binding in
 scope declares, which a processor refuses outright, and 16 stylesheet functions
 nothing calls. Another 141 are imports and includes naming a file the
 checkout does not hold. Most of those are modules a build generates first, so
-they usually need no patch. Run with `--preset all`, the same
+they are worth a look but usually need no patch. Run with `--preset all`, the same
 stylesheets draw **11,161 findings across 45 different checks in 867
 stylesheets**, most of them style.
 
