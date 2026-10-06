@@ -750,7 +750,7 @@ module.exports = function xslint(pths, options) {
   let ledger
   if (options.baseline) {
     ledger = path.resolve(options.baseline)
-  } else if (config.baseline && !options.since) {
+  } else if (config.baseline && options.since === undefined) {
     ledger = path.resolve(config.base, config.baseline)
   }
   if (options.baselinePrune && !ledger) {
@@ -807,7 +807,7 @@ module.exports = function xslint(pths, options) {
       logger.info(`${suggested.length} more fixable with --fix-suggestions`)
     }
   }
-  if (options.since) {
+  if (options.since !== undefined) {
     reported = since(
       reported, options.since,
       pths.map((pth) => path.resolve(process.cwd(), pth)),

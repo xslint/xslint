@@ -22,7 +22,9 @@ const {execSync, spawn, spawnSync} = require('child_process')
 
 /**
  * Run git inside a directory, answering the status alone, since a caller here
- * asks whether the command ran and never what it printed.
+ * asks whether the command ran and never what it printed. No `GIT_` variable
+ * a hook exports reaches it, so a fixture never writes into the repository
+ * the suite runs from.
  * @param {string} yard - Directory it runs in
  * @param {Array.<string>} args - What git is handed
  * @return {number} - Its exit code, or `null` where git is not there at all
@@ -33,6 +35,9 @@ const gitted = function(yard, args) {
     args,
     {
       cwd: yard,
+      env: Object.fromEntries(
+        Object.entries(process.env).filter(([name]) => !name.startsWith('GIT_')),
+      ),
       timeout: 120000,
       windowsHide: true,
       encoding: 'utf-8',

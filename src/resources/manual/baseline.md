@@ -78,7 +78,9 @@ of a submodule, or of any repository nested in the tree, is left out of the
 report, since that repository judges its own sheets, and so is a linked sheet
 whose target lies there or outside the repository.
 
-Every path named must lie in one repository, and CI must fetch the commit:
-with `actions/checkout`, set `fetch-depth: 0`. `--since` refuses to run with
-`--baseline`, `--baseline-write`, `--baseline-prune`, or a fix flag, and
-ignores the `baseline` key of `.xslint.yml`.
+Every path named must lie in one repository, and CI must fetch the history
+back to where the change left `<ref>`: with `actions/checkout`, set
+`fetch-depth: 0`, and in a shallow clone fetch that ref with `--unshallow`.
+`--since` refuses to run with `--baseline`, `--baseline-write`,
+`--baseline-prune`, or a fix flag, and ignores the `baseline` key of
+`.xslint.yml`.

@@ -41,7 +41,7 @@ program
   .addOption(
     new Option(
       '--since <ref>',
-      'Report only the defects the change since this git commit introduced',
+      'Report only the defects the change introduced since it left this git ref',
     ).conflicts([
       'baseline', 'baselineWrite', 'baselinePrune',
       'fix', 'fixDryRun', 'fixSuggestions',

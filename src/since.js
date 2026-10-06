@@ -30,7 +30,8 @@ const HUNK = /^@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@/
  */
 const ELSEWHERE = [
   'GIT_DIR', 'GIT_WORK_TREE', 'GIT_COMMON_DIR', 'GIT_INDEX_FILE',
-  'GIT_DIFF_OPTS', 'GIT_EXTERNAL_DIFF',
+  'GIT_DIFF_OPTS', 'GIT_EXTERNAL_DIFF', 'GIT_LITERAL_PATHSPECS',
+  'GIT_GLOB_PATHSPECS', 'GIT_NOGLOB_PATHSPECS', 'GIT_ICASE_PATHSPECS',
 ]
 
 /**
@@ -263,6 +264,18 @@ const rootOf = function(pths) {
  */
 const since = function(drawn, ref, pths, base, suffixes, linted) {
   const {root, under} = rootOf(pths)
+  let unshared = `Option --since names ${ref}, which shares no commit with HEAD`
+  if (
+    gitIn(
+      root, ['rev-parse', '--is-shallow-repository'],
+      `Git could not tell whether ${root} is a shallow clone`,
+    ).trim() === 'true'
+  ) {
+    unshared = [
+      `Option --since names ${ref}, and this shallow clone holds no commit it`,
+      'shares with HEAD, so fetch the history between them',
+    ].join(' ')
+  }
   const commit = gitIn(
     root,
     [
@@ -271,7 +284,7 @@ const since = function(drawn, ref, pths, base, suffixes, linted) {
         `Option --since names ${ref}, which git does not resolve to a commit`,
       ).trim(), 'HEAD',
     ],
-    `Option --since names ${ref}, which shares no commit with HEAD`,
+    unshared,
   ).trim()
   const moves = moved(
     gitIn(

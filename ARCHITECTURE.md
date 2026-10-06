@@ -233,7 +233,7 @@ left-most, then the wider, wins, and the other waits for the next run.
 | `src/config.js` | Resolves `.xslint.yml` (severities, `off`, excludes, `max-warnings`) |
 | `src/baseline.js` | `recorded`, `matched` and `trimmed`: the defects a baseline file holds by file, check and line text, the stale entries that fail a run, and the file with them dropped, over the files read and the checks `ranOf` names |
 | `src/gitignore.js` | `ignoring(start)`: what the project's `.gitignore` files refuse |
-| `src/since.js` | `since`: the defects a change introduced since a git commit, the commit linted in a scratch tree and each line mapped through `git diff` |
+| `src/since.js` | `since`: the defects a change introduced since it left a git ref, their merge base linted in a scratch tree and each line mapped through `git diff` |
 | `src/directives.js` | Parses inline `xslint-disable-*` comments |
 | `src/reporters.js` | `reporterOf(format)`: `text`, `json`, `sarif`, or `github` |
 | `src/validators/xsl-validator.js` | Builds the corpus; reports each non-well-formed stylesheet |

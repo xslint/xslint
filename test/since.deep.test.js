@@ -8,6 +8,7 @@ const assert = require('assert')
 const fs = require('fs')
 const path = require('path')
 const os = require('os')
+const {pathToFileURL} = require('url')
 
 /**
  * Directory the two states of the seeded repository live in.
@@ -107,6 +108,41 @@ const scratch = function(init) {
 }
 
 /**
+ * A clone one commit deep of a branch off a repository's first commit, with
+ * the tip of the branch it left fetched one commit deep beside it, so the
+ * clone holds no commit the two share.
+ * @return {string} - The directory of the clone
+ */
+const shallow = function() {
+  const yard = scratch(true)
+  placed('before/kept.xsl', yard)
+  repository(yard, ['.'])
+  gitted(yard, IDENTITY.concat(['commit', '--quiet', '-m', 'base']))
+  gitted(yard, ['branch', 'ahead'])
+  gitted(
+    yard, IDENTITY.concat(['commit', '--quiet', '--allow-empty', '-m', 'one']),
+  )
+  gitted(
+    yard, IDENTITY.concat(['commit', '--quiet', '--allow-empty', '-m', 'two']),
+  )
+  gitted(yard, ['checkout', '--quiet', 'ahead'])
+  gitted(
+    yard, IDENTITY.concat(['commit', '--quiet', '--allow-empty', '-m', 'side']),
+  )
+  gitted(yard, ['checkout', '--quiet', '-'])
+  const clone = scratch(false)
+  gitted(
+    clone,
+    [
+      'clone', '--quiet', '--depth', '1', '--branch', 'ahead',
+      pathToFileURL(yard).href, '.',
+    ],
+  )
+  gitted(clone, ['fetch', '--quiet', '--depth', '1', 'origin', 'HEAD:trunk'])
+  return clone
+}
+
+/**
  * A run `--since` refuses, and what its refusal says.
  * @type {Array.<{name: string, args: function(): Array, says: RegExp}>}
  */
@@ -125,6 +161,16 @@ const REFUSED = [
     name: 'refuses a path with no repository, giving the reason git gives',
     args: () => ['--since', 'HEAD', scratch(false)],
     says: /not a git repository/,
+  },
+  {
+    name: 'refuses a revision no history leads to, asking for a deeper fetch',
+    args: () => ['--since', 'trunk', shallow()],
+    says: /shallow/,
+  },
+  {
+    name: 'refuses an empty revision',
+    args: () => ['--since', '', scratch(true)],
+    says: /which git does not resolve/,
   },
   {
     name: 'refuses to run with a baseline',
@@ -148,6 +194,7 @@ describe('since', function() {
           {
             GIT_DIR: path.join(yard, 'vendor', '.git'),
             GIT_DIFF_OPTS: '--unified=3',
+            GIT_LITERAL_PATHSPECS: '1',
           },
         ).stdout,
       ).map((defect) => [
