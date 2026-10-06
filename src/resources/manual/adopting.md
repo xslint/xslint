@@ -53,19 +53,22 @@ how a defect is matched.
 
 A recorded defect is matched by its file and the text of its line, so a pull
 request that renames a sheet or edits a recorded line, in a feature as much as
-in a fix, sees those defects reported as new. Fix them while you are there.
-Otherwise check each defect the gate lists against the committed baseline. It
-is old when the baseline holds its check for that sheet, under the old name
-after a rename, at least as many times as the gate now lists it there. Any
-other is new, even on an edited line, and needs fixing first. Once every
-listed defect is old, record the tree again:
+in a fix, sees those defects reported as new. Fix them while you are there, or
+record the tree again and compare how often each sheet draws each check before
+and after:
 
 ```bash
 xslint --baseline-write xslint-baseline.json src
+TOTALS='to_entries[] | .key as $sheet | .value | to_entries[] | "\($sheet) \(.key) \([.value[]] | add)"'
+diff <(git show HEAD:xslint-baseline.json | jq -r "$TOTALS") <(jq -r "$TOTALS" xslint-baseline.json)
 ```
 
-Always record the whole tree, never one sheet, since a check that reads across
-sheets finds different things in one sheet on its own.
+A renamed sheet shows its old path on one side and its new path on the other;
+compare the two. A total that went up, or a check new to a sheet, is a defect
+the change added: restore the file with `git checkout xslint-baseline.json`,
+fix the defect, and record again. Always record the whole tree, never one
+sheet, since a check that reads across sheets finds different things in one
+sheet on its own.
 
 ## Pay it down
 
