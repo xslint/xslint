@@ -900,8 +900,22 @@ const slashed = function(pth, base) {
   return path.relative(base, pth).split(path.sep).join('/')
 }
 
+/**
+ * Two strings ranked by code unit, the order `Array.prototype.sort` gives with
+ * no comparator at all, rather than `localeCompare`, whose answer belongs to
+ * the machine's locale and so cannot underlie a report committed once and
+ * diffed on every runner (#638).
+ * @param {string} one - A string
+ * @param {string} two - Another string
+ * @return {number} - Negative, zero or positive, as a comparator answers
+ */
+const compared = function(one, two) {
+  return Number(one > two) - Number(one < two)
+}
+
 module.exports = {
   absentOf,
+  compared,
   allFilesFrom,
   brought,
   SEALED,

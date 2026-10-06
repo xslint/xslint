@@ -269,7 +269,7 @@ left-most, then the wider, wins, and the other waits for the next run.
 | `src/fixes.js` | Fix builders over the raw source: `deletion`, `substitution`, `excision`, `standsAt` |
 | `src/fixer.js` | Applies fixes to source: decode-walk, verify, end to start |
 | `src/xpath.js` | The fontoxpath environment: `PREFIXES`, the evaluator, `satisfies`, `compiles`, the `xslint:` functions |
-| `src/helpers.js` | XML and YAML parsing, `slashed`, `absentOf`, file recursion skipping `.git` and `node_modules` |
+| `src/helpers.js` | XML and YAML parsing, `slashed`, `compared`, `absentOf`, file recursion skipping `.git` and `node_modules` |
 | `src/resources/checks.json` | Every check as a run reads it; generated, never edited |
 | `src/logger.js` | 4-level logger |
 | `src/output.js` | `colorful(stream)` and the leveled `writer` |

@@ -18,7 +18,9 @@
 
 const path = require('path')
 const fs = require('fs')
-const {absentOf, allFilesFrom, slashed, subsetsOf} = require('./helpers')
+const {
+  absentOf, allFilesFrom, compared, slashed, subsetsOf,
+} = require('./helpers')
 const {ignoring} = require('./gitignore')
 const {parted} = require('./source')
 const {SUGGESTION, suppressed} = require('./checks')
@@ -537,19 +539,6 @@ const leveled = function(quiet, level) {
     chosen = levels.WARNING
   }
   return chosen
-}
-
-/**
- * Two strings ranked by code unit, the order `Array.prototype.sort` gives with
- * no comparator at all, rather than `localeCompare`, whose answer belongs to
- * the machine's locale and so cannot underlie a report committed once and
- * diffed on every runner (#638).
- * @param {string} one - A string
- * @param {string} two - Another string
- * @return {number} - Negative, zero or positive, as a comparator answers
- */
-const compared = function(one, two) {
-  return Number(one > two) - Number(one < two)
 }
 
 /**

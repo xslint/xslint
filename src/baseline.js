@@ -11,7 +11,7 @@
  */
 
 const crypto = require('crypto')
-const {slashed} = require('./helpers')
+const {compared, slashed} = require('./helpers')
 const {ENDINGS} = require('./source')
 const {GAPS} = require('./tokens')
 
@@ -43,16 +43,18 @@ const linesOf = function(sources) {
 }
 
 /**
- * An object with its keys in code unit order, the order `sort` gives with no
- * comparator, so the machine's locale cannot reorder them (#638), and each
- * value mapped by `inner`.
+ * An object with its keys ranked by `compared`, in code unit order, so the
+ * machine's locale cannot reorder them (#638), and each value mapped by
+ * `inner`.
  * @param {object} unordered - Keys in any order
  * @param {function(*): *} inner - What each value becomes
  * @return {object} - The same keys, ordered
  */
 const ordered = function(unordered, inner) {
   return Object.fromEntries(
-    Object.keys(unordered).sort().map((key) => [key, inner(unordered[key])]),
+    Object.keys(unordered)
+      .sort(compared)
+      .map((key) => [key, inner(unordered[key])]),
   )
 }
 

@@ -14,6 +14,26 @@ const fs = require('fs')
 const os = require('os')
 
 /**
+ * A scratch directory holding the sheet a baseline is recorded from as `a.xsl`
+ * in each of the subdirectories named, `.` for its root, with the baseline a
+ * run over the whole of it writes beside them.
+ * @param {Array.<string>} subs - Where the copies of the sheet go
+ * @return {{dir: string, file: string}} - The directory and its baseline
+ */
+const baselined = function(subs) {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-'))
+  for (const sub of subs) {
+    fs.mkdirSync(path.join(dir, sub), {recursive: true})
+    fs.copyFileSync(
+      'test/resources/baseline/recorded.xsl', path.join(dir, sub, 'a.xsl'),
+    )
+  }
+  const file = path.join(dir, 'baseline.json')
+  xslintStatus(['--preset', 'all', '--baseline-write', file, dir])
+  return {dir: dir, file: file}
+}
+
+/**
  * The two sizes of report a piped run is asked for. Twenty copies of the
  * scaling sheet stand past what a pipe takes, so the run is left writing into
  * a full one, which is #767's shape; two fit wherever they are read, so the
@@ -910,12 +930,7 @@ describe('xslint', function() {
     assert.equal(status, 0)
   })
   it('should pass a tree against the baseline it wrote', function() {
-    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-'))
-    fs.copyFileSync(
-      'test/resources/baseline/recorded.xsl', path.join(dir, 'a.xsl'),
-    )
-    const file = path.join(dir, 'baseline.json')
-    xslintStatus(['--preset', 'all', '--baseline-write', file, dir])
+    const {dir, file} = baselined(['.'])
     const status = xslintStatus([
       '--preset', 'all', '--baseline', file, '--max-warnings=0', dir,
     ])
@@ -926,12 +941,10 @@ describe('xslint', function() {
     )
   })
   it('should name the entry a fixed defect left stale', function() {
-    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-'))
-    const sheet = path.join(dir, 'a.xsl')
-    fs.copyFileSync('test/resources/baseline/recorded.xsl', sheet)
-    const file = path.join(dir, 'baseline.json')
-    xslintStatus(['--preset', 'all', '--baseline-write', file, dir])
-    fs.copyFileSync('test/resources/baseline/repaired.xsl', sheet)
+    const {dir, file} = baselined(['.'])
+    fs.copyFileSync(
+      'test/resources/baseline/repaired.xsl', path.join(dir, 'a.xsl'),
+    )
     const streams = xslintStreams(['--preset', 'all', '--baseline', file, dir])
     fs.rmSync(dir, {recursive: true, force: true})
     assert.ok(
@@ -940,16 +953,9 @@ describe('xslint', function() {
     )
   })
   it('should read the baseline the config file names', function() {
-    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-'))
-    fs.copyFileSync(
-      'test/resources/baseline/recorded.xsl', path.join(dir, 'a.xsl'),
-    )
+    const {dir} = baselined(['.'])
     const cfg = path.join(dir, '.xslint.yml')
     fs.writeFileSync(cfg, 'baseline: baseline.json\n')
-    xslintStatus([
-      '--preset', 'all', '--baseline-write', path.join(dir, 'baseline.json'),
-      dir,
-    ])
     const status = xslintStatus([
       '--preset', 'all', `--config=${cfg}`, '--max-warnings=0', dir,
     ])
@@ -960,12 +966,7 @@ describe('xslint', function() {
     )
   })
   it('should pass a fix dry run against its own baseline', function() {
-    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-'))
-    fs.copyFileSync(
-      'test/resources/baseline/recorded.xsl', path.join(dir, 'a.xsl'),
-    )
-    const file = path.join(dir, 'baseline.json')
-    xslintStatus(['--preset', 'all', '--baseline-write', file, dir])
+    const {dir, file} = baselined(['.'])
     const status = xslintStatus([
       '--preset', 'all', '--baseline', file, '--fix-dry-run',
       '--fix-suggestions', dir,
@@ -1007,15 +1008,7 @@ describe('xslint', function() {
     )
   })
   it('should keep what a rewrite over one directory did not read', function() {
-    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-'))
-    for (const sub of ['one', 'two']) {
-      fs.mkdirSync(path.join(dir, sub))
-      fs.copyFileSync(
-        'test/resources/baseline/recorded.xsl', path.join(dir, sub, 'a.xsl'),
-      )
-    }
-    const file = path.join(dir, 'baseline.json')
-    xslintStatus(['--preset', 'all', '--baseline-write', file, dir])
+    const {dir, file} = baselined(['one', 'two'])
     xslintStatus([
       '--preset', 'all', '--baseline-write', file, path.join(dir, 'one'),
     ])
@@ -1029,12 +1022,7 @@ describe('xslint', function() {
     )
   })
   it('should record every check a run draws in the baseline', function() {
-    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-'))
-    fs.copyFileSync(
-      'test/resources/baseline/recorded.xsl', path.join(dir, 'a.xsl'),
-    )
-    const file = path.join(dir, 'baseline.json')
-    xslintStatus(['--preset', 'all', '--baseline-write', file, dir])
+    const {dir, file} = baselined(['.'])
     let written = {}
     if (fs.existsSync(file)) {
       written = JSON.parse(fs.readFileSync(file, 'utf-8'))
