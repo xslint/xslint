@@ -195,6 +195,7 @@ const REACHING = [
  * reports: the flags, the configuration, and the checks left in the report.
  * A suppression outranks a choice however either is spelled, and a flag
  * replaces the choice a configuration makes rather than adding to it (#1030).
+ * Either flag takes a comma-separated list as readily as a repeat (#1161).
  * @type {Array.<Array>}
  */
 const CHOICES = [
@@ -211,6 +212,10 @@ const CHOICES = [
     ['unused-named-template'], 'the config beside a suppressing flag'],
   [['--only=short-names'], 'rules:\n  short-names: off\n',
     [], 'a flag choosing a check the config turns off'],
+  [['--only=short,unused'], '',
+    ['short-names', 'unused-named-template'], 'one flag listing two'],
+  [['--only=short,unused', '--suppress=short-names,starts-with'], '',
+    ['unused-named-template'], 'a suppression listing two'],
 ]
 
 /**

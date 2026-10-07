@@ -7,6 +7,8 @@
 import {program, Option} from 'commander'
 import version from './version.js'
 
+const listed = (value, values) => values.concat(value.split(','))
+
 program
   .name('xslint')
   .usage('path [options]')
@@ -56,12 +58,14 @@ program
     (value) => parseInt(value, 10),
   )
   .option(
-    '--suppress <check>', 'Suppress some checks',
-    (check, suppressions) => [...suppressions, check], [],
+    '--suppress <checks>',
+    'Suppress the checks whose names hold one of these comma-separated substrings',
+    listed, [],
   )
   .option(
-    '--only <check>', 'Report only the checks whose names hold this substring',
-    (check, choices) => [...choices, check], [],
+    '--only <checks>',
+    'Report only the checks whose names hold one of these comma-separated substrings',
+    listed, [],
   )
   .option(
     '--preset <name>',

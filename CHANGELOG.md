@@ -9,6 +9,10 @@ publication date only; detailed notes begin with the Unreleased section.
 
 ## Unreleased
 
+- Split each `--only` and `--suppress` value on commas. `--only=a,b` took the
+  whole value as one substring that no check name holds, so the run checked
+  nothing and still reported "No defects found"; a list now means the same as
+  repeating the flag (#1161).
 - Stop four recommended checks misjudging XSLT 3.0. `name-starts-with-numeric`
   reads the local part of a `Q{uri}local` name, so a digit in the URI no longer
   fires and `Q{}9lives` does; `with-param-use-in-invalid-parent-node` admits
