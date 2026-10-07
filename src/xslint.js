@@ -211,30 +211,30 @@ const suggests = function(check, fix) {
 }
 
 /**
- * The substrings given, refused outright where one names no check, since a
- * typo would otherwise narrow or widen the run silently and read as a clean
- * report (#1161).
+ * The substrings given, refused outright where one names no check or is the
+ * empty one a stray comma leaves, which every name holds, since either would
+ * narrow or widen the run silently and read as a clean report (#1161).
  * @param {Array.<string>} pieces - Substrings of check names
  * @param {string} kind - What the substrings do, as the refusal names it
  * @return {Array.<string>} - The substrings, each naming a check
  */
 const matching = function(pieces, kind) {
   const stray = pieces.find(
-    (piece) => !CHECKS.some((check) => check.includes(piece)),
+    (piece) => piece === '' || !CHECKS.some((check) => check.includes(piece)),
   )
   if (stray !== undefined) {
-    throw new Error(`${kind} substring '${stray}' matches no check, fix or drop it`)
+    throw new Error(`${kind} substring '${stray}' names no check, fix or drop it`)
   }
   return pieces
 }
 
 /**
- * Deleting incorrect substring-suppressions from array of arguments
- * @param {Array.<string>} suppressions - Array of suppressed checks
- * @return {Array.<string>} - Normalizing list of suppressions
+ * The suppressions given, the empty one warned about and dropped, and the
+ * rest refused where one names no check (#1161).
+ * @param {Array.<string>} suppressions - Substrings of suppressed checks
+ * @return {Array.<string>} - The suppressions, none of them empty
  */
 const validatedSuppressions = function(suppressions) {
-  matching(suppressions, 'Suppressed')
   if (suppressions.some((sup) => sup === '')) {
     logger.warn(
       [
@@ -244,7 +244,7 @@ const validatedSuppressions = function(suppressions) {
     )
     suppressions = suppressions.filter((sup) => (sup) !== '')
   }
-  return suppressions
+  return matching(suppressions, 'Suppressed')
 }
 
 /**
@@ -587,6 +587,7 @@ const settingsFrom = function(config, flags = {}) {
   if (flags.only?.length > 0) {
     only = flags.only
   }
+  matching(only, 'Chosen')
   const disabled = []
   const overrides = {}
   const problems = []
@@ -629,8 +630,9 @@ const settingsFrom = function(config, flags = {}) {
  * @return {{suppress: Array, overrides: object, preset: string, only: Array,
  *  excluded: function(string): boolean, exclude: Array, base: string,
  *  file: (string|undefined), problems: Array}} - What `lint` takes, and more
- * @throws {Error} - On a preset naming no check list, or a file no YAML parser
- *  reads, as the command line fails on both before it lints
+ * @throws {Error} - On a preset naming no check list, a choice naming no
+ *  check, or a file no YAML parser reads, as the command line fails on each
+ *  before it lints
  */
 const settingsOf = function(from, flags = {}) {
   const config = configFrom(flags.config, from)

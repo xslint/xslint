@@ -14,7 +14,8 @@ publication date only; detailed notes begin with the Unreleased section.
   nothing and still reported "No defects found"; a list now means the same as
   repeating the flag. A substring in either flag, or in `only:`, that no check
   name holds now stops the run with an error naming it and exit code 1, where
-  it used to warn and lint on (#1161).
+  it used to warn and lint on. So does an empty `--only` piece a stray comma
+  leaves, which used to widen the run to the whole catalog (#1161).
 - Stop four recommended checks misjudging XSLT 3.0. `name-starts-with-numeric`
   reads the local part of a `Q{uri}local` name, so a digit in the URI no longer
   fires and `Q{}9lives` does; `with-param-use-in-invalid-parent-node` admits

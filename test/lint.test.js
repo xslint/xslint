@@ -419,8 +419,25 @@ describe('lint (programmatic API)', function() {
         [source('stylesheets/xsl-with-some-violations.xsl')],
         {only: ['short', 'qwerty'], preset: 'all'},
       ),
-      /Chosen substring 'qwerty' matches no check, fix or drop it$/,
+      /Chosen substring 'qwerty' names no check, fix or drop it$/,
       'ran over a choice naming no check, which reads as a clean report',
+    )
+  })
+  it('refuses an empty chosen substring, which a stray comma leaves', function() {
+    assert.throws(
+      () => lint(
+        [source('stylesheets/xsl-with-some-violations.xsl')],
+        {only: ['short-names', ''], preset: 'all'},
+      ),
+      /Chosen substring '' names no check, fix or drop it$/,
+      'ran over an empty choice, which widens the run to the whole catalog',
+    )
+  })
+  it('refuses a configured choice naming no check before it lints', function() {
+    assert.throws(
+      () => settingsOf(configured('presets/mischosen.yml')),
+      /Chosen substring 'qwerty' names no check, fix or drop it$/,
+      'settled on a configured choice naming no check, which lint then refuses',
     )
   })
   it('refuses a suppressed substring naming no check', function() {
@@ -429,7 +446,7 @@ describe('lint (programmatic API)', function() {
         [source('stylesheets/xsl-with-some-violations.xsl')],
         {suppress: ['short', 'qwerty'], preset: 'all'},
       ),
-      /Suppressed substring 'qwerty' matches no check, fix or drop it$/,
+      /Suppressed substring 'qwerty' names no check, fix or drop it$/,
       'ran over a suppression naming no check, which reads as a clean report',
     )
   })

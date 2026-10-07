@@ -227,6 +227,7 @@ const CHOICES = [
 const UNMATCHED = [
   [['--only=unused-variable,unused-param'], 'unused-param', 'a choice'],
   [['--suppress=short-names,qwerty'], 'qwerty', 'a suppression'],
+  [['--only=short-names,'], '', 'a choice ending on a stray comma'],
 ]
 
 /**
@@ -423,7 +424,7 @@ describe('xslint', function() {
           'test/resources/stylesheets/xsl-with-some-violations.xsl', ...flags,
           '--log-level=error',
         ]).stderr,
-        new RegExp(`'${piece}' matches no check, fix or drop it`),
+        new RegExp(`'${piece}' names no check, fix or drop it`),
         `failed on ${what} naming no check without naming its substring`,
       )
     })

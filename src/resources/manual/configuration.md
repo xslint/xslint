@@ -37,6 +37,7 @@ baseline: xslint-baseline.json          # default for --baseline
 - **`only`** lists the substrings `--only` would take, narrowing every run to
   the checks they name. Passing `--only` replaces this list rather than adding
   to it, and a check `rules` turns `off` stays off whichever of the two chose it.
+  An entry no check name holds stops the run, naming that entry.
 - **`max-warnings`**, **`log-level`**, and **`quiet`** set the defaults for the
   matching command-line flags.
 - **`baseline`** names the [baseline](baseline.html) file a run compares
@@ -45,8 +46,8 @@ baseline: xslint-baseline.json          # default for --baseline
 Unknown top-level keys, rule names that match no check, and values of the wrong
 type (a non-numeric `max-warnings`, a non-list `exclude` or `only`, a
 non-boolean `quiet`, a non-string `log-level`, `preset`, or `baseline`) are reported and
-ignored, so typos do not pass silently. A preset that does not exist fails the
-run instead, before a file is read, since a run over no checks would read as a
-clean report. An
+ignored, so typos do not pass silently. A preset that does not exist, or an
+`only` entry no check name holds, fails the run instead, before a file is read,
+since a run over the wrong checks would read as a clean report. An
 `exclude` glob is named the same way when a run walks a directory and the glob
 excludes nothing anywhere under it.
