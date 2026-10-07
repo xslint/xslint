@@ -211,21 +211,30 @@ const suggests = function(check, fix) {
 }
 
 /**
+ * The substrings given, refused outright where one names no check, since a
+ * typo would otherwise narrow or widen the run silently and read as a clean
+ * report (#1161).
+ * @param {Array.<string>} pieces - Substrings of check names
+ * @param {string} kind - What the substrings do, as the refusal names it
+ * @return {Array.<string>} - The substrings, each naming a check
+ */
+const matching = function(pieces, kind) {
+  const stray = pieces.find(
+    (piece) => !CHECKS.some((check) => check.includes(piece)),
+  )
+  if (stray !== undefined) {
+    throw new Error(`${kind} substring '${stray}' matches no check, fix or drop it`)
+  }
+  return pieces
+}
+
+/**
  * Deleting incorrect substring-suppressions from array of arguments
  * @param {Array.<string>} suppressions - Array of suppressed checks
  * @return {Array.<string>} - Normalizing list of suppressions
  */
 const validatedSuppressions = function(suppressions) {
-  for (const sup of suppressions) {
-    if (!CHECKS.some((check) => check.includes(sup))) {
-      logger.warn(
-        [
-          `Check with substring '${sup}' does not exist.`,
-          `Delete this '--suppress' or use another one.`,
-        ].join(' '),
-      )
-    }
-  }
+  matching(suppressions, 'Suppressed')
   if (suppressions.some((sup) => sup === '')) {
     logger.warn(
       [
@@ -241,30 +250,19 @@ const validatedSuppressions = function(suppressions) {
 /**
  * The checks a run narrowed to some substrings reports, or where it names none
  * the preset's and every check it re-grades (#1094). A choice naming no check
- * is warned about, since a typo would otherwise narrow the run to nothing and
- * read as a clean report (#1030).
+ * is refused (#1161).
  * @param {Array.<string>} only - Substrings of the names chosen
  * @param {Array.<string>} listed - Names of the checks the preset holds
  * @param {Array.<string>} graded - Names of the checks the run re-grades
  * @return {Array.<string>} - Names of the checks chosen
  */
 const chosenOf = function(only, listed, graded) {
-  for (const choice of only) {
-    if (!CHECKS.some((check) => check.includes(choice))) {
-      logger.warn(
-        [
-          `Check with substring '${choice}' does not exist.`,
-          `Delete this '--only' or use another one.`,
-        ].join(' '),
-      )
-    }
-  }
-  return selected(only, listed, graded)
+  return selected(matching(only, 'Chosen'), listed, graded)
 }
 
 /**
- * The checks `chosenOf` answers, chosen without a word about a choice naming
- * none, so a caller asking again after the run warns nothing twice.
+ * The checks `chosenOf` answers, taken without refusing a choice naming none,
+ * which `chosenOf` refused before the run.
  * @param {Array.<string>} only - Substrings of the names chosen
  * @param {Array.<string>} listed - Names of the checks the preset holds
  * @param {Array.<string>} graded - Names of the checks the run re-grades

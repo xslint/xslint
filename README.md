@@ -180,7 +180,7 @@ Run `xslint` with no arguments to check every `.xsl` and `.xslt` file under the
 current directory, or name the files and directories to check. Pick the preset
 with `--preset`, silence checks by substring with `--suppress`, and ask one
 question of a whole tree with `--only`. Either flag takes a comma-separated
-list as readily as a repeat:
+list as readily as a repeat, and a substring no check name holds fails the run:
 
 ```bash
 xslint --preset all --suppress=short-names path/to/dir

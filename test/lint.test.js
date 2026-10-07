@@ -413,17 +413,24 @@ describe('lint (programmatic API)', function() {
       )
     })
   })
-  it('warns about a chosen substring naming no check', function() {
-    assert.match(
-      noted(() => lint(
+  it('refuses a chosen substring naming no check', function() {
+    assert.throws(
+      () => lint(
         [source('stylesheets/xsl-with-some-violations.xsl')],
-        {only: ['qwerty'], preset: 'all'},
-      )).join(' '),
-      /qwerty/,
-      [
-        'cannot keep quiet about a choice naming no check, where a typo would',
-        'otherwise narrow the run to nothing and read as a clean report',
-      ].join(' '),
+        {only: ['short', 'qwerty'], preset: 'all'},
+      ),
+      /Chosen substring 'qwerty' matches no check, fix or drop it$/,
+      'ran over a choice naming no check, which reads as a clean report',
+    )
+  })
+  it('refuses a suppressed substring naming no check', function() {
+    assert.throws(
+      () => lint(
+        [source('stylesheets/xsl-with-some-violations.xsl')],
+        {suppress: ['short', 'qwerty'], preset: 'all'},
+      ),
+      /Suppressed substring 'qwerty' matches no check, fix or drop it$/,
+      'ran over a suppression naming no check, which reads as a clean report',
     )
   })
   it('re-grades a severity through overrides', function() {

@@ -66,3 +66,7 @@ quiet, so this runs every `unused-*` check but `unused-variable`:
 ```bash
 xslint --only=unused --suppress=unused-variable
 ```
+
+A substring in either flag that no check name holds stops the run before it
+checks anything, names that substring, and exits with `1`, so a typo cannot
+pass for a clean report.

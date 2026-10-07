@@ -219,6 +219,17 @@ const CHOICES = [
 ]
 
 /**
+ * A run whose `--only` or `--suppress` holds a substring no check name holds:
+ * the flags and the substring it names. It refuses to run, since one typo
+ * would otherwise narrow it to nothing and read as a clean report (#1161).
+ * @type {Array.<Array>}
+ */
+const UNMATCHED = [
+  [['--only=unused-variable,unused-param'], 'unused-param', 'a choice'],
+  [['--suppress=short-names,qwerty'], 'qwerty', 'a suppression'],
+]
+
+/**
  * What a run over one stylesheet reports under each way the command line and
  * the configuration file name a preset: the flags, the file, the checks left
  * in the report, and the way. A run names none and reports `recommended`; a
@@ -396,23 +407,26 @@ describe('xslint', function() {
     assert.ok(stdout.includes('Empty suppress is incorrect. Delete this "--suppress" or use another one.'))
     expected.forEach((str) => assert.ok(stdout.includes(str)))
   })
-  it('should test incorrect suppress', function() {
-    const suppress = 'qwerty'
-    const stdout = runXslint([
-      '--preset', 'all',
-      'test/resources/stylesheets/xsl-with-some-violations.xsl',
-      `--suppress=${suppress}`,
-    ])
-    assert.ok(stdout.includes(`Check with substring '${suppress}' does not exist. Delete this '--suppress' or use another one.`))
-  })
-  it('should silence the bad-suppress warning under a raised log level', function() {
-    const streams = xslintStreams([
-      '--preset', 'all',
-      'test/resources/stylesheets/xsl-with-some-violations.xsl',
-      '--suppress=qwerty',
-      '--log-level=error',
-    ])
-    assert.ok(!streams.stderr.includes('does not exist'))
+  UNMATCHED.forEach(([flags, piece, what]) => {
+    it(`should fail on ${what} naming no check`, function() {
+      assert.equal(
+        xslintStatus([
+          'test/resources/stylesheets/xsl-with-some-violations.xsl', ...flags,
+        ]),
+        1,
+        `ran over ${what} naming no check and left with a zero`,
+      )
+    })
+    it(`should name the substring of ${what} naming no check`, function() {
+      assert.match(
+        xslintStreams([
+          'test/resources/stylesheets/xsl-with-some-violations.xsl', ...flags,
+          '--log-level=error',
+        ]).stderr,
+        new RegExp(`'${piece}' matches no check, fix or drop it`),
+        `failed on ${what} naming no check without naming its substring`,
+      )
+    })
   })
   it('should test non-existing directory', function() {
     const dir = 'non-existing-directory'
