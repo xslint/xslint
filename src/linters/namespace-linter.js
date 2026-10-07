@@ -6,6 +6,7 @@
 const {expressionsOf} = require('../attributes')
 const {metaOf, suppressed} = require('../checks')
 const {deletion, standsAt} = require('../fixes')
+const {documentary} = require('../literals')
 const {logger} = require('../logger')
 const {parseOf} = require('../syntax')
 const {GAPS, NAMED, TOKENS} = require('../tokens')
@@ -181,22 +182,6 @@ const used = function(elements, read, prefix) {
       ),
   ) || read.texts.some((text) => pattern.test(text)) ||
     read.streams.some((tokens) => qualifies(tokens, prefix, pattern))
-}
-
-/**
- * Whether the element is top-level data or stands inside it: a non-XSLT child
- * of an XSLT root, which a processor never instantiates (#1006).
- * @param {Element} element - Element to test
- * @return {boolean} - True for data outside every sequence constructor
- */
-const documentary = function(element) {
-  const xsl = element.ownerDocument
-  let top = element
-  while (top.parentNode !== xsl && top.parentNode.parentNode !== xsl) {
-    top = top.parentNode
-  }
-  return xsl.documentElement.namespaceURI === XSLT &&
-    top.namespaceURI !== XSLT
 }
 
 /**

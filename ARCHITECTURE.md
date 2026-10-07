@@ -253,6 +253,7 @@ left-most, then the wider, wins, and the other waits for the next run.
 | `src/xsl-version.js` | `versionOf`, `numbered` and `since` |
 | `src/conditions.js` | `excluded` and `conditional`: whether a `use-when` drops an element surely, or may |
 | `src/tree.js` | One walk per document: `walked`, `named`, `attributed`, `ranked`, `holding` |
+| `src/literals.js` | `documentary`: whether a non-XSLT element is top-level data, which no processor instantiates |
 | `src/roots.js` | `roots` and `entered`: the root templates, and whether a module can be entered |
 | `src/comparisons.js` | `comparedToZero`: a call compared with `0` or `1` |
 | `src/booleans.js` | `coerced` and `unwrapped`: where only an effective boolean value is taken |

@@ -5,6 +5,7 @@
 
 const {metaOf, suppressed} = require('../checks')
 const {standsAt, substitution} = require('../fixes')
+const {documentary} = require('../literals')
 const {GAPS} = require('../tokens')
 const {logger} = require('../logger')
 
@@ -57,23 +58,6 @@ const prefixOf = function(name) {
     prefix = name.slice(0, name.indexOf(':'))
   }
   return prefix
-}
-
-/**
- * Whether the element is top-level data or stands inside it: a non-XSLT child
- * of an XSLT root, such as an oXygen `doc:doc` block, which a processor never
- * instantiates, so it writes nothing into the result (#1006).
- * @param {Element} element - Element to test
- * @return {boolean} - True for data outside every sequence constructor
- */
-const documentary = function(element) {
-  const xsl = element.ownerDocument
-  let top = element
-  while (top.parentNode !== xsl && top.parentNode.parentNode !== xsl) {
-    top = top.parentNode
-  }
-  return xsl.documentElement.namespaceURI === XSLT &&
-    top.namespaceURI !== XSLT
 }
 
 /**
