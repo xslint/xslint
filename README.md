@@ -256,7 +256,7 @@ xslint --baseline xslint-baseline.json --max-warnings=0
 
 A fixed defect fails the run until `--baseline-prune` drops its entry. A prune
 records nothing new, so the baseline only shrinks. The [baseline
-guide][baseline] covers how a defect is matched and where the file is read
+guide][baseline] covers how defects are counted and where the file is read
 from.
 
 ## Adopting

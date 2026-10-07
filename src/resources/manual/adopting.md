@@ -49,13 +49,10 @@ The build now fails on any defect the file does not record, and on any
 recorded one that is gone until its entry is dropped. Pass `--baseline` in CI
 rather than naming the file in `.xslint.yml`, so a run on a developer's
 machine still shows the whole debt. The [baseline guide](baseline.html) covers
-how a defect is matched.
+how defects are counted and what to do when a sheet is renamed.
 
-A recorded defect is matched by its file and the text of its line, so a pull
-request that renames a sheet or edits a recorded line, in a feature as much as
-in a fix, sees those defects reported as new. The baseline cannot tell them
-from defects the change added, so fix every defect the gate lists, then drop
-the entries the fixes left stale:
+Every pull request that fixes a defect drops the entries the fix left stale
+and commits the file:
 
 ```bash
 xslint --baseline xslint-baseline.json --baseline-prune src
@@ -76,9 +73,7 @@ xslint --baseline xslint-baseline.json --baseline-prune src
 ```
 
 Commit the pruned file with the fix. A prune never records a defect, so the
-count in the file only goes down. A fix that rewrites a line also loses the
-entries other checks hold on it, and the prune lists them as new: fix those
-too and prune again, as above.
+count in the file only goes down.
 
 To turn on a check you turned off, delete its line from `rules:` and record
 what it finds before the gate sees it:

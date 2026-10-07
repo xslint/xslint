@@ -5,43 +5,13 @@
 
 /**
  * The defects a tree held when it adopted xslint, stored so a run reports only
- * the ones added since (#1188). Each is counted by file, check, and a hash of
- * the text of its line, so a line moved by an edit above it still matches. A
- * run judges, prunes, and rewrites only the files it read and the checks it
- * ran.
+ * the ones added since (#1188). Each is counted by file and check alone, so an
+ * edit to its line cannot bring it back, and a file whose count for a check
+ * rises reports every defect of that check (#1197). A run judges, prunes, and
+ * rewrites only the files it read and the checks it ran.
  */
 
-const crypto = require('crypto')
 const {compared, slashed} = require('./helpers')
-const {ENDINGS} = require('./source')
-const {GAPS} = require('./tokens')
-
-/**
- * Hash of the text of the line a defect stands on, its gaps collapsed so a
- * reindented line keeps its hash.
- * @param {object} defect - A defect a run reported
- * @param {Map.<string, Array.<string>>} lines - Lines of each source by file
- * @return {string} - Sixteen hex digits
- */
-const hashed = function(defect, lines) {
-  const text = lines.get(defect.file)[defect.line - 1]
-    .split(GAPS)
-    .filter(Boolean)
-    .join(' ')
-  return crypto.createHash('sha256').update(text).digest('hex').slice(0, 16)
-}
-
-/**
- * Lines of every source, keyed by the file its defects name, split at every
- * line ending the parser counts, a bare carriage return among them.
- * @param {Array.<{file: string, content: string}>} sources - What was linted
- * @return {Map.<string, Array.<string>>} - Lines by file
- */
-const linesOf = function(sources) {
-  return new Map(
-    sources.map((source) => [source.file, source.content.split(ENDINGS)]),
-  )
-}
 
 /**
  * An object with its keys ranked by `compared`, in code unit order, so the
@@ -60,14 +30,48 @@ const ordered = function(unordered, inner) {
 }
 
 /**
- * Counts by file, then check, then hash, each level ordered.
+ * Counts by file, then check, each level ordered.
  * @param {object} counts - Counts in any order
  * @return {object} - The same counts, ordered
  */
 const layered = function(counts) {
-  return ordered(
-    counts, (checks) => ordered(checks, (hashes) => ordered(hashes, Number)),
-  )
+  return ordered(counts, (checks) => ordered(checks, Number))
+}
+
+/**
+ * How many defects of each check a run drew in each file.
+ * @param {Array.<object>} reported - Defects the run reported
+ * @param {string} base - Directory the baseline file lives in
+ * @return {object} - Counts by file, then check
+ */
+const tallied = function(reported, base) {
+  const counts = {}
+  for (const defect of reported) {
+    const file = slashed(defect.file, base)
+    counts[file] ??= {}
+    counts[file][defect.name] = (counts[file][defect.name] ?? 0) + 1
+  }
+  return counts
+}
+
+/**
+ * A baseline file's content, refused when it holds anything but a count for a
+ * check, as one written before counts replaced line hashes does.
+ * @param {object} baseline - What the baseline file holds
+ * @param {string} file - Path of the baseline file
+ * @return {object} - The same content
+ */
+const counted = function(baseline, file) {
+  for (const checks of Object.values(baseline)) {
+    for (const count of Object.values(checks)) {
+      if (!Number.isInteger(count)) {
+        throw new Error(
+          `Baseline file ${file} holds line hashes where counts stand, delete it and record it again with --baseline-write`,
+        )
+      }
+    }
+  }
+  return baseline
 }
 
 /**
@@ -75,65 +79,33 @@ const layered = function(counts) {
  * entries for a file the run did not read, or a check it did not run, stay as
  * they were, and every other entry is replaced by what the run drew.
  * @param {Array.<object>} reported - Defects the run reported
- * @param {Array.<{file: string, content: string}>} sources - What was linted
+ * @param {Array.<{file: string}>} sources - What was linted
  * @param {string} base - Directory the baseline file lives in
  * @param {Array.<string>} ran - Names of the checks the run ran
  * @param {object} earlier - What the baseline file held before, or `{}`
- * @return {object} - Counts by file, then check, then hash
+ * @return {object} - Counts by file, then check
  */
 const recorded = function(reported, sources, base, ran, earlier) {
-  const lines = linesOf(sources)
   const read = sources.map((source) => slashed(source.file, base))
-  const counts = {}
+  const counts = tallied(reported, base)
   for (const [file, checks] of Object.entries(earlier)) {
-    for (const [name, hashes] of Object.entries(checks)) {
+    for (const [name, count] of Object.entries(checks)) {
       if (!read.includes(file) || !ran.includes(name)) {
         counts[file] ??= {}
-        counts[file][name] = {...hashes}
+        counts[file][name] = count
       }
     }
-  }
-  for (const defect of reported) {
-    const file = slashed(defect.file, base)
-    const hash = hashed(defect, lines)
-    counts[file] ??= {}
-    counts[file][defect.name] ??= {}
-    counts[file][defect.name][hash] = (counts[file][defect.name][hash] ?? 0) + 1
   }
   return layered(counts)
 }
 
 /**
- * The defects a baseline does not cover, and the counts it holds beyond what
- * the run drew.
+ * The defects of every check whose count in a file rose past what the
+ * baseline records, and the entries it records more often than the run drew
+ * them, among the files the run read and the checks it ran, since a run says
+ * nothing of what it never looked at.
  * @param {Array.<object>} reported - Defects the run reported
- * @param {Array.<{file: string, content: string}>} sources - What was linted
- * @param {object} baseline - What `recorded` answered for an earlier run
- * @param {string} base - Directory the baseline file lives in
- * @return {{fresh: Array.<object>, left: object}} - Uncovered defects, and
- *  the baseline with every covered defect taken off its count
- */
-const unmatched = function(reported, sources, baseline, base) {
-  const lines = linesOf(sources)
-  const left = structuredClone(baseline)
-  const fresh = reported.filter((defect) => {
-    const counts = left[slashed(defect.file, base)]?.[defect.name] ?? {}
-    const hash = hashed(defect, lines)
-    const covered = (counts[hash] ?? 0) > 0
-    if (covered) {
-      counts[hash]--
-    }
-    return !covered
-  })
-  return {fresh: fresh, left: left}
-}
-
-/**
- * The defects a baseline does not cover, and the entries it records more
- * often than the run drew them, among the files the run read and the checks
- * it ran, since a run says nothing of what it never looked at.
- * @param {Array.<object>} reported - Defects the run reported
- * @param {Array.<{file: string, content: string}>} sources - What was linted
+ * @param {Array.<{file: string}>} sources - What was linted
  * @param {object} baseline - What `recorded` answered for an earlier run
  * @param {string} base - Directory the baseline file lives in
  * @param {Array.<string>} ran - Names of the checks the run ran
@@ -141,14 +113,18 @@ const unmatched = function(reported, sources, baseline, base) {
  *  count: number}>}} - Defects to report and entries to rewrite
  */
 const matched = function(reported, sources, baseline, base, ran) {
-  const {fresh, left} = unmatched(reported, sources, baseline, base)
+  const drawn = tallied(reported, base)
+  const fresh = reported.filter((defect) => {
+    const file = slashed(defect.file, base)
+    return drawn[file][defect.name] > (baseline[file]?.[defect.name] ?? 0)
+  })
   const stale = sources
     .map((source) => slashed(source.file, base))
-    .flatMap((file) => Object.entries(left[file] ?? {}).map(
-      ([name, counts]) => ({
+    .flatMap((file) => Object.entries(baseline[file] ?? {}).map(
+      ([name, count]) => ({
         file: file,
         name: name,
-        count: Object.values(counts).reduce((sum, count) => sum + count, 0),
+        count: count - (drawn[file]?.[name] ?? 0),
       }),
     ))
     .filter((entry) => entry.count > 0 && ran.includes(entry.name))
@@ -160,29 +136,25 @@ const matched = function(reported, sources, baseline, base, ran) {
  * it ran lowered to what the run drew, so a stale entry goes and a defect the
  * baseline never held stays out.
  * @param {Array.<object>} reported - Defects the run reported
- * @param {Array.<{file: string, content: string}>} sources - What was linted
+ * @param {Array.<{file: string}>} sources - What was linted
  * @param {object} baseline - What `recorded` answered for an earlier run
  * @param {string} base - Directory the baseline file lives in
  * @param {Array.<string>} ran - Names of the checks the run ran
- * @return {object} - Counts by file, then check, then hash
+ * @return {object} - Counts by file, then check
  */
 const trimmed = function(reported, sources, baseline, base, ran) {
-  const {left} = unmatched(reported, sources, baseline, base)
+  const drawn = tallied(reported, base)
   const read = sources.map((source) => slashed(source.file, base))
   const counts = {}
   for (const [file, checks] of Object.entries(baseline)) {
-    for (const [name, hashes] of Object.entries(checks)) {
-      const judged = read.includes(file) && ran.includes(name)
-      for (const [hash, count] of Object.entries(hashes)) {
-        let kept = count
-        if (judged) {
-          kept = count - left[file][name][hash]
-        }
-        if (kept > 0) {
-          counts[file] ??= {}
-          counts[file][name] ??= {}
-          counts[file][name][hash] = kept
-        }
+    for (const [name, count] of Object.entries(checks)) {
+      let kept = count
+      if (read.includes(file) && ran.includes(name)) {
+        kept = Math.min(count, drawn[file]?.[name] ?? 0)
+      }
+      if (kept > 0) {
+        counts[file] ??= {}
+        counts[file][name] = kept
       }
     }
   }
@@ -193,4 +165,5 @@ module.exports = {
   recorded,
   matched,
   trimmed,
+  counted,
 }
