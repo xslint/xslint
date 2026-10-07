@@ -24,4 +24,6 @@ Correct:
 ```
 
 An `xsl:template`, `xsl:mode`, or `xsl:decimal-format` may leave its name out,
-though never empty. The XSLT 3.0 spelling `_name=""` is empty too.
+though never empty. An empty name on `xsl:namespace` declares the default
+namespace, and one on `xsl:processing-instruction` fails only at run time, so
+neither is reported. The XSLT 3.0 spelling `_name=""` is empty too.

@@ -219,7 +219,7 @@
         "message": "Two xsl:param siblings share a @name. Each parameter of a template, function, or stylesheet must have a distinct name."
       },
       "duplicate-with-param-name": {
-        "xpath": "//xsl:with-param[xslint:attribute(., 'name') = preceding-sibling::xsl:with-param/xslint:attribute(., 'name')]",
+        "xpath": "//xsl:with-param[some $sibling in preceding-sibling::xsl:with-param satisfies xslint:attribute($sibling, 'name') = xslint:attribute(., 'name') and not(xslint:conditional($sibling) or xslint:conditional(.))]",
         "severity": "error",
         "preset": "recommended",
         "message": "A single call passes two xsl:with-param with the same @name. Each parameter can be supplied only once."
@@ -286,7 +286,7 @@
         "message": "The @href is missing or empty, so this pulls in no module and no processor will load the stylesheet. Name the module to pull in."
       },
       "missing-or-empty-name": {
-        "xpath": "//(xsl:variable | xsl:param | xsl:call-template | xsl:function | xsl:key | xsl:attribute-set | xsl:character-map | xsl:accumulator)[not(@name) and not(@_name)] | //(xsl:variable | xsl:param | xsl:with-param | xsl:call-template | xsl:template | xsl:function | xsl:key | xsl:attribute-set | xsl:decimal-format | xsl:character-map | xsl:mode | xsl:accumulator)[xslint:attribute(., 'name') = '']",
+        "xpath": "//(xsl:variable | xsl:param | xsl:call-template | xsl:function | xsl:key | xsl:attribute-set | xsl:character-map | xsl:accumulator | xsl:element | xsl:attribute | xsl:processing-instruction | xsl:namespace)[not(@name) and not(@_name)] | //(xsl:variable | xsl:param | xsl:with-param | xsl:call-template | xsl:template | xsl:function | xsl:key | xsl:attribute-set | xsl:decimal-format | xsl:character-map | xsl:mode | xsl:accumulator | xsl:element | xsl:attribute)[xslint:attribute(., 'name') = '']",
         "severity": "error",
         "preset": "recommended",
         "message": "The @name is missing or empty, so it holds no QName and no processor will load this stylesheet. Give it a name."
@@ -312,7 +312,7 @@
         "message": "This XSLT 2.0 construct stands where the version in force is below 2.0, which a conformant 1.0 processor rejects. Use a 1.0 equivalent, or raise that version to 2.0."
       },
       "name-starts-with-numeric": {
-        "xpath": "//(xsl:variable | xsl:param | xsl:template | xsl:function)[matches(@name, '^([^:]*:)?[0-9]')]",
+        "xpath": "//(xsl:variable | xsl:param | xsl:template | xsl:function)[matches(@name, '^(Q[{][^}]*[}]|[^:{]*:)?[0-9]')]",
         "severity": "error",
         "preset": "recommended",
         "message": "A variable, parameter, function, or template name starts with a digit, so no processor loads this stylesheet. Rename it to start with a letter."
@@ -429,10 +429,10 @@
         "message": "An xsl:when or xsl:otherwise is valid only as a child of xsl:choose. Move it into an xsl:choose, or use xsl:if."
       },
       "with-param-use-in-invalid-parent-node": {
-        "xpath": "//xsl:with-param[not(parent::xsl:call-template or parent::xsl:apply-templates or parent::xsl:apply-imports or parent::xsl:next-match or parent::xsl:next-iteration)] | //xsl:with-param[parent::xsl:apply-imports][xslint:version(.) < 2.0]",
+        "xpath": "//xsl:with-param[not(parent::xsl:call-template or parent::xsl:apply-templates or parent::xsl:apply-imports or parent::xsl:next-match or parent::xsl:next-iteration or parent::xsl:evaluate)] | //xsl:with-param[parent::xsl:apply-imports][xslint:version(.) < 2.0]",
         "severity": "error",
         "preset": "recommended",
-        "message": "xsl:with-param is allowed only within xsl:call-template, xsl:apply-templates, xsl:next-match, xsl:next-iteration, or an xsl:apply-imports whose version in force is 2.0 or later. Move it into a call, or raise that version."
+        "message": "xsl:with-param stands under an element taking no parameters at the version in force, which a processor of that version refuses. Move it into a call, or raise the version."
       },
       "with-param-without-name": {
         "xpath": "//xsl:with-param[not(@name) and not(@_name)]",

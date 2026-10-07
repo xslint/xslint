@@ -8,8 +8,8 @@
  * spelling the vocabulary answers off the walk, `REFUSED` every one it does
  * not beside what puts it out of reach, and an entry crossing over fails
  * (#811). A third gate holds what the note atop `src/predicates.js` states of
- * the vocabulary's reach, 44 of 56, to `checks.json`; the `xpath` kind alone
- * answers 42 of 53, which no run sees. Whether an answer is correct is
+ * the vocabulary's reach, 43 of 56, to `checks.json`; the `xpath` kind alone
+ * answers 41 of 53, which no run sees. Whether an answer is correct is
  * `CANDIDATES` in `test/selectors.test.js` with `HEADED` beside it, the
  * oracle, 167 rows here, a row with a head of its own being how a predicate
  * is handed an attribute when `AXIS` is one element step.

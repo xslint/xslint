@@ -1,0 +1,23 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: name-starts-with-numeric
+found:
+  amount: 2
+  positions: [ [ 7, 3 ], [ 12, 5 ] ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" version="3.0" id="style1">
+    <xsl:output encoding="UTF-8" method="xml"/>
+    <xsl:function name="Q{urn:1}go" as="xs:string">
+      <xsl:sequence select="'x'"/>
+    </xsl:function>
+    <xsl:function name="Q{urn:isbn:0451}7seas" as="xs:string">
+      <xsl:sequence select="'y'"/>
+    </xsl:function>
+    <xsl:template name="Q{http://x.org/2:9}voyage">
+      <xsl:param name="Q{urn:a:b:c}harbour"/>
+      <xsl:variable name="Q{}3rd" select="1"/>
+      <xsl:sequence select="Q{urn:1}go()"/>
+    </xsl:template>
+  </xsl:stylesheet>

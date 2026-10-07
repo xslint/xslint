@@ -16,4 +16,6 @@ Correct:
 <xsl:param name="first" select="'first'"/>
 ```
 
-The local part is judged, so `my:9lives` is reported as well.
+The local part is judged, so `my:9lives` is reported as well, and so is
+`Q{}9lives`. A digit inside the braces of `Q{urn:1}lives` is part of the
+namespace URI, and the name is sound.

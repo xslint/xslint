@@ -5,11 +5,10 @@ A single `xsl:call-template`, `xsl:apply-templates`, `xsl:apply-imports`, or
 children with matching `@name` is a static error — the processor cannot tell
 which value to bind — and rejects the stylesheet.
 
-XSLT 3.0 writes the name `_name` as readily as `name`, the underscore form an
-attribute value template a processor evaluates before it compiles anything. So
-`_name="{'colour'}"` beside `name="colour"` supplies one parameter twice and is
-refused the same way. A shadow name computed from a static parameter names
-whatever that parameter holds, and is not compared.
+The XSLT 3.0 shadow `_name="{'colour'}"` beside `name="colour"` supplies one
+parameter twice too. A shadow computed from a static parameter is not
+compared, nor is a parameter carrying a `use-when`, since a processor may
+leave it out.
 
 Incorrect:
 

@@ -7,6 +7,17 @@ project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Entries for releases before this file was introduced record their npm
 publication date only; detailed notes begin with the Unreleased section.
 
+## Unreleased
+
+- Stop four recommended checks misjudging XSLT 3.0. `name-starts-with-numeric`
+  reads the local part of a `Q{uri}local` name, so a digit in the URI no longer
+  fires and `Q{}9lives` does; `with-param-use-in-invalid-parent-node` admits
+  `xsl:evaluate`; `duplicate-with-param-name` skips a parameter carrying a
+  `use-when`, as `duplicate-param-name` does; and
+  `missing-or-empty-name` asks a name of `xsl:element`, `xsl:attribute`,
+  `xsl:processing-instruction`, and `xsl:namespace` too, where the last two may
+  still leave it empty (#1199).
+
 ## 0.6.0 - 2026-09-30
 
 - Export `stylesheetsOf` and `sourceOf`, the discovery and the source building
@@ -827,8 +838,8 @@ publication date only; detailed notes begin with the Unreleased section.
   with it (#559).
 
 - **Breaking:** rename `variable-or-param-without-name` to
-  `missing-or-empty-name` and widen it to all twelve XSLT elements that take
-  an `@name`, an empty value counting as a missing one; add
+  `missing-or-empty-name` and widen it to the XSLT elements that take an
+  `@name`, an empty value counting as a missing one; add
   `missing-or-empty-href` beside it for an `xsl:import` or `xsl:include`
   written without one, which used to crash the run (#838, #597).
 
