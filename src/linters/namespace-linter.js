@@ -184,11 +184,54 @@ const used = function(elements, read, prefix) {
 }
 
 /**
- * Lint the corpus for namespace prefixes declared on the stylesheet but used
- * nowhere, reporting one defect per dead declaration with the fix that deletes
- * it. The span to cut is read from the source by `deletion`, so either
- * delimiter and any gap around the `=` is deleted rather than declined (#594);
- * where it stands is read the same way, so report and fix agree (#681).
+ * Whether the element is top-level data or stands inside it: a non-XSLT child
+ * of an XSLT root, which a processor never instantiates (#1006).
+ * @param {Element} element - Element to test
+ * @return {boolean} - True for data outside every sequence constructor
+ */
+const documentary = function(element) {
+  const xsl = element.ownerDocument
+  let top = element
+  while (top.parentNode !== xsl && top.parentNode.parentNode !== xsl) {
+    top = top.parentNode
+  }
+  return xsl.documentElement.namespaceURI === XSLT &&
+    top.namespaceURI !== XSLT
+}
+
+/**
+ * Whether `#all` excludes every namespace from the output of an element: a
+ * prefix list on itself or on an ancestor names it.
+ * @param {Element} element - Element to test
+ * @return {boolean} - True when no namespace of it reaches the output
+ */
+const shut = function(element) {
+  let all = false
+  for (let node = element; node.nodeType === node.ELEMENT_NODE;
+    node = node.parentNode) {
+    all = all || listed(node).includes('#all')
+  }
+  return all
+}
+
+/**
+ * Whether the output carries the namespaces the root declares: a literal
+ * result element copies every one in scope that no list excludes, so deleting
+ * one that names nothing still changes what the stylesheet writes (#1174).
+ * @param {Array.<Element>} elements - Every element of the document
+ * @return {boolean} - True when a literal result element copies them
+ */
+const carried = function(elements) {
+  return elements.some((element) => element.namespaceURI !== XSLT &&
+    !documentary(element) && !shut(element))
+}
+
+/**
+ * Lint the corpus for prefixes the stylesheet declares, uses nowhere and
+ * carries into no output (#1174), each with the fix that deletes it. The span
+ * to cut is read from the source by `deletion`, so either delimiter and any gap
+ * around the `=` is deleted rather than declined (#594); where it stands is
+ * read the same way, so report and fix agree (#681).
  * @param {Array.<{file: string, content: string, xsl: Document}>} corpus -
  *  Parsed stylesheets
  * @param {Array.<string>} suppressions - Array of suppressed checks
@@ -202,9 +245,11 @@ const lintByNamespace = function(corpus, suppressions = []) {
     for (const {file, content, xsl} of corpus) {
       const elements = Array.from(xsl.getElementsByTagName('*'))
       const read = readOf(xsl, elements)
+      const output = carried(elements)
       for (const attribute of Array.from(xsl.documentElement.attributes)) {
         const prefix = declared(attribute.name)
-        if (prefix && prefix !== 'xml' && !used(elements, read, prefix)) {
+        if (prefix && prefix !== 'xml' && !used(elements, read, prefix) &&
+          !(output && attribute.value !== XSLT)) {
           const where = standsAt(attribute, content)
           defects.push({
             name: CHECK,

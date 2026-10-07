@@ -22,4 +22,7 @@ Correct:
 A prefix is used where it qualifies an element name, an attribute name, or a
 name inside an expression or value template (a mention in an XPath comment
 qualifies nothing), and where `exclude-result-prefixes`,
-`extension-element-prefixes` or `xsl:namespace-alias` names it.
+`extension-element-prefixes` or `xsl:namespace-alias` names it. A literal
+result element copies every namespace in scope into the output unless `#all`
+excludes it, so a declaration in its scope is used too, and removing it
+changes what the stylesheet writes.

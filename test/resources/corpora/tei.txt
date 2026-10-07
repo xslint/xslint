@@ -761,8 +761,6 @@ docx/from/docxtotei.xsl:599:14 use-choose-without-otherwise
 docx/from/dynamic/tests/xspec/test-toc-scenario.xsl:2:1 missing-id-in-stylesheet
 docx/from/dynamic/tests/xspec/test-toc-scenario.xsl:2:17 leaking-result-namespace
 docx/from/dynamic/tests/xspec/test-toc-scenario.xsl:6:17 leaking-result-namespace
-docx/from/dynamic/tests/xspec/test-toc-scenario.xsl:7:17 redundant-namespace-declarations fix ""
-docx/from/dynamic/tests/xspec/test-toc-scenario.xsl:8:17 redundant-namespace-declarations fix ""
 docx/from/dynamic/tests/xspec/test-toc-scenario.xsl:17:4 unused-named-template
 docx/from/fields.xsl:2:1 missing-id-in-stylesheet
 docx/from/fields.xsl:78:7 setting-value-of-variable-incorrectly
@@ -1700,7 +1698,6 @@ docx/from/toc.xsl:192:7 setting-value-of-variable-incorrectly
 docx/from/wordsections.xsl:2:1 missing-id-in-stylesheet
 docx/misc/check-docx-and-annotate.xsl:2:1 missing-id-in-stylesheet
 docx/misc/check-docx-and-annotate.xsl:2:1 too-many-templates
-docx/misc/check-docx-and-annotate.xsl:26:17 redundant-namespace-declarations fix ""
 docx/misc/check-docx-and-annotate.xsl:33:5 setting-value-of-variable-incorrectly
 docx/misc/check-docx-and-annotate.xsl:34:38 undefined-variable
 docx/misc/check-docx-and-annotate.xsl:44:53 undefined-variable
@@ -2360,7 +2357,6 @@ docx/to/tagdocs.xsl:2:1 missing-id-in-stylesheet
 docx/to/tagdocs.xsl:42:2 not-creating-attribute-correctly
 docx/to/tagdocs.xsl:46:2 not-creating-attribute-correctly
 docx/to/tei-docx-verbatim.xsl:2:1 missing-id-in-stylesheet
-docx/to/tei-docx-verbatim.xsl:13:3 redundant-namespace-declarations fix ""
 docx/to/tei-docx-verbatim.xsl:64:9 unused-function-template-parameter
 docx/to/tei-docx-verbatim.xsl:70:9 unused-function-template-parameter
 docx/to/teitodocx.xsl:2:1 missing-id-in-stylesheet
@@ -2547,10 +2543,6 @@ docx/tools/fixstyle.xsl:44:57 use-double-slash
 docx/tools/listgraphics.xsl:2:1 missing-id-in-stylesheet
 docx/tools/listgraphics.xsl:2:17 leaking-result-namespace
 docx/tools/listgraphics.xsl:3:17 leaking-result-namespace
-docx/tools/listgraphics.xsl:3:17 redundant-namespace-declarations fix ""
-docx/tools/listgraphics.xsl:4:17 redundant-namespace-declarations fix ""
-docx/tools/listgraphics.xsl:5:17 redundant-namespace-declarations fix ""
-docx/tools/listgraphics.xsl:6:17 redundant-namespace-declarations fix ""
 docx/tools/listgraphics.xsl:7:3 leaking-result-namespace
 docx/tools/listgraphics.xsl:64:5 short-names
 docx/variables.xsl:2:1 missing-id-in-stylesheet
@@ -2916,7 +2908,6 @@ html/html_core.xsl:1920:11 text-outside-xsl-text suggestion "<xsl:text>[n.d.]  <
 html/html_core.xsl:1926:9 text-outside-xsl-text
 html/html_core.xsl:1927:9 text-outside-xsl-text suggestion "<xsl:text>: </xsl:text>"
 html/html_corpus.xsl:2:1 missing-id-in-stylesheet
-html/html_corpus.xsl:5:17 redundant-namespace-declarations fix ""
 html/html_corpus.xsl:105:13 setting-value-of-variable-incorrectly
 html/html_dictionaries.xsl:2:1 missing-id-in-stylesheet
 html/html_dictionaries.xsl:2:1 stylesheet-has-no-templates
@@ -2943,13 +2934,11 @@ html/html_figures.xsl:397:7 use-choose-without-otherwise
 html/html_figures.xsl:448:13 short-names
 html/html_figures.xsl:463:17 not-creating-attribute-correctly
 html/html_header.xsl:2:1 missing-id-in-stylesheet
-html/html_header.xsl:5:17 redundant-namespace-declarations fix ""
 html/html_header.xsl:97:7 setting-value-of-variable-incorrectly
 html/html_header.xsl:138:3 text-outside-xsl-text suggestion "<xsl:text>: </xsl:text>"
 html/html_header.xsl:139:7 short-names
 html/html_linking.xsl:2:1 missing-id-in-stylesheet
 html/html_namesdates.xsl:2:1 missing-id-in-stylesheet
-html/html_namesdates.xsl:5:17 redundant-namespace-declarations fix ""
 html/html_nets.xsl:2:1 missing-id-in-stylesheet
 html/html_nets.xsl:2:17 redundant-namespace-declarations fix ""
 html/html_nets.xsl:2:79 redundant-namespace-declarations fix ""
@@ -3081,7 +3070,6 @@ html/html_tagdocs.xsl:278:2 short-names
 html/html_tagdocs.xsl:363:4 setting-value-of-variable-incorrectly
 html/html_tagdocs.xsl:371:4 setting-value-of-variable-incorrectly
 html/html_textcrit.xsl:2:1 missing-id-in-stylesheet
-html/html_textcrit.xsl:10:17 redundant-namespace-declarations fix ""
 html/html_textstructure.xsl:2:1 missing-id-in-stylesheet
 html/html_textstructure.xsl:2:1 too-many-templates
 html/html_textstructure.xsl:132:32 count-compared-to-zero fix "exists(id($requestedID))"
@@ -4064,8 +4052,6 @@ odds/teiodds.xsl:2459:9 text-outside-xsl-text suggestion "<xsl:text>false</xsl:t
 odds/teiodds.xsl:2460:9 text-outside-xsl-text suggestion "<xsl:text>false</xsl:text>"
 odds/teiodds.xsl:2461:9 text-outside-xsl-text suggestion "<xsl:text>true</xsl:text>"
 odds/translate-odd.xsl:10:4 missing-id-in-stylesheet
-odds/translate-odd.xsl:10:20 redundant-namespace-declarations fix ""
-odds/translate-odd.xsl:12:17 redundant-namespace-declarations fix ""
 odt/expandxsl.xsl:2:1 missing-id-in-stylesheet
 odt/expandxsl.xsl:2:1 not-using-output
 odt/fixgraphics.xsl:2:1 missing-id-in-stylesheet
@@ -4127,26 +4113,11 @@ odt/teitoodt.xsl:2:1 missing-id-in-stylesheet
 odt/teitoodt.xsl:2:1 too-many-templates
 odt/teitoodt.xsl:2:17 leaking-result-namespace
 odt/teitoodt.xsl:2:110 leaking-result-namespace
-odt/teitoodt.xsl:2:162 redundant-namespace-declarations fix ""
-odt/teitoodt.xsl:2:268 redundant-namespace-declarations fix ""
-odt/teitoodt.xsl:2:314 redundant-namespace-declarations fix ""
 odt/teitoodt.xsl:2:437 leaking-result-namespace
-odt/teitoodt.xsl:2:508 redundant-namespace-declarations fix ""
-odt/teitoodt.xsl:2:568 redundant-namespace-declarations fix ""
-odt/teitoodt.xsl:2:676 redundant-namespace-declarations fix ""
 odt/teitoodt.xsl:2:807 leaking-result-namespace
 odt/teitoodt.xsl:2:852 leaking-result-namespace
-odt/teitoodt.xsl:2:893 redundant-namespace-declarations fix ""
 odt/teitoodt.xsl:2:974 leaking-result-namespace
-odt/teitoodt.xsl:2:1017 redundant-namespace-declarations fix ""
 odt/teitoodt.xsl:2:1059 leaking-result-namespace
-odt/teitoodt.xsl:2:1107 redundant-namespace-declarations fix ""
-odt/teitoodt.xsl:2:1153 redundant-namespace-declarations fix ""
-odt/teitoodt.xsl:2:1198 redundant-namespace-declarations fix ""
-odt/teitoodt.xsl:2:1245 redundant-namespace-declarations fix ""
-odt/teitoodt.xsl:2:1562 redundant-namespace-declarations fix ""
-odt/teitoodt.xsl:2:1607 redundant-namespace-declarations fix ""
-odt/teitoodt.xsl:2:1652 redundant-namespace-declarations fix ""
 odt/teitoodt.xsl:2:1706 leaking-result-namespace
 odt/teitoodt.xsl:2:1746 leaking-result-namespace
 odt/teitoodt.xsl:129:3 unused-variable
@@ -4501,7 +4472,6 @@ profiles/enrich/latex/to.xsl:2:1 missing-id-in-stylesheet
 profiles/enrich/latex/to.xsl:69:4 text-outside-xsl-text suggestion "<xsl:text>\n\\usepackage{makeidx}\n\\makeindex\n\\defaultfontfeatures{Scale=MatchLowercase}\n%\\setromanfont{DejaVu Serif}\n%\\setsansfont{DejaVu Sans}\n\\setmonofont{DejaVu Sans Mono}\n%\\setmonofont[Scale=0.9]{Lucida Sans Typewriter}\n%\\setsansfont[Scale=0.85]{Lucida Sans}\n%\\setromanfont{Times New Roman}\n\\setromanfont{Minion Pro}\n%\\setmonofont{CourierStd}\n\\setsansfont{Myriad Pro}\n\\setlength{\\headheight}{14pt}\n</xsl:text>"
 profiles/enrich/latex/to.xsl:214:7 text-outside-xsl-text suggestion "<xsl:text>\\mbox{}\\\\[-10pt] </xsl:text>"
 profiles/iso/check-docx.xsl:2:1 missing-id-in-stylesheet
-profiles/iso/check-docx.xsl:20:17 redundant-namespace-declarations fix ""
 profiles/iso/check-docx.xsl:24:5 broken-href
 profiles/iso/check-docx.xsl:68:5 setting-value-of-variable-incorrectly
 profiles/iso/check-docx.xsl:147:9 setting-value-of-variable-incorrectly
@@ -4518,7 +4488,6 @@ profiles/iso/docx/fixstyle.xsl:84:57 use-double-slash
 profiles/iso/docx/from-pass2.xsl:2:1 missing-id-in-stylesheet
 profiles/iso/docx/from-pass2.xsl:2:1 too-many-templates
 profiles/iso/docx/from-pass2.xsl:14:17 leaking-result-namespace suggestion "a pic rel ve o teidocx r m v wp w10 w wne mml vt cals tbx iso custprops tei"
-profiles/iso/docx/from-pass2.xsl:24:17 redundant-namespace-declarations fix ""
 profiles/iso/docx/from-pass2.xsl:125:6 text-outside-xsl-text suggestion "<xsl:text>dated</xsl:text>"
 profiles/iso/docx/from-pass2.xsl:126:6 text-outside-xsl-text suggestion "<xsl:text>undated</xsl:text>"
 profiles/iso/docx/from-pass2.xsl:174:66 scans-whole-document
@@ -4530,7 +4499,6 @@ profiles/iso/docx/from-pass3.xsl:24:17 redundant-namespace-declarations fix ""
 profiles/iso/docx/from-pass3.xsl:88:7 use-choose-without-otherwise
 profiles/iso/docx/from.xsl:2:1 missing-id-in-stylesheet
 profiles/iso/docx/from.xsl:2:1 too-many-templates
-profiles/iso/docx/from.xsl:24:17 redundant-namespace-declarations fix ""
 profiles/iso/docx/from.xsl:154:4 text-outside-xsl-text suggestion "<xsl:text>en</xsl:text>"
 profiles/iso/docx/from.xsl:159:4 text-outside-xsl-text suggestion "<xsl:text>ru</xsl:text>"
 profiles/iso/docx/from.xsl:160:4 text-outside-xsl-text suggestion "<xsl:text>fr</xsl:text>"
@@ -4913,9 +4881,6 @@ profiles/iso/html/web.xsl:325:3 unused-named-template
 profiles/iso/html/web.xsl:327:5 unused-function-template-parameter
 profiles/iso/iso2changes.xsl:2:1 missing-id-in-stylesheet
 profiles/iso/iso2changes.xsl:2:1 too-many-templates
-profiles/iso/iso2changes.xsl:3:3 redundant-namespace-declarations fix ""
-profiles/iso/iso2changes.xsl:4:3 redundant-namespace-declarations fix ""
-profiles/iso/iso2changes.xsl:5:3 redundant-namespace-declarations fix ""
 profiles/iso/iso2changes.xsl:10:17 leaking-result-namespace suggestion "tei cals tbx h"
 profiles/iso/iso2changes.xsl:62:7 unused-variable
 profiles/iso/iso2changes.xsl:132:16 use-choose-without-otherwise
@@ -4941,7 +4906,6 @@ profiles/iso/iso2rss.xsl:2:1 missing-id-in-stylesheet
 profiles/iso/iso2rss.xsl:2:1 not-using-output
 profiles/iso/iso2terms.xsl:2:1 missing-id-in-stylesheet
 profiles/iso/iso2terms.xsl:2:1 too-many-templates
-profiles/iso/iso2terms.xsl:3:17 redundant-namespace-declarations fix ""
 profiles/iso/iso2terms.xsl:60:7 unused-variable
 profiles/iso/iso2toc.xsl:2:1 missing-id-in-stylesheet
 profiles/iso/iso2toc.xsl:52:7 unused-variable
@@ -5088,10 +5052,6 @@ profiles/iso/schema/isotei-lite.xsl:8:17 redundant-namespace-declarations fix ""
 profiles/iso/schema/isotei-lite.xsl:63:7 text-outside-xsl-text suggestion "<xsl:text>/</xsl:text>"
 profiles/iso/schema/isotei-odd.xsl:2:1 missing-id-in-stylesheet
 profiles/iso/schema/isotei-odd.xsl:2:1 too-many-templates
-profiles/iso/schema/isotei-odd.xsl:4:17 redundant-namespace-declarations fix ""
-profiles/iso/schema/isotei-odd.xsl:5:17 redundant-namespace-declarations fix ""
-profiles/iso/schema/isotei-odd.xsl:6:17 redundant-namespace-declarations fix ""
-profiles/iso/schema/isotei-odd.xsl:7:17 redundant-namespace-declarations fix ""
 profiles/iso/schema/isotei-odd.xsl:567:38 name-compared-to-string suggestion "self::*:hi"
 profiles/iso/schema/isotei-odd.xsl:586:38 name-compared-to-string suggestion "self::*:hi"
 profiles/iso/schema/isotei-odd.xsl:623:38 name-compared-to-string suggestion "self::*:hi"
@@ -5134,11 +5094,6 @@ profiles/iso/schema/isotei-odd.xsl:1738:28 redundant-whitespace fix " "
 profiles/iso/schema/isotei-odd.xsl:1821:7 text-outside-xsl-text suggestion "<xsl:text>/</xsl:text>"
 profiles/iso/schema/isotei.xsl:2:1 missing-id-in-stylesheet
 profiles/iso/schema/isotei.xsl:2:1 too-many-templates
-profiles/iso/schema/isotei.xsl:4:17 redundant-namespace-declarations fix ""
-profiles/iso/schema/isotei.xsl:5:17 redundant-namespace-declarations fix ""
-profiles/iso/schema/isotei.xsl:6:17 redundant-namespace-declarations fix ""
-profiles/iso/schema/isotei.xsl:7:17 redundant-namespace-declarations fix ""
-profiles/iso/schema/isotei.xsl:8:17 redundant-namespace-declarations fix ""
 profiles/iso/schema/isotei.xsl:568:38 name-compared-to-string suggestion "self::*:hi"
 profiles/iso/schema/isotei.xsl:587:38 name-compared-to-string suggestion "self::*:hi"
 profiles/iso/schema/isotei.xsl:624:38 name-compared-to-string suggestion "self::*:hi"
@@ -5181,14 +5136,8 @@ profiles/iso/schema/isotei.xsl:1739:28 redundant-whitespace fix " "
 profiles/iso/schema/isotei.xsl:1822:7 text-outside-xsl-text suggestion "<xsl:text>/</xsl:text>"
 profiles/iso/schema/test.xsl:2:1 missing-id-in-stylesheet
 profiles/iso/schema/test.xsl:2:1 too-many-templates
-profiles/iso/schema/test.xsl:2:17 redundant-namespace-declarations fix ""
-profiles/iso/schema/test.xsl:4:17 redundant-namespace-declarations fix ""
-profiles/iso/schema/test.xsl:5:17 redundant-namespace-declarations fix ""
-profiles/iso/schema/test.xsl:6:17 redundant-namespace-declarations fix ""
-profiles/iso/schema/test.xsl:7:17 redundant-namespace-declarations fix ""
 profiles/iso/schema/test.xsl:8:17 leaking-result-namespace
 profiles/iso/schema/test.xsl:9:17 leaking-result-namespace
-profiles/iso/schema/test.xsl:10:17 redundant-namespace-declarations fix ""
 profiles/iso/schema/test.xsl:58:4 setting-value-of-variable-incorrectly
 profiles/iso/schema/test.xsl:101:90 redundant-whitespace fix " "
 profiles/iso/schema/test.xsl:110:10 text-outside-xsl-text suggestion "<xsl:text>@</xsl:text>"
@@ -5197,14 +5146,8 @@ profiles/iso/schema/test.xsl:151:7 text-outside-xsl-text suggestion "<xsl:text>/
 profiles/iso/schema/test.xsl:181:1 text-outside-xsl-text suggestion "<xsl:text>U</xsl:text>"
 profiles/iso/schema/test2.xsl:2:1 missing-id-in-stylesheet
 profiles/iso/schema/test2.xsl:2:1 too-many-templates
-profiles/iso/schema/test2.xsl:2:17 redundant-namespace-declarations fix ""
-profiles/iso/schema/test2.xsl:4:17 redundant-namespace-declarations fix ""
-profiles/iso/schema/test2.xsl:5:17 redundant-namespace-declarations fix ""
-profiles/iso/schema/test2.xsl:6:17 redundant-namespace-declarations fix ""
-profiles/iso/schema/test2.xsl:7:17 redundant-namespace-declarations fix ""
 profiles/iso/schema/test2.xsl:8:17 leaking-result-namespace
 profiles/iso/schema/test2.xsl:9:17 leaking-result-namespace
-profiles/iso/schema/test2.xsl:10:17 redundant-namespace-declarations fix ""
 profiles/iso/schema/test2.xsl:58:4 setting-value-of-variable-incorrectly
 profiles/iso/schema/test2.xsl:104:90 redundant-whitespace fix " "
 profiles/iso/schema/test2.xsl:113:10 text-outside-xsl-text suggestion "<xsl:text>@</xsl:text>"
@@ -6072,7 +6015,6 @@ tools/makegraphicsanttask.xsl:2:1 missing-id-in-stylesheet
 tools/makegraphicsanttask.xsl:2:1 not-using-output
 tools/makegraphicsanttask.xsl:2:17 leaking-result-namespace
 tools/makegraphicsanttask.xsl:3:3 leaking-result-namespace
-tools/makegraphicsanttask.xsl:4:3 redundant-namespace-declarations fix ""
 tools/makegraphicsanttask.xsl:95:9 short-names
 tools/makegraphicsanttask.xsl:139:5 setting-value-of-variable-incorrectly
 tools/makegraphicsanttask.xsl:139:5 short-names

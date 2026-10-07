@@ -102,7 +102,6 @@ anttools/xspec/generate-tests-utils.xsl:665:1 unused-function
 anttools/xspec/generate-xspec-tests.xsl:11:1 missing-id-in-stylesheet
 anttools/xspec/generate-xspec-tests.xsl:11:1 too-many-templates
 anttools/xspec/generate-xspec-tests.xsl:13:3 leaking-result-namespace
-anttools/xspec/generate-xspec-tests.xsl:18:3 redundant-namespace-declarations fix ""
 anttools/xspec/generate-xspec-tests.xsl:19:3 leaking-result-namespace
 anttools/xspec/generate-xspec-tests.xsl:92:4 unused-function-template-parameter
 anttools/xspec/generate-xspec-tests.xsl:94:28 redundant-whitespace fix ""
@@ -149,7 +148,6 @@ contrib/samples/assembly/assemble.xsl:341:21 string-length-compared-to-zero sugg
 contrib/samples/assembly/assemble.xsl:349:21 count-compared-to-zero fix "not($ref.content/*)"
 contrib/samples/assembly/assemble.xsl:386:13 use-choose-without-otherwise
 contrib/samples/assembly/topic-maker-chunk.xsl:1:1 missing-id-in-stylesheet
-contrib/samples/assembly/topic-maker-chunk.xsl:3:17 redundant-namespace-declarations fix ""
 contrib/samples/assembly/topic-maker-chunk.xsl:4:17 leaking-result-namespace suggestion "exsl d"
 contrib/samples/assembly/topic-maker-chunk.xsl:66:5 not-creating-attribute-correctly
 contrib/samples/assembly/topic-maker-chunk.xsl:69:5 not-creating-attribute-correctly
@@ -738,7 +736,6 @@ xsl/assembly/effectivity.xsl:295:36 string-length-compared-to-zero suggestion "$
 xsl/assembly/effectivity.xsl:304:33 string-length-compared-to-zero suggestion "$effectivity.vendor != ''"
 xsl/assembly/effectivity.xsl:313:35 string-length-compared-to-zero suggestion "$effectivity.wordsize != ''"
 xsl/assembly/topic-maker-chunk.xsl:1:1 missing-id-in-stylesheet
-xsl/assembly/topic-maker-chunk.xsl:4:17 redundant-namespace-declarations fix ""
 xsl/assembly/topic-maker-chunk.xsl:12:1 broken-href
 xsl/assembly/topic-maker-chunk.xsl:14:1 broken-href
 xsl/assembly/topic-maker-chunk.xsl:69:9 not-creating-attribute-correctly
@@ -1450,8 +1447,6 @@ xsl/fo/autoidx-kimber.xsl:157:59 string-length-compared-to-zero
 xsl/fo/autoidx-kimber.xsl:158:64 string-length-compared-to-zero
 xsl/fo/autoidx-kimber.xsl:158:64 string-length-compared-to-zero
 xsl/fo/autoidx-kosek.xsl:6:1 missing-id-in-stylesheet
-xsl/fo/autoidx-kosek.xsl:9:17 redundant-namespace-declarations fix ""
-xsl/fo/autoidx-kosek.xsl:10:17 redundant-namespace-declarations fix ""
 xsl/fo/autoidx-kosek.xsl:80:25 scans-whole-document
 xsl/fo/autoidx-kosek.xsl:82:44 string-length-compared-to-zero
 xsl/fo/autoidx-kosek.xsl:82:44 string-length-compared-to-zero
@@ -1584,7 +1579,6 @@ xsl/fo/autotoc.xsl:231:3 unused-variable
 xsl/fo/autotoc.xsl:938:24 unabbreviated-axis fix ""
 xsl/fo/autotoc.xsl:938:45 unabbreviated-axis fix ""
 xsl/fo/axf.xsl:2:1 missing-id-in-stylesheet
-xsl/fo/axf.xsl:5:3 redundant-namespace-declarations fix ""
 xsl/fo/axf.xsl:11:43 scans-whole-document
 xsl/fo/axf.xsl:11:54 scans-whole-document
 xsl/fo/axf.xsl:12:43 scans-whole-document
@@ -1756,7 +1750,6 @@ xsl/fo/fo.xsl:111:3 unused-function-template-parameter
 xsl/fo/footnote.xsl:2:1 missing-id-in-stylesheet
 xsl/fo/footnote.xsl:80:21 string-length-compared-to-zero suggestion "@label != ''"
 xsl/fo/fop.xsl:2:1 missing-id-in-stylesheet
-xsl/fo/fop.xsl:5:3 redundant-namespace-declarations fix ""
 xsl/fo/fop.xsl:26:3 setting-value-of-variable-incorrectly
 xsl/fo/fop1.xsl:2:1 missing-id-in-stylesheet
 xsl/fo/fop1.xsl:67:2 not-creating-attribute-correctly
@@ -2143,7 +2136,6 @@ xsl/fo/synop.xsl:962:3 unused-variable
 xsl/fo/synop.xsl:963:3 unused-variable
 xsl/fo/table.xsl:2:1 missing-id-in-stylesheet
 xsl/fo/table.xsl:2:1 too-many-templates
-xsl/fo/table.xsl:6:17 redundant-namespace-declarations fix ""
 xsl/fo/table.xsl:133:7 text-outside-xsl-text suggestion "<xsl:text>before</xsl:text>"
 xsl/fo/table.xsl:251:7 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
 xsl/fo/table.xsl:288:1 oversized-template
@@ -2214,7 +2206,6 @@ xsl/fo/verbatim.xsl:2:1 too-many-templates
 xsl/fo/verbatim.xsl:321:3 unused-variable
 xsl/fo/verbatim.xsl:371:7 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 xsl/fo/xep.xsl:2:1 missing-id-in-stylesheet
-xsl/fo/xep.xsl:5:3 redundant-namespace-declarations fix ""
 xsl/fo/xep.xsl:22:28 scans-whole-document
 xsl/fo/xep.xsl:22:39 scans-whole-document
 xsl/fo/xep.xsl:22:50 scans-whole-document
@@ -3264,24 +3255,6 @@ xsl/roundtrip/blocks2dbk.xsl:1701:5 unused-function-template-parameter
 xsl/roundtrip/blocks2dbk.xsl:1717:5 unused-function-template-parameter
 xsl/roundtrip/dbk2ooo.xsl:1:1 missing-id-in-stylesheet
 xsl/roundtrip/dbk2ooo.xsl:1:1 too-many-templates
-xsl/roundtrip/dbk2ooo.xsl:6:3 redundant-namespace-declarations fix ""
-xsl/roundtrip/dbk2ooo.xsl:7:3 redundant-namespace-declarations fix ""
-xsl/roundtrip/dbk2ooo.xsl:8:3 redundant-namespace-declarations fix ""
-xsl/roundtrip/dbk2ooo.xsl:9:3 redundant-namespace-declarations fix ""
-xsl/roundtrip/dbk2ooo.xsl:10:3 redundant-namespace-declarations fix ""
-xsl/roundtrip/dbk2ooo.xsl:11:3 redundant-namespace-declarations fix ""
-xsl/roundtrip/dbk2ooo.xsl:12:3 redundant-namespace-declarations fix ""
-xsl/roundtrip/dbk2ooo.xsl:14:3 redundant-namespace-declarations fix ""
-xsl/roundtrip/dbk2ooo.xsl:15:3 redundant-namespace-declarations fix ""
-xsl/roundtrip/dbk2ooo.xsl:16:3 redundant-namespace-declarations fix ""
-xsl/roundtrip/dbk2ooo.xsl:18:3 redundant-namespace-declarations fix ""
-xsl/roundtrip/dbk2ooo.xsl:19:3 redundant-namespace-declarations fix ""
-xsl/roundtrip/dbk2ooo.xsl:20:3 redundant-namespace-declarations fix ""
-xsl/roundtrip/dbk2ooo.xsl:21:3 redundant-namespace-declarations fix ""
-xsl/roundtrip/dbk2ooo.xsl:22:3 redundant-namespace-declarations fix ""
-xsl/roundtrip/dbk2ooo.xsl:23:3 redundant-namespace-declarations fix ""
-xsl/roundtrip/dbk2ooo.xsl:24:3 redundant-namespace-declarations fix ""
-xsl/roundtrip/dbk2ooo.xsl:25:3 redundant-namespace-declarations fix ""
 xsl/roundtrip/dbk2ooo.xsl:105:5 unused-function-template-parameter
 xsl/roundtrip/dbk2ooo.xsl:130:3 unused-named-template
 xsl/roundtrip/dbk2ooo.xsl:132:5 unused-function-template-parameter
@@ -3299,7 +3272,6 @@ xsl/roundtrip/dbk2ooo.xsl:173:5 unused-function-template-parameter
 xsl/roundtrip/dbk2pages.xsl:1:1 missing-id-in-stylesheet
 xsl/roundtrip/dbk2pages.xsl:1:1 too-many-templates
 xsl/roundtrip/dbk2pages.xsl:3:3 leaking-result-namespace suggestion "doc rnd xi d"
-xsl/roundtrip/dbk2pages.xsl:6:3 redundant-namespace-declarations fix ""
 xsl/roundtrip/dbk2pages.xsl:26:3 broken-href
 xsl/roundtrip/dbk2pages.xsl:269:5 unused-function-template-parameter
 xsl/roundtrip/dbk2pages.xsl:292:5 unused-function-template-parameter
@@ -3318,10 +3290,6 @@ xsl/roundtrip/dbk2pages.xsl:418:9 text-outside-xsl-text suggestion "<xsl:text>pa
 xsl/roundtrip/dbk2wordml.xsl:1:1 missing-id-in-stylesheet
 xsl/roundtrip/dbk2wordml.xsl:1:1 too-many-templates
 xsl/roundtrip/dbk2wordml.xsl:3:3 leaking-result-namespace suggestion "doc d"
-xsl/roundtrip/dbk2wordml.xsl:5:3 redundant-namespace-declarations fix ""
-xsl/roundtrip/dbk2wordml.xsl:6:3 redundant-namespace-declarations fix ""
-xsl/roundtrip/dbk2wordml.xsl:10:3 redundant-namespace-declarations fix ""
-xsl/roundtrip/dbk2wordml.xsl:11:3 redundant-namespace-declarations fix ""
 xsl/roundtrip/dbk2wordml.xsl:28:3 broken-href
 xsl/roundtrip/dbk2wordml.xsl:57:7 not-creating-attribute-correctly
 xsl/roundtrip/dbk2wordml.xsl:68:13 text-outside-xsl-text suggestion "<xsl:text>Unknown</xsl:text>"
@@ -3514,7 +3482,6 @@ xsl/tools/xsl/build/xsl-pi-link.xsl:5:3 broken-href
 xsl/tools/xsl/build/xsl-pi-link.xsl:18:5 setting-value-of-variable-incorrectly
 xsl/tools/xsl/build/xsl2jref.xsl:2:1 missing-id-in-stylesheet
 xsl/tools/xsl/build/xsl2jref.xsl:2:1 too-many-templates
-xsl/tools/xsl/build/xsl2jref.xsl:6:17 redundant-namespace-declarations fix ""
 xsl/tools/xsl/build/xsl2jref.xsl:10:1 broken-href
 xsl/tools/xsl/build/xsl2jref.xsl:20:5 text-outside-xsl-text suggestion "<xsl:text>left</xsl:text>"
 xsl/tools/xsl/build/xsl2jref.xsl:21:5 text-outside-xsl-text suggestion "<xsl:text>right</xsl:text>"

@@ -17,6 +17,11 @@ publication date only; detailed notes begin with the Unreleased section.
   `missing-or-empty-name` asks a name of `xsl:element`, `xsl:attribute`,
   `xsl:processing-instruction`, and `xsl:namespace` too, where the last two may
   still leave it empty (#1199).
+- Stop `redundant-namespace-declarations` reporting, and its safe fix
+  deleting, a declaration a literal result element copies into the output.
+  Removing it changed what the stylesheet wrote; a declaration is still
+  reported where `#all` excludes it from every literal result element, or
+  where no such element exists (#1174).
 
 ## 0.6.0 - 2026-09-30
 

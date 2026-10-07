@@ -11,6 +11,6 @@ input: |-
   <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:dead = "urn:dead" xmlns:gone='urn:gone'
     xmlns:lost   =   "urn:lost" version="2.0">
     <xsl:template match="/">
-      <out/>
+      <xsl:comment/>
     </xsl:template>
   </xsl:stylesheet>

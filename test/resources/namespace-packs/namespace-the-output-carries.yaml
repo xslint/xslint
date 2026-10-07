@@ -4,16 +4,20 @@
 pack: redundant-namespace-declarations
 found:
   amount: 1
-  positions: [ [ 4, 3 ] ]
+  positions: [ [ 6, 3 ] ]
   fixes: [ "" ]
 input: |-
   <?xml version="1.0"?>
   <xsl:stylesheet
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-    xmlns:out="urn:out"
-    exclude-result-prefixes="#all"
+    xmlns:foo="urn:foo"
+    xmlns:bar="urn:bar"
+    xmlns:axsl="http://www.w3.org/1999/XSL/Transform"
     version="2.0">
-    <xsl:template match="/">
-      <zz exclude-result-prefixes="out"/>
+    <xsl:template match="/" exclude-result-prefixes="#all">
+      <quiet/>
+    </xsl:template>
+    <xsl:template match="item">
+      <out/>
     </xsl:template>
   </xsl:stylesheet>

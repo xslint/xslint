@@ -582,6 +582,11 @@ const APPLIED = [
  */
 const UNCHANGED = [
   {
+    name: 'cannot delete a namespace a literal result element carries out',
+    flag: '--fix-suggestions',
+    sheet: 'redundant-namespace-declarations-the-output-carries.xsl',
+  },
+  {
     name: 'cannot rewrite a literal a run behind an entity walks onto',
     flag: '--fix',
     sheet: 'an-entity-before-a-spaced-run.xsl',
