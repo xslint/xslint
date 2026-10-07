@@ -814,7 +814,7 @@ module.exports = function xslint(pths, options) {
     logger.info(`Recorded ${reported.length} defects in ${target}`)
     reported = []
   } else if (ledger) {
-    const {fresh, stale} = matched(
+    const {stale} = matched(
       drawn, sources, earlier, path.dirname(ledger), ranOf(settings),
     )
     if (options.baselinePrune) {
@@ -835,7 +835,9 @@ module.exports = function xslint(pths, options) {
     if (stale.length > 0 && !options.baselinePrune) {
       process.exitCode = 1
     }
-    reported = reported.filter((defect) => fresh.includes(defect))
+    reported = matched(
+      reported, sources, earlier, path.dirname(ledger), ranOf(settings),
+    ).fresh
   }
   logger.info(`Processed files: ${found.stylesheets.length}`)
   if (reported.length > 0) {

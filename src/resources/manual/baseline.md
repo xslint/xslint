@@ -34,6 +34,17 @@ check more often than recorded reports every defect of that check in it, since
 a count cannot say which one is new. Fixing one defect and adding another of
 the same check in the same file nets zero and passes.
 
+A count belongs to a path, so a renamed or moved sheet reports all its defects
+as new, and its old entries stay in the file. Once the gate lists nothing but
+the renamed sheet's defects, record the tree again in the same change:
+
+```bash
+xslint --baseline-write xslint-baseline.json src
+```
+
+The rewrite counts the sheet under its new path and drops the entries of the
+path that no longer exists.
+
 A baseline written by an earlier xslint, with line hashes where the counts
 stand, is refused. Delete it and record it again with `--baseline-write`.
 

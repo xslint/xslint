@@ -1116,6 +1116,43 @@ describe('xslint', function() {
       )
     })
   })
+  REWRITES.concat([{name: 'gate', flags: (file) => ['--baseline', file]}])
+    .forEach((row) => {
+      it(`should refuse a baseline of line hashes on a ${row.name}`, function() {
+        const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-'))
+        fs.copyFileSync(
+          'test/resources/baseline/recorded.xsl', path.join(dir, 'a.xsl'),
+        )
+        const file = path.join(dir, 'baseline.json')
+        fs.copyFileSync('test/resources/baseline/hashed.json', file)
+        const streams = xslintStreams(
+          ['--preset', 'all'].concat(row.flags(file), [dir]),
+        )
+        fs.rmSync(dir, {recursive: true, force: true})
+        assert.ok(
+          streams.stderr.includes('holds line hashes where counts stand'),
+          'read a baseline of line hashes as if it held counts',
+        )
+      })
+    })
+  it('should pass a fix that leaves only the recorded defects', function() {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'xslint-'))
+    fs.copyFileSync(
+      'test/resources/fix/double-slash-opening-a-branch.xsl',
+      path.join(dir, 'a.xsl'),
+    )
+    const file = path.join(dir, 'baseline.json')
+    fs.copyFileSync('test/resources/baseline/branched.json', file)
+    const status = xslintStatus([
+      '--only', 'starts-with-double-slash', '--baseline', file, '--fix',
+      '--max-warnings=0', dir,
+    ])
+    fs.rmSync(dir, {recursive: true, force: true})
+    assert.equal(
+      status, 0,
+      'reported as new a recorded defect the fix left in place',
+    )
+  })
   it('should record every check a run draws in the baseline', function() {
     const {dir, file} = baselined(['.'])
     let written = {}

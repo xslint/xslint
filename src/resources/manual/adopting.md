@@ -49,7 +49,7 @@ The build now fails on any defect the file does not record, and on any
 recorded one that is gone until its entry is dropped. Pass `--baseline` in CI
 rather than naming the file in `.xslint.yml`, so a run on a developer's
 machine still shows the whole debt. The [baseline guide](baseline.html) covers
-how defects are counted.
+how defects are counted and what to do when a sheet is renamed.
 
 Every pull request that fixes a defect drops the entries the fix left stale
 and commits the file:
