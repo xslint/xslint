@@ -206,7 +206,8 @@ The nightly `corpora` budgets, read off the wall clock, are the only timing.
   outranks `--only=<substring>` (or `only:`), which reports only those named.
   Either flag splits its value on commas, so a list means a repeat, and
   `settingsOf` and `lint` throw on a chosen substring that is empty or no check
-  name holds, `lint` on such a suppression too.
+  name holds. `lint` throws on a suppression no check name holds, and drops an
+  empty one with a warning.
 - `--preset` (or `preset:`) is `recommended` unless `all`. `--only` replaces it,
   a re-grade naming a check exactly adds to it, and `off` outranks both.
 - `.xslint.yml`, found by walking up or named by `--config`, turns checks
