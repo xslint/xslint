@@ -76,7 +76,8 @@ another sheet declares. A renamed sheet keeps its old defects once
 git sees the rename, and a file git does not track is new as a whole. A sheet
 of a submodule, or of any repository nested in the tree, is left out of the
 report, since that repository judges its own sheets, and so is a linked sheet
-whose target lies there or outside the repository.
+whose target lies there or outside the repository. A link the change only
+retargets is judged against its old target (#1196).
 
 Every path named must lie in one repository, and CI must fetch the history
 back to where the change left `<ref>`: with `actions/checkout`, set
