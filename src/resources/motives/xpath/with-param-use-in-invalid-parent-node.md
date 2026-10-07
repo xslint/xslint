@@ -2,7 +2,7 @@
 
 `xsl:with-param` passes a value to the template a call invokes, so it belongs
 only inside `xsl:call-template`, `xsl:apply-templates`, `xsl:apply-imports`,
-`xsl:next-match`, or `xsl:next-iteration`. Anywhere else a processor refuses
+`xsl:next-match`, `xsl:next-iteration`, or `xsl:evaluate`. Anywhere else a processor refuses
 the whole module, and the stylesheet runs no transformation at all.
 
 Incorrect:

@@ -3,8 +3,8 @@
 ---
 pack: missing-or-empty-name
 found:
-  amount: 8
-  positions: [ [ 4, 3 ], [ 5, 3 ], [ 7, 5 ], [ 9, 3 ], [ 12, 3 ], [ 13, 3 ], [ 14, 3 ], [ 15, 3 ] ]
+  amount: 12
+  positions: [ [ 4, 3 ], [ 5, 3 ], [ 7, 5 ], [ 9, 3 ], [ 12, 3 ], [ 13, 3 ], [ 14, 3 ], [ 15, 3 ], [ 17, 5 ], [ 18, 5 ], [ 19, 5 ], [ 20, 5 ] ]
 input: |-
   <?xml version="1.0"?>
   <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="3.0" id="style1">
@@ -21,4 +21,10 @@ input: |-
     <xsl:attribute-set/>
     <xsl:character-map/>
     <xsl:accumulator initial-value="0"/>
+    <xsl:template match="/">
+      <xsl:element/>
+      <xsl:attribute select="'abel'"/>
+      <xsl:processing-instruction select="'cauchy'"/>
+      <xsl:namespace select="'urn:galois'"/>
+    </xsl:template>
   </xsl:stylesheet>

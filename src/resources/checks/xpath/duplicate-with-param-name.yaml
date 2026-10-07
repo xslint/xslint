@@ -1,7 +1,10 @@
 # SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
 # SPDX-License-Identifier: MIT
 ---
-xpath: "//xsl:with-param[xslint:attribute(., 'name') = preceding-sibling::xsl:with-param/xslint:attribute(., 'name')]"
+xpath: >-
+  //xsl:with-param[some $sibling in preceding-sibling::xsl:with-param satisfies
+  xslint:attribute($sibling, 'name') = xslint:attribute(., 'name') and
+  not(xslint:conditional($sibling) or xslint:conditional(.))]
 severity: error
 preset: recommended
 message: A single call passes two xsl:with-param with the same @name. Each parameter can be supplied only once.

@@ -8,7 +8,7 @@
  * one candidate off the walk, or `undefined` where the engine must answer it,
  * a fontoxpath call costing about 7 us for what a property read answers in
  * nanoseconds once #811 made the tail the whole cost. Off the parse, each of
- * the 56 distinct predicates in the tree is compiled once a run; 44 of them
+ * the 56 distinct predicates in the tree is compiled once a run; 43 of them
  * answer off the walk. Over-acceptance is a wrong report where
  * under-acceptance is only the engine call it was, so a regex, a bare
  * `normalize-space` (#881), an absolute path and an element's string value
