@@ -587,6 +587,16 @@ const UNCHANGED = [
     sheet: 'redundant-namespace-declarations-the-output-carries.xsl',
   },
   {
+    name: 'cannot trust #all to keep a namespace out of a 1.0 output',
+    flag: '--fix-suggestions',
+    sheet: 'redundant-namespace-declarations-all-in-xslt-1.xsl',
+  },
+  {
+    name: 'cannot delete a namespace a computed element name resolves',
+    flag: '--fix-suggestions',
+    sheet: 'redundant-namespace-declarations-a-computed-name.xsl',
+  },
+  {
     name: 'cannot rewrite a literal a run behind an entity walks onto',
     flag: '--fix',
     sheet: 'an-entity-before-a-spaced-run.xsl',

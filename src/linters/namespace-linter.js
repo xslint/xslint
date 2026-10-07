@@ -6,7 +6,7 @@
 const {expressionsOf} = require('../attributes')
 const {metaOf, suppressed} = require('../checks')
 const {deletion, standsAt} = require('../fixes')
-const {documentary} = require('../literals')
+const {carried} = require('../literals')
 const {logger} = require('../logger')
 const {parseOf} = require('../syntax')
 const {GAPS, NAMED, TOKENS} = require('../tokens')
@@ -185,35 +185,46 @@ const used = function(elements, read, prefix) {
 }
 
 /**
- * Whether `#all` excludes every namespace from the output of an element: a
- * prefix list on itself or on an ancestor names it.
- * @param {Element} element - Element to test
- * @return {boolean} - True when no namespace of it reaches the output
+ * The instructions that resolve a prefix at run time against the namespaces
+ * in scope, each with the attribute that hands them a namespace instead: a
+ * computed `xsl:element` or `xsl:attribute` name, and any `xsl:evaluate`.
+ * @type {Map.<string, {guard: string, open: function(Element): boolean}>}
  */
-const shut = function(element) {
-  let all = false
-  for (let node = element; node.nodeType === node.ELEMENT_NODE;
-    node = node.parentNode) {
-    all = all || listed(node).includes('#all')
-  }
-  return all
+const RESOLVERS = new Map([
+  ['element', {guard: 'namespace', open: (element) => computed(element)}],
+  ['attribute', {guard: 'namespace', open: (element) => computed(element)}],
+  ['evaluate', {guard: 'namespace-context', open: () => true}],
+])
+
+/**
+ * Whether an element's name is computed: a value template in `name`, or a
+ * shadow `_name`, so no scan can tell which prefix it spells.
+ * @param {Element} element - The `xsl:element` or `xsl:attribute`
+ * @return {boolean} - True when the name is known only at run time
+ */
+const computed = function(element) {
+  return (element.getAttribute('name') ?? '').includes('{') ||
+    element.hasAttribute('_name')
 }
 
 /**
- * Whether the output carries the namespaces the root declares: a literal
- * result element copies every one in scope that no list excludes, so deleting
- * one that names nothing still changes what the stylesheet writes (#1174).
+ * Whether some instruction resolves a prefix at run time, so a declaration
+ * nothing names may still be the one it needs (#1174).
  * @param {Array.<Element>} elements - Every element of the document
- * @return {boolean} - True when a literal result element copies them
+ * @return {boolean} - True when a prefix is resolved past every scan
  */
-const carried = function(elements) {
-  return elements.some((element) => element.namespaceURI !== XSLT &&
-    !documentary(element) && !shut(element))
+const resolving = function(elements) {
+  return elements.some((element) => {
+    const resolver = RESOLVERS.get(element.localName)
+    return element.namespaceURI === XSLT && resolver !== undefined &&
+      !element.hasAttribute(resolver.guard) &&
+      !element.hasAttribute(`_${resolver.guard}`) && resolver.open(element)
+  })
 }
 
 /**
- * Lint the corpus for prefixes the stylesheet declares, uses nowhere and
- * carries into no output (#1174), each with the fix that deletes it. The span
+ * Lint the corpus for prefixes the stylesheet declares and uses nowhere, each
+ * with the fix that deletes it unless the output carries it (#1174). The span
  * to cut is read from the source by `deletion`, so either delimiter and any gap
  * around the `=` is deleted rather than declined (#594); where it stands is
  * read the same way, so report and fix agree (#681).
@@ -231,20 +242,24 @@ const lintByNamespace = function(corpus, suppressions = []) {
       const elements = Array.from(xsl.getElementsByTagName('*'))
       const read = readOf(xsl, elements)
       const output = carried(elements)
+      const open = resolving(elements)
       for (const attribute of Array.from(xsl.documentElement.attributes)) {
         const prefix = declared(attribute.name)
-        if (prefix && prefix !== 'xml' && !used(elements, read, prefix) &&
-          !(output && attribute.value !== XSLT)) {
+        if (prefix && prefix !== 'xml' && !open &&
+          !used(elements, read, prefix)) {
           const where = standsAt(attribute, content)
-          defects.push({
+          const defect = {
             name: CHECK,
             severity: META.severity,
             message: META.message,
             file: file,
             line: where.line,
             pos: where.pos,
-            fix: deletion(attribute, content),
-          })
+          }
+          if (!output || attribute.value === XSLT) {
+            defect.fix = deletion(attribute, content)
+          }
+          defects.push(defect)
         }
       }
     }

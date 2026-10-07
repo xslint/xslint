@@ -273,6 +273,7 @@ src/main/plugins/org.dita.html5/xsl/syntax-braces.xsl:233:21 count-compared-to-z
 src/main/plugins/org.dita.html5/xsl/syntax-braces.xsl:244:3 unused-named-template
 src/main/plugins/org.dita.html5/xsl/syntax-braces.xsl:246:27 scans-whole-document
 src/main/plugins/org.dita.html5/xsl/syntax-svg.xsl:9:1 missing-id-in-stylesheet
+src/main/plugins/org.dita.html5/xsl/syntax-svg.xsl:11:17 redundant-namespace-declarations
 src/main/plugins/org.dita.html5/xsl/syntax-svg.xsl:53:5 blank-nested-if
 src/main/plugins/org.dita.html5/xsl/syntax-svg.xsl:53:70 text-outside-xsl-text suggestion "<xsl:text> | </xsl:text>"
 src/main/plugins/org.dita.html5/xsl/syntax-svg.xsl:53:84 count-compared-to-zero fix "exists(preceding-sibling::*)"
@@ -458,7 +459,6 @@ src/main/plugins/org.dita.pdf2/cfg/fo/attrs/hi-domain-attr.xsl:34:1 missing-id-i
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/index-attr.xsl:34:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/index-attr.xsl:35:67 redundant-namespace-declarations fix ""
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/layout-masters-attr.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/cfg/fo/attrs/layout-masters-attr.xsl:10:17 redundant-namespace-declarations fix ""
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/learning-elements-attr.xsl:34:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/learning-elements-attr.xsl:35:5 redundant-namespace-declarations fix ""
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/links-attr.xsl:34:1 missing-id-in-stylesheet
@@ -1003,6 +1003,7 @@ src/main/plugins/org.dita.xhtml/xsl/xslhtml/syntax-braces.xsl:194:81 count-compa
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/syntax-braces.xsl:204:1 unused-named-template
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/syntax-braces.xsl:206:25 scans-whole-document
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/syntax-svg.xsl:10:1 missing-id-in-stylesheet
+src/main/plugins/org.dita.xhtml/xsl/xslhtml/syntax-svg.xsl:11:31 redundant-namespace-declarations
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/syntax-svg.xsl:64:3 blank-nested-if
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/syntax-svg.xsl:64:68 text-outside-xsl-text suggestion "<xsl:text> | </xsl:text>"
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/syntax-svg.xsl:64:82 count-compared-to-zero fix "exists(preceding-sibling::*)"

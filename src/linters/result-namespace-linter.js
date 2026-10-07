@@ -5,7 +5,7 @@
 
 const {metaOf, suppressed} = require('../checks')
 const {standsAt, substitution} = require('../fixes')
-const {documentary} = require('../literals')
+const {extensionsOf, literal} = require('../literals')
 const {GAPS} = require('../tokens')
 const {logger} = require('../logger')
 
@@ -58,19 +58,6 @@ const prefixOf = function(name) {
     prefix = name.slice(0, name.indexOf(':'))
   }
   return prefix
-}
-
-/**
- * Whether the element is a literal result element — a non-XSLT element that is
- * neither an extension instruction nor top-level data, so it is copied into
- * the output and carries the stylesheet's in-scope namespaces with it.
- * @param {Element} element - Element to test
- * @param {Set.<string>} extension - Extension-element prefixes
- * @return {boolean} - True for a literal result element
- */
-const literal = function(element, extension) {
-  return element.namespaceURI !== XSLT && !extension.has(element.prefix) &&
-    !documentary(element)
 }
 
 /**
@@ -224,10 +211,7 @@ const lintByResultNamespace = function(corpus, suppressions = []) {
     for (const {file, content, xsl} of corpus) {
       const root = xsl.documentElement
       const elements = Array.from(xsl.getElementsByTagName('*'))
-      const extension = new Set(
-        (prefixes(root, 'extension-element-prefixes')?.value ?? '')
-          .split(GAPS),
-      )
+      const extension = extensionsOf(root)
       const excluded = new Set(
         (prefixes(root, 'exclude-result-prefixes')?.value ?? '').split(GAPS),
       )

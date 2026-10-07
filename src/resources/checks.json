@@ -114,7 +114,7 @@
       "redundant-namespace-declarations": {
         "severity": "warning",
         "preset": "all",
-        "message": "The xsl:stylesheet declares a namespace prefix that nothing uses and no output carries. Remove the redundant xmlns declaration.",
+        "message": "The xsl:stylesheet declares a namespace prefix that nothing in it uses. Remove the declaration, or exclude the prefix where a literal result element copies it out.",
         "fix": "safe"
       },
       "redundant-whitespace": {
