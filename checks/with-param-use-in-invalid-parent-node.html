@@ -106,13 +106,13 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-error">error</span> <span class="preset-recommended">recommended</span>
-    <code class="xpath">//xsl:with-param[not(parent::xsl:call-template or parent::xsl:apply-templates or parent::xsl:apply-imports or parent::xsl:next-match or parent::xsl:next-iteration)] | //xsl:with-param[parent::xsl:apply-imports][xslint:version(.) &lt; 2.0]</code>
+    <code class="xpath">//xsl:with-param[not(parent::xsl:call-template or parent::xsl:apply-templates or parent::xsl:apply-imports or parent::xsl:next-match or parent::xsl:next-iteration or parent::xsl:evaluate)] | //xsl:with-param[parent::xsl:apply-imports][xslint:version(.) &lt; 2.0]</code>
   </div>
   <div class="check-content">
 <h1>Using <code>xsl:with-param</code> in invalid parent node</h1>
 <p><code>xsl:with-param</code> passes a value to the template a call invokes, so it belongs
 only inside <code>xsl:call-template</code>, <code>xsl:apply-templates</code>, <code>xsl:apply-imports</code>,
-<code>xsl:next-match</code>, or <code>xsl:next-iteration</code>. Anywhere else a processor refuses
+<code>xsl:next-match</code>, <code>xsl:next-iteration</code>, or <code>xsl:evaluate</code>. Anywhere else a processor refuses
 the whole module, and the stylesheet runs no transformation at all.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:stylesheet version=&quot;1.0&quot; xmlns:xsl=&quot;http://www.w3.org/1999/XSL/Transform&quot;&gt;

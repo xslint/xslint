@@ -106,7 +106,7 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-error">error</span> <span class="preset-recommended">recommended</span>
-    <code class="xpath">//(xsl:variable | xsl:param | xsl:call-template | xsl:function | xsl:key | xsl:attribute-set | xsl:character-map | xsl:accumulator)[not(@name) and not(@_name)] | //(xsl:variable | xsl:param | xsl:with-param | xsl:call-template | xsl:template | xsl:function | xsl:key | xsl:attribute-set | xsl:decimal-format | xsl:character-map | xsl:mode | xsl:accumulator)[xslint:attribute(., 'name') = '']</code>
+    <code class="xpath">//(xsl:variable | xsl:param | xsl:call-template | xsl:function | xsl:key | xsl:attribute-set | xsl:character-map | xsl:accumulator | xsl:element | xsl:attribute | xsl:processing-instruction | xsl:namespace)[not(@name) and not(@_name)] | //(xsl:variable | xsl:param | xsl:with-param | xsl:call-template | xsl:template | xsl:function | xsl:key | xsl:attribute-set | xsl:decimal-format | xsl:character-map | xsl:mode | xsl:accumulator | xsl:element | xsl:attribute)[xslint:attribute(., 'name') = '']</code>
   </div>
   <div class="check-content">
 <h1>A name that is missing or empty</h1>
@@ -127,7 +127,9 @@ way on an element that requires one.</p>
 &lt;xsl:variable name=&quot;total&quot; select=&quot;count(item)&quot;/&gt;
 </code></pre>
 <p>An <code>xsl:template</code>, <code>xsl:mode</code>, or <code>xsl:decimal-format</code> may leave its name out,
-though never empty. The XSLT 3.0 spelling <code>_name=&quot;&quot;</code> is empty too.</p>
+though never empty. An empty name on <code>xsl:namespace</code> declares the default
+namespace, and one on <code>xsl:processing-instruction</code> fails only at run time, so
+neither is reported. The XSLT 3.0 spelling <code>_name=&quot;&quot;</code> is empty too.</p>
 
   </div>
 </body>

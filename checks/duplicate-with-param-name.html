@@ -106,7 +106,7 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-error">error</span> <span class="preset-recommended">recommended</span>
-    <code class="xpath">//xsl:with-param[xslint:attribute(., 'name') = preceding-sibling::xsl:with-param/xslint:attribute(., 'name')]</code>
+    <code class="xpath">//xsl:with-param[some $sibling in preceding-sibling::xsl:with-param satisfies xslint:attribute($sibling, 'name') = xslint:attribute(., 'name') and not(xslint:conditional($sibling) or xslint:conditional(.))]</code>
   </div>
   <div class="check-content">
 <h1>Duplicate <code>xsl:with-param</code> name</h1>
@@ -114,11 +114,10 @@
 <code>xsl:next-match</code> supplies each parameter at most once. Two <code>xsl:with-param</code>
 children with matching <code>@name</code> is a static error — the processor cannot tell
 which value to bind — and rejects the stylesheet.</p>
-<p>XSLT 3.0 writes the name <code>_name</code> as readily as <code>name</code>, the underscore form an
-attribute value template a processor evaluates before it compiles anything. So
-<code>_name=&quot;{&#39;colour&#39;}&quot;</code> beside <code>name=&quot;colour&quot;</code> supplies one parameter twice and is
-refused the same way. A shadow name computed from a static parameter names
-whatever that parameter holds, and is not compared.</p>
+<p>The XSLT 3.0 shadow <code>_name=&quot;{&#39;colour&#39;}&quot;</code> beside <code>name=&quot;colour&quot;</code> supplies one
+parameter twice too. A shadow computed from a static parameter is not
+compared, nor is a parameter carrying a <code>use-when</code>, since a processor may
+leave it out.</p>
 <p>Incorrect:</p>
 <pre><code class="language-xsl">&lt;xsl:call-template name=&quot;render&quot;&gt;
   &lt;xsl:with-param name=&quot;colour&quot; select=&quot;&#39;red&#39;&quot;/&gt;

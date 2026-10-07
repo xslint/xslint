@@ -380,7 +380,7 @@
     <td><a href="checks/with-param-use-in-invalid-parent-node.html">with-param-use-in-invalid-parent-node</a></td>
     <td>xpath</td>
     <td><span class="severity-error">error</span> <span class="preset-recommended">recommended</span></td>
-    <td>xsl:with-param is allowed only within xsl:call-template, xsl:apply-templates, xsl:next-match, xsl:next-iteration, or an xsl:apply-imports whose version in force is 2.0 or later. Move it into a call, or raise that version.</td>
+    <td>xsl:with-param stands under an element taking no parameters at the version in force, which a processor of that version refuses. Move it into a call, or raise the version.</td>
   </tr>
   <tr>
     <td><a href="checks/with-param-without-name.html">with-param-without-name</a></td>

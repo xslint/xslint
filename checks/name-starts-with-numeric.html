@@ -106,7 +106,7 @@
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
     <span class="severity-error">error</span> <span class="preset-recommended">recommended</span>
-    <code class="xpath">//(xsl:variable | xsl:param | xsl:template | xsl:function)[matches(@name, '^([^:]*:)?[0-9]')]</code>
+    <code class="xpath">//(xsl:variable | xsl:param | xsl:template | xsl:function)[matches(@name, '^(Q[{][^}]*[}]|[^:{]*:)?[0-9]')]</code>
   </div>
   <div class="check-content">
 <h1>Name starts with a numeric character</h1>
@@ -119,7 +119,9 @@ it anyway: <code>$1st</code> is a syntax error in XPath. Start the name with a l
 <p>Correct:</p>
 <pre><code class="language-xsl">&lt;xsl:param name=&quot;first&quot; select=&quot;&#39;first&#39;&quot;/&gt;
 </code></pre>
-<p>The local part is judged, so <code>my:9lives</code> is reported as well.</p>
+<p>The local part is judged, so <code>my:9lives</code> is reported as well, and so is
+<code>Q{}9lives</code>. A digit inside the braces of <code>Q{urn:1}lives</code> is part of the
+namespace URI, and the name is sound.</p>
 
   </div>
 </body>
