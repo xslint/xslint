@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {recorded, matched, trimmed} = require('../src/baseline')
+const {recorded, matched, trimmed, counted} = require('../src/baseline')
 const {lint, settingsOf, sourceOf, ranOf} = require('../src/xslint')
 const assert = require('assert')
 const fs = require('fs')
@@ -84,37 +84,36 @@ describe('baseline', function() {
       'reported a recorded defect after its line was indented with tabs',
     )
   })
-  it('reads a sheet whose lines end in a bare carriage return', function() {
-    const {sources, reported} = linted(
-      fs.readFileSync(path.join(BASE, 'recorded.xsl'), 'utf-8')
-        .replaceAll('\n', '\r'),
-    )
+  it('keeps suppressing a defect whose line was edited', function() {
+    const {sources, reported} = run('edited.xsl')
     assert.deepStrictEqual(
       matched(reported, sources, baseline(), BASE, every()).fresh, [],
-      'did not match the defects of a sheet ending its lines in CR alone',
+      'reported a recorded defect after an attribute was added to its line',
     )
   })
-  it('reports the defects a new line draws', function() {
+  it('reports every defect of a check whose count rose', function() {
     const {sources, reported} = run('grown.xsl')
     assert.deepStrictEqual(
       matched(reported, sources, baseline(), BASE, every()).fresh.map(
         (defect) => `${defect.name}:${defect.line}`,
       ),
       [
+        'setting-value-of-variable-incorrectly:16',
+        'short-names:16',
         'setting-value-of-variable-incorrectly:19',
         'short-names:19',
         'unused-variable:19',
       ],
-      'did not report the defects of a variable added after the baseline',
+      'did not report every defect of the checks a new variable drew again',
     )
   })
-  it('reports a copy of a recorded line beyond its count', function() {
+  it('reports both copies of a line recorded once', function() {
     const {sources, reported} = run('doubled.xsl')
     assert.deepStrictEqual(
       matched(reported, sources, baseline(), BASE, every()).fresh.map(
         (defect) => `${defect.name}:${defect.line}`,
       ),
-      ['starts-with-double-slash:38'],
+      ['starts-with-double-slash:31', 'starts-with-double-slash:38'],
       'did not report a second copy of a line the baseline recorded once',
     )
   })
@@ -201,6 +200,22 @@ describe('baseline', function() {
     assert.deepStrictEqual(
       trimmed([], [], baseline(), BASE, every()), baseline(),
       'dropped the entries of a file outside the paths a prune linted',
+    )
+  })
+  it('lowers a count a prune finds too high to what the run draws', function() {
+    const {sources, reported} = run('recorded.xsl')
+    const held = baseline()
+    held['recorded.xsl']['short-names'] = 3
+    assert.deepStrictEqual(
+      trimmed(reported, sources, held, BASE, every()), baseline(),
+      'did not lower a recorded count to the defects the run still draws',
+    )
+  })
+  it('refuses a baseline that holds line hashes where counts stand', function() {
+    assert.throws(
+      () => counted({'recorded.xsl': {'short-names': {'4f1c0d2a9b7e3c55': 1}}}, 'old.json'),
+      /--baseline-write/,
+      'read a baseline of the old shape as if it held counts',
     )
   })
   it('keeps the entries of a check a prune did not run', function() {

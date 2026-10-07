@@ -23,7 +23,7 @@ const {
 const {ignoring} = require('./gitignore')
 const {parted} = require('./source')
 const {SUGGESTION, suppressed} = require('./checks')
-const {recorded, matched, trimmed} = require('./baseline')
+const {recorded, matched, trimmed, counted} = require('./baseline')
 const {kinds} = require('./resources/checks.json')
 const {validate: validateXsls, names: xslChecks} =
   require('./validators/xsl-validator')
@@ -762,10 +762,10 @@ module.exports = function xslint(pths, options) {
   if (options.baselineWrite) {
     target = path.resolve(options.baselineWrite)
     if (fs.existsSync(target)) {
-      earlier = JSON.parse(fs.readFileSync(target, 'utf-8'))
+      earlier = counted(JSON.parse(fs.readFileSync(target, 'utf-8')), target)
     }
   } else if (ledger) {
-    earlier = JSON.parse(fs.readFileSync(ledger, 'utf-8'))
+    earlier = counted(JSON.parse(fs.readFileSync(ledger, 'utf-8')), ledger)
   }
   logger.info(`Directories and files to process: ${pths.join(', ')}`)
   const found = stylesheetsOf(pths, settings)

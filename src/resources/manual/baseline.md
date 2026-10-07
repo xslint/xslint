@@ -16,24 +16,26 @@ the defects the file does not record. A path given on the command line is read
 against the working directory, and one in `.xslint.yml` against the directory
 of that file.
 
-A defect is recorded by its file, its check, and the text of the line it stands
-on. Line numbers are left out, so a line moved by an edit above it still
-matches.
+A defect is recorded by its file and its check alone. Neither its line number
+nor its text is kept, so a line moved, reindented, or edited still matches.
 The file is JSON sorted by key, and each path in it is relative to the
 baseline's own directory, so it can be committed and diffed:
 
 ```json
 {
   "src/main.xsl": {
-    "short-names": {
-      "4f1c0d2a9b7e3c55": 2
-    }
+    "short-names": 2
   }
 }
 ```
 
-A count is how many times that line draws that check. A line that draws it
-more often than recorded reports the extra ones.
+A count is how many times that check fires in that file. A file that draws a
+check more often than recorded reports every defect of that check in it, since
+a count cannot say which one is new. Fixing one defect and adding another of
+the same check in the same file nets zero and passes.
+
+A baseline written by an earlier xslint, with line hashes where the counts
+stand, is refused. Delete it and record it again with `--baseline-write`.
 
 The baseline only shrinks. When a recorded defect is fixed, its entry is stale:
 the run names it and fails until the entry is dropped:
