@@ -118,21 +118,29 @@ none. <code>--baseline &lt;file&gt;</code>, or the <code>baseline</code> key of 
 the defects the file does not record. A path given on the command line is read
 against the working directory, and one in <code>.xslint.yml</code> against the directory
 of that file.</p>
-<p>A defect is recorded by its file, its check, and the text of the line it stands
-on. Line numbers are left out, so a line moved by an edit above it still
-matches.
+<p>A defect is recorded by its file and its check alone. Neither its line number
+nor its text is kept, so a line moved, reindented, or edited still matches.
 The file is JSON sorted by key, and each path in it is relative to the
 baseline&#39;s own directory, so it can be committed and diffed:</p>
 <pre><code class="language-json">{
   &quot;src/main.xsl&quot;: {
-    &quot;short-names&quot;: {
-      &quot;4f1c0d2a9b7e3c55&quot;: 2
-    }
+    &quot;short-names&quot;: 2
   }
 }
 </code></pre>
-<p>A count is how many times that line draws that check. A line that draws it
-more often than recorded reports the extra ones.</p>
+<p>A count is how many times that check fires in that file. A file that draws a
+check more often than recorded reports every defect of that check in it, since
+a count cannot say which one is new. Fixing one defect and adding another of
+the same check in the same file nets zero and passes.</p>
+<p>A count belongs to a path, so a renamed or moved sheet reports all its defects
+as new, and its old entries stay in the file. Once the gate lists nothing but
+the renamed sheet&#39;s defects, record the tree again in the same change:</p>
+<pre><code class="language-bash">xslint --baseline-write xslint-baseline.json src
+</code></pre>
+<p>The rewrite counts the sheet under its new path and drops the entries of the
+path that no longer exists.</p>
+<p>A baseline written by an earlier xslint, with line hashes where the counts
+stand, is refused. Delete it and record it again with <code>--baseline-write</code>.</p>
 <p>The baseline only shrinks. When a recorded defect is fixed, its entry is stale:
 the run names it and fails until the entry is dropped:</p>
 <pre><code class="language-bash">xslint --baseline xslint-baseline.json --baseline-prune

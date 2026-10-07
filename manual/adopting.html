@@ -137,12 +137,9 @@ git add xslint-baseline.json
 recorded one that is gone until its entry is dropped. Pass <code>--baseline</code> in CI
 rather than naming the file in <code>.xslint.yml</code>, so a run on a developer&#39;s
 machine still shows the whole debt. The <a href="baseline.html">baseline guide</a> covers
-how a defect is matched.</p>
-<p>A recorded defect is matched by its file and the text of its line, so a pull
-request that renames a sheet or edits a recorded line, in a feature as much as
-in a fix, sees those defects reported as new. The baseline cannot tell them
-from defects the change added, so fix every defect the gate lists, then drop
-the entries the fixes left stale:</p>
+how defects are counted and what to do when a sheet is renamed.</p>
+<p>Every pull request that fixes a defect drops the entries the fix left stale
+and commits the file:</p>
 <pre><code class="language-bash">xslint --baseline xslint-baseline.json --baseline-prune src
 </code></pre>
 <p>Prune the whole tree, never one sheet, since a check that reads across sheets
@@ -155,9 +152,7 @@ xslint --only incorrect-use-of-boolean-constants --fix-suggestions src
 xslint --baseline xslint-baseline.json --baseline-prune src
 </code></pre>
 <p>Commit the pruned file with the fix. A prune never records a defect, so the
-count in the file only goes down. A fix that rewrites a line also loses the
-entries other checks hold on it, and the prune lists them as new: fix those
-too and prune again, as above.</p>
+count in the file only goes down.</p>
 <p>To turn on a check you turned off, delete its line from <code>rules:</code> and record
 what it finds before the gate sees it:</p>
 <pre><code class="language-bash">xslint --only template-writes-nothing --baseline-write xslint-baseline.json src
