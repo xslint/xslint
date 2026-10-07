@@ -286,7 +286,7 @@
         "message": "The @href is missing or empty, so this pulls in no module and no processor will load the stylesheet. Name the module to pull in."
       },
       "missing-or-empty-name": {
-        "xpath": "//(xsl:variable | xsl:param | xsl:call-template | xsl:function | xsl:key | xsl:attribute-set | xsl:character-map | xsl:accumulator | xsl:element | xsl:attribute | xsl:processing-instruction | xsl:namespace)[not(@name) and not(@_name)] | //(xsl:variable | xsl:param | xsl:with-param | xsl:call-template | xsl:template | xsl:function | xsl:key | xsl:attribute-set | xsl:decimal-format | xsl:character-map | xsl:mode | xsl:accumulator | xsl:element | xsl:attribute | xsl:processing-instruction | xsl:namespace)[xslint:attribute(., 'name') = '']",
+        "xpath": "//(xsl:variable | xsl:param | xsl:call-template | xsl:function | xsl:key | xsl:attribute-set | xsl:character-map | xsl:accumulator | xsl:element | xsl:attribute | xsl:processing-instruction | xsl:namespace)[not(@name) and not(@_name)] | //(xsl:variable | xsl:param | xsl:with-param | xsl:call-template | xsl:template | xsl:function | xsl:key | xsl:attribute-set | xsl:decimal-format | xsl:character-map | xsl:mode | xsl:accumulator | xsl:element | xsl:attribute)[xslint:attribute(., 'name') = '']",
         "severity": "error",
         "preset": "recommended",
         "message": "The @name is missing or empty, so it holds no QName and no processor will load this stylesheet. Give it a name."
@@ -432,7 +432,7 @@
         "xpath": "//xsl:with-param[not(parent::xsl:call-template or parent::xsl:apply-templates or parent::xsl:apply-imports or parent::xsl:next-match or parent::xsl:next-iteration or parent::xsl:evaluate)] | //xsl:with-param[parent::xsl:apply-imports][xslint:version(.) < 2.0]",
         "severity": "error",
         "preset": "recommended",
-        "message": "xsl:with-param stands under an element that passes no parameters, so no processor loads this stylesheet. Move it into a call, or raise the version in force."
+        "message": "xsl:with-param stands under an element taking no parameters at the version in force, which a processor of that version refuses. Move it into a call, or raise the version."
       },
       "with-param-without-name": {
         "xpath": "//xsl:with-param[not(@name) and not(@_name)]",

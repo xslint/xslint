@@ -7,8 +7,8 @@ which value to bind — and rejects the stylesheet.
 
 The XSLT 3.0 shadow `_name="{'colour'}"` beside `name="colour"` supplies one
 parameter twice too. A shadow computed from a static parameter is not
-compared, nor are two parameters whose `use-when` conditions differ, since a
-processor may keep only one of them.
+compared, nor is a parameter carrying a `use-when`, since a processor may
+leave it out.
 
 Incorrect:
 
