@@ -210,7 +210,7 @@ const lintByResultNamespace = function(corpus, suppressions = []) {
     for (const {file, content, xsl} of corpus) {
       const root = xsl.documentElement
       const elements = Array.from(xsl.getElementsByTagName('*'))
-      const extension = extensionsOf(root)
+      const extension = extensionsOf(elements)
       const excluded = new Set(
         (prefixes(root, 'exclude-result-prefixes')?.value ?? '').split(GAPS),
       )

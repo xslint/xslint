@@ -39,9 +39,9 @@ const documentary = function(element) {
  * plain namesake is a result attribute (#1040).
  * @param {Element} element - The element to read
  * @param {string} name - The local name of the attribute
- * @return {Array.<string>} - The tokens it lists
+ * @return {Array.<string>} - The tokens it spells
  */
-const listOf = function(element, name) {
+const spelled = function(element, name) {
   let value = element.getAttributeNS(XSLT, name)
   if (element.namespaceURI === XSLT) {
     value = element.getAttribute(name)
@@ -50,12 +50,47 @@ const listOf = function(element, name) {
 }
 
 /**
- * The extension-element prefixes the stylesheet root declares (#1086).
- * @param {Element} root - The stylesheet root
+ * Whether a processor reads the prefix list an element spells: a 1.0 one
+ * reads the plain attribute on the root alone, and none can see past a 3.0
+ * shadow attribute, whose value a static parameter settles (#1174).
+ * @param {Element} element - The element to read
+ * @param {string} name - The local name of the attribute
+ * @return {boolean} - True when the spelled tokens are the ones in force
+ */
+const known = function(element, name) {
+  let shadow = element.hasAttributeNS(XSLT, `_${name}`)
+  let plain = true
+  if (element.namespaceURI === XSLT) {
+    shadow = element.hasAttribute(`_${name}`)
+    plain = element === element.ownerDocument.documentElement ||
+      since(versionOf(element), '2.0')
+  }
+  return plain && !shadow
+}
+
+/**
+ * The prefixes an element's list holds as far as a scan can know them, none
+ * where `known` doubts the spelled ones.
+ * @param {Element} element - The element to read
+ * @param {string} name - The local name of the attribute
+ * @return {Array.<string>} - The tokens in force
+ */
+const listOf = function(element, name) {
+  let tokens = []
+  if (known(element, name)) {
+    tokens = spelled(element, name)
+  }
+  return tokens
+}
+
+/**
+ * The extension-element prefixes any element of the sheet declares (#1086).
+ * @param {Array.<Element>} elements - Every element of the document
  * @return {Set.<string>} - The prefixes of its extension instructions
  */
-const extensionsOf = function(root) {
-  return new Set(listOf(root, 'extension-element-prefixes'))
+const extensionsOf = function(elements) {
+  return new Set(elements.flatMap((element) =>
+    listOf(element, 'extension-element-prefixes')))
 }
 
 /**
@@ -116,4 +151,5 @@ module.exports = {
   carried,
   extensionsOf,
   literal,
+  spelled,
 }

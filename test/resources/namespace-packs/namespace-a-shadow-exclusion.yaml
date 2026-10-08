@@ -1,0 +1,19 @@
+# SPDX-FileCopyrightText: Copyright (c) 2025-2026 Max Trunnikov
+# SPDX-License-Identifier: MIT
+---
+pack: redundant-namespace-declarations
+found:
+  amount: 1
+  positions: [ [ 4, 3 ] ]
+  fixes: [ null ]
+input: |-
+  <?xml version="1.0"?>
+  <xsl:stylesheet
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+    xmlns:foo="urn:foo"
+    version="3.0">
+    <xsl:param name="keep" static="yes" select="''"/>
+    <xsl:template match="/" exclude-result-prefixes="#all" _exclude-result-prefixes="{$keep}">
+      <out/>
+    </xsl:template>
+  </xsl:stylesheet>

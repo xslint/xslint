@@ -6,10 +6,10 @@
 const {expressionsOf} = require('../attributes')
 const {metaOf, suppressed} = require('../checks')
 const {deletion, standsAt} = require('../fixes')
-const {carried} = require('../literals')
+const {carried, spelled} = require('../literals')
 const {logger} = require('../logger')
 const {parseOf} = require('../syntax')
-const {GAPS, NAMED, TOKENS} = require('../tokens')
+const {NAMED, TOKENS} = require('../tokens')
 const {XSLT} = require('../xsl-version')
 
 /**
@@ -70,14 +70,11 @@ const ALIASES = ['stylesheet-prefix', 'result-prefix']
  * @return {Array.<string>} - The tokens its prefix lists hold
  */
 const listed = function(element) {
-  let names = LISTS.map((name) => element.getAttributeNS(XSLT, name))
-  if (element.namespaceURI === XSLT) {
-    names = LISTS.map((name) => element.getAttribute(name))
-    if (element.localName === 'namespace-alias') {
-      names = ALIASES.map((name) => element.getAttribute(name))
-    }
+  let names = LISTS
+  if (element.namespaceURI === XSLT && element.localName === 'namespace-alias') {
+    names = ALIASES
   }
-  return names.filter(Boolean).flatMap((value) => value.split(GAPS))
+  return names.flatMap((name) => spelled(element, name))
 }
 
 /**
