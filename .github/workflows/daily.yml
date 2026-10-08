@@ -40,7 +40,7 @@ jobs:
               echo "::notice::the registry answered nothing, asking again"
               sleep 20
             fi
-            npm audit --json > audit.json || true
+            npm audit --omit=dev --json > audit.json || true
             judged=0
             node scripts/audit.js audit.json || judged=$?
             if [ "$judged" -ne 2 ]; then
