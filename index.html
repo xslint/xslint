@@ -511,8 +511,8 @@
   <tr>
     <td><a href="checks/redundant-namespace-declarations.html">redundant-namespace-declarations</a></td>
     <td>format</td>
-    <td><span class="severity-warning">warning</span> <span class="fix-safe">safe fix</span></td>
-    <td>The xsl:stylesheet declares a namespace prefix that is never used. Remove the redundant xmlns declaration.</td>
+    <td><span class="severity-warning">warning</span> <span class="fix-suggestion">suggested fix</span></td>
+    <td>The xsl:stylesheet declares a namespace prefix that nothing in it uses. Remove the declaration, or exclude the prefix where a literal result element copies it out.</td>
   </tr>
   <tr>
     <td><a href="checks/redundant-whitespace.html">redundant-whitespace</a></td>

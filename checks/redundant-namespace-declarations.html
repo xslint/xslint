@@ -105,11 +105,12 @@
 <body>
   <a class="back" href="../index.html">← all checks</a>
   <div class="meta">
-    <span class="severity-warning">warning</span> <span class="fix-safe">safe fix</span>
+    <span class="severity-warning">warning</span> <span class="fix-suggestion">suggested fix</span>
     <code class="xpath">checked over the tokens, not an XPath rule</code>
   </div>
-  <p class="fix-note"><code>--fix</code> rewrites this one: the correction is
-  deterministic, and leaves the stylesheet meaning what it meant.</p>
+  <p class="fix-note"><code>--fix-suggestions</code> rewrites this one, and a plain
+  <code>--fix</code> leaves it alone: the correction changes what the
+  stylesheet does, or is one of several the check would accept.</p>
   <div class="check-content">
 <h1>Redundant namespace declarations</h1>
 <p>A namespace prefix declared on the <code>xsl:stylesheet</code> and never used sends its
@@ -124,10 +125,12 @@ reader looking for names it qualifies. Remove the declaration.</p>
   &lt;!-- only namespaces that are actually used are declared --&gt;
 &lt;/xsl:stylesheet&gt;
 </code></pre>
-<p>A prefix is used where it qualifies an element name, an attribute name, or a
-name inside an expression or value template (a mention in an XPath comment
-qualifies nothing), and where <code>exclude-result-prefixes</code>,
-<code>extension-element-prefixes</code> or <code>xsl:namespace-alias</code> names it.</p>
+<p>A prefix is used where it qualifies a name in an element, an attribute, an
+expression or a value template, or where a prefix list or <code>xsl:namespace-alias</code>
+names it. A computed name, an evaluated path or an extension function may
+still resolve it at run time, so check before removing it. Where a literal
+result element copies the namespace out and no <code>#all</code> of XSLT 2.0 or later
+excludes it, removing the declaration changes the output.</p>
 
   </div>
 </body>
