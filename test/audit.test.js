@@ -213,6 +213,16 @@ describe('audit', function() {
         ].join(' '),
       )
     })
+  it('audits only the dependencies a user installs', function() {
+    assert.ok(
+      /npm audit --omit=dev\b/.test(AUDITING),
+      [
+        'the nightly audit reads the development tree too, so an advisory',
+        'in tooling no user installs reddens the night with nothing this',
+        'project can patch',
+      ].join(' '),
+    )
+  })
   it('leaves no step judging npm audit by its own exit code', function() {
     assert.deepEqual(
       yaml.parsedFromFile(WORKFLOW).jobs.audit.steps
