@@ -102,6 +102,7 @@ anttools/xspec/generate-tests-utils.xsl:665:1 unused-function
 anttools/xspec/generate-xspec-tests.xsl:11:1 missing-id-in-stylesheet
 anttools/xspec/generate-xspec-tests.xsl:11:1 too-many-templates
 anttools/xspec/generate-xspec-tests.xsl:13:3 leaking-result-namespace
+anttools/xspec/generate-xspec-tests.xsl:18:3 redundant-namespace-declarations
 anttools/xspec/generate-xspec-tests.xsl:19:3 leaking-result-namespace
 anttools/xspec/generate-xspec-tests.xsl:92:4 unused-function-template-parameter
 anttools/xspec/generate-xspec-tests.xsl:94:28 redundant-whitespace fix ""
@@ -176,16 +177,16 @@ contrib/tools/fo-editor/src/schemas/convert.xsl:33:22 starts-with-double-slash s
 contrib/tools/fo-editor/src/schemas/convert.xsl:33:39 starts-with-double-slash suggestion ""
 contrib/tools/fo-editor/src/schemas/convert.xsl:37:22 starts-with-double-slash suggestion ""
 contrib/tools/pawson/checkparams.xsl:2:1 missing-id-in-stylesheet
-contrib/tools/pawson/checkparams.xsl:4:3 redundant-namespace-declarations fix ""
-contrib/tools/pawson/checkparams.xsl:5:3 redundant-namespace-declarations fix ""
-contrib/tools/pawson/checkparams.xsl:7:11 redundant-namespace-declarations fix ""
-contrib/tools/pawson/checkparams.xsl:8:11 redundant-namespace-declarations fix ""
+contrib/tools/pawson/checkparams.xsl:4:3 redundant-namespace-declarations suggestion ""
+contrib/tools/pawson/checkparams.xsl:5:3 redundant-namespace-declarations suggestion ""
+contrib/tools/pawson/checkparams.xsl:7:11 redundant-namespace-declarations suggestion ""
+contrib/tools/pawson/checkparams.xsl:8:11 redundant-namespace-declarations suggestion ""
 contrib/tools/pawson/checkparams.xsl:65:7 text-outside-xsl-text
 contrib/tools/pawson/checkparams.xsl:84:9 text-outside-xsl-text suggestion "<xsl:text>\nsrc:fragment/@xml:id </xsl:text>"
 contrib/tools/pawson/checkparams.xsl:91:50 redundant-whitespace fix ""
 contrib/tools/pawson/checkparams.xsl:95:9 text-outside-xsl-text suggestion "<xsl:text>'  \n          Missing .frag extension\n        </xsl:text>"
 contrib/tools/tennison/modify.xsl:8:1 missing-id-in-stylesheet
-contrib/tools/tennison/modify.xsl:9:3 redundant-namespace-declarations fix ""
+contrib/tools/tennison/modify.xsl:9:3 redundant-namespace-declarations suggestion ""
 contrib/xsl/applethelp/applethelp.xsl:5:1 missing-id-in-stylesheet
 contrib/xsl/applethelp/htmlhelp-common.xsl:2:1 missing-id-in-stylesheet
 contrib/xsl/applethelp/htmlhelp-common.xsl:2:1 too-many-templates
@@ -587,7 +588,7 @@ gentext/xsl/dsssl.xsl:52:5 using-disable-output-escaping suggestion ""
 gentext/xsl/dsssl.xsl:54:5 using-disable-output-escaping suggestion ""
 gentext/xsl/dsssl.xsl:55:5 using-disable-output-escaping
 gentext/xsl/xsl-primary-is-locale.xsl:2:1 missing-id-in-stylesheet
-gentext/xsl/xsl-primary-is-locale.xsl:4:17 redundant-namespace-declarations fix ""
+gentext/xsl/xsl-primary-is-locale.xsl:4:17 redundant-namespace-declarations suggestion ""
 gentext/xsl/xsl.xsl:2:1 missing-id-in-stylesheet
 gentext/xsl/xsl.xsl:79:3 setting-value-of-variable-incorrectly
 gentext/xsl/xsl.xsl:114:3 setting-value-of-variable-incorrectly
@@ -606,7 +607,7 @@ releasetools/.identity.xsl:1:1 missing-id-in-stylesheet
 releasetools/.make-docbook-rng.xsl:1:1 missing-id-in-stylesheet
 releasetools/.make-litprog.xsl:1:1 missing-id-in-stylesheet
 releasetools/eval-xpath.xsl:2:1 missing-id-in-stylesheet
-releasetools/eval-xpath.xsl:3:3 redundant-namespace-declarations fix ""
+releasetools/eval-xpath.xsl:3:3 redundant-namespace-declarations suggestion ""
 releasetools/eval-xpath.xsl:11:5 use-choose-without-otherwise
 releasetools/gitlog2docbook.xsl:2:1 missing-id-in-stylesheet
 releasetools/gitlog2docbook.xsl:2:1 too-many-templates
@@ -624,8 +625,8 @@ releasetools/modified-markup.xsl:173:2 use-choose-without-otherwise
 releasetools/modified-markup.xsl:205:2 use-choose-without-otherwise
 releasetools/w2docbook.xsl:10:1 missing-id-in-stylesheet
 releasetools/xslnsfiles/addns.xsl:2:1 missing-id-in-stylesheet
-releasetools/xslnsfiles/addns.xsl:4:17 redundant-namespace-declarations fix ""
-releasetools/xslnsfiles/addns.xsl:5:17 redundant-namespace-declarations fix ""
+releasetools/xslnsfiles/addns.xsl:4:17 redundant-namespace-declarations suggestion ""
+releasetools/xslnsfiles/addns.xsl:5:17 redundant-namespace-declarations suggestion ""
 releasetools/xslnsfiles/addns.xsl:12:1 broken-href
 releasetools/xslnsfiles/manpages.table.xsl:2:1 missing-id-in-stylesheet
 releasetools/xslnsfiles/manpages.table.xsl:2:1 too-many-templates
@@ -642,6 +643,7 @@ releasetools/xslnsfiles/manpages.table.xsl:588:5 unused-variable
 releasetools/xslnsfiles/titlepage.xsl:2:1 missing-id-in-stylesheet
 releasetools/xslnsfiles/titlepage.xsl:2:1 not-using-output
 releasetools/xslnsfiles/titlepage.xsl:2:1 too-many-templates
+releasetools/xslnsfiles/titlepage.xsl:7:17 redundant-namespace-declarations suggestion ""
 releasetools/xslnsfiles/titlepage.xsl:25:3 use-choose-without-otherwise
 releasetools/xslnsfiles/titlepage.xsl:26:5 text-outside-xsl-text suggestion "<xsl:text>http://www.w3.org/1999/XSL/Format</xsl:text>"
 releasetools/xslnsfiles/titlepage.xsl:27:5 text-outside-xsl-text suggestion "<xsl:text>http://www.w3.org/1999/xhtml</xsl:text>"
@@ -669,7 +671,7 @@ testdocs/i18n/i18n-fo.xsl:2:1 missing-id-in-stylesheet
 testdocs/i18n/i18n-fo.xsl:7:1 broken-href
 testdocs/i18n/i18n-fo.xsl:22:62 confusing-variable-and-node
 testdocs/i18n/identity.xsl:2:1 missing-id-in-stylesheet
-testdocs/i18n/identity.xsl:3:17 redundant-namespace-declarations fix ""
+testdocs/i18n/identity.xsl:3:17 redundant-namespace-declarations suggestion ""
 testdocs/i18n/localize.xsl:2:1 missing-id-in-stylesheet
 testdocs/i18n/localize.xsl:40:31 predicate-position-literal fix "1"
 testdocs/i18n/localize.xsl:50:2 text-outside-xsl-text suggestion "<xsl:text>[none credited]</xsl:text>"
@@ -681,8 +683,8 @@ xsl/.make-catalog.xsl:2:1 missing-id-in-stylesheet
 xsl/.make-catalog.xsl:12:1 setting-value-of-variable-incorrectly
 xsl/.make-catalog.xsl:15:1 setting-value-of-variable-incorrectly
 xsl/VERSION.xsl:2:1 missing-id-in-stylesheet
-xsl/VERSION.xsl:5:3 redundant-namespace-declarations fix ""
-xsl/VERSION.xsl:6:3 redundant-namespace-declarations fix ""
+xsl/VERSION.xsl:5:3 redundant-namespace-declarations suggestion ""
+xsl/VERSION.xsl:6:3 redundant-namespace-declarations suggestion ""
 xsl/assembly/assemble.xsl:2:1 missing-id-in-stylesheet
 xsl/assembly/assemble.xsl:2:1 too-many-templates
 xsl/assembly/assemble.xsl:91:25 count-compared-to-zero fix "not($id.structure)"
@@ -749,12 +751,12 @@ xsl/assembly/topic-maker-chunk.xsl:175:21 string-length-compared-to-zero suggest
 xsl/assembly/topic-maker.xsl:2:1 missing-id-in-stylesheet
 xsl/assembly/topic-maker.xsl:13:1 broken-href
 xsl/common/addns.xsl:2:1 missing-id-in-stylesheet
-xsl/common/addns.xsl:4:17 redundant-namespace-declarations fix ""
-xsl/common/addns.xsl:5:17 redundant-namespace-declarations fix ""
+xsl/common/addns.xsl:4:17 redundant-namespace-declarations suggestion ""
+xsl/common/addns.xsl:5:17 redundant-namespace-declarations suggestion ""
 xsl/common/autoidx-kimber.xsl:10:1 missing-id-in-stylesheet
 xsl/common/autoidx-kimber.xsl:33:5 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 xsl/common/autoidx-kosek.xsl:6:1 missing-id-in-stylesheet
-xsl/common/autoidx-kosek.xsl:12:17 redundant-namespace-declarations fix ""
+xsl/common/autoidx-kosek.xsl:12:17 redundant-namespace-declarations suggestion ""
 xsl/common/autoidx-kosek.xsl:34:5 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 xsl/common/autoidx-kosek.xsl:55:18 count-compared-to-zero fix "$local.l10n.letters"
 xsl/common/autoidx-kosek.xsl:58:18 count-compared-to-zero fix "$l10n.letters"
@@ -1261,14 +1263,14 @@ xsl/epub/docbook.xsl:1768:7 text-outside-xsl-text suggestion "<xsl:text>3</xsl:t
 xsl/epub/docbook.xsl:1769:7 text-outside-xsl-text suggestion "<xsl:text>2</xsl:text>"
 xsl/epub/docbook.xsl:1770:7 text-outside-xsl-text suggestion "<xsl:text>1</xsl:text>"
 xsl/epub3/chunk.xsl:2:1 missing-id-in-stylesheet
-xsl/epub3/chunk.xsl:6:3 redundant-namespace-declarations fix ""
+xsl/epub3/chunk.xsl:6:3 redundant-namespace-declarations suggestion ""
 xsl/epub3/chunk.xsl:17:1 broken-href
 xsl/epub3/chunk.xsl:19:1 broken-href
 xsl/epub3/chunkfast.xsl:4:1 missing-id-in-stylesheet
 xsl/epub3/docbook.xsl:7:1 missing-id-in-stylesheet
 xsl/epub3/epub3-chunk-mods.xsl:2:1 missing-id-in-stylesheet
-xsl/epub3/epub3-chunk-mods.xsl:6:3 redundant-namespace-declarations fix ""
-xsl/epub3/epub3-chunk-mods.xsl:9:3 redundant-namespace-declarations fix ""
+xsl/epub3/epub3-chunk-mods.xsl:6:3 redundant-namespace-declarations suggestion ""
+xsl/epub3/epub3-chunk-mods.xsl:9:3 redundant-namespace-declarations suggestion ""
 xsl/epub3/epub3-element-mods.xsl:7:1 missing-id-in-stylesheet
 xsl/epub3/epub3-element-mods.xsl:7:1 too-many-templates
 xsl/epub3/epub3-element-mods.xsl:33:1 broken-href
@@ -1433,7 +1435,7 @@ xsl/fo/admon.xsl:42:7 text-outside-xsl-text suggestion "<xsl:text>important</xsl
 xsl/fo/admon.xsl:43:7 text-outside-xsl-text suggestion "<xsl:text>note</xsl:text>"
 xsl/fo/admon.xsl:86:42 unabbreviated-axis fix ""
 xsl/fo/annotations.xsl:2:1 missing-id-in-stylesheet
-xsl/fo/annotations.xsl:5:3 redundant-namespace-declarations fix ""
+xsl/fo/annotations.xsl:5:3 redundant-namespace-declarations suggestion ""
 xsl/fo/autoidx-kimber.xsl:11:1 missing-id-in-stylesheet
 xsl/fo/autoidx-kimber.xsl:84:25 scans-whole-document
 xsl/fo/autoidx-kimber.xsl:86:21 string-length-compared-to-zero
@@ -1923,7 +1925,7 @@ xsl/fo/inline.xsl:1230:41 scans-whole-document
 xsl/fo/inline.xsl:1230:59 scans-whole-document
 xsl/fo/inline.xsl:1267:40 scans-whole-document
 xsl/fo/keywords.xsl:2:1 missing-id-in-stylesheet
-xsl/fo/keywords.xsl:5:3 redundant-namespace-declarations fix ""
+xsl/fo/keywords.xsl:5:3 redundant-namespace-declarations suggestion ""
 xsl/fo/lists.xsl:2:1 missing-id-in-stylesheet
 xsl/fo/lists.xsl:2:1 too-many-templates
 xsl/fo/lists.xsl:65:9 not-creating-attribute-correctly
@@ -2082,7 +2084,7 @@ xsl/fo/pagesetup.xsl:3532:3 unused-function-template-parameter
 xsl/fo/pagesetup.xsl:3541:9 not-creating-attribute-correctly
 xsl/fo/pagesetup.xsl:3552:9 not-creating-attribute-correctly
 xsl/fo/passivetex.xsl:2:1 missing-id-in-stylesheet
-xsl/fo/passivetex.xsl:5:3 redundant-namespace-declarations fix ""
+xsl/fo/passivetex.xsl:5:3 redundant-namespace-declarations suggestion ""
 xsl/fo/passivetex.xsl:14:1 unused-named-template
 xsl/fo/pi.xsl:2:1 missing-id-in-stylesheet
 xsl/fo/pi.xsl:2:1 too-many-templates
@@ -2141,6 +2143,7 @@ xsl/fo/synop.xsl:962:3 unused-variable
 xsl/fo/synop.xsl:963:3 unused-variable
 xsl/fo/table.xsl:2:1 missing-id-in-stylesheet
 xsl/fo/table.xsl:2:1 too-many-templates
+xsl/fo/table.xsl:6:17 redundant-namespace-declarations
 xsl/fo/table.xsl:133:7 text-outside-xsl-text suggestion "<xsl:text>before</xsl:text>"
 xsl/fo/table.xsl:251:7 text-outside-xsl-text suggestion "<xsl:text>0</xsl:text>"
 xsl/fo/table.xsl:288:1 oversized-template
@@ -2303,7 +2306,7 @@ xsl/fo/xref.xsl:1509:3 unused-function-template-parameter
 xsl/fo/xref.xsl:1516:3 unused-function-template-parameter
 xsl/fo/xref.xsl:1517:3 unused-function-template-parameter
 xsl/highlighting/common.xsl:2:1 missing-id-in-stylesheet
-xsl/highlighting/common.xsl:7:3 redundant-namespace-declarations fix ""
+xsl/highlighting/common.xsl:7:3 redundant-namespace-declarations suggestion ""
 xsl/highlighting/common.xsl:37:3 use-choose-without-otherwise
 xsl/html/admon.xsl:2:1 missing-id-in-stylesheet
 xsl/html/admon.xsl:2:1 too-many-templates
@@ -3135,8 +3138,8 @@ xsl/manpages/block.xsl:329:7 text-outside-xsl-text suggestion "<xsl:text>before<
 xsl/manpages/block.xsl:379:3 unused-function-template-parameter
 xsl/manpages/charmap.groff.xsl:2:1 missing-id-in-stylesheet
 xsl/manpages/docbook.xsl:2:1 missing-id-in-stylesheet
-xsl/manpages/docbook.xsl:5:17 redundant-namespace-declarations fix ""
-xsl/manpages/docbook.xsl:6:17 redundant-namespace-declarations fix ""
+xsl/manpages/docbook.xsl:5:17 redundant-namespace-declarations suggestion ""
+xsl/manpages/docbook.xsl:6:17 redundant-namespace-declarations suggestion ""
 xsl/manpages/docbook.xsl:13:3 broken-href
 xsl/manpages/docbook.xsl:29:3 broken-href
 xsl/manpages/endnotes.xsl:2:1 missing-id-in-stylesheet
@@ -3177,9 +3180,9 @@ xsl/manpages/lists.xsl:344:9 blank-nested-if
 xsl/manpages/lists.xsl:552:21 count-compared-to-zero fix "not($target)"
 xsl/manpages/other.xsl:2:1 missing-id-in-stylesheet
 xsl/manpages/other.xsl:2:1 too-many-templates
-xsl/manpages/other.xsl:5:17 redundant-namespace-declarations fix ""
-xsl/manpages/other.xsl:6:17 redundant-namespace-declarations fix ""
-xsl/manpages/other.xsl:7:17 redundant-namespace-declarations fix ""
+xsl/manpages/other.xsl:5:17 redundant-namespace-declarations suggestion ""
+xsl/manpages/other.xsl:6:17 redundant-namespace-declarations suggestion ""
+xsl/manpages/other.xsl:7:17 redundant-namespace-declarations suggestion ""
 xsl/manpages/other.xsl:80:3 unused-function-template-parameter
 xsl/manpages/other.xsl:115:22 starts-with-double-slash suggestion ""
 xsl/manpages/other.xsl:115:34 use-double-slash
@@ -3193,7 +3196,7 @@ xsl/manpages/other.xsl:648:7 setting-value-of-variable-incorrectly
 xsl/manpages/other.xsl:875:7 setting-value-of-variable-incorrectly
 xsl/manpages/other.xsl:878:7 setting-value-of-variable-incorrectly
 xsl/manpages/pi.xsl:2:1 missing-id-in-stylesheet
-xsl/manpages/pi.xsl:5:17 redundant-namespace-declarations fix ""
+xsl/manpages/pi.xsl:5:17 redundant-namespace-declarations suggestion ""
 xsl/manpages/refentry.xsl:2:1 missing-id-in-stylesheet
 xsl/manpages/refentry.xsl:2:1 too-many-templates
 xsl/manpages/refentry.xsl:88:7 setting-value-of-variable-incorrectly
@@ -3439,6 +3442,7 @@ xsl/slides/xhtml/slidy.xsl:70:5 not-creating-attribute-correctly
 xsl/template/titlepage.xsl:2:1 missing-id-in-stylesheet
 xsl/template/titlepage.xsl:2:1 not-using-output
 xsl/template/titlepage.xsl:2:1 too-many-templates
+xsl/template/titlepage.xsl:7:17 redundant-namespace-declarations suggestion ""
 xsl/template/titlepage.xsl:95:3 use-choose-without-otherwise
 xsl/template/titlepage.xsl:194:9 text-outside-xsl-text suggestion "<xsl:text>exsl d</xsl:text>"
 xsl/template/titlepage.xsl:195:9 text-outside-xsl-text suggestion "<xsl:text>exsl</xsl:text>"
@@ -3457,7 +3461,7 @@ xsl/template/titlepage.xsl:1343:7 text-outside-xsl-text suggestion "<xsl:text>re
 xsl/template/titlepage.xsl:1411:11 text-outside-xsl-text suggestion "<xsl:text>|</xsl:text>"
 xsl/tools/xsl/build/addnewline.xsl:1:1 missing-id-in-stylesheet
 xsl/tools/xsl/build/burst.xsl:1:1 missing-id-in-stylesheet
-xsl/tools/xsl/build/burst.xsl:2:17 redundant-namespace-declarations fix ""
+xsl/tools/xsl/build/burst.xsl:2:17 redundant-namespace-declarations suggestion ""
 xsl/tools/xsl/build/db4-upgrade.xsl:2:1 missing-id-in-stylesheet
 xsl/tools/xsl/build/db4-upgrade.xsl:2:1 too-many-templates
 xsl/tools/xsl/build/db4-upgrade.xsl:719:1 oversized-template
@@ -3468,7 +3472,7 @@ xsl/tools/xsl/build/doc-link-docbook.xsl:2:1 missing-id-in-stylesheet
 xsl/tools/xsl/build/doc-link-docbook.xsl:5:1 broken-href
 xsl/tools/xsl/build/docparam2txt.xsl:2:1 missing-id-in-stylesheet
 xsl/tools/xsl/build/entify.xsl:1:1 missing-id-in-stylesheet
-xsl/tools/xsl/build/entify.xsl:2:17 redundant-namespace-declarations fix ""
+xsl/tools/xsl/build/entify.xsl:2:17 redundant-namespace-declarations suggestion ""
 xsl/tools/xsl/build/fix-params-ns.xsl:1:1 missing-id-in-stylesheet
 xsl/tools/xsl/build/fix-params-ns.xsl:28:5 not-creating-element-correctly
 xsl/tools/xsl/build/fix-params-ns.xsl:34:5 not-creating-element-correctly
@@ -3510,6 +3514,7 @@ xsl/tools/xsl/build/xsl-pi-link.xsl:5:3 broken-href
 xsl/tools/xsl/build/xsl-pi-link.xsl:18:5 setting-value-of-variable-incorrectly
 xsl/tools/xsl/build/xsl2jref.xsl:2:1 missing-id-in-stylesheet
 xsl/tools/xsl/build/xsl2jref.xsl:2:1 too-many-templates
+xsl/tools/xsl/build/xsl2jref.xsl:6:17 redundant-namespace-declarations
 xsl/tools/xsl/build/xsl2jref.xsl:10:1 broken-href
 xsl/tools/xsl/build/xsl2jref.xsl:20:5 text-outside-xsl-text suggestion "<xsl:text>left</xsl:text>"
 xsl/tools/xsl/build/xsl2jref.xsl:21:5 text-outside-xsl-text suggestion "<xsl:text>right</xsl:text>"

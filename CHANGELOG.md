@@ -17,13 +17,12 @@ publication date only; detailed notes begin with the Unreleased section.
   `missing-or-empty-name` asks a name of `xsl:element`, `xsl:attribute`,
   `xsl:processing-instruction`, and `xsl:namespace` too, where the last two may
   still leave it empty (#1199).
-- Stop the safe fix of `redundant-namespace-declarations` deleting a
-  declaration a literal result element copies into the output, which changed
-  what the stylesheet wrote. Such a declaration is still reported, with no fix;
-  `#all` keeps it out of the output only from XSLT 2.0 on, and an extension
-  instruction or an inline schema copies nothing. A computed `xsl:element` or
-  `xsl:attribute` name, or an `xsl:evaluate`, now counts as using every
-  declaration, since it may resolve any prefix at run time (#1174).
+- Make the fix of `redundant-namespace-declarations` a suggestion, since a
+  computed name or an extension function can resolve a prefix no scan sees.
+  A declaration a literal result element copies into the output is reported
+  with no fix at all; `#all` keeps it out only from XSLT 2.0 on, and an
+  extension instruction, wherever its prefix is declared, or an inline schema
+  copies nothing (#1174).
 
 ## 0.6.0 - 2026-09-30
 

@@ -66,13 +66,12 @@ const prefixOf = function(name) {
  * static name of an `xsl:element`/`xsl:attribute` — so excluding them would
  * be wrong.
  * @param {Array.<Element>} elements - Every element of the document
- * @param {Set.<string>} extension - Extension-element prefixes
  * @return {Set.<string>} - Prefixes present in the result
  */
-const outputs = function(elements, extension) {
+const outputs = function(elements) {
   const set = new Set()
   for (const element of elements) {
-    if (literal(element, extension)) {
+    if (literal(element)) {
       set.add(element.prefix)
       for (const attribute of Array.from(element.attributes)) {
         if (!attribute.name.startsWith('xmlns')) {
@@ -217,11 +216,11 @@ const lintByResultNamespace = function(corpus, suppressions = []) {
       )
       const leaks = !excluded.has('#all') &&
         !textual(elements) &&
-        elements.some((element) => literal(element, extension))
+        elements.some((element) => literal(element))
       let output = new Set()
       let leaking = []
       if (leaks) {
-        output = outputs(elements, extension)
+        output = outputs(elements)
         leaking = Array.from(root.attributes).filter((attribute) => {
           const prefix = declared(attribute.name)
           return prefix && prefix !== 'xml' && attribute.value !== XSLT &&

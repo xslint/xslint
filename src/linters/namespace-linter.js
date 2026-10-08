@@ -185,44 +185,6 @@ const used = function(elements, read, prefix) {
 }
 
 /**
- * The instructions that resolve a prefix at run time against the namespaces
- * in scope, each with the attribute that hands them a namespace instead: a
- * computed `xsl:element` or `xsl:attribute` name, and any `xsl:evaluate`.
- * @type {Map.<string, {guard: string, open: function(Element): boolean}>}
- */
-const RESOLVERS = new Map([
-  ['element', {guard: 'namespace', open: (element) => computed(element)}],
-  ['attribute', {guard: 'namespace', open: (element) => computed(element)}],
-  ['evaluate', {guard: 'namespace-context', open: () => true}],
-])
-
-/**
- * Whether an element's name is computed: a value template in `name`, or a
- * shadow `_name`, so no scan can tell which prefix it spells.
- * @param {Element} element - The `xsl:element` or `xsl:attribute`
- * @return {boolean} - True when the name is known only at run time
- */
-const computed = function(element) {
-  return (element.getAttribute('name') ?? '').includes('{') ||
-    element.hasAttribute('_name')
-}
-
-/**
- * Whether some instruction resolves a prefix at run time, so a declaration
- * nothing names may still be the one it needs (#1174).
- * @param {Array.<Element>} elements - Every element of the document
- * @return {boolean} - True when a prefix is resolved past every scan
- */
-const resolving = function(elements) {
-  return elements.some((element) => {
-    const resolver = RESOLVERS.get(element.localName)
-    return element.namespaceURI === XSLT && resolver !== undefined &&
-      !element.hasAttribute(resolver.guard) &&
-      !element.hasAttribute(`_${resolver.guard}`) && resolver.open(element)
-  })
-}
-
-/**
  * Lint the corpus for prefixes the stylesheet declares and uses nowhere, each
  * with the fix that deletes it unless the output carries it (#1174). The span
  * to cut is read from the source by `deletion`, so either delimiter and any gap
@@ -242,11 +204,9 @@ const lintByNamespace = function(corpus, suppressions = []) {
       const elements = Array.from(xsl.getElementsByTagName('*'))
       const read = readOf(xsl, elements)
       const output = carried(elements)
-      const open = resolving(elements)
       for (const attribute of Array.from(xsl.documentElement.attributes)) {
         const prefix = declared(attribute.name)
-        if (prefix && prefix !== 'xml' && !open &&
-          !used(elements, read, prefix)) {
+        if (prefix && prefix !== 'xml' && !used(elements, read, prefix)) {
           const where = standsAt(attribute, content)
           const defect = {
             name: CHECK,

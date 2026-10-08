@@ -115,7 +115,7 @@
         "severity": "warning",
         "preset": "all",
         "message": "The xsl:stylesheet declares a namespace prefix that nothing in it uses. Remove the declaration, or exclude the prefix where a literal result element copies it out.",
-        "fix": "safe"
+        "fix": "suggestion"
       },
       "redundant-whitespace": {
         "severity": "warning",

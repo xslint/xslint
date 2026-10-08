@@ -21,7 +21,7 @@ Correct:
 
 A prefix is used where it qualifies a name in an element, an attribute, an
 expression or a value template, or where a prefix list or `xsl:namespace-alias`
-names it. A computed `xsl:element` or `xsl:attribute` name, or an
-`xsl:evaluate`, may resolve any prefix. Where a literal result element copies
-the namespace out and no `#all` of XSLT 2.0 or later excludes it, removing the
-declaration changes the output.
+names it. A computed name, an evaluated path or an extension function may
+still resolve it at run time, so check before removing it. Where a literal
+result element copies the namespace out and no `#all` of XSLT 2.0 or later
+excludes it, removing the declaration changes the output.

@@ -59,16 +59,33 @@ const extensionsOf = function(root) {
 }
 
 /**
- * Whether the element is a literal result element: a non-XSLT element that
- * is neither an extension instruction nor data, so it is copied into the
- * output and carries the stylesheet's in-scope namespaces with it.
+ * Whether a test holds for the element or one of its ancestors, the scope a
+ * prefix list on an XSLT or literal element governs.
+ * @param {Element} element - Element to start from
+ * @param {function(Element): boolean} test - What to ask of each one
+ * @return {boolean} - True when the element or an ancestor passes
+ */
+const along = function(element, test) {
+  let found = false
+  for (let node = element; node.nodeType === node.ELEMENT_NODE;
+    node = node.parentNode) {
+    found = found || test(node)
+  }
+  return found
+}
+
+/**
+ * Whether the element is a literal result element, copied into the output
+ * with the namespaces in scope: a non-XSLT element that is not data, and not
+ * an extension instruction, whose prefix an `extension-element-prefixes` on
+ * itself or an ancestor names.
  * @param {Element} element - Element to test
- * @param {Set.<string>} extension - Extension-element prefixes
  * @return {boolean} - True for a literal result element
  */
-const literal = function(element, extension) {
-  return element.namespaceURI !== XSLT && !extension.has(element.prefix) &&
-    !documentary(element)
+const literal = function(element) {
+  return element.namespaceURI !== XSLT && !documentary(element) &&
+    !along(element, (node) =>
+      listOf(node, 'extension-element-prefixes').includes(element.prefix))
 }
 
 /**
@@ -79,13 +96,9 @@ const literal = function(element, extension) {
  * @return {boolean} - True when no namespace of it reaches the output
  */
 const shut = function(element) {
-  let all = false
-  for (let node = element; node.nodeType === node.ELEMENT_NODE;
-    node = node.parentNode) {
-    all = all || (listOf(node, 'exclude-result-prefixes').includes('#all') &&
-      since(versionOf(node), '2.0'))
-  }
-  return all
+  return along(element, (node) =>
+    listOf(node, 'exclude-result-prefixes').includes('#all') &&
+    since(versionOf(node), '2.0'))
 }
 
 /**
@@ -96,9 +109,7 @@ const shut = function(element) {
  * @return {boolean} - True when a literal result element copies them
  */
 const carried = function(elements) {
-  const extension = extensionsOf(elements[0])
-  return elements.some((element) =>
-    literal(element, extension) && !shut(element))
+  return elements.some((element) => literal(element) && !shut(element))
 }
 
 module.exports = {
