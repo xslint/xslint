@@ -20,8 +20,10 @@ const {contents} = fixed(sources, defects)
 linters of a preset, `recommended` unless named, over the `{file, content}`
 sources, honors inline `xslint-disable` directives, runs every check
 `overrides` names beside the preset, and hands
-the defects back in the order the reports print them — file, line, column, rule;
-`fixed(sources, defects, suggestions)` returns the rewritten content per file.
+the defects back in the order the reports print them — file, line, column, rule.
+It throws on a preset naming no check list, on an `only` substring that is
+empty or no check name holds, and on a `suppress` substring no check name
+holds. `fixed(sources, defects, suggestions)` returns the rewritten content per file.
 
 `settingsOf(dir, flags)` reads the `.xslint.yml` nearest to `dir` the way the
 command line does, `flags` taking `config`, `preset`, `only` and `suppress`
@@ -30,8 +32,9 @@ whether `exclude:` keeps the stylesheet at that absolute path out, `file`, the
 absolute path of the configuration it read (undefined when none), `base`, the
 directory its globs resolve against, and `problems`, one sentence per
 unknown key, mistyped value or rule naming no check. It prints nothing, and
-throws rather than answering a problem where the preset names no check list or
-the file is not YAML at all, as the command line fails on both:
+throws rather than answering a problem where the preset names no check list,
+an `only` entry is empty or no check name holds it, or the file is not YAML at
+all, as the command line fails on each:
 
 ```js
 const {lint, settingsOf} = require('@maxonfjvipon/xslint')

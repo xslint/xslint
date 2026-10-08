@@ -195,6 +195,7 @@ const REACHING = [
  * reports: the flags, the configuration, and the checks left in the report.
  * A suppression outranks a choice however either is spelled, and a flag
  * replaces the choice a configuration makes rather than adding to it (#1030).
+ * Either flag takes a comma-separated list as readily as a repeat (#1161).
  * @type {Array.<Array>}
  */
 const CHOICES = [
@@ -211,6 +212,22 @@ const CHOICES = [
     ['unused-named-template'], 'the config beside a suppressing flag'],
   [['--only=short-names'], 'rules:\n  short-names: off\n',
     [], 'a flag choosing a check the config turns off'],
+  [['--only=short,unused'], '',
+    ['short-names', 'unused-named-template'], 'one flag listing two'],
+  [['--only=short,unused', '--suppress=short-names,starts-with'], '',
+    ['unused-named-template'], 'a suppression listing two'],
+]
+
+/**
+ * A run whose `--only` or `--suppress` holds a substring no check name holds:
+ * the flags and the substring it names. It refuses to run, since one typo
+ * would otherwise narrow it to nothing and read as a clean report (#1161).
+ * @type {Array.<Array>}
+ */
+const UNMATCHED = [
+  [['--only=unused-variable,unused-param'], 'unused-param', 'a choice'],
+  [['--suppress=short-names,qwerty'], 'qwerty', 'a suppression'],
+  [['--only=short-names,'], '', 'a choice ending on a stray comma'],
 ]
 
 /**
@@ -391,23 +408,26 @@ describe('xslint', function() {
     assert.ok(stdout.includes('Empty suppress is incorrect. Delete this "--suppress" or use another one.'))
     expected.forEach((str) => assert.ok(stdout.includes(str)))
   })
-  it('should test incorrect suppress', function() {
-    const suppress = 'qwerty'
-    const stdout = runXslint([
-      '--preset', 'all',
-      'test/resources/stylesheets/xsl-with-some-violations.xsl',
-      `--suppress=${suppress}`,
-    ])
-    assert.ok(stdout.includes(`Check with substring '${suppress}' does not exist. Delete this '--suppress' or use another one.`))
-  })
-  it('should silence the bad-suppress warning under a raised log level', function() {
-    const streams = xslintStreams([
-      '--preset', 'all',
-      'test/resources/stylesheets/xsl-with-some-violations.xsl',
-      '--suppress=qwerty',
-      '--log-level=error',
-    ])
-    assert.ok(!streams.stderr.includes('does not exist'))
+  UNMATCHED.forEach(([flags, piece, what]) => {
+    it(`should fail on ${what} naming no check`, function() {
+      assert.equal(
+        xslintStatus([
+          'test/resources/stylesheets/xsl-with-some-violations.xsl', ...flags,
+        ]),
+        1,
+        `ran over ${what} naming no check and left with a zero`,
+      )
+    })
+    it(`should name the substring of ${what} naming no check`, function() {
+      assert.match(
+        xslintStreams([
+          'test/resources/stylesheets/xsl-with-some-violations.xsl', ...flags,
+          '--log-level=error',
+        ]).stderr,
+        new RegExp(`'${piece}' names no check, fix or drop it`),
+        `failed on ${what} naming no check without naming its substring`,
+      )
+    })
   })
   it('should test non-existing directory', function() {
     const dir = 'non-existing-directory'
