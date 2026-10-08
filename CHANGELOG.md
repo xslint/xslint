@@ -7,8 +7,26 @@ project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Entries for releases before this file was introduced record their npm
 publication date only; detailed notes begin with the Unreleased section.
 
-## Unreleased
+## 0.7.0 - 2026-10-08
 
+- Add a baseline. A tree that grew for years without a linter draws hundreds
+  of reports on its first run, and the only gate it had was `--max-warnings`,
+  which counts reports without knowing which ones it counts, so a fixed warning
+  paid for a new one. `--baseline-write <file>` records every defect the run
+  finds and reports none, and `--baseline <file>`, or `baseline:` in
+  `.xslint.yml`, reports only the defects the file does not record. The file
+  counts defects per file per check, so a line moved or edited still matches,
+  and a file that draws a check more often than recorded reports every defect
+  of that check in it. A recorded defect the run no longer draws fails the run
+  until `--baseline-prune` lowers its count, and a prune records nothing new,
+  so the baseline only shrinks. A run judges and rewrites only the files it
+  read and the checks it ran, and neither `--baseline-write` nor
+  `--baseline-prune` runs with a fix flag (#1188, #1197).
+- Add an adoption guide to the manual. The README explained each flag on its
+  own, and nothing put them in order for a team whose first run draws hundreds
+  of reports. The guide counts the reports by check, turns off the checks the
+  team rejects, records the rest in a baseline that CI gates on, pays the debt
+  down one check per pull request, and moves the tree to `preset: all` (#1189).
 - Split each `--only` and `--suppress` value on commas. `--only=a,b` took the
   whole value as one substring that no check name holds, so the run checked
   nothing and still reported "No defects found"; a list now means the same as
@@ -16,6 +34,11 @@ publication date only; detailed notes begin with the Unreleased section.
   name holds now stops the run with an error naming it and exit code 1, where
   it used to warn and lint on. So does an empty `--only` piece a stray comma
   leaves, which used to widen the run to the whole catalog (#1161).
+- Stop installing `patch-package` with xslint. It was a runtime dependency
+  run from `postinstall`, so every `npm i @maxonfjvipon/xslint` fetched it and
+  its tree and ran it to patch nothing, since the patches it applies never
+  ship. It is now a dev dependency run from `prepare`, which an install from
+  the registry never runs (#1150).
 - Stop four recommended checks misjudging XSLT 3.0. `name-starts-with-numeric`
   reads the local part of a `Q{uri}local` name, so a digit in the URI no longer
   fires and `Q{}9lives` does; `with-param-use-in-invalid-parent-node` admits
@@ -27,12 +50,30 @@ publication date only; detailed notes begin with the Unreleased section.
 - Make the fix of `redundant-namespace-declarations` a suggestion, since a
   computed name or an extension function can resolve a prefix no scan sees.
   A declaration a literal result element copies into the output is reported
-  with no fix at all, and an inline schema copies nothing. Both this check and
-  `leaking-result-namespace` now read `exclude-result-prefixes` and
-  `extension-element-prefixes` the way a processor does: below the root only
-  from XSLT 2.0 on, and not at all past a 3.0 shadow attribute. So an extension
-  instruction declared on a template copies nothing, and its prefix leaks from
-  no literal element in its scope (#1174).
+  with no fix at all, and an inline schema copies nothing. This check reads
+  `exclude-result-prefixes` and `extension-element-prefixes` the way a
+  processor does: below the root only from XSLT 2.0 on, and not at all past a
+  3.0 shadow attribute. `leaking-result-namespace` reads
+  `extension-element-prefixes` the same way, while it still takes the
+  excluded prefixes from the root's own `exclude-result-prefixes`. So an
+  extension instruction declared on a template copies nothing, and its prefix
+  leaks from no literal element in its scope (#1174).
+- Make `not-using-output` linear in the length of an import chain. It walked
+  forward from every file and rescanned the whole edge list at each step, so
+  a chain of imports cost the cube of its length. It now walks back once from
+  the files that serialize or import outward, and forward once from what that
+  reaches (#1141).
+- Rewrite the README for a first visit. It opens with the `npx` command and a
+  stylesheet the default preset reports three real faults in, and states what
+  `recommended` draws over DocBook-XSL, TEI and DITA-OT. Usage, configuration,
+  inline suppression, output, fixing, the stages and the API moved into a
+  manual that the docs site renders, and each README section keeps a
+  paragraph and a link to its page (#1095).
+- State the principles xslint follows in the README: one way to say one
+  thing, the processor of the declared version decides what is an error, a
+  safe fix never changes the output, and advice stays inside the declared
+  version. The motives of the consistency checks now open with the principle
+  they serve, where `unabbreviated-axis` used to argue width (#1171).
 
 ## 0.6.0 - 2026-09-30
 
