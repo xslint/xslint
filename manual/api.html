@@ -123,8 +123,10 @@ const {contents} = fixed(sources, defects)
 linters of a preset, <code>recommended</code> unless named, over the <code>{file, content}</code>
 sources, honors inline <code>xslint-disable</code> directives, runs every check
 <code>overrides</code> names beside the preset, and hands
-the defects back in the order the reports print them — file, line, column, rule;
-<code>fixed(sources, defects, suggestions)</code> returns the rewritten content per file.</p>
+the defects back in the order the reports print them — file, line, column, rule.
+It throws on a preset naming no check list, on an <code>only</code> substring that is
+empty or no check name holds, and on a <code>suppress</code> substring no check name
+holds. <code>fixed(sources, defects, suggestions)</code> returns the rewritten content per file.</p>
 <p><code>settingsOf(dir, flags)</code> reads the <code>.xslint.yml</code> nearest to <code>dir</code> the way the
 command line does, <code>flags</code> taking <code>config</code>, <code>preset</code>, <code>only</code> and <code>suppress</code>
 over it, and answers options to hand straight to <code>lint</code>, plus <code>excluded(path)</code>,
@@ -132,8 +134,9 @@ whether <code>exclude:</code> keeps the stylesheet at that absolute path out, <c
 absolute path of the configuration it read (undefined when none), <code>base</code>, the
 directory its globs resolve against, and <code>problems</code>, one sentence per
 unknown key, mistyped value or rule naming no check. It prints nothing, and
-throws rather than answering a problem where the preset names no check list or
-the file is not YAML at all, as the command line fails on both:</p>
+throws rather than answering a problem where the preset names no check list,
+an <code>only</code> entry is empty or no check name holds it, or the file is not YAML at
+all, as the command line fails on each:</p>
 <pre><code class="language-js">const {lint, settingsOf} = require(&#39;@maxonfjvipon/xslint&#39;)
 
 const settings = settingsOf(&#39;/path/to/project&#39;)

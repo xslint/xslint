@@ -132,19 +132,26 @@ included. The <a href="../index.html">check catalog</a> marks the preset each ch
 <p>You can skip several checks at once if they contain a certain substring:</p>
 <pre><code class="language-bash">xslint --suppress=unused
 </code></pre>
-<p>If you want to suppress many checks, use <code>--suppress</code> as many times as you need:</p>
-<pre><code class="language-bash">xslint --suppress=oversized-template --suppress=short-names
+<p>If you want to suppress many checks, list them with commas, or use <code>--suppress</code>
+as many times as you need:</p>
+<pre><code class="language-bash">xslint --suppress=oversized-template,short-names
+xslint --suppress=oversized-template --suppress=short-names
 </code></pre>
 <p>To ask one question of a whole tree, run only the checks you name with
-<code>--only</code>. It matches by substring the way <code>--suppress</code> does, it may be given
-as many times as you need, and it reaches any check in the catalog whatever
-the preset:</p>
-<pre><code class="language-bash">xslint --only=short-names --only=unused
+<code>--only</code>. It matches by substring the way <code>--suppress</code> does, it takes a
+comma-separated list or may be given as many times as you need, and it reaches
+any check in the catalog whatever the preset:</p>
+<pre><code class="language-bash">xslint --only=short-names,unused
+xslint --only=short-names --only=unused
 </code></pre>
 <p>The two combine, and a suppression always wins: a check both of them name stays
 quiet, so this runs every <code>unused-*</code> check but <code>unused-variable</code>:</p>
 <pre><code class="language-bash">xslint --only=unused --suppress=unused-variable
 </code></pre>
+<p>A substring in either flag that no check name holds stops the run before it
+checks anything, names that substring, and exits with <code>1</code>, so a typo cannot
+pass for a clean report. So does an empty <code>--only</code> piece that a stray comma
+leaves, as in <code>--only=short-names,</code>.</p>
 
   </div>
 </body>

@@ -140,7 +140,8 @@ a name opening with a dot like any other, so <code>dir/**</code> covers a
 <code>dir/.hidden/sheet.xsl</code> as much as the rest of what stands under <code>dir</code>.</li>
 <li><strong><code>only</code></strong> lists the substrings <code>--only</code> would take, narrowing every run to
 the checks they name. Passing <code>--only</code> replaces this list rather than adding
-to it, and a check <code>rules</code> turns <code>off</code> stays off whichever of the two chose it.</li>
+to it, and a check <code>rules</code> turns <code>off</code> stays off whichever of the two chose it.
+An entry no check name holds stops the run, naming that entry.</li>
 <li><strong><code>max-warnings</code></strong>, <strong><code>log-level</code></strong>, and <strong><code>quiet</code></strong> set the defaults for the
 matching command-line flags.</li>
 <li><strong><code>baseline</code></strong> names the <a href="baseline.html">baseline</a> file a run compares
@@ -149,9 +150,9 @@ against, relative to this file. Passing <code>--baseline</code> replaces it.</li
 <p>Unknown top-level keys, rule names that match no check, and values of the wrong
 type (a non-numeric <code>max-warnings</code>, a non-list <code>exclude</code> or <code>only</code>, a
 non-boolean <code>quiet</code>, a non-string <code>log-level</code>, <code>preset</code>, or <code>baseline</code>) are reported and
-ignored, so typos do not pass silently. A preset that does not exist fails the
-run instead, before a file is read, since a run over no checks would read as a
-clean report. An
+ignored, so typos do not pass silently. A preset that does not exist, or an
+<code>only</code> entry no check name holds, fails the run instead, before a file is read,
+since a run over the wrong checks would read as a clean report. An
 <code>exclude</code> glob is named the same way when a run walks a directory and the glob
 excludes nothing anywhere under it.</p>
 
