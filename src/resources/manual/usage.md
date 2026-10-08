@@ -42,18 +42,21 @@ You can skip several checks at once if they contain a certain substring:
 xslint --suppress=unused
 ```
 
-If you want to suppress many checks, use `--suppress` as many times as you need:
+If you want to suppress many checks, list them with commas, or use `--suppress`
+as many times as you need:
 
 ```bash
+xslint --suppress=oversized-template,short-names
 xslint --suppress=oversized-template --suppress=short-names
 ```
 
 To ask one question of a whole tree, run only the checks you name with
-`--only`. It matches by substring the way `--suppress` does, it may be given
-as many times as you need, and it reaches any check in the catalog whatever
-the preset:
+`--only`. It matches by substring the way `--suppress` does, it takes a
+comma-separated list or may be given as many times as you need, and it reaches
+any check in the catalog whatever the preset:
 
 ```bash
+xslint --only=short-names,unused
 xslint --only=short-names --only=unused
 ```
 
@@ -63,3 +66,8 @@ quiet, so this runs every `unused-*` check but `unused-variable`:
 ```bash
 xslint --only=unused --suppress=unused-variable
 ```
+
+A substring in either flag that no check name holds stops the run before it
+checks anything, names that substring, and exits with `1`, so a typo cannot
+pass for a clean report. So does an empty `--only` piece that a stray comma
+leaves, as in `--only=short-names,`.
