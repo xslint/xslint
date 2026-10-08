@@ -257,6 +257,7 @@ left-most, then the wider, wins, and the other waits for the next run.
 | `src/xsl-version.js` | `versionOf`, `numbered` and `since` |
 | `src/conditions.js` | `excluded` and `conditional`: whether a `use-when` drops an element surely, or may |
 | `src/tree.js` | One walk per document: `walked`, `named`, `attributed`, `ranked`, `holding` |
+| `src/literals.js` | `spelled`, `extensionsOf`, `literal` and `carried`: how a prefix list is spelled and read, which elements copy the namespaces in scope into the output, and whether any does unexcluded |
 | `src/roots.js` | `roots` and `entered`: the root templates, and whether a module can be entered |
 | `src/comparisons.js` | `comparedToZero`: a call compared with `0` or `1` |
 | `src/booleans.js` | `coerced` and `unwrapped`: where only an effective boolean value is taken |

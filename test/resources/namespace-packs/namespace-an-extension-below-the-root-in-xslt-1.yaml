@@ -4,16 +4,18 @@
 pack: redundant-namespace-declarations
 found:
   amount: 1
-  positions: [ [ 4, 3 ] ]
-  fixes: [ "" ]
+  positions: [ [ 5, 3 ] ]
+  fixes: [ null ]
 input: |-
   <?xml version="1.0"?>
   <xsl:stylesheet
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-    xmlns:out="urn:out"
-    exclude-result-prefixes="#all"
-    version="2.0">
-    <xsl:template match="/">
-      <zz exclude-result-prefixes="out"/>
+    xmlns:exsl="http://exslt.org/common"
+    xmlns:foo="urn:foo"
+    version="1.0">
+    <xsl:template match="/" extension-element-prefixes="exsl">
+      <exsl:document href="out.xml">
+        <xsl:text>x</xsl:text>
+      </exsl:document>
     </xsl:template>
   </xsl:stylesheet>

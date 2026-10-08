@@ -3,5 +3,5 @@
 ---
 severity: warning
 preset: all
-message: The xsl:stylesheet declares a namespace prefix that is never used. Remove the redundant xmlns declaration.
-fix: safe
+message: The xsl:stylesheet declares a namespace prefix that nothing in it uses. Remove the declaration, or exclude the prefix where a literal result element copies it out.
+fix: suggestion

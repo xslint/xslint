@@ -5,15 +5,15 @@ pack: redundant-namespace-declarations
 found:
   amount: 1
   positions: [ [ 4, 3 ] ]
-  fixes: [ "" ]
+  fixes: [ null ]
 input: |-
   <?xml version="1.0"?>
   <xsl:stylesheet
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-    xmlns:out="urn:out"
-    exclude-result-prefixes="#all"
-    version="2.0">
+    xmlns:foo="urn:foo"
+    version="3.0">
+    <xsl:param name="keep" static="yes" select="''"/>
     <xsl:template match="/">
-      <zz exclude-result-prefixes="out"/>
+      <out xsl:exclude-result-prefixes="#all" xsl:_exclude-result-prefixes="{$keep}"/>
     </xsl:template>
   </xsl:stylesheet>

@@ -5,6 +5,7 @@
 
 const {metaOf, suppressed} = require('../checks')
 const {standsAt, substitution} = require('../fixes')
+const {extensionsOf, literal} = require('../literals')
 const {GAPS} = require('../tokens')
 const {logger} = require('../logger')
 
@@ -60,48 +61,17 @@ const prefixOf = function(name) {
 }
 
 /**
- * Whether the element is top-level data or stands inside it: a non-XSLT child
- * of an XSLT root, such as an oXygen `doc:doc` block, which a processor never
- * instantiates, so it writes nothing into the result (#1006).
- * @param {Element} element - Element to test
- * @return {boolean} - True for data outside every sequence constructor
- */
-const documentary = function(element) {
-  const xsl = element.ownerDocument
-  let top = element
-  while (top.parentNode !== xsl && top.parentNode.parentNode !== xsl) {
-    top = top.parentNode
-  }
-  return xsl.documentElement.namespaceURI === XSLT &&
-    top.namespaceURI !== XSLT
-}
-
-/**
- * Whether the element is a literal result element — a non-XSLT element that is
- * neither an extension instruction nor top-level data, so it is copied into
- * the output and carries the stylesheet's in-scope namespaces with it.
- * @param {Element} element - Element to test
- * @param {Set.<string>} extension - Extension-element prefixes
- * @return {boolean} - True for a literal result element
- */
-const literal = function(element, extension) {
-  return element.namespaceURI !== XSLT && !extension.has(element.prefix) &&
-    !documentary(element)
-}
-
-/**
  * The prefixes that genuinely appear in the serialized output — a literal
  * result element's own prefix, a prefix on one of its attributes, or the
  * static name of an `xsl:element`/`xsl:attribute` — so excluding them would
  * be wrong.
  * @param {Array.<Element>} elements - Every element of the document
- * @param {Set.<string>} extension - Extension-element prefixes
  * @return {Set.<string>} - Prefixes present in the result
  */
-const outputs = function(elements, extension) {
+const outputs = function(elements) {
   const set = new Set()
   for (const element of elements) {
-    if (literal(element, extension)) {
+    if (literal(element)) {
       set.add(element.prefix)
       for (const attribute of Array.from(element.attributes)) {
         if (!attribute.name.startsWith('xmlns')) {
@@ -240,20 +210,17 @@ const lintByResultNamespace = function(corpus, suppressions = []) {
     for (const {file, content, xsl} of corpus) {
       const root = xsl.documentElement
       const elements = Array.from(xsl.getElementsByTagName('*'))
-      const extension = new Set(
-        (prefixes(root, 'extension-element-prefixes')?.value ?? '')
-          .split(GAPS),
-      )
+      const extension = extensionsOf(elements)
       const excluded = new Set(
         (prefixes(root, 'exclude-result-prefixes')?.value ?? '').split(GAPS),
       )
       const leaks = !excluded.has('#all') &&
         !textual(elements) &&
-        elements.some((element) => literal(element, extension))
+        elements.some((element) => literal(element))
       let output = new Set()
       let leaking = []
       if (leaks) {
-        output = outputs(elements, extension)
+        output = outputs(elements)
         leaking = Array.from(root.attributes).filter((attribute) => {
           const prefix = declared(attribute.name)
           return prefix && prefix !== 'xml' && attribute.value !== XSLT &&

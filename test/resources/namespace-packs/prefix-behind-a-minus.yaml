@@ -21,6 +21,6 @@ input: |-
       <xsl:value-of select="last()-tei:offset"/>
       <xsl:value-of select="sum((1, 2)[. gt 5-db:n])"/>
       <xsl:value-of select="count(*)-ns:* - 1"/>
-      <out at="{position()-av:x}" note="mi-{us-mi}"/>
+      <out at="{position()-av:x}" note="mi-{us-mi}" xsl:exclude-result-prefixes="#all"/>
     </xsl:template>
   </xsl:stylesheet>

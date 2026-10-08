@@ -6,9 +6,10 @@
 const {expressionsOf} = require('../attributes')
 const {metaOf, suppressed} = require('../checks')
 const {deletion, standsAt} = require('../fixes')
+const {carried, spelled} = require('../literals')
 const {logger} = require('../logger')
 const {parseOf} = require('../syntax')
-const {GAPS, NAMED, TOKENS} = require('../tokens')
+const {NAMED, TOKENS} = require('../tokens')
 const {XSLT} = require('../xsl-version')
 
 /**
@@ -69,14 +70,11 @@ const ALIASES = ['stylesheet-prefix', 'result-prefix']
  * @return {Array.<string>} - The tokens its prefix lists hold
  */
 const listed = function(element) {
-  let names = LISTS.map((name) => element.getAttributeNS(XSLT, name))
-  if (element.namespaceURI === XSLT) {
-    names = LISTS.map((name) => element.getAttribute(name))
-    if (element.localName === 'namespace-alias') {
-      names = ALIASES.map((name) => element.getAttribute(name))
-    }
+  let names = LISTS
+  if (element.namespaceURI === XSLT && element.localName === 'namespace-alias') {
+    names = ALIASES
   }
-  return names.filter(Boolean).flatMap((value) => value.split(GAPS))
+  return names.flatMap((name) => spelled(element, name))
 }
 
 /**
@@ -184,11 +182,11 @@ const used = function(elements, read, prefix) {
 }
 
 /**
- * Lint the corpus for namespace prefixes declared on the stylesheet but used
- * nowhere, reporting one defect per dead declaration with the fix that deletes
- * it. The span to cut is read from the source by `deletion`, so either
- * delimiter and any gap around the `=` is deleted rather than declined (#594);
- * where it stands is read the same way, so report and fix agree (#681).
+ * Lint the corpus for prefixes the stylesheet declares and uses nowhere, each
+ * with the fix that deletes it unless the output carries it (#1174). The span
+ * to cut is read from the source by `deletion`, so either delimiter and any gap
+ * around the `=` is deleted rather than declined (#594); where it stands is
+ * read the same way, so report and fix agree (#681).
  * @param {Array.<{file: string, content: string, xsl: Document}>} corpus -
  *  Parsed stylesheets
  * @param {Array.<string>} suppressions - Array of suppressed checks
@@ -202,19 +200,23 @@ const lintByNamespace = function(corpus, suppressions = []) {
     for (const {file, content, xsl} of corpus) {
       const elements = Array.from(xsl.getElementsByTagName('*'))
       const read = readOf(xsl, elements)
+      const output = carried(elements)
       for (const attribute of Array.from(xsl.documentElement.attributes)) {
         const prefix = declared(attribute.name)
         if (prefix && prefix !== 'xml' && !used(elements, read, prefix)) {
           const where = standsAt(attribute, content)
-          defects.push({
+          const defect = {
             name: CHECK,
             severity: META.severity,
             message: META.message,
             file: file,
             line: where.line,
             pos: where.pos,
-            fix: deletion(attribute, content),
-          })
+          }
+          if (!output || attribute.value === XSLT) {
+            defect.fix = deletion(attribute, content)
+          }
+          defects.push(defect)
         }
       }
     }

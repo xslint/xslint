@@ -82,8 +82,11 @@ const APPLIED = [
     after: 'unabbreviated-axis-in-a-wrapped-value.fixed.xsl',
   },
   {
-    name: 'should delete a redundant namespace declaration with --fix',
-    flag: '--fix',
+    name: [
+      'should delete a redundant namespace declaration with',
+      '--fix-suggestions',
+    ].join(' '),
+    flag: '--fix-suggestions',
     before: 'redundant-namespace-declarations.xsl',
     after: 'redundant-namespace-declarations.fixed.xsl',
   },
@@ -568,8 +571,11 @@ const APPLIED = [
     after: 'a-mark-the-fixer-keeps.fixed.xsl',
   },
   {
-    name: 'should count no column in the byte order mark under --fix',
-    flag: '--fix',
+    name: [
+      'should count no column in the byte order mark under',
+      '--fix-suggestions',
+    ].join(' '),
+    flag: '--fix-suggestions',
     before: 'a-mark-no-column-counts-in.xsl',
     after: 'a-mark-no-column-counts-in.fixed.xsl',
   },
@@ -581,6 +587,21 @@ const APPLIED = [
  * @type {Array.<{name: string, flag: string, sheet: string}>}
  */
 const UNCHANGED = [
+  {
+    name: 'cannot delete a redundant namespace declaration with plain --fix',
+    flag: '--fix',
+    sheet: 'redundant-namespace-declarations.xsl',
+  },
+  {
+    name: 'cannot delete a namespace a literal result element carries out',
+    flag: '--fix-suggestions',
+    sheet: 'redundant-namespace-declarations-the-output-carries.xsl',
+  },
+  {
+    name: 'cannot trust #all to keep a namespace out of a 1.0 output',
+    flag: '--fix-suggestions',
+    sheet: 'redundant-namespace-declarations-all-in-xslt-1.xsl',
+  },
   {
     name: 'cannot rewrite a literal a run behind an entity walks onto',
     flag: '--fix',

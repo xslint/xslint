@@ -24,6 +24,15 @@ publication date only; detailed notes begin with the Unreleased section.
   `missing-or-empty-name` asks a name of `xsl:element`, `xsl:attribute`,
   `xsl:processing-instruction`, and `xsl:namespace` too, where the last two may
   still leave it empty (#1199).
+- Make the fix of `redundant-namespace-declarations` a suggestion, since a
+  computed name or an extension function can resolve a prefix no scan sees.
+  A declaration a literal result element copies into the output is reported
+  with no fix at all, and an inline schema copies nothing. Both this check and
+  `leaking-result-namespace` now read `exclude-result-prefixes` and
+  `extension-element-prefixes` the way a processor does: below the root only
+  from XSLT 2.0 on, and not at all past a 3.0 shadow attribute. So an extension
+  instruction declared on a template copies nothing, and its prefix leaks from
+  no literal element in its scope (#1174).
 
 ## 0.6.0 - 2026-09-30
 

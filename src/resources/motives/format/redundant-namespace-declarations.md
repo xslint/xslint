@@ -19,7 +19,9 @@ Correct:
 </xsl:stylesheet>
 ```
 
-A prefix is used where it qualifies an element name, an attribute name, or a
-name inside an expression or value template (a mention in an XPath comment
-qualifies nothing), and where `exclude-result-prefixes`,
-`extension-element-prefixes` or `xsl:namespace-alias` names it.
+A prefix is used where it qualifies a name in an element, an attribute, an
+expression or a value template, or where a prefix list or `xsl:namespace-alias`
+names it. A computed name, an evaluated path or an extension function may
+still resolve it at run time, so check before removing it. Where a literal
+result element copies the namespace out and no `#all` of XSLT 2.0 or later
+excludes it, removing the declaration changes the output.

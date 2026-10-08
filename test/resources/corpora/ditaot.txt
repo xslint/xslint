@@ -273,7 +273,7 @@ src/main/plugins/org.dita.html5/xsl/syntax-braces.xsl:233:21 count-compared-to-z
 src/main/plugins/org.dita.html5/xsl/syntax-braces.xsl:244:3 unused-named-template
 src/main/plugins/org.dita.html5/xsl/syntax-braces.xsl:246:27 scans-whole-document
 src/main/plugins/org.dita.html5/xsl/syntax-svg.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.html5/xsl/syntax-svg.xsl:11:17 redundant-namespace-declarations fix ""
+src/main/plugins/org.dita.html5/xsl/syntax-svg.xsl:11:17 redundant-namespace-declarations
 src/main/plugins/org.dita.html5/xsl/syntax-svg.xsl:53:5 blank-nested-if
 src/main/plugins/org.dita.html5/xsl/syntax-svg.xsl:53:70 text-outside-xsl-text suggestion "<xsl:text> | </xsl:text>"
 src/main/plugins/org.dita.html5/xsl/syntax-svg.xsl:53:84 count-compared-to-zero fix "exists(preceding-sibling::*)"
@@ -423,31 +423,31 @@ src/main/plugins/org.dita.htmlhelp/xsl/map2htmlhelp/map2hhpImpl.xsl:388:7 settin
 src/main/plugins/org.dita.htmlhelp/xsl/map2htmlhelp/map2hhpImpl.xsl:405:3 setting-value-of-variable-incorrectly
 src/main/plugins/org.dita.htmlhelp/xsl/map2htmlhelp/map2hhpImpl.xsl:426:5 text-outside-xsl-text suggestion "<xsl:text>/</xsl:text>"
 src/main/plugins/org.dita.pdf2.fop/cfg/fo/attrs/commons-attr_fop.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2.fop/cfg/fo/attrs/commons-attr_fop.xsl:10:17 redundant-namespace-declarations fix ""
+src/main/plugins/org.dita.pdf2.fop/cfg/fo/attrs/commons-attr_fop.xsl:10:17 redundant-namespace-declarations suggestion ""
 src/main/plugins/org.dita.pdf2.fop/cfg/fo/attrs/tables-attr_fop.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2.fop/cfg/fo/attrs/tables-attr_fop.xsl:10:17 redundant-namespace-declarations fix ""
+src/main/plugins/org.dita.pdf2.fop/cfg/fo/attrs/tables-attr_fop.xsl:10:17 redundant-namespace-declarations suggestion ""
 src/main/plugins/org.dita.pdf2.fop/xsl/fo/index_fop.xsl:9:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.pdf2.fop/xsl/fo/root-processing_fop.xsl:9:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.pdf2.fop/xsl/fo/tables_fop.xsl:9:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.pdf2.fop/xsl/fo/topic2fo_shell_fop_template.xsl:9:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.pdf2.fop/xsl/fo/topic_fop.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2.fop/xsl/fo/topic_fop.xsl:11:5 redundant-namespace-declarations fix ""
+src/main/plugins/org.dita.pdf2.fop/xsl/fo/topic_fop.xsl:11:5 redundant-namespace-declarations suggestion ""
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/basic-settings.xsl:7:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/basic-settings.xsl:64:3 unused-variable
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/commons-attr.xsl:34:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/cfg/fo/attrs/commons-attr.xsl:35:5 redundant-namespace-declarations fix ""
-src/main/plugins/org.dita.pdf2/cfg/fo/attrs/commons-attr.xsl:36:5 redundant-namespace-declarations fix ""
+src/main/plugins/org.dita.pdf2/cfg/fo/attrs/commons-attr.xsl:35:5 redundant-namespace-declarations suggestion ""
+src/main/plugins/org.dita.pdf2/cfg/fo/attrs/commons-attr.xsl:36:5 redundant-namespace-declarations suggestion ""
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/concept-attr.xsl:34:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/cfg/fo/attrs/concept-attr.xsl:35:5 redundant-namespace-declarations fix ""
-src/main/plugins/org.dita.pdf2/cfg/fo/attrs/concept-attr.xsl:36:5 redundant-namespace-declarations fix ""
+src/main/plugins/org.dita.pdf2/cfg/fo/attrs/concept-attr.xsl:35:5 redundant-namespace-declarations suggestion ""
+src/main/plugins/org.dita.pdf2/cfg/fo/attrs/concept-attr.xsl:36:5 redundant-namespace-declarations suggestion ""
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/custom.xsl:34:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/custom.xsl:34:1 stylesheet-has-no-templates
-src/main/plugins/org.dita.pdf2/cfg/fo/attrs/custom.xsl:35:5 redundant-namespace-declarations fix ""
+src/main/plugins/org.dita.pdf2/cfg/fo/attrs/custom.xsl:35:5 redundant-namespace-declarations suggestion ""
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/emphasis-domain-attr.xsl:6:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/front-matter-attr.xsl:34:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/cfg/fo/attrs/front-matter-attr.xsl:35:5 redundant-namespace-declarations fix ""
+src/main/plugins/org.dita.pdf2/cfg/fo/attrs/front-matter-attr.xsl:35:5 redundant-namespace-declarations suggestion ""
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/glossary-attr.xsl:34:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/cfg/fo/attrs/glossary-attr.xsl:34:66 redundant-namespace-declarations fix ""
+src/main/plugins/org.dita.pdf2/cfg/fo/attrs/glossary-attr.xsl:34:66 redundant-namespace-declarations suggestion ""
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/hazard-d-attr.xsl:6:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/hazard-d-attr.xsl:13:3 unused-variable
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/hazard-d-attr.xsl:15:3 unused-variable
@@ -457,50 +457,50 @@ src/main/plugins/org.dita.pdf2/cfg/fo/attrs/hazard-d-attr.xsl:20:3 unused-variab
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/hazard-d-attr.xsl:21:3 unused-variable
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/hi-domain-attr.xsl:34:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/index-attr.xsl:34:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/cfg/fo/attrs/index-attr.xsl:35:67 redundant-namespace-declarations fix ""
+src/main/plugins/org.dita.pdf2/cfg/fo/attrs/index-attr.xsl:35:67 redundant-namespace-declarations suggestion ""
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/layout-masters-attr.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/cfg/fo/attrs/layout-masters-attr.xsl:10:17 redundant-namespace-declarations fix ""
+src/main/plugins/org.dita.pdf2/cfg/fo/attrs/layout-masters-attr.xsl:10:17 redundant-namespace-declarations suggestion ""
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/learning-elements-attr.xsl:34:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/cfg/fo/attrs/learning-elements-attr.xsl:35:5 redundant-namespace-declarations fix ""
+src/main/plugins/org.dita.pdf2/cfg/fo/attrs/learning-elements-attr.xsl:35:5 redundant-namespace-declarations suggestion ""
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/links-attr.xsl:34:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/cfg/fo/attrs/links-attr.xsl:34:66 redundant-namespace-declarations fix ""
+src/main/plugins/org.dita.pdf2/cfg/fo/attrs/links-attr.xsl:34:66 redundant-namespace-declarations suggestion ""
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/lists-attr.xsl:34:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/cfg/fo/attrs/lists-attr.xsl:35:5 redundant-namespace-declarations fix ""
+src/main/plugins/org.dita.pdf2/cfg/fo/attrs/lists-attr.xsl:35:5 redundant-namespace-declarations suggestion ""
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/lot-lof-attr.xsl:10:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/cfg/fo/attrs/lot-lof-attr.xsl:11:5 redundant-namespace-declarations fix ""
-src/main/plugins/org.dita.pdf2/cfg/fo/attrs/lot-lof-attr.xsl:12:5 redundant-namespace-declarations fix ""
+src/main/plugins/org.dita.pdf2/cfg/fo/attrs/lot-lof-attr.xsl:11:5 redundant-namespace-declarations suggestion ""
+src/main/plugins/org.dita.pdf2/cfg/fo/attrs/lot-lof-attr.xsl:12:5 redundant-namespace-declarations suggestion ""
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/map-elements-attr.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/cfg/fo/attrs/map-elements-attr.xsl:10:3 redundant-namespace-declarations fix ""
+src/main/plugins/org.dita.pdf2/cfg/fo/attrs/map-elements-attr.xsl:10:3 redundant-namespace-declarations suggestion ""
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/markup-domain-attr.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/cfg/fo/attrs/markup-domain-attr.xsl:10:17 redundant-namespace-declarations fix ""
+src/main/plugins/org.dita.pdf2/cfg/fo/attrs/markup-domain-attr.xsl:10:17 redundant-namespace-declarations suggestion ""
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/pr-domain-attr.xsl:34:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/reference-elements-attr.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/cfg/fo/attrs/reference-elements-attr.xsl:10:3 redundant-namespace-declarations fix ""
-src/main/plugins/org.dita.pdf2/cfg/fo/attrs/reference-elements-attr.xsl:11:3 redundant-namespace-declarations fix ""
+src/main/plugins/org.dita.pdf2/cfg/fo/attrs/reference-elements-attr.xsl:10:3 redundant-namespace-declarations suggestion ""
+src/main/plugins/org.dita.pdf2/cfg/fo/attrs/reference-elements-attr.xsl:11:3 redundant-namespace-declarations suggestion ""
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/static-content-attr.xsl:34:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/cfg/fo/attrs/static-content-attr.xsl:35:5 redundant-namespace-declarations fix ""
+src/main/plugins/org.dita.pdf2/cfg/fo/attrs/static-content-attr.xsl:35:5 redundant-namespace-declarations suggestion ""
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/svg-domain-attr.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/cfg/fo/attrs/svg-domain-attr.xsl:10:17 redundant-namespace-declarations fix ""
+src/main/plugins/org.dita.pdf2/cfg/fo/attrs/svg-domain-attr.xsl:10:17 redundant-namespace-declarations suggestion ""
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/sw-domain-attr.xsl:34:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/tables-attr.xsl:34:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/cfg/fo/attrs/tables-attr.xsl:34:66 redundant-namespace-declarations fix ""
+src/main/plugins/org.dita.pdf2/cfg/fo/attrs/tables-attr.xsl:34:66 redundant-namespace-declarations suggestion ""
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/task-elements-attr.xsl:34:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/cfg/fo/attrs/task-elements-attr.xsl:35:5 redundant-namespace-declarations fix ""
+src/main/plugins/org.dita.pdf2/cfg/fo/attrs/task-elements-attr.xsl:35:5 redundant-namespace-declarations suggestion ""
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/toc-attr.xsl:34:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/cfg/fo/attrs/toc-attr.xsl:35:5 redundant-namespace-declarations fix ""
+src/main/plugins/org.dita.pdf2/cfg/fo/attrs/toc-attr.xsl:35:5 redundant-namespace-declarations suggestion ""
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/toc-attr.xsl:66:17 text-outside-xsl-text suggestion "<xsl:text>12pt</xsl:text>"
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/toc-attr.xsl:73:17 text-outside-xsl-text suggestion "<xsl:text>bold</xsl:text>"
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/toc-attr.xsl:74:17 text-outside-xsl-text suggestion "<xsl:text>normal</xsl:text>"
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/topic-attr.xsl:34:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/cfg/fo/attrs/topic-attr.xsl:35:5 redundant-namespace-declarations fix ""
-src/main/plugins/org.dita.pdf2/cfg/fo/attrs/topic-attr.xsl:36:5 redundant-namespace-declarations fix ""
+src/main/plugins/org.dita.pdf2/cfg/fo/attrs/topic-attr.xsl:35:5 redundant-namespace-declarations suggestion ""
+src/main/plugins/org.dita.pdf2/cfg/fo/attrs/topic-attr.xsl:36:5 redundant-namespace-declarations suggestion ""
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/ui-domain-attr.xsl:34:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.pdf2/cfg/fo/attrs/xml-domain-attr.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/cfg/fo/attrs/xml-domain-attr.xsl:10:17 redundant-namespace-declarations fix ""
+src/main/plugins/org.dita.pdf2/cfg/fo/attrs/xml-domain-attr.xsl:10:17 redundant-namespace-declarations suggestion ""
 src/main/plugins/org.dita.pdf2/cfg/fo/layout-masters.xsl:34:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.pdf2/cfg/fo/xsl/custom.xsl:34:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.pdf2/cfg/fo/xsl/custom.xsl:34:1 stylesheet-has-no-templates
-src/main/plugins/org.dita.pdf2/cfg/fo/xsl/custom.xsl:35:5 redundant-namespace-declarations fix ""
+src/main/plugins/org.dita.pdf2/cfg/fo/xsl/custom.xsl:35:5 redundant-namespace-declarations suggestion ""
 src/main/plugins/org.dita.pdf2/xsl/common/attr-set-reflection.xsl:34:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.pdf2/xsl/common/attr-set-reflection.xsl:59:5 oversized-template
 src/main/plugins/org.dita.pdf2/xsl/common/attr-set-reflection.xsl:59:5 unused-named-template
@@ -551,7 +551,7 @@ src/main/plugins/org.dita.pdf2/xsl/common/topicmerge_template.xsl:9:1 missing-id
 src/main/plugins/org.dita.pdf2/xsl/common/vars.xsl:34:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.pdf2/xsl/common/vars.xsl:45:3 unused-named-template
 src/main/plugins/org.dita.pdf2/xsl/fo/abbrev-domain.xsl:9:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/xsl/fo/abbrev-domain.xsl:11:17 redundant-namespace-declarations fix ""
+src/main/plugins/org.dita.pdf2/xsl/fo/abbrev-domain.xsl:11:17 redundant-namespace-declarations suggestion ""
 src/main/plugins/org.dita.pdf2/xsl/fo/abbrev-domain.xsl:62:63 use-double-slash
 src/main/plugins/org.dita.pdf2/xsl/fo/abbrev-domain.xsl:65:59 use-double-slash
 src/main/plugins/org.dita.pdf2/xsl/fo/abbrev-domain.xsl:76:78 predicate-position-literal fix "last()"
@@ -624,7 +624,7 @@ src/main/plugins/org.dita.pdf2/xsl/fo/i18n-postprocessImpl.xsl:124:33 use-double
 src/main/plugins/org.dita.pdf2/xsl/fo/i18n-postprocessImpl.xsl:160:11 text-outside-xsl-text suggestion "<xsl:text>default</xsl:text>"
 src/main/plugins/org.dita.pdf2/xsl/fo/i18n-postprocessImpl.xsl:189:13 not-creating-attribute-correctly
 src/main/plugins/org.dita.pdf2/xsl/fo/i18n-postprocess_template.xsl:34:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/xsl/fo/i18n-postprocess_template.xsl:37:17 redundant-namespace-declarations fix ""
+src/main/plugins/org.dita.pdf2/xsl/fo/i18n-postprocess_template.xsl:37:17 redundant-namespace-declarations suggestion ""
 src/main/plugins/org.dita.pdf2/xsl/fo/index.xsl:34:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.pdf2/xsl/fo/index.xsl:34:1 too-many-templates
 src/main/plugins/org.dita.pdf2/xsl/fo/index.xsl:56:5 unused-variable
@@ -776,8 +776,8 @@ src/main/plugins/org.dita.pdf2/xsl/fo/topic.xsl:1164:9 use-choose-without-otherw
 src/main/plugins/org.dita.pdf2/xsl/fo/topic.xsl:1362:13 use-choose-without-otherwise
 src/main/plugins/org.dita.pdf2/xsl/fo/topic.xsl:1436:11 use-choose-without-otherwise
 src/main/plugins/org.dita.pdf2/xsl/fo/topic2fo.xsl:34:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.pdf2/xsl/fo/topic2fo.xsl:35:5 redundant-namespace-declarations fix ""
-src/main/plugins/org.dita.pdf2/xsl/fo/topic2fo.xsl:40:5 redundant-namespace-declarations fix ""
+src/main/plugins/org.dita.pdf2/xsl/fo/topic2fo.xsl:35:5 redundant-namespace-declarations suggestion ""
+src/main/plugins/org.dita.pdf2/xsl/fo/topic2fo.xsl:40:5 redundant-namespace-declarations suggestion ""
 src/main/plugins/org.dita.pdf2/xsl/fo/topic2fo_shell_template.xsl:34:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.pdf2/xsl/fo/ui-domain.xsl:34:1 missing-id-in-stylesheet
 src/main/plugins/org.dita.pdf2/xsl/fo/ut-domain.xsl:9:1 missing-id-in-stylesheet
@@ -1004,7 +1004,7 @@ src/main/plugins/org.dita.xhtml/xsl/xslhtml/syntax-braces.xsl:194:81 count-compa
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/syntax-braces.xsl:204:1 unused-named-template
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/syntax-braces.xsl:206:25 scans-whole-document
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/syntax-svg.xsl:10:1 missing-id-in-stylesheet
-src/main/plugins/org.dita.xhtml/xsl/xslhtml/syntax-svg.xsl:11:31 redundant-namespace-declarations fix ""
+src/main/plugins/org.dita.xhtml/xsl/xslhtml/syntax-svg.xsl:11:31 redundant-namespace-declarations
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/syntax-svg.xsl:64:3 blank-nested-if
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/syntax-svg.xsl:64:68 text-outside-xsl-text suggestion "<xsl:text> | </xsl:text>"
 src/main/plugins/org.dita.xhtml/xsl/xslhtml/syntax-svg.xsl:64:82 count-compared-to-zero fix "exists(preceding-sibling::*)"
@@ -1094,7 +1094,7 @@ src/test/xsl/plugins/org.dita.html5/xsl/simpletable.xsl:2:1 missing-id-in-styles
 src/test/xsl/plugins/org.dita.html5/xsl/simpletable.xsl:38:5 unused-function-template-parameter
 src/test/xsl/plugins/org.dita.html5/xsl/simpletable.xsl:53:9 text-outside-xsl-text suggestion "<xsl:text>_</xsl:text>"
 src/test/xsl/plugins/org.dita.html5/xsl/topic.xsl:2:1 missing-id-in-stylesheet
-src/test/xsl/plugins/org.dita.html5/xsl/topic.xsl:7:17 redundant-namespace-declarations fix ""
+src/test/xsl/plugins/org.dita.html5/xsl/topic.xsl:7:17 redundant-namespace-declarations suggestion ""
 src/test/xsl/plugins/org.dita.pdf2/xsl/fo/mocks.xsl:2:1 missing-id-in-stylesheet
 src/test/xsl/plugins/org.dita.pdf2/xsl/fo/mocks.xsl:19:5 unused-function-template-parameter
 src/test/xsl/plugins/org.dita.pdf2/xsl/fo/mocks.xsl:34:5 unused-function-template-parameter
