@@ -235,7 +235,7 @@ left-most, then the wider, wins, and the other waits for the next run.
 | `src/index.mjs` | CLI entry (commander.js, ESM); imports the pipeline inside the command action |
 | `src/xslint.js` | Discovery, config, staging, output; exports `lint`, `fixed`, `settingsOf`, `ranOf`, `stylesheetsOf`, `sourceOf`, `ledgerOf`, `baselined` |
 | `src/config.js` | Resolves `.xslint.yml` (severities, `off`, excludes, `max-warnings`) |
-| `src/baseline.js` | `recorded`, `baselined`, `matched`, `trimmed`, `counted` and `ledgerOf`: the defects a baseline file holds counted by file and check, a run's defects split into fresh and recorded, the stale entries that fail a run, the file with them dropped, over the files read and the checks `ranOf` names, the refusal of a file in the old line-hash shape, and the file read |
+| `src/baseline.js` | `recorded`, `baselined`, `matched`, `trimmed`, `counted` and `ledgerOf`: the defects a baseline file holds counted by file and check, a run's defects split into fresh and known, the stale entries that fail a run, the file with them dropped, over the files read and the checks `ranOf` names, the refusal of a file in the old line-hash shape, and the file read |
 | `src/gitignore.js` | `ignoring(start)`: what the project's `.gitignore` files refuse |
 | `src/directives.js` | Parses inline `xslint-disable-*` comments |
 | `src/reporters.js` | `reporterOf(format)`: `text`, `json`, `sarif`, or `github` |

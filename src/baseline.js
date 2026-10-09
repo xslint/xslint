@@ -103,25 +103,27 @@ const recorded = function(reported, sources, base, ran, earlier) {
 
 /**
  * The defects of a run split by a baseline: fresh, those of every check whose
- * count in a file rose past what it records, and recorded, the rest. Neither
+ * count in a file rose past what it records, and known, the rest. Neither
  * the files read nor the checks run matter, so an editor splits as the
  * command line does without judging a stale entry (#1210).
  * @param {Array.<object>} reported - Defects the run reported
  * @param {{counts: object, base: string}} ledger - What `ledgerOf` answers,
  *  counts by file and check beside the directory their paths resolve against
- * @return {{fresh: Array.<object>, recorded: Array.<object>}} - Defects to
+ * @return {{fresh: Array.<object>, known: Array.<object>}} - Defects to
  *  report and defects the baseline holds
  */
 const baselined = function(reported, ledger) {
   const drawn = tallied(reported, ledger.base)
-  const fresh = reported.filter((defect) => {
+  const split = {fresh: [], known: []}
+  for (const defect of reported) {
     const file = slashed(defect.file, ledger.base)
-    return drawn[file][defect.name] > (ledger.counts[file]?.[defect.name] ?? 0)
-  })
-  return {
-    fresh: fresh,
-    recorded: reported.filter((defect) => !fresh.includes(defect)),
+    let side = 'known'
+    if (drawn[file][defect.name] > (ledger.counts[file]?.[defect.name] ?? 0)) {
+      side = 'fresh'
+    }
+    split[side].push(defect)
   }
+  return split
 }
 
 /**

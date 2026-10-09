@@ -578,11 +578,12 @@ const lint = function(
  * @param {object} config - The configuration, as `configFrom` resolves it
  * @param {{preset: string, only: Array.<string>, suppress: Array.<string>,
  *  baseline: string}} flags - What the caller says over the file
+ * @param {string} from - Directory a relative baseline flag resolves against
  * @return {{suppress: Array, overrides: object, preset: string, only: Array,
  *  excluded: function(string): boolean, exclude: Array, base: string,
  *  file?: string, baseline?: string, problems: Array}} - What `lint` takes
  */
-const settingsFrom = function(config, flags = {}) {
+const settingsFrom = function(config, flags, from) {
   const preset = flags.preset ?? config.preset ?? PRESET
   const listed = presetted(preset)
   let only = config.only
@@ -595,7 +596,7 @@ const settingsFrom = function(config, flags = {}) {
   const problems = []
   let baseline
   if (flags.baseline) {
-    baseline = path.resolve(flags.baseline)
+    baseline = path.resolve(from, flags.baseline)
   } else if (config.baseline) {
     baseline = path.resolve(config.base, config.baseline)
   }
@@ -646,7 +647,7 @@ const settingsFrom = function(config, flags = {}) {
  */
 const settingsOf = function(from, flags = {}) {
   const config = configFrom(flags.config, from)
-  const settings = settingsFrom(config, flags)
+  const settings = settingsFrom(config, flags, from)
   return {...settings, problems: [...config.problems, ...settings.problems]}
 }
 
@@ -747,7 +748,7 @@ module.exports = function xslint(pths, options) {
   if (options.quiet == null && options.logLevel == null) {
     logger.setLevel(leveled(config.quiet, config.logLevel))
   }
-  const settings = settingsFrom(config, options)
+  const settings = settingsFrom(config, options, process.cwd())
   settings.problems.forEach((problem) => logger.warn(problem))
   const maxWarnings = options.maxWarnings ?? config.maxWarnings ?? -1
   const fixing = options.fix || options.fixDryRun || options.fixSuggestions

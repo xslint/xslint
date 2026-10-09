@@ -14,8 +14,9 @@ publication date only; detailed notes begin with the Unreleased section.
   every defect the file records, where the command line reported none, since
   `settingsOf` dropped the key and the matching was not exported.
   `settingsOf` now answers `baseline`, the absolute path of the file a flag or
-  the configuration names, `ledgerOf(file)` reads and checks it, and
-  `baselined(defects, ledger)` splits the defects into `fresh` and `recorded`
+  the configuration names, a relative flag read against the directory it
+  starts in, `ledgerOf(file)` reads and checks it, and
+  `baselined(defects, ledger)` splits the defects into `fresh` and `known`
   by the counts per file per check, the one split the command line runs too
   (#1210).
 

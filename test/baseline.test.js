@@ -160,11 +160,19 @@ describe('baseline', function() {
       'called stale an entry of a file the baseline holds nothing for',
     )
   })
-  it('hands back as recorded every defect it suppresses', function() {
+  it('hands back as known every defect it suppresses', function() {
     const {reported} = run('recorded.xsl')
     assert.deepStrictEqual(
-      baselined(reported, {counts: baseline(), base: BASE}).recorded, reported,
+      baselined(reported, {counts: baseline(), base: BASE}).known, reported,
       'did not hand back the defects it suppressed, so an editor cannot tell them apart',
+    )
+  })
+  it('dont hand back as known a defect it reports as fresh', function() {
+    const {reported} = run('grown.xsl')
+    const split = baselined(reported, {counts: baseline(), base: BASE})
+    assert.deepStrictEqual(
+      split.known.filter((defect) => split.fresh.includes(defect)), [],
+      'handed back a fresh defect among the known ones, so an editor shows it twice',
     )
   })
   it('reads a baseline file as its counts beside its directory', function() {

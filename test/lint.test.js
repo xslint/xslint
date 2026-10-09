@@ -356,6 +356,14 @@ describe('lint (programmatic API)', function() {
       'did not let the baseline a caller names outrank the one the configuration names',
     )
   })
+  it('resolves a relative baseline flag against the directory it starts in', function() {
+    const dir = configured('presets/baselined.yml')
+    assert.equal(
+      settingsOf(dir, {baseline: 'own-7q.json'}).baseline,
+      path.join(dir, 'own-7q.json'),
+      'resolved a relative baseline flag against the process, where a relative config flag resolves against the directory',
+    )
+  })
   it('answers no baseline where none is named', function() {
     assert.equal(
       settingsOf(configured('presets/regraded.yml')).baseline, undefined,
