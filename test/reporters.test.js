@@ -4,6 +4,7 @@
  */
 
 const {reporterOf} = require('../src/reporters')
+const {kinds} = require('../src/resources/checks.json')
 const assert = require('assert')
 const path = require('path')
 
@@ -122,6 +123,47 @@ describe('reporters', function() {
   it('derives a SARIF rule from the defect', function() {
     const log = JSON.parse(capture(reporterOf('sarif'), [defect('warning')]))
     assert.equal(log.runs[0].tool.driver.rules[0].id, 'short-names')
+  })
+  it('describes a SARIF rule by its check, whatever its first defect says',
+    function() {
+      const log = JSON.parse(capture(reporterOf('sarif'), [defect('warning')]))
+      assert.equal(
+        log.runs[0].tool.driver.rules[0].shortDescription.text,
+        kinds.xpath['short-names'].message,
+        'took the SARIF rule description from a defect, not from its check',
+      )
+    })
+  it('describes a SARIF rule by the summary of a check worded two ways',
+    function() {
+      const log = JSON.parse(capture(reporterOf('sarif'), [{
+        ...defect('error'),
+        name: 'malformed-stylesheet',
+        message: kinds.validation['malformed-stylesheet'].namespace,
+      }]))
+      assert.equal(
+        log.runs[0].tool.driver.rules[0].shortDescription.text,
+        kinds.validation['malformed-stylesheet'].summary,
+        'described a check worded two ways by only one of its faults',
+      )
+    })
+  it('grades a SARIF rule at the severity its check declares', function() {
+    const log = JSON.parse(capture(reporterOf('sarif'), [defect('error')]))
+    assert.equal(
+      log.runs[0].tool.driver.rules[0].defaultConfiguration.level,
+      'warning',
+      'took the SARIF rule level from a defect, not from its check',
+    )
+  })
+  it('grades a SARIF rule at the severity the run gives its check', function() {
+    const log = JSON.parse(capture(
+      (found) => reporterOf('sarif')(found, {'short-names': 'error'}),
+      [defect('warning')],
+    ))
+    assert.equal(
+      log.runs[0].tool.driver.rules[0].defaultConfiguration.level,
+      'error',
+      'ignored the severity the configuration gives the check',
+    )
   })
   it('maps an error defect to the SARIF error level', function() {
     const log = JSON.parse(capture(reporterOf('sarif'), [defect('error')]))

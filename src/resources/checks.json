@@ -197,7 +197,8 @@
         "severity": "error",
         "preset": "recommended",
         "message": "The stylesheet is not well-formed XML and cannot be parsed. Fix its syntax.",
-        "namespace": "The stylesheet uses a namespace prefix it never declares, so it cannot be parsed. Declare the prefix with its namespace URI, or rename it if it is reserved."
+        "namespace": "The stylesheet uses a namespace prefix it never declares, so it cannot be parsed. Declare the prefix with its namespace URI, or rename it if it is reserved.",
+        "summary": "The stylesheet cannot be parsed, as its XML is malformed or it uses a prefix it never declares. Fix the syntax, or declare the prefix with its namespace URI."
       },
       "syntax-newer-than-xslt-version": {
         "severity": "error",

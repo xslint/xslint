@@ -25,6 +25,13 @@ publication date only; detailed notes begin with the Unreleased section.
   JSON held no result, and the summary read "No defects found". Each stale
   entry is now an error of the baseline file, at the line that records it,
   under the name of its check (#1209).
+- Describe each SARIF rule by its check. The rule took its description and
+  level from the first defect of its name, so a check that drew only a stale
+  baseline entry got that entry's message as its description and `error` as
+  its level, whatever the configuration graded it. A rule now carries the
+  check's own message and the severity the run gives the check, and
+  `malformed-stylesheet`, which words a syntax fault and an undeclared prefix
+  apart, is described by one summary covering both (#1214).
 
 ## 0.7.0 - 2026-10-08
 
