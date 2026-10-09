@@ -111,7 +111,7 @@ get inline annotations on your pull requests:
 
 ```yaml
 - uses: actions/checkout@v6
-- uses: xslint/xslint-action@0.0.14
+- uses: xslint/xslint-action@0.0.15
 ```
 
 Or run it on commit with [pre-commit](https://pre-commit.com) by adding this to your
