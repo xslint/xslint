@@ -23,7 +23,7 @@ const {
 const {ignoring} = require('./gitignore')
 const {parted} = require('./source')
 const {SUGGESTION, suppressed} = require('./checks')
-const {recorded, matched, trimmed, counted} = require('./baseline')
+const {recorded, matched, trimmed, counted, lapsed} = require('./baseline')
 const {kinds} = require('./resources/checks.json')
 const {validate: validateXsls, names: xslChecks} =
   require('./validators/xsl-validator')
@@ -759,13 +759,15 @@ module.exports = function xslint(pths, options) {
   }
   let target
   let earlier = {}
+  let held = ''
   if (options.baselineWrite) {
     target = path.resolve(options.baselineWrite)
     if (fs.existsSync(target)) {
       earlier = counted(JSON.parse(fs.readFileSync(target, 'utf-8')), target)
     }
   } else if (ledger) {
-    earlier = counted(JSON.parse(fs.readFileSync(ledger, 'utf-8')), ledger)
+    held = fs.readFileSync(ledger, 'utf-8')
+    earlier = counted(JSON.parse(held), ledger)
   }
   logger.info(`Directories and files to process: ${pths.join(', ')}`)
   const found = stylesheetsOf(pths, settings)
@@ -817,6 +819,7 @@ module.exports = function xslint(pths, options) {
     const {stale} = matched(
       drawn, sources, earlier, path.dirname(ledger), ranOf(settings),
     )
+    let lapses = []
     if (options.baselinePrune) {
       fs.writeFileSync(
         ledger,
@@ -824,20 +827,11 @@ module.exports = function xslint(pths, options) {
       )
       logger.info(`Pruned the stale entries of ${ledger}`)
     } else {
-      stale.forEach((entry) => logger.error(
-        [
-          `Baseline entry ${entry.file} records ${entry.count} ${entry.name}`,
-          `defects the run no longer draws, drop them from ${ledger} with`,
-          '--baseline-prune',
-        ].join(' '),
-      ))
-    }
-    if (stale.length > 0 && !options.baselinePrune) {
-      process.exitCode = 1
+      lapses = lapsed(stale, ledger, held)
     }
     reported = matched(
       reported, sources, earlier, path.dirname(ledger), ranOf(settings),
-    ).fresh
+    ).fresh.concat(lapses)
   }
   logger.info(`Processed files: ${found.stylesheets.length}`)
   if (reported.length > 0) {

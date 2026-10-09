@@ -12,6 +12,7 @@
  */
 
 const {compared, slashed} = require('./helpers')
+const {placeAt} = require('./source')
 
 /**
  * An object with its keys ranked by `compared`, in code unit order, so the
@@ -110,7 +111,7 @@ const recorded = function(reported, sources, base, ran, earlier) {
  * @param {string} base - Directory the baseline file lives in
  * @param {Array.<string>} ran - Names of the checks the run ran
  * @return {{fresh: Array.<object>, stale: Array.<{file: string, name: string,
- *  count: number}>}} - Defects to report and entries to rewrite
+ *  count: number, drawn: number}>}} - Defects to report and entries to rewrite
  */
 const matched = function(reported, sources, baseline, base, ran) {
   const drawn = tallied(reported, base)
@@ -124,10 +125,11 @@ const matched = function(reported, sources, baseline, base, ran) {
       ([name, count]) => ({
         file: file,
         name: name,
-        count: count - (drawn[file]?.[name] ?? 0),
+        count: count,
+        drawn: drawn[file]?.[name] ?? 0,
       }),
     ))
-    .filter((entry) => entry.count > 0 && ran.includes(entry.name))
+    .filter((entry) => entry.count > entry.drawn && ran.includes(entry.name))
   return {fresh: fresh, stale: stale}
 }
 
@@ -161,9 +163,49 @@ const trimmed = function(reported, sources, baseline, base, ran) {
   return layered(counts)
 }
 
+/**
+ * The stale entries as errors of the baseline file, so every reporter renders
+ * the reason a run fails (#1209). Each stands where the file records it, or at
+ * its head where the file spells the entry other than a write does, so the
+ * search never runs on into the object of the next sheet.
+ * @param {Array.<object>} stale - What `matched` calls stale, each with the
+ *  count its sheet records and the count the run drew
+ * @param {string} file - Path of the baseline file
+ * @param {string} content - What the baseline file holds
+ * @return {Array.<object>} - Defects the reporter takes
+ */
+const lapsed = function(stale, file, content) {
+  return stale.map((entry) => {
+    const key = `${JSON.stringify(entry.file)}:`
+    const sheet = content.indexOf(key)
+    const check = content.indexOf(`${JSON.stringify(entry.name)}:`, sheet)
+    let place = {line: 1, pos: 1}
+    if (
+      sheet >= 0 && check >= 0 &&
+      check < content.indexOf('}', sheet + key.length)
+    ) {
+      place = placeAt(content, check)
+    }
+    return {
+      name: entry.name,
+      severity: 'error',
+      message: [
+        `Baseline entry ${entry.file} records ${entry.count} ${entry.name}`,
+        `defects, the run draws ${entry.drawn}; drop the rest with`,
+        '--baseline-prune',
+      ].join(' '),
+      file: file,
+      line: place.line,
+      from: place.line,
+      pos: place.pos,
+    }
+  })
+}
+
 module.exports = {
   recorded,
   matched,
   trimmed,
   counted,
+  lapsed,
 }
