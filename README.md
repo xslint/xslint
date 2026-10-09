@@ -291,7 +291,7 @@ const {contents} = fixed(sources, defects)
 ```
 
 The [API guide][api] documents `lint`, `fixed`, `settingsOf`,
-`stylesheetsOf` and `sourceOf`.
+`stylesheetsOf`, `sourceOf`, `ledgerOf` and `baselined`.
 
 ## How to contribute
 

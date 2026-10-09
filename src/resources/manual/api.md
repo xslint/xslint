@@ -26,11 +26,13 @@ empty or no check name holds, and on a `suppress` substring no check name
 holds. `fixed(sources, defects, suggestions)` returns the rewritten content per file.
 
 `settingsOf(dir, flags)` reads the `.xslint.yml` nearest to `dir` the way the
-command line does, `flags` taking `config`, `preset`, `only` and `suppress`
-over it, and answers options to hand straight to `lint`, plus `excluded(path)`,
-whether `exclude:` keeps the stylesheet at that absolute path out, `file`, the
-absolute path of the configuration it read (undefined when none), `base`, the
-directory its globs resolve against, and `problems`, one sentence per
+command line does, `flags` taking `config`, `preset`, `only`, `suppress` and
+`baseline` over it, and answers options to hand straight to `lint`, plus
+`excluded(path)`, whether `exclude:` keeps the stylesheet at that absolute path
+out, `file`, the absolute path of the configuration it read (undefined when
+none), `base`, the directory its globs resolve against, `baseline`, the
+absolute path of the baseline file a flag or the configuration names
+(undefined when none), and `problems`, one sentence per
 unknown key, mistyped value or rule naming no check. It prints nothing, and
 throws rather than answering a problem where the preset names no check list,
 an `only` entry is empty or no check name holds it, or the file is not YAML at
@@ -66,4 +68,23 @@ const defects = lint(
   stylesheets.map((file) => sourceOf(file, fs.readFileSync(file, 'utf-8'))),
   settings,
 )
+```
+
+`ledgerOf(file)` reads a baseline file into `{counts, base}`, its counts per
+file per check and the directory its paths resolve against, and throws on a
+file in the old line-hash shape as the command line does.
+`baselined(defects, ledger)` splits the defects of a run by those counts into
+`{fresh, recorded}`, the one split the command line runs: a file that draws a
+check more often than recorded makes every defect of that check in it fresh.
+It reads nothing and judges no entry stale, so an editor shows what the
+command line reports:
+
+```js
+const {lint, settingsOf, ledgerOf, baselined} = require('@maxonfjvipon/xslint')
+
+const settings = settingsOf('/path/to/project')
+let shown = lint(sources, settings)
+if (settings.baseline) {
+  shown = baselined(shown, ledgerOf(settings.baseline)).fresh
+}
 ```

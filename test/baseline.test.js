@@ -3,7 +3,9 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {recorded, matched, trimmed, counted} = require('../src/baseline')
+const {
+  recorded, matched, trimmed, counted, baselined, ledgerOf,
+} = require('../src/baseline')
 const {lint, settingsOf, sourceOf, ranOf} = require('../src/xslint')
 const assert = require('assert')
 const fs = require('fs')
@@ -59,42 +61,42 @@ const baseline = function() {
 
 describe('baseline', function() {
   it('suppresses every defect it recorded', function() {
-    const {sources, reported} = run('recorded.xsl')
+    const {reported} = run('recorded.xsl')
     assert.deepStrictEqual(
-      matched(reported, sources, baseline(), BASE, every()).fresh, [],
+      baselined(reported, {counts: baseline(), base: BASE}).fresh, [],
       'reported a defect the baseline recorded, so a gated tree cannot pass',
     )
   })
   it('keeps suppressing a defect whose line moved', function() {
-    const {sources, reported} = run('shifted.xsl')
+    const {reported} = run('shifted.xsl')
     assert.deepStrictEqual(
-      matched(reported, sources, baseline(), BASE, every()).fresh, [],
+      baselined(reported, {counts: baseline(), base: BASE}).fresh, [],
       'reported a recorded defect after lines above it were added',
     )
   })
   it('keeps suppressing a defect whose line was reindented', function() {
-    const {sources, reported} = linted(
+    const {reported} = linted(
       fs.readFileSync(path.join(BASE, 'recorded.xsl'), 'utf-8')
         .split('\n')
         .map((line) => line.replace(/^ +/, (lead) => '\t'.repeat(lead.length)))
         .join('\n'),
     )
     assert.deepStrictEqual(
-      matched(reported, sources, baseline(), BASE, every()).fresh, [],
+      baselined(reported, {counts: baseline(), base: BASE}).fresh, [],
       'reported a recorded defect after its line was indented with tabs',
     )
   })
   it('keeps suppressing a defect whose line was edited', function() {
-    const {sources, reported} = run('edited.xsl')
+    const {reported} = run('edited.xsl')
     assert.deepStrictEqual(
-      matched(reported, sources, baseline(), BASE, every()).fresh, [],
+      baselined(reported, {counts: baseline(), base: BASE}).fresh, [],
       'reported a recorded defect after an attribute was added to its line',
     )
   })
   it('reports every defect of a check whose count rose', function() {
-    const {sources, reported} = run('grown.xsl')
+    const {reported} = run('grown.xsl')
     assert.deepStrictEqual(
-      matched(reported, sources, baseline(), BASE, every()).fresh.map(
+      baselined(reported, {counts: baseline(), base: BASE}).fresh.map(
         (defect) => `${defect.name}:${defect.line}`,
       ),
       [
@@ -108,9 +110,9 @@ describe('baseline', function() {
     )
   })
   it('reports both copies of a line recorded once', function() {
-    const {sources, reported} = run('doubled.xsl')
+    const {reported} = run('doubled.xsl')
     assert.deepStrictEqual(
-      matched(reported, sources, baseline(), BASE, every()).fresh.map(
+      baselined(reported, {counts: baseline(), base: BASE}).fresh.map(
         (defect) => `${defect.name}:${defect.line}`,
       ),
       ['starts-with-double-slash:31', 'starts-with-double-slash:38'],
@@ -144,11 +146,39 @@ describe('baseline', function() {
     )
   })
   it('reports every defect of a file it never recorded', function() {
-    const {sources, reported} = run('recorded.xsl')
+    const {reported} = run('recorded.xsl')
     assert.equal(
-      matched(reported, sources, {}, BASE, every()).fresh.length,
+      baselined(reported, {counts: {}, base: BASE}).fresh.length,
       reported.length,
       'suppressed a defect of a file the baseline holds no entry for',
+    )
+  })
+  it('dont call stale a file the baseline never recorded', function() {
+    const {sources} = run('recorded.xsl')
+    assert.deepStrictEqual(
+      matched([], sources, {}, BASE, every()).stale, [],
+      'called stale an entry of a file the baseline holds nothing for',
+    )
+  })
+  it('hands back as recorded every defect it suppresses', function() {
+    const {reported} = run('recorded.xsl')
+    assert.deepStrictEqual(
+      baselined(reported, {counts: baseline(), base: BASE}).recorded, reported,
+      'did not hand back the defects it suppressed, so an editor cannot tell them apart',
+    )
+  })
+  it('reads a baseline file as its counts beside its directory', function() {
+    assert.deepStrictEqual(
+      ledgerOf(path.join(BASE, 'branched.json')),
+      {counts: {'a.xsl': {'starts-with-double-slash': 1}}, base: BASE},
+      'did not read the counts of a baseline file and the directory its paths resolve against',
+    )
+  })
+  it('refuses to read a baseline file that holds line hashes', function() {
+    assert.throws(
+      () => ledgerOf(path.join(BASE, 'hashed.json')),
+      /--baseline-write/,
+      'read a baseline file of the old shape as if it held counts',
     )
   })
   it('dont call stale a file the run did not read', function() {

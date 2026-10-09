@@ -7,6 +7,18 @@ project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Entries for releases before this file was introduced record their npm
 publication date only; detailed notes begin with the Unreleased section.
 
+## Unreleased
+
+- Export `baselined` and `ledgerOf`, the baseline the command line applies. An
+  editor calling `lint` under a `.xslint.yml` that names a `baseline` showed
+  every defect the file records, where the command line reported none, since
+  `settingsOf` dropped the key and the matching was not exported.
+  `settingsOf` now answers `baseline`, the absolute path of the file a flag or
+  the configuration names, `ledgerOf(file)` reads and checks it, and
+  `baselined(defects, ledger)` splits the defects into `fresh` and `recorded`
+  by the counts per file per check, the one split the command line runs too
+  (#1210).
+
 ## 0.7.0 - 2026-10-08
 
 - Add a baseline. A tree that grew for years without a linter draws hundreds

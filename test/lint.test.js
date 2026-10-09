@@ -4,7 +4,8 @@
  */
 
 const {
-  lint, fixed, settingsOf, stylesheetsOf, sourceOf, PRESETS,
+  lint, fixed, settingsOf, stylesheetsOf, sourceOf, baselined, ledgerOf,
+  PRESETS,
 } = require('../src/xslint')
 const fs = require('fs')
 const os = require('os')
@@ -338,6 +339,43 @@ describe('lint (programmatic API)', function() {
     assert.ok(
       !settingsOf(dir).excluded(path.join(dir, 'own', 'kept.xsl')),
       'excluded a stylesheet under a directory no exclusion names',
+    )
+  })
+  it('answers the baseline the configuration names, beside it', function() {
+    const dir = configured('presets/baselined.yml')
+    assert.equal(
+      settingsOf(dir).baseline, path.join(dir, 'build', 'xslint-baseline.json'),
+      'did not answer the baseline file the configuration names, resolved against its directory',
+    )
+  })
+  it('answers the baseline a flag names over the configuration', function() {
+    const dir = configured('presets/baselined.yml')
+    assert.equal(
+      settingsOf(dir, {baseline: path.join(dir, 'own.json')}).baseline,
+      path.join(dir, 'own.json'),
+      'did not let the baseline a caller names outrank the one the configuration names',
+    )
+  })
+  it('answers no baseline where none is named', function() {
+    assert.equal(
+      settingsOf(configured('presets/regraded.yml')).baseline, undefined,
+      'answered a baseline although neither the configuration nor the caller names one',
+    )
+  })
+  it('suppresses a defect the baseline of the settings records', function() {
+    const dir = configured('presets/baselined.yml')
+    fs.mkdirSync(path.join(dir, 'build'))
+    fs.copyFileSync(
+      path.resolve(__dirname, 'resources', 'baseline', 'branched.json'),
+      path.join(dir, 'build', 'xslint-baseline.json'),
+    )
+    assert.deepEqual(
+      baselined(
+        [{file: path.join(dir, 'build', 'a.xsl'), name: 'starts-with-double-slash'}],
+        ledgerOf(settingsOf(dir).baseline),
+      ).fresh,
+      [],
+      'reported a defect the baseline of the configuration records, which the command line hides',
     )
   })
   it('answers the problems a troubled configuration holds', function() {
