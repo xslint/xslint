@@ -20,14 +20,17 @@ const BASE = path.resolve(__dirname, 'resources', 'baseline')
 /**
  * Baseline fixtures that record one entry too many, and where the defect the
  * stale entry turns into stands in each: on the entry where the file spells
- * it as a write does, and at its head where the file or the check is spelled
- * another way.
+ * it as a write does, even under a second sheet or beside a nested one, and
+ * at its head where the file or the check is spelled another way.
  * @type {Array.<{name: string, file: string, place: string}>}
  */
 const LAPSES = [
   {name: 'on the line that records it', file: 'inflated.json', place: '4:5'},
   {name: 'at the head of a respaced sheet', file: 'spaced.json', place: '1:1'},
   {name: 'at the head of a respaced check', file: 'checked.json', place: '1:1'},
+  {name: 'under its own sheet', file: 'paired.json', place: '6:5'},
+  {name: 'under its sheet, not a nested one', file: 'nested.json', place: '6:5'},
+  {name: 'at the head of a check respaced before a later sheet', file: 'bounded.json', place: '1:1'},
 ]
 
 /**
@@ -263,6 +266,18 @@ describe('baseline', function() {
       ),
       ['inflated.json:error:short-names'],
       'did not hand the reporter the stale entry as an error of its file',
+    )
+  })
+  it('states what a stale entry records and what the run draws', function() {
+    assert.deepStrictEqual(
+      lapses('inflated.json').map((defect) => defect.message),
+      [
+        [
+          'Baseline entry recorded.xsl records 2 short-names defects,',
+          'the run draws 1; drop the rest with --baseline-prune',
+        ].join(' '),
+      ],
+      'did not tell the recorded count of a stale entry from what the run drew',
     )
   })
   LAPSES.forEach((row) => {
