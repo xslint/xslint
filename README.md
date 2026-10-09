@@ -18,7 +18,7 @@ Catch the bugs in your XSLT stylesheets before they ship.
 Run it on your stylesheets, no install needed:
 
 ```bash
-npx @maxonfjvipon/xslint@0.6.0 path/to/stylesheets
+npx @maxonfjvipon/xslint@0.7.0 path/to/stylesheets
 ```
 
 Given a stylesheet like this:
@@ -120,7 +120,7 @@ Or run it on commit with [pre-commit](https://pre-commit.com) by adding this to 
 ```yaml
 repos:
   - repo: https://github.com/xslint/xslint
-    rev: 0.6.0
+    rev: 0.7.0
     hooks:
       - id: xslint
 ```
@@ -142,7 +142,7 @@ same diagnostics and quick-fixes as the CLI:
 To install `xslint` globally, install [npm] first, then run:
 
 ```bash
-npm install -g @maxonfjvipon/xslint@0.6.0
+npm install -g @maxonfjvipon/xslint@0.7.0
 xslint --version
 ```
 
