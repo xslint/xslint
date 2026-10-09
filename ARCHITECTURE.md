@@ -34,7 +34,8 @@ output, no exit, and the defects in one total order. The command-line
 `xslint(paths, options)` wraps it: it resolves config, reads the files, calls
 `lint`, applies `--fix`, filters by or writes the baseline, reports, and sets
 `process.exitCode`. The editor integrations (`xslint-lsp`, `xslint-jetbrains`)
-use what the package `main` re-exports, listed in the index. `src/index.mjs`
+use what the package `main` re-exports, listed in the index, and filter by the
+baseline through the `baselined` the command line calls. `src/index.mjs`
 imports the pipeline in the command action: `--version` and `--help` load none.
 
 Each linter is one `{run, checks}` entry in `LINTERS` or
@@ -232,9 +233,9 @@ left-most, then the wider, wins, and the other waits for the next run.
 | File | Role |
 | --- | --- |
 | `src/index.mjs` | CLI entry (commander.js, ESM); imports the pipeline inside the command action |
-| `src/xslint.js` | Discovery, config, staging, output; exports `lint`, `fixed`, `settingsOf`, `ranOf`, `stylesheetsOf`, `sourceOf` |
+| `src/xslint.js` | Discovery, config, staging, output; exports `lint`, `fixed`, `settingsOf`, `ranOf`, `stylesheetsOf`, `sourceOf`, `ledgerOf`, `baselined` |
 | `src/config.js` | Resolves `.xslint.yml` (severities, `off`, excludes, `max-warnings`) |
-| `src/baseline.js` | `recorded`, `matched`, `lapsed`, `trimmed` and `counted`: the defects a baseline file holds counted by file and check, the stale entries that fail a run and the errors of the baseline file they are reported as, the file with them dropped, over the files read and the checks `ranOf` names, and the refusal of a file in the old line-hash shape |
+| `src/baseline.js` | `recorded`, `baselined`, `matched`, `lapsed`, `trimmed`, `counted` and `ledgerOf`: the defects a baseline file holds counted by file and check, a run's defects split into fresh and known, the stale entries that fail a run and the errors of the baseline file they are reported as, the file with them dropped, over the files read and the checks `ranOf` names, the refusal of a file in the old line-hash shape, and the file read |
 | `src/gitignore.js` | `ignoring(start)`: what the project's `.gitignore` files refuse |
 | `src/directives.js` | Parses inline `xslint-disable-*` comments |
 | `src/reporters.js` | `reporterOf(format)`: `text`, `json`, `sarif`, or `github` |

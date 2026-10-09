@@ -11,6 +11,8 @@
  * rewrites only the files it read and the checks it ran.
  */
 
+const fs = require('fs')
+const path = require('path')
 const {compared, slashed} = require('./helpers')
 const {placeAt} = require('./source')
 
@@ -101,36 +103,57 @@ const recorded = function(reported, sources, base, ran, earlier) {
 }
 
 /**
- * The defects of every check whose count in a file rose past what the
- * baseline records, and the entries it records more often than the run drew
- * them, among the files the run read and the checks it ran, since a run says
- * nothing of what it never looked at.
+ * The defects of a run split by a baseline: fresh, those of every check whose
+ * count in a file rose past what it records, and known, the rest. Neither
+ * the files read nor the checks run matter, so an editor splits as the
+ * command line does without judging a stale entry (#1210).
+ * @param {Array.<object>} reported - Defects the run reported
+ * @param {{counts: object, base: string}} ledger - What `ledgerOf` answers,
+ *  counts by file and check beside the directory their paths resolve against
+ * @return {{fresh: Array.<object>, known: Array.<object>}} - Defects to
+ *  report and defects the baseline holds
+ */
+const baselined = function(reported, ledger) {
+  const drawn = tallied(reported, ledger.base)
+  const split = {fresh: [], known: []}
+  for (const defect of reported) {
+    const file = slashed(defect.file, ledger.base)
+    let side = 'known'
+    if (drawn[file][defect.name] > (ledger.counts[file]?.[defect.name] ?? 0)) {
+      side = 'fresh'
+    }
+    split[side].push(defect)
+  }
+  return split
+}
+
+/**
+ * The entries a baseline records more often than the run drew them, among the
+ * files the run read and the checks it ran, since a run says nothing of what
+ * it never looked at.
  * @param {Array.<object>} reported - Defects the run reported
  * @param {Array.<{file: string}>} sources - What was linted
  * @param {object} baseline - What `recorded` answered for an earlier run
  * @param {string} base - Directory the baseline file lives in
  * @param {Array.<string>} ran - Names of the checks the run ran
- * @return {{fresh: Array.<object>, stale: Array.<{file: string, name: string,
- *  count: number, drawn: number}>}} - Defects to report and entries to rewrite
+ * @return {{stale: Array.<{file: string, name: string, count: number,
+ *  drawn: number}>}} - Entries to rewrite
  */
 const matched = function(reported, sources, baseline, base, ran) {
   const drawn = tallied(reported, base)
-  const fresh = reported.filter((defect) => {
-    const file = slashed(defect.file, base)
-    return drawn[file][defect.name] > (baseline[file]?.[defect.name] ?? 0)
-  })
-  const stale = sources
-    .map((source) => slashed(source.file, base))
-    .flatMap((file) => Object.entries(baseline[file] ?? {}).map(
-      ([name, count]) => ({
-        file: file,
-        name: name,
-        count: count,
-        drawn: drawn[file]?.[name] ?? 0,
-      }),
-    ))
-    .filter((entry) => entry.count > entry.drawn && ran.includes(entry.name))
-  return {fresh: fresh, stale: stale}
+  return {
+    stale: sources
+      .map((source) => slashed(source.file, base))
+      .flatMap((file) => Object.entries(baseline[file] ?? {}).map(
+        ([name, count]) => ({
+          file: file,
+          name: name,
+          count: count,
+          drawn: drawn[file]?.[name] ?? 0,
+        }),
+      ))
+      .filter((entry) => entry.count > entry.drawn && ran.includes(entry.name)),
+  }
 }
 
 /**
@@ -161,6 +184,19 @@ const trimmed = function(reported, sources, baseline, base, ran) {
     }
   }
   return layered(counts)
+}
+
+/**
+ * The baseline a file holds, read and refused as `counted` refuses it, beside
+ * the directory its paths resolve against.
+ * @param {string} file - Path of the baseline file
+ * @return {{counts: object, base: string}} - What `baselined` takes
+ */
+const ledgerOf = function(file) {
+  return {
+    counts: counted(JSON.parse(fs.readFileSync(file, 'utf-8')), file),
+    base: path.dirname(file),
+  }
 }
 
 /**
@@ -205,7 +241,9 @@ const lapsed = function(stale, file, content) {
 module.exports = {
   recorded,
   matched,
+  baselined,
   trimmed,
   counted,
+  ledgerOf,
   lapsed,
 }

@@ -9,6 +9,16 @@ publication date only; detailed notes begin with the Unreleased section.
 
 ## Unreleased
 
+- Export `baselined` and `ledgerOf`, the baseline the command line applies. An
+  editor calling `lint` under a `.xslint.yml` that names a `baseline` showed
+  every defect the file records, where the command line reported none, since
+  `settingsOf` dropped the key and the matching was not exported.
+  `settingsOf` now answers `baseline`, the absolute path of the file a flag or
+  the configuration names, a relative flag read against the directory it
+  starts in, `ledgerOf(file)` reads and checks it, and
+  `baselined(defects, ledger)` splits the defects into `fresh` and `known`
+  by the counts per file per check, the one split the command line runs too
+  (#1210).
 - Report a stale baseline entry through the chosen format. A run that found
   a recorded defect gone failed with exit code 1 but wrote the entry only as
   a log line on stderr, so `--format github` drew no annotation, SARIF and

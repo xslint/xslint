@@ -23,7 +23,9 @@ const {
 const {ignoring} = require('./gitignore')
 const {parted} = require('./source')
 const {SUGGESTION, suppressed} = require('./checks')
-const {recorded, matched, trimmed, counted, lapsed} = require('./baseline')
+const {
+  recorded, matched, baselined, trimmed, lapsed, ledgerOf,
+} = require('./baseline')
 const {kinds} = require('./resources/checks.json')
 const {validate: validateXsls, names: xslChecks} =
   require('./validators/xsl-validator')
@@ -570,17 +572,18 @@ const lint = function(
 /**
  * What a run under one configuration hands `lint`: the preset, the choice, the
  * suppressions and the re-grades it spells with the flags laid over it,
- * whether its `exclude:` keeps a file out, and a rule naming no check as a
- * problem rather than a warning. An exact name in `rules` adds its check to
- * the run while a glob re-grades only what already runs (#1094, #1128).
+ * whether its `exclude:` keeps a file out, the baseline it names, and a rule
+ * naming no check as a problem. An exact name in `rules` adds its check to the
+ * run while a glob re-grades only what already runs (#1094, #1128, #1210).
  * @param {object} config - The configuration, as `configFrom` resolves it
- * @param {{preset: string, only: Array.<string>, suppress: Array.<string>}}
- *  flags - What the caller says over the file
+ * @param {{preset: string, only: Array.<string>, suppress: Array.<string>,
+ *  baseline: string}} flags - What the caller says over the file
+ * @param {string} from - Directory a relative baseline flag resolves against
  * @return {{suppress: Array, overrides: object, preset: string, only: Array,
  *  excluded: function(string): boolean, exclude: Array, base: string,
- *  file: (string|undefined), problems: Array}} - What `lint` takes, and more
+ *  file?: string, baseline?: string, problems: Array}} - What `lint` takes
  */
-const settingsFrom = function(config, flags = {}) {
+const settingsFrom = function(config, flags, from) {
   const preset = flags.preset ?? config.preset ?? PRESET
   const listed = presetted(preset)
   let only = config.only
@@ -591,6 +594,12 @@ const settingsFrom = function(config, flags = {}) {
   const disabled = []
   const overrides = {}
   const problems = []
+  let baseline
+  if (flags.baseline) {
+    baseline = path.resolve(from, flags.baseline)
+  } else if (config.baseline) {
+    baseline = path.resolve(config.base, config.baseline)
+  }
   for (const [pattern, severity] of Object.entries(config.rules)) {
     const matched = CHECKS.filter((check) => minimatch(check, pattern))
     if (matched.length === 0) {
@@ -615,6 +624,7 @@ const settingsFrom = function(config, flags = {}) {
     exclude: config.exclude,
     base: config.base,
     file: config.file,
+    baseline: baseline,
     problems: problems,
   }
 }
@@ -626,17 +636,18 @@ const settingsFrom = function(config, flags = {}) {
  * asking once a keystroke shows the problems where it will (#1128).
  * @param {string} from - Directory the search for `.xslint.yml` starts in
  * @param {{config: string, preset: string, only: Array.<string>,
- *  suppress: Array.<string>}} flags - What the caller says over the file
+ *  suppress: Array.<string>, baseline: string}} flags - What the caller says
+ *  over the file
  * @return {{suppress: Array, overrides: object, preset: string, only: Array,
  *  excluded: function(string): boolean, exclude: Array, base: string,
- *  file: (string|undefined), problems: Array}} - What `lint` takes, and more
+ *  file?: string, baseline?: string, problems: Array}} - What `lint` takes
  * @throws {Error} - On a preset naming no check list, a choice naming no
  *  check, or a file no YAML parser reads, as the command line fails on each
  *  before it lints
  */
 const settingsOf = function(from, flags = {}) {
   const config = configFrom(flags.config, from)
-  const settings = settingsFrom(config, flags)
+  const settings = settingsFrom(config, flags, from)
   return {...settings, problems: [...config.problems, ...settings.problems]}
 }
 
@@ -737,7 +748,7 @@ module.exports = function xslint(pths, options) {
   if (options.quiet == null && options.logLevel == null) {
     logger.setLevel(leveled(config.quiet, config.logLevel))
   }
-  const settings = settingsFrom(config, options)
+  const settings = settingsFrom(config, options, process.cwd())
   settings.problems.forEach((problem) => logger.warn(problem))
   const maxWarnings = options.maxWarnings ?? config.maxWarnings ?? -1
   const fixing = options.fix || options.fixDryRun || options.fixSuggestions
@@ -746,12 +757,7 @@ module.exports = function xslint(pths, options) {
       'Option --baseline-write records what a run finds and cannot run with a fix flag',
     )
   }
-  let ledger
-  if (options.baseline) {
-    ledger = path.resolve(options.baseline)
-  } else if (config.baseline) {
-    ledger = path.resolve(config.base, config.baseline)
-  }
+  const ledger = settings.baseline
   if (options.baselinePrune && !ledger) {
     throw new Error(
       'Option --baseline-prune rewrites the file --baseline names and cannot run without one',
@@ -759,15 +765,13 @@ module.exports = function xslint(pths, options) {
   }
   let target
   let earlier = {}
-  let held = ''
   if (options.baselineWrite) {
     target = path.resolve(options.baselineWrite)
     if (fs.existsSync(target)) {
-      earlier = counted(JSON.parse(fs.readFileSync(target, 'utf-8')), target)
+      earlier = ledgerOf(target).counts
     }
   } else if (ledger) {
-    held = fs.readFileSync(ledger, 'utf-8')
-    earlier = counted(JSON.parse(held), ledger)
+    earlier = ledgerOf(ledger).counts
   }
   logger.info(`Directories and files to process: ${pths.join(', ')}`)
   const found = stylesheetsOf(pths, settings)
@@ -827,10 +831,10 @@ module.exports = function xslint(pths, options) {
       )
       logger.info(`Pruned the stale entries of ${ledger}`)
     } else {
-      lapses = lapsed(stale, ledger, held)
+      lapses = lapsed(stale, ledger, fs.readFileSync(ledger, 'utf-8'))
     }
-    reported = matched(
-      reported, sources, earlier, path.dirname(ledger), ranOf(settings),
+    reported = baselined(
+      reported, {counts: earlier, base: path.dirname(ledger)},
     ).fresh.concat(lapses)
   }
   logger.info(`Processed files: ${found.stylesheets.length}`)
@@ -856,6 +860,8 @@ module.exports.settingsOf = settingsOf
 module.exports.ranOf = ranOf
 module.exports.stylesheetsOf = stylesheetsOf
 module.exports.sourceOf = sourceOf
+module.exports.baselined = baselined
+module.exports.ledgerOf = ledgerOf
 module.exports.PRESETS = PRESETS
 module.exports.SUFFIXES = SUFFIXES
 module.exports.suffixed = suffixed

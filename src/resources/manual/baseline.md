@@ -14,7 +14,8 @@ xslint --baseline xslint-baseline.json --max-warnings=0
 none. `--baseline <file>`, or the `baseline` key of `.xslint.yml`, reports only
 the defects the file does not record. A path given on the command line is read
 against the working directory, and one in `.xslint.yml` against the directory
-of that file.
+of that file. An editor reads the same file through `settingsOf` and splits its
+defects through `baselined`, both in the [API guide](api.html).
 
 A defect is recorded by its file and its check alone. Neither its line number
 nor its text is kept, so a line moved, reindented, or edited still matches.
