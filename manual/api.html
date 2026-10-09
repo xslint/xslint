@@ -128,12 +128,15 @@ It throws on a preset naming no check list, on an <code>only</code> substring th
 empty or no check name holds, and on a <code>suppress</code> substring no check name
 holds. <code>fixed(sources, defects, suggestions)</code> returns the rewritten content per file.</p>
 <p><code>settingsOf(dir, flags)</code> reads the <code>.xslint.yml</code> nearest to <code>dir</code> the way the
-command line does, <code>flags</code> taking <code>config</code>, <code>preset</code>, <code>only</code> and <code>suppress</code>
-over it, and answers options to hand straight to <code>lint</code>, plus <code>excluded(path)</code>,
-whether <code>exclude:</code> keeps the stylesheet at that absolute path out, <code>file</code>, the
-absolute path of the configuration it read (undefined when none), <code>base</code>, the
-directory its globs resolve against, and <code>problems</code>, one sentence per
-unknown key, mistyped value or rule naming no check. It prints nothing, and
+command line does, <code>flags</code> taking <code>config</code>, <code>preset</code>, <code>only</code>, <code>suppress</code> and
+<code>baseline</code> over it, and answers options to hand straight to <code>lint</code>, plus
+<code>excluded(path)</code>, whether <code>exclude:</code> keeps the stylesheet at that absolute path
+out, <code>file</code>, the absolute path of the configuration it read (undefined when
+none), <code>base</code>, the directory its globs resolve against, <code>baseline</code>, the
+absolute path of the baseline file a flag or the configuration names
+(undefined when none, and a relative flag read against <code>dir</code> as <code>config</code> is),
+and <code>problems</code>, one sentence per unknown key, mistyped value or rule naming no
+check. It prints nothing, and
 throws rather than answering a problem where the preset names no check list,
 an <code>only</code> entry is empty or no check name holds it, or the file is not YAML at
 all, as the command line fails on each:</p>
@@ -163,6 +166,22 @@ const defects = lint(
   stylesheets.map((file) =&gt; sourceOf(file, fs.readFileSync(file, &#39;utf-8&#39;))),
   settings,
 )
+</code></pre>
+<p><code>ledgerOf(file)</code> reads a baseline file into <code>{counts, base}</code>, its counts per
+file per check and the directory its paths resolve against, and throws on a
+file in the old line-hash shape as the command line does.
+<code>baselined(defects, ledger)</code> splits the defects of a run by those counts into
+<code>{fresh, known}</code>, the one split the command line runs: a file that draws a
+check more often than recorded makes every defect of that check in it fresh.
+It reads nothing and judges no entry stale, so an editor shows what the
+command line reports:</p>
+<pre><code class="language-js">const {lint, settingsOf, ledgerOf, baselined} = require(&#39;@maxonfjvipon/xslint&#39;)
+
+const settings = settingsOf(&#39;/path/to/project&#39;)
+let shown = lint(sources, settings)
+if (settings.baseline) {
+  shown = baselined(shown, ledgerOf(settings.baseline)).fresh
+}
 </code></pre>
 
   </div>
