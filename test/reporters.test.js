@@ -133,6 +133,19 @@ describe('reporters', function() {
         'took the SARIF rule description from a defect, not from its check',
       )
     })
+  it('describes a SARIF rule by the summary of a check worded two ways',
+    function() {
+      const log = JSON.parse(capture(reporterOf('sarif'), [{
+        ...defect('error'),
+        name: 'malformed-stylesheet',
+        message: kinds.validation['malformed-stylesheet'].namespace,
+      }]))
+      assert.equal(
+        log.runs[0].tool.driver.rules[0].shortDescription.text,
+        kinds.validation['malformed-stylesheet'].summary,
+        'described a check worded two ways by only one of its faults',
+      )
+    })
   it('grades a SARIF rule at the severity its check declares', function() {
     const log = JSON.parse(capture(reporterOf('sarif'), [defect('error')]))
     assert.equal(

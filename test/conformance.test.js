@@ -518,10 +518,11 @@ const SHAPED = {
 /**
  * The keys a check words a message under: `message` on every check, and
  * `namespace` on `malformed-stylesheet`, what a prefix nothing binds earns in
- * place of a syntax fault (#1019).
+ * place of a syntax fault (#1019), with the `summary` its SARIF rule reads,
+ * covering both (#1214).
  * @type {Array.<string>}
  */
-const WORDINGS = ['message', 'namespace']
+const WORDINGS = ['message', 'namespace', 'summary']
 
 /**
  * Every way one message departs from `SHAPED`.

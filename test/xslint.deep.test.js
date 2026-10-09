@@ -1007,7 +1007,7 @@ describe('xslint', function() {
         shortDescription: {
           text: kinds.format['starts-with-double-slash'].message,
         },
-        defaultConfiguration: {level: 'error'},
+        defaultConfiguration: {level: 'warning'},
       }],
       'did not describe the rule by its check and the grade the run gives it',
     )

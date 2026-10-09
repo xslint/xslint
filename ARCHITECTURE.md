@@ -115,6 +115,7 @@ declares and another file calls is never flagged.
 tier is spelled. `preset:` names the first preset holding the check;
 `recommended` holds every error a processor refuses a stylesheet over and the
 dead code whose reports held over the corpora, bar `unused-variable`.
+A check worded two ways carries a `summary:`, which its SARIF rule reads.
 
 `npx grunt checks` renders every YAML into `src/resources/checks.json`, which
 is what a run reads; `test/conformance.test.js` re-renders it and fails on any

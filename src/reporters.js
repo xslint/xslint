@@ -17,7 +17,8 @@ const LEVEL = {warning: 'warning', error: 'error'}
 /**
  * Every check by its name, what a SARIF rule is described and graded by, so a
  * defect speaking for one sheet, as a stale baseline entry does, never renames
- * the rule its check stands for (#1214).
+ * the rule its check stands for (#1214). A check worded two ways carries a
+ * `summary` covering both, which describes its rule in place of `message`.
  * @type {{[name: string]: {severity: string, message: string}}}
  */
 const CATALOG = Object.assign({}, ...Object.values(kinds))
@@ -112,7 +113,9 @@ const sarif = function(defects, overrides = {}) {
       indexed[defect.name] = rules.length
       rules.push({
         id: defect.name,
-        shortDescription: {text: CATALOG[defect.name].message},
+        shortDescription: {
+          text: CATALOG[defect.name].summary ?? CATALOG[defect.name].message,
+        },
         defaultConfiguration: {
           level: LEVEL[overrides[defect.name] ?? CATALOG[defect.name].severity],
         },
