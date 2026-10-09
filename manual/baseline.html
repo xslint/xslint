@@ -142,7 +142,9 @@ path that no longer exists.</p>
 <p>A baseline written by an earlier xslint, with line hashes where the counts
 stand, is refused. Delete it and record it again with <code>--baseline-write</code>.</p>
 <p>The baseline only shrinks. When a recorded defect is fixed, its entry is stale:
-the run names it and fails until the entry is dropped:</p>
+the run reports it as an error of the baseline file, at the line that records
+it and under the name of its check, in whatever <code>--format</code> asks for, and fails
+until the entry is dropped:</p>
 <pre><code class="language-bash">xslint --baseline xslint-baseline.json --baseline-prune
 </code></pre>
 <p><code>--baseline-prune</code> lowers each count to what the run still draws and records
