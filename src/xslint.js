@@ -839,7 +839,7 @@ module.exports = function xslint(pths, options) {
   } else {
     logger.info(`No defects found`)
   }
-  reporterOf(options.format)(reported)
+  reporterOf(options.format)(reported, settings.overrides)
   const errors = reported.filter((defect) => defect.severity === 'error')
   const warnings = reported.filter((defect) => defect.severity === 'warning')
   if (

@@ -39,7 +39,8 @@ annotation on the pull-request diff with no upload step — the lowest-friction
 way to see findings on a review.
 
 SARIF feeds GitHub code scanning, so xslint findings appear as annotations on
-pull requests:
+pull requests. Each rule in the log is a check that drew a result, described by
+the check's own message and graded at the severity the run gives it:
 
 ```yaml
 - run: xslint --format sarif . > xslint.sarif || true

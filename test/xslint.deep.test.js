@@ -12,6 +12,7 @@ const version = require('../src/version')
 const path = require('path')
 const fs = require('fs')
 const os = require('os')
+const {kinds} = require('../src/resources/checks.json')
 
 /**
  * A scratch directory holding the sheet a baseline is recorded from as `a.xsl`
@@ -987,6 +988,28 @@ describe('xslint', function() {
         'starts-with-double-slash defects, the run draws 0;',
       ].join(''), 'm'),
       'did not annotate the baseline entry no defect matches any more',
+    )
+  })
+  it('should describe the rule a stale entry names by its check', function() {
+    const {dir, file} = baselined(['.'])
+    fs.copyFileSync(
+      'test/resources/baseline/repaired.xsl', path.join(dir, 'a.xsl'),
+    )
+    const streams = xslintStreams([
+      '--preset', 'all', '--config=test/resources/baseline/graded.yml',
+      '--baseline', file, '--format', 'sarif', dir,
+    ])
+    fs.rmSync(dir, {recursive: true, force: true})
+    assert.deepStrictEqual(
+      JSON.parse(streams.stdout).runs[0].tool.driver.rules,
+      [{
+        id: 'starts-with-double-slash',
+        shortDescription: {
+          text: kinds.format['starts-with-double-slash'].message,
+        },
+        defaultConfiguration: {level: 'error'},
+      }],
+      'did not describe the rule by its check and the grade the run gives it',
     )
   })
   it('should read the baseline the config file names', function() {

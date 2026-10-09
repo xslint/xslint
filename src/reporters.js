@@ -6,12 +6,21 @@
 const path = require('path')
 const {out} = require('./output')
 const version = require('./version')
+const {kinds} = require('./resources/checks.json')
 
 /**
  * Defect severity mapped to a SARIF level.
  * @type {{warning: string, error: string}}
  */
 const LEVEL = {warning: 'warning', error: 'error'}
+
+/**
+ * Every check by its name, what a SARIF rule is described and graded by, so a
+ * defect speaking for one sheet, as a stale baseline entry does, never renames
+ * the rule its check stands for (#1214).
+ * @type {{[name: string]: {severity: string, message: string}}}
+ */
+const CATALOG = Object.assign({}, ...Object.values(kinds))
 
 /**
  * A defect's file as a path relative to the working directory, in posix form,
@@ -88,11 +97,14 @@ const json = function(defects) {
 }
 
 /**
- * Print defects as a SARIF 2.1.0 log. The rules are derived from the defects
- * present, so the log is self-contained; GitHub code scanning ingests it.
+ * Print defects as a SARIF 2.1.0 log. The rules are the checks the defects
+ * present name, each graded as the run grades it, so the log is
+ * self-contained; GitHub code scanning ingests it.
  * @param {Array.<object>} defects - Defects to print
+ * @param {{[check: string]: string}} overrides - Severities the run gives
+ *  checks over what they declare
  */
-const sarif = function(defects) {
+const sarif = function(defects, overrides = {}) {
   const rules = []
   const indexed = {}
   for (const defect of defects) {
@@ -100,8 +112,10 @@ const sarif = function(defects) {
       indexed[defect.name] = rules.length
       rules.push({
         id: defect.name,
-        shortDescription: {text: defect.message},
-        defaultConfiguration: {level: LEVEL[defect.severity]},
+        shortDescription: {text: CATALOG[defect.name].message},
+        defaultConfiguration: {
+          level: LEVEL[overrides[defect.name] ?? CATALOG[defect.name].severity],
+        },
       })
     }
   }
@@ -169,15 +183,17 @@ const github = function(defects) {
 }
 
 /**
- * Reporters by format name, each a function that writes given defects.
- * @type {{[format: string]: function(Array.<object>): void}}
+ * Reporters by format name, each a function that writes given defects under
+ * the severities the run gives checks.
+ * @type {{[format: string]: function(Array.<object>, object): void}}
  */
 const REPORTERS = {text: text, json: json, sarif: sarif, github: github}
 
 /**
  * The reporter for a format, so a caller writes defects without knowing how.
  * @param {string} format - Format name (text, json, sarif, or github)
- * @return {function(Array.<object>): void} - Reporter that writes the defects
+ * @return {function(Array.<object>, object): void} - Reporter that writes the
+ *  defects
  */
 const reporterOf = function(format) {
   return REPORTERS[format]
