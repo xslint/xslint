@@ -135,7 +135,8 @@ report committed today diffs against one taken tomorrow.</p>
 annotation on the pull-request diff with no upload step — the lowest-friction
 way to see findings on a review.</p>
 <p>SARIF feeds GitHub code scanning, so xslint findings appear as annotations on
-pull requests:</p>
+pull requests. Each rule in the log is a check that drew a result, described by
+the check&#39;s own message and graded at the severity the run gives it:</p>
 <pre><code class="language-yaml">- run: xslint --format sarif . &gt; xslint.sarif || true
 - uses: github/codeql-action/upload-sarif@v3
   with:
