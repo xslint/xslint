@@ -19,6 +19,12 @@ publication date only; detailed notes begin with the Unreleased section.
   `baselined(defects, ledger)` splits the defects into `fresh` and `known`
   by the counts per file per check, the one split the command line runs too
   (#1210).
+- Report a stale baseline entry through the chosen format. A run that found
+  a recorded defect gone failed with exit code 1 but wrote the entry only as
+  a log line on stderr, so `--format github` drew no annotation, SARIF and
+  JSON held no result, and the summary read "No defects found". Each stale
+  entry is now an error of the baseline file, at the line that records it,
+  under the name of its check (#1209).
 
 ## 0.7.0 - 2026-10-08
 

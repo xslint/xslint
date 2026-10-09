@@ -24,7 +24,7 @@ const {ignoring} = require('./gitignore')
 const {parted} = require('./source')
 const {SUGGESTION, suppressed} = require('./checks')
 const {
-  recorded, matched, baselined, trimmed, ledgerOf,
+  recorded, matched, baselined, trimmed, lapsed, ledgerOf,
 } = require('./baseline')
 const {kinds} = require('./resources/checks.json')
 const {validate: validateXsls, names: xslChecks} =
@@ -823,6 +823,7 @@ module.exports = function xslint(pths, options) {
     const {stale} = matched(
       drawn, sources, earlier, path.dirname(ledger), ranOf(settings),
     )
+    let lapses = []
     if (options.baselinePrune) {
       fs.writeFileSync(
         ledger,
@@ -830,20 +831,11 @@ module.exports = function xslint(pths, options) {
       )
       logger.info(`Pruned the stale entries of ${ledger}`)
     } else {
-      stale.forEach((entry) => logger.error(
-        [
-          `Baseline entry ${entry.file} records ${entry.count} ${entry.name}`,
-          `defects the run no longer draws, drop them from ${ledger} with`,
-          '--baseline-prune',
-        ].join(' '),
-      ))
-    }
-    if (stale.length > 0 && !options.baselinePrune) {
-      process.exitCode = 1
+      lapses = lapsed(stale, ledger, fs.readFileSync(ledger, 'utf-8'))
     }
     reported = baselined(
       reported, {counts: earlier, base: path.dirname(ledger)},
-    ).fresh
+    ).fresh.concat(lapses)
   }
   logger.info(`Processed files: ${found.stylesheets.length}`)
   if (reported.length > 0) {

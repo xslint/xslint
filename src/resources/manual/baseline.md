@@ -50,7 +50,9 @@ A baseline written by an earlier xslint, with line hashes where the counts
 stand, is refused. Delete it and record it again with `--baseline-write`.
 
 The baseline only shrinks. When a recorded defect is fixed, its entry is stale:
-the run names it and fails until the entry is dropped:
+the run reports it as an error of the baseline file, at the line that records
+it and under the name of its check, in whatever `--format` asks for, and fails
+until the entry is dropped:
 
 ```bash
 xslint --baseline xslint-baseline.json --baseline-prune

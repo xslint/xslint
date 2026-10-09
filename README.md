@@ -18,7 +18,7 @@ Catch the bugs in your XSLT stylesheets before they ship.
 Run it on your stylesheets, no install needed:
 
 ```bash
-npx @maxonfjvipon/xslint@0.6.0 path/to/stylesheets
+npx @maxonfjvipon/xslint@0.7.0 path/to/stylesheets
 ```
 
 Given a stylesheet like this:
@@ -111,7 +111,7 @@ get inline annotations on your pull requests:
 
 ```yaml
 - uses: actions/checkout@v6
-- uses: xslint/xslint-action@0.0.14
+- uses: xslint/xslint-action@0.0.15
 ```
 
 Or run it on commit with [pre-commit](https://pre-commit.com) by adding this to your
@@ -120,7 +120,7 @@ Or run it on commit with [pre-commit](https://pre-commit.com) by adding this to 
 ```yaml
 repos:
   - repo: https://github.com/xslint/xslint
-    rev: 0.6.0
+    rev: 0.7.0
     hooks:
       - id: xslint
 ```
@@ -142,7 +142,7 @@ same diagnostics and quick-fixes as the CLI:
 To install `xslint` globally, install [npm] first, then run:
 
 ```bash
-npm install -g @maxonfjvipon/xslint@0.6.0
+npm install -g @maxonfjvipon/xslint@0.7.0
 xslint --version
 ```
 
@@ -257,7 +257,8 @@ xslint --baseline-write xslint-baseline.json
 xslint --baseline xslint-baseline.json --max-warnings=0
 ```
 
-A fixed defect fails the run until `--baseline-prune` drops its entry. A prune
+A fixed defect leaves its entry stale, which the run reports as an error of
+the baseline file and fails on until `--baseline-prune` drops it. A prune
 records nothing new, so the baseline only shrinks. The [baseline
 guide][baseline] covers how defects are counted and where the file is read
 from.
