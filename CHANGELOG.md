@@ -7,6 +7,15 @@ project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Entries for releases before this file was introduced record their npm
 publication date only; detailed notes begin with the Unreleased section.
 
+## Unreleased
+
+- Report a stale baseline entry through the chosen format. A run that found
+  a recorded defect gone failed with exit code 1 but wrote the entry only as
+  a log line on stderr, so `--format github` drew no annotation, SARIF and
+  JSON held no result, and the summary read "No defects found". Each stale
+  entry is now an error of the baseline file, at the line that records it,
+  under the name of its check (#1209).
+
 ## 0.7.0 - 2026-10-08
 
 - Add a baseline. A tree that grew for years without a linter draws hundreds

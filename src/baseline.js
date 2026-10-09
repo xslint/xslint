@@ -12,6 +12,7 @@
  */
 
 const {compared, slashed} = require('./helpers')
+const {placeAt} = require('./source')
 
 /**
  * An object with its keys ranked by `compared`, in code unit order, so the
@@ -161,9 +162,43 @@ const trimmed = function(reported, sources, baseline, base, ran) {
   return layered(counts)
 }
 
+/**
+ * The stale entries as errors of the baseline file, so every reporter renders
+ * the reason a run fails (#1209). Each stands where the file records it, or at
+ * its head where the file spells the entry other than a write does.
+ * @param {Array.<{file: string, name: string, count: number}>} stale - What
+ *  `matched` calls stale
+ * @param {string} file - Path of the baseline file
+ * @param {string} content - What the baseline file holds
+ * @return {Array.<object>} - Defects the reporter takes
+ */
+const lapsed = function(stale, file, content) {
+  return stale.map((entry) => {
+    const sheet = content.indexOf(`${JSON.stringify(entry.file)}:`)
+    const check = content.indexOf(`${JSON.stringify(entry.name)}:`, sheet)
+    let place = {line: 1, pos: 1}
+    if (sheet >= 0 && check >= 0) {
+      place = placeAt(content, check)
+    }
+    return {
+      name: entry.name,
+      severity: 'error',
+      message: [
+        `Baseline entry ${entry.file} records ${entry.count} ${entry.name}`,
+        'defects the run no longer draws. Drop them with --baseline-prune',
+      ].join(' '),
+      file: file,
+      line: place.line,
+      from: place.line,
+      pos: place.pos,
+    }
+  })
+}
+
 module.exports = {
   recorded,
   matched,
   trimmed,
   counted,
+  lapsed,
 }

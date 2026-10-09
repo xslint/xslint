@@ -3,7 +3,8 @@
  * SPDX-License-Identifier: MIT
  */
 
-const {recorded, matched, trimmed, counted} = require('../src/baseline')
+const {recorded, matched, trimmed, counted, lapsed} =
+  require('../src/baseline')
 const {lint, settingsOf, sourceOf, ranOf} = require('../src/xslint')
 const assert = require('assert')
 const fs = require('fs')
@@ -15,6 +16,19 @@ const path = require('path')
  * @type {string}
  */
 const BASE = path.resolve(__dirname, 'resources', 'baseline')
+
+/**
+ * Baseline fixtures that record one entry too many, and where the defect the
+ * stale entry turns into stands in each: on the entry where the file spells
+ * it as a write does, and at its head where the file or the check is spelled
+ * another way.
+ * @type {Array.<{name: string, file: string, place: string}>}
+ */
+const LAPSES = [
+  {name: 'on the line that records it', file: 'inflated.json', place: '4:5'},
+  {name: 'at the head of a respaced sheet', file: 'spaced.json', place: '1:1'},
+  {name: 'at the head of a respaced check', file: 'checked.json', place: '1:1'},
+]
 
 /**
  * The checks a run over every check in the catalog runs.
@@ -55,6 +69,23 @@ const run = function(name) {
 const baseline = function() {
   const {sources, reported} = run('recorded.xsl')
   return recorded(reported, sources, BASE, every(), {})
+}
+
+/**
+ * The defects a run over the untouched sheet draws from the stale entries of
+ * one baseline fixture.
+ * @param {string} name - Baseline fixture under test/resources/baseline
+ * @return {Array.<object>} - What the reporter is handed for them
+ */
+const lapses = function(name) {
+  const {sources, reported} = run('recorded.xsl')
+  const file = path.join(BASE, name)
+  const content = fs.readFileSync(file, 'utf-8')
+  return lapsed(
+    matched(reported, sources, JSON.parse(content), BASE, every()).stale,
+    file,
+    content,
+  )
 }
 
 describe('baseline', function() {
@@ -224,5 +255,23 @@ describe('baseline', function() {
       trimmed(reported, sources, baseline(), BASE, ['short-names']), baseline(),
       'dropped the entries of checks a narrowed prune never ran',
     )
+  })
+  it('reports a stale entry as an error of the baseline file', function() {
+    assert.deepStrictEqual(
+      lapses('inflated.json').map(
+        (defect) => `${path.basename(defect.file)}:${defect.severity}:${defect.name}`,
+      ),
+      ['inflated.json:error:short-names'],
+      'did not hand the reporter the stale entry as an error of its file',
+    )
+  })
+  LAPSES.forEach((row) => {
+    it(`places a stale entry ${row.name}`, function() {
+      assert.deepStrictEqual(
+        lapses(row.file).map((defect) => `${defect.line}:${defect.pos}`),
+        [row.place],
+        'did not place the stale entry where the baseline file records it',
+      )
+    })
   })
 })

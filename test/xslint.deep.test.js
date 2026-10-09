@@ -978,8 +978,23 @@ describe('xslint', function() {
     const streams = xslintStreams(['--preset', 'all', '--baseline', file, dir])
     fs.rmSync(dir, {recursive: true, force: true})
     assert.ok(
-      streams.stderr.includes('a.xsl records 1 starts-with-double-slash'),
-      'did not name the baseline entry no defect matches any more',
+      streams.stdout.includes('a.xsl records 1 starts-with-double-slash'),
+      'did not report the baseline entry no defect matches any more',
+    )
+  })
+  it('should annotate a stale baseline entry for github', function() {
+    const {dir, file} = baselined(['.'])
+    fs.copyFileSync(
+      'test/resources/baseline/repaired.xsl', path.join(dir, 'a.xsl'),
+    )
+    const streams = xslintStreams([
+      '--preset', 'all', '--baseline', file, '--format', 'github', dir,
+    ])
+    fs.rmSync(dir, {recursive: true, force: true})
+    assert.match(
+      streams.stdout,
+      /^::error file=[^,]*baseline\.json,line=5,col=5,title=starts-with-double-slash::/m,
+      'did not annotate the stale baseline entry a github job fails on',
     )
   })
   it('should read the baseline the config file names', function() {
