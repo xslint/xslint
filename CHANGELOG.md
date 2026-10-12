@@ -7,7 +7,7 @@ project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 Entries for releases before this file was introduced record their npm
 publication date only; detailed notes begin with the Unreleased section.
 
-## Unreleased
+## 0.8.0 - 2026-10-12
 
 - Export `baselined` and `ledgerOf`, the baseline the command line applies. An
   editor calling `lint` under a `.xslint.yml` that names a `baseline` showed
