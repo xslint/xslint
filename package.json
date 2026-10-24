@@ -68,7 +68,7 @@
     "grunt-mocha-cli": {
       "mocha": "$mocha"
     },
-    "serialize-javascript": "^7.1.0",
+    "serialize-javascript": "^7.1.4",
     "typed-rest-client": {
       "qs": "^6.16.0"
     }
