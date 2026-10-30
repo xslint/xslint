@@ -35,7 +35,7 @@
     "colors": "1.4.0",
     "commander": "^15.0.0",
     "fontoxpath": "^3.34.0",
-    "minimatch": "^10.2.5",
+    "minimatch": "^11.0.0",
     "yaml": "^2.7.0"
   },
   "devDependencies": {
